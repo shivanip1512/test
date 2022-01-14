@@ -105,7 +105,7 @@ public class HighChartServiceImpl implements HighChartService {
         Map<String, Object> seriesDetails = Maps.newHashMap();
         seriesDetails.put(HighChartOptionKey.SERIES_DATA.getKey(), getDataArray(graph, graphDetail, userContext));
         seriesDetails.put(HighChartOptionKey.SHOW_IN_LEGEND.getKey(), false);
-        seriesDetails.put(HighChartOptionKey.BORDER_COLOR.getKey(), ChartColorsEnum.GREEN);
+        seriesDetails.put(HighChartOptionKey.BORDER_COLOR.getKey(), ChartColorsEnum.EMERALD);
         if (isTemperaturePoint(graph.getPointId())) {
             seriesDetails.put(HighChartOptionKey.THRESHOLD.getKey(), null);
             seriesDetails.put(HighChartOptionKey.COLOR.getKey(), graph.getColor().getColorHex());
@@ -116,12 +116,12 @@ public class HighChartServiceImpl implements HighChartService {
             seriesDetails.put(HighChartOptionKey.MARKER.getKey(), Collections.singletonMap("enabled", true));
             seriesDetails.put(HighChartOptionKey.SERIES_GRAPH_TYPE.getKey(), graphType.getHighChartType());
             if (graphType == GraphType.COLUMN) {
-                seriesDetails.put(HighChartOptionKey.BORDER_COLOR.getKey(), ChartColorsEnum.GREEN.getColorHex());
+                seriesDetails.put(HighChartOptionKey.BORDER_COLOR.getKey(), ChartColorsEnum.EMERALD.getColorHex());
                 seriesDetails.put(HighChartOptionKey.COLOR.getKey(), graph.getColor().getColorHex());
                 seriesDetails.put(HighChartOptionKey.BORDER_WIDTH.getKey(), "2");
             } else {
                 seriesDetails.put(HighChartOptionKey.FILL_OPACITY.getKey(), "0.45");
-                seriesDetails.put(HighChartOptionKey.COLOR.getKey(), ChartColorsEnum.GREEN.getColorHex());
+                seriesDetails.put(HighChartOptionKey.COLOR.getKey(), ChartColorsEnum.EMERALD.getColorHex());
             }
         }
         seriesDetails.put(HighChartOptionKey.SERIES_Y_AXIS.getKey(), graph.getAxisIndex() - 1); //The axis index in Highchart starts with 0

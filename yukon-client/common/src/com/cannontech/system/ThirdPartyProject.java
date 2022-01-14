@@ -5,6 +5,7 @@ import java.util.List;
 import java.util.Objects;
 import java.util.stream.Collectors;
 
+import com.fasterxml.jackson.annotation.JsonAlias;
 import com.fasterxml.jackson.annotation.JsonSetter;
 
 public class ThirdPartyProject implements Comparable<ThirdPartyProject> {
@@ -13,6 +14,8 @@ public class ThirdPartyProject implements Comparable<ThirdPartyProject> {
     public String projectUrl;
     public List<LibraryLicenseType> licenses;
     public List<String> licenseUrls;
+    @JsonAlias("yukon group")
+    public LibraryGroup group;
 
     public String getProject() {
         return project;
@@ -47,6 +50,14 @@ public class ThirdPartyProject implements Comparable<ThirdPartyProject> {
         licenseUrls = Arrays.asList(licenseUrlString.split(", *"));
     }
     
+    public LibraryGroup getGroup() {
+        return group;
+    }
+
+    public void setGroup(LibraryGroup group) {
+        this.group = group;
+    }
+    
     public boolean isAttributionRequired() {
         //  Attribution is only required if all license types require attribution
         return licenses.stream().allMatch(LibraryLicenseType::isAttributionRequired); 
@@ -75,9 +86,14 @@ public class ThirdPartyProject implements Comparable<ThirdPartyProject> {
                Objects.equals(projectUrl,
                               other.projectUrl);
     }
-    
+
     @Override
     public int compareTo(ThirdPartyProject other) {
         return this.project.compareToIgnoreCase(other.project);
+    }
+
+
+    public boolean isNotJunitProject() {
+        return group != LibraryGroup.UNIT_TESTS;
     }
 }

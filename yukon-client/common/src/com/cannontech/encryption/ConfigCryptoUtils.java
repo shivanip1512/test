@@ -34,7 +34,10 @@ public abstract class ConfigCryptoUtils {
      */
     protected static String encryptValue(String valuePlaintext, AESPasswordBasedCrypto encrypter) throws CryptoException {
         valuePlaintext = StringUtils.stripToNull(valuePlaintext);
-        String encryptedValue = encryptionDesignation + encrypter.encryptToHexStr(valuePlaintext);
+        String encryptedValue = null;
+        if (valuePlaintext != null) {
+            encryptedValue = encryptionDesignation + encrypter.encryptToHexStr(valuePlaintext);
+        }
         return encryptedValue;
     }
     

@@ -26,5 +26,14 @@
             <jms:listener destination="yukon.notif.stream.dr.EatonCloudStopRequest" ref="eatonCloudCommandListener" method="handleEatonCloudStopCommand"/>
     </jms:listener-container>
     
-    <bean class="com.cannontech.dr.eatonCloud.service.EatonCloudRuntimeCalcService"/>
+    <bean id="eatonCloudRuntimeCalcServiceListener" class="com.cannontech.dr.eatonCloud.service.EatonCloudRuntimeCalcService"/>
+    <jms:listener-container 
+        connection-factory="connectionFactory" 
+        destination-type="queue"
+        concurrency="1" 
+        container-type="simple"
+        container-class="com.cannontech.services.jms.ContextLoggingMessageListenerContainer">
+        <jms:listener destination="yukon.notif.obj.simulator.EatonCloudRuntimeCalcSimulatonRequest" ref="eatonCloudRuntimeCalcServiceListener" method="startSimulation"/>
+    </jms:listener-container>
+     <bean class="com.cannontech.dr.eatonCloud.service.impl.EatonCloudSendControlServiceImpl"/>
 </beans>

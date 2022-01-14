@@ -15,7 +15,7 @@
 <div class="page-actions fr stacked-md">
     <cti:button icon="icon-plus-green" nameKey="createDashboard" data-popup=".js-create-dashboard-popup"/>
 </div>
-<br/><br/>
+<br/><br/><br/>
 
 <cti:tabs>
     <cti:msg2 var="dashboardsTab" key=".dashboardsTab"/>

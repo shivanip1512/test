@@ -9,7 +9,4 @@ public interface SmartNotificationDeciderService {
    
     void putMessagesOnAssemblerQueue(List<SmartNotificationMessageParameters> messages, int interval, 
                                      boolean sendAllInOneEmail, String digestTime);
-
-    void logInfo(String text, Object obj);
-
 }

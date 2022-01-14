@@ -29,27 +29,39 @@ public class ExportFieldValidator extends SimpleValidator<ExportField> {
         }
 
         YukonValidationUtils.checkExceedsMaxLength(errors, "padChar", field.getPadChar(), 1);
+        
         YukonValidationUtils.checkExceedsMaxLength(errors, "missingAttributeValue", field.getMissingAttributeValue(), 20);
         
         if (field.isTimestamp()) {
-            {
-                YukonValidationUtils.checkExceedsMaxLength(errors, "timestampPattern", field.getPattern(), 50);
-                YukonValidationUtils.checkIsBlank(errors, "pattern", field.getPattern(), "Pattern", false);
-                try {
-                    new SimpleDateFormat(field.getPattern());
-                } catch (Exception e) {
-                    errors.rejectValue("timestampPattern", invalidPatternMsgKey);
+            
+            YukonValidationUtils.checkIsBlank(errors, "pattern", field.getPattern(), "Pattern", false);
+            
+            if( field.getPattern() != null && !field.getPattern().isEmpty()){
+                YukonValidationUtils.checkExceedsMaxLength(errors, "pattern", field.getPattern(), 50);
+                if (!errors.hasFieldErrors("pattern")) {
+                    try {
+                        new SimpleDateFormat(field.getPattern());
+
+                    } catch (Exception e) {
+                        errors.rejectValue("pattern", invalidPatternMsgKey);
+                    }
                 }
             }
-        } else if (field.isValue()) {
-            YukonValidationUtils.checkExceedsMaxLength(errors, "readingPattern", field.getPattern(), 50);
+        } else if (field.isValue() ) {
+            
             YukonValidationUtils.checkIsBlank(errors, "pattern", field.getPattern(), "Pattern", false);
-            try {
-                new DecimalFormat(field.getPattern());
-            } catch (Exception e) {
-                errors.rejectValue("readingPattern", invalidPatternMsgKey);
+            
+            if (field.getPattern() != null && !field.getPattern().isEmpty()) {
+                YukonValidationUtils.checkExceedsMaxLength(errors, "pattern", field.getPattern(), 50);
+                if (!errors.hasFieldErrors("pattern")) {
+                    try {
+                        new DecimalFormat(field.getPattern());
+                    } catch (Exception e) {
+                        errors.rejectValue("pattern", invalidPatternMsgKey);
+                    }
+                }
             }
         }
     }
-    
+
 }

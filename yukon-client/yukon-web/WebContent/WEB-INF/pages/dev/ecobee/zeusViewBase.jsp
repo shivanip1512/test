@@ -16,7 +16,7 @@
     }
 
      $(function() {
-         $('#authenticate, #createDevice, #deleteDevice, #enrollment, #showUser, #issueDemandResponse, #createPushConfiguration, #showPushConfiguration, #runtimeData, #cancelDemandResponse, #getGroup, #generateDiscrepency, #paginatedResponse').click(function () {
+         $('#authenticate, #createDevice, #deleteDevice, #enrollment, #showUser, #issueDemandResponse, #createPushConfiguration, #showPushConfiguration, #runtimeData, #cancelDemandResponse, #getGroup, #generateDiscrepency, #paginatedResponse, #deviceStatusResponse').click(function () {
          switch(this.name){
              case 'authenticate' : {
                  enabledSelectedOption(authenticate, authenticateOp);
@@ -56,6 +56,9 @@
              } break;
              case 'paginatedResponse' : {
                  enabledSelectedOption(paginatedResponse, paginatedResponseOp);
+             } break;
+             case 'deviceStatusResponse' : {
+                 enabledSelectedOption(deviceStatusResponse, deviceStatusResponseOp);
              } break;
          }
          });
@@ -146,6 +149,12 @@
                             <label> 
                                 <input id="paginatedResponse" type="checkbox" name="paginatedResponse"> 
                                 <i:inline key=".paginatedResponse" />
+                            </label>
+                        </li>
+                        <li>
+                            <label> 
+                                <input id="deviceStatusResponse" type="checkbox" name="deviceStatusResponse"> 
+                                <i:inline key=".deviceStatusResponse" />
                             </label>
                         </li>
                     </ul>
@@ -249,7 +258,15 @@
                                         <option value="${loopCounter.count-1}">${paginatedStatus}</option>
                                     </c:forEach>
                                 </select>
-                                <input type="hidden" name="paginatedStatusOp" value="0" />
+                                <input type="hidden" name="paginatedResponseOp" value="0" />
+                            </li>
+                            <li>
+                                <select id="deviceStatusResponseOp" name="deviceStatusResponseOp" disabled="disabled">
+                                    <c:forEach var="status" items="${deviceStatus}" varStatus="loopCounter">
+                                        <option value="${loopCounter.count-1}">${status}</option>
+                                    </c:forEach>
+                                </select>
+                                <input type="hidden" name="deviceStatusResponseOp" value="0" />
                             </li>
                         </ul>
                     </tags:nameValueContainer>

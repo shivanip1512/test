@@ -440,7 +440,7 @@
 
                     <div class="column-12-12 clearfix select-box bordered-div">
                         <cti:msg2 var="minutes" key="yukon.common.units.MINUTES" />
-                        <table class="compact-results-table no-stripes">
+                        <table class="compact-results-table no-stripes no-borders">
                             <tr>
                                 <td>
                                     <input type="checkbox" id="js-program-start-check" <c:if test="${not empty loadProgram.notification.programStartInMinutes}">checked="checked" </c:if>

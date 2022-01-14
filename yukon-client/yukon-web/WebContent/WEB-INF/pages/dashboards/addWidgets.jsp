@@ -33,10 +33,10 @@
                                 <b class="wsnw"><span class="js-name"><i:inline key="${widgetType.formatKey}"/></span></b>
                                 <br/><br/><span class="js-description"><i:inline key="${widgetType.descriptionKey}"/></span>
                             </td>    
-                            <td style="width:25%;" class="wsnw">
+                            <td style="width:25%;" class="wsnw vat">
                                 <cti:button data-type="${widgetType}" classes="js-widget-add" icon="icon-plus-green" nameKey="addWidgets.addWidget"/>
                                 <br/><br/>
-                                <div class="success js-widget-added-msg-${widgetType} dn"><i:inline key=".addWidgets.widgetAdded"/></div>
+                                <div class="success js-widget-added-msg-${widgetType} fl MT10 dn"><i:inline key=".addWidgets.widgetAdded"/></div>
                             </td>            
                         </tr>
                     </c:forEach>

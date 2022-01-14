@@ -15,5 +15,9 @@ public interface RfnDeviceLookupService {
      * @throws NotFoundException
      */
     public RfnDevice getDevice(RfnIdentifier rfnIdentifier) throws NotFoundException;
-    
+   
+    /**
+     * This method is used to find devices based on passed identifier
+     */
+    public RfnDevice findRfnDevices(RfnIdentifier identifier);
 }

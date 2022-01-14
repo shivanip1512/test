@@ -5,7 +5,7 @@ import java.util.Set;
 import org.springframework.stereotype.Service;
 
 import com.cannontech.common.pao.PaoType;
-import com.cannontech.services.systemDataPublisher.service.model.SystemDataFieldType.FieldType;
+import com.cannontech.yukon.system.metrics.message.YukonMetricPointInfo;
 
 @Service
 public class RfRelayDataProcessor extends PaoCountDataProcessor {
@@ -16,7 +16,12 @@ public class RfRelayDataProcessor extends PaoCountDataProcessor {
     }
 
     @Override
-    public boolean supportsField(FieldType field) {
-        return field == FieldType.RFN_RELAYS;
+    public YukonMetricPointInfo getYukonMetricPointInfo() {
+        return YukonMetricPointInfo.RELAYS;
+    }
+
+    @Override
+    public long getPeriodInMinutes() {
+        return 360;
     }
 }

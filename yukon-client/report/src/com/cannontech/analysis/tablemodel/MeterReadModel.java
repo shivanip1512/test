@@ -484,7 +484,7 @@ public class MeterReadModel extends ReportModelBase<MeterAndPointData> implement
 		final StringBuilder sb = new StringBuilder();
         sb.append("<table align='center' width='90%' border='0' cellspacing='0' cellpadding='0' class='TableCell'>" + LINE_SEPARATOR);
         sb.append("  <tr>" + LINE_SEPARATOR);
-        sb.append("    <td valign='top'>" + LINE_SEPARATOR);		
+        sb.append("    <td class='vat'>" + LINE_SEPARATOR);		
         sb.append("      <table width='100%' border='0' cellspacing='0' cellpadding='0' class='TableCell'>" + LINE_SEPARATOR);
         sb.append("        <tr>" + LINE_SEPARATOR);
         sb.append("          <td valign='top' class='title-header'>Meter Read Status</td>" +LINE_SEPARATOR);
@@ -501,7 +501,7 @@ public class MeterReadModel extends ReportModelBase<MeterAndPointData> implement
         sb.append("      </table>" + LINE_SEPARATOR);
         sb.append("    </td>" + LINE_SEPARATOR);
 
-        sb.append("    <td valign='top'>" + LINE_SEPARATOR);
+        sb.append("    <td class='vat'>" + LINE_SEPARATOR);
         sb.append("      <table width='100%' border='0' cellspacing='0' cellpadding='0' class='TableCell'>" + LINE_SEPARATOR);
         sb.append("        <tr>" + LINE_SEPARATOR);
         sb.append("          <td class='title-header'>&nbsp;Order By</td>" +LINE_SEPARATOR);
@@ -517,7 +517,7 @@ public class MeterReadModel extends ReportModelBase<MeterAndPointData> implement
         sb.append("      </table>" + LINE_SEPARATOR);
         sb.append("    </td>" + LINE_SEPARATOR);
         
-        sb.append("    <td valign='top'>" + LINE_SEPARATOR);        
+        sb.append("    <td class='vat'>" + LINE_SEPARATOR);        
         sb.append("      <table width='100%' border='0' cellspacing='0' cellpadding='0' class='TableCell'>" + LINE_SEPARATOR);
         sb.append("        <tr>" + LINE_SEPARATOR);
         sb.append("          <td valign='top' class='title-header'>Disabled Devices</td>" +LINE_SEPARATOR);

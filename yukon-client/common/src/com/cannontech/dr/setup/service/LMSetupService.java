@@ -27,5 +27,8 @@ public interface LMSetupService<T1, T2> {
     /**
      * Copy the LM object.
      */
-    int copy(int id, T2 lmCopy, LiteYukonUser liteYukonUser);
+    T1 copy(int id, T2 lmCopy, LiteYukonUser liteYukonUser);
+       
+   
+    
 }

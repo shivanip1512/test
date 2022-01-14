@@ -175,6 +175,19 @@
                 <exclude name="easymock-3.0.jar"/>
                 <exclude name="h2-1.4.178.jar"/>
                 <exclude name="objenesis-1.2.jar"/>
+                <exclude name="apiguardian-api-1.1.0.jar"/>
+                <exclude name="hamcrest-2.2.jar"/>
+                <exclude name="hamcrest-core-2.2.jar"/>
+                <exclude name="hamcrest-library-2.2.jar"/>
+                <exclude name="javassist-3.26.0-GA.jar"/>
+                <exclude name="junit-jupiter-api-5.7.1.jar"/>
+                <exclude name="junit-jupiter-engine-5.7.1.jar"/>
+                <exclude name="junit-jupiter-params-5.7.1.jar"/>
+                <exclude name="junit-platform-commons-1.7.1.jar"/>
+                <exclude name="junit-platform-console-standalone-1.7.1.jar"/>
+                <exclude name="junit-platform-engine-1.7.1.jar"/>
+                <exclude name="reflections-0.9.12.jar"/>
+                <exclude name="opentest4j-1.2.0.jar"/>
               </fileset>
         </copy>
 
@@ -187,7 +200,10 @@
 
         <copy todir="${client.bin}" preservelastmodified="true">
             <fileset dir="${basedir}/yukon-install/resources/client_common_dlls" />
-            <fileset dir="${client.bag}" excludes="*.txt,*.xml,*.properties,*.debug,images/**,commands/**,easymock-3.0.jar,h2-1.4.178.jar,objenesis-1.2.jar"/>
+            <fileset dir="${client.bag}" excludes="*.txt,*.xml,*.properties,*.debug,images/**,commands/**,easymock-3.0.jar,h2-1.4.178.jar,objenesis-1.2.jar,
+            apiguardian-api-1.1.0.jar,javassist-3.26.0-GA.jar,junit-jupiter-api-5.7.1.jar,junit-jupiter-engine-5.7.1.jar,junit-jupiter-params-5.7.1.jar,hamcrest-2.2.jar,
+            hamcrest-core-2.2.jar,hamcrest-library-2.2.jar,junit-platform-commons-1.7.1.jar,junit-platform-console-standalone-1.7.1.jar,junit-platform-engine-1.7.1.jar,
+            opentest4j-1.2.0.jar,reflections-0.9.12.jar"/>
             <fileset file="${basedir}/yukon-client/billing/src/main/resources" includes="*.bat"/>
             <fileset file="${basedir}/yukon-client/commander/src/main/resources/CommanderIcon.ico"/>
             <fileset file="${basedir}/yukon-client/dbeditor/resource/dbEditorIcon.ico"/>
@@ -408,17 +424,45 @@
         <copy todir="${temp.dir}/YukonInstall">
             <fileset dir="${basedir}/yukon-install/YukonSetupX/Media/Release 1/Package" />
         </copy>
-        <copy todir="${temp.dir}/YukonMisc/YukonDatabase/DatabaseValidation">
-            <fileset dir="${basedir}/yukon-client/common/src/com/cannontech/database/snapshot" />
-        </copy>
         <copy todir="${temp.dir}/YukonMisc/YukonDatabase/DatabaseCreation">
-            <fileset dir="${basedir}/yukon-database/CreationScripts" />
+            <fileset file="${basedir}/yukon-database/CreationScripts/OracleTableCreation.sql"/>
+            <fileset file="${basedir}/yukon-database/CreationScripts/SqlServerTableCreation.sql"/>
         </copy>
         <copy todir="${temp.dir}/YukonMisc/YukonDatabase/DatabaseUpdates/Oracle">
-            <fileset dir="${basedir}/yukon-database/DBUpdates/oracle" />
+            <fileset dir="${basedir}/yukon-database/DBUpdates/oracle">
+                <exclude name="2.*.sql"/>
+                <exclude name="3.*.sql"/>
+                <exclude name="4.*.sql"/>
+                <exclude name="5.0*.sql"/>
+                <exclude name="5.1*.sql"/>
+                <exclude name="5.2_0.sql"/>
+                <exclude name="5.2_1.sql"/>
+                <exclude name="5.2_2.sql"/>
+                <exclude name="5.2_3.sql"/>
+                <exclude name="5.2_4.sql"/>
+                <exclude name="5.2_5.sql"/>
+                <exclude name="5.2_6.sql"/>
+                <exclude name="5.2_7.sql"/>
+                <exclude name="**/stars/**"/>
+            </fileset>
         </copy>
         <copy todir="${temp.dir}/YukonMisc/YukonDatabase/DatabaseUpdates/SqlServer">
-            <fileset dir="${basedir}/yukon-database/DBUpdates/sqlserver" />
+            <fileset dir="${basedir}/yukon-database/DBUpdates/sqlserver">
+                <exclude name="2.*.sql"/>
+                <exclude name="3.*.sql"/>
+                <exclude name="4.*.sql"/>
+                <exclude name="5.0*.sql"/>
+                <exclude name="5.1*.sql"/>
+                <exclude name="5.2_0.sql"/>
+                <exclude name="5.2_1.sql"/>
+                <exclude name="5.2_2.sql"/>
+                <exclude name="5.2_3.sql"/>
+                <exclude name="5.2_4.sql"/>
+                <exclude name="5.2_5.sql"/>
+                <exclude name="5.2_6.sql"/>
+                <exclude name="5.2_7.sql"/>
+                <exclude name="**/stars/**"/>
+            </fileset>
         </copy>
         
 

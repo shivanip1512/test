@@ -11,7 +11,7 @@ post-operation:
             $ref: '../schemas/MacroLoadGroupsSchema.yaml#/MacroLoadGroup'
           examples:
             MacroLoadGroup:
-              $ref: '../schemas/MacroLoadGroupsSchema.yaml#/components/examples/MacroLoadGroup'
+              $ref: '../schemas/MacroLoadGroupsSchema.yaml#/components/examples/MacroLoadGroup Request'
       required: true
     responses:
       '201':
@@ -19,10 +19,10 @@ post-operation:
         content:
           application/json:
             schema:
-              $ref: '../schemas/MacroLoadGroupsSchema.yaml#/MacroLoadGroup'
+              $ref: '../schemas/MacroLoadGroupsSchema.yaml#/MacroLoadGroup Response Schema'
             examples:
               MacroLoadGroup:
-                $ref: '../schemas/MacroLoadGroupsSchema.yaml#/components/examples/MacroLoadGroup'
+                $ref: '../schemas/MacroLoadGroupsSchema.yaml#/components/examples/MacroLoadGroup Response'
 get-update-delete-operation:
   get:
     tags:
@@ -42,10 +42,10 @@ get-update-delete-operation:
         content:
           application/json:
             schema:
-              $ref: '../schemas/MacroLoadGroupsSchema.yaml#/MacroLoadGroup'
+              $ref: '../schemas/MacroLoadGroupsSchema.yaml#/MacroLoadGroup Response Schema'
             examples:
               MacroLoadGroup:
-                $ref: '../schemas/MacroLoadGroupsSchema.yaml#/components/examples/MacroLoadGroup'
+                $ref: '../schemas/MacroLoadGroupsSchema.yaml#/components/examples/MacroLoadGroup Response'
   put:
     tags:
      - Macro Load Group
@@ -65,7 +65,7 @@ get-update-delete-operation:
             $ref: '../schemas/MacroLoadGroupsSchema.yaml#/MacroLoadGroup'
           examples:
             MacroLoadGroup:
-              $ref: '../schemas/MacroLoadGroupsSchema.yaml#/components/examples/MacroLoadGroup'
+              $ref: '../schemas/MacroLoadGroupsSchema.yaml#/components/examples/MacroLoadGroup Request'
       required: true
     responses:
       '200':
@@ -73,10 +73,10 @@ get-update-delete-operation:
         content:
           application/json:
             schema:
-              $ref: '../schemas/MacroLoadGroupsSchema.yaml#/MacroLoadGroup'
+              $ref: '../schemas/MacroLoadGroupsSchema.yaml#/MacroLoadGroup Response Schema'
             examples:
               MacroLoadGroup:
-                $ref: '../schemas/MacroLoadGroupsSchema.yaml#/components/examples/MacroLoadGroup'
+                $ref: '../schemas/MacroLoadGroupsSchema.yaml#/components/examples/MacroLoadGroup Response'
   delete:
     tags:
      - Macro Load Group
@@ -131,7 +131,7 @@ copy-operation:
         content:
           application/json:
             schema:
-              $ref: '../schemas/MacroLoadGroupsSchema.yaml#/MacroLoadGroupCopyResponse'
+              $ref: '../schemas/MacroLoadGroupsSchema.yaml#/MacroLoadGroup Response Schema'
             examples:
               Macro Load Group Copy:
                 $ref: '../schemas/MacroLoadGroupsSchema.yaml#/components/examples/MacroLoadGroupCopyResponse' 

@@ -48,7 +48,7 @@ public abstract class SmartNotificationDecider {
     private static final String DEFAULT_INTERVALS = "0,1,3,5,15,30";
     private static Intervals intervals;
 
-    private static Logger commsLogger = YukonLogManager.getCommsLogger();
+    private static Logger snLogger = YukonLogManager.getSmartNotificationsLogger(SmartNotificationDecider.class);
 
     // cache key/ wait time
     /*
@@ -70,9 +70,11 @@ public abstract class SmartNotificationDecider {
 
     @PostConstruct
     private void init() {
-        String intervalStr = configSource.getString(MasterConfigString.SMART_NOTIFICATION_INTERVALS,
-                DEFAULT_INTERVALS);
-        intervals = new Intervals(intervalStr, DEFAULT_INTERVALS);
+        if (intervals == null) {
+            String intervalStr = configSource.getString(MasterConfigString.SMART_NOTIFICATION_INTERVALS,
+                    DEFAULT_INTERVALS);
+            intervals = new Intervals(intervalStr, DEFAULT_INTERVALS);
+        }
     }
 
     /**
@@ -90,13 +92,13 @@ public abstract class SmartNotificationDecider {
             if (!subscriptions.isEmpty()) {
                 result.addMessageParameters(
                         MessageParametersHelper.getMessageParameters(eventType, subscriptions, 0, ProcessingType.START_UP));
-                logInfo("On Startup found: " + unprocessed.size() + " " + frequency + " events. Result:"
-                        + result.loggingString(commsLogger.getLevel()));
+                snLogger.info("On Startup unproccessed: {} frequency:{} result:{}", unprocessed.size(), frequency
+                        + result.loggingString(snLogger.getLevel()));
             } else {
-                logInfo("On Startup didn't find any unprocessed events for frequency: " + frequency);
+                snLogger.info("On Startup didn't find any unprocessed events for frequency: " + frequency);
             }
         } catch (Exception e) {
-            commsLogger.error("Exception processing event on startup", e);
+            snLogger.error("Exception processing event on startup", e);
         }
 
         return result;
@@ -154,7 +156,7 @@ public abstract class SmartNotificationDecider {
                     // replace current interval with the next interval
                     WaitTime newInterval = replaceCachedInterval(cacheKey, currentInterval);
 
-                    logInfo("UPDATING cache for key:" + cacheKey + " to:" + newInterval + " from:" + currentInterval);
+                    snLogger.info("UPDATING cache for key:{} to:{} from:{}", cacheKey, newInterval, currentInterval);
 
                     // all unprocessed events
                     List<SmartNotificationEvent> unprocessed = getUnprocessedGroupedEvents(cacheKey);
@@ -169,13 +171,13 @@ public abstract class SmartNotificationDecider {
                         if (subscriptionsToEvents.isEmpty()) {
                             // if there is no events to process, remove the key from cache
                             iter.remove();
-                            logInfo("REMOVING from cache (No subscriptions for events):" + cacheKey + "/" + newInterval + " all:"
-                                    + intervals + " " + getStatistics(cacheKey));
+                            snLogger.info("REMOVING from cache (No subscriptions for events):{}/{} all:{} statistics:{}",
+                                    cacheKey, newInterval, intervals, getStatistics(cacheKey));
 
                         } else {
-                            logInfo("PROCESSING cache key:" + cacheKey + "/" + currentInterval + " events:"
-                                    + subscriptionsToEvents.values().size() + " subscriptions:"
-                                    + subscriptionsToEvents.keys().stream().distinct().count());
+                            snLogger.info("PROCESSING cache key:{}/{} events:{} subscriptions:{}", cacheKey, currentInterval,
+                                    subscriptionsToEvents.values().size(),
+                                    subscriptionsToEvents.keys().stream().distinct().count());
                             // subscription found add info used to create email message
                             result.addMessageParameters(
                                     MessageParametersHelper.getMessageParameters(eventType, subscriptionsToEvents,
@@ -188,18 +190,18 @@ public abstract class SmartNotificationDecider {
                     } else {
                         // if there is no events to process, remove the key from cache
                         iter.remove();
-                        logInfo("REMOVING from cache (No unprocessed events):" + cacheKey + "/" + newInterval + " all intervals:"
-                                + intervals + " " + getStatistics(cacheKey));
+                        snLogger.info("REMOVING from cache (No unprocessed events):{}/{} all:{} statistics:{}",
+                                cacheKey, newInterval, intervals, getStatistics(cacheKey));
 
                     }
                 } else {
                     // It is not time to process events yet
-                    logInfo("WAITING TO PROCESS Cache key:" + cacheKey + " Next run:" + currentInterval + " Now:"
-                            + new DateTime().toString("MM-dd-yyyy HH:mm:ss.SSS"));
+                    snLogger.info("WAITING TO PROCESS Cache key:{} Next run:{} Now:{}", cacheKey, currentInterval,
+                            new DateTime().toString("MM-dd-yyyy HH:mm:ss.SSS"));
                 }
             }
         } catch (Exception e) {
-            commsLogger.error("Exception processing on interval", e);
+            snLogger.error("Exception processing on interval", e);
         }
         return results;
     }
@@ -359,7 +361,7 @@ public abstract class SmartNotificationDecider {
         Instant nextRunTime = new DateTime().plusMinutes(nextInterval).toInstant();
         WaitTime newInterval = new WaitTime(nextRunTime, nextInterval);
         intervalCache.put(cacheKey, newInterval);
-        logInfo("Adding interval to cache for key:" + cacheKey + " to:" + newInterval);
+        snLogger.info("Adding interval {} to cache for key:{}", newInterval, cacheKey);
     }
 
     public final class ProcessorResult {
@@ -429,13 +431,5 @@ public abstract class SmartNotificationDecider {
                 return getLogMsg().toString();
             }
         }
-    }
-
-    public void logDebug(String text) {
-        commsLogger.debug("[SN:{}] {}", this.getClass().getSimpleName(), text);
-    }
-
-    public void logInfo(String text) {
-        commsLogger.info("[SN:{}] {}", this.getClass().getSimpleName(), text);
     }
 }

@@ -232,7 +232,7 @@ public:
     static const Attribute  PowerFactor;
     static const Attribute  PowerFactorCoincidental;
     static const Attribute  MinimumPowerFactor;
-    static const Attribute  PreviousMinimumPowerFactor;
+    static const Attribute  MinimumPowerFactorFrozen;
     static const Attribute  CoincidentPowerFactorAtDeliveredPeakKVA;
     static const Attribute  CoincidentPowerFactorAtDeliveredPeakkVARateA;
     static const Attribute  CoincidentPowerFactorAtDeliveredPeakkVARateB;
@@ -638,6 +638,10 @@ public:
 
     static const Attribute  RegisterRemoval;
     static const Attribute  MagnetTampering;
+    static const Attribute  Pulse1SwitchFailure;
+    static const Attribute  Pulse2SwitchFailure;
+    static const Attribute  NodeCommissionEvent;
+    static const Attribute  LostAssociation;
 
     static const Attribute  TamperNoUsageOver24Hours;
     static const Attribute  TamperReverseWhDetected;

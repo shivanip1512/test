@@ -36,7 +36,6 @@ public class ItronCommandStrategy  implements LmHardwareCommandStrategy{
        
         try {
             switch (command.getType()) {
-            case CONFIG:
             case IN_SERVICE:
                 itronCommunicationService.enroll(command.getDevice().getAccountID(),
                 (Collection<Integer>) command.getParams().get(LmHardwareCommandParam.GROUP_ID));

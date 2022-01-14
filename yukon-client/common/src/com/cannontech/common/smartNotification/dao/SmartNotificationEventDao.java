@@ -78,7 +78,15 @@ public interface SmartNotificationEventDao {
     SearchResults<SmartNotificationEventData> getDeviceDataMonitorEventData(DateTimeZone timeZone, PagingParameters paging, SortBy sortBy, Direction direction, Range<DateTime> dateRange,
                                                                             int monitorId);
 
+    /**
+     * Returns events by event type and date range
+     */
     List<SmartNotificationEvent> getEventsByTypeAndDate(SmartNotificationEventType eventType, Range<Instant> range);
+    
+    /**
+     * Returns events by monitor id and date range
+     */
+    List<SmartNotificationEvent> getEventsByMonitorIdAndDate(Integer monitorId, Range<Instant> range);
 
     /**
      * Returns watchdog event data to be displayed on UI.
@@ -119,11 +127,9 @@ public interface SmartNotificationEventDao {
      * Returns events that have not been processed by event type and event params.
      */
     List<SmartNotificationEvent> getUnprocessedGroupedEvents(SmartNotificationEventType type, String name, String value);
-
+    
     /**
      * Creates history to track the number of emails sent
      */
     void createHistory(SmartNotificationMessageParameters parameters, int intervalMinutes);
-
-
 }

@@ -116,4 +116,18 @@ public interface EcobeeZeusGroupDao {
      */
     Multimap<String, String> getAllEcobeeGroupToSerialNumberMapping();
 
+    /**
+     * Return all ecobee groups mapped with the specified inventoryId
+     */
+    List<String> getZeusGroupIdsForInventoryId(int inventoryId);
+
+    /**
+     * Delete zeus group mapping.
+     */
+    void deleteZeusGroupMapping(String zeusGroupId);
+
+    /**
+     * Update mappings with new zeus group Id.
+     */
+    void updateZeusGroupId(String oldZeusGroupId, String newZeusGroupId);
 }

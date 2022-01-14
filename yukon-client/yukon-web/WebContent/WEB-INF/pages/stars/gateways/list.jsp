@@ -14,11 +14,22 @@
             data-dialog
             data-title="<cti:msg2 key=".create.gateway.label"/>" 
             data-url="<cti:url value="/stars/gateways/create"/>" 
-            data-width="570" 
-            data-min-width="570" 
+            data-width="680" 
+            data-min-width="680" 
+            data-height="600"
             data-event="yukon:assets:gateway:save" 
             data-ok-text="<cti:msg2 key="components.button.save.label"/>" 
             data-load-event="yukon:assets:gateway:load">
+        </div>
+    </cti:checkRolesAndProperties>
+    
+    <cti:checkRolesAndProperties value="MANAGE_INFRASTRUCTURE" level="OWNER">
+        <div id="update-gateways-popup" class="dn"
+            data-dialog
+            data-title="<cti:msg2 key=".updateGateways"/>" 
+            data-url="<cti:url value="/stars/gateways/update"/>" 
+            data-event="yukon:assets:gateways:update" 
+            data-ok-text="<cti:msg2 key="components.button.update.label"/>">
         </div>
     </cti:checkRolesAndProperties>
 
@@ -40,6 +51,8 @@
             <cm:dropdownOption icon="icon-drive-go" key=".manageCertificates" href="${manageCertificate}"/>
             <cti:url var="manageFirmware" value="/stars/gateways/manageFirmware"/>
             <cm:dropdownOption icon="icon-drive-go" key=".manageFirmware" href="${manageFirmware}"/>
+            <li class="divider"></li>
+            <cm:dropdownOption data-popup="#update-gateways-popup" icon="icon-cog-edit" key=".updateGateways"/>
         </cti:checkRolesAndProperties>
     </div>
 

@@ -6,6 +6,7 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 import java.util.stream.Collectors;
 
 import javax.servlet.http.HttpServletRequest;
@@ -257,8 +258,12 @@ public class LoadGroupSetupController {
             }
 
             if (response.getStatusCode() == HttpStatus.OK) {
-                HashMap<String, Integer> paoIdMap = (HashMap<String, Integer>) response.getBody();
-                int groupId = paoIdMap.get("groupId");
+                
+                HashMap<String, Object> responseMap = (HashMap<String, Object>) response.getBody();
+                // this will have a single value
+                List<String> key= responseMap.keySet().stream().collect(Collectors.toList());
+                Map<String,Object> loadGroupMap = (Map<String, Object>) responseMap.get(key.get(0));
+                int groupId = (int) loadGroupMap.get("id");
                 json.put("groupId", Integer.toString(groupId));
                 servletResponse.setContentType("application/json");
                 JsonUtils.getWriter().writeValue(servletResponse.getOutputStream(), json);

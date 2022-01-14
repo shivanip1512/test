@@ -143,7 +143,8 @@ public class LoadGroupSetupServiceImpl implements LoadGroupSetupService {
 
     @Override
     @Transactional
-    public int copy(int loadGroupId, LMCopy lmCopy, LiteYukonUser liteYukonUser) {
+    public LoadGroupBase copy(int loadGroupId, LMCopy lmCopy, LiteYukonUser liteYukonUser) {
+    
         Optional<LiteYukonPAObject> liteLoadGroup =dbCache.getAllLMGroups()
                                                           .stream()
                                                           .filter(group -> group.getLiteID() == loadGroupId)
@@ -152,19 +153,32 @@ public class LoadGroupSetupServiceImpl implements LoadGroupSetupService {
             throw new NotFoundException("Id not found");
         }
 
-        LMGroup loadGroup = (LMGroup) dbPersistentDao.retrieveDBPersistent(liteLoadGroup.get());
-        int oldLoadGroupId = loadGroup.getPAObjectID();
-        lmCopy.buildModel(loadGroup);
-        loadGroup.setPAObjectID(null);
+        LMGroup lmGroup = (LMGroup) dbPersistentDao.retrieveDBPersistent(liteLoadGroup.get());
+        int oldLoadGroupId = lmGroup.getPAObjectID();
+        lmCopy.buildModel(lmGroup);
+        lmGroup.setPAObjectID(null);
 
-        dbPersistentDao.performDBChange(loadGroup, TransactionType.INSERT);
+        dbPersistentDao.performDBChange(lmGroup, TransactionType.INSERT);
 
         List<PointBase> points = pointDao.getPointsForPao(oldLoadGroupId);
-        SimpleDevice device = SimpleDevice.of(loadGroup.getPAObjectID(), loadGroup.getPaoType());
+        SimpleDevice device = SimpleDevice.of(lmGroup.getPAObjectID(), lmGroup.getPaoType());
         paoCreationHelper.applyPoints(device, points);
         dbChangeManager.processPaoDbChange(device, DbChangeType.UPDATE);
-        logService.loadGroupCreated(loadGroup.getPAOName(), loadGroup.getPaoType(), liteYukonUser);
-        return loadGroup.getPAObjectID();
+    
+        LoadGroupBase loadGroupBase = getModel(lmGroup.getPaoType());
+        loadGroupBase.buildModel(lmGroup);
+        if (loadGroupBase instanceof LoadGroupRoute) {
+            setRouteName((LoadGroupRoute) loadGroupBase);
+        }
+        if (loadGroupBase instanceof LoadGroupPoint) {
+            LMGroupPoint lmGroupPoint = (LMGroupPoint) lmGroup;
+            LoadGroupPoint loadGroupPoint = (LoadGroupPoint) loadGroupBase;
+            updateLoadGroupPoint(lmGroupPoint, loadGroupPoint);
+        }
+        logService.loadGroupCreated(loadGroupBase.getName(), loadGroupBase.getType(), liteYukonUser);
+        
+        
+        return loadGroupBase;
     }
 
     /**
@@ -234,4 +248,5 @@ public class LoadGroupSetupServiceImpl implements LoadGroupSetupService {
         loadGroupPoint.setPointUsage(new LMDto(lmGroupPoint.getLMGroupPoint().getPointIDUsage(), pointUsageName));
         loadGroupPoint.setStartControlRawState(new LMDto(lmGroupPoint.getLMGroupPoint().getStartControlRawState(), rawStateName));
     }
+
 }

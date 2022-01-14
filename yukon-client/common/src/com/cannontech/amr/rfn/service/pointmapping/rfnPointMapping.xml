@@ -6260,7 +6260,7 @@
                 <modifier>Min</modifier>
             </modifiers>
         </point>
-        <point name="Previous Minimum Power Factor" icdExcludedTypes="RFN530S4EAX,RFN530S4EAXR">
+        <point name="Minimum Power Factor Frozen" icdExcludedTypes="RFN530S4EAX,RFN530S4EAXR">
             <uom>PF</uom>
             <multiplier value=".001"/>
             <parseSiPrefix/>

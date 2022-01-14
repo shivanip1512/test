@@ -6,6 +6,7 @@ import java.util.List;
 
 import javax.servlet.http.HttpServletResponse;
 
+import org.joda.time.DateTime;
 import org.joda.time.Duration;
 import org.joda.time.Instant;
 import org.joda.time.format.DateTimeFormatter;
@@ -59,6 +60,11 @@ public class RecentEventParticipationController {
     @RequestMapping(value = "/recenteventparticipation/details", method = RequestMethod.GET)
     public String details(ModelMap model, @RequestParam(required = false) Instant from,
             @RequestParam(required = false) Instant to, PagingParameters paging) {
+        if (from == null && to == null) {
+            DateTime todaysDate = DateTime.now();
+            to = todaysDate.toInstant();
+            from = todaysDate.minusMonths(1).toInstant();
+        }
         setUpModel(model, from, to, paging);
         return "dr/recenteventparticipation/details.jsp";
     }

@@ -59,6 +59,8 @@ import com.cannontech.common.config.MasterConfigBoolean;
 import com.cannontech.common.pao.PaoType;
 import com.cannontech.common.rfn.message.RfnIdentifier;
 import com.cannontech.common.rfn.message.datastreaming.device.DeviceDataStreamingConfigError;
+import com.cannontech.common.rfn.message.device.RfnDeviceDeleteConfirmationReplyType;
+import com.cannontech.common.rfn.message.device.RfnDeviceDeleteInitialReplyType;
 import com.cannontech.common.rfn.message.gateway.ConnectionStatus;
 import com.cannontech.common.rfn.message.gateway.GatewayConfigResult;
 import com.cannontech.common.rfn.message.gateway.GatewayFirmwareUpdateRequestResult;
@@ -85,7 +87,9 @@ import com.cannontech.common.rfn.simulation.SimulatedFirmwareReplySettings;
 import com.cannontech.common.rfn.simulation.SimulatedFirmwareVersionReplySettings;
 import com.cannontech.common.rfn.simulation.SimulatedGatewayDataSettings;
 import com.cannontech.common.rfn.simulation.SimulatedNmMappingSettings;
+import com.cannontech.common.rfn.simulation.SimulatedRfnDeviceDeletionSettings;
 import com.cannontech.common.rfn.simulation.SimulatedUpdateReplySettings;
+import com.cannontech.common.rfn.simulation.service.RfnDeviceDeletionSimulatorService;
 import com.cannontech.common.rfn.simulation.service.RfnGatewaySimulatorService;
 import com.cannontech.common.util.jms.YukonJmsTemplate;
 import com.cannontech.common.util.jms.YukonJmsTemplateFactory;
@@ -117,9 +121,11 @@ import com.cannontech.simulators.message.request.MeterInfoStatusArchiveSimulator
 import com.cannontech.simulators.message.request.ModifyDataStreamingSimulatorRequest;
 import com.cannontech.simulators.message.request.ModifyFieldSimulatorRequest;
 import com.cannontech.simulators.message.request.ModifyGatewaySimulatorRequest;
+import com.cannontech.simulators.message.request.ModifyRfnDeviceDeletionSimulatorRequest;
 import com.cannontech.simulators.message.request.ModifyRfnMeterReadAndControlSimulatorRequest;
 import com.cannontech.simulators.message.request.NmNetworkSimulatorRequest;
 import com.cannontech.simulators.message.request.NmNetworkSimulatorRequest.Action;
+import com.cannontech.simulators.message.request.RfnDeviceDeletionSimulatorStatusRequest;
 import com.cannontech.simulators.message.request.RfnLcrAllDeviceSimulatorStartRequest;
 import com.cannontech.simulators.message.request.RfnLcrAllDeviceSimulatorStopRequest;
 import com.cannontech.simulators.message.request.RfnLcrSimulatorByRangeStartRequest;
@@ -134,6 +140,7 @@ import com.cannontech.simulators.message.response.DataStreamingSimulatorStatusRe
 import com.cannontech.simulators.message.response.FieldSimulatorStatusResponse;
 import com.cannontech.simulators.message.response.GatewaySimulatorStatusResponse;
 import com.cannontech.simulators.message.response.NmNetworkSimulatorResponse;
+import com.cannontech.simulators.message.response.RfnDeviceDeletionSimulatorStatusResponse;
 import com.cannontech.simulators.message.response.RfnLcrSimulatorStatusResponse;
 import com.cannontech.simulators.message.response.RfnMeterDataSimulatorStatusResponse;
 import com.cannontech.simulators.message.response.RfnMeterReadAndControlSimulatorStatusResponse;
@@ -156,6 +163,7 @@ import com.google.common.collect.Lists;
 public class NmIntegrationController {
 
     @Autowired private DatePropertyEditorFactory datePropertyEditorFactory;
+    @Autowired private RfnDeviceDeletionSimulatorService rfnDeviceDeletionSimulatorService;
     @Autowired private RfnGatewayService rfnGatewayService;
     @Autowired private RfnEventTestingService rfnEventTestingService;
     @Autowired private RfnPerformanceVerificationService performanceVerificationService;
@@ -493,6 +501,24 @@ public class NmIntegrationController {
             flash.setError(new YukonMessageSourceResolvable(SimulatorsCommunicationService.COMMUNICATION_ERROR_KEY));
         }
     }
+    
+    private void sendRfnDeviceDeletionStartStopRequest(ModifyRfnDeviceDeletionSimulatorRequest request, FlashScope flash, boolean isStartRequest) {
+        String successKey = isStartRequest ? "yukon.web.modules.dev.rfnTest.rfnDeviceDeletionSimulator.simStartSuccess" :
+                                             "yukon.web.modules.dev.rfnTest.rfnDeviceDeletionSimulator.simStopSuccess";
+        String failureKey = isStartRequest ? "yukon.web.modules.dev.rfnTest.rfnDeviceDeletionSimulator.simStartFailed" :
+                                             "yukon.web.modules.dev.rfnTest.rfnDeviceDeletionSimulator.simStopFailed";
+        try {
+            SimulatorResponseBase response = simulatorsCommunicationService.sendRequest(request, SimulatorResponseBase.class);
+            if (response.isSuccessful()) {
+                flash.setConfirm(new YukonMessageSourceResolvable(successKey));
+            } else {
+                flash.setError(new YukonMessageSourceResolvable(failureKey));
+            }
+        } catch (ExecutionException e) {
+            log.error(SIMULATORS_COMM_ERROR, e);
+            flash.setError(new YukonMessageSourceResolvable(SimulatorsCommunicationService.COMMUNICATION_ERROR_KEY));
+        }
+    }
 
     private void sendFieldSimulatorSettingsRequest(ModifyFieldSimulatorRequest request, FlashScope flash) {
         String successKey = "yukon.web.modules.dev.rfnTest.rfnMeterSimulator.deviceConfig.configurationSuccess";
@@ -631,6 +657,25 @@ public class NmIntegrationController {
         return buildSimulatorStatusJson(status.response.getStatus());
     }
 
+    @RequestMapping("viewRfnDeviceDeleteSimulator")
+    public String viewRfnDeviceDeleteSimulator(ModelMap model, FlashScope flash) {
+        model.addAttribute("rfnDeviceDeleteInitialReplies", RfnDeviceDeleteInitialReplyType.values());
+        model.addAttribute("rfnDeviceDeleteConfirmationReplies", RfnDeviceDeleteConfirmationReplyType.values());
+        
+        var rfnDeviceDeleteResponse = getRfnDeviceDeletionStatusResponse().response;
+        
+        if (rfnDeviceDeleteResponse == null) {
+            flash.setError(new YukonMessageSourceResolvable(SimulatorsCommunicationService.COMMUNICATION_ERROR_KEY));
+            return "redirect:viewBase";
+        }
+        
+        model.addAttribute("deletionSettings", rfnDeviceDeleteResponse.getDeletionSettings());
+
+        model.addAttribute("deviceDeletionReplyActive", rfnDeviceDeleteResponse.isDeviceDeletionReplyActive());
+
+        return "rfn/rfnDeviceDeleteSimulator.jsp";
+    }
+    
     @RequestMapping("viewRfnMeterSimulator")
     public String viewRfnMeterSimulator(ModelMap model, FlashScope flash) {
         ImmutableSet<PaoType> paoTypes = PaoType.getRfMeterTypes();
@@ -701,6 +746,20 @@ public class NmIntegrationController {
         }
     }
     
+    private ResponseOrError<RfnDeviceDeletionSimulatorStatusResponse> getRfnDeviceDeletionStatusResponse() {
+        try {
+            RfnDeviceDeletionSimulatorStatusResponse response = simulatorsCommunicationService.sendRequest(
+                new RfnDeviceDeletionSimulatorStatusRequest(), RfnDeviceDeletionSimulatorStatusResponse.class);
+            return ResponseOrError.of(response);
+        } catch (Exception e) {
+            log.error(e);
+            Map<String, Object> json = new HashMap<>();
+            json.put("hasError", true);
+            json.put("errorMessage", "Unable to send message to Simulator Service: " + e.getMessage() + ".");
+            return ResponseOrError.of(json);
+        }
+    }
+    
     @RequestMapping("enableAllRfnReadAndControl")
     public String enableAllRfnReadAndControlSimulators(RfnMeterReadAndControlReadSimulatorSettings readSettings,
                                                        RfnMeterReadAndControlDisconnectSimulatorSettings disconnectSettings,
@@ -725,6 +784,27 @@ public class NmIntegrationController {
         sendRfnMeterReadAndControlStartStopRequest(request, flash, false);
         
         return "redirect:viewRfnMeterSimulator";
+    }
+    
+    @RequestMapping("enableDeviceDeletionReply")
+    public String enableDeviceDeletionReply(SimulatedRfnDeviceDeletionSettings settings, FlashScope flash) {
+        
+        ModifyRfnDeviceDeletionSimulatorRequest request = new ModifyRfnDeviceDeletionSimulatorRequest();
+        request.setDeletionSettings(settings);
+        
+        sendRfnDeviceDeletionStartStopRequest(request, flash, true);
+        
+        return "redirect:viewRfnDeviceDeleteSimulator";
+    }
+
+    @RequestMapping("disableDeviceDeletionReply")
+    public String disableDeviceDeletionReply(FlashScope flash) {
+        ModifyRfnDeviceDeletionSimulatorRequest request = new ModifyRfnDeviceDeletionSimulatorRequest();
+        request.setStopDeletionReply(true);
+        
+        sendRfnDeviceDeletionStartStopRequest(request, flash, false);
+        
+        return "redirect:viewRfnDeviceDeleteSimulator";
     }
     
     @RequestMapping("viewLcrDataSimulator")

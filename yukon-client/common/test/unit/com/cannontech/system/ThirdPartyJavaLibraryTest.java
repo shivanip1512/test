@@ -15,10 +15,20 @@ import java.nio.file.Path;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 import java.util.Arrays;
+import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
 import java.util.function.Function;
+import java.util.stream.Collectors;
 import java.util.stream.Stream;
+
+import javax.xml.parsers.ParserConfigurationException;
+import javax.xml.parsers.SAXParser;
+import javax.xml.parsers.SAXParserFactory;
+
+import org.xml.sax.Attributes;
+import org.xml.sax.SAXException;
+import org.xml.sax.helpers.DefaultHandler;
 
 import org.apache.commons.codec.binary.Hex;
 import org.apache.commons.collections4.CollectionUtils;
@@ -64,7 +74,7 @@ public class ThirdPartyJavaLibraryTest {
             "tomcat-websocket.jar",
             "websocket-api.jar",
             "catalina.jar",
-            "tomcat-juli-9.0.50.jar");
+            "tomcat-juli-9.0.56.jar");
 
     private static Stream<File> recurse(File f) {
         if (f.isDirectory()) {
@@ -126,5 +136,41 @@ public class ThirdPartyJavaLibraryTest {
                 assertEquals(sha1, e.getValue().sha1, "SHA1 mismatch for " + e.getKey() + " " + p);
             }
         });
+    }
+    
+    @Test
+    public void test_junitJarsExcluded()
+            throws IOException, NoSuchAlgorithmException, ParserConfigurationException, SAXException {
+        Set<String> unitTestJars = new HashSet<>();
+        String buildDirectory = System.getProperty("user.dir");
+        if (!buildDirectory.contains("yukon-build")) {
+            String yukonDirectory = buildDirectory.substring(0, buildDirectory.indexOf("yukon-client"));
+            buildDirectory = yukonDirectory + "yukon-build";
+        }
+        File resourceFile = new File(buildDirectory + File.separatorChar + "build.xml");
+        SAXParserFactory factory = SAXParserFactory.newInstance();
+        SAXParser saxParser = factory.newSAXParser();
+        DefaultHandler handler = new DefaultHandler() {
+            @Override
+            public void startElement(String uri, String localName, String qName, Attributes attributes)
+                    throws SAXException {
+                if (qName.equals("exclude") && attributes.getValue("name").endsWith(".jar")) {
+                    unitTestJars.add(attributes.getValue("name"));
+                }
+            }
+        };
+        saxParser.parse(resourceFile, handler);
+        ClassPathResource libraryYaml = new ClassPathResource("thirdPartyLibraries.yaml");
+
+        ThirdPartyLibraries documentedLibraries = YamlParserUtils.parseToObject(libraryYaml.getInputStream(),
+                ThirdPartyLibraries.class);
+        Map<String, ThirdPartyJavaLibrary> documentedLibrariesByFilename = Maps.uniqueIndex(documentedLibraries.javaLibraries,
+                l -> l.filename);
+
+        Set<String> unitTestjarsFromYaml = documentedLibrariesByFilename.entrySet().stream()
+                .filter(e -> e.getValue().group == LibraryGroup.UNIT_TESTS).map(e -> e.getKey()).collect(Collectors.toSet());
+        Set<String> missingJars = Sets.difference(unitTestjarsFromYaml, unitTestJars);
+        assertTrue(missingJars.isEmpty(),
+                "New Unit Tests related JAR found. These must be excluded in build.xml file of yukon-build " + missingJars);
     }
 }

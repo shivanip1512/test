@@ -12,7 +12,7 @@
         <tags:nameValueContainer>
 	        <c:forEach var="filter" items="${filterByList}" varStatus="status">
 	        	<cti:msg2 key="${filter.formatKey}" var="filterName"/>
-                <tags:nameValue name="${filterName}" valueClass="full-width"><input class="full-width" type="text" id="searchField_${status.count}" name="${filter.name}" value="${filter.filterValue}"></tags:nameValue>
+                <tags:nameValue name="${filterName}" valueClass="full-width"><input size="30" type="text" id="searchField_${status.count}" name="${filter.name}" value="${filter.filterValue}"></tags:nameValue>
 	        </c:forEach>
         </tags:nameValueContainer>
         

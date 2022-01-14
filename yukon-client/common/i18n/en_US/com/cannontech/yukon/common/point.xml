@@ -300,7 +300,7 @@
     <entry key="yukon.common.attribute.builtInAttribute.POWER_FACTOR">Power Factor</entry>
     <entry key="yukon.common.attribute.builtInAttribute.POWER_FACTOR_COIN">Power Factor Coincidental</entry>
     <entry key="yukon.common.attribute.builtInAttribute.MINIMUM_POWER_FACTOR">Minimum Power Factor</entry>
-    <entry key="yukon.common.attribute.builtInAttribute.PREVIOUS_MINIMUM_POWER_FACTOR">Previous Minimum Power Factor</entry>
+    <entry key="yukon.common.attribute.builtInAttribute.MINIMUM_POWER_FACTOR_FROZEN">Minimum Power Factor Frozen</entry>
 
     <entry key="yukon.common.attribute.builtInAttribute.COIN_POWER_FACTOR_AT_DELIVERED_PEAK_KVA">Coincident Power Factor at Delivered Peak kVA</entry>
     <entry key="yukon.common.attribute.builtInAttribute.COIN_POWER_FACTOR_AT_DELIVERED_PEAK_KVA_RATE_A">Coincident Power Factor at Delivered Peak kVA Rate A</entry>
@@ -724,6 +724,10 @@
     
     <entry key="yukon.common.attribute.builtInAttribute.MAGNET_TAMPERING">Magnet Tampering</entry>
     <entry key="yukon.common.attribute.builtInAttribute.REGISTER_REMOVAL">Register Removal</entry>
+    <entry key="yukon.common.attribute.builtInAttribute.PULSE_1_SWITCH_FAILURE">Pulse 1 Switch Failure</entry>
+    <entry key="yukon.common.attribute.builtInAttribute.PULSE_2_SWITCH_FAILURE">Pulse 2 Switch Failure</entry>
+    <entry key="yukon.common.attribute.builtInAttribute.NODE_COMMISSION_EVENT">Node Commission Event</entry>
+    <entry key="yukon.common.attribute.builtInAttribute.LOST_ASSOCIATION">Lost Association</entry>
     
     <entry key="yukon.common.attribute.builtInAttribute.TAMPER_NO_USAGE_OVER_24_HOURS">Tamper - No Usage over 24 hours</entry>
     <entry key="yukon.common.attribute.builtInAttribute.TAMPER_REVERSE_WH_DETECTED">Tamper - Reverse Wh Detected</entry>

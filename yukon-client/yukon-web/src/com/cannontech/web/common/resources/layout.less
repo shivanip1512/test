@@ -64,7 +64,7 @@ html {
         background-color: @page-background;
         color: @font-color;
         display:block;
-        font: 14px/1.3 "Helvetica Neue", Helvetica, Arial, sans-serif;
+        font: 14px/1.3 "Open Sans", "Helvetica Neue", Helvetica, Arial, sans-serif;
         -webkit-font-smoothing: antialiased;
            -moz-font-smoothing: antialiased;
                 font-smoothing: antialiased;
@@ -76,7 +76,7 @@ html {
 .yukon-page { min-width: @page-width; }
 
 /* HEADER */
-.yukon-header .toolbar-outer { height: 44px; }
+.yukon-header .toolbar-outer { height: 50px; }
 
 .yukon-header .toolbar-inner { .page-fixed-width; }
 .yukon-header .nav-inner { .page-fixed-width; }
@@ -91,7 +91,12 @@ html {
     float: left;
     margin-right: 6px;
 }
-.yukon-header .search-field { min-width: 240px; }
+.yukon-header .search-field { 
+	min-width: 240px;
+	border-radius: 4px;
+	padding: 8px !important;
+	background-color: white !important;
+}
 .yukon-header .yukon-alert-button { padding: 4px 10px; }
 .yukon-header .yukon-alert-button .b-label {
     font-size: 14px;
@@ -399,12 +404,6 @@ html {
             text-align: center;
         }
         
-        input[type=text], input[type=password],
-        input[type=text]:focus, input[type=password]:focus {
-            box-shadow: none;
-            line-height: 16px;
-            padding: 4px;
-        }
     }
 }
 

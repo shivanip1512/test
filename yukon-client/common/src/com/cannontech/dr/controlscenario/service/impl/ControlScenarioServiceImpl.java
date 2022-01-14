@@ -122,7 +122,7 @@ public class ControlScenarioServiceImpl implements LMSetupService <ControlScenar
     }
 
     @Override
-    public int copy(int id, LMCopy lmCopy, LiteYukonUser liteYukonUser) {
+    public ControlScenario copy(int id, LMCopy lmCopy, LiteYukonUser liteYukonUser) {
         throw new UnsupportedOperationException("Not supported copy operation");
     }
 

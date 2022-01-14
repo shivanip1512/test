@@ -35,7 +35,7 @@ var yg = {
             long_date_time_hm: 'MMM DD hh:mm A',
             both_with_ampm: 'MM/DD/YYYY hh:mm:ss A',
             date: 'MM/DD/YYYY',
-
+            date_hms_12: 'MM/DD/YYYY hh:mm:ss a'
         },
         phone: <cti:msg2 key="yukon.common.phoneNumberFormatting.formats"/>
     },
@@ -96,7 +96,8 @@ var yg = {
     // Common selectors in all of Yukon.
     selectors: {
         // Any of the paging controls (previous, next, page counts)
-        paging : '.paging-area .previous-page .button, .paging-area .next-page .button, .paging-area .page-size a'
+        paging : '.paging-area .previous-page .button, .paging-area .next-page .button',
+        pageSize: '.paging-area .page-size .js-items-per-page'
     },
     
     colors: JSON.parse('<cti:getYukonColorPaletteJson/>'),

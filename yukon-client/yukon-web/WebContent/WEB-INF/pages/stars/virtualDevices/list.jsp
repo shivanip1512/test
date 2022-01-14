@@ -32,10 +32,10 @@
             <tbody>
                 <c:forEach var="device" items="${virtualDevices.items}">
                     <tr>
-                        <cti:url var="detailUrl" value="/stars/virtualDevice/${device.id}"/>
-                        <td><a href="${detailUrl}">${fn:escapeXml(device.name)}</a></td>
+                        <cti:url var="detailUrl" value="/stars/virtualDevice/${device.deviceId}"/>
+                        <td><a href="${detailUrl}">${fn:escapeXml(device.deviceName)}</a></td>
                         <td>
-                            <c:if test="${device.type == virtualMeterType}">
+                            <c:if test="${device.deviceType == virtualMeterType}">
                                 ${fn:escapeXml(device.meterNumber)}
                             </c:if>
                         </td>

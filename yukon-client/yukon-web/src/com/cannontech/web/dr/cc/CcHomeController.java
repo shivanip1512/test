@@ -154,6 +154,8 @@ public class CcHomeController {
     
     @InitBinder
     public void initBinder(WebDataBinder binder, final YukonUserContext userContext) {
+        // increased array size from default value of 256 to 1000
+        binder.setAutoGrowCollectionLimit(1000);
         datePropertyEditorFactory.setupDateTimePropertyEditor(binder, userContext, BlankMode.CURRENT);
     }
     

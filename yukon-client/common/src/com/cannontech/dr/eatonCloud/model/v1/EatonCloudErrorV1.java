@@ -30,7 +30,6 @@ public class EatonCloudErrorV1 implements Serializable {
         this.message =  message;
         this.errorId = errorId;
         this.errorCode = errorCode;
-        this.errorId = errorId;
         this.generatedTime = generatedTime;
         this.errorNumber = errorNumber;
     }

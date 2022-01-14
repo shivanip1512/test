@@ -4,8 +4,10 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 import java.util.stream.Collectors;
 
 import org.apache.commons.lang3.StringUtils;
@@ -27,6 +29,7 @@ import com.cannontech.common.rfn.model.RfnGatewayData;
 import com.cannontech.common.rfn.model.RfnGatewayFirmwareUpdateSummary;
 import com.cannontech.common.rfn.service.RfnGatewayCertificateUpdateService;
 import com.cannontech.common.rfn.service.RfnGatewayFirmwareUpgradeService;
+import com.cannontech.common.rfn.service.RfnGatewayService;
 import com.cannontech.i18n.YukonUserContextMessageSourceResolver;
 import com.cannontech.user.YukonUserContext;
 import com.cannontech.web.amr.util.cronExpressionTag.CronExpressionTagService;
@@ -44,6 +47,7 @@ public class GatewayControllerHelper {
     @Autowired private PaoNotesService paoNotesService;
     @Autowired private RfnGatewayFirmwareUpgradeService rfnGatewayFirmwareUpgradeService;
     @Autowired private RfnGatewayCertificateUpdateService certificateUpdateService;
+    @Autowired private RfnGatewayService rfnGatewayService;
 
     public void addGatewayMessages(ModelMap model, YukonUserContext userContext) {
         
@@ -93,6 +97,8 @@ public class GatewayControllerHelper {
                     + data.getConnectionStatus()));
             dataJson.put("ip", data.getIpAddress());
             dataJson.put("port", data.getPort());
+            dataJson.put("nmip", data.getNmIpAddress());
+            dataJson.put("nmport", data.getNmPort());
             dataJson.put("dataStreamingLoadingPercent", data.getDataStreamingLoadingPercent());
             dataJson.put("lastComm", data.getLastCommStatus());
             dataJson.put("lastCommText", accessor.getMessage(baseKey + "lastCommStatus." + data.getLastCommStatus()));
@@ -280,5 +286,38 @@ public class GatewayControllerHelper {
             SortableColumn col = SortableColumn.of(dir, column == sortBy, text, column.name());
             model.addAttribute(column.name(), col);
         }
+    }
+    
+    public Set<GatewayNMIPAddressPort> getAllGatewayNMIPPorts() {
+    	Set<GatewayNMIPAddressPort> nmIPAddressPorts = new HashSet<GatewayNMIPAddressPort>();
+        Set<RfnGateway> allGateways = rfnGatewayService.getAllGateways();
+        nmIPAddressPorts = allGateways.stream()
+                .filter(g -> g.getData().getNmIpAddress() != null && g.getData().getNmPort() != null)
+                .map(g -> { return (new GatewayNMIPAddressPort(g.getData().getNmIpAddress(), g.getData().getNmPort()));})
+                .collect(Collectors.toSet());
+    	
+    	return nmIPAddressPorts;
+    
+    }
+    
+    public GatewayNMIPAddressPort getMostUsedGatewayNMIPPort() {
+        Set<RfnGateway> allGateways = rfnGatewayService.getAllGateways();
+        String mostNmIpAddress = allGateways.stream()
+                .filter(g -> g.getData().getNmIpAddress() != null)
+                // summarize NmIpAddress
+                .collect(Collectors.groupingBy(g -> g.getData().getNmIpAddress(), Collectors.counting()))
+                // fetch the max entry
+                .entrySet().stream().max(Map.Entry.comparingByValue())
+                .map(Map.Entry::getKey).orElse(null);
+
+        if (mostNmIpAddress != null) {
+            Integer nmPort = allGateways.stream()
+                    .filter(g -> g.getData().getNmIpAddress().equals(mostNmIpAddress))
+                    .findFirst().orElse(null)
+                    .getData()
+                    .getNmPort();
+            return new GatewayNMIPAddressPort(mostNmIpAddress, nmPort);
+        }
+        return null;
     }
 }

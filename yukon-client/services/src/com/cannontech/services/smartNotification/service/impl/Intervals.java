@@ -14,7 +14,7 @@ import com.google.common.collect.Iterables;
  * This class is responsible for loading and managing smart notification intervals.
  */
 public final class Intervals {
-    private static final Logger log = YukonLogManager.getLogger(Intervals.class);
+    private static final Logger log = YukonLogManager.getSmartNotificationsLogger(Intervals.class);
     private final Set<Integer> intervals = new TreeSet<>();
 
     public Intervals(String intervalStr, String defaultIntervalStr) {

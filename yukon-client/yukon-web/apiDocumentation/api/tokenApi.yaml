@@ -21,7 +21,7 @@ token-generate:
           content:
             application/json:
               schema:
-                $ref: '../schemas/tokenSchema.yaml#/components/examples/Token'
+                $ref: '../schemas/tokenSchema.yaml#/Token-Generate-Response'
               examples:
                 Token: 
                   $ref: '../schemas/tokenSchema.yaml#/components/examples/Token'

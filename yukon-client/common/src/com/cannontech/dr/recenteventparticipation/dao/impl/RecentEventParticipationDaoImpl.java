@@ -1,5 +1,6 @@
 package com.cannontech.dr.recenteventparticipation.dao.impl;
 
+import static com.cannontech.dr.recenteventparticipation.ControlEventDeviceStatus.FAILED_WILL_RETRY;
 import static com.cannontech.dr.recenteventparticipation.ControlEventDeviceStatus.FAILED;
 import static com.cannontech.dr.recenteventparticipation.ControlEventDeviceStatus.UNKNOWN;
 
@@ -18,9 +19,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 
 import com.cannontech.clientutils.YukonLogManager;
 import com.cannontech.common.model.PagingParameters;
-import com.cannontech.common.util.ChunkingSqlTemplate;
 import com.cannontech.common.util.Range;
-import com.cannontech.common.util.SqlFragmentGenerator;
 import com.cannontech.common.util.SqlFragmentSource;
 import com.cannontech.common.util.SqlStatementBuilder;
 import com.cannontech.core.dynamic.AsyncDynamicDataSource;
@@ -161,7 +160,7 @@ public class RecentEventParticipationDaoImpl implements RecentEventParticipation
     public SqlStatementBuilder getSumSql() {
         SqlStatementBuilder sql = new SqlStatementBuilder();
         sql.append("SUM(CASE WHEN ced.Result").eq_k(UNKNOWN).append("THEN 1 ELSE 0 END) Unknown,");
-        sql.append("SUM(CASE WHEN ced.Result").eq_k(FAILED).append("THEN 1 ELSE 0 END) Failed,");
+        sql.append("SUM(CASE WHEN ced.Result").in_k(List.of(FAILED, FAILED_WILL_RETRY)).append("THEN 1 ELSE 0 END) Failed,");
         sql.append("SUM(CASE WHEN ced.Result").in_k(List.of(ControlEventDeviceStatus.SUCCESS_COMPLETED,
                 ControlEventDeviceStatus.SUCCESS_RECEIVED, ControlEventDeviceStatus.SUCCESS_STARTED))
                 .append("AND ced.RetryTime is NULL THEN 1 ELSE 0 END) Confirmed,");
@@ -414,22 +413,26 @@ public class RecentEventParticipationDaoImpl implements RecentEventParticipation
     }
     
     @Override
-    public Set<Integer> getDeviceIdsByStatus(Set<Integer> deviceIds, ControlEventDeviceStatus status, Range<Instant> range) {
-        ChunkingSqlTemplate template = new ChunkingSqlTemplate(jdbcTemplate);
-        SqlFragmentGenerator<Integer> sqlGenerator = (subList) -> {
-            SqlStatementBuilder sql = new SqlStatementBuilder();
-            sql.append("SELECT DeviceId");
-            sql.append("FROM ControlEventDevice");
-            sql.append("WHERE DeviceId").in(subList);
-            sql.append("AND Result").eq(status);
-            sql.append("AND DeviceReceivedTime").gte(range.getMin());
-            sql.append("AND DeviceReceivedTime").lte(range.getMax());
-            return sql;
-        };
-
-        return template.query(sqlGenerator, deviceIds, TypeRowMapper.INTEGER)
+    public Set<Integer> getDeviceIdsByExternalEventIdAndStatuses(Integer externalEventId, List<ControlEventDeviceStatus> statuses) {
+        SqlStatementBuilder sql = new SqlStatementBuilder();
+        sql.append("SELECT DeviceId");
+        sql.append("FROM ControlEventDevice ced");
+        sql.append("  JOIN ControlEvent ce ON ced.ControlEventId = ce.ControlEventId");
+        sql.append("WHERE Result").in_k(statuses);
+        sql.append("AND ce.ExternalEventId").eq(externalEventId);
+        return jdbcTemplate.query(sql, TypeRowMapper.INTEGER)
                 .stream().distinct().collect(Collectors.toSet());
-
     }
-
-}
+    
+    @Override
+    public int failWillRetryDevices(Integer externalEventId) {
+        SqlStatementBuilder sql = new SqlStatementBuilder();
+        sql.append("UPDATE ControlEventDevice").set("Result", ControlEventDeviceStatus.FAILED);
+        sql.append("WHERE Result").in_k(List.of(ControlEventDeviceStatus.FAILED_WILL_RETRY, ControlEventDeviceStatus.UNKNOWN));
+        if(externalEventId != null) {
+            sql.append("AND ControlEventId = (select ControlEventId from ControlEvent where ExternalEventId").eq(externalEventId).append(")"); 
+        }
+        return jdbcTemplate.update(sql);
+    }
+}    
+    

@@ -81,10 +81,10 @@ get-update-delete-operation:
       content:
         application/json:
           schema:
-            $ref: '../schemas/yukonLoggingSchema.yaml#/Logger'
+            $ref: '../schemas/yukonLoggingSchema.yaml#/Update Logger'
           examples:
             Logger:
-              $ref: '../schemas/yukonLoggingSchema.yaml#/components/examples/Logger Request'
+              $ref: '../schemas/yukonLoggingSchema.yaml#/components/examples/Update Logger Request'
       required: true
     responses:
       '200':

@@ -1,12 +1,11 @@
 package com.cannontech.stars.dr.eatonCloud;
 
-import java.util.Set;
-
 import org.apache.commons.lang3.StringUtils;
 import org.apache.logging.log4j.Logger;
 import org.joda.time.DateTime;
 import org.joda.time.Instant;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.validation.Errors;
 
 import com.cannontech.clientutils.YukonLogManager;
@@ -68,12 +67,15 @@ public class EatonCloudLcrBuilder implements HardwareTypeExtensionProvider {
                                     + hardware.getGuid() + ". Device cannot be added to Yukon at this time.",
                             "invalidDeviceCreation", Type.UNKNOWN);
                 }
-            } catch (EatonCloudCommunicationExceptionV1 | EatonCloudException e) {
-                throw new DeviceCreationException("Unable to find a matching device identifier GUID:" + hardware.getGuid()
-                        + " registered in your Brightlayer site. Device cannot be added to Yukon at this time.",
-                        "invalidDeviceCreation", Type.GUID_DOES_NOT_EXIST);
+            } catch (EatonCloudCommunicationExceptionV1 e) {
+                if (e.getErrorMessage() != null && e.getErrorMessage().getErrorCode() == HttpStatus.BAD_REQUEST.value()) {
+                    throw new DeviceCreationException("Unable to find a matching device identifier GUID:" + hardware.getGuid()
+                            + " registered in your Brightlayer site. Device cannot be added to Yukon at this time.",
+                            "invalidDeviceCreation", Type.GUID_DOES_NOT_EXIST, e);
+                }
+                throw e;
             }
-  
+
             SimpleDevice pao = creationService.createDeviceByDeviceType(
                 hardwareTypeToPaoType.get(hardware.getHardwareType()), hardware.getSerialNumber());
             inventoryBaseDao.updateInventoryBaseDeviceId(hardware.getInventoryId(), pao.getDeviceId());
@@ -81,7 +83,11 @@ public class EatonCloudLcrBuilder implements HardwareTypeExtensionProvider {
             DateTime start = new DateTime();
             DateTime end = start.minusDays(1);
             Range<Instant> range =  new Range<Instant>(end.toInstant(), false, start.toInstant(), true);
-            readService.collectDataForRead(Set.of(pao.getDeviceId()), range);
+            try {
+                readService.collectDataForRead(pao.getDeviceId(), range);
+            } catch (EatonCloudCommunicationExceptionV1 | EatonCloudException e) {
+                log.error("Unable to read device:{}", pao, e);
+            }
         } catch (EatonCloudCommunicationExceptionV1 | EatonCloudException e) {
             log.error("Unable to create device.", e);
             throw new DeviceCreationException(e.getMessage(), "invalidDeviceCreation", e);
@@ -132,7 +138,7 @@ public class EatonCloudLcrBuilder implements HardwareTypeExtensionProvider {
             hardware.setGuid(deviceDao.getGuid(hardware.getDeviceId()));
             hardware.setFirmwareVersion(paoDao.findPaoInfoValue(hardware.getDeviceId(), InfoKey.FIRMWARE_VERSION));
         } catch (NotFoundException nfe) {
-            log.error("GUID is not found device id:" + hardware.getDeviceId(), nfe);
+            log.debug("GUID is not found device id:" + hardware.getDeviceId());
             hardware.setGuid("");
         }
     }

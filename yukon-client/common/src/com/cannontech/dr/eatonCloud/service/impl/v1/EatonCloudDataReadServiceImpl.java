@@ -66,29 +66,39 @@ public class EatonCloudDataReadServiceImpl implements EatonCloudDataReadService 
     @Autowired private RecentEventParticipationDao recentEventParticipationDao;
  
     @Override
-    public Multimap<PaoIdentifier, PointData> collectDataForRead(Set<Integer> deviceIds, Range<Instant> queryRange) {
+    public Multimap<PaoIdentifier, PointData> collectDataForRead(Integer deviceId, Range<Instant> range) {
+        return collectDataForRead(Set.of(deviceId), range, true, "SINGLE DEVICE");
+    }
 
+    @Override
+    public Multimap<PaoIdentifier, PointData> collectDataForRead(Set<Integer> deviceIds, Range<Instant> range, String debugReadType) {
+        return collectDataForRead(deviceIds, range, false, debugReadType);
+    }
+
+    private Multimap<PaoIdentifier, PointData> collectDataForRead(Set<Integer> deviceIds, Range<Instant> range,
+            boolean throwErrorIfFailed, String debugReadType) {
         Map<PaoType, Set<LiteYukonPAObject>> paos = paoDao.getLiteYukonPaos(deviceIds).stream()
                 .filter(pao -> pao.getPaoType().isCloudLcr())
                 .collect(Collectors.groupingBy(pao -> pao.getPaoType(), Collectors.toSet()));
-          
+
         Multimap<PaoIdentifier, PointData> receivedPoints = HashMultimap.create();
         for (PaoType type : paos.keySet()) {
             Set<BuiltInAttribute> attr = getAttributesForPaoType(type);
-            log.info("Initiating read for type:{} devices: {} on attributes:{}", type, paos.get(type).size(), attr.size());
-            receivedPoints.putAll(retrievePointData(paos.get(type), attr, queryRange));
+            log.info("Initiating read ({}) for type:{} devices: {} on attributes:{}", debugReadType, type, paos.get(type).size(),
+                    attr.size());
+            receivedPoints.putAll(retrievePointData(paos.get(type), attr, range, throwErrorIfFailed));
         }
 
-        log.debug("Retrieved point data:{} for devices:{}", receivedPoints.values().size(), receivedPoints.keySet().size());
+        log.debug("({}) Retrieved point data:{} for devices:{}", debugReadType, receivedPoints.values().size(),
+                receivedPoints.keySet().size());
         if (!receivedPoints.isEmpty()) {
             dispatchData.putValues(receivedPoints.values());
-            updateAssetAvailability(receivedPoints);
         }
         return receivedPoints;
     }
 
     private Multimap<PaoIdentifier, PointData> retrievePointData(Iterable<LiteYukonPAObject> paos,
-            Set<BuiltInAttribute> attribtues, Range<Instant> queryRange) {
+            Set<BuiltInAttribute> attribtues, Range<Instant> queryRange, boolean throwErrorIfFailed) {
 
         Map<Integer, LiteYukonPAObject> deviceIdToPao = StreamSupport.stream(paos.spliterator(), false)
                 .collect(Collectors.toMap(LiteYukonPAObject::getYukonID, liteYukonPao -> liteYukonPao));
@@ -99,10 +109,18 @@ public class EatonCloudDataReadServiceImpl implements EatonCloudDataReadService 
         Set<String> tags = EatonCloudChannel.getTagsForAttributes(attribtues);
         List<EatonCloudTimeSeriesDeviceV1> chunkedRequests = buildRequests(deviceIdGuid.values(), tags);
         for (EatonCloudTimeSeriesDeviceV1 request : chunkedRequests) {
-            List<EatonCloudTimeSeriesDeviceResultV1> result = eatonCloudCommunicationService.getTimeSeriesValues(List.of(request), queryRange);
-            timeSeriesResults.addAll(result);
+            try {
+                List<EatonCloudTimeSeriesDeviceResultV1> result = eatonCloudCommunicationService
+                        .getTimeSeriesValues(List.of(request), queryRange);
+                timeSeriesResults.addAll(result);
+            } catch (Exception e) {
+                log.error("Guid:" + request.getDeviceGuid() + " Read Failed:" + e.getMessage(), e);
+                if(throwErrorIfFailed) {
+                    throw e;
+                }
+            }
         }
-        
+
         Multimap<PaoIdentifier, PointData> pointMap = HashMultimap.create();
 
         for (EatonCloudTimeSeriesDeviceResultV1 deviceResult : timeSeriesResults) {
@@ -142,6 +160,16 @@ public class EatonCloudDataReadServiceImpl implements EatonCloudDataReadService 
                         value.getTimestamp(), guid);
                 if (pointData != null) {
                     pointMap.put(device.getPaoIdentifier(), pointData);
+                    AssetAvailabilityPointDataTimes time = new AssetAvailabilityPointDataTimes(device.getLiteID());
+                    time.setLastCommunicationTime(new Instant(pointData.getTimeStamp()));
+                    if (mwChannel.getRelayNumberByRuntime() != null && pointData.getValue() > 0) {
+                        time.setRelayRuntime(mwChannel.getRelayNumberByRuntime(), new Instant(pointData.getTimeStamp()));
+                        log.debug("Publishing asset availability {} info for PAO {} relay:{} point data value:{}", time, device,
+                                mwChannel.getRelayNumberByRuntime(), pointData.getValue());
+                    } else {
+                        log.debug("Publishing asset availability {} info for PAO {}", time, device);
+                    }
+                    dynamicLcrCommunicationsDao.insertData(time);
                 }
             }
         }
@@ -279,18 +307,6 @@ public class EatonCloudDataReadServiceImpl implements EatonCloudDataReadService 
         }
         return chunkedRequests;
     }
-
-    private void updateAssetAvailability(Multimap<PaoIdentifier, PointData> pointUpdates) {
-        for (PaoIdentifier pao : pointUpdates.keySet()) {
-            for (PointData pointData : pointUpdates.get(pao)) {
-                AssetAvailabilityPointDataTimes time = new AssetAvailabilityPointDataTimes(pao.getPaoId());
-                time.setLastCommunicationTime(new Instant(pointData.getTimeStamp()));
-                log.debug("Publishing asset avaiability {} info for PAO {}", time, pao);
-                dynamicLcrCommunicationsDao.insertData(time);
-            }
-        }
-    }
-
     /**
      * Takes a paoTypes and gets all of the tags that have a builtInAttribute for that paoType
      */

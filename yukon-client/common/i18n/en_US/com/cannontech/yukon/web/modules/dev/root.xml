@@ -243,6 +243,7 @@
     <entry key="yukon.web.modules.dev.rfnTest.lcrReadArchiveRequest.pageName">LCR Read Archive Request</entry>
     <entry key="yukon.web.modules.dev.rfnTest.deviceArchive.pageName">Device Archive Request</entry>
     <entry key="yukon.web.modules.dev.rfnTest.viewLcrDataSimulator.pageName">LCR Data Simulator</entry>
+    <entry key="yukon.web.modules.dev.rfnTest.rfnDeviceDeleteSimulator.pageName">RFN Device Simulator</entry>
     <entry key="yukon.web.modules.dev.rfnTest.rfnMeterSimulator.pageName">RFN Meter Simulator</entry>
     <entry key="yukon.web.modules.dev.rfnTest.dataStreamingSimulator.pageName">Data Streaming Simulator</entry>
     <entry key="yukon.web.modules.dev.rfnTest.mappingSimulator.pageName">Mapping Simulator</entry>
@@ -272,6 +273,11 @@
     <entry key="yukon.web.modules.dev.rfnTest.dataType.OLD_DNP3_ADDRESS">Old DNP3 Address</entry>
     <entry key="yukon.web.modules.dev.rfnTest.dataType.NEW_DNP3_ADDRESS">New DNP3 Address</entry>
     <entry key="yukon.web.modules.dev.rfnTest.lcrDataSimulator.title">LCR Data Simulator</entry>
+    <entry key="yukon.web.modules.dev.rfnTest.rfnDeviceDeletionSimulator.title">RFN Device Delete Simulator</entry>
+    <entry key="yukon.web.modules.dev.rfnTest.rfnDeviceDeletionSimulator.simStartFailed">Simulator failed to start</entry>
+    <entry key="yukon.web.modules.dev.rfnTest.rfnDeviceDeletionSimulator.simStartSuccess">Simulator started</entry>
+    <entry key="yukon.web.modules.dev.rfnTest.rfnDeviceDeletionSimulator.simStopFailed">Simulator failed to stop</entry>
+    <entry key="yukon.web.modules.dev.rfnTest.rfnDeviceDeletionSimulator.simStopSuccess">Simulator stopped</entry>
     <entry key="yukon.web.modules.dev.rfnTest.rfnMeterSimulator.title">RFN Meter Simulator</entry>
     <entry key="yukon.web.modules.dev.rfnTest.rfnMeterSimulator.data.title">RFN Meter Data Simulator</entry>
     <entry key="yukon.web.modules.dev.rfnTest.rfnMeterSimulator.data.duplicates">Duplicates</entry>
@@ -297,6 +303,7 @@
     <entry key="yukon.web.modules.dev.rfnTest.lcrDataSimulator.serialNumberRangeLcr6200">RFN LCR 6200 Serial Number Range</entry>
     <entry key="yukon.web.modules.dev.rfnTest.lcrDataSimulator.serialNumberRangeLcr6600">RFN LCR 6600 Serial Number Range</entry>
     <entry key="yukon.web.modules.dev.rfnTest.lcrDataSimulator.serialNumberRangeLcr6700">RFN LCR 6700 Serial Number Range</entry>
+    <entry key="yukon.web.modules.dev.rfnTest.lcrDataSimulator.serialNumberRangeLcr6200S">LCR 6200S Serial Number Range</entry>
     <entry key="yukon.web.modules.dev.rfnTest.lcrDataSimulator.serialNumberRangeLcr6600S">LCR 6600S Serial Number Range</entry>
     <entry key="yukon.web.modules.dev.rfnTest.lcrDataSimulator.serialNumberRangeLcr6601S">LCR 6601S Serial Number Range</entry>
     <entry key="yukon.web.modules.dev.rfnTest.lcrDataSimulator.duplicates">Duplicates</entry>
@@ -416,6 +423,7 @@
     <entry key="yukon.web.modules.dev.ecobee.mockTest.generateDiscrepency">Generate Discrepency</entry>
     <entry key="yukon.web.modules.dev.ecobee.mockTest.cancelDemandResponse">Cancel Demand Response / Opt Out</entry>
     <entry key="yukon.web.modules.dev.ecobee.mockTest.paginatedResponse">Paginated Response for Groups and Thermostats </entry>
+    <entry key="yukon.web.modules.dev.ecobee.mockTest.deviceStatusResponse">Device Status</entry>
     
     <!-- Itron Key Pair -->
     <entry key="yukon.web.modules.dev.itronKeyPair">Itron Key Pair</entry>
@@ -591,6 +599,7 @@
     <entry key="yukon.web.modules.dev.sliders.pageName">Sliders</entry>
     <entry key="yukon.web.modules.dev.steppers.pageName">Steppers</entry>
     <entry key="yukon.web.modules.dev.blocking.pageName">Blocking</entry>
+    <entry key="yukon.web.modules.dev.dropDown.pageName">Dropdowns</entry>
     
     <entry key="yukon.web.modules.dev.dialogs.pageName">Dialogs</entry>
     

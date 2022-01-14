@@ -31,7 +31,7 @@
                             <c:set var="striped" value=""/>
                         </c:otherwise>
                     </c:choose>
-                    <tr class="${striped}">
+                    <tr class="${striped} no-borders">
                         <td class="fwb">${programDataStatusVar.first ? programDataEntry.key: ""}</td>
                         <c:url var="programURL" value="/dr/program/detail">
                             <c:param name="programId" value="${programData.programId}"/>

@@ -57,7 +57,7 @@
     <!-- Filter Inputs -->
     <hr>
         <div class="filter-section">
-            <span class="vat"><i:inline key="yukon.common.filterBy"/>&nbsp;</span>
+            <div class="vat"><i:inline key="yukon.common.filterBy"/></div>
             <div class="dib">
                 <cti:url value="/dr/setup/filter" var="filterUrl"/>
                 <form:form id="setupFilter" method="get" modelAttribute="lmSetupFilter" action="${filterUrl}">
@@ -71,11 +71,11 @@
                     
                     <tags:selectWithItems items="${filterByTypes}" path="filterByType" id="js-filter-by-type" inputClass="vat MR5"/>
                     <tags:input path="name" placeholder="${namePlaceholder}" inputClass="vat MR5" id="js-name"/>
-                    <div class="js-load-group-types-container dib ${displayLoadGroupFilters} MR5">
+                    <div class="js-load-group-types-container dib ${displayLoadGroupFilters} MR10">
                         <tags:selectWithItems items="${loadGroupTypes}" path="types" dataPlaceholder="${selectLbl}" 
                                               id="js-load-group-types"/>
                     </div>
-                    <div class="js-load-program-types-container vat dib ${displayLoadProgramFilters} MR5">
+                    <div class="js-load-program-types-container vat dib ${displayLoadProgramFilters} MR5 MB5">
                         <tags:selectWithItems items="${loadProgramTypes}" path="types" dataPlaceholder="${selectLbl}"
                                               id="js-load-program-types"/>
                     </div>
@@ -101,7 +101,7 @@
                                                             endEvent="yukon:gear:filter:programSelected"
                                                             allowEmptySelection="true"/>
                     </div>
-                    <cti:button label="${filterLbl}" classes="primary action fr" type="submit"/>
+                    <cti:button label="${filterLbl}" classes="primary action fr MR0 ML5" type="submit"/>
                 </form:form>
             </div>
         </div>

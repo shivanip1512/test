@@ -3,7 +3,7 @@ package com.cannontech.services.smartNotification.service.impl.email;
 import java.util.List;
 
 import javax.annotation.PostConstruct;
-import javax.mail.MessagingException;
+import jakarta.mail.MessagingException;
 
 import org.springframework.beans.factory.annotation.Autowired;
 

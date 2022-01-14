@@ -1,4 +1,4 @@
-﻿Meter models:
+﻿﻿Meter models:
     Itron Centron:
         - &c1sx ITRN C1SX
         - &c2sx ITRN C2SX
@@ -1104,7 +1104,7 @@ RFN-500 Node in Landis & Gyr S4e and S4x:
     - Time of Min Power factor:                   { Unit: *s,     Modifiers: [ *Coin1                                                ], Models: *____-RDTR-650 }
     - Cumulative Min Power factor:                { Unit: *PF,    Modifiers: [ *Q1, *Q2, *Q3, *Q4, *Min, *Cuml                       ], Models: *____-____-650, Mapped: false }
     - Continuous Cumulative Min Power factor:     { Unit: *PF,    Modifiers: [ *Q1, *Q2, *Q3, *Q4, *Min, *Cont                       ], Models: *____-____-650, Mapped: false }
-    - Previous Min Power factor:                  { Unit: *PF,    Modifiers: [ *Q1, *Q2, *Q3, *Q4, *Min, *Prev                       ], Models: *____-RDTR-650 }
+    - Min Power Factor Frozen:                    { Unit: *PF,    Modifiers: [ *Q1, *Q2, *Q3, *Q4, *Min, *Prev                       ], Models: *____-RDTR-650 }
     - Time of Previous Min Power factor:          { Unit: *s,     Modifiers: [ *Coin1, *Prev                                         ], Models: *____-RDTR-650 }
     - Delivered Watthours:                        { Unit: *Wh,    Modifiers: [ *Q1, *Q4, *RateA                                      ], Models: *____-____-650 }
     - Received Watthours:                         { Unit: *Wh,    Modifiers: [ *Q2, *Q3, *RateA                                      ], Models: *____-____-650 }
@@ -2082,9 +2082,9 @@ Metric IDs:
     222: { name: "VA hour Q2 + Q3 + Q4",                 Unit: *VAh,    Modifiers: [ *Q2, *Q3, *Q4                         ] }
     # ------     
     230: { name: "Power Factor total, minimum",          Unit: *PF,     Modifiers: [ *Q1, *Q2, *Q3, *Q4, *Min              ] }
-    231: { name: "Previous Minimum Power Factor",        Unit: *PF,     Modifiers: [ *Q1, *Q2, *Q3, *Q4, *Min, *Prev       ] }
+    231: { name: "Power Factor total, minimum (Frozen)", Unit: *PF,     Modifiers: [ *Q1, *Q2, *Q3, *Q4, *Min, *Prev       ] }
     233: { name: "Average Power Factor",                 Unit: *PF,     Modifiers: [ *Q1, *Q2, *Q3, *Q4, *Avg              ] }
-    234: { name: "Average Power Factor Frozen",          Unit: *PF,     Modifiers: [ *Q1, *Q2, *Q3, *Q4, *Avg, *Prev       ] }
+    234: { name: "Average Power Factor (Frozen)",        Unit: *PF,     Modifiers: [ *Q1, *Q2, *Q3, *Q4, *Avg, *Prev       ] }
     # ------     
     240: { name: "kW Delivered Daily Max",               Unit: *W,      Modifiers: [ *Q1, *Q4, *DayMax                     ] }
     # ------     

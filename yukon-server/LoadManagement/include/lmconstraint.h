@@ -28,6 +28,7 @@ public:
     bool checkWeekDays(CtiTime proposed_start, CtiTime proposed_stop);
     bool checkControlWindows(CtiTime proposed_start, CtiTime proposed_stop);
     bool checkControlAreaControlWindows(CtiLMControlArea &controlArea, CtiTime proposed_start, CtiTime proposed_stop, const CtiDate &theDate);
+    bool checkProgramControlWindows(CtiTime proposed_start, CtiTime proposed_stop);
     bool checkMasterActive();
     bool checkNotifyActiveOffset(CtiTime proposed_start);
 

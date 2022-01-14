@@ -29,7 +29,7 @@ public class EatonCloudErrorHandlerV1 implements ResponseErrorHandler {
             body = StreamUtils.copyToString(response.getBody(), Charset.defaultCharset());
             EatonCloudErrorV1 error = parseErrorMessage(body);
             exception = new EatonCloudCommunicationExceptionV1(error);
-            log.error("Parsed error status: {} response : {} formated response: {} ", status, body,
+            log.error("Parsed error status: {} response : {} formatted response: {} ", status, body,
                     new GsonBuilder().setPrettyPrinting().create().toJson(exception.getErrorMessage()),
                     exception);
         } catch (Exception e) {

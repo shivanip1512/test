@@ -101,8 +101,10 @@ public class MacroRouteServiceImpl implements MacroRouteService {
 
     private void setRouteNameFromList(MacroRouteModel macroRouteModel) {
         List<MacroRouteList> routeList = macroRouteModel.getRouteList();
-        for (MacroRouteList macroRouteList : routeList) {
-            macroRouteList.setRouteName(serverDatabaseCache.getAllPaosMap().get(macroRouteList.getRouteId()).getPaoName());
+        if (routeList != null) {
+            for (MacroRouteList macroRouteList : routeList) {
+                macroRouteList.setRouteName(serverDatabaseCache.getAllPaosMap().get(macroRouteList.getRouteId()).getPaoName());
+            }
         }
     }
 }

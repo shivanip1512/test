@@ -477,6 +477,24 @@ public class SmartNotificationEventDaoImpl implements SmartNotificationEventDao 
         }
         return events;
     }
+    
+    @Override
+    public List<SmartNotificationEvent> getEventsByMonitorIdAndDate(Integer monitorId, Range<Instant> range) {
+        SqlStatementBuilder sql = new SqlStatementBuilder();
+        sql.append("SELECT sne.EventId, Timestamp, GroupProcessTime, ImmediateProcessTime");
+        sql.append("FROM  SmartNotificationEvent sne");
+        sql.append("JOIN SmartNotificationEventParam snep ON sne.EventId = snep.EventId");
+        sql.append("WHERE Type").eq_k(SmartNotificationEventType.DEVICE_DATA_MONITOR);
+        sql.append("AND sne.Timestamp").gte(range.getMin());
+        sql.append("AND sne.Timestamp").lt(range.getMax());
+        sql.append("AND snep.name = 'monitorId'");
+        sql.append("AND snep.value").eq(monitorId.toString());
+        List<SmartNotificationEvent> events = jdbcTemplate.query(sql, eventMapper);
+        if (!events.isEmpty()) {
+            addParameters(events);
+        }
+        return events;
+    }
 
     @Override
     public SearchResults<SmartNotificationEventData> getWatchdogWarningEventData(DateTimeZone timeZone, PagingParameters paging, SortBy sortBy, Direction direction, Range<DateTime> dateRange) {

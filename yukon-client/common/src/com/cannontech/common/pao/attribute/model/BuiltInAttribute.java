@@ -250,7 +250,7 @@ public enum BuiltInAttribute implements Attribute, DisplayableEnum {
     POWER_FACTOR("Power Factor", AttributeGroup.REACTIVE),
     POWER_FACTOR_COIN("Power Factor Coincidental", AttributeGroup.REACTIVE),
     MINIMUM_POWER_FACTOR("Minimum Power Factor", AttributeGroup.REACTIVE),
-    PREVIOUS_MINIMUM_POWER_FACTOR("Previous Minimum Power Factor", AttributeGroup.REACTIVE),
+    MINIMUM_POWER_FACTOR_FROZEN("Minimum Power Factor Frozen", AttributeGroup.REACTIVE),
 
     COIN_POWER_FACTOR_AT_DELIVERED_PEAK_KVA("Coincident Power Factor at Delivered Peak kVA", AttributeGroup.REACTIVE),
     COIN_POWER_FACTOR_AT_DELIVERED_PEAK_KVA_RATE_A("Coincident Power Factor at Delivered Peak kVA Rate A", AttributeGroup.REACTIVE),
@@ -649,6 +649,10 @@ public enum BuiltInAttribute implements Attribute, DisplayableEnum {
     // RFN Integrated Gas Meter Events
     MAGNET_TAMPERING("Magnet Tampering", AttributeGroup.RFN_METERING_EVENT, false),
     REGISTER_REMOVAL("Register Removal", AttributeGroup.RFN_METERING_EVENT, false),
+    PULSE_1_SWITCH_FAILURE("Pulse 1 Switch Failure", AttributeGroup.RFN_METERING_EVENT, false),
+    PULSE_2_SWITCH_FAILURE("Pulse 2 Switch Failure", AttributeGroup.RFN_METERING_EVENT, false),
+    NODE_COMMISSION_EVENT("Node Commission Event", AttributeGroup.RFN_METERING_EVENT, false),
+    LOST_ASSOCIATION("Lost Association", AttributeGroup.RFN_METERING_EVENT, false),
     
     // RFN Tamper Alarm/Event
     TAMPER_NO_USAGE_OVER_24_HOURS("Tamper - No Usage over 24 hours", AttributeGroup.RFN_METERING_EVENT, false),
@@ -1025,7 +1029,9 @@ public enum BuiltInAttribute implements Attribute, DisplayableEnum {
                 SUM_PEAK_KVAR_RATE_A,
                 SUM_PEAK_KVAR_RATE_B,
                 SUM_PEAK_KVAR_RATE_C,
-                SUM_PEAK_KVAR_RATE_D);
+                SUM_PEAK_KVAR_RATE_D,
+                MINIMUM_POWER_FACTOR,
+                MINIMUM_POWER_FACTOR_FROZEN);
 
         Builder<BuiltInAttribute> builder = ImmutableSet.builder();
         builder.addAll(lookupByGroup.get(AttributeGroup.RFN_HARDWARE_EVENT));

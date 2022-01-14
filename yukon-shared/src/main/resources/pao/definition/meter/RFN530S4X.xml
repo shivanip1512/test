@@ -34,7 +34,7 @@
         <pointInfo name="Clock Error" attributes="CLOCK_ERROR"/>
         <pointInfo name="Coincident Power Factor" attributes="POWER_FACTOR_COIN"/>
         <pointInfo name="Minimum Power Factor" attributes="MINIMUM_POWER_FACTOR"></pointInfo>
-        <pointInfo name="Previous Minimum Power Factor" attributes="PREVIOUS_MINIMUM_POWER_FACTOR"></pointInfo>
+        <pointInfo name="Minimum Power Factor Frozen" attributes="MINIMUM_POWER_FACTOR_FROZEN"></pointInfo>
         <pointInfo name="Coincident Power Factor at Delivered Peak kVA" attributes="COIN_POWER_FACTOR_AT_DELIVERED_PEAK_KVA"/>
         <pointInfo name="Coincident Power Factor at Delivered Peak kVA Rate A" attributes="COIN_POWER_FACTOR_AT_DELIVERED_PEAK_KVA_RATE_A"/>
         <pointInfo name="Coincident Power Factor at Delivered Peak kVA Rate B" attributes="COIN_POWER_FACTOR_AT_DELIVERED_PEAK_KVA_RATE_B"/>

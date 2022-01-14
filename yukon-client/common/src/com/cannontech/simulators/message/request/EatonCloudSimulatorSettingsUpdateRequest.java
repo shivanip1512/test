@@ -3,13 +3,18 @@ package com.cannontech.simulators.message.request;
 import java.util.Map;
 
 import com.cannontech.dr.eatonCloud.model.EatonCloudRetrievalUrl;
+import com.cannontech.dr.eatonCloud.model.EatonCloudVersion;
 import com.cannontech.simulators.SimulatorType;
 
 public class EatonCloudSimulatorSettingsUpdateRequest implements SimulatorRequest{
+    private static final long serialVersionUID = 1L;
     private Map<EatonCloudRetrievalUrl, Integer> statuses;
-    
-    public EatonCloudSimulatorSettingsUpdateRequest(Map<EatonCloudRetrievalUrl, Integer> statuses) {
-        this.statuses = statuses;
+    private Map<EatonCloudRetrievalUrl, Integer> successPercentages;
+    private EatonCloudVersion version;
+    private boolean resetSecretsExpireTime;
+        
+    public EatonCloudSimulatorSettingsUpdateRequest(EatonCloudVersion version) {
+        this.version = version;
     }
     
     @Override
@@ -19,5 +24,29 @@ public class EatonCloudSimulatorSettingsUpdateRequest implements SimulatorReques
 
     public Map<EatonCloudRetrievalUrl, Integer> getStatuses() {
         return statuses;
+    }
+
+    public void setStatuses(Map<EatonCloudRetrievalUrl, Integer> statuses) {
+        this.statuses = statuses;
+    }
+
+    public Map<EatonCloudRetrievalUrl, Integer> getSuccessPercentages() {
+        return successPercentages;
+    }
+
+    public void setSuccessPercentages(Map<EatonCloudRetrievalUrl, Integer> successPercentages) {
+        this.successPercentages = successPercentages;
+    }
+
+    public EatonCloudVersion getVersion() {
+        return version;
+    }
+
+    public boolean isResetSecretsExpireTime() {
+        return resetSecretsExpireTime;
+    }
+
+    public void setResetSecretsExpireTime(boolean resetSecretsExpireTime) {
+        this.resetSecretsExpireTime = resetSecretsExpireTime;
     }
 }

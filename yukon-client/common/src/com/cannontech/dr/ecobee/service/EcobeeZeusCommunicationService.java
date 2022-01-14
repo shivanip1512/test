@@ -3,7 +3,10 @@ package com.cannontech.dr.ecobee.service;
 import java.util.List;
 import java.util.Set;
 
+import org.springframework.web.client.RestClientException;
+
 import com.cannontech.common.device.commands.exception.CommandCompletionException;
+import com.cannontech.dr.ecobee.EcobeeAuthenticationException;
 import com.cannontech.dr.ecobee.message.ZeusGroup;
 import com.cannontech.dr.ecobee.message.ZeusShowPushConfig;
 import com.cannontech.dr.ecobee.message.ZeusThermostat;
@@ -14,9 +17,9 @@ import com.cannontech.dr.ecobee.model.EcobeeSetpointDrParameters;
 public interface EcobeeZeusCommunicationService {
 
     /**
-     * Check whether the provided thermostat serial number is registered in Ecobee portal and its already connected.
+     * Add the specified thermostat to the root group with NOT_YET_CONNECTED state
      */
-    boolean isDeviceRegistered(String serialNumber);
+    void createDevice(String serialNumber);
 
     /**
      * Deletes the specified thermostat from a program's root group and deletes from all child groups.
@@ -42,7 +45,7 @@ public interface EcobeeZeusCommunicationService {
     /**
      * Create thermostat group
      */
-    void createThermostatGroup(String zeusGroupId, List<String> thermostatIds);
+    void createThermostatGroup(String zeusGroupId, List<Integer> inventoryIds);
     /**
      * Create push API configuration with a publicly accessible HTTPS endpoint and encoded private key.
      */
@@ -77,7 +80,7 @@ public interface EcobeeZeusCommunicationService {
      * Sends a message to cancel the whole Demand Response event, or cancel it for specified thermostats only. Return ture if API
      * call is successful.
      */
-    boolean cancelDemandResponse(List<Integer> groupIds, String... serialNumbers) throws CommandCompletionException;
+    void cancelDemandResponse(List<Integer> groupIds, String... serialNumbers) throws CommandCompletionException;
 
     /**
      * Initiates a eco+ demand response event in Ecobee.
@@ -93,4 +96,25 @@ public interface EcobeeZeusCommunicationService {
      * Remove the thermostat from a specific Ecobee zeus group.
      */
     void removeThermostatFromGroup(String zeusGroupId, String serialNumber, int inventoryId, boolean updateDeviceMapping);
+
+    /**
+     * Opt out the device.
+     */
+    void optOut(String serialNumber, int inventoryID);
+
+    /**
+     * Cancel opt out for the device.
+     */
+    void cancelOptOut(String serialNumber, int inventoryID);
+    
+    /**
+     * Get root group. 
+     */
+    String retrieveThermostatGroupID() throws RestClientException, EcobeeAuthenticationException;
+    
+    /**
+     * Check enrollment state for device. 
+     */
+    boolean isDeviceEnrolled(String yukonSerialNumber);
+    
 }

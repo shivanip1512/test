@@ -49,27 +49,22 @@ public class EcobeeZeusAuthTokenServiceImplTest {
     @Test
     public void test_shouldCancelScheduler() throws Exception {
         Class<EcobeeZeusAuthTokenServiceImpl> implClass = EcobeeZeusAuthTokenServiceImpl.class;
-        Method method = implClass.getDeclaredMethod("isExpiredAuthToken", String.class);
+        Method method = implClass.getDeclaredMethod("isExpiredRefreshToken", String.class);
         method.setAccessible(true);
         DateTimeFormatter formatter = DateTimeFormat.forPattern("yyyy-MM-dd'T'HH:mm:ss'Z'").withZoneUTC();
+        DateTime tokenGeneratedTime = DateTime.now(DateTimeZone.UTC).minusHours(24);
+        ReflectionTestUtils.setField(impl, "tokenGeneratedTime", tokenGeneratedTime);
         DateTime beforeTime = DateTime.now(DateTimeZone.UTC).minusHours(1);
         DateTime afterTime = DateTime.now(DateTimeZone.UTC).plusHours(1);
-        assertTrue((boolean) method.invoke(impl, formatter.print(beforeTime)), "Must be true");
-        assertFalse((boolean) method.invoke(impl, formatter.print(afterTime)), "Must be false");
+        assertFalse((boolean) method.invoke(impl, formatter.print(beforeTime)), "Must be false");
+        assertTrue((boolean) method.invoke(impl, formatter.print(afterTime)), "Must be true");
     }
 
     @Test
     public void test_authenticate_emptyConfigurations() throws Exception {
-        GlobalSettingDao mockGlobalSettingDao = EasyMock.createMock(GlobalSettingDao.class);
-        EasyMock.expect(mockGlobalSettingDao.getString(GlobalSettingType.ECOBEE_SERVER_URL)).andReturn(StringUtils.EMPTY);
-        EasyMock.expect(mockGlobalSettingDao.getString(GlobalSettingType.ECOBEE_USERNAME)).andReturn(StringUtils.EMPTY);
-        EasyMock.expect(mockGlobalSettingDao.getString(GlobalSettingType.ECOBEE_PASSWORD)).andReturn(StringUtils.EMPTY);
-        EasyMock.expect(mockGlobalSettingDao.getString(GlobalSettingType.HTTP_PROXY)).andReturn(StringUtils.EMPTY);
-
-        EasyMock.expectLastCall();
-        EasyMock.replay(mockGlobalSettingDao);
-        ReflectionTestUtils.setField(impl, "globalSettingDao", mockGlobalSettingDao);
-
+        ReflectionTestUtils.setField(impl, "ecobeePassword", "");
+        ReflectionTestUtils.setField(impl, "ecobeeUsername", "");
+        ReflectionTestUtils.setField(impl, "ecobeeServerURL", "");
         Assertions.assertThrows(InvalidCacheLoadException.class, () -> {
             impl.authenticate();
         });
@@ -141,6 +136,9 @@ public class EcobeeZeusAuthTokenServiceImplTest {
         ReflectionTestUtils.setField(impl, "globalSettingDao", mockGlobalSettingDao);
         ReflectionTestUtils.setField(impl, "scheduledExecutor", scheduledExecutor);
         ReflectionTestUtils.setField(impl, "asyncDynamicDataSource", asyncDynamicDataSource);
+        ReflectionTestUtils.setField(impl, "ecobeePassword", "pwd");
+        ReflectionTestUtils.setField(impl, "ecobeeUsername", "name");
+        ReflectionTestUtils.setField(impl, "ecobeeServerURL", "url");
 
     }
 

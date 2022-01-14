@@ -17,8 +17,8 @@ import com.cannontech.common.model.YukonTextMessage;
 import com.cannontech.core.dao.DeviceDao;
 import com.cannontech.database.data.lite.LiteYukonUser;
 import com.cannontech.database.incrementer.NextValueHelper;
-import com.cannontech.dr.eatonCloud.EatonCloudMessageListener.CommandParam;
 import com.cannontech.dr.eatonCloud.model.v1.EatonCloudCommandRequestV1;
+import com.cannontech.dr.eatonCloud.service.EatonCloudSendControlService.CommandParam;
 import com.cannontech.dr.eatonCloud.service.v1.EatonCloudCommunicationServiceV1;
 import com.cannontech.stars.core.dao.InventoryBaseDao;
 import com.cannontech.stars.database.data.lite.LiteLmHardwareBase;
@@ -56,16 +56,22 @@ public class EatonCloudCommandStrategy implements LmHardwareCommandStrategy {
             Map<String, Object> shedParams = getShedParams(command);
             checkOptout(command);
             sendRequest(command, shedParams);
-            eatonCloudEventLogService.sendShed(deviceName, 
-                                               deviceGuid,
-                                               (Integer) shedParams.get(CommandParam.CYCLE_PERCENT.getParamName()),
-                                               (Integer) shedParams.get(CommandParam.CYCLE_PERIOD.getParamName()),
-                                               (Integer) shedParams.get(CommandParam.CRITICALITY.getParamName()));
+            eatonCloudEventLogService.sendShed(deviceName,
+                    deviceGuid,
+                    (String) shedParams.get(CommandParam.EVENT_ID.getParamName()),
+                    "1",
+                    (Integer) shedParams.get(CommandParam.CYCLE_PERCENT.getParamName()),
+                    (Integer) shedParams.get(CommandParam.CYCLE_PERIOD.getParamName()),
+                    (Integer) shedParams.get(CommandParam.CRITICALITY.getParamName()),
+                    (Integer) command.getParams().get(LmHardwareCommandParam.RELAY));
             break;
         case RESTORE:
             checkOptout(command);
-            sendRequest(command, getRestoreParams(command));
-            eatonCloudEventLogService.sendRestore(deviceName, deviceGuid);
+            Map<String, Object> restoreParams =  getRestoreParams(command);
+            sendRequest(command, restoreParams);
+            eatonCloudEventLogService.sendRestore(deviceName, deviceGuid,
+                    (String) restoreParams.get(CommandParam.EVENT_ID.getParamName()),
+                    (Integer) command.getParams().get(LmHardwareCommandParam.RELAY));
             break;
         case TEMP_OUT_OF_SERVICE:
             sendRequest(command, null);

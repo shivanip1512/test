@@ -42,8 +42,8 @@ import com.google.common.collect.Multimap;
  */
 public class SmartNotificationDeciderServiceImpl implements SmartNotificationDeciderService, MessageListener {
         
-    private static Logger commsLogger = YukonLogManager.getCommsLogger();
-
+    private static Logger snLogger = YukonLogManager.getSmartNotificationsLogger(SmartNotificationDeciderServiceImpl.class);
+    
     @Autowired @Qualifier("main") private ScheduledExecutor scheduledExecutor;
     @Autowired private YukonJmsTemplateFactory jmsTemplateFactory;
     @Autowired protected SmartNotificationEventDao eventDao;
@@ -95,7 +95,7 @@ public class SmartNotificationDeciderServiceImpl implements SmartNotificationDec
         
         isScheduled = true;
        
-        logInfo("Scheduling interval processing", this);
+        snLogger.info("Scheduling interval processing");
         
         scheduledExecutor.scheduleAtFixedRate(() -> {
             deciders.values().forEach(decider -> {
@@ -104,11 +104,6 @@ public class SmartNotificationDeciderServiceImpl implements SmartNotificationDec
             });
         }, 0, 1, TimeUnit.MINUTES);
         
-    }
-    
-    @Override
-    public void logInfo(String text, Object obj) {
-        commsLogger.info("[SN:{}] {}", obj.getClass().getSimpleName(), text);
     }
 
     /**
@@ -120,7 +115,7 @@ public class SmartNotificationDeciderServiceImpl implements SmartNotificationDec
                 try {
                     putMessagesOnAssemblerQueue(result);
                 } catch (Exception e) {
-                    commsLogger.error("Error sending smart notification message parameters", e);
+                    snLogger.error("Error sending smart notification message parameters", e);
                 }
             });
         } 
@@ -134,7 +129,7 @@ public class SmartNotificationDeciderServiceImpl implements SmartNotificationDec
             int interval = result.getInterval();
             List<SmartNotificationMessageParameters> messages = result.getMessageParameters();
             SmartNotificationMessageParametersMulti msg = new SmartNotificationMessageParametersMulti(messages, interval, false);
-            logInfo("Put on assembler queue: " + msg.loggingString(commsLogger.getLevel()), this);
+            snLogger.info("Put on assembler queue:{}", msg.loggingString(snLogger.getLevel()));
             jmsTemplate.convertAndSend(msg);
         }
     }
@@ -145,8 +140,8 @@ public class SmartNotificationDeciderServiceImpl implements SmartNotificationDec
         if (!messages.isEmpty()) {
             SmartNotificationMessageParametersMulti msg = new SmartNotificationMessageParametersMulti(messages, interval,
                     sendAllInOneEmail);
-            logInfo("Daily Digest Total:" + messages.size() + " Digest Time:" + digestTime
-                    + " One email:" + sendAllInOneEmail + " Put on assembler queue: " + msg.loggingString(commsLogger.getLevel()), this);
+            snLogger.info("Daily Digest Total:{} Digest Time:{} One email:{} Put on assembler queue:{}", messages.size(),
+                    digestTime, sendAllInOneEmail, msg.loggingString(snLogger.getLevel()));
             jmsTemplate.convertAndSend(msg);
         }
     }
@@ -172,20 +167,20 @@ public class SmartNotificationDeciderServiceImpl implements SmartNotificationDec
                         //Find and process grouped subscriptions
                         ProcessorResult grouped = decider.processGroupedSubscriptions(event.getEvents());
                         //Log event and processing result
-                        logInfo("Received event: " + event + " Immediate result:"
-                                + immediate.loggingString(commsLogger.getLevel()) + " Grouped result:"
-                                + grouped.loggingString(commsLogger.getLevel()), this);
+                        
+                        snLogger.info("Received event:{} Immediate result:{}  Grouped result:{}", event, immediate.loggingString(snLogger.getLevel()), grouped.loggingString(snLogger.getLevel()));
+                        
                         //Send results for immediate subscriptions
                         send(immediate);
                         //Send results for grouped subscriptions in interval is 0
                         send(grouped);
                     } else {
-                        commsLogger.error("Decider for {} doesn't exist", event.getEventType());
+                        snLogger.error("Decider for {} doesn't exist", event.getEventType());
                     }
                 }
             }
         } catch (Exception e) {
-            commsLogger.error("Unable to process message", e);
+            snLogger.error("Unable to process message", e);
         }
     } 
 }

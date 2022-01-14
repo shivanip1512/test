@@ -148,7 +148,7 @@
                     <div class="column-16-8 clearfix">
                         <div class="column one">
                             <!-- Interfaces -->
-                            <table class="compact-results-table row-highlighting full-width">
+                            <table class="compact-results-table no-stripes full-width">
                                 <thead>
                                     <tr>
                                         <th><i:inline key=".interface" /></th>
@@ -262,7 +262,7 @@
                                         <c:set var="interfaceListLength"
                                             value="${fn:length(multispeak.mspInterfaceList)/2}" />
                                         <td rowspan='${interfaceListLength+3}'><textarea cols="40"
-                                                rows="${interfaceListLength*2+3}" name="Results" id="results" readonly
+                                                rows="${interfaceListLength*3+1}" name="Results" id="results" readonly
                                                 wrap="VIRTUAL" style='color:<c:out value="${resultColor}"/>'>${MSP_RESULT_MSG}</textarea>
                                         </td>
                                     </tr>

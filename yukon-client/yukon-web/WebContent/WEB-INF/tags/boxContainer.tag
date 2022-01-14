@@ -86,10 +86,10 @@
 
 <c:if test="${not empty pageScope.helpText or not empty pageScope.helpUrl or showHelpIcon}">
     <div id="box-container-info-popup-${thisId}" 
-            class="dn" 
+            class="dn js-help-text" 
             data-title="${pageScope.title}"
             <c:if test="${not empty pageScope.helpUrl}">data-url="${helpUrl}"</c:if> 
-            data-width="600"><div class="scroll-lg">${helpText}</div></div>
+            data-width="600" data-max-height="600">${helpText}</div>
 </c:if>
 <c:if test="${not empty pageScope.smartNotificationsEvent}">
     <cti:url var="smartNotificationsUrl" value="/notifications/subscription/existingPopup/${pageScope.smartNotificationsEvent}"/>

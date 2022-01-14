@@ -3,7 +3,7 @@ package com.cannontech.tools.email;
 import java.util.ArrayList;
 import java.util.List;
 
-import javax.mail.MessagingException;
+import jakarta.mail.MessagingException;
 
 public class MockEmailService implements EmailService {
     private List<EmailMessage> sentMessages = new ArrayList<EmailMessage>();

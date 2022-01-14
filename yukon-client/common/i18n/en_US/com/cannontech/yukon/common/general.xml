@@ -3,7 +3,7 @@
 <!-- KEEP ALPHABETIZED BY KEY -->
 <properties>
 <entry key="yukon.common.add">Add</entry>
-<entry key="yukon.common.address">Address</entry>
+<entry key="yukon.common.addressSerial">Address/Serial</entry>
 <entry key="yukon.common.actions">Actions</entry>
 <entry key="yukon.common.all">All</entry>
 <entry key="yukon.common.allGroups">All Groups</entry>
@@ -212,6 +212,7 @@
 <entry key="yukon.common.name">Name</entry>
 <entry key="yukon.common.networkManager">Network Manager</entry>
 <entry key="yukon.common.never">Never</entry>
+<entry key="yukon.common.new">New</entry>
 <entry key="yukon.common.no">No</entry>
 <entry key="yukon.common.noDevices">(No Devices Selected)</entry>
 <entry key="yukon.common.none">None</entry>
@@ -278,6 +279,7 @@
 <entry key="yukon.common.search.noResultsFound">No results found.</entry>
 <entry key="yukon.common.search.placeholder">search</entry>
 <entry key="yukon.common.selectall">Select All</entry>
+<entry key="yukon.common.selectDateRange">Select Date Range</entry>
 <entry key="yukon.common.selectGroup">Select Device Group</entry>
 <entry key="yukon.common.selectGroup.more">and {0} more</entry>
 <entry key="yukon.common.selectGroup.title">Select Device Group</entry>
@@ -391,6 +393,7 @@
 <entry key="yukon.common.color.BLUE">Blue</entry>
 <entry key="yukon.common.color.BLUE_LIGHT">Light Blue</entry>
 <entry key="yukon.common.color.BLUE_DARK">Dark Blue</entry>
+<entry key="yukon.common.color.EMERALD">Emerald</entry>
 <entry key="yukon.common.color.GREEN">Green</entry>
 <entry key="yukon.common.color.GREEN_LIGHT">Light Green</entry>
 <entry key="yukon.common.color.GRAY">Gray</entry>

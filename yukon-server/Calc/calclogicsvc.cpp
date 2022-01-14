@@ -29,6 +29,8 @@
 #include "coroutine_util.h"
 #include "MessageCounter.h"
 
+#include "std_helper.h"
+
 #include <boost/range.hpp>
 
 #include <iostream>
@@ -661,14 +663,37 @@ void CtiCalcLogicService::handleDbChangeMsg( const CtiDBChangeMsg &dbChgMsg, Cti
         Cti::GlobalSettings::reload();
 
         doutManager.reloadSettings();
-    }
 
-    // only reload on if a database change was made to a point
-    if( dbChgMsg.getDatabase() != ChangePointDb)
-    {
         return;
     }
 
+    switch( dbChgMsg.getDatabase() )
+    {
+        case ChangePAODb:
+            return handlePaoChange(dbChgMsg);
+        case ChangePointDb:
+            return handlePointChange(dbChgMsg, thread);
+    }
+}
+
+void CtiCalcLogicService::handlePaoChange(const CtiDBChangeMsg& dbChgMsg)
+{
+    if( dbChgMsg.getTypeOfChange() == ChangeTypeAdd )
+    {
+        if( isDatabaseCalcDeviceID(dbChgMsg.getId()) )
+        {
+            // always load when a point is added
+            _update = true;
+            _nextCheckTime = std::time(0) + CHECK_RATE_SECONDS;
+            _dbChangeMessages.push(dbChgMsg);
+
+            CTILOG_INFO(dout, "Database change - DeviceDB.  Setting reload flag. Reload at " << _nextCheckTime);
+        }
+    }
+}
+
+void CtiCalcLogicService::handlePointChange(const CtiDBChangeMsg& dbChgMsg, CtiCalculateThread & thread)
+{
     const long changedId  = dbChgMsg.getId();
     const int  changeType = dbChgMsg.getTypeOfChange();
 
@@ -843,6 +868,7 @@ bool CtiCalcLogicService::isDatabaseCalcPointID(const long aPointID)
                                   "WHERE CB.POINTID = ?";
 
     DatabaseConnection connection { getCalcQueryTimeout() };
+
     DatabaseReader rdr { connection, sqlCore };
 
     rdr << aPointID;
@@ -850,6 +876,50 @@ bool CtiCalcLogicService::isDatabaseCalcPointID(const long aPointID)
     rdr.execute();
 
     // Return whether the ID exists in the DB
+    return rdr();
+}
+
+bool CtiCalcLogicService::isDatabaseCalcDeviceID(const long aDeviceID)
+{
+    //  Find any calc point on the specified device ID
+    static const string subquery = 
+        "SELECT *"
+        " FROM CALCBASE cb JOIN POINT p"
+                " ON cb.POINTID=p.POINTID"
+        " WHERE"
+            " p.PAObjectID=?";
+
+    static const string sqlServer = 
+        "SELECT 1"
+        " WHERE EXISTS (" + subquery + ")";
+    static const string oracle = 
+        "SELECT 1"
+        " FROM DUAL"
+        " WHERE EXISTS (" + subquery + ")";
+
+    DatabaseConnection connection{ getCalcQueryTimeout() };
+    DatabaseReader rdr{ connection };
+
+    switch( connection.getClientType() )
+    {
+        case DatabaseConnection::ClientType::Oracle:
+            rdr.setCommandText(oracle);
+            CTILOG_DEBUG(dout, rdr.asString());
+            break;
+        case DatabaseConnection::ClientType::SqlServer:
+            rdr.setCommandText(sqlServer);
+            CTILOG_DEBUG(dout, rdr.asString());
+            break;
+        default:
+            CTILOG_ERROR(dout, "Unhandled client type " << Cti::as_underlying(connection.getClientType()));
+            return true;  //  Reload all devices since we can't check this one with a query
+    }
+
+    rdr << aDeviceID;
+
+    rdr.execute();
+
+    //  Indicate whether we found a calc point on the device
     return rdr();
 }
 

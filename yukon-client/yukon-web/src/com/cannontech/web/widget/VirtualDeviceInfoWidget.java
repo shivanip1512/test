@@ -96,7 +96,7 @@ public class VirtualDeviceInfoWidget extends AdvancedWidgetControllerBase {
         model.addAttribute("mode", PageEditMode.CREATE);
         VirtualDeviceModel virtualDevice = new VirtualDeviceModel();
         virtualDevice.setEnable(true);
-        virtualDevice.setType(PaoType.VIRTUAL_SYSTEM);
+        virtualDevice.setDeviceType(PaoType.VIRTUAL_SYSTEM);
         model.addAttribute("virtualDevice", virtualDevice);
         prepareModel(model);
         return "virtualDeviceInfoWidget/render.jsp";
@@ -107,9 +107,9 @@ public class VirtualDeviceInfoWidget extends AdvancedWidgetControllerBase {
     public String create(ModelMap model, @PathVariable PaoType type, @RequestParam String name) {
         model.addAttribute("mode", PageEditMode.CREATE);
         VirtualDeviceBaseModel virtualDevice = (VirtualDeviceBaseModel) PaoModelFactory.getModel(type);
-        virtualDevice.setName(name);
+        virtualDevice.setDeviceName(name);
         virtualDevice.setEnable(true);
-        virtualDevice.setType(type);
+        virtualDevice.setDeviceType(type);
         model.addAttribute("virtualDevice", virtualDevice);
         prepareModel(model);
         return "virtualDeviceInfoWidget/render.jsp";
@@ -122,7 +122,7 @@ public class VirtualDeviceInfoWidget extends AdvancedWidgetControllerBase {
                     HttpMethod.GET, VirtualDeviceBaseModel.class);
             if (response.getStatusCode() == HttpStatus.OK) {
                 VirtualDeviceBaseModel virtualDevice = (VirtualDeviceBaseModel) response.getBody();
-                virtualDevice.setId(id);
+                virtualDevice.setDeviceId(id);
                 model.addAttribute("virtualDevice", virtualDevice);
             }
         } catch (ApiCommunicationException ex) {
@@ -159,14 +159,14 @@ public class VirtualDeviceInfoWidget extends AdvancedWidgetControllerBase {
                 return "virtualDeviceInfoWidget/render.jsp";
             }
             ResponseEntity<? extends Object> response = null;
-            if (virtualDevice.getId() != null) {
-                String url = helper.findWebServerUrl(request, userContext, ApiURL.virtualDeviceUrl + "/" + virtualDevice.getId());
+            if (virtualDevice.getDeviceId() != null) {
+                String url = helper.findWebServerUrl(request, userContext, ApiURL.virtualDeviceUrl + "/" + virtualDevice.getDeviceId());
                 model.addAttribute("mode", PageEditMode.EDIT);
-                response = apiRequestHelper.callAPIForObject(userContext, request, url, HttpMethod.PATCH, Object.class, virtualDevice);
+                response = apiRequestHelper.callAPIForObject(userContext, request, url, HttpMethod.PATCH, VirtualDeviceBaseModel.class, virtualDevice);
             } else {
                 String url = helper.findWebServerUrl(request, userContext, ApiURL.virtualDeviceUrl);
                 model.addAttribute("mode", PageEditMode.CREATE);
-                response = apiRequestHelper.callAPIForObject(userContext, request, url, HttpMethod.POST, Object.class, virtualDevice);
+                response = apiRequestHelper.callAPIForObject(userContext, request, url, HttpMethod.POST, VirtualDeviceBaseModel.class, virtualDevice);
             }
 
             if (response.getStatusCode() == HttpStatus.UNPROCESSABLE_ENTITY) {
@@ -181,14 +181,14 @@ public class VirtualDeviceInfoWidget extends AdvancedWidgetControllerBase {
             if (response.getStatusCode() == HttpStatus.OK || response.getStatusCode() == HttpStatus.CREATED) {
                 model.clear();
                 Map<String, Object> json = new HashMap<>();
-                if (virtualDevice.getId() == null) {
+                if (virtualDevice.getDeviceId() == null) {
                     //device was created so we need to get id from response
-                    HashMap<String, Integer> savedVirtualDevice = (HashMap<String, Integer>) response.getBody();
-                    json.put("id", savedVirtualDevice.get("id"));
+                    VirtualDeviceBaseModel savedVirtualDevice = (VirtualDeviceBaseModel) response.getBody();
+                    json.put("id", savedVirtualDevice.getDeviceId());
                 } else {
-                    json.put("id", virtualDevice.getId());
+                    json.put("id", virtualDevice.getDeviceId());
                 }
-                flash.setConfirm(new YukonMessageSourceResolvable("yukon.common.save.success", virtualDevice.getName()));
+                flash.setConfirm(new YukonMessageSourceResolvable("yukon.common.save.success", virtualDevice.getDeviceName()));
                 return JsonUtils.writeResponse(resp, json);
             }
 
@@ -196,9 +196,9 @@ public class VirtualDeviceInfoWidget extends AdvancedWidgetControllerBase {
             log.error(ex.getMessage());
             return "virtualDeviceInfoWidget/render.jsp";
         } catch (RestClientException e) {
-            log.error("Error updating virtual device: {}. Error: {}", virtualDevice.getName(), e.getMessage());
+            log.error("Error updating virtual device: {}. Error: {}", virtualDevice.getDeviceName(), e.getMessage());
             resp.setStatus(HttpStatus.BAD_REQUEST.value());
-            model.addAttribute("errorMsg", accessor.getMessage("yukon.web.api.save.error", virtualDevice.getName(), e.getMessage()));
+            model.addAttribute("errorMsg", accessor.getMessage("yukon.web.api.save.error", virtualDevice.getDeviceName(), e.getMessage()));
             return "virtualDeviceInfoWidget/render.jsp";
         }
         return null;

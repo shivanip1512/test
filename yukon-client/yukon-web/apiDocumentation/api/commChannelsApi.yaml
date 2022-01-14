@@ -21,13 +21,13 @@ post-operation:
               - $ref: '../schemas/commChannelsSchema.yaml#/LOCAL_SHARED'
           examples:
             TCP Port:
-              $ref: '../schemas/commChannelsSchema.yaml#/components/examples/TCP Port' 
+              $ref: '../schemas/commChannelsSchema.yaml#/components/examples/TCP Port Request' 
             UDP Terminal Server:
-              $ref: '../schemas/commChannelsSchema.yaml#/components/examples/UDP Terminal Server'
+              $ref: '../schemas/commChannelsSchema.yaml#/components/examples/UDP Terminal Server Request'
             Terminal Server:
-              $ref: '../schemas/commChannelsSchema.yaml#/components/examples/Terminal Server'
+              $ref: '../schemas/commChannelsSchema.yaml#/components/examples/Terminal Server Request'
             Local Shared Port:
-              $ref: '../schemas/commChannelsSchema.yaml#/components/examples/Local Shared Port'
+              $ref: '../schemas/commChannelsSchema.yaml#/components/examples/Local Shared Port Request'
       required: true
     responses:
         '200':
@@ -36,19 +36,19 @@ post-operation:
             application/json:
               schema:
                 oneOf:
-                  - $ref: '../schemas/commChannelsSchema.yaml#/TCPPORT'
-                  - $ref: '../schemas/commChannelsSchema.yaml#/UDPPORT'
-                  - $ref: '../schemas/commChannelsSchema.yaml#/TSERVER_SHARED'
-                  - $ref: '../schemas/commChannelsSchema.yaml#/LOCAL_SHARED'
+                  - $ref: '../schemas/commChannelsSchema.yaml#/TCPPORT Response Schema'
+                  - $ref: '../schemas/commChannelsSchema.yaml#/UDPPORT Response Schema'
+                  - $ref: '../schemas/commChannelsSchema.yaml#/TSERVER_SHARED Response Schema'
+                  - $ref: '../schemas/commChannelsSchema.yaml#/LOCAL_SHARED Response Schema'
               examples:
                 TCP Port:
-                  $ref: '../schemas/commChannelsSchema.yaml#/components/examples/TCP Port' 
+                  $ref: '../schemas/commChannelsSchema.yaml#/components/examples/TCP Port Response' 
                 UDP Terminal Server:
-                  $ref: '../schemas/commChannelsSchema.yaml#/components/examples/UDP Terminal Server'
+                  $ref: '../schemas/commChannelsSchema.yaml#/components/examples/UDP Terminal Server Response'
                 Terminal Server:
-                  $ref: '../schemas/commChannelsSchema.yaml#/components/examples/Terminal Server'
+                  $ref: '../schemas/commChannelsSchema.yaml#/components/examples/Terminal Server Response'
                 Local Shared Port:
-                  $ref: '../schemas/commChannelsSchema.yaml#/components/examples/Local Shared Port'
+                  $ref: '../schemas/commChannelsSchema.yaml#/components/examples/Local Shared Port Response'
 get-update-delete-operation:
   get:
     tags:
@@ -76,19 +76,19 @@ get-update-delete-operation:
           application/json:
             schema:
                 oneOf:
-                  - $ref: '../schemas/commChannelsSchema.yaml#/TCPPORT'
-                  - $ref: '../schemas/commChannelsSchema.yaml#/UDPPORT'
-                  - $ref: '../schemas/commChannelsSchema.yaml#/TSERVER_SHARED'
-                  - $ref: '../schemas/commChannelsSchema.yaml#/LOCAL_SHARED'
+                  - $ref: '../schemas/commChannelsSchema.yaml#/TCPPORT Response Schema'
+                  - $ref: '../schemas/commChannelsSchema.yaml#/UDPPORT Response Schema'
+                  - $ref: '../schemas/commChannelsSchema.yaml#/TSERVER_SHARED Response Schema'
+                  - $ref: '../schemas/commChannelsSchema.yaml#/LOCAL_SHARED Response Schema'
             examples:
               TCP Port:
-                $ref: '../schemas/commChannelsSchema.yaml#/components/examples/TCP Port' 
+                $ref: '../schemas/commChannelsSchema.yaml#/components/examples/TCP Port Response' 
               UDP Terminal Server:
-                $ref: '../schemas/commChannelsSchema.yaml#/components/examples/UDP Terminal Server'
+                $ref: '../schemas/commChannelsSchema.yaml#/components/examples/UDP Terminal Server Response'
               Terminal Server:
-                $ref: '../schemas/commChannelsSchema.yaml#/components/examples/Terminal Server'
+                $ref: '../schemas/commChannelsSchema.yaml#/components/examples/Terminal Server Response'
               Local Shared Port:
-                $ref: '../schemas/commChannelsSchema.yaml#/components/examples/Local Shared Port'
+                $ref: '../schemas/commChannelsSchema.yaml#/components/examples/Local Shared Port Response'
   patch:
     tags:
       - Comm Channel
@@ -118,13 +118,13 @@ get-update-delete-operation:
               - $ref: '../schemas/commChannelsSchema.yaml#/LOCAL_SHARED'
           examples:
             TCP Port:
-              $ref: '../schemas/commChannelsSchema.yaml#/components/examples/TCP Port' 
+              $ref: '../schemas/commChannelsSchema.yaml#/components/examples/TCP Port Request' 
             UDP Terminal Server:
-              $ref: '../schemas/commChannelsSchema.yaml#/components/examples/UDP Terminal Server'
+              $ref: '../schemas/commChannelsSchema.yaml#/components/examples/UDP Terminal Server Request'
             Terminal Server:
-              $ref: '../schemas/commChannelsSchema.yaml#/components/examples/Terminal Server'
+              $ref: '../schemas/commChannelsSchema.yaml#/components/examples/Terminal Server Request'
             Local Shared Port:
-              $ref: '../schemas/commChannelsSchema.yaml#/components/examples/Local Shared Port'
+              $ref: '../schemas/commChannelsSchema.yaml#/components/examples/Local Shared Port Request'
       required: true
     responses:
       '200':
@@ -133,19 +133,19 @@ get-update-delete-operation:
           application/json:
             schema:
               oneOf:
-               - $ref: '../schemas/commChannelsSchema.yaml#/TCPPORT'
-               - $ref: '../schemas/commChannelsSchema.yaml#/UDPPORT'
-               - $ref: '../schemas/commChannelsSchema.yaml#/TSERVER_SHARED'
-               - $ref: '../schemas/commChannelsSchema.yaml#/LOCAL_SHARED'
+               - $ref: '../schemas/commChannelsSchema.yaml#/TCPPORT Response Schema'
+               - $ref: '../schemas/commChannelsSchema.yaml#/UDPPORT Response Schema'
+               - $ref: '../schemas/commChannelsSchema.yaml#/TSERVER_SHARED Response Schema'
+               - $ref: '../schemas/commChannelsSchema.yaml#/LOCAL_SHARED Response Schema'
             examples:
               TCP Port:
-                $ref: '../schemas/commChannelsSchema.yaml#/components/examples/TCP Port' 
+                $ref: '../schemas/commChannelsSchema.yaml#/components/examples/TCP Port Response' 
               UDP Terminal Server:
-                $ref: '../schemas/commChannelsSchema.yaml#/components/examples/UDP Terminal Server'
+                $ref: '../schemas/commChannelsSchema.yaml#/components/examples/UDP Terminal Server Response'
               Terminal Server:
-                $ref: '../schemas/commChannelsSchema.yaml#/components/examples/Terminal Server'
+                $ref: '../schemas/commChannelsSchema.yaml#/components/examples/Terminal Server Response'
               Local Shared Port:
-                $ref: '../schemas/commChannelsSchema.yaml#/components/examples/Local Shared Port'
+                $ref: '../schemas/commChannelsSchema.yaml#/components/examples/Local Shared Port Response'
   delete:
     tags:
       - Comm Channel

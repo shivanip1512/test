@@ -186,8 +186,8 @@
                     }
                 }],
                 seriesDetails: [{
-                    color: '#2ca618',
-                    borderColor: 'GREEN',
+                    color: '#5d9c53',
+                    borderColor: 'EMERALD',
                     fillOpacity: '0.45',
                     marker: {enabled: true},
                     showInLegend: false,
@@ -259,8 +259,8 @@
                     }
                 }],
                 seriesDetails: [{
-                    color: '#2ca618',
-                    borderColor: 'GREEN',
+                    color: '#5d9c53',
+                    borderColor: 'EMERALD',
                     fillOpacity: '0.45',
                     marker: {enabled: true},
                     showInLegend: false,

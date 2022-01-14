@@ -29,9 +29,9 @@
                          </c:if>
                          <tr>
                             <td>
-                              <cti:paoDetailUrl paoId="${device.id}">${fn:escapeXml(device.name)}</cti:paoDetailUrl>
+                              <cti:paoDetailUrl paoId="${device.deviceId}">${fn:escapeXml(device.deviceName)}</cti:paoDetailUrl>
                             </td>
-                            <td><i:inline key="${device.type}"/></td>
+                            <td><i:inline key="${device.deviceType}"/></td>
                              
                             <td class="${cssClass}">${deviceStatus}</td>
                          </tr>

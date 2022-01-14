@@ -1112,7 +1112,7 @@ public class RfnPointMappingTest {
         missing.put(PaoType.RFN530S4EAX, "Average Power Factor");
         missing.put(PaoType.RFN530S4EAX, "Average Power Factor Frozen");
         missing.put(PaoType.RFN530S4EAX, "Minimum Power Factor");
-        missing.put(PaoType.RFN530S4EAX, "Previous Minimum Power Factor");
+        missing.put(PaoType.RFN530S4EAX, "Minimum Power Factor Frozen");
         
         missing.put(PaoType.RFN530S4EAXR, "Avg Voltage Phase A");
         missing.put(PaoType.RFN530S4EAXR, "Avg Voltage Phase B");
@@ -1226,7 +1226,7 @@ public class RfnPointMappingTest {
         missing.put(PaoType.RFN530S4EAXR, "Average Power Factor");
         missing.put(PaoType.RFN530S4EAXR, "Average Power Factor Frozen");
         missing.put(PaoType.RFN530S4EAXR, "Minimum Power Factor");
-        missing.put(PaoType.RFN530S4EAXR, "Previous Minimum Power Factor");
+        missing.put(PaoType.RFN530S4EAXR, "Minimum Power Factor Frozen");
         missing.put(PaoType.RFN530S4EAXR, "Received kWh (Rate A kWh)");
         missing.put(PaoType.RFN530S4EAXR, "Received kWh (Rate B kWh)");
         missing.put(PaoType.RFN530S4EAXR, "Received kWh (Rate C kWh)");

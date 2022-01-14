@@ -51,6 +51,7 @@ public class YukonLoggerServiceImpl implements YukonLoggerService {
     @Override
     public YukonLogger updateLogger(int loggerId, YukonLogger logger) {
         yukonLoggerDao.updateLogger(loggerId, logger);
+        logger = getLogger(loggerId);
         dbChangeManager.processDbChange(DbChangeType.UPDATE, DbChangeCategory.LOGGER, loggerId);
         systemEventLogService.loggerUpdated(logger.getLoggerName(), logger.getLevel().toString(),
                 getExpirationDate(logger.getExpirationDate()), ApiRequestContext.getContext().getLiteYukonUser());

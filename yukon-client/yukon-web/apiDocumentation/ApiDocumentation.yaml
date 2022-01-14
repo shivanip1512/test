@@ -1,7 +1,7 @@
 openapi: 3.0.0
 info:
   title: Yukon API Documentation
-  version: 9.0.0
+  version: 9.2.0
   description: 'Yukon provides REST based API support for different modules like Load Management,Point,Comm Channel,Trends and Virtual Devices.'
 servers:
   - url: /api/
@@ -42,7 +42,7 @@ paths:
     $ref: 'api/MacroLoadGroupsApi.yaml#/post-operation'
   /dr/macroLoadGroups/{id}:
     $ref: 'api/MacroLoadGroupsApi.yaml#/get-update-delete-operation'
-  / dr/macroLoadGroups/{id}/copy:
+  /dr/macroLoadGroups/{id}/copy:
     $ref: 'api/MacroLoadGroupsApi.yaml#/copy-operation'
     
   /dr/loadPrograms:

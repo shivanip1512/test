@@ -91,7 +91,7 @@ public class Rfn1200Controller {
             }
 
             if (!devicesList.isEmpty()) {
-                return devicesList.stream().map(device -> device.getName()).collect(Collectors.joining(", "));
+                return devicesList.stream().map(device -> device.getDeviceName()).collect(Collectors.joining(", "));
             }
         } catch (ApiCommunicationException ex) {
             log.error(ex.getMessage());

@@ -77,7 +77,8 @@ public:
         CV_NP_IdenticalGearID                  = 124,
         CV_NP_CannotChangeFromLatching         = 125,
         CV_NP_GearCannotChangeStopping         = 126,
-        CV_NP_GearCannotChangeInactive         = 127
+        CV_NP_GearCannotChangeInactive         = 127,
+        CV_NP_ControlWindowSpansMidnight       = 150
     };
 
     enum CV_Type_ThreeTimes

@@ -112,7 +112,7 @@
     <div class="column-12-12">
         <div class="column one">
             <tags:boxContainer2 nameKey="routesBox" styleClass="largeContainer">
-                <table id="routesBoxTable" class="compact-results-table row-highlighting">
+                <table id="routesBoxTable" class="compact-results-table no-stripes">
                     <thead>
                         <tr>
                             <th><i:inline key=".paoName" /></th>
@@ -139,7 +139,7 @@
                                             <form:input path="encryptionKeyId" type="hidden" value="${route.encryptionKeyId}" />
                                             <form:input path="encryptionKeyName" type="hidden" value="${route.encryptionKeyName}" />
                                             <d:confirm on="#remove_EncryptionBtn_${route.paobjectId}" nameKey="confirmRemove" argument="${fn:escapeXml(route.paoName)}" />
-                                            <select disabled="disabled" style="width: 100%">
+                                            <select disabled="disabled" style="width: 85%">
                                                 <option>${fn:escapeXml(route.encryptionKeyName)}</option>
                                             <select>
                                         </c:if> 
@@ -171,6 +171,26 @@
                         </c:if>
                     </tbody>
                 </table>
+            </tags:boxContainer2>
+            <tags:boxContainer2 nameKey="secretsBox" styleClass="largeContainer">
+                <c:if test="${!empty secretExpirationError}">
+                    <tags:alertBox type="warning">${secretExpirationError}</tags:alertBox> 
+                </c:if>
+                <form:form id="refreshSecretForm" method="POST" action="refreshSecret">
+                	<cti:csrfToken/>
+                	<input type="hidden" id="secretNumber" name="secretNumber"/>
+                </form:form>
+                <cti:msg2 var="secretNotFoundMessage" key=".secretsBox.secretNotFound"/>
+            	<div class="PB10" style="line-height:40px;">
+            		<i:inline key=".secretsBox.secret1Expiration"/>:&nbsp;
+            		<cti:formatDate type="DATEHMS_12" value="${brightlayerSecretKeyExpiration.expiryTime1}" nullText="${secretNotFoundMessage}"/>
+            		<cti:button nameKey="refresh" classes="fr js-refresh-secret" data-secret-number="1"/>
+            	</div>
+            	<div style="line-height:40px;">
+            		<i:inline key=".secretsBox.secret2Expiration"/>:&nbsp;
+            		<cti:formatDate type="DATEHMS_12" value="${brightlayerSecretKeyExpiration.expiryTime2}" nullText="${secretNotFoundMessage}"/>
+            		<cti:button nameKey="refresh" classes="fr js-refresh-secret" data-secret-number="2"/>
+            	</div>
             </tags:boxContainer2>
         </div>
         <div class="column two nogutter">
@@ -251,7 +271,7 @@
                           <c:set var="isPublicKeyGenerated" value="true" />
                           <div id="honeywellPublicKeyText">
             		          <p><i:inline key=".currentPublicKey" /></p>
-            		                 <textarea id="honeywellPublicKeyTextArea" rows="6" cols="60" 
+            		                 <textarea id="honeywellPublicKeyTextArea" rows="6" cols="54" 
                 		              readonly="readonly">${honeywellPublicKey}</textarea>
         		          </div>
                       </c:otherwise>
@@ -262,7 +282,7 @@
                       <cti:button id="importHoneywellKeyFileBtn" nameKey="importKeyFileBtn" data-popup="#importHoneywellKeyDialog"/>
                       <form:form method="POST" action="generateHoneywellCertificate" autocomplete="off" enctype="multipart/form-data">
                          <cti:csrfToken/>
-                         <cti:button id="generateCertificate" nameKey="generateCertificate" type="submit" disabled="${!isPublicKeyGenerated}" />
+                         <cti:button id="generateCertificate" nameKey="generateCertificate" type="submit" disabled="${!isPublicKeyGenerated}" classes="MT5"/>
                       </form:form>
                   </div>
               </tags:boxContainer2>

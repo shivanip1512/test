@@ -1,8 +1,6 @@
 package com.cannontech.web.stars.dr.operator.hardware.service.impl;
 
-import java.util.HashSet;
 import java.util.Map;
-import java.util.Set;
 
 import org.apache.logging.log4j.Logger;
 import org.joda.time.DateTime;
@@ -42,10 +40,8 @@ public class EatonCloudHardwareReadNowStrategy implements HardwareReadNowStrateg
             DateTime end = start.minusDays(7);
             Range<Instant> range = new Range<Instant>(end.toInstant(), false, start.toInstant(), true);
 
-            Set<Integer> deviceIds = new HashSet<>();
-            deviceIds.add(deviceId);
             // Read Device.
-            readService.collectDataForRead(deviceIds, range);
+            readService.collectDataForRead(deviceId, range);
             json.put("success", true);
             json.put("message", accessor.getMessage(keyBase + "readNowSuccess"));
         } catch (EatonCloudCommunicationExceptionV1 | EatonCloudException e) {

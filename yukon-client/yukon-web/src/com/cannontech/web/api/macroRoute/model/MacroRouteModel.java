@@ -24,9 +24,9 @@ public class MacroRouteModel<T extends MacroRoute> extends DeviceBaseModel imple
 
     @Override
     public void buildModel(MacroRoute macroRoute) {
-        setName(macroRoute.getRouteName());
-        setId(macroRoute.getRouteID());
-        setType(macroRoute.getPaoType());
+        setDeviceName(macroRoute.getRouteName());
+        setDeviceId(macroRoute.getRouteID());
+        setDeviceType(macroRoute.getPaoType());
         setEnable(macroRoute.isDisabled());
 
         ArrayList<MacroRouteList> routeList = new ArrayList<>();
@@ -44,8 +44,8 @@ public class MacroRouteModel<T extends MacroRoute> extends DeviceBaseModel imple
     @Override
     public void buildDBPersistent(MacroRoute macroRoute) {
 
-        if (getName() != null) {
-            macroRoute.setRouteName(getName());
+        if (getDeviceName() != null) {
+            macroRoute.setRouteName(getDeviceName());
         }
         macroRoute.setDeviceID(0);
         macroRoute.setDefaultRoute("N");
@@ -62,7 +62,7 @@ public class MacroRouteModel<T extends MacroRoute> extends DeviceBaseModel imple
                 }
                 macroRouteVector.add(macroRoutes);
             }
+            macroRoute.setMacroRouteVector(macroRouteVector);
         }
-        macroRoute.setMacroRouteVector(macroRouteVector);
     }
 }

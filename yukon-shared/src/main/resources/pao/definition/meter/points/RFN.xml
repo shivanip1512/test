@@ -2448,7 +2448,7 @@ Note: Look at BuiltInAttribute as that follows the same convention.
         <decimalplaces value="3"/>
     </point>
     <point offset="495" type="Analog">
-        <name>Previous Minimum Power Factor</name>
+        <name>Minimum Power Factor Frozen</name>
         <multiplier value="1"/>
         <unitofmeasure value="PF"/>
         <decimalplaces value="3"/>
@@ -2556,6 +2556,7 @@ Note: Look at BuiltInAttribute as that follows the same convention.
             <components>
                 <component point="Blink Count"/>
                 <component point="Outage Count"/>
+                <component point="Blink Restore Count"/>
             </components>
         </calculation>
     </point>

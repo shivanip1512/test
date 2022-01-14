@@ -108,7 +108,8 @@ public class MapNetworkController {
         model.addAttribute("displayNearbyLayer", displayNearbyLayer);
         model.addAttribute("displayInfrastructure", !isPlc);
         
-        int numLayers = BooleanUtils.toInteger(displayNeighborsLayer) + BooleanUtils.toInteger(displayParentNodeLayer) + BooleanUtils.toInteger(displayPrimaryRouteLayer);
+        int numLayers = BooleanUtils.toInteger(displayNearbyLayer) + BooleanUtils.toInteger(displayNeighborsLayer) + 
+                BooleanUtils.toInteger(displayParentNodeLayer) + BooleanUtils.toInteger(displayPrimaryRouteLayer);
         model.addAttribute("numLayers", numLayers);
         
         model.addAttribute("gatewayPaoTypes", PaoType.getRfGatewayTypes());

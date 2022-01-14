@@ -186,6 +186,9 @@ public class ButtonTag extends YukonTagSupport implements DynamicAttributes {
             if (mode == RenderMode.LABELED_IMAGE || mode == RenderMode.IMAGE || mode == RenderMode.LABEL) {
                 classes.append(" naked");
             }
+            if (mode == RenderMode.BUTTON_IMAGE) {
+                classes.append(" image-btn");
+            }
             if (mode == RenderMode.APPBUTTON) {
                 classes.append(" app-button");
             }

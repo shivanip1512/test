@@ -1,18 +1,28 @@
 MacroRoute:
   title: MacroRoute
   required:
-    - routeName
+    - deviceName
     - routeList
 
   type: object
   properties:
-    id:
+    deviceName:
+      type: string
+      maxLength: 60
+      description: 'Name for the macroRoute.'
+    routeList:
+      $ref: '#/routeList'
+
+MacroRouteResponseSchema:
+  type: array
+  properties:
+    deviceId:
       type: integer
       description: 'Individual entry for every route selected.'
-    type:
+    deviceType:
       type: string
       description: 'Type of the Route.'
-    name:
+    deviceName:
       type: string
       maxLength: 60
       description: 'Name for the macroRoute.'
@@ -20,7 +30,19 @@ MacroRoute:
       type: boolean
       description: 'DisableFlag.'  
     routeList:
-      $ref: '#/routeList'
+      $ref: '#/routeListResponseSchema'
+
+routeListResponseSchema:
+  type: array
+  items:
+    type: object
+    properties:
+      routeId:
+        type: integer
+        description: 'Id of the selected route.'
+      routeName:
+        type: string
+        description: 'Name for the Route.'
 
 routeList:
   type: array
@@ -43,24 +65,21 @@ id:
       type: integer
       description: 'Unique identifier for Macro Route.'
       
-routeId :
-  title: routeId
-  required:
-    - routeId
+macroRouteId :
+  title: id
   type: object
   properties:
-    routeId:
+    id:
       type: integer
-      description: 'Unique identifier for Macro Route.'      
-      
-      
+      description: 'Unique identifier for Macro Route.'
+
 components:
   examples:
     MacroRoute:
       value:
-        id: 222
-        type: ROUTE_MACRO
-        name: Test MacroRoute
+        deviceId: 222
+        deviceType: ROUTE_MACRO
+        deviceName: Test MacroRoute
         enable: false
         routeList:
           - routeId: 1
@@ -69,35 +88,31 @@ components:
             routeName: 'Route2'
     MacroRouteRequest:
       value:
-        id: 222
-        type: ROUTE_MACRO
-        name: Test MacroRoute
-        enable: false
+        deviceName: Test MacroRoute
         routeList:
           - routeId: 1
           - routeId: 2
     List MacroRoutes:
       value:
-        - id: 222
-          type: ROUTE_MACRO
-          name: Test MacroRoute
+        - deviceId: 222
+          deviceType: ROUTE_MACRO
+          deviceName: Test MacroRoute
           enable: false
           routeList:
             - routeId: 1
               routeName: 'Route1'
             - routeId: 2
               routeName: 'Route2'
-        - id: 223
-          type: ROUTE_MACRO
-          name: Test MacroRoute1
+        - deviceId: 223
+          deviceType: ROUTE_MACRO
+          deviceName: Test MacroRoute1
           enable: false
           routeList:
             - routeId: 3
               routeName: 'Route3'
             - routeId: 4
-              routeName: 'Route4'       
+              routeName: 'Route4'
              
-     
-    routeId:
+    macroRouteId:
       value:
-        routeId: 10     
+        id: 10

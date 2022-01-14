@@ -150,6 +150,7 @@ dt, dd { font-size: 16px; }
                             &lt;page name=&quot;groupPickers&quot; type=&quot;BASIC&quot;/&gt;
                             &lt;page name=&quot;deviceCollections&quot; type=&quot;BASIC&quot;/&gt;
                             &lt;page name=&quot;charts&quot; type=&quot;BASIC&quot;/&gt;
+                            &lt;page name=&quot;dropDown&quot; type=&quot;BASIC&quot;/&gt;
                         &lt;/pages&gt;
                     &lt;/page&gt;
                 &lt;/pages&gt;

@@ -15,13 +15,13 @@
     <cti:url var="action" value="/stars/device/commChannel/save" />
     <form:form modelAttribute="commChannel" action="${action}" method="post" cssClass="commChannel-create-form">
         <cti:csrfToken />
-        <input type="hidden" name="commChannel" value="${commChannel.type}">
+        <input type="hidden" name="commChannel" value="${commChannel.deviceType}">
         <tags:nameValueContainer2>
             <tags:nameValue2 nameKey=".name">
-                <tags:input id="js-comm-channel-name" path="name" maxlength="60" inputClass="w300 wrbw dib"/>
+                <tags:input id="js-comm-channel-name" path="deviceName" maxlength="60" inputClass="w300 wrbw dib"/>
             </tags:nameValue2>
             <tags:nameValue2 nameKey=".type">
-                <tags:selectWithItems items="${webSupportedCommChannelTypes}" id="js-comm-channel-type" path="type"/>
+                <tags:selectWithItems items="${webSupportedCommChannelTypes}" id="js-comm-channel-type" path="deviceType"/>
             </tags:nameValue2>
             <div id="js-commChannel-container">
                 <%@ include file="../../widget/commChannelInfoWidget/configuration.jsp" %>

@@ -36,13 +36,13 @@ public class PortApiValidator<T extends PortBase<?>> extends SimpleValidator<T> 
         
         // Validate if type is changed during update.
         String paoId = ServletUtils.getPathVariable("id");
-        if (paoId != null && port.getType() != null) {
-            yukonApiValidationHelper.checkIfPaoTypeChanged(errors, port.getType(), Integer.valueOf(paoId));
+        if (paoId != null && port.getDeviceType() != null) {
+            yukonApiValidationHelper.checkIfPaoTypeChanged(errors, port.getDeviceType(), Integer.valueOf(paoId));
         }
 
         // Validate Name if present.
-        if (port.getName() != null) {
-            yukonApiValidationHelper.validatePaoName(port.getName(), port.getType(), errors, "Name", paoId);
+        if (port.getDeviceName() != null) {
+            yukonApiValidationHelper.validatePaoName(port.getDeviceName(), port.getDeviceType(), errors, "Name", paoId);
         }
 
         if (port instanceof TcpPortDetail) {
@@ -102,7 +102,7 @@ public class PortApiValidator<T extends PortBase<?>> extends SimpleValidator<T> 
                 Integer existingPortId = portDao.findUniquePortTerminalServer(udpPortDetail.getIpAddress(),
                         udpPortDetail.getPortNumber());
                 PortApiValidatorHelper.validateUniquePortAndIpAddress(errors, udpPortDetail.getPortNumber(),
-                        udpPortDetail.getIpAddress(), existingPortId, paoId, udpPortDetail.getType());
+                        udpPortDetail.getIpAddress(), existingPortId, paoId, udpPortDetail.getDeviceType());
             }
         }
 
@@ -113,7 +113,7 @@ public class PortApiValidator<T extends PortBase<?>> extends SimpleValidator<T> 
                 Integer existingPortId = portDao.findUniquePortTerminalServer(tcpSharedPortDetail.getIpAddress(),
                         tcpSharedPortDetail.getPortNumber());
                 PortApiValidatorHelper.validateUniquePortAndIpAddress(errors, tcpSharedPortDetail.getPortNumber(),
-                        tcpSharedPortDetail.getIpAddress(), existingPortId, paoId, tcpSharedPortDetail.getType());
+                        tcpSharedPortDetail.getIpAddress(), existingPortId, paoId, tcpSharedPortDetail.getDeviceType());
             }
         }
     }

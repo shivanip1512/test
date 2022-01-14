@@ -434,7 +434,420 @@ CalcStatus:
       $ref: '#/calculationBase'
     pointStatusControl:
       $ref: '#/pointStatusControl'
-    
+
+Analog Response Schema:
+  title: Analog
+  type: object
+  properties:
+    pointId:
+      type: integer
+      description: 'Unique identifier of the Analog Point.'
+    pointName:
+      type: string
+      maxLength: 60
+      description: 'Name of the point.'
+    pointType:
+      type: string
+      enum:
+        - Analog
+      description: 'Type of the point.'
+    pointOffset:
+      type: integer
+      minimum: 0
+      maximum: 99999999
+      description: 'The offset value is used to uniquely identify the type of data input. An explicit offset and point type maps to a specific attribute.'
+    paoId:
+      type: integer
+      description: 'The unique identifier of the object this point is attached to.'
+    stateGroupId:
+      type: integer
+      description: 'The unique identifier of the state group used to define the messages to display for the different states of a point.'
+    enable:
+      type: boolean
+      default: true
+      description: 'Flag to enable point.'
+    archiveType:
+      type: string
+      enum:
+        - NONE
+        - ON_CHANGE
+        - ON_TIMER
+        - ON_UPDATE
+        - ON_TIMER_OR_UPDATE
+      description: 'Archive type. 
+                   None – Does not archive.
+                   On Change – Archives when an operand causes the point to change.
+                   On Timer – Archives at the selected archive interval.
+                   On Update – Archives any time the point is updated.'
+
+    archiveInterval:
+      type: integer
+      default: 0
+      description: 'Controls how often the point data is archived. This field is enabled only when On Timer or On Timer or Update is selected as the Data Type.
+                   Archive Interval must be 0 when Archive Data type is None, On Change, or On Update.
+                   The interval must be represented as seconds. Valid values for seconds range from 0, 1, 2, 5, 10, 15, 30. 
+                   Additionally, minutes can be accepted in 1 minute increments up to 15 minutes and then at 20, 25, 30, 35, 40, 45, 50 and 55. (example: 4 minutes = 240 seconds).
+                   Hours can be accepted in 1 hour increments up to 8 hours, and then at 10, 12, 15, 20, 30, and 45. (example: 12 hours = 43200 seconds).
+                   Days can be accepted at 1, 7, and 30. (example: 7 days = 604800 seconds).'
+    timingGroup:
+      type: string
+      default: DEFAULT
+      enum:
+        - DEFAULT
+        - SOE
+      description: 'Controls how often events are recorded. A value of Default records events that occur within seconds of each other. 
+                    For points on DNP devices, a value of SOE (Sequence of Events) can be selected, which records high-speed events that occur within milliseconds of each other.'
+    alarmsDisabled:
+      type: boolean
+      default: false
+      description: 'Flag to disable alarm.'
+    staleData:
+      $ref: '#/staleData'
+    alarming:
+      $ref: '#/alarming'
+    fdrList:
+      $ref: '#fdrList'
+    limits:
+      $ref: '#/limits'
+    pointUnit:
+      $ref: '#/pointUnit'
+    pointAnalog:
+      $ref: '#/pointAnalog'
+    pointAnalogControl:
+      $ref: '#/pointAnalogControl'
+
+PulseAccumulator Response Schema:
+  title: PulseAccumulator
+  type: object
+  properties:
+    pointId:
+      type: integer
+      description: 'Unique identifier of the Pulse Accumulator Point.'
+    pointName:
+      type: string
+      maxLength: 60
+      description: 'Name of the point.'
+    pointType:
+      type: string
+      enum:
+        - PulseAccumulator
+      description: 'Type of the point.'
+    pointOffset:
+      type: integer
+      minimum: 0
+      maximum: 99999999
+      description: 'The offset value is used to uniquely identify the type of data input. An explicit offset and point type maps to a specific attribute.'
+    paoId:
+      type: integer
+      description: 'The unique identifier of the object this point is attached to.'
+    stateGroupId:
+      type: integer
+      description: 'The unique identifier of the state group used to define the messages to display for the different states of a point.'
+    enable:
+      type: boolean
+      default: true
+      description: 'Flag to enable point.'
+    archiveType:
+      type: string
+      enum:
+        - NONE
+        - ON_CHANGE
+        - ON_TIMER
+        - ON_UPDATE
+        - ON_TIMER_OR_UPDATE
+      description: 'Archive type. 
+                   None – Does not archive.
+                   On Change – Archives when an operand causes the point to change.
+                   On Timer – Archives at the selected archive interval.
+                   On Update – Archives any time the point is updated.'
+
+    archiveInterval:
+      type: integer
+      default: 0
+      description: 'Controls how often the point data is archived. This field is enabled only when On Timer or On Timer or Update is selected as the Data Type.
+                   Archive Interval must be 0 when Archive Data type is None, On Change, or On Update.
+                   The interval must be represented as seconds. Valid values for seconds range from 0, 1, 2, 5, 10, 15, 30. 
+                   Additionally, minutes can be accepted in 1 minute increments up to 15 minutes and then at 20, 25, 30, 35, 40, 45, 50 and 55. (example: 4 minutes = 240 seconds).
+                   Hours can be accepted in 1 hour increments up to 8 hours, and then at 10, 12, 15, 20, 30, and 45. (example: 12 hours = 43200 seconds).
+                   Days can be accepted at 1, 7, and 30. (example: 7 days = 604800 seconds).'
+    timingGroup:
+      type: string
+      default: DEFAULT
+      enum:
+        - DEFAULT
+        - SOE
+      description: 'Controls how often events are recorded. A value of Default records events that occur within seconds of each other. 
+                    For points on DNP devices, a value of SOE (Sequence of Events) can be selected, which records high-speed events that occur within milliseconds of each other.'
+    alarmsDisabled:
+      type: boolean
+      default: false
+      description: 'Flag to disable alarm.'
+    staleData:
+      $ref: '#/staleData'
+    alarming:
+      $ref: '#/alarming'
+    fdrList:
+      $ref: '#fdrList'
+    limits:
+      $ref: '#/limits'
+    pointUnit:
+      $ref: '#/pointUnit'
+    accumulatorPoint:
+      $ref: '#/accumulatorPoint'
+
+CalcAnalog Response Schema:
+  title: CalcAnalog
+  type: object
+  properties:
+    pointId:
+      type: integer
+      description: 'Unique identifier of the CalcAnalog Point.'
+    pointName:
+      type: string
+      maxLength: 60
+      description: 'Name of the point.'
+    pointType:
+      type: string
+      enum:
+        - CalcAnalog
+      description: 'Type of the point.'
+    pointOffset:
+      type: integer
+      minimum: 0
+      maximum: 99999999
+      description: 'The offset value is typically used to uniquely identify similar points on multiple objects. 
+                    For example when associating a custom attribute and/or using the same or similar calculation on more than one device. 
+                    Use 0 if this not needed.'
+    paoId:
+      type: integer
+      description: 'The unique identifier of the object this point is attached to.'
+    stateGroupId:
+      type: integer
+      description: 'The unique identifier of the state group used to define the messages to display for the different states of a point.'
+    enable:
+      type: boolean
+      default: true
+      description: 'Flag to enable point.'
+    archiveType:
+      type: string
+      enum:
+        - NONE
+        - ON_CHANGE
+        - ON_TIMER
+        - ON_UPDATE
+        - ON_TIMER_OR_UPDATE
+      description: 'Archive type. 
+                   None – Does not archive.
+                   On Change – Archives when an operand causes the point to change.
+                   On Timer – Archives at the selected archive interval.
+                   On Update – Archives any time the point is updated.'
+
+    archiveInterval:
+      type: integer
+      default: 0
+      description: 'Controls how often the point data is archived. This field is enabled only when On Timer or On Timer or Update is selected as the Data Type.
+                   Archive Interval must be 0 when Archive Data type is None, On Change, or On Update.
+                   The interval must be represented as seconds. Valid values for seconds range from 0, 1, 2, 5, 10, 15, 30. 
+                   Additionally, minutes can be accepted in 1 minute increments up to 15 minutes and then at 20, 25, 30, 35, 40, 45, 50 and 55. (example: 4 minutes = 240 seconds).
+                   Hours can be accepted in 1 hour increments up to 8 hours, and then at 10, 12, 15, 20, 30, and 45. (example: 12 hours = 43200 seconds).
+                   Days can be accepted at 1, 7, and 30. (example: 7 days = 604800 seconds).'
+    timingGroup:
+      type: string
+      default: DEFAULT
+      enum:
+        - DEFAULT
+        - SOE
+      description: 'Controls how often events are recorded. A value of Default records events that occur within seconds of each other. 
+                    For points on DNP devices, a value of SOE (Sequence of Events) can be selected, which records high-speed events that occur within milliseconds of each other.'
+    alarmsDisabled:
+      type: boolean
+      default: false
+      description: 'Flag to disable alarm.'
+    staleData:
+      $ref: '#/staleData'
+    alarming:
+      $ref: '#/alarming'
+    fdrList:
+      $ref: '#fdrList'
+    limits:
+      $ref: '#/limits'
+    pointUnit:
+      $ref: '#/pointUnit'
+    baselineId:
+      type: integer
+      description: 'Baseline id of calcAnalog.'
+    calcAnalogBase:
+      $ref: '#/calcAnalogBase'
+    calcComponents:
+      $ref: '#/calcComponents'
+      
+Status Response Schema:
+  title: Status
+  type: object
+  properties:
+    pointId:
+      type: integer
+      description: 'Unique identifier of the Status Point.'
+    pointName:
+      type: string
+      maxLength: 60
+      description: 'Name of the point.'
+    pointType:
+      type: string
+      enum:
+        - Status
+      description: 'Type of the point.'
+    pointOffset:
+      type: integer
+      minimum: 0
+      maximum: 99999999
+      description: 'The offset value is used to uniquely identify the type of data input. An explicit offset and point type maps to a specific attribute.'
+    paoId:
+      type: integer
+      description: 'The unique identifier of the object this point is attached to.'
+    stateGroupId:
+      type: integer
+      description: 'The unique identifier of the state group used to define the messages to display for the different states of a point.'
+    enable:
+      type: boolean
+      default: true
+      description: 'Flag to enable point.'
+    archiveType:
+      type: string
+      enum:
+        - NONE
+        - ON_CHANGE
+        - ON_TIMER
+        - ON_UPDATE
+        - ON_TIMER_OR_UPDATE
+      description: 'Archive type. 
+                   None – Does not archive.
+                   On Change – Archives when an operand causes the point to change.
+                   On Timer – Archives at the selected archive interval.
+                   On Update – Archives any time the point is updated.'
+
+    archiveInterval:
+      type: integer
+      default: 0
+      description: 'Controls how often the point data is archived. This field is enabled only when On Timer or On Timer or Update is selected as the Data Type.
+                   Archive Interval must be 0 when Archive Data type is None, On Change, or On Update.
+                   The interval must be represented as seconds. Valid values for seconds range from 0, 1, 2, 5, 10, 15, 30. 
+                   Additionally, minutes can be accepted in 1 minute increments up to 15 minutes and then at 20, 25, 30, 35, 40, 45, 50 and 55. (example: 4 minutes = 240 seconds).
+                   Hours can be accepted in 1 hour increments up to 8 hours, and then at 10, 12, 15, 20, 30, and 45. (example: 12 hours = 43200 seconds).
+                   Days can be accepted at 1, 7, and 30. (example: 7 days = 604800 seconds).'
+    timingGroup:
+      type: string
+      default: DEFAULT
+      enum:
+        - DEFAULT
+        - SOE
+      description: 'Controls how often events are recorded. A value of Default records events that occur within seconds of each other. 
+                    For points on DNP devices, a value of SOE (Sequence of Events) can be selected, which records high-speed events that occur within milliseconds of each other.'
+    alarmsDisabled:
+      type: boolean
+      default: false
+      description: 'Flag to disable alarm.'
+    initialState:
+      type: integer
+      default: 0
+      description: 'Initial state of the point. The initial state depends on the state group selected.'
+    staleData:
+      $ref: '#/staleData'
+    alarming:
+      $ref: '#/alarming'
+    fdrList:
+      $ref: '#fdrList'
+    pointStatusControl:
+      $ref: '#/pointStatusControl'
+      
+CalcStatus Response Schema:
+  title: CalcStatus
+  type: object
+  properties:
+    pointId:
+      type: integer
+      description: 'Unique identifier of the Calc Status Point.'
+    pointName:
+      type: string
+      maxLength: 60
+      description: 'Name of the point.'
+    pointType:
+      type: string
+      enum:
+        - Status    
+      description: 'Type of the point.'
+    pointOffset:
+      type: integer
+      minimum: 0
+      maximum: 99999999
+      description: 'The offset value is typically used to uniquely identify similar points on multiple objects. 
+                    For example when associating a custom attribute and/or using the same or similar calculation on more than one device. 
+                    Use 0 if this not needed.'
+    paoId:
+      type: integer
+      description: 'The unique identifier of the object this point is attached to.'
+    stateGroupId:
+      type: integer
+      description: 'The unique identifier of the state group used to define the messages to display for the different states of a point.'
+    enable:
+      type: boolean
+      default: true
+      description: 'Flag to enable point.'
+    archiveType:
+      type: string
+      enum:
+        - NONE
+        - ON_CHANGE
+        - ON_TIMER
+        - ON_UPDATE
+        - ON_TIMER_OR_UPDATE
+      description: 'Archive type. 
+                   None – Does not archive.
+                   On Change – Archives when an operand causes the point to change.
+                   On Timer – Archives at the selected archive interval.
+                   On Update – Archives any time the point is updated.'
+
+    archiveInterval:
+      type: integer
+      default: 0
+      description: 'Controls how often the point data is archived. This field is enabled only when On Timer or On Timer or Update is selected as the Data Type.
+                   Archive Interval must be 0 when Archive Data type is None, On Change, or On Update.
+                   The interval must be represented as seconds. Valid values for seconds range from 0, 1, 2, 5, 10, 15, 30. 
+                   Additionally, minutes can be accepted in 1 minute increments up to 15 minutes and then at 20, 25, 30, 35, 40, 45, 50 and 55. (example: 4 minutes = 240 seconds).
+                   Hours can be accepted in 1 hour increments up to 8 hours, and then at 10, 12, 15, 20, 30, and 45. (example: 12 hours = 43200 seconds).
+                   Days can be accepted at 1, 7, and 30. (example: 7 days =  604800 seconds).'
+    timingGroup:
+      type: string
+      default: DEFAULT
+      enum:
+        - DEFAULT
+        - SOE
+      description: 'Controls how often events are recorded. A value of Default records events that occur within seconds of each other. 
+                    For points on DNP devices, a value of SOE (Sequence of Events) can be selected, which records high-speed events that occur within milliseconds of each other.'
+    alarmsDisabled:
+      type: boolean
+      default: false
+      description: 'Flag to disabled alarm.'
+    staleData:
+      $ref: '#/staleData'
+    alarming:
+      $ref: '#/alarming'
+    fdrList:
+      $ref: '#fdrList'
+    initialState:
+      type: integer
+      description: 'Initial state of the point. The initial state depends on the state group selected.'
+    baselineId:
+      type: integer
+      default: 0
+      description: 'Baseline id of calcStatus.'
+    calcComponents:
+      $ref: '#/calcComponents'
+    calculationBase:
+      $ref: '#/calculationBase'
+    pointStatusControl:
+      $ref: '#/pointStatusControl'
+
 staleData:
   type: object
   properties:
@@ -891,7 +1304,7 @@ id:
 
 components:
   examples:
-    Analog Point: 
+    Analog Point Request: 
       value:
         pointName: Analog point create
         pointType: Analog
@@ -968,7 +1381,85 @@ components:
          controlInhibited: false
          controlType: NONE
  
-    Status Point:
+    Analog Point Response: 
+      value:
+        pointId: 83
+        pointName: Analog point create
+        pointType: Analog
+        pointOffset: 894499
+        paoId: 1790
+        stateGroupId: -11
+        enable: true
+        archiveType: NONE
+        archiveInterval: 0
+        timingGroup: SOE
+        alarmsDisabled: false
+        staleData:
+         updateStyle: 1
+         time: 5
+        alarming:
+         notificationGroupId: 1
+         notifyOnAck: false
+         notifyOnClear: false
+         alarmTableList:
+           - condition: Non-updated
+             category: (none)
+             notify: NONE
+           - condition: Rate Of Change
+             category: (none)
+             notify: NONE
+           - condition: Limit Set 1
+             category: (none)
+             notify: NONE
+           - condition: Limit Set 2
+             category: (none)
+             notify: NONE
+           - condition: High Reasonability
+             category: (none)
+             notify: NONE
+           - condition: Low Reasonability
+             category: (none)
+             notify: NONE
+           - condition: Low Limit 1
+             category: (none)
+             notify: NONE
+           - condition: Low Limit 2
+             category: (none)
+             notify: NONE
+           - condition: High Limit 1
+             category: (none)
+             notify: NONE
+           - condition: High Limit 2
+             category: (none)
+             notify: NONE
+           - condition: Stale
+             category: (none)
+             notify: NONE
+        limits:
+         - limitNumber: 1
+           highLimit: 5
+           lowLimit: 1
+           limitDuration: 1
+         - limitNumber: 2
+           highLimit: 0
+           lowLimit: 0
+           limitDuration: 0
+        pointUnit:
+         uomId: 3
+         decimalPlaces: 9
+         highReasonabilityLimit: 1e+30
+         lowReasonabilityLimit: 0
+         meterDials: 2
+        pointAnalog:
+         deadband: -1
+         multiplier: 1
+         dataOffset: 0
+        pointAnalogControl:
+         controlOffset: 0
+         controlInhibited: false
+         controlType: NONE
+ 
+    Status Point Request:
       value:
         pointName: Status Point Create
         pointType: Status
@@ -1023,8 +1514,63 @@ components:
          commandTimeOut: 44
          controlType: SBOLATCH
  
+    Status Point Response:
+      value:
+        pointId: 84
+        pointName: Status Point Create
+        pointType: Status
+        pointOffset: 2233
+        paoId: 1790
+        stateGroupId: -11
+        initialState: 0
+        enable: true
+        archiveType: NONE
+        archiveInterval: 0
+        timingGroup: DEFAULT
+        alarmsDisabled: false
+        staleData:
+         updateStyle: 1
+         time: 5
+        alarming:
+         notificationGroupId: 1
+         notifyOnAck: false
+         notifyOnClear: false
+         alarmTableList:
+           - condition: Non-updated
+             category: (none)
+             notify: NONE
+           - condition: Abnormal
+             category: (none)
+             notify: NONE
+           - condition: Uncommanded State Change
+             category: (none)
+             notify: NONE
+           - condition: Command Failure
+             category: (none)
+             notify: NONE
+           - condition: Stale
+             category: (none)
+             notify: NONE
+           - condition: '-1'
+             category: (none)
+             notify: NONE
+           - condition: '0'
+             category: (none)
+             notify: NONE
+           - condition: '1'
+             category: (none)
+             notify: NONE
+        pointStatusControl:
+         controlOffset: 0
+         controlInhibited: false
+         closeTime1: 0
+         closeTime2: 0
+         openCommand: control open
+         closeCommand: control close
+         commandTimeOut: 44
+         controlType: SBOLATCH
     
-    Pulse Accumulator Point:
+    Pulse Accumulator Point Request:
       value:  
         pointName: Pulse Accumulator point create
         pointType: PulseAccumulator
@@ -1096,8 +1642,80 @@ components:
           multiplier: 1
           dataOffset: 0
 
+    Pulse Accumulator Point Response:
+      value: 
+        pointId: 84 
+        pointName: Pulse Accumulator point create
+        pointType: PulseAccumulator
+        pointOffset: 43632
+        paoId: 1790
+        stateGroupId: -1
+        enable: true
+        archiveType: NONE
+        archiveInterval: 0
+        timingGroup: DEFAULT
+        alarmsDisabled: false
+        staleData:
+          updateStyle: 1
+          time: 5
+        alarming:
+          notificationGroupId: 1
+          notifyOnAck: false
+          notifyOnClear: false
+          alarmTableList:
+            - condition: Non-updated
+              category: (none)
+              notify: NONE
+            - condition: Rate Of Change
+              category: (none)
+              notify: NONE
+            - condition: Limit Set 1
+              category: (none)
+              notify: NONE
+            - condition: Limit Set 2
+              category: (none)
+              notify: NONE
+            - condition: High Reasonability
+              category: (none)
+              notify: NONE
+            - condition: Low Reasonability
+              category: (none)
+              notify: NONE
+            - condition: Low Limit 1
+              category: (none)
+              notify: NONE
+            - condition: Low Limit 2
+              category: (none)
+              notify: NONE
+            - condition: High Limit 1
+              category: (none)
+              notify: NONE
+            - condition: High Limit 2
+              category: (none)
+              notify: NONE
+            - condition: Stale
+              category: (none)
+              notify: NONE
+        limits:
+          - limitNumber: 1
+            highLimit: 5
+            lowLimit: 1
+            limitDuration: 1
+          - limitNumber: 2
+            highLimit: 0
+            lowLimit: 0
+            limitDuration: 0
+        pointUnit:
+          uomId: 0
+          decimalPlaces: 2
+          highReasonabilityLimit: 1e+30
+          lowReasonabilityLimit: -1e+30
+          meterDials: 0
+        accumulatorPoint:
+          multiplier: 1
+          dataOffset: 0
       
-    Calc Analog Point:
+    Calc Analog Point Request:
       value:    
         pointName: Calc Analog Point Create
         pointType: CalcAnalog
@@ -1180,9 +1798,93 @@ components:
           - componentType: FUNCTION
             operation: Baseline
             operand: 595
+ 
+    Calc Analog Point Response:
+      value:
+        pointId: 85
+        pointName: Calc Analog Point Create
+        pointType: CalcAnalog
+        pointOffset: 69323
+        paoId: 1790
+        stateGroupId: -11
+        enable: true
+        archiveType: ON_CHANGE
+        archiveInterval: 0
+        timingGroup: SOE
+        alarmsDisabled: false
+        baselineId: 1
+        staleData:
+          updateStyle: 1
+          time: 5
+        alarming:
+          notificationGroupId: 1
+          notifyOnAck: false
+          notifyOnClear: false
+          alarmTableList:
+            - condition: Non-updated
+              category: (none)
+              notify: NONE
+            - condition: Rate Of Change
+              category: (none)
+              notify: NONE
+            - condition: Limit Set 1
+              category: (none)
+              notify: NONE
+            - condition: Limit Set 2
+              category: (none)
+              notify: NONE
+            - condition: High Reasonability
+              category: (none)
+              notify: NONE
+            - condition: Low Reasonability
+              category: (none)
+              notify: NONE
+            - condition: Low Limit 1
+              category: (none)
+              notify: NONE
+            - condition: Low Limit 2
+              category: (none)
+              notify: NONE
+            - condition: High Limit 1
+              category: (none)
+              notify: NONE
+            - condition: High Limit 2
+              category: (none)
+              notify: NONE
+            - condition: Stale
+              category: (none)
+              notify: NONE
+        limits:
+          - limitNumber: 1
+            highLimit: 5
+            lowLimit: 1
+            limitDuration: 1
+          - limitNumber: 2
+            highLimit: 0
+            lowLimit: 0
+            limitDuration: 0
+        pointUnit:
+          uomId: 46
+          decimalPlaces: 3
+          highReasonabilityLimit: 0
+          lowReasonabilityLimit: 0
+          meterDials: 0
+        calcAnalogBase:
+          updateType: CONSTANT
+          periodicRate: 1
+          calculateQuality: false
+        calcComponents:
+          - componentType: OPERATION
+            operation: +
+            operand: 595
+          - componentType: CONSTANT
+            operation: +
+            operand: 896
+          - componentType: FUNCTION
+            operation: Baseline
+            operand: 595   
     
-    
-    Calc Status Point:
+    Calc Status Point Request:
       value:       
         pointName: Calc Status Point Create
         pointType: CalcStatus
@@ -1251,7 +1953,77 @@ components:
             operation: Baseline
             operand: -110
 
-    PointCopy:
+    Calc Status Point Response:
+      value:
+        pointId:: 86
+        pointName: Calc Status Point Create
+        pointType: CalcStatus
+        pointOffset: 88343
+        paoId: 1790
+        stateGroupId: -11
+        initialState: 0
+        enable: true
+        archiveType: ON_CHANGE
+        archiveInterval: 0
+        timingGroup: SOE
+        alarmsDisabled: false
+        baselineId: 1
+        staleData:
+          updateStyle: 1
+          time: 5
+        alarming:
+          notificationGroupId: 1
+          notifyOnAck: false
+          notifyOnClear: false
+          alarmTableList:
+            - condition: Non-updated
+              category: (none)
+              notify: NONE
+            - condition: Abnormal
+              category: (none)
+              notify: NONE
+            - condition: Uncommanded State Change
+              category: (none)
+              notify: NONE
+            - condition: Command Failure
+              category: (none)
+              notify: NONE
+            - condition: Stale
+              category: (none)
+              notify: NONE
+            - condition: '-1'
+              category: (none)
+              notify: NONE
+            - condition: '0'
+              category: (none)
+              notify: NONE
+            - condition: '1'
+              category: (none)
+              notify: NONE
+        pointStatusControl:
+          controlOffset: 0
+          controlInhibited: false
+          closeTime1: 0
+          closeTime2: 0
+          openCommand: control open
+          closeCommand: control close
+          commandTimeOut: 0
+          controlType: NONE
+        calculationBase:
+          updateType: ON_TIMER
+          periodicRate: 15
+        calcComponents:
+          - componentType: OPERATION
+            operation: +
+            operand: -110
+          - componentType: CONSTANT
+            operation: +
+            operand: 244
+          - componentType: FUNCTION
+            operation: Baseline
+            operand: -110
+
+    PointCopy Request:
       value:
         pointName: 'Point copy'
         pointOffset: 32536

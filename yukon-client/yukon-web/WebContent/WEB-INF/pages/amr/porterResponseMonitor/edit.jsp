@@ -114,7 +114,7 @@
         
         <tags:sectionContainer2 nameKey="rulesTable" hideEnabled="false">
             <div class="scroll-lg">
-            <table id="rules-table" class="compact-results-table with-form-controls clearfix">
+            <table id="rules-table" class="compact-results-table no-stripes with-form-controls clearfix">
                 <thead>
                     <tr>
                         <th><i:inline key=".rulesTable.header.ruleOrder"/></th>

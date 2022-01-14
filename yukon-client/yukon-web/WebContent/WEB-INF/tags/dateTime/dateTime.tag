@@ -97,10 +97,12 @@
                         data-toggle-group="${pageScope.toggleGroup}" 
                         autocomplete="off"/>
                 </span>
+                <br>
             </cti:displayForPageEditModes>
             <c:if test="${status.error}">
-                <br/><br/>
-                <form:errors path="${pageScope.path}" cssClass="${cssErrorClass} error" />
+                <div style="padding-top:20px">
+                    <form:errors path="${pageScope.path}" cssClass="${cssErrorClass} error"/>
+                </div>
             </c:if>
         </spring:bind>
     </c:when>
@@ -113,6 +115,7 @@
                     <input id="${id}" 
                         <c:if test="${!empty pageScope.name}">name="${pageScope.name}"</c:if>
                         value="${dateTimeValue}"
+                        type="text"
                         class="js-dateTimePicker js-dateTimePickerUI dateTimePicker ${cssClass}"
                         <c:if test="${disabled}">disabled="true"</c:if>
                         data-max-date="${pageScope.maxFormattedDate}"

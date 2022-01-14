@@ -115,7 +115,7 @@ public enum GlobalSettingType implements DisplayableEnum {
     ECOBEE_USERNAME(GlobalSettingSubCategory.DR, stringType(), null),
     ECOBEE_PASSWORD(GlobalSettingSubCategory.DR, stringType(), null),
     ECOBEE_PROGRAM_ID(GlobalSettingSubCategory.DR, stringType(), null),
-    ECOBEE_SERVER_URL(GlobalSettingSubCategory.DR, stringType(), "https://api.ecobee.com/1/", GlobalSettingTypeValidators.urlValidator),
+    ECOBEE_SERVER_URL(GlobalSettingSubCategory.DR, stringType(), "https://es.ecobee.com/ecp/api/v1/", GlobalSettingTypeValidators.urlValidator),
     ECOBEE_REPORTING_URL(GlobalSettingSubCategory.DR, stringType(), null, GlobalSettingTypeValidators.urlValidator),
     ECOBEE_SEND_NOTIFICATIONS(GlobalSettingSubCategory.DR, booleanType(), false),
     HONEYWELL_WIFI_SERVICE_BUS_QUEUE(GlobalSettingSubCategory.DR, stringType(), null),
@@ -138,6 +138,7 @@ public enum GlobalSettingType implements DisplayableEnum {
     EATON_CLOUD_DEVICE_READ_INTERVAL_MINUTES(GlobalSettingSubCategory.DR, integerType(), 60),
     EATON_CLOUD_SERVICE_ACCOUNT_ID(GlobalSettingSubCategory.DR, stringType(), null, GlobalSettingTypeValidators.guidValidator),
     EATON_CLOUD_SECRET(GlobalSettingSubCategory.DR, stringType(), null),
+    EATON_CLOUD_SECRET2(GlobalSettingSubCategory.DR, stringType(), null),
     EATON_CLOUD_URL(GlobalSettingSubCategory.DR, stringType(), "https://blu-dr-api.eaton.com", GlobalSettingTypeValidators.urlValidator),
 
     // Web Server
@@ -263,7 +264,8 @@ public enum GlobalSettingType implements DisplayableEnum {
                 NETWORK_MANAGER_DB_PASSWORD,
                 CLOUD_IOT_HUB_CONNECTION_STRING,
                 EATON_CLOUD_SERVICE_ACCOUNT_ID,
-                EATON_CLOUD_SECRET);
+                EATON_CLOUD_SECRET,
+                EATON_CLOUD_SECRET2);
         }
 
     private GlobalSettingType(GlobalSettingSubCategory category, InputType<?> type, Object defaultValue) {
