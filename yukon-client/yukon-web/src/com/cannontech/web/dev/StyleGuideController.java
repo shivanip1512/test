@@ -45,6 +45,7 @@ import com.cannontech.util.Validator;
 import com.cannontech.web.common.flashScope.FlashScope;
 import com.cannontech.web.dev.model.Person;
 import com.cannontech.web.group.DisableNodeCallback;
+import com.cannontech.web.i18n.IconSvg;
 import com.cannontech.web.security.annotation.CheckCparm;
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.ImmutableMap;
@@ -275,6 +276,18 @@ public class StyleGuideController {
         ArrayList<String> sprites16Array = new ArrayList<String>();
         ArrayList<String> sprites32Array = new ArrayList<String>();
         ArrayList<String> spritesNew32Array = new ArrayList<String>();
+        
+        //First add all from IconSvg
+        IconSvg[] iconSvgs = IconSvg.values();
+        for (IconSvg iconSvg : iconSvgs) {
+        	if (iconSvg.getIconClass().contains("icon-32-")) {
+        		sprites32Array.add(iconSvg.getIconClass());
+        	} else if (iconSvg.getIconClass().contains("icon-app-32")) {
+        		spritesNew32Array.add(iconSvg.getIconClass());
+        	} else {
+        		sprites16Array.add(iconSvg.getIconClass());
+        	}
+        }
 
         BufferedReader br = new BufferedReader(new FileReader(request.getServletContext().getRealPath("/WebConfig/yukon/styles/icons.css")));
         try {

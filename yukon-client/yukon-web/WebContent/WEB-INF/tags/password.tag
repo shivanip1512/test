@@ -47,12 +47,14 @@
 <div class="dib M0">
     <form:password path="${path}" disabled="${pageScope.disabled}" size="${pageScope.size}" maxlength="${pageScope.maxlength}" 
         autocomplete="${autocomplete}" cssClass="${inputClass} ${pageScope.cssClass}" showPassword="${showPassword}" tabindex="${tabindex}" placeholder="${placeholder}"/>
-    <c:if test="${includeShowHideButton}">
-         <tags:check classes="fr M0" onclick="showHideData(this.checked, '${path}');" name="showHideDataField">
-             <i title="<i:inline key="yukon.web.modules.adminSetup.config.showHideData"/>" class="icon icon-eye"></i>
+			<c:if test="${includeShowHideButton}">
+				<cti:msg2 var="showHideDataMsg" key="yukon.web.modules.adminSetup.config.showHideData" />
+				<tags:check classes="fr M0" onclick="showHideData(this.checked, '${path}');" name="showHideDataField">
+             	<cti:icon icon="icon-eye" title="${showHideDataMsg}"/>
          </tags:check>
     </c:if>
-</div>
+
+		</div>
 <c:if test="${status.error}"><br><form:errors path="${path}" cssClass="error"/><br/></c:if>
 
 </cti:displayForPageEditModes>

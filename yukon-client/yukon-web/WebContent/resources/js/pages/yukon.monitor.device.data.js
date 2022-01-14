@@ -111,7 +111,7 @@ yukon.ami.ddm = (function () {
             .addClass('js-show-violation-help js-violation-help-link')
             .attr('target-id', 'total-supported-help')
             .attr('target-title', data.totalSupportedCountHelpTitle)
-            .html('<i class="icon icon-help">&nbsp;</i>')
+            .html('<i class="icon icon-help">' + yg.iconSvg.iconHelp + '</i>')
             .appendTo(help);
             
             $('<div>').addClass('dn')
@@ -170,7 +170,7 @@ yukon.ami.ddm = (function () {
                         '<a class="fl js-show-too-many-device-for-point-help" href="javascript:void(0);"'
                         + ' target-id="point-unknown-number-help"'
                         + ' target-title="'+ pt_help_title +'">'
-                            + '<i class="icon icon-error ML0">&nbsp;</i>'
+                            + '<i class="icon icon-error ML0">' + yg.iconSvg.iconError + '</i>'
                         + '</a>';
                 }
                 
@@ -180,7 +180,7 @@ yukon.ami.ddm = (function () {
                         + ' data-url="' + url + '"'
                         + ' target-id="' + popupListId + '"'
                         + ' target-title="' + violation.listTitle + '">'
-                            + '<i class="icon icon-magnifier"></i>'+ countText
+                            + '<i class="icon icon-magnifier">' + yg.iconSvg.iconMagnifier + '</i>'+ countText
                         + '</a>'
                         
                         + '<span class="fl js-loading dn">'
@@ -205,7 +205,7 @@ yukon.ami.ddm = (function () {
                             + '<a href="' + add_points_url + '"'
                                 + ' target="_blank"'
                                 + ' data-add-key="' + attribute + '">'
-                                + '<i class="icon icon-add"></i>'
+                                + '<i class="icon icon-add">' + yg.iconSvg.iconAdd + '</i>'
                                 + '<span class="b-label">' + violation.addPointsTxt + '</span>'
                             + '</a>'
                         + '</td>';
@@ -222,7 +222,7 @@ yukon.ami.ddm = (function () {
                     + '<a class="js-show-violation-help js-violation-help-link" href="javascript:void(0);"'
                     + ' target-id="' + popupHelpId + '"'
                     + ' target-title="' + violation.helpTitle +'">'
-                        + '<i class="icon icon-help">&nbsp;</i>'
+                        + '<i class="icon icon-help">' + yg.iconSvg.iconHelp + '</i>'
                     + '</a>'
                     + '<div class="dn" id="' + popupHelpId + '">' + violation.helpText + '</div>'
                 + '</td>'
@@ -696,8 +696,8 @@ yukon.ami.ddm = (function () {
             _get_supported_counts({ initial_load: true });
             
             // Add our help icons next to the two column titles (Settings and Processors)
-            $('.js-settings-section .title-bar').append('<i class="icon icon-help js-open-settings-help cp"></i>');
-            $('.js-processors-section .title-bar').append('<i class="icon icon-help js-open-processors-help cp"></i>');
+            $('.js-settings-section .title-bar').append('<i class="icon icon-help js-open-settings-help cp">' + yg.iconSvg.iconHelp + '</i>');
+            $('.js-processors-section .title-bar').append('<i class="icon icon-help js-open-processors-help cp">' + yg.iconSvg.iconHelp + '</i>');
             
             _initialized = true;
         },

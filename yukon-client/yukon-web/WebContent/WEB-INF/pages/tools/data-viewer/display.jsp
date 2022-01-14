@@ -74,4 +74,6 @@
     
     <cti:includeScript link="/resources/js/pages/yukon.tools.tdc.js"/>
     <cti:includeScript link="/resources/js/pages/yukon.points.js"/>
+    <cti:includeScript link="/resources/js/lib/sortable/sortable.js"/>
+<cti:includeCss link="/resources/js/lib/sortable/sortable.css"/>
 </cti:standardPage>

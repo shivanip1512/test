@@ -224,7 +224,7 @@
         <c:forEach var="target" items="${recentTargets}">
             <c:set var="label" value="${fn:escapeXml(target.label)}"/>
             <c:set var="type" value="${target.target.target}"/>
-            <c:set var="icon" value="${type == 'DEVICE' || type == 'LOAD_GROUP' ? 'icon-database-add' : 'icon-textfield'}"/>
+            <c:set var="icon" value="${type == 'DEVICE' || type == 'LOAD_GROUP' ? 'icon-database-add' : 'icon-arrow-forward'}"/>
             <cm:dropdownOption icon="${icon}"
                 data-type="${type}"
                 data-pao-id="${target.target.paoId}"

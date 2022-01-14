@@ -626,12 +626,12 @@ yukon.ui.unbusy('#busy-test-3');
 &lt;/cm:dropdown&gt;
 ...
 &lt;cm:dropdown icon=&quot;icon-vehicle-car&quot;&gt;
-    &lt;cm:dropdownOption icon=&quot;icon-vehicle-car&quot;&gt;Smile&lt;/cm:dropdownOption&gt;
-    &lt;cm:dropdownOption icon=&quot;icon-vehicle-forklift&quot;&gt;Tongue&lt;/cm:dropdownOption&gt;
-    &lt;cm:dropdownOption icon=&quot;icon-vehicle-sports-car&quot;&gt;Happy&lt;/cm:dropdownOption&gt;
-    &lt;cm:dropdownOption icon=&quot;icon-vehicle-tractor&quot;&gt;Surprised&lt;/cm:dropdownOption&gt;
-    &lt;cm:dropdownOption icon=&quot;icon-vehicle-utility-van&quot;&gt;Surprised&lt;/cm:dropdownOption&gt;
-    &lt;cm:dropdownOption icon=&quot;icon-vehicle-pickup-truck&quot;&gt;Surprised&lt;/cm:dropdownOption&gt;
+    &lt;cm:dropdownOption icon=&quot;icon-vehicle-car&quot;&gt;Car&lt;/cm:dropdownOption&gt;
+    &lt;cm:dropdownOption icon=&quot;icon-vehicle-forklift&quot;&gt;Forklift&lt;/cm:dropdownOption&gt;
+    &lt;cm:dropdownOption icon=&quot;icon-vehicle-sports-car&quot;&gt;Sports Car&lt;/cm:dropdownOption&gt;
+    &lt;cm:dropdownOption icon=&quot;icon-vehicle-tractor&quot;&gt;Tractpr&lt;/cm:dropdownOption&gt;
+    &lt;cm:dropdownOption icon=&quot;icon-vehicle-utility-van&quot;&gt;Utility Van&lt;/cm:dropdownOption&gt;
+    &lt;cm:dropdownOption icon=&quot;icon-vehicle-pickup-truck&quot;&gt;Pickup Truck&lt;/cm:dropdownOption&gt;
 &lt;/cm:dropdown&gt;
 </pre>
     
