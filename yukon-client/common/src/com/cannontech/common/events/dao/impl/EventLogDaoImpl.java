@@ -6,6 +6,7 @@ import java.util.Collections;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Set;
+import java.util.concurrent.TimeUnit;
 
 import org.apache.commons.lang3.StringUtils;
 import org.apache.logging.log4j.Logger;
@@ -33,6 +34,8 @@ import com.cannontech.database.YukonJdbcTemplate;
 import com.cannontech.database.YukonResultSet;
 import com.cannontech.database.YukonRowMapperAdapter;
 import com.cannontech.database.incrementer.NextValueHelper;
+import com.google.common.cache.Cache;
+import com.google.common.cache.CacheBuilder;
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.ImmutableList.Builder;
 import com.google.common.collect.Sets;
@@ -44,6 +47,10 @@ public class EventLogDaoImpl implements EventLogDao {
     @Autowired private NextValueHelper nextValueHelper;
 
     private static final Logger log = YukonLogManager.getLogger(EventLogDaoImpl.class);
+    
+    
+    private final Cache<String,Set<EventCategory>> allCategories = CacheBuilder.newBuilder()
+            .expireAfterWrite(30, TimeUnit.SECONDS).build();
     
     private final int countOfTotalArguments;
     private List<ArgumentColumn> argumentColumns;
@@ -188,17 +195,23 @@ public class EventLogDaoImpl implements EventLogDao {
     
     @Override
     public Set<EventCategory> getAllCategories() {
-        Set<EventCategory> allCategoryLeafs = getAllCategoryLeafs();
-        
-        Set<EventCategory> allCategories = Sets.newHashSet(allCategoryLeafs);
-        
-        for (EventCategory eventCategory : allCategoryLeafs) {
-            collectParentCategories(eventCategory, allCategories);
+        Set<EventCategory> categories = allCategories.getIfPresent("allCategories");
+        if (categories != null) {
+            return categories;
         }
-        
-        return allCategories;
+
+        Set<EventCategory> allCategoryLeafs = getAllCategoryLeafs();
+
+        categories = Sets.newHashSet(allCategoryLeafs);
+
+        for (EventCategory eventCategory : allCategoryLeafs) {
+            collectParentCategories(eventCategory, categories);
+        }
+        allCategories.put("allCategories", categories);
+        return categories;
+
     }
-    
+
     private void collectParentCategories(EventCategory eventCategory, Set<EventCategory> allCategories) {
         EventCategory parent = eventCategory.getParent();
         if (parent != null) {
@@ -217,99 +230,43 @@ public class EventLogDaoImpl implements EventLogDao {
         List<EventLog> result = yukonJdbcTemplate.query(sql, eventLogRowMapper);
         return result;
     }
-    
-    @Override
-    public List<EventLog> findAllByCategories(Iterable<EventCategory> eventCategories, 
-                                              ReadableInstant startDate, 
-                                              ReadableInstant stopDate) {
-        Set<EventCategory> slimEventCategories = removeDuplicates(eventCategories);
         
-        if (slimEventCategories.isEmpty()) {
-            return Collections.emptyList();
-        }
-        
-        SqlStatementBuilder sql = findAllSqlStatementBuilder(startDate, stopDate, slimEventCategories);
-        sql.append("ORDER BY EL.EventTime, EL.EventLogId");
 
-        List<EventLog> result = yukonJdbcTemplate.query(sql, eventLogRowMapper);
-        return result;
-    }
-
-    
     @Override
-    public SearchResults<EventLog> getPagedSearchResultByCategories(Iterable<EventCategory> eventCategories, 
-                                                                   ReadableInstant startDate, 
-                                                                   ReadableInstant stopDate, 
-                                                                   Integer start, 
-                                                                   Integer pageCount) {
+    public SearchResults<EventLog> getFilteredPagedSearchResultByCategories(Iterable<EventCategory> eventCategories,
+            ReadableInstant startDate,
+            ReadableInstant stopDate,
+            Integer start,
+            Integer pageCount,
+            String filterString) {
+
         SearchResults<EventLog> result = new SearchResults<EventLog>();
         Set<EventCategory> slimEventCategories = removeDuplicates(eventCategories);
-        if (slimEventCategories.isEmpty()){
+        if (slimEventCategories.isEmpty()) {
             return SearchResults.emptyResult();
         }
-        
         /* Get row count. */
         SqlStatementBuilder countSql = new SqlStatementBuilder();
-        countSql.append("SELECT COUNT(*)");
-        countSql.append("FROM EventLog EL");
-        countSql.append("WHERE (");
-        SqlFragmentCollection sqlFragmentCollection = getEventCategorySqlFragment(slimEventCategories);
-        countSql.appendFragment(sqlFragmentCollection);
-        countSql.append(  ") AND EL.EventTime").lt(stopDate);
-        countSql.append(  "AND EL.EventTime").gte(startDate);
-        
-        int hitCount = yukonJdbcTemplate.queryForInt(countSql);
-        
+        countSql.appendFragment(findAllSqlStatementBuilder(startDate, stopDate, slimEventCategories, true));
+        if (!StringUtils.isEmpty(filterString)) {
+            countSql.append("AND").appendFragment(getEventLogColumnSqlFragment(filterString));
+        }
+
         /* Get paged data. */
         SqlStatementBuilder sql = new SqlStatementBuilder();
-        sql.appendFragment(findAllSqlStatementBuilder(startDate, stopDate, slimEventCategories));
-        sql.append("ORDER BY EL.EventTime DESC, EL.EventLogId DESC");
-        
-        PagingResultSetExtractor<EventLog> rse = new PagingResultSetExtractor<EventLog>(start, pageCount, new YukonRowMapperAdapter<EventLog>(eventLogRowMapper));
-        yukonJdbcTemplate.query(sql, rse);
-        result.setResultList(rse.getResultList());
-        result.setBounds(start, pageCount, hitCount);
-        
-        return result;
-    }
-
-
-    @Override
-    public SearchResults<EventLog> 
-                getFilteredPagedSearchResultByCategories(Iterable<EventCategory> eventCategories,
-                                                         ReadableInstant startDate,
-                                                         ReadableInstant stopDate,
-                                                         Integer start,
-                                                         Integer pageCount,
-                                                         String filterString) {
-
-        SearchResults<EventLog> result = new SearchResults<EventLog>();
-        Set<EventCategory> slimEventCategories = removeDuplicates(eventCategories);
-        if (slimEventCategories.isEmpty()){
-            return SearchResults.emptyResult();
+        sql.appendFragment(findAllSqlStatementBuilder(startDate, stopDate, slimEventCategories, false));
+        if (!StringUtils.isEmpty(filterString)) {
+            sql.append("AND").appendFragment(getEventLogColumnSqlFragment(filterString));
         }
-
-        /* Get row count. */
-        SqlStatementBuilder countSql = new SqlStatementBuilder();
-        countSql.append("SELECT COUNT(*)");
-        countSql.append("FROM EventLog EL");
-        countSql.append("WHERE").appendFragment(getEventCategorySqlFragment(slimEventCategories));
-        countSql.append("AND").appendFragment(getEventLogColumnSqlFragment(filterString));
-        countSql.append("AND EL.EventTime").lt(stopDate);
-        countSql.append("AND EL.EventTime").gte(startDate);
-        int hitCount = yukonJdbcTemplate.queryForInt(countSql);
-        
-        /* Get paged data. */
-        SqlStatementBuilder sql = findAllSqlStatementBuilder(startDate, stopDate, slimEventCategories);
-        sql.append("AND").appendFragment(getEventLogColumnSqlFragment(filterString));
         sql.append("ORDER BY EL.EventTime DESC, EL.EventLogId DESC");
-        
-        PagingResultSetExtractor<EventLog> rse = 
-            new PagingResultSetExtractor<EventLog>(start, pageCount, eventLogRowMapper);
+
+        PagingResultSetExtractor<EventLog> rse = new PagingResultSetExtractor<EventLog>(start, pageCount,
+                new YukonRowMapperAdapter<EventLog>(eventLogRowMapper));
         yukonJdbcTemplate.query(sql, rse);
         result.setResultList(rse.getResultList());
-        result.setBounds(start, pageCount, hitCount);
         
+        int hitCount = yukonJdbcTemplate.queryForInt(countSql);
+        result.setBounds(start, pageCount, hitCount);
         return result;
     }
 
@@ -427,33 +384,30 @@ public class EventLogDaoImpl implements EventLogDao {
         return sqlFragmentCollection;
     }
 
-    private SqlStatementBuilder findAllSqlStatementBuilder(ReadableInstant startDate,
-                                                           ReadableInstant stopDate,
-                                                           Iterable<String> eventLogTypes) {
-        SqlStatementBuilder sql = new SqlStatementBuilder();
-        sql.append("SELECT *");
-        sql.append("FROM EventLog EL");
-        sql.append("WHERE EL.EventType").in(eventLogTypes);
-        sql.append("AND EL.EventTime").lt(stopDate);
-        sql.append("AND EL.EventTime").gte(startDate);
-
-        return sql;
-    }
-
     private SqlStatementBuilder findAllSqlStatementBuilder(ReadableInstant startDate, 
                                                            ReadableInstant stopDate, 
-                                                           Set<EventCategory> slimEventCategories) {
+                                                           Set<EventCategory> slimEventCategories,
+                                                           boolean isCount) {
         SqlStatementBuilder sql = new SqlStatementBuilder();
-        sql.append("SELECT * ");
+        if(isCount) {
+            sql.append("SELECT count(*) ");
+        } else {
+            sql.append("SELECT * "); 
+        }
+
         sql.append("FROM EventLog EL");
-        sql.append("WHERE (");
-        
-        SqlFragmentCollection sqlFragmentCollection = getEventCategorySqlFragment(slimEventCategories);
-        sql.appendFragment(sqlFragmentCollection);
-        
-        sql.append(")");
-        sql.append("AND EL.EventTime").lt(stopDate);
+        sql.append("WHERE EL.EventTime").lt(stopDate);
         sql.append("AND EL.EventTime").gte(startDate);
+        
+        if(!slimEventCategories.containsAll(getAllCategories())){
+            sql.append("AND (");
+            
+            SqlFragmentCollection sqlFragmentCollection = getEventCategorySqlFragment(slimEventCategories);
+            sql.appendFragment(sqlFragmentCollection);
+            
+            sql.append(")");            
+        }
+
         return sql;
     }
 
