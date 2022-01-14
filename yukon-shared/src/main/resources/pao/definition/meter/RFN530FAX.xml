@@ -22,7 +22,7 @@
     <configuration>
         <category type="demandFreeze"/>
         <category type="rfnChannelConfiguration"/>
-        <category type="rfnDemand"/>
+        <category type="rfnDemand" optional="true"/>
         <category type="rfnMetrologyConfiguration" optional="true"/>
         <category type="rfnTempAlarm"/>
         <category type="rfnVoltage"/>
