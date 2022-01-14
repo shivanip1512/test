@@ -1,8 +1,10 @@
 package com.cannontech.services.systemDataPublisher.processor.impl;
 
+import org.apache.logging.log4j.Logger;
 import org.joda.time.DateTime;
 import org.springframework.stereotype.Service;
 
+import com.cannontech.clientutils.YukonLogManager;
 import com.cannontech.common.version.VersionTools;
 import com.cannontech.yukon.system.metrics.message.YukonMetric;
 import com.cannontech.yukon.system.metrics.message.YukonMetricPointInfo;
@@ -10,10 +12,13 @@ import com.cannontech.yukon.system.metrics.producer.service.YukonMetricStartupPr
 
 @Service
 public class YukonVersionDataProcessor extends YukonMetricStartupProducer {
+    private static final Logger log = YukonLogManager.getLogger(YukonVersionDataProcessor.class);
 
     @Override
     public YukonMetric produce() {
-        return new YukonMetric(getYukonMetricPointInfo(), VersionTools.getYukonDetails(), new DateTime());
+        YukonMetric metric = new YukonMetric(getYukonMetricPointInfo(), VersionTools.getYukonDetails(), new DateTime());
+        debug(metric, log);
+        return metric;
     }
 
     @Override
