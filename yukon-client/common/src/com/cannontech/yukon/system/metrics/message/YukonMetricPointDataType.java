@@ -1,9 +1,8 @@
-package com.cannontech.yukon.system.metrics.listener;
+package com.cannontech.yukon.system.metrics.message;
 
 import static com.google.common.base.Preconditions.checkArgument;
 
 import com.cannontech.database.data.point.PointType;
-import com.cannontech.yukon.system.metrics.message.YukonMetricPointInfo;
 import com.google.common.collect.ImmutableMap;
 import com.google.common.collect.ImmutableSet;
 
@@ -75,5 +74,16 @@ public enum YukonMetricPointDataType {
     public static YukonMetricPointDataType getForPointInfo(YukonMetricPointInfo pointInfo) {
         checkArgument(pointInfo != null);
         return lookupByPointInfo.get(pointInfo);
+    }
+
+    public static boolean isYukonMetricType(Integer offset, PointType pointType) {
+        checkArgument(offset != null);
+        checkArgument(pointType != null);
+        for (YukonMetricPointDataType metricPointDataType : lookupByPointInfo.values()) {
+            if (metricPointDataType.getOffset().equals(offset) && metricPointDataType.getType() == pointType) {
+                return true;
+            }
+        }
+        return false;
     }
 }
