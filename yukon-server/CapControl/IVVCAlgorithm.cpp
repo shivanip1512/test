@@ -1381,7 +1381,7 @@ void IVVCAlgorithm::execute(IVVCStatePtr state, CtiCCSubstationBusPtr subbus, IV
             }
             else if ( state->isCommsLost() )    // Currently good data but previously were comms lost
             {
-                CTILOG_INFO(dout, "IVVC Analysis Resuming for bus: " << subbus->getPaoName());
+                CTILOG_INFO(dout, "IVVC Algorithm: IVVC Analysis Resuming on bus: " << subbus->getPaoName());
 
                 state->setState(IVVCState::IVVC_WAIT);
                 state->setCommsRetryCount(0);
@@ -3207,6 +3207,11 @@ void CreateRegulatorAutoRemoteEventLog( CtiCCSubstationBusPtr subbus, bool resto
     long stationId, areaId, spAreaId;
     store->getSubBusParentInfo( subbus, spAreaId, areaId, stationId );
 
+    std::string message = 
+        restored
+            ? "Auto/Remote Control transitioned from DISABLED to ENABLED on: " + regulator->getPaoName()
+            : "IVVC Analysis Period Skipped - Auto/Remote Control DISABLED on: "  + regulator->getPaoName();
+
     EventLogEntry entry(
         0,
         SYS_PID_CAPCONTROL,
@@ -3218,14 +3223,14 @@ void CreateRegulatorAutoRemoteEventLog( CtiCCSubstationBusPtr subbus, bool resto
         capControlIvvcAnalysisSkipped,
         0,
         restored,
-        restored
-            ? "Auto/Remote Control transitioned from DISABLED to ENABLED on: " + regulator->getPaoName()
-            : "IVVC Analysis Period Skipped - Auto/Remote Control DISABLED on: "  + regulator->getPaoName(),
+        message,
         Cti::CapControl::SystemUser );
 
     entry.regulatorId = regulator->getPaoId();
 
     ccEvents.push_back( entry );
+
+    CTILOG_INFO( dout, "IVVC Algorithm: " << message );
 }
 
 }
@@ -3550,10 +3555,7 @@ void IVVCAlgorithm::handleCommsLost(IVVCStatePtr state, CtiCCSubstationBusPtr su
 
     // Switch the voltage regulators to auto mode.
     {
-        if (_CC_DEBUG & CC_DEBUG_IVVC)
-        {
-            CTILOG_DEBUG(dout, "IVVC Algorithm: " << subbus->getPaoName() << " - Comms lost.");
-        }
+        CTILOG_INFO(dout, "IVVC Algorithm: IVVC Analysis Stopped - Comms lost on bus: " << subbus->getPaoName() );
 
         sendDisableRemoteControl( subbus );
     }
