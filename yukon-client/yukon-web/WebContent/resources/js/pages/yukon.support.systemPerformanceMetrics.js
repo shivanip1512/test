@@ -13,11 +13,24 @@ yukon.support.systemPerformanceMetrics = (function() {
     var
     _initialized = false,
     
+    labelFormat = '%Y-%m-%d %l:%M:%S %p',
+    dateTimeLabelFormats = {
+            millisecond: [labelFormat,labelFormat],
+            second:      [labelFormat,labelFormat],
+            minute:      [labelFormat,labelFormat],
+            hour:        [labelFormat,labelFormat],
+            day:         [labelFormat,labelFormat],
+            week:        [labelFormat,labelFormat],
+            month:       [labelFormat,labelFormat],
+            year:        [labelFormat,labelFormat]
+        },
+    
     _sparklineDefaultOptions = {
             chart: {
                 backgroundColor: null,
                 borderWidth: 0,
                 type: 'area',
+                margin: [20, 0, 40, 60],
                 width: 400,
                 height: 100,
                 style: {
@@ -35,34 +48,37 @@ yukon.support.systemPerformanceMetrics = (function() {
             xAxis: {
                 type: 'datetime',
                 labels: {
-                    enabled: false
+                    enabled: true,
+                    step: 1,
+                    overflow: 'allow',
+                    y: 12,
+                    style: {
+                        fontSize: '8px'
+                    }
                 },
+                tickLength: 5,
                 title: {
-                    text: null
+                    text: 'Series'
                 },
                 startOnTick: false,
                 endOnTick: false,
-                tickPositions: []
             },
             yAxis: {
-                endOnTick: false,
-                startOnTick: false,
-                labels: {
-                    enabled: false
-                },
-                title: {
-                    text: null
-                },
-                tickPositions: [0]
+                categories:  ['low', 'medium', 'high']
             },
             legend: {
                 enabled: false
             },
             tooltip: {
-                hideDelay: 0,
-                outside: true,
-                shared: true
+            	dateTimeLabelFormats: dateTimeLabelFormats,
+                xDateFormat: labelFormat,
+                valueDecimals: 3,
+                style: {
+                    fontSize: "10px",
+                    width: "200px",
+                }
             },
+
             plotOptions: {
                 series: {
                     animation: false,
