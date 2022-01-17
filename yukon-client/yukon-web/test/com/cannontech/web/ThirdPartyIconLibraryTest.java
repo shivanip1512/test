@@ -144,7 +144,7 @@ public class ThirdPartyIconLibraryTest {
                     "marker-generic.svg", 
                     "marker-lcr-grey.svg", 
                     "marker-meter-elec-grey.svg", 
-                    "marker-meter-gas-grey.png", 
+                    "marker-meter-gas-grey.svg", 
                     "marker-meter-plc-elec-grey.svg", 
                     "marker-meter-water-grey.svg", 
                     "marker-meter-wifi-grey.svg", 
