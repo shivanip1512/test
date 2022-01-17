@@ -6151,8 +6151,8 @@ JavaScript :
     license : MIT
     license URLs : "https://github.com/HubSpot/sortable/blob/master/LICENSE"
     npm URL : "n/a"
-    md5 : 33e2940c385847f56a611b8142990ecf
-    sha1 : b7ae7d2ee0607a082e603e25588ed0d5d23bf209
+    md5 : b21623bc52b8dd90fbb180d005c34419
+    sha1 : 8edbf5cf52c034a6b95de9da6fceb60d6a2902bd
     jira : YUK-17019
     updated : 2017-08-30
     notes : "Includes several subsequent Eaton changes; open issue to add project to NPM at https://github.com/HubSpot/sortable/issues/30"
