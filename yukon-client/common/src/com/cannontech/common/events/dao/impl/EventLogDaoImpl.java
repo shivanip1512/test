@@ -262,10 +262,10 @@ public class EventLogDaoImpl implements EventLogDao {
 
         PagingResultSetExtractor<EventLog> rse = new PagingResultSetExtractor<EventLog>(start, pageCount,
                 new YukonRowMapperAdapter<EventLog>(eventLogRowMapper));
+        int hitCount = yukonJdbcTemplate.queryForInt(countSql);
         yukonJdbcTemplate.query(sql, rse);
         result.setResultList(rse.getResultList());
         
-        int hitCount = yukonJdbcTemplate.queryForInt(countSql);
         result.setBounds(start, pageCount, hitCount);
         return result;
     }
