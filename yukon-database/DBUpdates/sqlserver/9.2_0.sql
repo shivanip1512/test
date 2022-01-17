@@ -201,6 +201,112 @@ UPDATE POINT SET POINTNAME = 'RFN Meter Reading Archive Point Data Generated Cou
 INSERT INTO DBUpdates VALUES ('YUK-25742', '9.2.0', GETDATE());
 /* @end YUK-25742 */
 
+/* @start YUK-25614 */
+
+/* Calculate the new values into the temp table */
+SELECT
+    outTotal.POINTID,
+    GETDATE(),
+    CASE
+        WHEN (dpdOutBlink.QUALITY=5 AND dpdOutCount.QUALITY=5 AND dpdResBlink.QUALITY=5) THEN 5  -- NormalQuality
+        ELSE 18 -- EstimatedQuality
+    END,
+    dpdOutCount.VALUE + dpdResBlink.VALUE + ISNULL(dpdOutBlink.VALUE, 0)
+INTO 
+    #OutageCalcValuesTemp
+FROM 
+    POINT outTotal 
+        JOIN YukonPAObject y 
+            ON y.PAObjectID=outTotal.PAObjectID
+        JOIN CALCBASE cb
+            ON cb.POINTID=outTotal.POINTID
+        JOIN CALCCOMPONENT cc
+            ON cc.PointID=cb.POINTID
+        JOIN CALCCOMPONENT cc1 ON cc1.PointID=cb.POINTID and cc1.COMPONENTORDER=1 and cc1.COMPONENTTYPE='Operation' and cc1.OPERATION='+'
+        JOIN CALCCOMPONENT cc2 ON cc2.PointID=cb.POINTID and cc2.COMPONENTORDER=2 and cc2.COMPONENTTYPE='Operation' and cc2.OPERATION='+'
+        JOIN CALCCOMPONENT cc3 ON cc3.PointID=cb.POINTID and cc3.COMPONENTORDER=3 and cc3.COMPONENTTYPE='Operation' and cc3.OPERATION='+'
+        JOIN POINT outBlink ON outBlink.POINTID=cc1.COMPONENTPOINTID and outBlink.POINTTYPE='Analog' and outBlink.POINTOFFSET='20'
+        JOIN POINT outCount ON outCount.POINTID=cc2.COMPONENTPOINTID and outCount.POINTTYPE='Analog' and outCount.POINTOFFSET='22'
+        JOIN POINT resBlink ON resBlink.POINTID=cc3.COMPONENTPOINTID and resBlink.POINTTYPE='Analog' and resBlink.POINTOFFSET='21'
+        JOIN DYNAMICPOINTDISPATCH dpdOutTotal on outTotal.POINTID=dpdOutTotal.POINTID
+        JOIN DYNAMICPOINTDISPATCH dpdOutCount on outCount.POINTID=dpdOutCount.POINTID
+        JOIN DYNAMICPOINTDISPATCH dpdResBlink on resBlink.POINTID=dpdResBlink.POINTID
+        LEFT JOIN DYNAMICPOINTDISPATCH dpdOutBlink on outBlink.POINTID=dpdOutBlink.POINTID
+WHERE
+    outTotal.POINTTYPE='CalcAnalog'
+        AND outTotal.POINTOFFSET='0'
+        AND (SELECT COUNT(PointID) FROM CALCCOMPONENT WHERE PointID=outTotal.POINTID)=3
+        AND dpdOutTotal.QUALITY != 0
+        AND dpdOutCount.QUALITY != 0
+        AND dpdResBlink.QUALITY != 0
+        AND y.Type in (
+            'RFN-410fL', 'RFN-410fX', 'RFN-410fD',
+            'RFN-420fL', 'RFN-420fX', 'RFN-420fD', 'RFN-420fRX', 'RFN-420fRD',
+            'RFN-410cL',
+            'RFN-420cL', 'RFN-420cD',
+            'WRL-420cL', 'WRL-420cD',
+            'RFN-430A3D', 'RFN-430A3T', 'RFN-430A3K', 'RFN-430A3R',
+            'RFN-430KV',
+            'RFN-430SL0', 'RFN-430SL1', 'RFN-430SL2', 'RFN-430SL3', 'RFN-430SL4',
+            'RFN-440-2131TD', 'RFN-440-2132TD', 'RFN-440-2133TD',
+            'RFN-510fL',
+            'RFN-520fAX', 'RFN-520fRX', 'RFN-520fAXD', 'RFN-520fRXD',
+            'RFN-520fAXe', 'RFN-520fRXe', 'RFN-520fAXeD', 'RFN-520fRXeD',
+            'RFN-530fAX', 'RFN-530fRX', 'RFN-530fAXe', 'RFN-530fRXe',
+            'RFN-530S4x',
+            'RFN-530S4eAX', 'RFN-530S4eAXR', 'RFN-530S4eRX', 'RFN-530S4eRXR');
+
+/* Update DynamicPointDispatch with the new value */
+UPDATE 
+    dpd
+SET
+    dpd.TIMESTAMP = 
+        t.TIMESTAMP,
+    dpd.QUALITY =
+        t.QUALITY,
+    dpd.VALUE =
+        t.VALUE, 
+    dpd.TAGS =
+        0, 
+    dpd.NEXTARCHIVE =
+        '2038-01-15 00:00:00', 
+    dpd.millis =
+        0
+FROM
+    DYNAMICPOINTDISPATCH dpd
+        JOIN #OutageCalcValuesTemp t on dpd.POINTID=t.POINTID;
+
+/* @start-block */
+BEGIN
+    DECLARE @maxChangeId NUMERIC = (SELECT ISNULL(MAX(CHANGEID), 0) FROM RAWPOINTHISTORY)
+
+/* Insert the new values into RPH */
+    INSERT INTO RAWPOINTHISTORY (
+        CHANGEID,
+        POINTID, 
+        TIMESTAMP, 
+        QUALITY, 
+        VALUE, 
+        millis)
+    SELECT 
+        @maxChangeId + ROW_NUMBER() OVER (ORDER BY POINTID),
+        POINTID, 
+        TIMESTAMP,
+        QUALITY,
+        VALUE,
+        0
+    FROM 
+        #OutageCalcValuesTemp;
+
+END;
+/* @end-block */
+
+/* Clean up */
+DROP TABLE #OutageCalcValuesTemp;
+
+INSERT INTO DBUpdates VALUES ('YUK-25614', '9.2.0', GETDATE());
+/* @end YUK-25614 */
+
 /***********************************************************************************/
 /* VERSION INFO                                                                    */
 /* Inserted when update script is run, stays commented out until the release build */
