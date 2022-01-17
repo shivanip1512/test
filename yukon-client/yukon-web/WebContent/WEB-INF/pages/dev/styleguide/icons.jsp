@@ -119,8 +119,8 @@
     
         <div class="card bg-light column ${classes}">
             <div class="card-body">                
-                <div class="clearfix" style="text-align:center;">
-                    <cti:icon icon="${sprite32Property}" classes="icon-32 fn"/>
+                <div class="clearfix" style="text-align:center;font-size:1.5rem;">
+                    <cti:icon icon="icon-32 ${sprite32Property}" classes="fn"/>
                 </div>
                 <div style="text-align:center">
                     <span ><c:out value="${sprite32Property}" /></span>
