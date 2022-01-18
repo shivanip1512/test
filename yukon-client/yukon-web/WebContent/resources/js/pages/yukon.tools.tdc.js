@@ -294,6 +294,7 @@ yukon.tools.tdc = (function () {
             $(document).ready(function() {
                 $('#date').attr('readonly', true);
                 $('#date').addClass('opacityOff');
+                Sortable.init();
             });
             
             $(document).on('change', '#date', function (ev) {

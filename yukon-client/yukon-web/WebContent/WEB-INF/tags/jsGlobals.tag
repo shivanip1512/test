@@ -138,6 +138,14 @@ var yg = {
         confirmRemoveTitle: '<cti:msg2 key="yukon.web.components.ajaxConfirm.confirmRemove.title"/>'
     },
     
+    iconSvg: {
+    	iconCloseX: '<cti:getIconSvg iconClass="icon-close-x"/>',
+    	iconMagnifier: '<cti:getIconSvg iconClass="icon-magnifier"/>',
+    	iconHelp: '<cti:getIconSvg iconClass="icon-help"/>',
+    	iconError: '<cti:getIconSvg iconClass="icon-error"/>',
+    	iconAdd: '<cti:getIconSvg iconClass="icon-add"/>'
+    },
+    
     timezone: '<cti:getUsersTimezone/>',
     
     // Role properties

@@ -823,11 +823,14 @@ table.matrix{
 .sortable .icon {
     margin: 0;
     float: none;
-    background-position: 16px 16px;
 }
-.sortable.asc .icon { background-position: -208px -48px; }
+.sortable.asc .icon { 
+	background-image: url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" enable-background="new 0 0 24 24" fill="%23727e84" height="18" viewBox="0 0 24 24" width="18"><g><path d="M0,0h24v24H0V0z" fill="none"/></g><g><g><g><path d="M4,12l1.41,1.41L11,7.83V20h2V7.83l5.58,5.59L20,12l-8-8L4,12z"/></g></g></g></svg>');
+}
 .sortable.desc .icon,
-.sortable:hover:not(.asc) .icon { background-position: -176px -48px; }
+.sortable:hover:not(.asc) .icon { 
+	background-image: url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" fill="%23727e84" height="18" viewBox="0 0 24 24" width="18"><path d="M0 0h24v24H0V0z" fill="none"/><path d="M20 12l-1.41-1.41L13 16.17V4h-2v12.17l-5.58-5.59L4 12l8 8 8-8z"/></svg>');
+}
 
 .selectable tbody tr td:first-child { padding: 0; width: 3px; }
 .selectable tbody tr.selected td:first-child { background-color: @primary-color; }
@@ -1087,10 +1090,9 @@ ul.selectable li.selected {
         margin: auto;
         left: 0;
         right:0;
-        width: 16px;
-        height: 16px;
-        background-image: url(..//Icons/icons.png);
-        background-position: -176px -48px;
+        width: 18px;
+        height: 18px;
+		background-image: url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" fill="%23727e84" height="18" viewBox="0 0 24 24" width="18"><path d="M0 0h24v24H0z" fill="none"/><path d="M16.59 8.59L12 13.17 7.41 8.59 6 10l6 6 6-6z"/></svg>');
     }
 }
 
@@ -1205,9 +1207,9 @@ ol.error{ list-style-type: none; }
     position: absolute;
     left: 7px;
     top: 10px;
-    width: 16px;
-    height: 16px;
-    background-image: url('../Icons/icons.png');
+    width: 18px;
+    height: 18px;
+	background-image: url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" fill="%2339b620" height="18" viewBox="0 0 25 25" width="18"><path d="M0 0h24v24H0z" fill="none"/><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-2 15l-5-5 1.41-1.41L10 14.17l7.59-7.59L19 8l-9 9z"/></svg>');
 }
 
 .user-message.error {
@@ -1215,7 +1217,7 @@ ol.error{ list-style-type: none; }
     color: #6e0414 !important;
 }
 .user-message.error:before {
-    background-position: -512px -144px;
+	background-image: url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" fill="%23da3227" height="17" viewBox="0 0 24 24" width="17"><path d="M0 0h24v24H0z" fill="none"/><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm1 15h-2v-2h2v2zm0-4h-2V7h2v6z"/></svg>');
 }
 
 .user-message.success {
@@ -1243,7 +1245,7 @@ ol.error{ list-style-type: none; }
     color: #774e08 !important;
 }
 .user-message.warning:before {
-    background-position: -448px -144px;
+	background-image: url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" fill="%23f0cb2f" height="17" viewBox="0 0 24 24" width="17"><path d="M0 0h24v24H0z" fill="none"/><path d="M1 21h22L12 2 1 21zm12-3h-2v-2h2v2zm0-4h-2v-4h2v4z"/></svg>');
 }
 
 input.error,
@@ -2126,13 +2128,15 @@ li:hover .show-on-hover {
 }
 
 .ui-accordion-header-icon {
-    background-image: url(../Icons/icons.png) !important;
-    background-position: -192px -416px !important;
+	background-image: url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" fill="%23727e84" height="18" viewBox="0 0 24 24" width="18"><path d="M0 0h24v24H0V0z" fill="none"/><path d="M8.59 16.59L13.17 12 8.59 7.41 10 6l6 6-6 6-1.41-1.41z"/></svg>') !important;
+	background-position: unset !important;
+	padding-left: 20px !important;
 }
 
 .ui-accordion-header-active .ui-accordion-header-icon {
-    background-image: url(../Icons/icons.png) !important;
-    background-position: -176px -48px !important;
+	background-image: url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" fill="%23727e84" height="18" viewBox="0 0 24 24" width="18"><path d="M0 0h24v24H0z" fill="none"/><path d="M16.59 8.59L12 13.17 7.41 8.59 6 10l6 6 6-6z"/></svg>') !important;
+	background-position: unset !important;
+	padding-left: 20px !important;
 }
 
 .small-font-orange-color-text {

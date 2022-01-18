@@ -312,7 +312,7 @@ yukon.tools.commander = (function () {
                 $('#route-id').val = targetStore.routeId;
                 option.data('routeId', targetStore.routeId);
                 option.data('serialNumber', targetStore.serialNumber);
-                option.find('.icon').toggleClass('icon-database-add icon-textfield');
+                option.find('.icon').toggleClass('icon-database-add icon-arrow-forward');
             }
             option.find('.dropdown-option-label').text(element.label);
             $('.js-recent-menu').append(option);

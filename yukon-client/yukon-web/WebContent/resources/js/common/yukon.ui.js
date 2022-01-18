@@ -838,7 +838,7 @@ yukon.ui = (function () {
                             popup.append(content);
                         }
                         if (popup.is('[data-help-text]') && !$(this).parent().children(".ui-dialog-titlebar").find(".icon-help").exists()) {
-                            $(this).parent().children(".ui-dialog-titlebar").prepend('<i class="icon icon-help fr js-dialog-help-text cp">');
+                            $(this).parent().children(".ui-dialog-titlebar").prepend('<i class="icon icon-help fr js-dialog-help-text cp">' + yg.iconSvg.iconHelp);
                             $(this).parent().children(".ui-dialog-titlebar").find('.icon-help').css('margin-right', '20px');
                             $(this).parent().find(".ui-dialog-title").width("80%");
                         }

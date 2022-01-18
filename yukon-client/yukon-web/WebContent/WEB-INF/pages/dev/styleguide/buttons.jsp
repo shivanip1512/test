@@ -581,7 +581,7 @@ yukon.ui.unbusy('#busy-test-3');
 <div class="column-4-20 clearfix button-example">
     <div class="column one"><h4 class="subtle">Example:</h4></div>
     <div class="column two nogutter">
-        <cm:dropdown type="button" key="yukon.common.actions">
+        <cm:dropdown type="button" key="yukon.common.actions" showIcon="false">
             <cm:dropdownOption icon="icon-pencil" href="buttons#drop-down-example">Edit</cm:dropdownOption>
             <cm:dropdownOption icon="icon-page-copy" disabled="true" key="yukon.web.components.button.copy.label"/>
             <cm:dropdownOption icon="icon-cross" label="Delete" classes="js-delete-all-the-things"/>
@@ -597,13 +597,12 @@ yukon.ui.unbusy('#busy-test-3');
             <cm:dropdownOption icon="icon-plus-green" key=".create" id="create-option"/>
         </cm:dropdown>
         &nbsp;&nbsp;
-        <cm:dropdown icon="icon-vehicle-car">
-            <cm:dropdownOption icon="icon-vehicle-car">Car</cm:dropdownOption>
-            <cm:dropdownOption icon="icon-vehicle-forklift">Forklift</cm:dropdownOption>
-            <cm:dropdownOption icon="icon-vehicle-sports-car">Sports Car</cm:dropdownOption>
-            <cm:dropdownOption icon="icon-vehicle-tractor">Tractor</cm:dropdownOption>
-            <cm:dropdownOption icon="icon-vehicle-utility-van">Utility Van</cm:dropdownOption>
-            <cm:dropdownOption icon="icon-vehicle-pickup-truck">Pickup Truck</cm:dropdownOption>
+        <cm:dropdown icon="icon-electric-meter">
+            <cm:dropdownOption icon="icon-electric-meter">RF Meter</cm:dropdownOption>
+            <cm:dropdownOption icon="icon-electric-plc-meter">PLC Meter</cm:dropdownOption>
+            <cm:dropdownOption icon="icon-water-meter">Water Meter</cm:dropdownOption>
+            <cm:dropdownOption icon="icon-gas-meter">Gas Meter</cm:dropdownOption>
+            <cm:dropdownOption icon="icon-virtual-meter">Virtual Meter</cm:dropdownOption>
         </cm:dropdown>
     </div>
 </div>
@@ -625,13 +624,12 @@ yukon.ui.unbusy('#busy-test-3');
     &lt;cm:dropdownOption icon=&quot;icon-plus-green&quot; key=&quot;.create&quot; id=&quot;create-option&quot;/&gt;
 &lt;/cm:dropdown&gt;
 ...
-&lt;cm:dropdown icon=&quot;icon-vehicle-car&quot;&gt;
-    &lt;cm:dropdownOption icon=&quot;icon-vehicle-car&quot;&gt;Smile&lt;/cm:dropdownOption&gt;
-    &lt;cm:dropdownOption icon=&quot;icon-vehicle-forklift&quot;&gt;Tongue&lt;/cm:dropdownOption&gt;
-    &lt;cm:dropdownOption icon=&quot;icon-vehicle-sports-car&quot;&gt;Happy&lt;/cm:dropdownOption&gt;
-    &lt;cm:dropdownOption icon=&quot;icon-vehicle-tractor&quot;&gt;Surprised&lt;/cm:dropdownOption&gt;
-    &lt;cm:dropdownOption icon=&quot;icon-vehicle-utility-van&quot;&gt;Surprised&lt;/cm:dropdownOption&gt;
-    &lt;cm:dropdownOption icon=&quot;icon-vehicle-pickup-truck&quot;&gt;Surprised&lt;/cm:dropdownOption&gt;
+&lt;cm:dropdown icon=&quot;icon-electric-meter&quot;&gt;
+    &lt;cm:dropdownOption icon=&quot;icon-electric-meter&quot;&gt;RF Meter&lt;/cm:dropdownOption&gt;
+    &lt;cm:dropdownOption icon=&quot;icon-electric-plc-meter&quot;&gt;PLC Meter&lt;/cm:dropdownOption&gt;
+    &lt;cm:dropdownOption icon=&quot;icon-water-meter&quot;&gt;Water Meter&lt;/cm:dropdownOption&gt;
+    &lt;cm:dropdownOption icon=&quot;icon-gas-meter&quot;&gt;Gas Meter&lt;/cm:dropdownOption&gt;
+    &lt;cm:dropdownOption icon=&quot;icon-virtual-meter&quot;&gt;Virtual Meter&lt;/cm:dropdownOption&gt;
 &lt;/cm:dropdown&gt;
 </pre>
     

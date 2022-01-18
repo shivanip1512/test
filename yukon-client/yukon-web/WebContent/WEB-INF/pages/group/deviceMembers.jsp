@@ -47,7 +47,7 @@
             									<cti:button nameKey="add" type="submit" renderMode="image" icon="icon-cross"/>
             								</form>
             							</c:when>
-            							<c:otherwise><i class="icon icon-cross" disabled="disabled"/></c:otherwise>
+            							<c:otherwise><cti:icon icon="icon-cross" classes="disabled"/></c:otherwise>
             						</c:choose>
             					</td>
                             </c:if>
@@ -62,7 +62,7 @@
             <div class="action-area stacked">
                 <button id="removeAllDevicesButton" data-ok-event="yukon:devicegroup:removealldevices" value="${removeAllDevicesFromGroupLabel}" 
                         title="${removeAllDevicesFromGroupDescription}">
-                    <i class="icon icon-cross"></i><span class="b-label">${removeAllDevicesFromGroupLabel}</span>
+                    <cti:icon icon="icon-cross"/><span class="b-label">${removeAllDevicesFromGroupLabel}</span>
                 </button>
                 <d:confirm on="#removeAllDevicesButton" nameKey="membersContainer.confirmRemove"/>
                 <img id="removeAllDevicesWaitImg" src="<cti:url value="/WebConfig/yukon/Icons/spinner.gif"/>" style="display:none;">
