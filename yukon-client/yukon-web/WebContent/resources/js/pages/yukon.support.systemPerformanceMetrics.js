@@ -47,7 +47,7 @@ yukon.support.systemPerformanceMetrics = (function() {
                 labels: {
                     enabled: true,
                     style: {
-                    	fontSize: '9px'
+                        fontSize: '9px'
                     }
                 },
                 title: {
@@ -63,7 +63,7 @@ yukon.support.systemPerformanceMetrics = (function() {
                 labels: {
                     enabled: true,
                     style: {
-                    	fontSize: '9px'
+                        fontSize: '9px'
                     }
                 },
                 title: {
@@ -85,11 +85,11 @@ yukon.support.systemPerformanceMetrics = (function() {
                     width: "200px",
                 },
                 formatter: function () {
-                	var tooltipHtml = '';
-                	tooltipHtml += "<span style='color:" + this.color + "'>\u25CF</span>&nbsp;" + this.series.name + "</br>";
-                	tooltipHtml += this.point.formattedValue + " " + this.point.units + "</br>";
-                	tooltipHtml += moment(this.point.x).tz(yg.timezone).format(yg.formats.date.both_with_ampm);
-                	return tooltipHtml;
+                    var tooltipHtml = '';
+                    tooltipHtml += "<span style='color:" + this.color + "'>\u25CF</span>&nbsp;" + this.series.name + "</br>";
+                    tooltipHtml += this.point.formattedValue + " " + this.point.units + "</br>";
+                    tooltipHtml += moment(this.point.x).tz(yg.timezone).format(yg.formats.date.both_with_ampm);
+                    return tooltipHtml;
                 },
                 positioner: function() {
                     var chartPosition = this.chart.pointer.getChartPosition();
@@ -162,11 +162,11 @@ yukon.support.systemPerformanceMetrics = (function() {
                             renderTo: chartTableCell
                         },
                         xAxis: {
-                        	min: Date.parse(startDate),
-                        	max: Date.parse(endDate)
+                            min: Date.parse(startDate),
+                            max: Date.parse(endDate)
                         },
                         series: [{
-                        	name: value.pointName,
+                            name: value.pointName,
                             data: data
                         }]
                     };
