@@ -5078,8 +5078,8 @@ void CreateRegulatorPowerFlowEventLog( CtiCCSubstationBusPtr subbus, PowerFlowEr
     std::map< PowerFlowErrorType, std::pair< double, std::string > > eventDecoder
     {
         {   PowerFlowErrorType::None,           {   1.0, "Invalid Power Flow condition cleared on: "                } },
-        {   PowerFlowErrorType::Indeterminate,  {  -1.0, "IVVC Analysis Skipped – Indeterminate power flow on: "    } },
-        {   PowerFlowErrorType::Invalid,        {   0.0, "IVVC Analysis Skipped – Invalid power flow on: "          } }
+        {   PowerFlowErrorType::Indeterminate,  {  -1.0, "IVVC Analysis Skipped - Indeterminate power flow on: "    } },
+        {   PowerFlowErrorType::Invalid,        {   0.0, "IVVC Analysis Skipped - Invalid power flow on: "          } }
     };
 
     if ( auto lookup = Cti::mapFind( eventDecoder, type ) )
