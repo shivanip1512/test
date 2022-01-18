@@ -222,8 +222,10 @@ SELECT
     outTotal.POINTID,
     SYSDATE,
     CASE
-        WHEN (dpdOutBlink.QUALITY=5 AND dpdOutCount.QUALITY=5 AND dpdResBlink.QUALITY=5) THEN 5  -- NormalQuality
-        ELSE 18 -- EstimatedQuality
+/* 5 = Normal quality */
+        WHEN (dpdOutBlink.QUALITY=5 AND dpdOutCount.QUALITY=5 AND dpdResBlink.QUALITY=5) THEN 5
+/* 18 = Estimated quality */
+        ELSE 18
     END,
     dpdOutCount.VALUE + dpdResBlink.VALUE + NVL(dpdOutBlink.VALUE, 0)
 FROM 
@@ -232,8 +234,6 @@ FROM
             ON y.PAObjectID=outTotal.PAObjectID
         JOIN CALCBASE cb
             ON cb.POINTID=outTotal.POINTID
-        JOIN CALCCOMPONENT cc
-            ON cc.PointID=cb.POINTID
         JOIN CALCCOMPONENT cc1 ON cc1.PointID=cb.POINTID and cc1.COMPONENTORDER=1 and cc1.COMPONENTTYPE='Operation' and cc1.OPERATION='+'
         JOIN CALCCOMPONENT cc2 ON cc2.PointID=cb.POINTID and cc2.COMPONENTORDER=2 and cc2.COMPONENTTYPE='Operation' and cc2.OPERATION='+'
         JOIN CALCCOMPONENT cc3 ON cc3.PointID=cb.POINTID and cc3.COMPONENTORDER=3 and cc3.COMPONENTTYPE='Operation' and cc3.OPERATION='+'
