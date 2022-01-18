@@ -5,7 +5,7 @@ import org.springframework.stereotype.Service;
 
 import com.cannontech.common.device.groups.editor.dao.DeviceGroupEditorDao;
 import com.cannontech.common.device.groups.editor.dao.SystemGroupEnum;
-import com.cannontech.services.systemDataPublisher.service.model.SystemDataFieldType.FieldType;
+import com.cannontech.yukon.system.metrics.message.YukonMetricPointInfo;
 
 @Service
 public class WaterReadRateDataProcessor extends ReadRateDataProcessor {
@@ -17,7 +17,12 @@ public class WaterReadRateDataProcessor extends ReadRateDataProcessor {
     }
 
     @Override
-    public boolean supportsField(FieldType field) {
-        return field == FieldType.WATER_READ_RATE;
+    public YukonMetricPointInfo getYukonMetricPointInfo() {
+        return YukonMetricPointInfo.WATER_READ_RATE;
+    }
+
+    @Override
+    public long getPeriodInMinutes() {
+        return 360;
     }
 }

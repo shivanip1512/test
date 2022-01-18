@@ -536,7 +536,7 @@ public class MeterController {
             return "redirect:/meter/start";
         }
         catch (Exception e) {
-            log.error("Unable to delete meter with id " + meter.getPaoName(), e);
+            log.error("Unable to delete meter with id " + meter.getPaoIdentifier().getPaoId(), e);
             flash.setError(new YukonMessageSourceResolvable("yukon.web.modules.amr.delete.failure", meter.getPaoName()));
             return "redirect:/meter/home?deviceId="+id;
         }

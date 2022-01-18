@@ -29,5 +29,18 @@
         <property name="loadAverageAttribute" value="SERVICE_MANAGER_CPU_UTILIZATION"/>
         <property name="memoryAttribute" value="SERVICE_MANAGER_MEMORY_UTILIZATION" />
     </bean>
-    
+
+    <bean id="yukonMetricListener" class="com.cannontech.yukon.system.metrics.listener.YukonMetricListener"/>
+    <bean id="listener" class="org.springframework.jms.listener.SimpleMessageListenerContainer">
+        <property name="destinationName" value="com.eaton.eas.yukon.metric" />
+        <property name="pubSubDomain" value="true"/>
+        <property name="connectionFactory" ref="connectionFactory" />
+        <property name="messageListener" ref="yukonMetricListener"/>
+    </bean>
+    <bean class="com.cannontech.yukon.system.metrics.producer.RfnMeterReadingArchiveRequestsReceivedProducer"/>
+    <bean class="com.cannontech.yukon.system.metrics.producer.RfnMeterReadingPointDataCountProducer"/>
+    <bean class="com.cannontech.yukon.system.metrics.producer.RfnLcrArchiveRequestsReceivedProducer"/>
+    <bean class="com.cannontech.yukon.system.metrics.producer.RfnLcrReadingArchiveRequestsQueueSizeProducer"/>
+    <bean class="com.cannontech.yukon.system.metrics.producer.RfnMeterReadingArchiveRequestsQueueSizeProducer"/>
+    <bean class="com.cannontech.yukon.system.metrics.producer.RfnLcrReadingPointDataCountProducer"/>
 </beans>

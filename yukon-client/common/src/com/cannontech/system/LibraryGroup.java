@@ -33,6 +33,7 @@ public enum LibraryGroup {
     JAVASSIST("Javassist"),
     JAXB("JAXB"),
     JFREEREPORT("jfreereport"),
+    PENTAHOREPORT("pentahoreport"),
     JMX("JMX"),
     LAUNCH4J("Launch4j"),
     LOG4J("Log4j"),

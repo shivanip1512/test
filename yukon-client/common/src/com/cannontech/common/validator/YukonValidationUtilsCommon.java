@@ -15,6 +15,7 @@ public class YukonValidationUtilsCommon extends ValidationUtils {
    
     public static final String BASIC_BLACKLISTED_CHAR_LIST = "[\\\\!#$%&'*();+=<>?{}\"|,/]";
     public final static String ILLEGAL_NAME_CHARS = "[\\,|/\"\\\\]";
+    public final static String ILLEGAL_XML_CHARS = "[\"'<>&]";
 
     public static  boolean checkExceedsMaxLength(String fieldValue, int max) {
         return (fieldValue != null && fieldValue.length() > max) ? true : false;
@@ -51,6 +52,17 @@ public class YukonValidationUtilsCommon extends ValidationUtils {
         if (fieldValue != null) {
             Matcher hasBlacklistedChar = Pattern.compile(ILLEGAL_NAME_CHARS).matcher(fieldValue);
             return (hasBlacklistedChar.find()) ? true : false;
+        }
+        return false;
+    }
+
+    /**
+     * Return true if the provided String contains any characters from illegal XML characters ( " ' < > and & )
+     */
+    public static boolean checkIllegalXmlCharacter(String fieldValue) {
+        if (fieldValue != null) {
+            Matcher hasBlacklistedChar = Pattern.compile(ILLEGAL_XML_CHARS).matcher(fieldValue);
+            return hasBlacklistedChar.find();
         }
         return false;
     }

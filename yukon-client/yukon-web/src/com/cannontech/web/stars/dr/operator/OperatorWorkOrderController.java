@@ -6,8 +6,9 @@ import java.util.List;
 
 import javax.servlet.http.HttpServletResponse;
 
-import org.jfree.report.JFreeReport;
-import org.jfree.report.function.FunctionInitializeException;
+import org.pentaho.reporting.engine.classic.core.MasterReport;
+import org.pentaho.reporting.engine.classic.core.TableDataFactory;
+import org.pentaho.reporting.engine.classic.core.function.FunctionProcessingException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.MessageSourceResolvable;
 import org.springframework.stereotype.Controller;
@@ -65,25 +66,25 @@ public class OperatorWorkOrderController {
     @Autowired private StarsDatabaseCache starsDatabaseCache;
     @Autowired private WorkOrderService workOrderService;
     @Autowired private WorkOrderValidator workOrderValidator;
-    
+
     private final String baseKey = "yukon.web.modules.operator.workOrder.";
-    
+
     @RequestMapping("workOrderList")
     public String workOrderList(ModelMap modelMap, YukonUserContext userContext, AccountInfoFragment accountInfoFragment) {
-        
+
         AccountInfoFragmentHelper.setupModelMapBasics(accountInfoFragment, modelMap);
-        
+
         // pageEditMode
-        boolean allowAccountEditing = 
-                rolePropertyDao.checkProperty(YukonRoleProperty.OPERATOR_ALLOW_ACCOUNT_EDITING, userContext.getYukonUser());
+        boolean allowAccountEditing = rolePropertyDao.checkProperty(YukonRoleProperty.OPERATOR_ALLOW_ACCOUNT_EDITING,
+                userContext.getYukonUser());
         modelMap.addAttribute("mode", allowAccountEditing ? PageEditMode.CREATE : PageEditMode.VIEW);
-        
+
         // workOrders
         List<WorkOrderDto> workOrders = workOrderService.getWorkOrderList(accountInfoFragment.getAccountId());
-        
+
         List<ServiceCompanyDto> allServiceCompanies = serviceCompanyDao.getAllServiceCompanies();
         modelMap.addAttribute("allServiceCompanies", allServiceCompanies);
-        
+
         modelMap.addAttribute("workOrders", workOrders);
         modelMap.addAttribute("energyCompanyId", accountInfoFragment.getEnergyCompanyId());
         return "operator/workOrder/workOrderList.jsp";
@@ -93,23 +94,23 @@ public class OperatorWorkOrderController {
     @CheckRoleProperty(YukonRoleProperty.OPERATOR_ALLOW_ACCOUNT_EDITING)
     public String create(ModelMap model, YukonUserContext context, AccountInfoFragment fragment) {
         model.addAttribute("mode", PageEditMode.CREATE);
-        
+
         setupWorkOrderModel(fragment, model, context, null);
-        
+
         WorkOrderDto workOrderDto = new WorkOrderDto();
         workOrderDto.getWorkOrderBase().setAccountId(fragment.getAccountId());
         workOrderDto.getWorkOrderBase().setEnergyCompanyId(fragment.getEnergyCompanyId());
-        
+
         model.addAttribute("workOrderDto", workOrderDto);
-        
+
         return "operator/workOrder/viewWorkOrder.jsp";
     }
-    
+
     @RequestMapping("edit")
     @CheckRoleProperty(YukonRoleProperty.OPERATOR_ALLOW_ACCOUNT_EDITING)
     public String edit(ModelMap model, int workOrderId, YukonUserContext context, AccountInfoFragment fragment) {
         model.addAttribute("mode", PageEditMode.EDIT);
-        
+
         setupViewEditModel(model, workOrderId, context, fragment);
 
         return "operator/workOrder/viewWorkOrder.jsp";
@@ -118,31 +119,32 @@ public class OperatorWorkOrderController {
     @RequestMapping("view")
     public String view(ModelMap model, int workOrderId, YukonUserContext context, AccountInfoFragment fragment) {
         model.addAttribute("mode", PageEditMode.VIEW);
-        
+
         setupViewEditModel(model, workOrderId, context, fragment);
-        
+
         return "operator/workOrder/viewWorkOrder.jsp";
     }
-    
+
     private void setupViewEditModel(ModelMap model, int workOrderId, YukonUserContext context, AccountInfoFragment fragment) {
         setupWorkOrderModel(fragment, model, context, workOrderId);
         WorkOrderDto workOrderDto = workOrderService.getWorkOrder(workOrderId);
         model.addAttribute("workOrderDto", workOrderDto);
     }
-    
+
     @RequestMapping("updateWorkOrder")
     @CheckRoleProperty(YukonRoleProperty.OPERATOR_ALLOW_ACCOUNT_EDITING)
     public String updateWorkOrder(@ModelAttribute("workOrderDto") WorkOrderDto workOrderDto, BindingResult bindingResult,
-            ModelMap modelMap, YukonUserContext userContext, FlashScope flashScope, 
+            ModelMap modelMap, YukonUserContext userContext, FlashScope flashScope,
             AccountInfoFragment accountInfoFragment) {
-        
+
         setupWorkOrderModel(accountInfoFragment, modelMap, userContext, workOrderDto.getWorkOrderBase().getOrderId());
 
         // validate
         workOrderValidator.validate(workOrderDto, bindingResult);
-        
+
         if (bindingResult.hasErrors()) {
-            modelMap.addAttribute("mode", workOrderDto.getWorkOrderBase().getOrderId() == 0 ? PageEditMode.CREATE : PageEditMode.EDIT);
+            modelMap.addAttribute("mode",
+                    workOrderDto.getWorkOrderBase().getOrderId() == 0 ? PageEditMode.CREATE : PageEditMode.EDIT);
 
             List<MessageSourceResolvable> messages = YukonValidationUtils.errorsForBindingResult(bindingResult);
             flashScope.setMessage(messages, FlashScopeMessageType.ERROR);
@@ -152,53 +154,53 @@ public class OperatorWorkOrderController {
         // Create a work order
         if (workOrderDto.getWorkOrderBase().getOrderId() == 0) {
             accountEventLogService.workOrderCreationAttempted(userContext.getYukonUser(),
-                                                              accountInfoFragment.getAccountNumber(),
-                                                              workOrderDto.getWorkOrderBase().getOrderNumber(),
-                                                              EventSource.OPERATOR);
+                    accountInfoFragment.getAccountNumber(),
+                    workOrderDto.getWorkOrderBase().getOrderNumber(),
+                    EventSource.OPERATOR);
 
             workOrderService.createWorkOrder(workOrderDto, accountInfoFragment.getEnergyCompanyId(),
-                                             accountInfoFragment.getAccountNumber(), userContext);
+                    accountInfoFragment.getAccountNumber(), userContext);
             flashScope.setConfirm(new YukonMessageSourceResolvable(baseKey + "workOrderCreated"));
-        
-        // Update a work order
+
+            // Update a work order
         } else {
             accountEventLogService.workOrderUpdateAttempted(userContext.getYukonUser(),
-                                                            accountInfoFragment.getAccountNumber(),
-                                                            workOrderDto.getWorkOrderBase().getOrderNumber(),
-                                                            EventSource.OPERATOR);
+                    accountInfoFragment.getAccountNumber(),
+                    workOrderDto.getWorkOrderBase().getOrderNumber(),
+                    EventSource.OPERATOR);
 
             workOrderService.updateWorkOrder(workOrderDto, accountInfoFragment.getAccountNumber(), userContext);
             flashScope.setConfirm(new YukonMessageSourceResolvable(baseKey + "workOrderUpdated"));
         }
-        
+
         return "redirect:workOrderList";
     }
-    
+
     @RequestMapping("deleteWorkOrder")
     @CheckRoleProperty(YukonRoleProperty.OPERATOR_ALLOW_ACCOUNT_EDITING)
-    public String deleteWorkOrder(int deleteWorkOrderId, ModelMap modelMap, YukonUserContext userContext, 
+    public String deleteWorkOrder(int deleteWorkOrderId, ModelMap modelMap, YukonUserContext userContext,
             FlashScope flashScope, AccountInfoFragment accountInfoFragment) {
 
         WorkOrderDto workOrderDto = workOrderService.getWorkOrder(deleteWorkOrderId);
         accountEventLogService.workOrderDeletionAttempted(userContext.getYukonUser(),
-                                                          accountInfoFragment.getAccountNumber(),
-                                                          workOrderDto.getWorkOrderBase().getOrderNumber(),
-                                                          EventSource.OPERATOR);
+                accountInfoFragment.getAccountNumber(),
+                workOrderDto.getWorkOrderBase().getOrderNumber(),
+                EventSource.OPERATOR);
 
         workOrderService.deleteWorkOrder(deleteWorkOrderId, accountInfoFragment.getAccountNumber(), userContext);
-        
+
         AccountInfoFragmentHelper.setupModelMapBasics(accountInfoFragment, modelMap);
         flashScope.setConfirm(new YukonMessageSourceResolvable(baseKey + "workOrderRemoved"));
-        
-        return "redirect:workOrderList"; 
+
+        return "redirect:workOrderList";
     }
-    
+
     @RequestMapping("generateWorkOrderReport")
     public void generateWorkOrderReport(int workOrderId,
-                                          HttpServletResponse response,
-                                          AccountInfoFragment accountInfoFragment,
-                                          YukonUserContext userContext) throws IOException, FunctionInitializeException {
-        
+            HttpServletResponse response,
+            AccountInfoFragment accountInfoFragment,
+            YukonUserContext userContext) throws IOException, FunctionProcessingException {
+
         WorkOrderModel workOrderModel = new WorkOrderModel();
         workOrderModel.setEnergyCompanyID(accountInfoFragment.getEnergyCompanyId());
         workOrderModel.setOrderID(workOrderId);
@@ -207,25 +209,25 @@ public class OperatorWorkOrderController {
         // Generate Work Order Data
         WorkOrder workOrderJReport = new WorkOrder(workOrderModel);
         workOrderJReport.getModel().collectData();
-        JFreeReport workOrderReport = workOrderJReport.createReport();
-        workOrderReport.setData(workOrderJReport.getModel());
-        
+        MasterReport workOrderReport = workOrderJReport.createReport();
+        workOrderReport.setDataFactory(new TableDataFactory("default", workOrderJReport.getModel()));
+
         // Write out work order report
         response.setContentType("application/pdf");
         OutputStream outputStream = response.getOutputStream();
-        
-        ReportFuncs.outputYukonReport(workOrderReport, "pdf", outputStream);
-        
+
+        ReportFuncs.outputYukonReport(workOrderReport, "pdf", outputStream, workOrderModel);
+
     }
-    
-    private void setupWorkOrderModel(AccountInfoFragment fragment, 
-                                    ModelMap model, 
-                                    YukonUserContext context, 
-                                    Integer workOrderId) {
-        
+
+    private void setupWorkOrderModel(AccountInfoFragment fragment,
+            ModelMap model,
+            YukonUserContext context,
+            Integer workOrderId) {
+
         AccountInfoFragmentHelper.setupModelMapBasics(fragment, model);
         model.addAttribute("workOrderId", workOrderId);
-        
+
         // Get event history for the given work order id
         if (workOrderId != null) {
             List<EventBase> eventHistory = workOrderService.getWorkOrderEventHistory(workOrderId);
@@ -235,28 +237,28 @@ public class OperatorWorkOrderController {
         List<ServiceCompanyDto> allServiceCompanies = serviceCompanyDao.getAllServiceCompanies();
         model.addAttribute("allServiceCompanies", allServiceCompanies);
         model.addAttribute("energyCompanyId", fragment.getEnergyCompanyId());
-        
+
         // Getting the assigned entry id to help with the change service company java script
-        LiteStarsEnergyCompany energyCompany = 
-            starsDatabaseCache.getEnergyCompany(fragment.getEnergyCompanyId());
-        YukonListEntry yukonListEntry = 
-                selectionListService.getListEntry(energyCompany, WorkOrderCurrentStateEnum.ASSIGNED.getDefinitionId());
+        LiteStarsEnergyCompany energyCompany = starsDatabaseCache.getEnergyCompany(fragment.getEnergyCompanyId());
+        YukonListEntry yukonListEntry = selectionListService.getListEntry(energyCompany,
+                WorkOrderCurrentStateEnum.ASSIGNED.getDefinitionId());
         model.addAttribute("assignedEntryId", yukonListEntry.getEntryID());
-        
-        boolean showWorkOrderNumberField = !energyCompanySettingDao.getBoolean(EnergyCompanySettingType.WORK_ORDER_NUMBER_AUTO_GEN, fragment.getEnergyCompanyId());
+
+        boolean showWorkOrderNumberField = !energyCompanySettingDao
+                .getBoolean(EnergyCompanySettingType.WORK_ORDER_NUMBER_AUTO_GEN, fragment.getEnergyCompanyId());
         model.addAttribute("showWorkOrderNumberField", showWorkOrderNumberField);
 
     }
-    
+
     @InitBinder
     public void initBinder(WebDataBinder binder, YukonUserContext userContext) {
-        
+
         if (binder.getTarget() != null) {
             DefaultMessageCodesResolver msgCodesResolver = new DefaultMessageCodesResolver();
             msgCodesResolver.setPrefix(baseKey);
             binder.setMessageCodesResolver(msgCodesResolver);
         }
-        
+
         datePropertyEditorFactory.setupInstantPropertyEditor(binder, userContext, BlankMode.CURRENT);
     }
 }

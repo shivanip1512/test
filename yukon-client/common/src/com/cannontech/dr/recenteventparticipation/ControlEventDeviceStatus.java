@@ -12,10 +12,11 @@ import com.google.common.collect.ImmutableSet;
 public enum ControlEventDeviceStatus {
 
     UNKNOWN(0),
-    FAILED(1),
-    SUCCESS_RECEIVED(2),
-    SUCCESS_STARTED(3),
-    SUCCESS_COMPLETED(4);
+    FAILED_WILL_RETRY(1),
+    FAILED(2),
+    SUCCESS_RECEIVED(3),
+    SUCCESS_STARTED(4),
+    SUCCESS_COMPLETED(5);
 
     private int messageOrder;
     

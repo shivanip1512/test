@@ -15,6 +15,7 @@ public enum JmsCommunicatingService {
     YUKON_MESSAGE_BROKER("Yukon Message Broker"),
     YUKON_WATCHDOG("Yukon Watchdog"),
     YUKON_LOAD_MANAGEMENT("Yukon Load Management"),
+    YUKON_CLOUD_SERVICE("Yukon Cloud Service")
     ;
     
     private final String niceString;

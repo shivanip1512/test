@@ -43,6 +43,8 @@ yukon.assets.gateway.details = (function () {
             comm.find('.js-gw-conn-type').text(data.connType);
             comm.find('.js-gw-ip').text(data.ip);
             comm.find('.js-gw-port').text(_text['port'].replace('{0}', data.port));
+            comm.find('.js-gw-nmip').text(data.nmip);
+            comm.find('.js-gw-nmport').text(_text['port'].replace('{0}', data.nmport));
             comm.find('.js-gw-radios').empty();
             radios.forEach(function (item, idx, arr) {
                 var radio = radios[idx],

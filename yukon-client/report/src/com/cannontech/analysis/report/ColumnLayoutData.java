@@ -1,6 +1,6 @@
 package com.cannontech.analysis.report;
 
-import org.jfree.report.ElementAlignment;
+import org.pentaho.reporting.engine.classic.core.ElementAlignment;
 
 /**
  * This is used to specify the layout data for a column. The model index

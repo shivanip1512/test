@@ -1259,7 +1259,7 @@ void IVVCAlgorithm::execute(IVVCStatePtr state, CtiCCSubstationBusPtr subbus, IV
             std::set<PointRequest> pointRequests;
 
             bool shouldScan = allowScanning && state->isScannedRequest();
-            if ( ! determineWatchPoints( subbus, shouldScan, pointRequests, strategy ) )
+            if ( ! determineWatchPoints( state, subbus, shouldScan, pointRequests, strategy ) )
             {
                 // Configuration Error
                 // Disable the bus so we don't try to run again. User Intervention required.
@@ -1381,7 +1381,7 @@ void IVVCAlgorithm::execute(IVVCStatePtr state, CtiCCSubstationBusPtr subbus, IV
             }
             else if ( state->isCommsLost() )    // Currently good data but previously were comms lost
             {
-                CTILOG_INFO(dout, "IVVC Analysis Resuming for bus: " << subbus->getPaoName());
+                CTILOG_INFO(dout, "IVVC Algorithm: IVVC Analysis Resuming on bus: " << subbus->getPaoName());
 
                 state->setState(IVVCState::IVVC_WAIT);
                 state->setCommsRetryCount(0);
@@ -1393,7 +1393,9 @@ void IVVCAlgorithm::execute(IVVCStatePtr state, CtiCCSubstationBusPtr subbus, IV
                 updateCommsState( subbus->getCommsStatePointId(), state->isCommsLost() );
 
                 // Write to the event log...
-                CtiCapController::submitEventLogEntry(
+                EventLogEntries ccEvents;
+
+                ccEvents.push_back(
                    EventLogEntry(
                         0,
                         SYS_PID_CAPCONTROL,
@@ -1408,6 +1410,23 @@ void IVVCAlgorithm::execute(IVVCStatePtr state, CtiCCSubstationBusPtr subbus, IV
                         "IVVC Comms Restored",
                         Cti::CapControl::SystemUser ) );
 
+                ccEvents.push_back(
+                    EventLogEntry(
+                        0,
+                        SYS_PID_CAPCONTROL,
+                        spAreaId,
+                        areaId,
+                        stationId,
+                        subbus->getPaoId(),
+                        0,
+                        capControlIvvcAnalysisState,
+                        0,
+                        1,
+                        "IVVC Analysis Resumed",
+                        Cti::CapControl::SystemUser) );
+
+                CtiCapController::submitEventLogEntries(ccEvents);
+
                 break;
             }
             else if ( isAnyRegulatorInBadPowerFlow( state, subbus ) )
@@ -1416,7 +1435,7 @@ void IVVCAlgorithm::execute(IVVCStatePtr state, CtiCCSubstationBusPtr subbus, IV
 
                 break;
             }
-            else if ( ! allRegulatorsInRemoteMode(subbusId) )   // At least one regulator in 'Auto' mode
+            else if ( ! allRegulatorsInRemoteMode(state, subbus) )   // At least one regulator in 'Auto' mode
             {
                 if (_CC_DEBUG & CC_DEBUG_IVVC)
                 {
@@ -1581,7 +1600,7 @@ void IVVCAlgorithm::execute(IVVCStatePtr state, CtiCCSubstationBusPtr subbus, IV
 
             std::set<PointRequest> pointRequests;
 
-            if ( ! determineWatchPoints( subbus, allowScanning, pointRequests, strategy ) )
+            if ( ! determineWatchPoints( state, subbus, allowScanning, pointRequests, strategy ) )
             {
                 // Do we want to bail here?
             }
@@ -1740,11 +1759,15 @@ void IVVCAlgorithm::execute(IVVCStatePtr state, CtiCCSubstationBusPtr subbus, IV
 
 
 //sendScan must be false for unit tests.
-bool IVVCAlgorithm::determineWatchPoints(CtiCCSubstationBusPtr subbus, bool sendScan, std::set<PointRequest>& pointRequests, IVVCStrategy* strategy)
+bool IVVCAlgorithm::determineWatchPoints(IVVCStatePtr state, CtiCCSubstationBusPtr subbus, bool sendScan, std::set<PointRequest>& pointRequests, IVVCStrategy* strategy)
 {
     bool configurationError = false;
 
     CtiCCSubstationBusStore* store = CtiCCSubstationBusStore::getInstance();
+
+    // Prepare our internal 'database' of stuff to log for events
+
+    state->deviceInformation.clear();
 
     ZoneManager & zoneManager = store->getZoneManager();
 
@@ -1765,9 +1788,21 @@ bool IVVCAlgorithm::determineWatchPoints(CtiCCSubstationBusPtr subbus, bool send
                 VoltageRegulatorManager::SharedPtr  regulator
                     = store->getVoltageRegulatorManager()->getVoltageRegulator( mapping.second );
 
-                long voltagePointId = regulator->getPointByAttribute( Attribute::Voltage ).getPointId();
+                auto voltagePoint = regulator->getPointByAttribute( Attribute::Voltage );
 
-                pointRequests.insert( PointRequest(voltagePointId, RegulatorRequestType, ! sendScan) );
+                state->deviceInformation.emplace(
+                   voltagePoint.getPointId(),
+                   IVVCState::DeviceInformation
+                   {
+                       IVVCState::DeviceInformation::Type::REGULATOR,
+                       regulator->getPaoId(),
+                       voltagePoint.getPointId(),
+                       regulator->getPaoName(),
+                       regulator->getPaoType(),
+                       voltagePoint.getPointName()
+                   } );
+
+                pointRequests.insert( PointRequest(voltagePoint.getPointId(), RegulatorRequestType, ! sendScan) );
 
                 if ( sendScan )
                 {
@@ -1810,6 +1845,18 @@ bool IVVCAlgorithm::determineWatchPoints(CtiCCSubstationBusPtr subbus, bool send
                     {
                         if ( point->getPointId() > 0 )
                         {
+                            state->deviceInformation.emplace(
+                               point->getPointId(),
+                               IVVCState::DeviceInformation
+                               { 
+                                   IVVCState::DeviceInformation::Type::CAPBANK,
+                                   bank->getPaoId(),
+                                   point->getPointId(),
+                                   bank->getPaoName(),
+                                   bank->getPaoType(),
+                                   point->getPointName()
+                               } );
+
                             pointRequests.insert( PointRequest(point->getPointId(), CbcRequestType, ! sendScan) );
                         }
                     }
@@ -1834,9 +1881,28 @@ bool IVVCAlgorithm::determineWatchPoints(CtiCCSubstationBusPtr subbus, bool send
 
         for ( const Zone::PhaseToVoltagePointIds::value_type & mapping : zone->getPointIds() )
         {
+            if ( auto x = zone->getCacheEntry( mapping.second ) )
+            {
+                state->deviceInformation.emplace(
+                   x->pointId,
+                   IVVCState::DeviceInformation
+                   { 
+                       IVVCState::DeviceInformation::Type::VOLTAGE_MONITOR,
+                       x->deviceId,
+                       x->pointId,
+                       x->deviceName,
+                       x->deviceType,
+                       x->pointName
+                   } );
+            }
+
             pointRequests.insert( PointRequest(mapping.second, OtherRequestType) );
         }
     }
+
+    // Bus and feeder telemetry data doesn't have its point name data cached anywhere. We will cache the IDs and query at the end.
+
+    std::set<long> queryIDs;
 
     // Bus and feeder voltage points are now attached to the zones and were loaded then.
     // We still need the bus watt and var points.
@@ -1846,6 +1912,20 @@ bool IVVCAlgorithm::determineWatchPoints(CtiCCSubstationBusPtr subbus, bool send
 
     if (busWattPointId > 0)
     {
+        state->deviceInformation.emplace(
+           busWattPointId,
+           IVVCState::DeviceInformation
+           { 
+               IVVCState::DeviceInformation::Type::OTHER,
+               subbus->getPaoId(),
+               busWattPointId,
+               subbus->getPaoName(),
+               subbus->getPaoType(),
+               "<<pointname-placeholder>>"
+           } );
+
+        queryIDs.emplace( busWattPointId );
+
         pointRequests.insert( PointRequest(busWattPointId, BusPowerRequestType) );
     }
     else
@@ -1862,6 +1942,20 @@ bool IVVCAlgorithm::determineWatchPoints(CtiCCSubstationBusPtr subbus, bool send
     {
         if (ID > 0)
         {
+            state->deviceInformation.emplace(
+               ID,
+               IVVCState::DeviceInformation
+               { 
+                   IVVCState::DeviceInformation::Type::OTHER,
+                   subbus->getPaoId(),
+                   ID,
+                   subbus->getPaoName(),
+                   subbus->getPaoType(),
+                   "<<pointname-placeholder>>"
+               } );
+
+            queryIDs.emplace( ID );
+
             pointRequests.insert( PointRequest(ID, BusPowerRequestType) );
         }
         else
@@ -1887,6 +1981,20 @@ bool IVVCAlgorithm::determineWatchPoints(CtiCCSubstationBusPtr subbus, bool send
 
             if (wattPoint > 0)
             {
+                state->deviceInformation.emplace(
+                   wattPoint,
+                   IVVCState::DeviceInformation
+                   { 
+                       IVVCState::DeviceInformation::Type::OTHER,
+                       feeder->getPaoId(),
+                       wattPoint,
+                       feeder->getPaoName(),
+                       feeder->getPaoType(),
+                       "<<pointname-placeholder>>"
+                   } );
+
+                queryIDs.emplace( wattPoint );
+
                 pointRequests.insert( PointRequest(wattPoint, BusPowerRequestType) );
             }
             else
@@ -1904,6 +2012,20 @@ bool IVVCAlgorithm::determineWatchPoints(CtiCCSubstationBusPtr subbus, bool send
             {
                 if (varPoint > 0)
                 {
+                    state->deviceInformation.emplace(
+                       varPoint,
+                       IVVCState::DeviceInformation
+                       { 
+                           IVVCState::DeviceInformation::Type::OTHER,
+                           feeder->getPaoId(),
+                           varPoint,
+                           feeder->getPaoName(),
+                           feeder->getPaoType(),
+                           "<<pointname-placeholder>>"
+                       } );
+
+                    queryIDs.emplace( varPoint );
+
                     pointRequests.insert( PointRequest(varPoint, BusPowerRequestType) );
                 }
                 else
@@ -1916,6 +2038,48 @@ bool IVVCAlgorithm::determineWatchPoints(CtiCCSubstationBusPtr subbus, bool send
                     }
                 }
             }
+        }
+    }
+
+    // this is gross - but until the bus/feeder actually contain this info in a smart way - it will have to do.
+
+    if ( queryIDs.size() )
+    {
+        std::string sql = 
+            "SELECT "
+                "P.POINTID, "
+                "P.POINTNAME "
+            "FROM "
+                "POINT P "
+            "WHERE "
+                + Cti::Database::createIdInClause( "P", "POINTID", queryIDs.size() );
+
+        Cti::Database::DatabaseConnection   connection;
+        Cti::Database::DatabaseReader       reader( connection, sql );
+
+        for ( long ID : queryIDs )
+        {
+            reader << ID;
+        }
+
+        reader.execute();
+
+        if ( _CC_DEBUG & CC_DEBUG_DATABASE )
+        {
+            CTILOG_INFO( dout, reader.asString() );
+        }
+
+        while ( reader() )
+        {
+            long pointID;
+            std::string pointName;
+
+            reader[ "POINTID" ] >> pointID;
+            reader[ "POINTNAME" ] >> pointName;
+
+            // fill in the pointname placeholder string with the correct entry
+
+            state->deviceInformation[ pointID ].pointName = pointName;
         }
     }
 
@@ -2212,7 +2376,7 @@ bool IVVCAlgorithm::busAnalysisState(IVVCStatePtr state, CtiCCSubstationBusPtr s
 
         std::set<PointRequest> pointRequests;
 
-        determineWatchPoints( subbus, false, pointRequests, strategy );
+        determineWatchPoints( state, subbus, false, pointRequests, strategy );
 
         // strip off the extra info and just get a set of point IDs we a care about.
 
@@ -2720,7 +2884,7 @@ bool IVVCAlgorithm::busAnalysisState(IVVCStatePtr state, CtiCCSubstationBusPtr s
         // if there are tap ops remaining, set state to IVVC_OPERATE_TAP as long as all regulators are in 'remote' mode.
         if ( hasTapOpsRemaining(state->_tapOps) )
         {
-            if ( allRegulatorsInRemoteMode(subbus->getPaoId()) )
+            if ( allRegulatorsInRemoteMode(state, subbus) )
             {
                 state->setState( IVVCState::IVVC_OPERATE_TAP );
             }
@@ -2931,7 +3095,7 @@ void IVVCAlgorithm::tapOperation(IVVCStatePtr state, CtiCCSubstationBusPtr subbu
     // if there are tap ops remaining, set state to IVVC_OPERATE_TAP as long as all regulators are in 'remote' mode.
     if ( hasTapOpsRemaining(state->_tapOps) )
     {
-        if ( allRegulatorsInRemoteMode(subbusId) )
+        if ( allRegulatorsInRemoteMode(state, subbus) )
         {
             state->setState( IVVCState::IVVC_OPERATE_TAP );
         }
@@ -3033,13 +3197,54 @@ void IVVCAlgorithm::tapOpZoneNormalization(const long parentID, const ZoneManage
     }
 }
 
-
-bool IVVCAlgorithm::allRegulatorsInRemoteMode(const long subbusId) const
+namespace
 {
+
+void CreateRegulatorAutoRemoteEventLog( CtiCCSubstationBusPtr subbus, bool restored, VoltageRegulatorManager::SharedPtr regulator, EventLogEntries & ccEvents )
+{
+    CtiCCSubstationBusStore * store = CtiCCSubstationBusStore::getInstance();
+
+    long stationId, areaId, spAreaId;
+    store->getSubBusParentInfo( subbus, spAreaId, areaId, stationId );
+
+    std::string message = 
+        restored
+            ? "Auto/Remote Control transitioned from DISABLED to ENABLED on: " + regulator->getPaoName()
+            : "IVVC Analysis Period Skipped - Auto/Remote Control DISABLED on: "  + regulator->getPaoName();
+
+    EventLogEntry entry(
+        0,
+        SYS_PID_CAPCONTROL,
+        spAreaId,
+        areaId,
+        stationId,
+        subbus->getPaoId(),
+        0,
+        capControlIvvcAnalysisSkipped,
+        0,
+        restored,
+        message,
+        Cti::CapControl::SystemUser );
+
+    entry.regulatorId = regulator->getPaoId();
+
+    ccEvents.push_back( entry );
+
+    CTILOG_INFO( dout, "IVVC Algorithm: " << message );
+}
+
+}
+
+bool IVVCAlgorithm::allRegulatorsInRemoteMode(IVVCStatePtr state, CtiCCSubstationBusPtr subbus) const
+{
+    bool allInRemote = true;
+
     CtiCCSubstationBusStore * store = CtiCCSubstationBusStore::getInstance();
     ZoneManager & zoneManager       = store->getZoneManager();
 
-    Zone::IdSet subbusZoneIds   = zoneManager.getZoneIdsBySubbus(subbusId);
+    Zone::IdSet subbusZoneIds   = zoneManager.getZoneIdsBySubbus(subbus->getPaoId());
+
+    EventLogEntries ccEvents;
 
     for each ( const Zone::IdSet::value_type & ID in subbusZoneIds )
     {
@@ -3049,12 +3254,27 @@ bool IVVCAlgorithm::allRegulatorsInRemoteMode(const long subbusId) const
         {
             try
             {
+                const long regulatorID = mapping.second;
+
                 VoltageRegulatorManager::SharedPtr regulator =
-                        store->getVoltageRegulatorManager()->getVoltageRegulator( mapping.second );
+                        store->getVoltageRegulatorManager()->getVoltageRegulator( regulatorID );
 
                 if ( regulator->getOperatingMode() != VoltageRegulator::RemoteMode )
                 {
-                    return false;
+                    allInRemote = false;
+
+                    state->disabledRegulators.insert( regulatorID );
+
+                    CreateRegulatorAutoRemoteEventLog( subbus, false, regulator, ccEvents );
+                }
+                else
+                {
+                    if ( state->disabledRegulators.count( regulatorID ) )
+                    {
+                        state->disabledRegulators.erase( regulatorID );
+
+                        CreateRegulatorAutoRemoteEventLog( subbus, true, regulator, ccEvents );
+                    }
                 }
             }
             catch ( const Cti::CapControl::NoVoltageRegulator & noRegulator )
@@ -3071,7 +3291,9 @@ bool IVVCAlgorithm::allRegulatorsInRemoteMode(const long subbusId) const
         }
     }
 
-    return true;
+    CtiCapController::submitEventLogEntries( ccEvents );
+
+    return allInRemote;
 }
 
 
@@ -3333,10 +3555,7 @@ void IVVCAlgorithm::handleCommsLost(IVVCStatePtr state, CtiCCSubstationBusPtr su
 
     // Switch the voltage regulators to auto mode.
     {
-        if (_CC_DEBUG & CC_DEBUG_IVVC)
-        {
-            CTILOG_DEBUG(dout, "IVVC Algorithm: " << subbus->getPaoName() << " - Comms lost.");
-        }
+        CTILOG_INFO(dout, "IVVC Algorithm: IVVC Analysis Stopped - Comms lost on bus: " << subbus->getPaoName() );
 
         sendDisableRemoteControl( subbus );
     }
@@ -3347,6 +3566,7 @@ void IVVCAlgorithm::handleCommsLost(IVVCStatePtr state, CtiCCSubstationBusPtr su
         store->getSubBusParentInfo(subbus, spAreaId, areaId, stationId);
 
         EventLogEntries ccEvents;
+
         ccEvents.push_back(
             EventLogEntry(
                 0,
@@ -3360,6 +3580,21 @@ void IVVCAlgorithm::handleCommsLost(IVVCStatePtr state, CtiCCSubstationBusPtr su
                 0,
                 0,
                 "IVVC Comms Lost",
+                Cti::CapControl::SystemUser) );
+
+        ccEvents.push_back(
+            EventLogEntry(
+                0,
+                SYS_PID_CAPCONTROL,
+                spAreaId,
+                areaId,
+                stationId,
+                subbus->getPaoId(),
+                0,
+                capControlIvvcAnalysisState,
+                0,
+                0,
+                "IVVC Analysis Stopped",
                 Cti::CapControl::SystemUser) );
 
         PointValueMap rejectedPoints = state->getGroupRequest()->getRejectedPointValues();
@@ -4732,7 +4967,7 @@ PointValueMap getAllRegulatorsTapPositions( const long subbusId )
 
 bool IVVCAlgorithm::regulatorsReadyForDmvTest( IVVCStatePtr state, CtiCCSubstationBusPtr subbus )
 {
-    if ( allRegulatorsInRemoteMode( subbus->getPaoId() ) )
+    if ( allRegulatorsInRemoteMode( state, subbus ) )
     {
         return true;
     }

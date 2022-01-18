@@ -331,7 +331,7 @@ public class DefinitionLoaderServiceImpl implements DefinitionLoaderService{
                 Point componentPoint = allPoints.get(component.getPoint());
                 PointIdentifier pointIdentifier = createPointIdentifier(componentPoint);
                 CalcPointComponent calcPointComponent =
-                    new CalcPointComponent(pointIdentifier, componentType.toString(), component.getOperator());
+                    new CalcPointComponent(pointIdentifier, componentType.value(), component.getOperator());
                 calcPointComponents.add(calcPointComponent);
             }
 
@@ -374,5 +374,10 @@ public class DefinitionLoaderServiceImpl implements DefinitionLoaderService{
         PointType type = PointType.getForString(point.getType());
         PointIdentifier pointIdentifier = new PointIdentifier(type, point.getOffset());
         return pointIdentifier;
+    }
+
+    @Override
+    public Map<String, Point> getSystemDevicePoints() {
+        return fileLoader.getPoints(PaoType.SYSTEM.getDbString());
     }
 }

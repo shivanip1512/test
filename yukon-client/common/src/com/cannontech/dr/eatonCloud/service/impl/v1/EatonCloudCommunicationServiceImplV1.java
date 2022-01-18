@@ -42,6 +42,8 @@ import com.cannontech.dr.eatonCloud.model.v1.EatonCloudCommandResponseV1;
 import com.cannontech.dr.eatonCloud.model.v1.EatonCloudCommunicationExceptionV1;
 import com.cannontech.dr.eatonCloud.model.v1.EatonCloudDeviceDetailV1;
 import com.cannontech.dr.eatonCloud.model.v1.EatonCloudErrorHandlerV1;
+import com.cannontech.dr.eatonCloud.model.v1.EatonCloudSecretValueV1;
+import com.cannontech.dr.eatonCloud.model.v1.EatonCloudServiceAccountDetailV1;
 import com.cannontech.dr.eatonCloud.model.v1.EatonCloudSiteDevicesV1;
 import com.cannontech.dr.eatonCloud.model.v1.EatonCloudSiteV1;
 import com.cannontech.dr.eatonCloud.model.v1.EatonCloudTimeSeriesDataRequestV1;
@@ -49,6 +51,7 @@ import com.cannontech.dr.eatonCloud.model.v1.EatonCloudTimeSeriesDeviceResultV1;
 import com.cannontech.dr.eatonCloud.model.v1.EatonCloudTimeSeriesDeviceV1;
 import com.cannontech.dr.eatonCloud.model.v1.EatonCloudTokenV1;
 import com.cannontech.dr.eatonCloud.service.v1.EatonCloudCommunicationServiceV1;
+import com.cannontech.system.GlobalSettingType;
 import com.cannontech.system.dao.GlobalSettingDao;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
@@ -233,6 +236,52 @@ public class EatonCloudCommunicationServiceImplV1 implements EatonCloudCommunica
             throw e;
         } catch (Exception e) {
             throw new EatonCloudException("Exception occured while sending command", e);
+        }
+    }
+    
+    @Override
+    public EatonCloudServiceAccountDetailV1 getServiceAccountDetail()
+            throws EatonCloudCommunicationExceptionV1, EatonCloudException {
+        String serviceAccountId = settingDao.getString(GlobalSettingType.EATON_CLOUD_SERVICE_ACCOUNT_ID);
+        URI uri = getUri(Map.of("serviceAccountId", serviceAccountId), EatonCloudRetrievalUrl.ACCOUNT_DETAIL);
+
+        log.debug("Getting account info. Service Account: {} URL: {}", serviceAccountId, uri);
+
+        try {
+            HttpEntity<String> requestEntity = getEmptyRequestWithAuthHeaders();
+            ResponseEntity<EatonCloudServiceAccountDetailV1> response = restTemplate.exchange(uri, HttpMethod.GET, requestEntity,
+                    EatonCloudServiceAccountDetailV1.class);
+            log.debug("Got account info. Service Account:{} Result:{}", serviceAccountId,
+                    deferredJson(response.getBody()));
+            return response.getBody();
+        } catch (EatonCloudCommunicationExceptionV1 | EatonCloudException e) {
+            throw e;
+        } catch (Exception e) {
+            throw new EatonCloudException("Exception occured while getting device detail", e);
+        }
+    }
+    
+    @Override
+    public EatonCloudSecretValueV1 rotateAccountSecret(int secretNumber)
+            throws EatonCloudCommunicationExceptionV1, EatonCloudException {
+        String serviceAccountId = settingDao.getString(GlobalSettingType.EATON_CLOUD_SERVICE_ACCOUNT_ID);
+        String secret = "secret" + secretNumber;
+        URI uri = getUri(Map.of("serviceAccountId", serviceAccountId, "secretName", secret),
+                EatonCloudRetrievalUrl.ROTATE_ACCOUNT_SECRET);
+
+        log.debug("Rotating {}. Service Account: {} Secret: {} URL: {}", secret, serviceAccountId, uri);
+
+        try {
+            HttpEntity<String> requestEntity = getEmptyRequestWithAuthHeaders();
+            ResponseEntity<EatonCloudSecretValueV1> response = restTemplate.exchange(uri, HttpMethod.GET, requestEntity,
+                    EatonCloudSecretValueV1.class);
+            log.debug("Rotating {}. Service Account:{} Result:{}", secret, serviceAccountId,
+                    deferredJson(response.getBody()));
+            return response.getBody();
+        } catch (EatonCloudCommunicationExceptionV1 | EatonCloudException e) {
+            throw e;
+        } catch (Exception e) {
+            throw new EatonCloudException("Exception occured while getting device detail", e);
         }
     }
        
