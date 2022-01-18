@@ -25,7 +25,7 @@
                 { "metricId" : 25, "attributeMagnitude" : 3, "attribute" : "DELIVERED_KVARH_Q1" },
                 { "metricId" : 26, "attributeMagnitude" : 3, "attribute" : "REVERSE_INDUCTIVE_KVARH" },
 
-				{ "metricId" : 25, "attributeMagnitude" : 3, "attribute" : "RECEIVED_KVARH_Q4" },
+				{ "metricId" : 28, "attributeMagnitude" : 3, "attribute" : "RECEIVED_KVARH_Q4" },
                 { "metricId" : 29, "attributeMagnitude" : 3, "attribute" : "NET_DELIVERED_KVARH" },
                 { "metricId" : 30, "attributeMagnitude" : 3, "attribute" : "NET_RECEIVED_KVARH" },
 
