@@ -2124,14 +2124,27 @@ li:hover .show-on-hover {
 }
 
 .ui-accordion-header {
-    background: whitesmoke !important;
-    color: black !important;
-    border: 1px solid #ccc !important;
+    background: rgba(0, 0, 0, 0.03) !important;
+    color: rgba(0, 0, 0, 0.87) !important;
+
+    margin: 0 !important;
+    font-size: 1rem !important;
+    line-height: 1.5;
+    letter-spacing: 0;
+    font-weight: 400 !important;
+    font-family: Arial;
+    align-items: center !important;
+    justify-content: center;
+    box-sizing: border-box;
+    user-select: none;
+    vertical-align: middle !important;
+    min-height: 48px;
+    padding: 10px 16px !important;
+    transition: min-height 150ms cubic-bezier(0.4, 0, 0.2, 1) 0ms,background-color 150ms cubic-bezier(0.4, 0, 0.2, 1) 0ms;
 }
 
 .ui-accordion-header-active {
-    border: 1px solid @primary-color !important;
-    background: #dedede !important;
+    border: 1px solid rgba(0, 0, 0, .125) !important;
 }
 
 .ui-accordion-header-icon {
