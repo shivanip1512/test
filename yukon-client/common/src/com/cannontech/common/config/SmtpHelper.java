@@ -29,7 +29,7 @@ import com.cannontech.common.smartNotification.model.SmartNotificationEventType;
 import com.cannontech.common.util.CtiUtilities;
 import com.cannontech.core.dynamic.AsyncDynamicDataSource;
 import com.cannontech.core.dynamic.DatabaseChangeEventListener;
-import com.cannontech.encryption.SystemPublisherMetadataCryptoUtils;
+import com.cannontech.encryption.YukonCryptoUtils;
 import com.cannontech.message.dispatch.message.DatabaseChangeEvent;
 import com.cannontech.message.dispatch.message.DbChangeCategory;
 import com.cannontech.system.GlobalSettingType;
@@ -203,9 +203,9 @@ public class SmtpHelper {
      */
     private void encryptSetting(List<String> settings, String key)
             throws IllegalBlockSizeException, BadPaddingException, UnsupportedEncodingException {
-        settings.add(SystemPublisherMetadataCryptoUtils.encrypt(key.toString())
+        settings.add(YukonCryptoUtils.encrypt(key.toString())
                 .concat(separator)
-                .concat(SystemPublisherMetadataCryptoUtils.encrypt(getCachedValue(key))));
+                .concat(YukonCryptoUtils.encrypt(getCachedValue(key))));
     }
 
     /**
@@ -217,8 +217,8 @@ public class SmtpHelper {
             lines.forEach(line -> {
                 try {
                     String tokens[] = line.split(separator);
-                    updateCachedValue(SystemPublisherMetadataCryptoUtils.decrypt(tokens[0]),
-                            SystemPublisherMetadataCryptoUtils.decrypt(tokens[1]));
+                    updateCachedValue(YukonCryptoUtils.decrypt(tokens[0]),
+                            YukonCryptoUtils.decrypt(tokens[1]));
                 } catch (IllegalBlockSizeException | BadPaddingException | UnsupportedEncodingException e) {
                     log.error("Error decrypting data from emailSettings.txt file", e);
                 }
