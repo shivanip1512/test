@@ -4,6 +4,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 
+import org.apache.commons.lang3.StringUtils;
+import org.apache.commons.lang3.math.NumberUtils;
 import org.apache.logging.log4j.Logger;
 import org.joda.time.Instant;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -342,14 +344,14 @@ public class CymeSimulationHelper {
         String tempKWStr = template.evaluateAsString("KW" + phase).split("#")[0];
         String tempTapPosStr = template.evaluateAsString("RegTap" + phase).split("#")[0];
         String tempVoltageSetPoint = template.evaluateAsString("RegVset" + phase).split("#")[0];
-
-        float tempI = Float.parseFloat(tempIStr);
-        float tempVBase = Float.parseFloat(tempVBaseStr);
-        float tempKVar = Float.parseFloat(tempKVarStr);
-        float tempKW = Float.parseFloat(tempKWStr);
+        
+        float tempI = NumberUtils.toFloat(tempIStr);
+        float tempVBase = NumberUtils.toFloat(tempVBaseStr);
+        float tempKVar = NumberUtils.toFloat(tempKVarStr);
+        float tempKW = NumberUtils.toFloat(tempKWStr);
 
         float tempTapPos = 0;
-        if (!tempTapPosStr.isEmpty()) {
+        if (StringUtils.isNotBlank(tempTapPosStr)) {
             tempTapPos = Float.parseFloat(tempTapPosStr);
         }
         float tempVSetPoint = 0;
