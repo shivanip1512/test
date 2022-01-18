@@ -60,8 +60,8 @@ public abstract class EatonCloudDataGenerator {
     public abstract EatonCloudDataGenerator getDataGenerator(EatonCloudVersion version);
     
     public void expireSecrets() {
-        expiryTime1 = DateUtils.addMonths(new Date(), -6);
-        expiryTime2 = DateUtils.addMonths(new Date(), -6);
+        expiryTime1 = DateUtils.addMonths(new Date(), +5);
+        expiryTime2 = DateUtils.addMonths(new Date(), +5);
     }
 
     public String getToken2() {

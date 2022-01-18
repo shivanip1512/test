@@ -1583,10 +1583,8 @@ public class RfnPointMappingTest {
                         "Rate D Coincident Peak kW",
                         "Rate D Coincident kVA")
                 .putAll(PaoType.RFN430SL1,
-                        "Coincident Cumulative Peak kVAr",
                         "Demand at Peak kVa Coincidental",
-                        "kVA at Peak kW Coincidental",
-                        "Peak kVAr")
+                        "kVA at Peak kW Coincidental")
                 .putAll(PaoType.RFN430SL2,
                         "Demand at Peak kVa Coincidental",
                         "kVA at Peak kW Coincidental")

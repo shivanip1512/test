@@ -19,8 +19,6 @@ import com.cannontech.simulators.eatonCloud.model.EatonCloudDataGenerator;
 import com.cannontech.simulators.message.request.EatonCloudSimulatorDeviceCreateRequest;
 import com.cannontech.simulators.message.request.EatonCloudSimulatorRequest;
 import com.cannontech.simulators.message.request.EatonCloudSimulatorSettingsUpdateRequest;
-import com.cannontech.simulators.message.request.EatonCloudSimulatorStatisticsRequest;
-import com.cannontech.simulators.message.request.EatonCloudSimulatorStatisticsResponse;
 import com.cannontech.simulators.message.request.SimulatorRequest;
 import com.cannontech.simulators.message.response.EatonCloudSimulatorResponse;
 import com.cannontech.simulators.message.response.SimulatorResponse;
@@ -92,11 +90,6 @@ public class EatonCloudMessageHandler extends SimulatorMessageHandler {
                     successPercentages = request.getSuccessPercentages();
                 }
                 return new SimulatorResponseBase(true);
-            } else if (simulatorRequest instanceof EatonCloudSimulatorStatisticsRequest) {
-                EatonCloudSimulatorStatisticsRequest request = (EatonCloudSimulatorStatisticsRequest) simulatorRequest;
-                EatonCloudDataGenerator generator = getGenerator(request.getVersion());
-                return new EatonCloudSimulatorStatisticsResponse(generator.getToken1(),
-                        generator.getToken2());
             } else if (simulatorRequest instanceof EatonCloudSimulatorDeviceCreateRequest) {
                 EatonCloudSimulatorDeviceCreateRequest request = (EatonCloudSimulatorDeviceCreateRequest) simulatorRequest;
                 EatonCloudDataGenerator generator = getGenerator(request.getVersion());

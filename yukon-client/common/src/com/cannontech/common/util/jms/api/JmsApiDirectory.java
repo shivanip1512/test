@@ -147,7 +147,6 @@ import com.cannontech.services.ecobee.authToken.message.ZeusEcobeeAuthTokenRespo
 import com.cannontech.simulators.message.request.EatonCloudDataRetrievalSimulatonRequest;
 import com.cannontech.simulators.message.request.EatonCloudRuntimeCalcSimulatonRequest;
 import com.cannontech.simulators.message.request.EatonCloudSecretRotationSimulationRequest;
-import com.cannontech.simulators.message.request.EatonCloudSimulatorStatisticsRequest;
 import com.cannontech.simulators.message.request.FieldSimulatorStatusRequest;
 import com.cannontech.simulators.message.request.ItronRuntimeCalcSimulatonRequest;
 import com.cannontech.simulators.message.request.ModifyFieldSimulatorRequest;
@@ -1295,19 +1294,7 @@ public final class JmsApiDirectory {
                   .receiver(NETWORK_MANAGER)
                   .timeToLive(Duration.standardMinutes(5))
                   .build();
-    
-    
-    public static final JmsApi<EatonCloudSimulatorStatisticsRequest,?,?> EATON_CLOUD_SIM_STATISTICS_REQUEST = 
-            JmsApi.builder(EatonCloudSimulatorStatisticsRequest.class)
-                  .name("Eaton Cloud Device Auto Creation Simulation Request")
-                  .description("WS sends request to SM to get simulator statistics")
-                  .communicationPattern(NOTIFICATION)
-                  .queue(new JmsQueue("yukon.notif.obj.simulator.EatonCloudSimulatorStatisticsRequest"))
-                  .requestMessage(EatonCloudSimulatorStatisticsRequest.class)
-                  .sender(YUKON_WEBSERVER)
-                  .receiver(YUKON_SERVICE_MANAGER)
-                  .build();
-    
+     
     public static final JmsApi<EatonCloudDataRetrievalSimulatonRequest,?,?> EATON_CLOUD_SIM_DEVICE_DATA_RETRIEVAL_REQUEST = 
             JmsApi.builder(EatonCloudDataRetrievalSimulatonRequest.class)
                   .name("Eaton Cloud Device Auto Creation Simulation Request")
@@ -1531,8 +1518,7 @@ public final class JmsApiDirectory {
                 EATON_CLOUD_SIM_DEVICE_DATA_RETRIEVAL_REQUEST, 
                 EATON_CLOUD_SIM_RUNTIME_CALC_START_REQUEST,
                 ITRON_SIM_RUNTIME_CALC_START_REQUEST,
-                EATON_CLOUD_SIM_SECRET_ROTATION_REQUEST,
-                EATON_CLOUD_SIM_STATISTICS_REQUEST);
+                EATON_CLOUD_SIM_SECRET_ROTATION_REQUEST);
 
         return jmsApis;
     }

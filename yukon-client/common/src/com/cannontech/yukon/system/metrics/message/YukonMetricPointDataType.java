@@ -1,17 +1,14 @@
-package com.cannontech.yukon.system.metrics.listener;
+package com.cannontech.yukon.system.metrics.message;
 
 import static com.google.common.base.Preconditions.checkArgument;
 
 import com.cannontech.database.data.point.PointType;
-import com.cannontech.yukon.system.metrics.message.YukonMetricPointInfo;
 import com.google.common.collect.ImmutableMap;
 import com.google.common.collect.ImmutableSet;
 
 public enum YukonMetricPointDataType {
     RFN_METER_READING_ARCHIVE_REQUESTS_RECEIVED(YukonMetricPointInfo.RFN_METER_READING_ARCHIVE_REQUESTS_RECEIVED, 1032,
             PointType.Analog, "RFN Meter Reading Archive Requests Received"),
-    RFN_METER_READING_ARCHIVE_REQUESTS_PUSHED(YukonMetricPointInfo.RFN_METER_READING_ARCHIVE_REQUESTS_PUSHED, 1033,
-            PointType.Analog, "RFN Meter Reading Archive Requests Pushed"),
     RFN_METER_READING_ARCHIVE_REQUESTS_POINT_DATA_GENERATED_COUNT(
             YukonMetricPointInfo.RFN_METER_READING_ARCHIVE_POINT_DATA_GENERATED_COUNT, 1034, PointType.Analog,
             "RFN Meter Reading Archive Point Data Generated Count"),
@@ -77,5 +74,16 @@ public enum YukonMetricPointDataType {
     public static YukonMetricPointDataType getForPointInfo(YukonMetricPointInfo pointInfo) {
         checkArgument(pointInfo != null);
         return lookupByPointInfo.get(pointInfo);
+    }
+
+    public static boolean isYukonMetricType(Integer offset, PointType pointType) {
+        checkArgument(offset != null);
+        checkArgument(pointType != null);
+        for (YukonMetricPointDataType metricPointDataType : lookupByPointInfo.values()) {
+            if (metricPointDataType.getOffset().equals(offset) && metricPointDataType.getType() == pointType) {
+                return true;
+            }
+        }
+        return false;
     }
 }
