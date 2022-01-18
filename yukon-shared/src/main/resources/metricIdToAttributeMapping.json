@@ -22,9 +22,10 @@
                 { "metricId" : 23, "attributeMagnitude" : 3, "attribute" : "SUM_KVARH" },
 
                 { "metricId" : 24, "attributeMagnitude" : 3, "attribute" : "NET_KVARH" },
-                { "metricId" : 25, "attributeMagnitude" : 3, "attribute" : "FORWARD_INDUCTIVE_KVARH" },
+                { "metricId" : 25, "attributeMagnitude" : 3, "attribute" : "DELIVERED_KVARH_Q1" },
                 { "metricId" : 26, "attributeMagnitude" : 3, "attribute" : "REVERSE_INDUCTIVE_KVARH" },
 
+				{ "metricId" : 25, "attributeMagnitude" : 3, "attribute" : "RECEIVED_KVARH_Q4" },
                 { "metricId" : 29, "attributeMagnitude" : 3, "attribute" : "NET_DELIVERED_KVARH" },
                 { "metricId" : 30, "attributeMagnitude" : 3, "attribute" : "NET_RECEIVED_KVARH" },
 

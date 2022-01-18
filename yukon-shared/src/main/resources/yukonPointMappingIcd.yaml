@@ -1,4 +1,4 @@
-﻿﻿Meter models:
+﻿﻿﻿Meter models:
     Itron Centron:
         - &c1sx ITRN C1SX
         - &c2sx ITRN C2SX
@@ -1546,7 +1546,7 @@ RFN-500 Node in L & G Focus AX (with Advanced Metrology):
     - Watt-hours Net:                       { Unit: *Wh,     Modifiers: [ *Q1, *Q2, *Q3, *Q4, *Net         ], Models: *AX-RX-23 }
     - Var-hours Delivered:                  { Unit: *Varh,   Modifiers: [ *Q1                              ], Models: *__-RX-23 } # Alternative Delivered kVArh definition for 2-quadrant metering
     - Var-hours Delivered:                  { Unit: *Varh,   Modifiers: [ *Q1, *Q2                         ], Models: *__-RX-23 }
-    - Var-hours Received:                   { Unit: *Varh,   Modifiers: [ *Q4                              ], Models: *__-RX-23, Mapped: false } # Alternative Received kVArh definition for 2-quadrant metering
+    - Var-hours Received:                   { Unit: *Varh,   Modifiers: [ *Q4                              ], Models: *__-RX-23 } # Alternative Received kVArh definition for 2-quadrant metering
     - Var-hours Received:                   { Unit: *Varh,   Modifiers: [ *Q3, *Q4                         ], Models: *__-RX-23 }
     - Var-hours Total:                      { Unit: *Varh,   Modifiers: [ *Q1, *Q2, *Q3, *Q4               ], Models: *__-RX-23 }
     - Var-hours Net:                        { Unit: *Varh,   Modifiers: [ *Q1, *Q2, *Q3, *Q4, *Net         ], Models: *__-RX-23 }
@@ -1580,9 +1580,9 @@ RFN-500 Node in L & G Focus AX (with Advanced Metrology):
     - Watt-hours Received Rate A:           { Unit: *Wh,     Modifiers: [ *Q2, *Q3, *RateA                 ], Models: *AX-RX-23 }
     - Watt-hours Total Rate A:              { Unit: *Wh,     Modifiers: [ *Q1, *Q2, *Q3, *Q4, *RateA       ], Models: *AX-RX-23 }
     - Watt-hours Net Rate A:                { Unit: *Wh,     Modifiers: [ *Q1, *Q2, *Q3, *Q4, *Net, *RateA ], Models: *AX-RX-23 }
-    - Var-hours Delivered Rate A:           { Unit: *Varh,   Modifiers: [ *Q1, *RateA                      ], Models: *__-RX-23, Mapped: false } 
-    - Var-hours Delivered Rate A:           { Unit: *Varh,   Modifiers: [ *Q1, *Q2, *RateA                 ], Models: *__-RX-23 } 
-    - Var-hours Received Rate A:            { Unit: *Varh,   Modifiers: [ *Q4, *RateA                      ], Models: *__-RX-23, Mapped: false } 	
+    - Var-hours Delivered Rate A:           { Unit: *Varh,   Modifiers: [ *Q1, *RateA                      ], Models: *__-RX-23 }
+    - Var-hours Delivered Rate A:           { Unit: *Varh,   Modifiers: [ *Q1, *Q2, *RateA                 ], Models: *__-RX-23 }
+    - Var-hours Received Rate A:            { Unit: *Varh,   Modifiers: [ *Q4, *RateA                      ], Models: *__-RX-23 }
     - Var-hours Received Rate A:            { Unit: *Varh,   Modifiers: [ *Q3, *Q4, *RateA                 ], Models: *__-RX-23 } 
     - Var-hours Total Rate A:               { Unit: *Varh,   Modifiers: [ *Q1, *Q2, *Q3, *Q4, *RateA       ], Models: *__-RX-23 } 
     - Var-hours Net Rate A:                 { Unit: *Varh,   Modifiers: [ *Q1, *Q2, *Q3, *Q4, *Net, *RateA ], Models: *__-RX-23 } 
@@ -1606,9 +1606,9 @@ RFN-500 Node in L & G Focus AX (with Advanced Metrology):
     - Watt-hours Received Rate B:           { Unit: *Wh,     Modifiers: [ *Q2, *Q3, *RateB                 ], Models: *AX-RX-23 }
     - Watt-hours Total Rate B:              { Unit: *Wh,     Modifiers: [ *Q1, *Q2, *Q3, *Q4, *RateB       ], Models: *AX-RX-23 }
     - Watt-hours Net Rate B:                { Unit: *Wh,     Modifiers: [ *Q1, *Q2, *Q3, *Q4, *Net, *RateB ], Models: *AX-RX-23 }
-    - Var-hours Delivered Rate B:           { Unit: *Varh,   Modifiers: [ *Q1, *RateB                      ], Models: *__-RX-23, Mapped: false } 
+    - Var-hours Delivered Rate B:           { Unit: *Varh,   Modifiers: [ *Q1, *RateB                      ], Models: *__-RX-23 }
     - Var-hours Delivered Rate B:           { Unit: *Varh,   Modifiers: [ *Q1, *Q2, *RateB                 ], Models: *__-RX-23 } 
-    - Var-hours Received Rate B:            { Unit: *Varh,   Modifiers: [ *Q4, *RateB                      ], Models: *__-RX-23, Mapped: false } 	
+    - Var-hours Received Rate B:            { Unit: *Varh,   Modifiers: [ *Q4, *RateB                      ], Models: *__-RX-23 }
     - Var-hours Received Rate B:            { Unit: *Varh,   Modifiers: [ *Q3, *Q4, *RateB                 ], Models: *__-RX-23 } 
     - Var-hours Total Rate B:               { Unit: *Varh,   Modifiers: [ *Q1, *Q2, *Q3, *Q4, *RateB       ], Models: *__-RX-23 } 
     - Var-hours Net Rate B:                 { Unit: *Varh,   Modifiers: [ *Q1, *Q2, *Q3, *Q4, *Net, *RateB ], Models: *__-RX-23 } 
@@ -1632,9 +1632,9 @@ RFN-500 Node in L & G Focus AX (with Advanced Metrology):
     - Watt-hours Received Rate C:           { Unit: *Wh,     Modifiers: [ *Q2, *Q3, *RateC                 ], Models: *AX-RX-23 }
     - Watt-hours Total Rate C:              { Unit: *Wh,     Modifiers: [ *Q1, *Q2, *Q3, *Q4, *RateC       ], Models: *AX-RX-23 }
     - Watt-hours Net Rate C:                { Unit: *Wh,     Modifiers: [ *Q1, *Q2, *Q3, *Q4, *Net, *RateC ], Models: *AX-RX-23 }
-    - Var-hours Delivered Rate C:           { Unit: *Varh,   Modifiers: [ *Q1, *RateC                      ], Models: *__-RX-23, Mapped: false } 
+    - Var-hours Delivered Rate C:           { Unit: *Varh,   Modifiers: [ *Q1, *RateC                      ], Models: *__-RX-23 } 
     - Var-hours Delivered Rate C:           { Unit: *Varh,   Modifiers: [ *Q1, *Q2, *RateC                 ], Models: *__-RX-23 } 
-    - Var-hours Received Rate C:            { Unit: *Varh,   Modifiers: [ *Q4, *RateC                      ], Models: *__-RX-23, Mapped: false } 		
+    - Var-hours Received Rate C:            { Unit: *Varh,   Modifiers: [ *Q4, *RateC                      ], Models: *__-RX-23 }
     - Var-hours Received Rate C:            { Unit: *Varh,   Modifiers: [ *Q3, *Q4, *RateC                 ], Models: *__-RX-23 } 
     - Var-hours Total Rate C:               { Unit: *Varh,   Modifiers: [ *Q1, *Q2, *Q3, *Q4, *RateC       ], Models: *__-RX-23 } 
     - Var-hours Net Rate C:                 { Unit: *Varh,   Modifiers: [ *Q1, *Q2, *Q3, *Q4, *Net, *RateC ], Models: *__-RX-23 } 
@@ -1658,9 +1658,9 @@ RFN-500 Node in L & G Focus AX (with Advanced Metrology):
     - Watt-hours Received Rate D:           { Unit: *Wh,     Modifiers: [ *Q2, *Q3, *RateD                 ], Models: *AX-RX-23 }
     - Watt-hours Total Rate D:              { Unit: *Wh,     Modifiers: [ *Q1, *Q2, *Q3, *Q4, *RateD       ], Models: *AX-RX-23 }
     - Watt-hours Net Rate D:                { Unit: *Wh,     Modifiers: [ *Q1, *Q2, *Q3, *Q4, *Net, *RateD ], Models: *AX-RX-23 }
-    - Var-hours Delivered Rate D:           { Unit: *Varh,   Modifiers: [ *Q1, *RateD                      ], Models: *__-RX-23, Mapped: false } 
+    - Var-hours Delivered Rate D:           { Unit: *Varh,   Modifiers: [ *Q1, *RateD                      ], Models: *__-RX-23 }
     - Var-hours Delivered Rate D:           { Unit: *Varh,   Modifiers: [ *Q1, *Q2, *RateD                 ], Models: *__-RX-23 } 
-    - Var-hours Received Rate D:            { Unit: *Varh,   Modifiers: [ *Q4, *RateD                      ], Models: *__-RX-23, Mapped: false } 	
+    - Var-hours Received Rate D:            { Unit: *Varh,   Modifiers: [ *Q4, *RateD                      ], Models: *__-RX-23 }
     - Var-hours Received Rate D:            { Unit: *Varh,   Modifiers: [ *Q3, *Q4, *RateD                 ], Models: *__-RX-23 } 
     - Var-hours Total Rate D:               { Unit: *Varh,   Modifiers: [ *Q1, *Q2, *Q3, *Q4, *RateD       ], Models: *__-RX-23 } 
     - Var-hours Net Rate D:                 { Unit: *Varh,   Modifiers: [ *Q1, *Q2, *Q3, *Q4, *Net, *RateD ], Models: *__-RX-23 } 
@@ -1718,7 +1718,7 @@ RFN-500 Node in L & G Focus AXe (with Advanced Metrology):
     - Watt-hours Net:                       { Unit: *Wh,     Modifiers: [ *Q1, *Q2, *Q3, *Q4, *Net         ], Models: *AXe-RXe-23 }
     - Var-hours Delivered:                  { Unit: *Varh,   Modifiers: [ *Q1                              ], Models: *___-RXe-23 } # Alternative Delivered kVArh definition for 2-quadrant metering
     - Var-hours Delivered:                  { Unit: *Varh,   Modifiers: [ *Q1, *Q2                         ], Models: *___-RXe-23 }
-    - Var-hours Received:                   { Unit: *Varh,   Modifiers: [ *Q4                              ], Models: *___-RXe-23, Mapped: false } # Alternative Received kVArh definition for 2-quadrant metering
+    - Var-hours Received:                   { Unit: *Varh,   Modifiers: [ *Q4                              ], Models: *___-RXe-23 } # Alternative Received kVArh definition for 2-quadrant metering
     - Var-hours Received:                   { Unit: *Varh,   Modifiers: [ *Q3, *Q4                         ], Models: *___-RXe-23 }
     - Var-hours Total:                      { Unit: *Varh,   Modifiers: [ *Q1, *Q2, *Q3, *Q4               ], Models: *___-RXe-23 }
     - Var-hours Net:                        { Unit: *Varh,   Modifiers: [ *Q1, *Q2, *Q3, *Q4, *Net         ], Models: *___-RXe-23 }
@@ -1752,9 +1752,9 @@ RFN-500 Node in L & G Focus AXe (with Advanced Metrology):
     - Watt-hours Received Rate A:           { Unit: *Wh,     Modifiers: [ *Q2, *Q3, *RateA                 ], Models: *AXe-RXe-23 }
     - Watt-hours Total Rate A:              { Unit: *Wh,     Modifiers: [ *Q1, *Q2, *Q3, *Q4, *RateA       ], Models: *AXe-RXe-23 }
     - Watt-hours Net Rate A:                { Unit: *Wh,     Modifiers: [ *Q1, *Q2, *Q3, *Q4, *Net, *RateA ], Models: *AXe-RXe-23 }
-    - Var-hours Delivered Rate A:           { Unit: *Varh,   Modifiers: [ *Q1, *RateA                      ], Models: *___-RXe-23, Mapped: false } 
+    - Var-hours Delivered Rate A:           { Unit: *Varh,   Modifiers: [ *Q1, *RateA                      ], Models: *___-RXe-23 }
     - Var-hours Delivered Rate A:           { Unit: *Varh,   Modifiers: [ *Q1, *Q2, *RateA                 ], Models: *___-RXe-23 } 
-    - Var-hours Received Rate A:            { Unit: *Varh,   Modifiers: [ *Q4, *RateA                      ], Models: *___-RXe-23, Mapped: false }     
+    - Var-hours Received Rate A:            { Unit: *Varh,   Modifiers: [ *Q4, *RateA                      ], Models: *___-RXe-23 }
     - Var-hours Received Rate A:            { Unit: *Varh,   Modifiers: [ *Q3, *Q4, *RateA                 ], Models: *___-RXe-23 } 
     - Var-hours Total Rate A:               { Unit: *Varh,   Modifiers: [ *Q1, *Q2, *Q3, *Q4, *RateA       ], Models: *___-RXe-23 } 
     - Var-hours Net Rate A:                 { Unit: *Varh,   Modifiers: [ *Q1, *Q2, *Q3, *Q4, *Net, *RateA ], Models: *___-RXe-23 } 
@@ -1778,9 +1778,9 @@ RFN-500 Node in L & G Focus AXe (with Advanced Metrology):
     - Watt-hours Received Rate B:           { Unit: *Wh,     Modifiers: [ *Q2, *Q3, *RateB                 ], Models: *AXe-RXe-23 }
     - Watt-hours Total Rate B:              { Unit: *Wh,     Modifiers: [ *Q1, *Q2, *Q3, *Q4, *RateB       ], Models: *AXe-RXe-23 }
     - Watt-hours Net Rate B:                { Unit: *Wh,     Modifiers: [ *Q1, *Q2, *Q3, *Q4, *Net, *RateB ], Models: *AXe-RXe-23 }
-    - Var-hours Delivered Rate B:           { Unit: *Varh,   Modifiers: [ *Q1, *RateB                      ], Models: *___-RXe-23, Mapped: false }
+    - Var-hours Delivered Rate B:           { Unit: *Varh,   Modifiers: [ *Q1, *RateB                      ], Models: *___-RXe-23 }
     - Var-hours Delivered Rate B:           { Unit: *Varh,   Modifiers: [ *Q1, *Q2, *RateB                 ], Models: *___-RXe-23 } 
-    - Var-hours Received Rate B:            { Unit: *Varh,   Modifiers: [ *Q4, *RateB                      ], Models: *___-RXe-23, Mapped: false }
+    - Var-hours Received Rate B:            { Unit: *Varh,   Modifiers: [ *Q4, *RateB                      ], Models: *___-RXe-23 }
     - Var-hours Received Rate B:            { Unit: *Varh,   Modifiers: [ *Q3, *Q4, *RateB                 ], Models: *___-RXe-23 } 
     - Var-hours Total Rate B:               { Unit: *Varh,   Modifiers: [ *Q1, *Q2, *Q3, *Q4, *RateB       ], Models: *___-RXe-23 } 
     - Var-hours Net Rate B:                 { Unit: *Varh,   Modifiers: [ *Q1, *Q2, *Q3, *Q4, *Net, *RateB ], Models: *___-RXe-23 } 
@@ -1804,9 +1804,9 @@ RFN-500 Node in L & G Focus AXe (with Advanced Metrology):
     - Watt-hours Received Rate C:           { Unit: *Wh,     Modifiers: [ *Q2, *Q3, *RateC                 ], Models: *AXe-RXe-23 }
     - Watt-hours Total Rate C:              { Unit: *Wh,     Modifiers: [ *Q1, *Q2, *Q3, *Q4, *RateC       ], Models: *AXe-RXe-23 }
     - Watt-hours Net Rate C:                { Unit: *Wh,     Modifiers: [ *Q1, *Q2, *Q3, *Q4, *Net, *RateC ], Models: *AXe-RXe-23 }
-    - Var-hours Delivered Rate C:           { Unit: *Varh,   Modifiers: [ *Q1, *RateC                      ], Models: *___-RXe-23, Mapped: false }
+    - Var-hours Delivered Rate C:           { Unit: *Varh,   Modifiers: [ *Q1, *RateC                      ], Models: *___-RXe-23 }
     - Var-hours Delivered Rate C:           { Unit: *Varh,   Modifiers: [ *Q1, *Q2, *RateC                 ], Models: *___-RXe-23 } 
-    - Var-hours Received Rate C:            { Unit: *Varh,   Modifiers: [ *Q4, *RateC                      ], Models: *___-RXe-23, Mapped: false }
+    - Var-hours Received Rate C:            { Unit: *Varh,   Modifiers: [ *Q4, *RateC                      ], Models: *___-RXe-23 }
     - Var-hours Received Rate C:            { Unit: *Varh,   Modifiers: [ *Q3, *Q4, *RateC                 ], Models: *___-RXe-23 } 
     - Var-hours Total Rate C:               { Unit: *Varh,   Modifiers: [ *Q1, *Q2, *Q3, *Q4, *RateC       ], Models: *___-RXe-23 } 
     - Var-hours Net Rate C:                 { Unit: *Varh,   Modifiers: [ *Q1, *Q2, *Q3, *Q4, *Net, *RateC ], Models: *___-RXe-23 } 
@@ -1830,9 +1830,9 @@ RFN-500 Node in L & G Focus AXe (with Advanced Metrology):
     - Watt-hours Received Rate D:           { Unit: *Wh,     Modifiers: [ *Q2, *Q3, *RateD                 ], Models: *AXe-RXe-23 }
     - Watt-hours Total Rate D:              { Unit: *Wh,     Modifiers: [ *Q1, *Q2, *Q3, *Q4, *RateD       ], Models: *AXe-RXe-23 }
     - Watt-hours Net Rate D:                { Unit: *Wh,     Modifiers: [ *Q1, *Q2, *Q3, *Q4, *Net, *RateD ], Models: *AXe-RXe-23 }
-    - Var-hours Delivered Rate D:           { Unit: *Varh,   Modifiers: [ *Q1, *RateD                      ], Models: *___-RXe-23, Mapped: false }
+    - Var-hours Delivered Rate D:           { Unit: *Varh,   Modifiers: [ *Q1, *RateD                      ], Models: *___-RXe-23 }
     - Var-hours Delivered Rate D:           { Unit: *Varh,   Modifiers: [ *Q1, *Q2, *RateD                 ], Models: *___-RXe-23 } 
-    - Var-hours Received Rate D:            { Unit: *Varh,   Modifiers: [ *Q4, *RateD                      ], Models: *___-RXe-23, Mapped: false }
+    - Var-hours Received Rate D:            { Unit: *Varh,   Modifiers: [ *Q4, *RateD                      ], Models: *___-RXe-23 }
     - Var-hours Received Rate D:            { Unit: *Varh,   Modifiers: [ *Q3, *Q4, *RateD                 ], Models: *___-RXe-23 } 
     - Var-hours Total Rate D:               { Unit: *Varh,   Modifiers: [ *Q1, *Q2, *Q3, *Q4, *RateD       ], Models: *___-RXe-23 } 
     - Var-hours Net Rate D:                 { Unit: *Varh,   Modifiers: [ *Q1, *Q2, *Q3, *Q4, *Net, *RateD ], Models: *___-RXe-23 } 
