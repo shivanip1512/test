@@ -299,7 +299,6 @@ public class DataStreamingAttributeHelper {
                 BuiltInAttribute.DELIVERED_KWH,   //metric 1
                 BuiltInAttribute.RECEIVED_KWH,    //metric 2
                 BuiltInAttribute.INSTANTANEOUS_KW,//metric 200
-                BuiltInAttribute.KVAR,            //metric 201
                 BuiltInAttribute.KVA,             //metric 202
                 BuiltInAttribute.POWER_FACTOR,    //metric 80
                 BuiltInAttribute.VOLTAGE_PHASE_A, //metric 100

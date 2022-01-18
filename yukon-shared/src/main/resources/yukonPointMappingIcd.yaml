@@ -984,7 +984,7 @@ Itron Sentinel:
     - Coincident Cumulative Volt-ampere-reactive Delivered Rate D:              { Unit: *Var,   Modifiers: [ *Q1, *Q2, *Max, *Coin2, *Cuml, *RateD      ], Models: *__234, Itron name: Cumulative Volt-ampere-reactive Delivered Rate D" }
     - Coincident Continuous Cumulative Volt-ampere-reactive Delivered Rate D:   { Unit: *Var,   Modifiers: [ *Q1, *Q2, *Max, *Coin3, *Cont, *RateD      ], Models: *__234, Mapped: false, Itron name: Continuous Cumulative Volt-ampere-reactive Delivered Rate D" }
     - Present Watts:                                                            { Unit: *W,     Modifiers: [ *milli                                     ], Models: *_1234, Itron name: "Instantaneous Watts" }
-    - Present Var:                                                              { Unit: *Var,   Modifiers: [ *milli                                     ], Models: *_1234, Itron name: "Instantaneous Var" }
+    - Present Var:                                                              { Unit: *Var,   Modifiers: [ *milli                                     ], Models: *__234, Itron name: "Instantaneous Var" }
     - Present VA:                                                               { Unit: *VA,    Modifiers: [ *milli                                     ], Models: *_1234, Itron name: "Instantaneous VA" }
     - Voltage Phase A:                                                          { Unit: *V,     Modifiers: [ *PhA, *milli                               ], Models: *_1234, Itron name: "Instantaneous Voltage, Phase A" }
     - Voltage Phase B:                                                          { Unit: *V,     Modifiers: [ *PhB, *milli                               ], Models: *_1234, Itron name: "Instantaneous Voltage, Phase B" }
