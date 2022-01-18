@@ -3,7 +3,6 @@ package com.cannontech.amr.deviceDataMonitor.model;
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Optional;
 import java.util.stream.Collectors;
 
 import com.cannontech.amr.MonitorEvaluatorStatus;
@@ -24,6 +23,7 @@ public class DeviceDataMonitor implements PointMonitor, Serializable, Comparable
     private Integer id;
     private String name;
     private boolean enabled = true;
+    private boolean notifyOnAlarmOnly = false;
     private transient DeviceGroup group;
     private transient StoredDeviceGroup violationGroup;
     private List<DeviceDataMonitorProcessor> processors = LazyList.ofInstance(DeviceDataMonitorProcessor.class);
@@ -50,6 +50,7 @@ public class DeviceDataMonitor implements PointMonitor, Serializable, Comparable
         this.id = id;
     }
 
+    @Override
     public String getGroupName() {
         return groupName;
     }
@@ -58,6 +59,7 @@ public class DeviceDataMonitor implements PointMonitor, Serializable, Comparable
         this.groupName = groupName;
     }
 
+    @Override
     public String getName() {
         return name;
     }
@@ -72,6 +74,14 @@ public class DeviceDataMonitor implements PointMonitor, Serializable, Comparable
 
     public void setEnabled(boolean enabled) {
         this.enabled = enabled;
+    }
+    
+    public boolean isNotifyOnAlarmOnly() {
+        return notifyOnAlarmOnly;
+    }
+    
+    public void setNotifyOnAlarmOnly(boolean enabled) {
+        notifyOnAlarmOnly = enabled;
     }
 
     public List<DeviceDataMonitorProcessor> getProcessors() {
