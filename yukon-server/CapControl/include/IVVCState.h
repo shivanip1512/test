@@ -225,6 +225,9 @@ class IVVCState
 
         std::set<long> disabledRegulators;
 
+        std::set<long> pfIndeterminateRegulators;
+        std::set<long> pfErrorRegulators;
+
     private:
 
         CtiTime _timeStamp;
