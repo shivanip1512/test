@@ -16,8 +16,6 @@ public enum ManagedService {
     ITRON_SERVICES("Itron Services", ServiceType.CONTEXT_FILE_TYPE, "classpath:com/cannontech/services/itronServices/itronServicesContext.xml"),
     DISCONNECT_METER_SERVICES("Disconnect Meter Services", ServiceType.CONTEXT_FILE_TYPE, "classpath:com/cannontech/services/disconnectMeter/disconnectMeterServicesContext.xml"),
     // CLOUD_DATA_LISTENER should always be before SYSTEM_DATA_PUBLISHER as listener should be ready before any data is published in SYSTEM_DATA_PUBLISHER.
-    CLOUD_DATA_LISTENER("Cloud Data Listener", ServiceType.CONTEXT_FILE_TYPE, "classpath:com/cannontech/services/systemDataPublisher/context/cloudDataListenerContext.xml"),
-    SYSTEM_DATA_PUBLISHER("System Data Publisher", ServiceType.CONTEXT_FILE_TYPE, "classpath:com/cannontech/services/systemDataPublisher/context/systemDataPublisherContext.xml"),
     EATON_CLOUD_AUTH_TOKEN("Eaton Cloud Auth Token", ServiceType.CONTEXT_FILE_TYPE, "classpath:com/cannontech/services/eatonCloud/authToken/eatonCloudAuthTokenContext.xml"),
     EATON_CLOUD("Eaton Cloud Message Listener", ServiceType.CONTEXT_FILE_TYPE, "classpath:com/cannontech/services/dr/lmEatonCloudContext.xml"),
     EATON_CLOUD_DEVICE_AUTO_CREATION("Eaton Cloud Device Auto Creation", ServiceType.CONTEXT_FILE_TYPE, "classpath:com/cannontech/services/eatonCloud/creation/eatonCloudDeviceCreationContext.xml"),
