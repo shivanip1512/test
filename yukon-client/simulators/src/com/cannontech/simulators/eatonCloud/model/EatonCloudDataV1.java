@@ -1,5 +1,6 @@
 package com.cannontech.simulators.eatonCloud.model;
 
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Date;
@@ -73,6 +74,7 @@ public class EatonCloudDataV1 extends EatonCloudDataGenerator {
     private boolean displayError() {
         if(successPercentage != 100) {
             int randomPercentage = (int) (Math.random() * 100);
+            log.debug("Random Percentage:{} Success Percentage:{}", randomPercentage, successPercentage);
             if (randomPercentage > successPercentage) { 
                 return true;
             }
@@ -183,20 +185,11 @@ public class EatonCloudDataV1 extends EatonCloudDataGenerator {
             EatonCloudErrorV1 error = new EatonCloudErrorV1(List.of("ClientId"),  "The field \u0027ClientId\u0027 is not a valid uuid.",
                     "4aeacd2f-9424-4e6d-a218-c0b621d0f4c9", status, "2021-02-25T13:45:10.4807211+00:00", 10022);
             return new EatonCloudSimulatorResponse(error, status);
-        } else if (status == HttpStatus.UNAUTHORIZED.value()) {
+        } else if (status == HttpStatus.UNAUTHORIZED.value() || displayError() ) {
             EatonCloudErrorV1 error = new EatonCloudErrorV1(List.of(),
                     "User is not authorized to access devices: 76f93adc-4e9e-4aae-9701-e4ca684e7af5.",
                     "763a1051-e142-4cdb-893c-46afa4f9af31", status, "2021-02-25T13:45:10.4807211+00:00", null);
-            return new EatonCloudSimulatorResponse(error, status);
-        }
-        
-        if(successPercentage != 100) {
-            int randomPercentage = (int) (Math.random() * 100);
-            if (randomPercentage > successPercentage) { 
-                EatonCloudErrorV1 error = new EatonCloudErrorV1(List.of("ClientId"),  "The field \u0027ClientId\u0027 is not a valid uuid.",
-                        "4aeacd2f-9424-4e6d-a218-c0b621d0f4c9", status, "2021-02-25T13:45:10.4807211+00:00", 10022);
-                return new EatonCloudSimulatorResponse(error,  HttpStatus.BAD_REQUEST.value());
-            }
+            return new EatonCloudSimulatorResponse(error, HttpStatus.UNAUTHORIZED.value());
         }
         
         //load bad data to test the parser
@@ -243,10 +236,10 @@ public class EatonCloudDataV1 extends EatonCloudDataGenerator {
     }
     
     public EatonCloudSimulatorResponse sendCommandV1(String id, String command_instance_id, EatonCloudCommandRequestV1 eatonCloudCommandRequestV1) {
-        if (status == HttpStatus.BAD_REQUEST.value()) {
+        if (status == HttpStatus.BAD_REQUEST.value() || displayError()) {
             EatonCloudErrorV1 error = new EatonCloudErrorV1(List.of("id"), "Invalid device command payload, id=123.",
                     "f5f61b63-68aa-42be-b8a1-a84a171ca38e", status, "2021-02-24T08:23:35.7124876+00:00", null);
-            return new EatonCloudSimulatorResponse(error, status);
+            return new EatonCloudSimulatorResponse(error, HttpStatus.BAD_REQUEST.value());
         }
         if (status == HttpStatus.UNAUTHORIZED.value()) {
             return new EatonCloudSimulatorResponse(
@@ -256,15 +249,6 @@ public class EatonCloudDataV1 extends EatonCloudDataGenerator {
         } 
         if (status == HttpStatus.NOT_FOUND.value()) {
             return new EatonCloudSimulatorResponse(new EatonCloudCommandResponseV1(status, "Resource not found"), HttpStatus.OK.value());
-        }
-        
-        if(successPercentage != 100) {
-            int randomPercentage = (int) (Math.random() * 100);
-            if (randomPercentage > successPercentage) { 
-                EatonCloudErrorV1 error = new EatonCloudErrorV1(List.of("id"), "Invalid device command payload, id=123.",
-                        "f5f61b63-68aa-42be-b8a1-a84a171ca38e", status, "2021-02-24T08:23:35.7124876+00:00", null);
-                return new EatonCloudSimulatorResponse(error,  HttpStatus.BAD_REQUEST.value());
-            }
         }
         
         return new EatonCloudSimulatorResponse(
@@ -303,6 +287,11 @@ public class EatonCloudDataV1 extends EatonCloudDataGenerator {
                     new EatonCloudErrorV1(status,"Authorization has been denied for this request. User token is invalid or expired. Please renew the token."),
                     status);
         } 
+        
+        
+        SimpleDateFormat sm = new SimpleDateFormat("MM-dd-yyyy HH:mm:ss.SSS");
+        log.info("expiryTime1=" + sm.format(expiryTime1) + " expiryTime2=" + sm.format(expiryTime2));
+
         if (status == HttpStatus.NOT_FOUND.value()) {
             EatonCloudErrorV1 error = new EatonCloudErrorV1(List.of(), "Given Service Account Not found.","624b5e65-5e4c-4196-8a8a-54f833c9fc42", status, "2021-03-10T07:27:38.2222228+00:00", 11418);
             return new EatonCloudSimulatorResponse(error, status);
