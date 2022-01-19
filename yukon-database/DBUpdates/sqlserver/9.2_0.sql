@@ -187,20 +187,6 @@ INSERT INTO UnitMeasure VALUES ( 60,'CCF', 0, 'Centum Cubic Feet', '(none)');
 INSERT INTO DBUpdates VALUES ('YUK-25562', '9.2.0', GETDATE());
 /* @end YUK-25562 */
 
-/* @start YUK-25742 */
-DELETE FROM POINTANALOG WHERE POINTID = (SELECT POINTID FROM POINT where POINTNAME = 'RFN Meter Reading Archive Requests Pushed');
-
-DELETE FROM POINTUNIT WHERE POINTID = (SELECT POINTID FROM POINT where POINTNAME = 'RFN Meter Reading Archive Requests Pushed');
-
-DELETE FROM POINTALARMING WHERE POINTID = (SELECT POINTID FROM POINT where POINTNAME = 'RFN Meter Reading Archive Requests Pushed');
-
-DELETE FROM POINT WHERE POINTNAME = 'RFN Meter Reading Archive Requests Pushed';
-
-UPDATE POINT SET POINTNAME = 'RFN Meter Reading Archive Point Data Generated Count' WHERE POINTNAME = 'Rfn Meter Reading Archive Requests Pt Data Generated Count';
-
-INSERT INTO DBUpdates VALUES ('YUK-25742', '9.2.0', GETDATE());
-/* @end YUK-25742 */
-
 /***********************************************************************************/
 /* VERSION INFO                                                                    */
 /* Inserted when update script is run, stays commented out until the release build */
