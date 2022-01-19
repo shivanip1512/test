@@ -173,18 +173,21 @@ yukon.support.systemPerformanceMetrics = (function() {
                     var options = Highcharts.merge(_sparklineDefaultOptions, sparklineOptions);
 
                     chartTableCell.highcharts(options);
-                  
+
                     $(document).on('click', '.js-metrics', function (ev) {
-                    	var pointId = $(this).data('pointId');
-                    	$('.js-point-data-dialog').load(yukon.url('/meter/historicalReadings/view?pointId=' + pointId), function () {
-                    		$('.js-point-data-dialog').dialog({
-                    			title : "test",       // value.pointName
-                    			width : 500,
-                    			height: 600,
-                    			autoOpen : true
-                    			//chartTableCell.highcharts(options);
-                    		});
-                    	});
+                        var pointId = $(this).data('pointId'),
+                            pointName = $(this).text(),
+                            url = yukon.url('/support/systemPerformanceMetrics/trend'),
+                            parameters = {pointId : pointId};
+                        $.post(url, parameters, function (response) {
+                            $(".js-point-data-dialog").html(response);
+                            $(".js-point-data-dialog").dialog({
+                                title: pointName,
+                                width : 800,
+                                height : 500,
+                                autoOpen : true
+                            });
+                        });
                     });
 
                 });
