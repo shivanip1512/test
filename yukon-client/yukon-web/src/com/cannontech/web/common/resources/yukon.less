@@ -1636,11 +1636,14 @@ hr.dashed,
     font-size: 14px !important; /* jquery ui is messing up the font-size */
 }
 .datetimeEntry_wrap img { 
-	margin: 5px;
-	padding-top: 5px; 
+    margin: 5px;
+    padding-top: 5px; 
 }
 .datetimeEntry_wrap:focus-within {
     border: 2px solid @primary-color;
+}
+.datetimeEntry_wrap > input > .error {
+    border: 2px solid red;
 }
 .timeOffsetWrap img {
     margin-left: 8px;
@@ -1672,12 +1675,26 @@ input.dateTimePicker {
     border: 2px solid red;
 }
 
-input.datePicker{ background: #fff};
-input.datePicker:hover { 
+input.datePicker,
+input.timePicker,
+input.timeOffsetPicker,
+input.dateTimePicker { 
+    background: #fff;
+    border: none !important;
+}
+
+input.datePicker:hover,
+input.timePicker:hover,
+input.timeOffsetPicker:hover,
+input.dateTimePicker:hover { 
     background: none !important;
-    border-bottom-color: #f7f8f8 !important;
+    border: none !important;
 };
-input.datePicker:focus {
+input.datePicker:focus,
+input.timePicker:focus,
+input.timeOffsetPicker:focus,
+input.dateTimePicker:focus
+ {
     border: none !important;
 }
 input.datePicker { width: 114px ;}
