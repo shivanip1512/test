@@ -205,15 +205,19 @@ INSERT INTO DBUpdates VALUES ('YUK-25742', '9.2.0', GETDATE());
 
 /* Calculate the new values into the temp table */
 SELECT
-    outTotal.POINTID,
-    GETDATE(),
+    outTotal.POINTID
+        AS POINTID,
+    GETDATE()
+        AS TIMESTAMP,
     CASE
 /* 5 = Normal quality */
         WHEN (dpdOutBlink.QUALITY=5 AND dpdOutCount.QUALITY=5 AND dpdResBlink.QUALITY=5) THEN 5
-/* 18 = EstimatedQuality */
+/* 18 = Estimated quality */
         ELSE 18
-    END,
+    END
+        AS QUALITY,
     dpdOutCount.VALUE + dpdResBlink.VALUE + ISNULL(dpdOutBlink.VALUE, 0)
+        AS VALUE
 INTO 
     #OutageCalcValuesTemp
 FROM 
