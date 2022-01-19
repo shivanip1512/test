@@ -62,10 +62,12 @@ public class PointDataPruningServiceImpl implements PointDataPruningService {
     }
 
     @Override
-    public int deleteDuplicatePointData(Instant processEndTime) {
+    public Integer[] deleteDuplicatePointData(Instant processEndTime) {
         int totalRowsdeleted = 0;
         boolean noLockRequired =
             configurationSource.getBoolean(MasterConfigBoolean.MAINTENANCE_DUPLICATE_POINT_DATA_NOLOCK_REQUIRED, true);
+        int lastChangeId = 0;
+        Integer[] returnArray = new Integer[] {totalRowsdeleted, lastChangeId};
         Integer daysInDuration =
             configurationSource.getInteger(MasterConfigInteger.MAINTENANCE_DUPLICATE_POINT_DATA_DELETE_DURATION, 60);
         int noOfMonthsConfigured = globalSettingDao.getInteger(GlobalSettingType.RFN_INCOMING_DATA_TIMESTAMP_LIMIT);
@@ -86,9 +88,11 @@ public class PointDataPruningServiceImpl implements PointDataPruningService {
             Duration deletionDuration = Period.days(daysInDuration).toDurationTo(fromTimestamp);
             Instant toTimestamp = fromTimestamp.minus(deletionDuration);
             Range<Instant> dateRange = Range.inclusive(toTimestamp, fromTimestamp);
-            int rowsDeleted = pointDataPruningDao.deleteDuplicatePointData(dateRange, noLockRequired);
-            totalRowsdeleted = totalRowsdeleted + rowsDeleted;
-            if (rowsDeleted == 0) {
+            // returns array of [rowsDeleted, lastChangeId]
+            returnArray = pointDataPruningDao.deleteDuplicatePointData(dateRange, noLockRequired, lastChangeId);
+            totalRowsdeleted = totalRowsdeleted + returnArray[0];
+            lastChangeId = returnArray[1];
+            if (returnArray[0] == 0) {
                 fromTimestamp = toTimestamp;
             }
         }
@@ -97,6 +101,6 @@ public class PointDataPruningServiceImpl implements PointDataPruningService {
         log.info("Duplicate point data deletion finished. Deleted " + totalRowsdeleted + " records in "
             + secondsTaken.getSeconds() + " seconds");
         systemEventLogService.rphDeleteDuplicates(totalRowsdeleted, start, finish);
-        return totalRowsdeleted;
+        return returnArray;
     }
 }
