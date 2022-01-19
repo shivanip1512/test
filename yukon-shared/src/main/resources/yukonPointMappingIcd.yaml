@@ -2083,6 +2083,7 @@ Metric IDs:
     # ------     
     230: { name: "Power Factor total, minimum",          Unit: *PF,     Modifiers: [ *Q1, *Q2, *Q3, *Q4, *Min              ] }
     231: { name: "Power Factor total, minimum (Frozen)", Unit: *PF,     Modifiers: [ *Q1, *Q2, *Q3, *Q4, *Min, *Prev       ] }
+    232: { name: "Power Factor, minimum (Frozen)",       Unit: *PF,     Modifiers: [ *Min, *Prev                           ] }
     233: { name: "Average Power Factor",                 Unit: *PF,     Modifiers: [ *Q1, *Q2, *Q3, *Q4, *Avg              ] }
     234: { name: "Average Power Factor (Frozen)",        Unit: *PF,     Modifiers: [ *Q1, *Q2, *Q3, *Q4, *Avg, *Prev       ] }
     # ------     

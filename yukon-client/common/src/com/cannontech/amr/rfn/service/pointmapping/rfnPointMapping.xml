@@ -3078,12 +3078,6 @@
             <parseSiPrefix/>
             <modifiers match="equal"/>
         </point>
-        <point name="kVAr"> <!-- Instantaneous Var -->
-            <uom>Var</uom>
-            <multiplier value=".001"/>
-            <parseSiPrefix/>
-            <modifiers match="equal"/>
-        </point>
         <point name="kVA"> <!-- Instantaneous VA-->
             <uom>VA</uom>
             <multiplier value=".001"/>
@@ -3248,6 +3242,12 @@
         <paoType value="RFN430SL3"/>
         <paoType value="RFN430SL4"/>
         
+        <point name="kVAr"> <!-- Instantaneous Var -->
+            <uom>Var</uom>
+            <multiplier value=".001"/>
+            <parseSiPrefix/>
+            <modifiers match="equal"/>
+        </point>
         <point name="kVAh">
             <uom>VAh</uom>
             <multiplier value=".001"/>
