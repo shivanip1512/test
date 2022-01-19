@@ -120,6 +120,7 @@ public:
 
     static void enqueueMessage(const ActiveMQ::Queues::OutboundQueue &queue, StreamableMessage::auto_type&& message);
     static void enqueueMessage(const ActiveMQ::Queues::OutboundQueue &queue, const SerializedMessage &message);
+    static void enqueueMessage(const ActiveMQ::Queues::OutboundQueue& queue, std::string message);
 
     template<class Msg>
     static void enqueueMessageWithCallbackFor(
@@ -213,6 +214,10 @@ protected:
     virtual void enqueueOutgoingMessage(
             const std::string &queueName,
             const SerializedMessage &message,
+            ReturnLabel returnAddress);
+    virtual void enqueueOutgoingMessage(
+            const std::string& queueName,
+            const std::string message,
             ReturnLabel returnAddress);
     virtual void enqueueOutgoingReply(
             std::shared_ptr<cms::Destination> dest,

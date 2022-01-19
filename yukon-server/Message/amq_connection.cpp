@@ -583,6 +583,11 @@ void ActiveMQConnectionManager::enqueueMessage(const ActiveMQ::Queues::OutboundQ
     gActiveMQConnection->enqueueOutgoingMessage(queue.name, message, nullptr);
 }
 
+void ActiveMQConnectionManager::enqueueMessage(const ActiveMQ::Queues::OutboundQueue& queue, std::string message)
+{
+    gActiveMQConnection->enqueueOutgoingMessage(queue.name, std::move(message), nullptr);
+}
+
 template<typename Msg>
 struct DeserializationHelper : ActiveMQConnectionManager::MessageCallback
 {
@@ -780,6 +785,40 @@ void ActiveMQConnectionManager::enqueueOutgoingMessage(
     kickstart();
 }
 
+void ActiveMQConnectionManager::enqueueOutgoingMessage(
+        const std::string& queueName,
+        const std::string message,
+        ReturnLabel returnAddress)
+{
+    struct JsonTextEnvelope : Envelope
+    {
+        std::string message;
+
+        std::unique_ptr<cms::Message> extractMessage(cms::Session& session) const
+        {
+            std::unique_ptr<cms::TextMessage> textMessage{ session.createTextMessage() };
+
+            textMessage->setText(message);
+
+            return std::move(textMessage);
+        }
+    };
+    
+    auto e = std::make_unique<JsonTextEnvelope>();
+
+    e->queueName = queueName;
+    e->message = message;
+    e->returnAddress = std::move(returnAddress);
+
+    if (debugActivityInfo())
+    {
+        CTILOG_DEBUG(dout, "Enqueuing outbound message for queue \"" << queueName << "\"" << std::endl << message);
+    }
+
+    emplaceTask(_newTasks.outgoingMessages, std::move(e));
+
+    kickstart();
+}
 
 void ActiveMQConnectionManager::enqueueOutgoingReply(
     std::shared_ptr<cms::Destination> dest,
