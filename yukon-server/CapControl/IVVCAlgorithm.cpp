@@ -5031,14 +5031,18 @@ bool IVVCAlgorithm::executeBusVerification( IVVCStatePtr state, CtiCCSubstationB
 namespace
 {
 
-void WritePowerFlowEventLog( CtiCCSubstationBusPtr subbus, bool properFlowDirection )
+void WritePowerFlowAnalysisEventLog( CtiCCSubstationBusPtr subbus, bool restored, EventLogEntries & ccEvents )
 {
     CtiCCSubstationBusStore * store = CtiCCSubstationBusStore::getInstance();
 
     long stationId, areaId, spAreaId;
     store->getSubBusParentInfo( subbus, spAreaId, areaId, stationId );
 
-    EventLogEntries ccEvents;
+    std::string message =
+        restored
+            ? "IVVC Analysis Resumed - Proper Power Flow Restored"
+            : "IVVC Analysis Stopped - Improper Power Flow";
+
     ccEvents.push_back(
         EventLogEntry(
             0,
@@ -5048,15 +5052,65 @@ void WritePowerFlowEventLog( CtiCCSubstationBusPtr subbus, bool properFlowDirect
             stationId,
             subbus->getPaoId(),
             0,
-            capControlIvvcPowerFlowIndication,
+            capControlIvvcAnalysisState,
             0,
-            properFlowDirection,
-            properFlowDirection
-                ? "Proper Power Flow Restored"
-                : "Improper Power Flow",
-            Cti::CapControl::SystemUser ) );
+            restored,
+            message,
+            Cti::CapControl::SystemUser) );
 
-    CtiCapController::submitEventLogEntries( ccEvents );
+    CTILOG_INFO( dout, "IVVC Algorithm: " << message );
+}
+
+enum class PowerFlowErrorType
+{
+    None,
+    Indeterminate,
+    Invalid
+};
+
+void CreateRegulatorPowerFlowEventLog( CtiCCSubstationBusPtr subbus, PowerFlowErrorType type, VoltageRegulatorManager::SharedPtr regulator, EventLogEntries & ccEvents )
+{
+    CtiCCSubstationBusStore * store = CtiCCSubstationBusStore::getInstance();
+
+    long stationId, areaId, spAreaId;
+    store->getSubBusParentInfo( subbus, spAreaId, areaId, stationId );
+
+    std::map< PowerFlowErrorType, std::pair< double, std::string > > eventDecoder
+    {
+        {   PowerFlowErrorType::None,           {   1.0, "Invalid Power Flow condition cleared on: "                } },
+        {   PowerFlowErrorType::Indeterminate,  {  -1.0, "IVVC Analysis Skipped - Indeterminate power flow on: "    } },
+        {   PowerFlowErrorType::Invalid,        {   0.0, "IVVC Analysis Skipped - Invalid power flow on: "          } }
+    };
+
+    if ( auto lookup = Cti::mapFind( eventDecoder, type ) )
+    {
+        std::string message = lookup->second + regulator->getPaoName();
+
+        EventLogEntry entry(
+            0,
+            SYS_PID_CAPCONTROL,
+            spAreaId,
+            areaId,
+            stationId,
+            subbus->getPaoId(),
+            0,
+            capControlIvvcAnalysisSkipped,
+            0,
+            lookup->first,
+            message,
+            Cti::CapControl::SystemUser );
+
+        entry.regulatorId = regulator->getPaoId();
+
+        ccEvents.push_back( entry );
+
+        CTILOG_INFO( dout, "IVVC Algorithm: " << message );
+    }
+    else
+    {
+        // should never see this
+        CTILOG_ERROR( dout, "IVVC Algorithm: eventDecoder map lookup failed for key type: PowerFlowErrorType" );
+    }
 }
 
 }
@@ -5076,6 +5130,8 @@ bool IVVCAlgorithm::isAnyRegulatorInBadPowerFlow( IVVCStatePtr state, CtiCCSubst
    
     state->pausedRegulatorIDs.clear();
 
+    EventLogEntries ccEvents;
+
     for ( const auto ID : subbusZoneIds )
     {
         ZoneManager::SharedPtr  zone = zoneManager.getZone(ID);
@@ -5086,23 +5142,47 @@ bool IVVCAlgorithm::isAnyRegulatorInBadPowerFlow( IVVCStatePtr state, CtiCCSubst
         {
             try
             {
+                const long regulatorID = mapping.second;
+
                 VoltageRegulatorManager::SharedPtr regulator =
-                        store->getVoltageRegulatorManager()->getVoltageRegulator( mapping.second );
+                        store->getVoltageRegulatorManager()->getVoltageRegulator( regulatorID );
 
                 auto retCode = regulator->determinePowerFlowSituation();
 
                 if ( retCode == VoltageRegulator::PowerFlowSituations::OK )
                 {
-                    // do nothing
+                    // if this regulator is in either collection - clear it and issue a restored event...
+
+                    if ( state->pfIndeterminateRegulators.count( regulatorID ) || state->pfErrorRegulators.count( regulatorID )  )
+                    {
+                        state->pfIndeterminateRegulators.erase( regulatorID );
+                        state->pfErrorRegulators.erase( regulatorID );
+
+                        CreateRegulatorPowerFlowEventLog( subbus, PowerFlowErrorType::None, regulator, ccEvents );
+                    }
                 }
                 else if ( retCode == VoltageRegulator::PowerFlowSituations::IndeterminateFlow )
                 {
-                    state->pausedRegulatorIDs.insert( mapping.second );
+                    state->pausedRegulatorIDs.insert( regulatorID );     // is this collection still used for anything or can it be removed...?
                     counts.pauseCount++;
+
+                    // can only be in one of the collections at a time - clear and add as appropriate and issue event
+
+                    state->pfIndeterminateRegulators.insert( regulatorID );
+                    state->pfErrorRegulators.erase( regulatorID );
+
+                    CreateRegulatorPowerFlowEventLog( subbus, PowerFlowErrorType::Indeterminate, regulator, ccEvents );
                 }
                 else    // all other codes are error conditions where we'd want to release control of the bus
                 {
                     counts.errorCount++;
+
+                    // can only be in one of the collections at a time - clear and add as appropriate and issue event
+
+                    state->pfIndeterminateRegulators.erase( regulatorID );
+                    state->pfErrorRegulators.insert( regulatorID );
+
+                    CreateRegulatorPowerFlowEventLog( subbus, PowerFlowErrorType::Invalid, regulator, ccEvents );
                 }
             }
             catch ( const NoVoltageRegulator & noRegulator )
@@ -5121,6 +5201,8 @@ bool IVVCAlgorithm::isAnyRegulatorInBadPowerFlow( IVVCStatePtr state, CtiCCSubst
         }
     }
 
+    // report both error counts and pause counts to the log
+    //  if we have an error count and we are in valid power flow, we transition and disable the bus
     if ( counts.errorCount > 0 )
     {
         CTILOG_DEBUG(dout, "IVVC Algorithm: " << subbus->getPaoName() << " - Improper Power Flow." );
@@ -5131,25 +5213,27 @@ bool IVVCAlgorithm::isAnyRegulatorInBadPowerFlow( IVVCStatePtr state, CtiCCSubst
 
             sendDisableRemoteControl( subbus );
 
-            WritePowerFlowEventLog( subbus, state->powerFlow.valid );
+            WritePowerFlowAnalysisEventLog( subbus, state->powerFlow.valid, ccEvents );
         }
-
-        return true;
     }
-    else if ( counts.pauseCount > 0 )
+    if ( counts.pauseCount > 0 )
     {
         CTILOG_DEBUG(dout, "IVVC Algorithm: " << subbus->getPaoName() << " - Indeterminate Power Flow for one or more regulators." );
     }
-    else if ( ! state->powerFlow.valid )     // transition from bad to good
+
+    // if all the counts have cleared and we are invalid - we transition to valid
+    if ( counts.errorCount == 0 && counts.pauseCount == 0 && ! state->powerFlow.valid )     // transition from bad to good
     {
         state->powerFlow.valid = true;
 
         CTILOG_DEBUG(dout, "IVVC Algorithm: " << subbus->getPaoName() << " - Proper Power Flow Restored." );
 
-        WritePowerFlowEventLog( subbus, state->powerFlow.valid );
+        WritePowerFlowAnalysisEventLog( subbus, state->powerFlow.valid, ccEvents );
     }
 
-    return false;
+    CtiCapController::submitEventLogEntries( ccEvents );
+
+    return counts.errorCount > 0 || counts.pauseCount > 0;
 }
 
 
