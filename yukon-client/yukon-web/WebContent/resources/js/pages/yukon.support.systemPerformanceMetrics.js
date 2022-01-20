@@ -171,24 +171,23 @@ yukon.support.systemPerformanceMetrics = (function() {
                     };
 
                     var options = Highcharts.merge(_sparklineDefaultOptions, sparklineOptions);
-
                     chartTableCell.highcharts(options);
-
-                    $(document).on('click', '.js-metrics', function (ev) {
-                        var pointId = $(this).data('pointId'),
-                            pointName = $(this).text();
-                        $('.js-point-data-dialog').load(yukon.url('/meter/historicalReadings/view?pointId=' + pointId), function () {
-                            $('.js-point-data-dialog').dialog({
-                                title : pointName,
-                                width : 600,
-                                height: 400,
-                                autoOpen : true
-                            });
-                        });
-                    });
-
                 });
             });
+            
+            $(document).on('click', '.js-metrics', function (ev) {
+                var pointId = $(this).data('pointId'),
+                    popup = $('.js-point-data-dialog');
+                popup.load(yukon.url('/meter/historicalReadings/view?pointId=' + pointId), function () {
+                	popup.dialog({
+                        title : popup.find('.js-popup-title').val(),
+                        width : 800,
+                        height: 400,
+                        autoOpen : true
+                    });
+                });
+            });
+            
             _initialized = true;
         }
     };
