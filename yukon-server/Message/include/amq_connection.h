@@ -28,12 +28,15 @@ namespace ActiveMQ {
 
 class ManagedConnection;
 class QueueConsumer;
-class QueueProducer;
+class DestinationProducer;
 class TempQueueConsumer;
 
 namespace Queues {
 class OutboundQueue;
 class InboundQueue;
+}
+namespace Topics {
+class OutboundTopic;
 }
 }
 
@@ -118,9 +121,9 @@ public:
 
     static void start();
 
-    static void enqueueMessage(const ActiveMQ::Queues::OutboundQueue &queue, StreamableMessage::auto_type&& message);
-    static void enqueueMessage(const ActiveMQ::Queues::OutboundQueue &queue, const SerializedMessage &message);
-    static void enqueueMessage(const ActiveMQ::Queues::OutboundQueue& queue, std::string message);
+    static void enqueueMessage(const ActiveMQ::Queues::OutboundQueue& queue, StreamableMessage::auto_type&& message);
+    static void enqueueMessage(const ActiveMQ::Queues::OutboundQueue& queue, const SerializedMessage &message);
+    static void enqueueMessage(const ActiveMQ::Topics::OutboundTopic& topic, std::string message);
 
     template<class Msg>
     static void enqueueMessageWithCallbackFor(
@@ -161,10 +164,15 @@ protected:
 
     using ReturnLabel = std::unique_ptr<ReturnAddress>;
 
+    using OutboundDestination = 
+        std::variant<
+            const ActiveMQ::Queues::OutboundQueue*,
+            const ActiveMQ::Topics::OutboundTopic*>;
+
     //  Message submission objects and methods
     struct Envelope
     {
-        std::string queueName;
+        OutboundDestination destination;
 
         ReturnLabel returnAddress;
 
@@ -208,15 +216,15 @@ protected:
     const cms::Destination* makeDestinationForReturnAddress(ReturnAddress returnAddress);
 
     virtual void enqueueOutgoingMessage(
-            const std::string &queueName,
+            const ActiveMQ::Queues::OutboundQueue &queue,
             StreamableMessage::auto_type&& message,
             ReturnLabel returnAddress);
     virtual void enqueueOutgoingMessage(
-            const std::string &queueName,
+            const ActiveMQ::Queues::OutboundQueue &queue,
             const SerializedMessage &message,
             ReturnLabel returnAddress);
     virtual void enqueueOutgoingMessage(
-            const std::string& queueName,
+            const ActiveMQ::Topics::OutboundTopic& topic,
             const std::string message,
             ReturnLabel returnAddress);
     virtual void enqueueOutgoingReply(
@@ -251,8 +259,8 @@ private:
     template<class Container, typename... Arguments>
     void emplaceTask(Container& c, Arguments&&... args);
         
-    using ProducersByQueueName = std::map<std::string, std::unique_ptr<ActiveMQ::QueueProducer>>;
-    ProducersByQueueName _producers;
+    using ProducersByOutboundDestination = std::map<OutboundDestination, std::unique_ptr<ActiveMQ::DestinationProducer>>;
+    ProducersByOutboundDestination _producers;
 
     CallbacksPerQueue  _namedCallbacks;
 
@@ -310,7 +318,7 @@ private:
 
     void sendOutgoingMessages(EnvelopeQueue messages);
     void sendOutgoingReplies (ReplyQueue replies);
-    ActiveMQ::QueueProducer &getQueueProducer(cms::Session &session, const std::string &queue);
+    ActiveMQ::DestinationProducer& getDestinationProducer(cms::Session &session, OutboundDestination destination);
 
     void dispatchIncomingMessages(IncomingPerQueue incomingMessages);
     void dispatchTempQueueReplies(RepliesByDestination tempQueueReplies);
