@@ -1259,7 +1259,7 @@ void IVVCAlgorithm::execute(IVVCStatePtr state, CtiCCSubstationBusPtr subbus, IV
             std::set<PointRequest> pointRequests;
 
             bool shouldScan = allowScanning && state->isScannedRequest();
-            if ( ! determineWatchPoints( state, subbus, shouldScan, pointRequests, strategy ) )
+            if ( ! determineWatchPoints( state->deviceInformation, subbus, shouldScan, pointRequests, strategy->getMethodType() == ControlStrategy::BusOptimizedFeeder ) )
             {
                 // Configuration Error
                 // Disable the bus so we don't try to run again. User Intervention required.
@@ -1600,7 +1600,7 @@ void IVVCAlgorithm::execute(IVVCStatePtr state, CtiCCSubstationBusPtr subbus, IV
 
             std::set<PointRequest> pointRequests;
 
-            if ( ! determineWatchPoints( state, subbus, allowScanning, pointRequests, strategy ) )
+            if ( ! determineWatchPoints( state->deviceInformation, subbus, allowScanning, pointRequests, strategy->getMethodType() == ControlStrategy::BusOptimizedFeeder ) )
             {
                 // Do we want to bail here?
             }
@@ -1759,7 +1759,7 @@ void IVVCAlgorithm::execute(IVVCStatePtr state, CtiCCSubstationBusPtr subbus, IV
 
 
 //sendScan must be false for unit tests.
-bool IVVCAlgorithm::determineWatchPoints(IVVCStatePtr state, CtiCCSubstationBusPtr subbus, bool sendScan, std::set<PointRequest>& pointRequests, IVVCStrategy* strategy)
+bool IVVCAlgorithm::determineWatchPoints(IVVCState::DeviceInformation & deviceInformation, CtiCCSubstationBusPtr subbus, bool sendScan, std::set<PointRequest>& pointRequests, bool isBusOptimizedFeeder)
 {
     bool configurationError = false;
 
@@ -1767,7 +1767,7 @@ bool IVVCAlgorithm::determineWatchPoints(IVVCStatePtr state, CtiCCSubstationBusP
 
     // Prepare our internal 'database' of stuff to log for events
 
-    state->deviceInformation.clear();
+    deviceInformation.clear();
 
     ZoneManager & zoneManager = store->getZoneManager();
 
@@ -1790,15 +1790,13 @@ bool IVVCAlgorithm::determineWatchPoints(IVVCStatePtr state, CtiCCSubstationBusP
 
                 auto voltagePoint = regulator->getPointByAttribute( Attribute::Voltage );
 
-                state->deviceInformation.emplace(
+                deviceInformation.emplace(
                    voltagePoint.getPointId(),
-                   IVVCState::DeviceInformation
+                   IVVCState::DeviceInformationEntry
                    {
-                       IVVCState::DeviceInformation::Type::REGULATOR,
                        regulator->getPaoId(),
                        voltagePoint.getPointId(),
                        regulator->getPaoName(),
-                       regulator->getPaoType(),
                        voltagePoint.getPointName()
                    } );
 
@@ -1845,15 +1843,13 @@ bool IVVCAlgorithm::determineWatchPoints(IVVCStatePtr state, CtiCCSubstationBusP
                     {
                         if ( point->getPointId() > 0 )
                         {
-                            state->deviceInformation.emplace(
+                            deviceInformation.emplace(
                                point->getPointId(),
-                               IVVCState::DeviceInformation
+                               IVVCState::DeviceInformationEntry
                                { 
-                                   IVVCState::DeviceInformation::Type::CAPBANK,
                                    bank->getPaoId(),
                                    point->getPointId(),
                                    bank->getPaoName(),
-                                   bank->getPaoType(),
                                    point->getPointName()
                                } );
 
@@ -1883,15 +1879,13 @@ bool IVVCAlgorithm::determineWatchPoints(IVVCStatePtr state, CtiCCSubstationBusP
         {
             if ( auto x = zone->getCacheEntry( mapping.second ) )
             {
-                state->deviceInformation.emplace(
+                deviceInformation.emplace(
                    x->pointId,
-                   IVVCState::DeviceInformation
+                   IVVCState::DeviceInformationEntry
                    { 
-                       IVVCState::DeviceInformation::Type::VOLTAGE_MONITOR,
                        x->deviceId,
                        x->pointId,
                        x->deviceName,
-                       x->deviceType,
                        x->pointName
                    } );
             }
@@ -1912,15 +1906,13 @@ bool IVVCAlgorithm::determineWatchPoints(IVVCStatePtr state, CtiCCSubstationBusP
 
     if (busWattPointId > 0)
     {
-        state->deviceInformation.emplace(
+        deviceInformation.emplace(
            busWattPointId,
-           IVVCState::DeviceInformation
+           IVVCState::DeviceInformationEntry
            { 
-               IVVCState::DeviceInformation::Type::OTHER,
                subbus->getPaoId(),
                busWattPointId,
                subbus->getPaoName(),
-               subbus->getPaoType(),
                "<<pointname-placeholder>>"
            } );
 
@@ -1942,15 +1934,13 @@ bool IVVCAlgorithm::determineWatchPoints(IVVCStatePtr state, CtiCCSubstationBusP
     {
         if (ID > 0)
         {
-            state->deviceInformation.emplace(
+            deviceInformation.emplace(
                ID,
-               IVVCState::DeviceInformation
+               IVVCState::DeviceInformationEntry
                { 
-                   IVVCState::DeviceInformation::Type::OTHER,
                    subbus->getPaoId(),
                    ID,
                    subbus->getPaoName(),
-                   subbus->getPaoType(),
                    "<<pointname-placeholder>>"
                } );
 
@@ -1972,7 +1962,7 @@ bool IVVCAlgorithm::determineWatchPoints(IVVCStatePtr state, CtiCCSubstationBusP
     // We need the watt and var points for each feeder on the bus
     //  -- iff control method is bus optimized
 
-    if ( strategy->getMethodType() == ControlStrategy::BusOptimizedFeeder )
+    if ( isBusOptimizedFeeder )
     {
         for ( CtiCCFeederPtr feeder : subbus->getCCFeeders() )
         {
@@ -1981,15 +1971,13 @@ bool IVVCAlgorithm::determineWatchPoints(IVVCStatePtr state, CtiCCSubstationBusP
 
             if (wattPoint > 0)
             {
-                state->deviceInformation.emplace(
+                deviceInformation.emplace(
                    wattPoint,
-                   IVVCState::DeviceInformation
+                   IVVCState::DeviceInformationEntry
                    { 
-                       IVVCState::DeviceInformation::Type::OTHER,
                        feeder->getPaoId(),
                        wattPoint,
                        feeder->getPaoName(),
-                       feeder->getPaoType(),
                        "<<pointname-placeholder>>"
                    } );
 
@@ -2012,15 +2000,13 @@ bool IVVCAlgorithm::determineWatchPoints(IVVCStatePtr state, CtiCCSubstationBusP
             {
                 if (varPoint > 0)
                 {
-                    state->deviceInformation.emplace(
+                    deviceInformation.emplace(
                        varPoint,
-                       IVVCState::DeviceInformation
+                       IVVCState::DeviceInformationEntry
                        { 
-                           IVVCState::DeviceInformation::Type::OTHER,
                            feeder->getPaoId(),
                            varPoint,
                            feeder->getPaoName(),
-                           feeder->getPaoType(),
                            "<<pointname-placeholder>>"
                        } );
 
@@ -2079,7 +2065,7 @@ bool IVVCAlgorithm::determineWatchPoints(IVVCStatePtr state, CtiCCSubstationBusP
 
             // fill in the pointname placeholder string with the correct entry
 
-            state->deviceInformation[ pointID ].pointName = pointName;
+            deviceInformation[ pointID ].pointName = pointName;
         }
     }
 
@@ -2376,7 +2362,7 @@ bool IVVCAlgorithm::busAnalysisState(IVVCStatePtr state, CtiCCSubstationBusPtr s
 
         std::set<PointRequest> pointRequests;
 
-        determineWatchPoints( state, subbus, false, pointRequests, strategy );
+        determineWatchPoints( state->deviceInformation, subbus, false, pointRequests, strategy->getMethodType() == ControlStrategy::BusOptimizedFeeder );
 
         // strip off the extra info and just get a set of point IDs we a care about.
 
@@ -3982,7 +3968,13 @@ void IVVCAlgorithm::calculateMultiTapOperationHelper( const long zoneID,
     }
 }
 
-
+namespace CommEventEntries
+{
+    static const std::string BusPower       { "BusPower"        };
+    static const std::string Regulator      { "Regulator"       };
+    static const std::string CapBank        { "CapBank"         };
+    static const std::string VoltageMonitor { "VoltageMonitor"  };
+}
 /*
     This guy will run a validation check on the received point data request.
         We are looking for non-stale data and that all of the required BusPower points are present and accounted for.
@@ -3991,7 +3983,7 @@ void IVVCAlgorithm::calculateMultiTapOperationHelper( const long zoneID,
 */
 IVVCAlgorithm::ValidityCheckResults IVVCAlgorithm::hasValidData( IVVCStatePtr state,
                                                                  PointDataRequestPtr& request,
-                                                                 const CtiTime & timeNow,
+                                                                 const CtiTime timeNow,
                                                                  const CtiCCSubstationBusPtr subbus,
                                                                  const IVVCStrategy & strategy )
 {
@@ -4122,13 +4114,13 @@ IVVCAlgorithm::ValidityCheckResults IVVCAlgorithm::hasValidData( IVVCStatePtr st
                                             Scenario_RequiredPointCommsIncomplete,
                                             Scenario_RequiredPointCommsStale,
                                             timeNow,
-                                            "BusPower" );
+                                            CommEventEntries::BusPower );
 
     dataIsValid &= result;
 
     if ( ! result )
     {
-        events.insert( "BusPower" );
+        events.insert( CommEventEntries::BusPower );
     }
 
     // process the current event set against the previous analysis interval set   commViolations
@@ -4209,7 +4201,7 @@ IVVCAlgorithm::ValidityCheckResults IVVCAlgorithm::hasValidData( IVVCStatePtr st
 
 bool IVVCAlgorithm::processZoneByPhase( IVVCStatePtr state,
                                         PointDataRequestPtr& request,
-                                        const CtiTime & timeNow,
+                                        const CtiTime timeNow,
                                         const CtiCCSubstationBusPtr subbus,
                                         const IVVCStrategy & strategy,
                                         const long zoneId,
@@ -4279,12 +4271,12 @@ bool IVVCAlgorithm::processZoneByPhase( IVVCStatePtr state,
                                                 Scenario_RequiredPointCommsIncomplete,
                                                 Scenario_RequiredPointCommsStale,
                                                 timeNow,
-                                                "Regulator on Phase: " + Cti::CapControl::desolvePhase( phase ) );
+                                                CommEventEntries::Regulator + " on Phase: " + Cti::CapControl::desolvePhase( phase ) );
 
         dataIsValid &= result;
         if ( ! result )
         {
-            events.insert( "Regulator" );
+            events.insert( CommEventEntries::Regulator );
         }
 
         // capbank(s)...
@@ -4325,12 +4317,12 @@ bool IVVCAlgorithm::processZoneByPhase( IVVCStatePtr state,
                                                 Scenario_RequiredPointCommsIncomplete,
                                                 Scenario_RequiredPointCommsStale,
                                                 timeNow,
-                                                "CBC(s) on Phase: " + Cti::CapControl::desolvePhase( phase ) );
+                                                CommEventEntries::CapBank + " on Phase: " + Cti::CapControl::desolvePhase( phase ) );
 
         dataIsValid &= result;
         if ( ! result )
         {
-            events.insert( "CapBank" );
+            events.insert( CommEventEntries::CapBank );
         }
 
         // voltage monitor point(s)...
@@ -4358,11 +4350,11 @@ bool IVVCAlgorithm::processZoneByPhase( IVVCStatePtr state,
                                                 Scenario_RequiredPointCommsIncomplete,
                                                 Scenario_RequiredPointCommsStale,
                                                 timeNow,
-                                                "Other(s) on Phase: " + Cti::CapControl::desolvePhase( phase ) );
+                                                CommEventEntries::VoltageMonitor +  " on Phase: " + Cti::CapControl::desolvePhase(phase));
         dataIsValid &= result;
         if ( ! result )
         {
-            events.insert( "VoltageMonitor" );
+            events.insert( CommEventEntries::VoltageMonitor );
         }
     }
 
@@ -4372,7 +4364,7 @@ bool IVVCAlgorithm::processZoneByPhase( IVVCStatePtr state,
 
 bool IVVCAlgorithm::processZoneByAggregate( IVVCStatePtr state,
                                             PointDataRequestPtr& request,
-                                            const CtiTime & timeNow,
+                                            const CtiTime timeNow,
                                             const CtiCCSubstationBusPtr subbus,
                                             const IVVCStrategy & strategy,
                                             const long zoneId,
@@ -4428,12 +4420,12 @@ bool IVVCAlgorithm::processZoneByAggregate( IVVCStatePtr state,
                                             Scenario_RequiredPointCommsIncomplete,
                                             Scenario_RequiredPointCommsStale,
                                             timeNow,
-                                            "Regulator" );
+                                            CommEventEntries::Regulator );
 
     dataIsValid &= result;
     if ( ! result )
     {
-        events.insert( "Regulator" );
+        events.insert( CommEventEntries::Regulator );
     }
 
     // capbank(s)...
@@ -4474,12 +4466,12 @@ bool IVVCAlgorithm::processZoneByAggregate( IVVCStatePtr state,
                                             Scenario_RequiredPointCommsIncomplete,
                                             Scenario_RequiredPointCommsStale,
                                             timeNow,
-                                            "CBC(s)" );
+                                            CommEventEntries::CapBank );
 
     dataIsValid &= result;
     if ( ! result )
     {
-        events.insert( "CapBank" );
+        events.insert( CommEventEntries::CapBank );
     }
 
     // voltage monitor point(s)...
@@ -4506,12 +4498,12 @@ bool IVVCAlgorithm::processZoneByAggregate( IVVCStatePtr state,
                                             Scenario_RequiredPointCommsIncomplete,
                                             Scenario_RequiredPointCommsStale,
                                             timeNow,
-                                            "Other(s)" );
+                                            CommEventEntries::VoltageMonitor );
 
     dataIsValid &= result;
     if ( ! result )
     {
-        events.insert( "VoltageMonitor" );
+        events.insert( CommEventEntries::VoltageMonitor );
     }
 
     return true;
@@ -4522,7 +4514,7 @@ void IVVCAlgorithm::findPointInRequest( IVVCStatePtr state,
                                         const long pointID,
                                         const PointValueMap & pointValues,
                                         PointDataRequestPtr & request,
-                                        const CtiTime & timeNow,
+                                        const CtiTime timeNow,
                                         int & totalPoints, int & missingPoints, int & stalePoints )
 {
     PointValueMap::const_iterator   pt = pointValues.find( pointID );
@@ -4566,7 +4558,7 @@ bool IVVCAlgorithm::analysePointRequestData( const long subbusID, const int tota
                                              const int stalePoints, const double minimum, 
                                              const IVVCAnalysisScenarios & incompleteScenario,
                                              const IVVCAnalysisScenarios & staleScenario,
-                                             const CtiTime & timeNow, const std::string & type )
+                                             const CtiTime timeNow, const std::string & type )
 {
     bool isValid = true;
 
@@ -5230,7 +5222,7 @@ void CreateRegulatorPowerFlowEventLog( CtiCCSubstationBusPtr subbus, PowerFlowEr
 
     if ( auto lookup = Cti::mapFind( eventDecoder, type ) )
     {
-        std::string message = lookup->second + regulator->getPaoName();
+        const std::string message = lookup->second + regulator->getPaoName();
 
         EventLogEntry entry(
             0,

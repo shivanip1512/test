@@ -55,13 +55,13 @@ class IVVCAlgorithm
 
         ValidityCheckResults hasValidData( IVVCStatePtr state,
                                            PointDataRequestPtr & request,
-                                           const CtiTime & timeNow,
+                                           const CtiTime timeNow,
                                            const CtiCCSubstationBusPtr subbus,
                                            const IVVCStrategy & strategy );
 
         bool processZoneByPhase( IVVCStatePtr state,
                                  PointDataRequestPtr & request, 
-                                 const CtiTime & timeNow,
+                                 const CtiTime timeNow,
                                  const CtiCCSubstationBusPtr subbus,
                                  const IVVCStrategy & strategy, 
                                  const long zoneId,
@@ -70,14 +70,14 @@ class IVVCAlgorithm
 
         bool processZoneByAggregate( IVVCStatePtr state,
                                      PointDataRequestPtr & request, 
-                                     const CtiTime & timeNow,
+                                     const CtiTime timeNow,
                                      const CtiCCSubstationBusPtr subbus,
                                      const IVVCStrategy & strategy, 
                                      const long zoneId,
                                      bool & dataIsValid,
                                      std::set<std::string> & events );
 
-        bool determineWatchPoints(IVVCStatePtr state, CtiCCSubstationBusPtr subbus, bool sendScan, std::set<PointRequest>& pointRequests, IVVCStrategy* strategy);
+        bool determineWatchPoints(IVVCState::DeviceInformation & deviceInformation, CtiCCSubstationBusPtr subbus, bool sendScan, std::set<PointRequest>& pointRequests, bool isBusOptimizedFeeder);
         bool determineDmvWatchPoints(CtiCCSubstationBusPtr subbus, bool sendScan, std::set<PointRequest>& pointRequests, ControlStrategy::ControlMethodType strategyControlMethod, std::set<long> & dmvWattVarPointIDs );
 
         double calculateTargetPFVars(const double targetPF, const double wattValue);
@@ -142,13 +142,13 @@ class IVVCAlgorithm
 
         double getVmaxForPoint( const long pointID, CtiCCSubstationBusPtr subbus, IVVCStrategy * strategy ) const;
 
-        void findPointInRequest( IVVCStatePtr state, const long pointID, const PointValueMap & pointValues, PointDataRequestPtr & request, const CtiTime & timeNow,
+        void findPointInRequest( IVVCStatePtr state, const long pointID, const PointValueMap & pointValues, PointDataRequestPtr & request, const CtiTime timeNow,
                                  int & totalPoints, int & missingPoints, int & stalePoints );
         bool analysePointRequestData( const long subbusID, const int totalPoints, const int missingPoints, 
                                       const int stalePoints, const double minimum, 
                                       const Cti::Messaging::CapControl::IVVCAnalysisScenarios & incompleteScenario,
                                       const Cti::Messaging::CapControl::IVVCAnalysisScenarios & staleScenario,
-                                      const CtiTime & timeNow, const std::string & type );
+                                      const CtiTime timeNow, const std::string & type );
 
         void updateMaxOvervoltages( const long pointID,
                                     const Cti::CapControl::Phase & phase,
