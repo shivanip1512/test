@@ -72,7 +72,7 @@
                 <cti:formatDate type="TIME" value="${status.actualValue}"/>
             </cti:displayForPageEditModes>
             <cti:displayForPageEditModes modes="EDIT,CREATE">
-                <span class="datetimeEntry_wrap ${wrapClass}">
+                <span class="datetimeEntry_wrap ${wrapClass} ${cssClass}">
                     <form:input id="${id}" 
                         path="${path}"
                         value="${timeValue}"
@@ -100,7 +100,7 @@
                 ${timeValue}
             </cti:displayForPageEditModes>
             <cti:displayForPageEditModes modes="EDIT,CREATE">
-                <span class="datetimeEntry_wrap ${wrapClass}">
+                <span class="datetimeEntry_wrap ${wrapClass} ${cssClass}">
                     <input id="${id}" 
                         <c:if test="${!empty pageScope.name}">name="${pageScope.name}"</c:if>
                         value="${timeValue}"

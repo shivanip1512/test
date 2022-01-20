@@ -73,8 +73,7 @@
                 <c:if test="${status.error}">
                     <c:set var="errorCssClass" value="error"/>
                 </c:if>
-                
-                <span class="datetimeEntry_wrap timeOffsetWrap ${wrapClass}">
+                <span class="datetimeEntry_wrap timeOffsetWrap ${wrapClass} ${cssClass}">
                     <form:input type="hidden" path="${path}"/>
                     <input id="${id}" 
                         name="${path}_inputField"
@@ -110,7 +109,10 @@
             ${displayValue}
         </cti:displayForPageEditModes>
         <cti:displayForPageEditModes modes="EDIT,CREATE">
-            <span class="datetimeEntry_wrap timeOffsetWrap ${wrapClass}">
+        <c:if test="${status.error}">
+            <c:set var="errorCssClass" value="error"/>
+        </c:if>
+            <span class="datetimeEntry_wrap timeOffsetWrap ${wrapClass} ${cssClass}">
                 <input type="hidden" <c:if test="${!empty pageScope.name}">name="${pageScope.name}"</c:if> value="${value}"/>
                 <input id="${id}" 
                     <c:if test="${!empty pageScope.name}">name="${pageScope.name}_inputField"</c:if>
