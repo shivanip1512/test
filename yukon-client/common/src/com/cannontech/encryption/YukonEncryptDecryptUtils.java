@@ -16,9 +16,9 @@ import org.apache.logging.log4j.Logger;
 
 import com.cannontech.clientutils.YukonLogManager;
 
-public class YukonCryptoUtils {
+public class YukonEncryptDecryptUtils {
 
-    private static final Logger log = YukonLogManager.getLogger(YukonCryptoUtils.class);
+    private static final Logger log = YukonLogManager.getLogger(YukonEncryptDecryptUtils.class);
     private static final String SECRET_KEY = "452C3BdAD-1RT2-508A-6D62-FDFB58B52TRM";
     private static final String TRANSFORMATION = "AES/ECB/PKCS5Padding";
     private static final String CHARACTER_SET = "UTF-16";
@@ -43,9 +43,9 @@ public class YukonCryptoUtils {
     }
 
     /**
-     * Set the Chiper by using provided mode(Cipher.ENCRYPT_MODE, Cipher.DECRYPT_MODE) and SecretKeySpec.
+     * Set the Cipher by using provided mode(Cipher.ENCRYPT_MODE, Cipher.DECRYPT_MODE) and SecretKeySpec.
      */
-    private static void setChiper(Integer cipherMode) {
+    private static void setCipher(Integer cipherMode) {
         try {
             cipher = Cipher.getInstance(TRANSFORMATION);
             cipher.init(cipherMode, secretKey);
@@ -60,7 +60,7 @@ public class YukonCryptoUtils {
     public static String encrypt(String strToEncrypt)
             throws IllegalBlockSizeException, BadPaddingException, UnsupportedEncodingException {
         setKey();
-        setChiper(Cipher.ENCRYPT_MODE);
+        setCipher(Cipher.ENCRYPT_MODE);
         return new String(Base64.getEncoder().encode(cipher.doFinal(strToEncrypt.getBytes(CHARACTER_SET))));
     }
 
@@ -70,7 +70,7 @@ public class YukonCryptoUtils {
     public static String decrypt(String strToDecrypt)
             throws IllegalBlockSizeException, BadPaddingException, UnsupportedEncodingException {
         setKey();
-        setChiper(Cipher.DECRYPT_MODE);
+        setCipher(Cipher.DECRYPT_MODE);
         return new String(cipher.doFinal(Base64.getDecoder().decode(strToDecrypt)), CHARACTER_SET);
     }
 }
