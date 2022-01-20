@@ -180,8 +180,8 @@ yukon.support.systemPerformanceMetrics = (function() {
                         $('.js-point-data-dialog').load(yukon.url('/meter/historicalReadings/view?pointId=' + pointId), function () {
                             $('.js-point-data-dialog').dialog({
                                 title : pointName,
-                                width : 500,
-                                height: 600,
+                                width : 600,
+                                height: 400,
                                 autoOpen : true
                             });
                         });
