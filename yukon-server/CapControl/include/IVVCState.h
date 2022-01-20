@@ -228,6 +228,8 @@ class IVVCState
         std::set<long> pfIndeterminateRegulators;
         std::set<long> pfErrorRegulators;
 
+        std::set<std::string> commViolations;
+
     private:
 
         CtiTime _timeStamp;

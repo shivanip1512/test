@@ -53,24 +53,29 @@ class IVVCAlgorithm
             MissingObject
         };
 
-        ValidityCheckResults hasValidData( PointDataRequestPtr & request,
+        ValidityCheckResults hasValidData( IVVCStatePtr state,
+                                           PointDataRequestPtr & request,
                                            const CtiTime & timeNow,
                                            const CtiCCSubstationBusPtr subbus,
                                            const IVVCStrategy & strategy );
 
-        bool processZoneByPhase( PointDataRequestPtr & request, 
+        bool processZoneByPhase( IVVCStatePtr state,
+                                 PointDataRequestPtr & request, 
                                  const CtiTime & timeNow,
                                  const CtiCCSubstationBusPtr subbus,
                                  const IVVCStrategy & strategy, 
                                  const long zoneId,
-                                 bool & dataIsValid );
+                                 bool & dataIsValid,
+                                 std::set<std::string> & events );
 
-        bool processZoneByAggregate( PointDataRequestPtr & request, 
+        bool processZoneByAggregate( IVVCStatePtr state,
+                                     PointDataRequestPtr & request, 
                                      const CtiTime & timeNow,
                                      const CtiCCSubstationBusPtr subbus,
                                      const IVVCStrategy & strategy, 
                                      const long zoneId,
-                                     bool & dataIsValid );
+                                     bool & dataIsValid,
+                                     std::set<std::string> & events );
 
         bool determineWatchPoints(IVVCStatePtr state, CtiCCSubstationBusPtr subbus, bool sendScan, std::set<PointRequest>& pointRequests, IVVCStrategy* strategy);
         bool determineDmvWatchPoints(CtiCCSubstationBusPtr subbus, bool sendScan, std::set<PointRequest>& pointRequests, ControlStrategy::ControlMethodType strategyControlMethod, std::set<long> & dmvWattVarPointIDs );
@@ -137,7 +142,7 @@ class IVVCAlgorithm
 
         double getVmaxForPoint( const long pointID, CtiCCSubstationBusPtr subbus, IVVCStrategy * strategy ) const;
 
-        void findPointInRequest( const long pointID, const PointValueMap & pointValues, PointDataRequestPtr & request, const CtiTime & timeNow,
+        void findPointInRequest( IVVCStatePtr state, const long pointID, const PointValueMap & pointValues, PointDataRequestPtr & request, const CtiTime & timeNow,
                                  int & totalPoints, int & missingPoints, int & stalePoints );
         bool analysePointRequestData( const long subbusID, const int totalPoints, const int missingPoints, 
                                       const int stalePoints, const double minimum, 
