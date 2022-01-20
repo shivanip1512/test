@@ -177,7 +177,7 @@ yukon.support.systemPerformanceMetrics = (function() {
                     $(document).on('click', '.js-metrics', function (ev) {
                         var pointId = $(this).data('pointId'),
                             pointName = $(this).text(),
-                            url = yukon.url('/support/systemPerformanceMetrics/trend'),
+                            url = yukon.url('/meter/historicalReadings/trend'),
                             parameters = {pointId : pointId};
                         $.post(url, parameters, function (response) {
                             $(".js-point-data-dialog").html(response);
@@ -185,7 +185,10 @@ yukon.support.systemPerformanceMetrics = (function() {
                                 title: pointName,
                                 width : 800,
                                 height : 500,
-                                autoOpen : true
+                                autoOpen : true,
+                                resizeStop: function(event, ui) {
+                                    yukon.highChart.redrawTrendChart($(this), ui);
+                                }
                             });
                         });
                     });
