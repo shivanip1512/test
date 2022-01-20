@@ -205,28 +205,22 @@ class IVVCState
         bool showZoneRegulatorConfigMsg;
 
 
-        struct DeviceInformation
+        struct DeviceInformationEntry
         {
-            enum Type
-            {
-                REGULATOR,
-                CAPBANK,
-                VOLTAGE_MONITOR,
-                OTHER
-            };
-
-            Type type;
             long deviceID, pointID;
-            std::string deviceName, deviceType, pointName;      // do we really need the device type??
-
+            std::string deviceName, pointName;
         };
 
-        std::map<long, DeviceInformation>   deviceInformation;
+        using DeviceInformation = std::map<long, DeviceInformationEntry>;
+
+        DeviceInformation   deviceInformation;
 
         std::set<long> disabledRegulators;
 
         std::set<long> pfIndeterminateRegulators;
         std::set<long> pfErrorRegulators;
+
+        std::set<std::string> commViolations;
 
     private:
 
