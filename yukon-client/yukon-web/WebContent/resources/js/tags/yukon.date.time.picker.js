@@ -116,7 +116,7 @@ yukon.ui.dateTimePickers = function () {
         init : function (cfgDtArgs, cfgTpArgs) {
             //default arguments
             var datetimepickerArgs = {
-                    buttonImage: yukon.url('/WebConfig/yukon/Icons/StartCalendar.png'),
+                    buttonImage: yukon.url('/WebConfig/yukon/Icons/calendar.svg'),
                     buttonImageOnly: true,
                     hideIfNoPrevNext:true,
                     showButtonPanel: true,
@@ -251,7 +251,7 @@ yukon.ui.dateTimePickers = function () {
                 $.extend(defaultArgs, datetimepickerArgs);
                 $.extend(defaultArgs, timepickerArgs);
                 var timeArgs = _getPickerArgs(self);
-                timeArgs.buttonImage = yukon.url('/WebConfig/yukon/Icons/pencil.png');
+                timeArgs.buttonImage = yukon.url('/WebConfig/yukon/Icons/pencil.svg');
                 var minValue = self.data('minValue');
                 if (minValue) {
                     timeArgs.minTime = minValue;
