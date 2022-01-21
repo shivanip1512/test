@@ -146,7 +146,7 @@ pipeline {
                     steps {
                         script {
                             try {
-                                // Running All JUnit Test cases
+                                // Running All JUnit Test cases - Test
                                 bat './yukon-build/go.bat runUnitTests'
                             } catch (Exception) {
                                 currentBuild.result = 'FAILURE'
