@@ -150,7 +150,7 @@ pipeline {
                                 bat './yukon-build/go.bat runUnitTests'
                             } catch (Exception) {
                                 currentBuild.result = 'FAILURE'
-                                //Added sleep so that it capture full log for current stage
+                                //Added sleep so that it capture full log for current stage Test
                                 sleep(5)
                                 sendEmailNotification("${env.STAGE_NAME}")
                             }
