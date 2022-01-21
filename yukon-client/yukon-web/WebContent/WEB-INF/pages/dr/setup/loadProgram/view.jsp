@@ -204,7 +204,7 @@
                                     </tags:nameValue2>
                                     <c:set var="controlWindowOneClass" value="${controlWindowOneEnabled ? '' : 'dn'}" />
                                     <tags:nameValue2 nameKey=".startTime" data-toggle-group="controlWindowOne" rowClass="${controlWindowOneClass}" >
-                                        <dt:timeOffset id="startTimeWindowOne" name="startTimeWindowOne" value="${loadProgram.controlWindow.controlWindowOne.availableStartTimeInMinutes}" cssClass="${startTimeErrorWindowOne ? 'error' : ''}"/>
+                                        <dt:timeOffset id="startTimeWindowOne" name="startTimeWindowOne" value="${loadProgram.controlWindow.controlWindowOne.availableStartTimeInMinutes}" wrapClass="${startTimeErrorWindowOne ? 'date-time-error' : ''}"/>
                                             <c:if test="${not empty startTimeErrorWindowOne}">
                                                 <br/></br>
                                                 <div class="error">
@@ -215,7 +215,7 @@
                                         <input type="hidden" id="startTimeInMinutesWindowOne" name="controlWindow.controlWindowOne.availableStartTimeInMinutes" value="${loadProgram.controlWindow.controlWindowOne.availableStartTimeInMinutes}"/>
                                     </tags:nameValue2>
                                     <tags:nameValue2 nameKey=".stopTime" data-toggle-group="controlWindowOne" rowClass="${controlWindowOneClass}">
-                                        <dt:timeOffset id="stopTimeWindowOne" name="stopTimeWindowOne" value="${loadProgram.controlWindow.controlWindowOne.availableStopTimeInMinutes}" cssClass="${stopTimeErrorWindowOne ? 'error' : ''}"/>
+                                        <dt:timeOffset id="stopTimeWindowOne" name="stopTimeWindowOne" value="${loadProgram.controlWindow.controlWindowOne.availableStopTimeInMinutes}" wrapClass="${stopTimeErrorWindowOne ? 'date-time-error' : ''}"/>
                                             <c:if test="${not empty stopTimeErrorWindowOne}">
                                                 <br/></br>
                                                 <div class="error">
@@ -235,7 +235,7 @@
                                     </tags:nameValue2>
                                     <c:set var="controlWindowTwoClass" value="${controlWindowTwoEnabled ? '' : 'dn'}" />
                                     <tags:nameValue2 nameKey=".startTime" data-toggle-group="controlWindowTwo" rowClass="${controlWindowTwoClass}">
-                                        <dt:timeOffset id="startTimeWindowTwo" name="startTimeWindowTwo" value="${loadProgram.controlWindow.controlWindowTwo.availableStartTimeInMinutes}"  cssClass="${startTimeErrorWindowTwo ? 'error' : ''}"/>
+                                        <dt:timeOffset id="startTimeWindowTwo" name="startTimeWindowTwo" value="${loadProgram.controlWindow.controlWindowTwo.availableStartTimeInMinutes}"  wrapClass="${startTimeErrorWindowTwo ? 'date-time-error' : ''}"/>
                                             <c:if test="${not empty startTimeErrorWindowTwo}">
                                                 <br/></br>
                                                 <div class="error">
@@ -246,7 +246,7 @@
                                         <input type="hidden" id="startTimeInMinutesWindowTwo" name="controlWindow.controlWindowTwo.availableStartTimeInMinutes" value="${loadProgram.controlWindow.controlWindowTwo.availableStartTimeInMinutes}"/>
                                     </tags:nameValue2>
                                     <tags:nameValue2 nameKey=".stopTime" data-toggle-group="controlWindowTwo" rowClass="${controlWindowTwoClass}">
-                                        <dt:timeOffset id="stopTimeWindowTwo" name="stopTimeWindowTwo" value="${loadProgram.controlWindow.controlWindowTwo.availableStopTimeInMinutes}"  cssClass="${stopTimeErrorWindowTwo ? 'error' : ''}"/>
+                                        <dt:timeOffset id="stopTimeWindowTwo" name="stopTimeWindowTwo" value="${loadProgram.controlWindow.controlWindowTwo.availableStopTimeInMinutes}"  wrapClass="${stopTimeErrorWindowTwo ? 'date-time-error' : ''}"/>
                                             <c:if test="${not empty stopTimeErrorWindowTwo}">
                                                 <br/></br>
                                                 <div class="error">
