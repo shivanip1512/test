@@ -187,6 +187,26 @@ INSERT INTO UnitMeasure VALUES ( 60,'CCF', 0, 'Centum Cubic Feet', '(none)');
 INSERT INTO DBUpdates VALUES ('YUK-25562', '9.2.0', GETDATE());
 /* @end YUK-25562 */
 
+/* @start YUK-25792 */
+DROP INDEX INDX_EventType ON EventLog;
+GO
+
+CREATE INDEX INDX_EventLog_EvntTime_EvntLogId_EvntType ON EventLog (
+EventTime DESC,
+EventLogId DESC,
+EventType ASC
+)
+go
+
+CREATE INDEX INDX_EventLog_EvntTime_EvntLogID ON EventLog (
+EventTime DESC,
+EventLogId DESC
+)
+go
+
+INSERT INTO DBUpdates VALUES ('YUK-25792', '9.2.0', GETDATE());
+/* @end YUK-25792 */
+
 /***********************************************************************************/
 /* VERSION INFO                                                                    */
 /* Inserted when update script is run, stays commented out until the release build */
