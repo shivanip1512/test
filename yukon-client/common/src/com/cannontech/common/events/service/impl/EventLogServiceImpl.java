@@ -13,7 +13,6 @@ import javax.annotation.PostConstruct;
 
 import org.apache.commons.lang3.ClassUtils;
 import org.apache.commons.lang3.StringUtils;
-import org.apache.commons.lang3.Validate;
 import org.apache.logging.log4j.Logger;
 import org.joda.time.Instant;
 import org.joda.time.LocalDate;
@@ -36,10 +35,8 @@ import com.cannontech.common.events.dao.EventLogDao;
 import com.cannontech.common.events.loggers.ArgEnum;
 import com.cannontech.common.events.model.ArgumentColumn;
 import com.cannontech.common.events.model.EventCategory;
-import com.cannontech.common.events.model.EventLog;
 import com.cannontech.common.events.model.EventParameter;
 import com.cannontech.common.events.model.EventSource;
-import com.cannontech.common.events.model.MappedEventLog;
 import com.cannontech.common.events.service.EventLogService;
 import com.cannontech.common.events.service.mappers.LiteYukonUserToNameMapper;
 import com.cannontech.common.exception.BadAuthenticationException;
@@ -58,7 +55,6 @@ import com.cannontech.database.data.point.PointType;
 import com.cannontech.stars.energyCompany.EnergyCompanySettingType;
 import com.cannontech.system.DREncryption;
 import com.cannontech.system.GlobalSettingType;
-import com.google.common.base.Function;
 import com.google.common.collect.ArrayListMultimap;
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.ImmutableList.Builder;
@@ -370,43 +366,6 @@ public class EventLogServiceImpl implements EventLogService {
     @Override
     public MethodLogDetail getDetailForMethod(Method method) {
         return methodLogDetailLookup.get(method);
-    }
-    
-    @Override
-    public List<MappedEventLog> findAllByCategories(Iterable<EventCategory> eventCategory, ReadableInstant startDate, ReadableInstant stopDate) {
-        List<EventLog> eventLogs = eventLogDao.findAllByCategories(eventCategory, startDate, stopDate);
-        
-        List<MappedEventLog> result = mapEventLogParameters(eventLogs);
-        return result;
-    }
-    
-    private List<MappedEventLog> mapEventLogParameters(List<EventLog> eventLogs) {
-        return Lists.transform(eventLogs, new Function<EventLog, MappedEventLog> () {
-            @Override
-            public MappedEventLog apply(EventLog from) {
-                return mapEventLogParameters(from);
-            }
-            
-        });
-    }
-    
-    private MappedEventLog mapEventLogParameters(EventLog eventLog) {
-        MappedEventLog mappedEventLog = new MappedEventLog();
-        mappedEventLog.setEventLog(eventLog);
-        
-        MethodLogDetail methodLogDetail = getDetailForEventType(eventLog.getEventType());
-        
-        Object[] values = eventLog.getArguments();
-        List<ArgumentColumn> columns = eventLogDao.getArgumentColumns();
-        Validate.isTrue(values.length == columns.size());
-        
-        for (int i = 0; i < values.length; i++) {
-            Object value = values[i];
-            ArgumentColumn column = columns.get(i);
-            EventParameter eventParameter = methodLogDetail.getColumnToParameterMapping().get(column);
-            mappedEventLog.getParameterMap().put(eventParameter, value);
-        }
-        return mappedEventLog;
     }
     
     @Autowired
