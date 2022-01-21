@@ -114,7 +114,7 @@ public class PointDataPruningDaoImpl implements PointDataPruningDao {
                 returnArray[0] = jdbcTemplate.update(deleteDuplicatePointDataQuery);
             } else {
                 deleteDuplicatePointDataQuery = buildDeleteDuplicatePointDataMSSQLQuery(dateRange, noLockRequired, lastChangeId);
-                returnArray = jdbcTemplate.queryForList (deleteDuplicatePointDataQuery.getSql(), Integer.class).toArray(returnArray);
+                returnArray = jdbcTemplate.queryForList (deleteDuplicatePointDataQuery.getSql(), Integer.class, deleteDuplicatePointDataQuery.getArguments()).toArray(returnArray);
             }
         } catch (TransientDataAccessResourceException e) {
             log.error("Error when deleting duplicate data " + e);
@@ -168,11 +168,11 @@ public class PointDataPruningDaoImpl implements PointDataPruningDao {
         if (noLockRequired) {
             sql.append(    "WITH (NOLOCK)");
         }
-        sql.append(        "WHERE Timestamp").gte(dateRange.getMin());
-        sql.append(        "AND Timestamp").lte(dateRange.getMax());
-        sql.append(        "AND CHANGEID").gt(lastChangeId);
-        sql.append(        "AND (CHANGEID").lt(lastChangeId + (10 * BATCH_SIZE));
-        sql.append(          "OR 0").gte(lastChangeId);
+        sql.append(        "WHERE Timestamp >= '2021-11-21 10:04:58'")/*.gte(dateRange.getMin())*/;
+        sql.append(        "AND Timestamp <= '2021-01-20 10:04:58'")/*.lte(dateRange.getMax())*/;
+        sql.append(        "AND CHANGEID > 0")/*.gt(lastChangeId)*/;
+        sql.append(        "AND (CHANGEID < 1000000")/*.lt(lastChangeId + (10 * BATCH_SIZE))*/;
+        sql.append(          "OR 0 >= 0")/*.gte(lastChangeId)*/;
         sql.append(        ")");
         sql.append(        "AND PointId IN (");
         sql.append(            "SELECT PointId ");

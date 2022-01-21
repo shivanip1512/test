@@ -91,9 +91,11 @@ public class PointDataPruningServiceImpl implements PointDataPruningService {
             // returns array of [rowsDeleted, lastChangeId]
             returnArray = pointDataPruningDao.deleteDuplicatePointData(dateRange, noLockRequired, lastChangeId);
             totalRowsdeleted = totalRowsdeleted + returnArray[0];
-            lastChangeId = returnArray[1];
             if (returnArray[0] == 0) {
                 fromTimestamp = toTimestamp;
+            }
+            if (returnArray[1] != null) {
+                lastChangeId = returnArray[1];
             }
         }
         Instant finish = new Instant();
