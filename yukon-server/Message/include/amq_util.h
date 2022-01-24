@@ -147,6 +147,18 @@ public:
 };
 
 /*-----------------------------------------------------------------------------
+  Managed topic message producer
+-----------------------------------------------------------------------------*/
+class IM_EX_MSG TopicProducer : public DestinationProducer
+{
+public:
+
+    TopicProducer(proton::session& sess, const std::string& dest);
+
+    ~TopicProducer();
+};
+
+/*-----------------------------------------------------------------------------
   Managed topic message consumer
 -----------------------------------------------------------------------------*/
 class IM_EX_MSG TopicConsumer : public DestinationConsumer
@@ -161,6 +173,18 @@ public:
     TopicConsumer(proton::session& sess, const std::string& dest, MessageCallback c, OpenCallback o, const std::string& selector = "");
 
     ~TopicConsumer();
+};
+
+/*-----------------------------------------------------------------------------
+  Managed temporary queue message producer
+-----------------------------------------------------------------------------*/
+class IM_EX_MSG TempQueueProducer : public DestinationProducer
+{
+public:
+
+    TempQueueProducer(proton::session& sess, const std::string& dest);
+
+    ~TempQueueProducer();
 };
 
 /*-----------------------------------------------------------------------------
@@ -195,6 +219,11 @@ inline std::unique_ptr<QueueConsumer> createQueueConsumer( proton::session & ses
     return std::make_unique<QueueConsumer>( sess, queueName, c );
 }
 
+inline std::unique_ptr<TopicProducer> createTopicProducer( proton::session& sess, const std::string& topicName )
+{
+    return std::make_unique<TopicProducer>(sess, topicName);
+}
+
 inline std::unique_ptr<TopicConsumer> createTopicConsumer( proton::session & sess, const std::string &topicName, ManagedConsumer::MessageCallback c )
 {
     return std::make_unique<TopicConsumer>( sess, topicName, c );
@@ -203,6 +232,11 @@ inline std::unique_ptr<TopicConsumer> createTopicConsumer( proton::session & ses
 inline std::unique_ptr<TopicConsumer> createTopicConsumer( proton::session & sess, const std::string &topicName, ManagedConsumer::MessageCallback c, const std::string &selector )
 {
     return std::make_unique<TopicConsumer>( sess, topicName, c, selector );
+}
+
+inline std::unique_ptr<TempQueueProducer> createTempQueueProducer(proton::session& sess, const std::string& tempQueueName)
+{
+    return std::make_unique<TempQueueProducer>(sess, tempQueueName);
 }
 
 inline std::unique_ptr<TempQueueConsumer> createTempQueueConsumer( proton::session & sess, ManagedConsumer::MessageCallback c )

@@ -22,7 +22,7 @@ namespace Cti::Messaging
 namespace Qpid
 {
 class QueueConsumer;
-class QueueProducer;
+class DestinationProducer;
 class TempQueueConsumer;
 
 namespace Queues
@@ -30,6 +30,10 @@ namespace Queues
 class OutboundQueue;
 class InboundQueue;
 }   // Queues
+namespace Topics 
+{
+class OutboundTopic;
+}   // Topics
 }   // Qpid
 
 class IM_EX_MSG ActiveMQConnectionManager :
@@ -112,8 +116,9 @@ public:
     static void start();
     void start_impl();
 
-    static void enqueueMessage(const Qpid::Queues::OutboundQueue &queue, StreamableMessagePtr message);
-    static void enqueueMessage(const Qpid::Queues::OutboundQueue &queue, const SerializedMessage &message);
+    static void enqueueMessage(const Qpid::Queues::OutboundQueue& queue, StreamableMessagePtr message);
+    static void enqueueMessage(const Qpid::Queues::OutboundQueue& queue, const SerializedMessage &message);
+    static void enqueueMessage(const Qpid::Topics::OutboundTopic& topic, std::string message);
 
     template<class Msg>
     static void enqueueMessageWithCallbackFor(
@@ -169,10 +174,15 @@ protected:
 
     using ReturnLabel = std::unique_ptr<ReturnAddress>;
 
+    using OutboundDestination = 
+        std::variant<
+            const Qpid::Queues::OutboundQueue*,
+            const Qpid::Topics::OutboundTopic*>;
+
     //  Message submission objects and methods
     struct Envelope
     {
-        std::string queueName;
+        OutboundDestination destination;
         ReturnLabel returnAddress;
         proton::message message;
     };
@@ -182,12 +192,16 @@ protected:
     std::string makeDestinationForReturnAddress(ReturnAddress returnAddress);
 
     virtual void enqueueOutgoingMessage(
-            const std::string &queueName,
+            const Qpid::Queues::OutboundQueue &queue,
             StreamableMessagePtr message,
             ReturnLabel returnAddress);
     virtual void enqueueOutgoingMessage(
-            const std::string &queueName,
+            const Qpid::Queues::OutboundQueue &queue,
             const SerializedMessage &message,
+            ReturnLabel returnAddress);
+    virtual void enqueueOutgoingMessage(
+            const Qpid::Topics::OutboundTopic& topic,
+            const std::string message,
             ReturnLabel returnAddress);
     virtual void enqueueOutgoingReply(
             std::string dest,
@@ -210,8 +224,8 @@ private:
     template<typename... Arguments>
     void emplaceCallback(Arguments&&... args);
         
-    using ProducersByQueueName = std::map<std::string, std::unique_ptr<Qpid::QueueProducer>>;
-    ProducersByQueueName _producers;
+    using ProducersByOutboundDestination = std::map<OutboundDestination, std::unique_ptr<Qpid::DestinationProducer>>;
+    ProducersByOutboundDestination _producers;
 
     CallbacksPerQueue  _namedCallbacks;
 
@@ -254,7 +268,7 @@ private:
     std::string createSessionConsumer(const SessionCallback callback);
 
     void sendOutgoingMessage( Envelope & e );
-    Qpid::QueueProducer &getQueueProducer( proton::session & session, const std::string & queue );
+    Qpid::DestinationProducer& getDestinationProducer( proton::session & session, OutboundDestination destination );
 
     std::string getJMSType( proton::message & msg ) const;
 

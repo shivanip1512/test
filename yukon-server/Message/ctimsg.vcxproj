@@ -360,6 +360,7 @@ if exist $(OutDir)$(TargetName).pdb xcopy /d/y/f $(OutDir)$(TargetName).pdb $(So
     <ClCompile Include="amq_connection.cpp">
     </ClCompile>
     <ClCompile Include="amq_queues.cpp" />
+    <ClCompile Include="amq_topics.cpp" />
     <ClCompile Include="amq_util.cpp">
     </ClCompile>
     <ClCompile Include="CapControlOperationMessage.cpp">
@@ -463,6 +464,7 @@ if exist $(OutDir)$(TargetName).pdb xcopy /d/y/f $(OutDir)$(TargetName).pdb $(So
     <ClInclude Include="include\amq_connection.h" />
     <ClInclude Include="include\amq_constants.h" />
     <ClInclude Include="include\amq_queues.h" />
+    <ClInclude Include="include\amq_topics.h" />
     <ClInclude Include="include\amq_util.h" />
     <ClInclude Include="include\CapControlOperationMessage.h" />
     <ClInclude Include="include\connection.h" />

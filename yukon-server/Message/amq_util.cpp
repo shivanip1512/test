@@ -385,6 +385,18 @@ QueueConsumer::~QueueConsumer()
 }
 
 /*-----------------------------------------------------------------------------
+  Managed topic message producer
+-----------------------------------------------------------------------------*/
+TopicProducer::TopicProducer(proton::session& sess, const std::string& dest) :
+    DestinationProducer(sess, dest)
+{
+}
+
+TopicProducer::~TopicProducer()
+{
+}
+
+/*-----------------------------------------------------------------------------
   Managed topic message consumer
 -----------------------------------------------------------------------------*/
 TopicConsumer::TopicConsumer(proton::session& sess, const std::string& dest, MessageCallback c, const std::string& selector) :
@@ -400,6 +412,18 @@ TopicConsumer::TopicConsumer( proton::session & sess, const std::string & dest, 
 }
 
 TopicConsumer::~TopicConsumer()
+{
+}
+
+/*-----------------------------------------------------------------------------
+  Managed temporary queue message producer
+-----------------------------------------------------------------------------*/
+TempQueueProducer::TempQueueProducer(proton::session& sess, const std::string& tempQueueName) :
+    DestinationProducer(sess, tempQueueName)
+{
+}
+
+TempQueueProducer::~TempQueueProducer()
 {
 }
 
