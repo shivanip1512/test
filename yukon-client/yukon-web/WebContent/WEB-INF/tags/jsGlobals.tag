@@ -143,7 +143,9 @@ var yg = {
     	iconMagnifier: '<cti:getIconSvg iconClass="icon-magnifier"/>',
     	iconHelp: '<cti:getIconSvg iconClass="icon-help"/>',
     	iconError: '<cti:getIconSvg iconClass="icon-error"/>',
-    	iconAdd: '<cti:getIconSvg iconClass="icon-add"/>'
+    	iconAdd: '<cti:getIconSvg iconClass="icon-add"/>',
+    	iconStar: '<cti:getIconSvg iconClass="icon-star"/>',
+       	iconFavoriteNot: '<cti:getIconSvg iconClass="icon-favorite-not"/>'
     },
     
     timezone: '<cti:getUsersTimezone/>',
