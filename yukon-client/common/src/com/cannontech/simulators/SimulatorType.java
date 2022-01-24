@@ -16,6 +16,7 @@ public enum SimulatorType {
     DATA_STREAMING,
     FIELD_SIMULATOR,
     GATEWAY,
+    RFN_DEVICE_DELETE,
     RFN_LCR,
     RFN_METER,
     RFN_NETWORK,

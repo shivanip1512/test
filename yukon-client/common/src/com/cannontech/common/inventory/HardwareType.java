@@ -38,6 +38,7 @@ public enum HardwareType implements DatabaseRepresentationSource, DisplayableEnu
     LCR_6600_EXPRESSCOM(YUK_DEF_ID_DEV_TYPE_LCR_6600_XCOM, ONE_WAY_RECEIVER, SWITCH, EXPRESSCOM, false, true, false),
     LCR_6600_RFN(YUK_DEF_ID_DEV_TYPE_LCR_6600_RFN, TWO_WAY_RECEIVER, SWITCH, EXPRESSCOM, false, true, false),
     LCR_6700_RFN(YUK_DEF_ID_DEV_TYPE_LCR_6700_RFN, TWO_WAY_RECEIVER, SWITCH, EXPRESSCOM, false, true, false),
+    LCR_6200S(YUK_DEF_ID_DEV_TYPE_LCR_6200S, TWO_WAY_RECEIVER, SWITCH, ITRON, false, true, false),
     LCR_6600S(YUK_DEF_ID_DEV_TYPE_LCR_6600S, TWO_WAY_RECEIVER, SWITCH, ITRON, false, true, false),
     LCR_6601S(YUK_DEF_ID_DEV_TYPE_LCR_6601S, TWO_WAY_RECEIVER, SWITCH, ITRON, false, true, false),
     
@@ -170,7 +171,7 @@ public enum HardwareType implements DatabaseRepresentationSource, DisplayableEnu
                 UTILITY_PRO_G3);
         
         rfTypes = ImmutableSet.of(LCR_6200_RFN, LCR_6600_RFN, LCR_6700_RFN);
-        itronTypes = ImmutableSet.of(LCR_6600S, LCR_6601S);
+        itronTypes = ImmutableSet.of(LCR_6600S, LCR_6601S, LCR_6200S);
         
         utilityProTypes =  ImmutableSet.of(UTILITY_PRO, UTILITY_PRO_G2, UTILITY_PRO_G3, UTILITY_PRO_ZIGBEE);
         autoModeEnableTypes =  ImmutableSet.of(UTILITY_PRO, UTILITY_PRO_G2, UTILITY_PRO_G3);
@@ -186,6 +187,7 @@ public enum HardwareType implements DatabaseRepresentationSource, DisplayableEnu
         starsToPaoMap.put(PaoType.LCR6200_RFN, LCR_6200_RFN);
         starsToPaoMap.put(PaoType.LCR6600_RFN, LCR_6600_RFN);
         starsToPaoMap.put(PaoType.LCR6700_RFN, LCR_6700_RFN);
+        starsToPaoMap.put(PaoType.LCR6200S, LCR_6200S);
         starsToPaoMap.put(PaoType.LCR6600S, LCR_6600S);
         starsToPaoMap.put(PaoType.LCR6601S, LCR_6601S);
         starsToPaoMap.put(PaoType.LCR6200C, LCR_6200C);

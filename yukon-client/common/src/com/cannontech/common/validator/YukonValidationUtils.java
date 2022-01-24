@@ -92,6 +92,17 @@ public class YukonValidationUtils extends ValidationUtils {
         return false;
     }
 
+    /**
+     * Return true if the provided String contains any characters from illegal XML characters ( " ' < > and & )
+     */
+    public static boolean checkIllegalXmlCharacter(Errors errors, String field, String fieldValue) {
+        if (YukonValidationUtilsCommon.checkIllegalXmlCharacter(fieldValue)) {
+            errors.rejectValue(field, "yukon.web.error.isIllegalXmlCharacter");
+            return true;
+        }
+        return false;
+    }
+
     public static boolean checkIsBlank(Errors errors, String field, String fieldValue, boolean fieldAllowsNull) {
         if (YukonValidationUtilsCommon.checkIsBlank(fieldValue, fieldAllowsNull)) {
             errors.rejectValue(field, "yukon.web.error.isBlank", "Cannot be blank.");

@@ -65,7 +65,7 @@ public class SystemLogModel extends ReportModelBase<SystemLog>
 	public final static String USERNAME_STRING = "UserName";
 	
 	/** A string for the title of the data */
-	private static String title = "SYSTEM LOG";
+	private static String title = "System Log";
 	
 	/** Class fields */
 	/**

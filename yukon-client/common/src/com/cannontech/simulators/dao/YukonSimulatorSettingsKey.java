@@ -45,6 +45,10 @@ public enum YukonSimulatorSettingsKey {
     //Run on startup for Gateway
     GATEWAY_SIMULATOR_RUN_ON_STARTUP(false, InputTypeFactory.booleanType(), SimulatorType.GATEWAY),
 
+    //RFN Device Deletion Settings (SimulatorSettings)
+    RFN_DEVICE_DELETION_SIMULATOR_INITIAL_REPLY("OK", InputTypeFactory.stringType(), SimulatorType.RFN_DEVICE_DELETE),
+    RFN_DEVICE_DELETION_SIMULATOR_CONFIRMATION_REPLY("SUCCESS", InputTypeFactory.stringType(), SimulatorType.RFN_DEVICE_DELETE),
+    
     //RFN LCR Simulator Settings (SimulatorSettings)
     RFN_LCR_SIMULATOR_6200_SERIAL_FROM(100000, InputTypeFactory.integerType(), SimulatorType.RFN_LCR),
     RFN_LCR_SIMULATOR_6200_SERIAL_TO(200000, InputTypeFactory.integerType(), SimulatorType.RFN_LCR),

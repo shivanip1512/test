@@ -162,10 +162,13 @@ public class EatonCloudDataReadServiceImpl implements EatonCloudDataReadService 
                     pointMap.put(device.getPaoIdentifier(), pointData);
                     AssetAvailabilityPointDataTimes time = new AssetAvailabilityPointDataTimes(device.getLiteID());
                     time.setLastCommunicationTime(new Instant(pointData.getTimeStamp()));
-                    if(mwChannel.getRelayNumberByRuntime() != null) {
+                    if (mwChannel.getRelayNumberByRuntime() != null && pointData.getValue() > 0) {
                         time.setRelayRuntime(mwChannel.getRelayNumberByRuntime(), new Instant(pointData.getTimeStamp()));
+                        log.debug("Publishing asset availability {} info for PAO {} relay:{} point data value:{}", time, device,
+                                mwChannel.getRelayNumberByRuntime(), pointData.getValue());
+                    } else {
+                        log.debug("Publishing asset availability {} info for PAO {}", time, device);
                     }
-                    log.debug("Publishing asset avaiability {} info for PAO {}", time, device);
                     dynamicLcrCommunicationsDao.insertData(time);
                 }
             }

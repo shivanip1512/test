@@ -15,8 +15,8 @@
 
 <form:form id="update-servers-form" modelAttribute="allSettings" action="${updateUrl}">
     <cti:csrfToken/>
-    <div class="scroll-lg js-resize-with-dialog">
-    <table class="compact-results-table with-form-controls">
+    <div class="js-resize-with-dialog">
+    <table class="compact-results-table with-form-controls no-stripes">
         <thead>
             <tr>
                 <th><i:inline key=".name" /></th>

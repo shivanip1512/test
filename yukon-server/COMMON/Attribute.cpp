@@ -647,6 +647,10 @@ INIT_ATTRIBUTE( DebugEvent,                                         "DEBUG_EVENT
 
 INIT_ATTRIBUTE( RegisterRemoval,                                    "REGISTER_REMOVAL" );
 INIT_ATTRIBUTE( MagnetTampering,                                    "MAGNET_TAMPERING" );
+INIT_ATTRIBUTE( Pulse1SwitchFailure,                                "PULSE_1_SWITCH_FAILURE" );
+INIT_ATTRIBUTE( Pulse2SwitchFailure,                                "PULSE_2_SWITCH_FAILURE" );
+INIT_ATTRIBUTE( NodeCommissionEvent,                                "NODE_COMMISSION_EVENT" );
+INIT_ATTRIBUTE( LostAssociation,                                    "LOST_ASSOCIATION" );
 
 INIT_ATTRIBUTE( TamperNoUsageOver24Hours,                           "TAMPER_NO_USAGE_OVER_24_HOURS" );
 INIT_ATTRIBUTE( TamperReverseWhDetected,                            "TAMPER_REVERSE_WH_DETECTED" );

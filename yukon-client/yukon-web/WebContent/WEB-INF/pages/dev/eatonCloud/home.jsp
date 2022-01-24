@@ -24,13 +24,22 @@
         <br/>Click on the Test button to test the Endpoint and the JSON result will be displayed below.
         <br/>The Clear Cache button will clear the cache.
         <br/>
-        <br/>
         <br/>Configure the Brightlayer Utilities Suite Demand Response URL - Admin/Configuration/Demand Response
         <br/>Brightlayer Utilities Suite Demand Response URL:https://eas-dev.eastus.cloudapp.azure.com/api
         <br/>Simulator URL local: http://localhost:8080/yukon/dev/api
         <br/>Simulator URL QA: http://localhost:8080/dev/api
         <br/>
         <br/>Currently using <span class="fwb bg-color-grey txt-color-white">${urlType}</span>: ${url}
+     </div><br/>
+     <tags:alertBox classes="js-success-message dn" type="success" includeCloseButton="true"></tags:alertBox>
+     <div class="js-secret-information user-message info dn">
+     	Token cached by Service Manager: <span class="js-cached-token">${cachedToken}</span>
+     	<br/>
+        Token1:<span class="js-secret1Token">${secret1Token}</span> cached by <span class="js-cachedBy">${cachedBy}</span> 
+        Secret1: <span class="js-secret1">${secret1}</span> Expiration: <span class="js-secret1Expiration"></span>
+        <br/>
+        Token2:<span class="js-secret2Token">${secret2Token}</span> cached by <span class="js-cachedBy">${cachedBy}</span> 
+        Secret2: <span class="js-secret2">${secret2}</span> Expiration: <span class="js-secret2Expiration"></span>
      </div>
      <br/>
 	    
@@ -106,7 +115,9 @@
                             </c:if>
                         </td>
                         <td>
-                            <cti:button label="Test" classes="js-test-endpoint MR0" data-endpoint="${endpoint}" data-params="${params}"/>
+                        	<c:if test="${endpoint.showTestButton()}">
+                            	<cti:button label="Test" classes="js-test-endpoint MR0" data-endpoint="${endpoint}" data-params="${params}"/>
+                            </c:if>
                             <c:if test="${endpoint == 'SECURITY_TOKEN'}">
                                 <cti:button label="Clear" classes="js-clear-cache MR0"/>
                             </c:if>
@@ -143,37 +154,54 @@
             </tags:nameValue>
         </tags:nameValueContainer>
     </form:form>
-    
-    
-    <div class="notes">
-        <br/>Reads all Eaton Cloud LCRs
-     </div>
-    <br/>
-    <cti:url var="autoReadUrl" value="deviceAutoRead"/>
-    <form:form id="autoReadForm" action="${autoReadUrl}" method="post">
-        <tags:nameValueContainer>
-            <tags:nameValue name="Read LCRs" nameColumnWidth="250px">
-                <cti:button label="Submit" type="submit" classes="fn vam"/>
-                <form:form id="autoReadForm" action="${autoReadUrl}" method="post"/>
-                <cti:csrfToken/>
-            </tags:nameValue>
-        </tags:nameValueContainer>
-    </form:form>
-    
-        <div class="notes">
-        <br/>Force Runtime Calculation
-     </div>
-    <br/>
-    <cti:url var="forceRuntimeCalcUrl" value="forceRuntimeCalc"/>
-    <form:form id="forceRuntimeCalcForm" action="${forceRuntimeCalcUrl}" method="post">
-        <tags:nameValueContainer>
-            <tags:nameValue name="" nameColumnWidth="250px">
-                <cti:button label="Submit" type="submit" classes="fn vam"/>
-                <form:form id="forceRuntimeCalcForm" action="${forceRuntimeCalcUrl}" method="post"/>
-                <cti:csrfToken/>
-            </tags:nameValue>
-        </tags:nameValueContainer>
-    </form:form>
-    
-    <cti:includeScript link="/resources/js/pages/yukon.dev.simulators.eatonCloudSimulator.js" />
+
+
+	<br />
+	<cti:url var="rotateSecretsUrl" value="rotateSecrets" />
+	<form:form id="rotateSecretsForm" action="${rotateSecretsUrl}"
+		method="post">
+		<tags:nameValueContainer>
+			<cti:button label="Start Automatic Secret Rotation" type="submit" />
+			<form:form id="rotateSecretsForm" action="${rotateSecretsUrl}"
+				method="post" />
+			<cti:csrfToken />
+		</tags:nameValueContainer>
+	</form:form>
+	<br />
+	<cti:url var="validateSecretsUrl" value="validateSecrets" />
+	<form:form id="validateSecretsForm" action="${validateSecretsUrl}"
+		method="post">
+		<tags:nameValueContainer>
+			<cti:button label="Start Automatic Secret Validation" type="submit" />
+			<form:form id="validateSecretsForm" action="${validateSecretsUrl}"
+				method="post" />
+			<cti:csrfToken />
+		</tags:nameValueContainer>
+	</form:form>
+	<br />
+	<cti:url var="autoReadUrl" value="deviceAutoRead" />
+	<form:form id="autoReadForm" action="${autoReadUrl}" method="post">
+		<tags:nameValueContainer>
+			<cti:button label="Read all Eaton Cloud LCRs" type="submit" />
+			<form:form id="autoReadForm" action="${autoReadUrl}" method="post" />
+			<cti:csrfToken />
+		</tags:nameValueContainer>
+	</form:form>
+
+	<br />
+	<cti:url var="forceRuntimeCalcUrl" value="forceRuntimeCalc" />
+	<form:form id="forceRuntimeCalcForm" action="${forceRuntimeCalcUrl}"
+		method="post">
+		<tags:nameValueContainer>
+
+			<cti:button label="Force Runtime Calculation" type="submit" />
+			<form:form id="forceRuntimeCalcForm" action="${forceRuntimeCalcUrl}"
+				method="post" />
+			<cti:csrfToken />
+
+		</tags:nameValueContainer>
+	</form:form>
+
+	<cti:includeScript
+			link="/resources/js/pages/yukon.dev.simulators.eatonCloudSimulator.js" />
 </cti:standardPage>

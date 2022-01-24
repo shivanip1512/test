@@ -9,12 +9,14 @@ public class EatonCloudSimulatorRequest implements SimulatorRequest{
     private String method;
     private Class<?>[] paramClasses;
     private Object[] paramValues;
+    private String header;
 
-    public EatonCloudSimulatorRequest(EatonCloudRetrievalUrl url, String method, Class<?>[] paramClasses, Object[] paramValues) {
+    public EatonCloudSimulatorRequest(EatonCloudRetrievalUrl url, String method, Class<?>[] paramClasses, Object[] paramValues, String header) {
         this.url = url;
         this.method = method;
         this.paramClasses = paramClasses;
         this.paramValues = paramValues;
+        this.header = header;
     }
 
     public EatonCloudRetrievalUrl getUrl() {
@@ -36,5 +38,9 @@ public class EatonCloudSimulatorRequest implements SimulatorRequest{
     @Override
     public SimulatorType getRequestType() {
         return SimulatorType.EATON_CLOUD;
+    }
+
+    public String getHeader() {
+        return header;
     }
 }

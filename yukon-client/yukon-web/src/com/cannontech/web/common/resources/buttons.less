@@ -95,9 +95,9 @@ button.naked:not([disabled]):hover .b-label,
 
 /* Disabled Button */
 
-button[disabled], .button[disabled] { 
-    border-color: #d6d6d6;
+button[disabled], .button[disabled] {
     cursor: default;
+    opacity: 0.3;
 }
 
 button[disabled] .b-label, 
@@ -191,9 +191,9 @@ button.yes .b-label, button.no .b-label, .button.yes .b-label, .button.no .b-lab
 	font-size: 0.8125rem;
 }
 
-button.yes:hover, button.no:hover, .button.yes:hover, .button.no:hover,
-.button-group .button:hover,
-.radio-btn .button:hover {
+button.yes:enabled:hover, button.no:enabled:hover, .button.yes:enabled:hover, .button.no:enabled:hover,
+.button-group .button:enabled:hover,
+.radio-btn .button:enabled:hover {
 	background-color: @toggle-button-color-hover !important;
 }
 

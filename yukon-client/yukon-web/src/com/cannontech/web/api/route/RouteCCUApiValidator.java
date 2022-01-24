@@ -63,33 +63,40 @@ public class RouteCCUApiValidator<T extends CCURouteModel<?>> extends RouteApiVa
 
     private void validateRepeater(RepeaterRouteModel repeaterRouteModel, Errors errors, Integer repeaterArrSize, Integer count,
             boolean lastRepeater) {
-        int repeaterId = repeaterRouteModel.getRepeaterId();
-        /**
-         * Checking repaterId belongs to device Repeater or not
-         * if repeater array size is equal to last repeater then variable bit is 7 or else ranges between 0 to 6.
-         * If Repeater_850 exists in the input then it should be last repeater.
-         */
-        LiteYukonPAObject liteYukonPAObject = dbCache.getAllPaosMap().get(repeaterId);
-        if (liteYukonPAObject == null || !liteYukonPAObject.getPaoType().isRepeater()) {
-            errors.rejectValue("repeaters[" + count + "].repeaterId", ApiErrorDetails.INVALID_VALUE.getCodeString(),
-                    new Object[] { repeaterId }, "");
+        if (repeaterRouteModel.getRepeaterId() == null) {
+            errors.rejectValue("repeaters[" + count + "].repeaterId", ApiErrorDetails.FIELD_REQUIRED.getCodeString(),
+                    new Object[] { "repeaterId" }, "");
         } else {
-            YukonApiValidationUtils.checkIfFieldRequired("repeaters[" + count + "].variableBits", errors,
-                    repeaterRouteModel.getVariableBits(), "VariableBits");
-            if (!errors.hasFieldErrors("variableBits")) {
-                int variableBits = repeaterRouteModel.getVariableBits();
-                if (!lastRepeater) {
-                    // non last Repeater can have variable bits from 1 to 6
-                    YukonApiValidationUtils.checkRange(errors, "repeaters[" + count + "].variableBits", variableBits, 1, 6, false);
-                    // 1st 6 cant be of type REPEATER_850
-                    if (liteYukonPAObject.getPaoType() == PaoType.REPEATER_850) {
-                        String repeaterI18nText = accessor.getMessage(basekey, String.valueOf(repeaterId));
-                        errors.rejectValue("repeaters[" + count + "].repeaterId", ApiErrorDetails.INVALID_VALUE.getCodeString(),
-                                new Object[] { repeaterI18nText }, "");
+            int repeaterId = repeaterRouteModel.getRepeaterId();
+            /**
+             * Checking repaterId belongs to device Repeater or not
+             * if repeater array size is equal to last repeater then variable bit is 7 or else ranges between 0 to 6.
+             * If Repeater_850 exists in the input then it should be last repeater.
+             */
+            LiteYukonPAObject liteYukonPAObject = dbCache.getAllPaosMap().get(repeaterId);
+            if (liteYukonPAObject == null || !liteYukonPAObject.getPaoType().isRepeater()) {
+                errors.rejectValue("repeaters[" + count + "].repeaterId", ApiErrorDetails.INVALID_VALUE.getCodeString(),
+                        new Object[] { repeaterId }, "");
+            } else {
+                YukonApiValidationUtils.checkIfFieldRequired("repeaters[" + count + "].variableBits", errors,
+                        repeaterRouteModel.getVariableBits(), "VariableBits");
+                if (!errors.hasFieldErrors("variableBits")) {
+                    int variableBits = repeaterRouteModel.getVariableBits();
+                    if (!lastRepeater) {
+                        // non last Repeater can have variable bits from 1 to 6
+                        YukonApiValidationUtils.checkRange(errors, "repeaters[" + count + "].variableBits", variableBits, 1, 6,
+                                false);
+                        // 1st 6 cant be of type REPEATER_850
+                        if (liteYukonPAObject.getPaoType() == PaoType.REPEATER_850) {
+                            String repeaterI18nText = accessor.getMessage(basekey, String.valueOf(repeaterId));
+                            errors.rejectValue("repeaters[" + count + "].repeaterId",
+                                    ApiErrorDetails.INVALID_VALUE.getCodeString(),
+                                    new Object[] { repeaterI18nText }, "");
+                        }
+                    } else if (variableBits != 7) {
+                        errors.rejectValue("repeaters[" + count + "].variableBits", ApiErrorDetails.INVALID_VALUE.getCodeString(),
+                                new Object[] { 7 }, "");
                     }
-                } else if (variableBits != 7) {
-                    errors.rejectValue("repeaters[" + count + "].variableBits", ApiErrorDetails.INVALID_VALUE.getCodeString(),
-                            new Object[] { 7 }, "");
                 }
             }
         }

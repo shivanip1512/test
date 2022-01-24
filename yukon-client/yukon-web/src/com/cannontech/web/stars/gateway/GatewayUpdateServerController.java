@@ -24,7 +24,6 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import com.cannontech.clientutils.YukonLogManager;
 import com.cannontech.common.events.loggers.GatewayEventLogService;
 import com.cannontech.common.i18n.MessageSourceAccessor;
-import com.cannontech.common.pao.PaoType;
 import com.cannontech.common.rfn.dao.impl.GatewayDataException;
 import com.cannontech.common.rfn.message.gateway.Authentication;
 import com.cannontech.common.rfn.model.GatewayFirmwareVersion;

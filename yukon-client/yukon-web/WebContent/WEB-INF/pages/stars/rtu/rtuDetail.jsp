@@ -222,7 +222,7 @@
                 </cti:checkRolesAndProperties>
                 <c:if test="${isPointCreate}">
                     <div class="stacked-lg">
-                        <span class="fr"><i:inline key=".rtuPoints"/><tags:pointCreation paoId="${rtu.id}" buttonClasses="vam"/></span>
+                        <span class="fr"><i:inline key=".rtuPoints"/><tags:pointCreation paoId="${rtu.id}" buttonClasses="vam MB10"/></span>
                     </div>
                     <hr>
                 </c:if>

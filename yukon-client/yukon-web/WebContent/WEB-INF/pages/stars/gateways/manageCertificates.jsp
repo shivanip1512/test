@@ -15,7 +15,7 @@
              data-help-text="<cti:msg key="yukon.web.modules.operator.gateways.cert.update.note"/>"
              data-url="<cti:url value="/stars/gateways/cert-update/options"/>"
              data-width="450"
-             data-height="250"
+             data-height="280"
              data-ok-text="<cti:msg2 key="components.button.start.label"/>">
         </div>
     </cti:checkRolesAndProperties>

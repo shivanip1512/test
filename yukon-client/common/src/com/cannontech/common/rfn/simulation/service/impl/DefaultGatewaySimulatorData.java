@@ -20,6 +20,7 @@ import com.cannontech.common.rfn.message.gateway.LastCommStatus;
 import com.cannontech.common.rfn.message.gateway.Radio;
 import com.cannontech.common.rfn.message.gateway.RadioType;
 import com.cannontech.common.rfn.message.gateway.SequenceBlock;
+import com.cannontech.common.rfn.service.RfnGatewayService;
 import com.cannontech.common.rfn.simulation.SimulatedGatewayDataSettings;
 import com.google.common.collect.Sets;
 
@@ -28,8 +29,7 @@ import com.google.common.collect.Sets;
  * combining the defaults with any device-specific values available.
  */
 public class DefaultGatewaySimulatorData {
-    private static final String ipAddress = "123.123.123.123";
-    private static final String port = "1234";
+
     private static final Authentication admin = new Authentication();
     private static final String adminUser = "admin";
     private static final String adminPass = "password";
@@ -79,6 +79,10 @@ public class DefaultGatewaySimulatorData {
         response.setRfnIdentifier(rfnId);
         
         response.setIpv6Prefix(ipv6Prefix);
+        
+        
+        response.setNmIpAddress(customData.getNmIpAddress() == null ? "127.0.0.1": customData.getNmIpAddress());
+        response.setNmPort(customData.getNmPort());
 
         response.setAdmin(customData.getAdmin());
         response.setIpAddress(customData.getIpAddress());
@@ -157,14 +161,25 @@ public class DefaultGatewaySimulatorData {
     public static GatewaySaveData getDefaultGatewayData() {
         GatewaySaveData data = new GatewaySaveData();
         data.setAdmin(admin);
-        data.setIpAddress(ipAddress);
-        data.setPort(Integer.valueOf(port));
+        Random rd = new Random();
+        if (rd.nextBoolean()) {
+            data.setIpAddress("127.0.0.1");
+            data.setNmIpAddress("127.0.0.2");
+            data.setNmPort(RfnGatewayService.GATEWAY_DEFAULT_PORT);
+            data.setPort(RfnGatewayService.GATEWAY_DEFAULT_PORT);
+        } else {
+            data.setIpAddress("127.0.0.3");
+            data.setNmIpAddress("127.0.0.4");
+            data.setNmPort(1234);
+            data.setPort(4567);
+        }
+       
         data.setSuperAdmin(superAdmin);
         data.setUpdateServerLogin(updateServerAdmin);
         data.setUpdateServerUrl(updateServerUrl);
         return data;
     }
-    
+
     private static DataSequence buildDataSequence(DataType dataType) {
         DataSequence dataSequence = new DataSequence();
         dataSequence.setType(dataType);
@@ -177,15 +192,5 @@ public class DefaultGatewaySimulatorData {
         dataSequence.setBlocks(Sets.newHashSet(sequenceBlock));
         
         return dataSequence;
-    }
-    
-    private static String getRandomHexString(int numchars){
-        Random r = new Random();
-        StringBuffer sb = new StringBuffer();
-        while(sb.length() < numchars){
-            sb.append(Integer.toHexString(r.nextInt()));
-        }
-
-        return sb.toString().substring(0, numchars);
     }
 }
