@@ -184,7 +184,7 @@ public class PerIntervalAndLoadProfileCalculator implements PointCalculator {
             }
         }
         
-        if (nextPerIntervalValue < 0 || previousPerIntervalValue < 0) {
+        if ((nextPerIntervalValue < 0 || previousPerIntervalValue < 0) && (basedOn == null || !basedOn.canCreateNegativeCalcualations())) {
             log.info("Calculated negative previous/next RFN meter reading value. Interval and profile data calculations"
                     + " being skipped for {}, RFN meter ID: {}, pointData: {}", timestamp, pao.getPaoId(), pointData);
             return; // Do not process further

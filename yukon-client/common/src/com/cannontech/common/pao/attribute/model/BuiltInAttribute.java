@@ -856,6 +856,8 @@ public enum BuiltInAttribute implements Attribute, DisplayableEnum {
     private static Set<BuiltInAttribute> itronLcrAttributes;
     
     private static Set<BuiltInAttribute> calculableAttributes;
+    
+    private static Set<BuiltInAttribute> canCreateNegativeCalculations;
 
     static {
 
@@ -880,6 +882,7 @@ public enum BuiltInAttribute implements Attribute, DisplayableEnum {
         buildVoltageAttributes();
         buildItronLcrAttributes();
         buildCalculableAttributes();
+        buildCanCreateNegativeCalculations();
     }
 
     /**
@@ -1242,6 +1245,15 @@ public enum BuiltInAttribute implements Attribute, DisplayableEnum {
                                                NET_KWH_RATE_C,
                                                NET_KWH_RATE_D);
     }
+    
+    private static void buildCanCreateNegativeCalculations() {
+
+        canCreateNegativeCalculations = ImmutableSet.of(NET_KWH,
+                                                        NET_KWH_RATE_A,
+                                                        NET_KWH_RATE_B,
+                                                        NET_KWH_RATE_C,
+                                                        NET_KWH_RATE_D);
+    }
 
     private String defaultDescription;
     private AttributeGroup attributeGroup;
@@ -1262,6 +1274,10 @@ public enum BuiltInAttribute implements Attribute, DisplayableEnum {
 
     public boolean isReadableProfile() {
         return readableProfileAttributes.contains(this);
+    }
+
+    public boolean canCreateNegativeCalcualations() {
+        return canCreateNegativeCalculations.contains(this);
     }
 
     public static Map<AttributeGroup, Set<BuiltInAttribute>> getStandardGroupedAttributes() {
