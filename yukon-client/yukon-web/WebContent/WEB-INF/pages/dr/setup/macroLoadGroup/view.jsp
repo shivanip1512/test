@@ -31,7 +31,7 @@
             </cti:checkRolesAndProperties>
             <!-- Delete -->
             <cti:checkRolesAndProperties value="DR_SETUP_PERMISSION" level="OWNER">
-                <cm:dropdownOption icon="icon-cross" key="yukon.web.components.button.delete.label" classes="js-hide-dropdown"
+                <cm:dropdownOption icon="icon-delete" key="yukon.web.components.button.delete.label" classes="js-hide-dropdown"
                                id="js-delete-option" data-ok-event="yukon:macro-load-group:delete"/>
             
                 <d:confirm on="#js-delete-option" nameKey="confirmDelete" argument="${macroLoadGroup.name}" />
@@ -88,7 +88,7 @@
                                     <div class="select-box-item cm js-assigned-load-group" data-id="${item.id}">
                                         <cti:deviceName deviceId="${item.id}"/>
                                     
-                                        <cti:button icon="icon-cross" renderMode="buttonImage" classes="select-box-item-remove js-remove"/>
+                                        <cti:button icon="icon-remove" renderMode="buttonImage" classes="select-box-item-remove js-remove"/>
                                         <div class="select-box-item-movers">
                                             <c:set var="disabled" value="${status.first}"/>
                                             <cti:button icon="icon-bullet-go-up" renderMode="buttonImage"
@@ -102,7 +102,7 @@
                             </div>
                             <div class="select-box-item cm js-assigned-load-group js-template-row dn" data-id="0">
                                 <span class="js-load-group-name"></span>
-                                <cti:button icon="icon-cross" renderMode="buttonImage" classes="select-box-item-remove js-remove"/>
+                                <cti:button icon="icon-remove" renderMode="buttonImage" classes="select-box-item-remove js-remove"/>
                                 <div class="select-box-item-movers">
                                     <cti:button icon="icon-bullet-go-up" renderMode="buttonImage" classes="left select-box-item-up js-move-up"/>
                                     <cti:button icon="icon-bullet-go-down" renderMode="buttonImage" classes="right select-box-item-down js-move-down" disabled="${true}"/>
