@@ -1,4 +1,4 @@
-Meter models:
+ï»¿ï»¿Meter models:
     Itron Centron:
         - &c1sx ITRN C1SX
         - &c2sx ITRN C2SX
@@ -137,7 +137,7 @@ Units of measure:
     &Var    Var  : Var
     &Q      Q    : Q
     &VA     VA   : Volt-Amps
-    &C      °C   : Temperature (in degrees Celsius)
+    &C      Â°C   : Temperature (in degrees Celsius)
     &Unk    "-"  : Unknown
     &Out    Outage Count        : Outage Count
     &Rest   Restore Count       : Restore Count
@@ -206,7 +206,7 @@ Modifiers:
         - &Coin6 Coincident Value 6
         - &Coin7 Coincident Value 7
 
-# Table 1 – Centron C1SX and C2SX with Advanced Metrology
+# Table 1 â€“ Centron C1SX and C2SX with Advanced Metrology
 Centron C1SX and C2SX with Advanced Metrology:
     - Watt-hours Delivered:                         { Unit: *Wh,  Modifiers: [ *Q1, *Q4                         ], Models: *c1sx_c2sx }
     - Watt-hours Received:                          { Unit: *Wh,  Modifiers: [ *Q2, *Q3                         ], Models: *c1sx_c2sx }
@@ -267,7 +267,7 @@ Centron C1SX and C2SX with Advanced Metrology:
     - Coincident Time of Frozen Peak Demand Rate D: { Unit: *s,   Modifiers: [ *RateD                           ], Models: *c1sx_c2sx }
     - RFN Temperature:                              { Unit: *C,   Modifiers: [                                  ], Models: *c1sx_c2sx }
 
-# Table 2 – Centron C2SX Prior To Advanced Metrology
+# Table 2 â€“ Centron C2SX Prior To Advanced Metrology
 Centron C2SX prior to Advanced Metrology:
     - Watt-hours Delivered:                   { Unit: *Wh, Modifiers: [ *Q1, *Q4               ] }
     - Watt-hours Received:                    { Unit: *Wh, Modifiers: [ *Q2, *Q3               ] }
@@ -306,7 +306,7 @@ Centron C2SX prior to Advanced Metrology:
     # Table 6 shows units and modifiers for RFN-420 nodes in kWh meters without Advanced Metrology.
     # Table 11 shows units and modifiers for RFN-500 nodes in AX meters with Advanced Metrology.
 
-# Table 3 – RFN-420 Node in L & G Focus AX with Advanced Metrology
+# Table 3 â€“ RFN-420 Node in L & G Focus AX with Advanced Metrology
 # This table covers models:  FocusAXD, FocusAXT, FocusAXR, FocusAXD-SD, FocusAXT-SD, FocusAXR-SD
 RFN-420 Node in L & G Focus AX with Advanced Metrology:
     - Watt-hours Delivered:                         { Unit: *Wh,     Modifiers: [ *Q1, *Q4                         ] }
@@ -382,7 +382,7 @@ RFN-420 Node in L & G Focus AX with Advanced Metrology:
     - Maximum Voltage Phase C:                      { Unit: *V,      Modifiers: [ *PhC, *Max, *milli               ] }
     - RFN Temperature:                              { Unit: *C,      Modifiers: [                                  ] }
      
-# Table 4 – RFN-420 Node in L & G Focus AX Prior to Advanced Metrology
+# Table 4 â€“ RFN-420 Node in L & G Focus AX Prior to Advanced Metrology
 RFN-420 Node in L & G Focus AX Prior to Advanced Metrology:
     - Watt-hours Delivered:        { Unit: *Wh,     Modifiers: [ *Q1, *Q4                         ] }
     - Watt-hours Received:         { Unit: *Wh,     Modifiers: [ *Q2, *Q3                         ] }
@@ -426,7 +426,7 @@ RFN-420 Node in L & G Focus AX Prior to Advanced Metrology:
     - Restore Blink Count:         { Unit: *RestB,  Modifiers: [                                  ] }
     - RFN Temperature:             { Unit: *C,      Modifiers: [                                  ] }
      
-# Table 5 – RFN-500 and RFN-420 Node in L & G Focus kWh with Advanced Metrology
+# Table 5 â€“ RFN-500 and RFN-420 Node in L & G Focus kWh with Advanced Metrology
 # The model name for meters with RFN-420 nodes is FocuskWh
 # The model name for meters with RFN-500 nodes is FocuskWh-500
 # Both meter/node combinations have all of the metrics shown below.
@@ -485,7 +485,7 @@ RFN-500 and RFN-420 Node in L & G Focus kWh with Advanced Metrology:
     - Secondary Voltage:                            { Unit: *V,  Modifiers: [ *Sec, *milli                     ], Mapped: false }
     - RFN Temperature:                              { Unit: *C,  Modifiers: [                                  ] }
      
-# Table 6 – RFN-420 Node in L & G Focus kWh Prior to Advanced Metrology
+# Table 6 â€“ RFN-420 Node in L & G Focus kWh Prior to Advanced Metrology
 RFN-420 Node in L & G Focus kWh Prior to Advanced Metrology:
     - Watt-hours Delivered: { Unit: *Wh, Modifiers: [ *Q1, *Q4     ] }
     - Watt-hours Received:  { Unit: *Wh, Modifiers: [ *Q2, *Q3     ] }
@@ -494,7 +494,7 @@ RFN-420 Node in L & G Focus kWh Prior to Advanced Metrology:
     - Interval Demand:      { Unit: *W,  Modifiers: [ *Q1, *Q4     ] }
     - RFN Temperature:      { Unit: *C,  Modifiers: [              ] }
 
-# Table 7 – Elster A3
+# Table 7 â€“ Elster A3
 Elster A3:
     - Watt-hours Delivered:                                            { Unit: *Wh,     Modifiers: [ *Q1, *Q4                              ], Models: *DTKR, Other names: [ "kWh delivered" ] }
     - Watt-hours Received:                                             { Unit: *Wh,     Modifiers: [ *Q2, *Q3                              ], Models: *DTKR, Other names: [ "kWh received" ] }
@@ -712,7 +712,7 @@ ELO:
     - Power Factor:                        { Unit: *PF,    Modifiers: [                  ], Models: *ELO-123, Mapped: false }
     - RFN Temperature:                     { Unit: *C,     Modifiers: [                  ], Models: *ELO-123, Mapped: false }
 
-#Table 9 – Itron Sentinel
+#Table 9 â€“ Itron Sentinel
 Itron Sentinel:
     - Watt-hours Delivered:                                                     { Unit: *Wh,    Modifiers: [ *Q1, *Q4                                   ], Models: *01234, Itron name: "Delivered kWh" }
     - Watt-hours Received:                                                      { Unit: *Wh,    Modifiers: [ *Q2, *Q3                                   ], Models: *_1234, Itron name: "Received kWh" }
@@ -1539,7 +1539,7 @@ RFN-500 Node in Landis & Gyr S4e and S4x:
     - Current Angle Phase C:                      { Unit: *A_deg, Modifiers: [ *PhC                                                  ], Models: *ADTR-RDTR-650 }
     - RFN Temperature:                            { Unit: *C,     Modifiers: [                                                       ], Models: *ADTR-RDTR-650 }
 
-# Table 11 – RFN-500 Node in L & G Focus AX and RX (with Advanced Metrology)
+# Table 11 â€“ RFN-500 Node in L & G Focus AX and RX (with Advanced Metrology)
 RFN-500 Node in L & G Focus AX (with Advanced Metrology):
     - Watt-hours Delivered:                 { Unit: *Wh,     Modifiers: [ *Q1, *Q4                         ], Models: *AX-RX-23 }
     - Watt-hours Received:                  { Unit: *Wh,     Modifiers: [ *Q2, *Q3                         ], Models: *AX-RX-23 }
@@ -1711,7 +1711,7 @@ RFN-500 Node in L & G Focus AX (with Advanced Metrology):
     - Current Phase C:                      { Unit: *A,      Modifiers: [ *PhC, *milli                     ], Models: *AX-RX-_3 }
     - RFN Temperature:                      { Unit: *C,      Modifiers: [                                  ], Models: *AX-RX-23 }
 
-# Table 12 – RFN-500 Node in L & G Focus AXe and RXe (with Advanced Metrology)
+# Table 12 â€“ RFN-500 Node in L & G Focus AXe and RXe (with Advanced Metrology)
 RFN-500 Node in L & G Focus AXe (with Advanced Metrology):
     - Watt-hours Delivered:                 { Unit: *Wh,     Modifiers: [ *Q1, *Q4                         ], Models: *AXe-RXe-23 }
     - Watt-hours Received:                  { Unit: *Wh,     Modifiers: [ *Q2, *Q3                         ], Models: *AXe-RXe-23 }
@@ -1887,7 +1887,7 @@ RFN-500 Node in L & G Focus AXe (with Advanced Metrology):
 Next Gen Water Node:
     - Faceplate Reading: { Unit: *Unk,  Modifiers: [        ], Metric ID: 255 }
     # Note: For the Faceplate Reading, the units string (passed to Yukon) is a dash, "-", which corresponds to Unknown units reported by the node.  
-    #     The goal of the Faceplate Reading channel is to match the number on the meter’s faceplate.  The actual units of the meter’s faceplate 
+    #     The goal of the Faceplate Reading channel is to match the number on the meterâ€™s faceplate.  The actual units of the meterâ€™s faceplate 
     #     reading will differ among the various meter types that may be attached to the node.
     - Battery Voltage:   { Unit: *V,    Modifiers: [ *milli ], Metric ID: 115 }
     # Note: The metricId is incorrect for the Battery Voltage. It will be corrected in the future.
