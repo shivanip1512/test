@@ -1,7 +1,7 @@
 token-generate:
   post:
       tags:
-        - Token Generation
+        - Authentication
       summary: Log in and generate token
       description: API to Generate a token and set it for authorization.
       requestBody:
@@ -25,10 +25,11 @@ token-generate:
               examples:
                 Token: 
                   $ref: '../schemas/tokenSchema.yaml#/components/examples/Token'
+
 refreshToken:
   post:
       tags:
-        - Refresh Access Token
+        - Authentication
       summary: Generate Refresh and Access token
       description: Use existing valid refresh token to generate a new set of access and refresh tokens to continue making API calls.
       requestBody:
@@ -39,8 +40,8 @@ refreshToken:
             schema:
               $ref: '../schemas/tokenSchema.yaml#/Token-Refresh-Generate-Request'
             examples:
-              Refresh: 
-                $ref: '../schemas/tokenSchema.yaml#/components/examples/Refresh'
+              RefreshToken: 
+                $ref: '../schemas/tokenSchema.yaml#/components/examples/RefreshToken'
         required: true
       responses:
         '200':
@@ -55,7 +56,7 @@ refreshToken:
 logout:
   post:
       tags:
-        - Logout
+        - Authentication
       summary: Log out and invalidate refresh token
       description: Logout a User by invalidating refresh token.
       requestBody:
