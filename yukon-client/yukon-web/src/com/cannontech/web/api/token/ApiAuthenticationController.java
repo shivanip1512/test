@@ -66,7 +66,8 @@ public class ApiAuthenticationController {
                 log.info("User " + user.getUsername() + " (userid=" + user.getUserID() + ") has logged in from " + request.getRemoteAddr());
                 return new ResponseEntity<TokenResponse>(response, HttpStatus.OK);
             } catch (BadAuthenticationException | PasswordExpiredException e) {
-                throw new AuthenticationException("Authentication Failed. Username or Password not valid." + e);
+                log.error(e);
+                throw new AuthenticationException("Authentication Failed. Username or Password not valid.");
             }
         } else {
             throw new AuthenticationException("Username or Password not provided");
