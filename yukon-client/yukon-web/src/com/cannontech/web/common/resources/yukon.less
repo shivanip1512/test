@@ -1620,7 +1620,7 @@ hr.dashed,
 .datetimeEntry_wrap {
     display: inline-block;
     overflow: hidden;
-    background: #ccc;
+    background: #fff;
     border-radius: @border-radius;
     float: left;
     margin-right: 5px;
@@ -1636,8 +1636,11 @@ hr.dashed,
     font-size: 14px !important; /* jquery ui is messing up the font-size */
 }
 .datetimeEntry_wrap img { 
-	margin: 5px;
-	padding-top: 5px; 
+    margin: 5px;
+    padding-top: 5px; 
+}
+.datetimeEntry_wrap:focus-within {
+    border: 2px solid @primary-color;
 }
 .timeOffsetWrap img {
     margin-left: 8px;
@@ -1664,6 +1667,33 @@ input.timePicker,
 input.timeOffsetPicker,
 input.dateTimePicker {
     border-radius: @border-radius 0 0 @border-radius;
+}
+
+.datetimeEntry_wrap.date-time-error{
+    border: 2px solid @red !important;
+}
+
+input.datePicker,
+input.timePicker,
+input.timeOffsetPicker,
+input.dateTimePicker { 
+    background: #fff;
+    border: none !important;
+}
+
+input.datePicker:hover,
+input.timePicker:hover,
+input.timeOffsetPicker:hover,
+input.dateTimePicker:hover { 
+    background: none !important;
+    border: none !important;
+};
+input.datePicker:focus,
+input.timePicker:focus,
+input.timeOffsetPicker:focus,
+input.dateTimePicker:focus
+ {
+    border: none !important;
 }
 input.datePicker { width: 114px ;}
 input.timePicker { width: 74px; }
