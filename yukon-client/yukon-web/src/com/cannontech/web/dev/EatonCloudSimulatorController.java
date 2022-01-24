@@ -1,7 +1,6 @@
 package com.cannontech.web.dev;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -18,7 +17,6 @@ import org.joda.time.Instant;
 import org.joda.time.format.DateTimeFormatter;
 import org.joda.time.format.ISODateTimeFormat;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.converter.json.MappingJackson2HttpMessageConverter;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.ModelMap;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -43,7 +41,6 @@ import com.cannontech.dr.eatonCloud.model.v1.EatonCloudCommandResponseV1;
 import com.cannontech.dr.eatonCloud.model.v1.EatonCloudCommunicationExceptionV1;
 import com.cannontech.dr.eatonCloud.model.v1.EatonCloudCredentialsV1;
 import com.cannontech.dr.eatonCloud.model.v1.EatonCloudDeviceDetailV1;
-import com.cannontech.dr.eatonCloud.model.v1.EatonCloudErrorHandlerV1;
 import com.cannontech.dr.eatonCloud.model.v1.EatonCloudSecretValueV1;
 import com.cannontech.dr.eatonCloud.model.v1.EatonCloudServiceAccountDetailV1;
 import com.cannontech.dr.eatonCloud.model.v1.EatonCloudSiteDevicesV1;
@@ -117,32 +114,37 @@ public class EatonCloudSimulatorController {
 
         if (url.contains("localhost") || url.contains("127.0.0.1")) {
             json.put("cachedBy", "Simulator");
+            String serviceAccountId = settingDao.getString(GlobalSettingType.EATON_CLOUD_SERVICE_ACCOUNT_ID);
+            try {
+                EatonCloudTokenV1 token1 = retrieveNewToken(GlobalSettingType.EATON_CLOUD_SECRET, serviceAccountId);
+                json.put("secret1Token", token1.getToken());
+            } catch (Exception e) {
+                json.put("secret1Token", "Date doesn't exist");
+                log.error("Error", e);
+            }
+
+            try {
+                EatonCloudTokenV1 token2 = retrieveNewToken(GlobalSettingType.EATON_CLOUD_SECRET2, serviceAccountId);
+                json.put("secret2Token", token2.getToken());
+            } catch (Exception e) {
+                json.put("secret2Token", "Date doesn't exist");
+                log.error("Error", e);
+            }
+
+            try {
+                EatonCloudServiceAccountDetailV1 detail = eatonCloudCommunicationServiceV1.getServiceAccountDetail();
+                json.put("secret1Expiration", detail.getExpiryTime(1));
+                json.put("secret2Expiration", detail.getExpiryTime(2));
+            } catch (Exception e) {
+                log.error("Error", e);
+            }
         } else {
             json.put("cachedBy", "Cloud");
-        }
-
-        if (restTemplate == null) {
-            restTemplate = new RestTemplate();
-            restTemplate.setErrorHandler(new EatonCloudErrorHandlerV1());
-            restTemplate.setMessageConverters(Arrays.asList(new MappingJackson2HttpMessageConverter()));
-        }
-
-        String serviceAccountId = settingDao.getString(GlobalSettingType.EATON_CLOUD_SERVICE_ACCOUNT_ID);
-        try {
-            EatonCloudTokenV1 token1 = retrieveNewToken(GlobalSettingType.EATON_CLOUD_SECRET, serviceAccountId);
-            json.put("secret1Token", token1.getToken());
-        } catch (Exception e) {
-            json.put("secret1Token", "Date doesn't exist");
-            log.error("Error", e);
-        }
-
-        try {
-            EatonCloudTokenV1 token2 = retrieveNewToken(GlobalSettingType.EATON_CLOUD_SECRET2, serviceAccountId);
-            json.put("secret2Token", token2.getToken());
-        } catch (Exception e) {
-            json.put("secret2Token", "Date doesn't exist");
-            log.error("Error", e);
-        }
+            json.put("secret1Token", "Simulator Only");
+            json.put("secret2Token", "Simulator Only");
+            json.put("secret1Expiration", null);
+            json.put("secret2Expiration", null);
+        }       
 
         try {
             String cachedToken = eatonCloudCommunicationServiceV1.getToken().getToken();
@@ -151,15 +153,7 @@ public class EatonCloudSimulatorController {
             json.put("cachedToken", "Date doesn't exist");
             log.error("Error", e);
         }
-
-        try {
-            EatonCloudServiceAccountDetailV1 detail = eatonCloudCommunicationServiceV1.getServiceAccountDetail();
-            json.put("secret1Expiration", detail.getExpiryTime(1));
-            json.put("secret2Expiration", detail.getExpiryTime(2));
-        } catch (Exception e) {
-            log.error("Error", e);
-        }
-
+        
         json.put("secret1", settingDao.getString(GlobalSettingType.EATON_CLOUD_SECRET));
         json.put("secret2", settingDao.getString(GlobalSettingType.EATON_CLOUD_SECRET2));
         
