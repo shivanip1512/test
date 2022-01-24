@@ -109,6 +109,9 @@
             ${displayValue}
         </cti:displayForPageEditModes>
         <cti:displayForPageEditModes modes="EDIT,CREATE">
+        <c:if test="${status.error}">
+            <c:set var="wrapClass" value="${wrapClass} date-time-error"/>       
+        </c:if>
             <span class="datetimeEntry_wrap timeOffsetWrap ${wrapClass}">
                 <input type="hidden" <c:if test="${!empty pageScope.name}">name="${pageScope.name}"</c:if> value="${value}"/>
                 <input id="${id}" 
