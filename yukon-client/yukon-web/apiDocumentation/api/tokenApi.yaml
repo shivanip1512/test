@@ -25,3 +25,57 @@ token-generate:
               examples:
                 Token: 
                   $ref: '../schemas/tokenSchema.yaml#/components/examples/Token'
+refreshToken:
+  post:
+      tags:
+        - Refresh Access Token
+      summary: Generate Refresh and Access token
+      description: Use existing valid refresh token to generate a new set of access and refresh tokens to continue making API calls.
+      requestBody:
+        description: |-
+          Send the existing refresh token to generate an API access and refresh token.
+        content:
+          application/json:
+            schema:
+              $ref: '../schemas/tokenSchema.yaml#/Token-Refresh-Generate-Request'
+            examples:
+              Refresh: 
+                $ref: '../schemas/tokenSchema.yaml#/components/examples/Refresh'
+        required: true
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '../schemas/tokenSchema.yaml#/Token-Refresh-Generate-Response'
+              examples:
+                Token: 
+                  $ref: '../schemas/tokenSchema.yaml#/components/examples/Token'
+logout:
+  post:
+      tags:
+        - Logout
+      summary: Log out and invalidate refresh token
+      description: Logout a User by invalidating refresh token.
+      requestBody:
+        description: |-
+          Send refresh token and logoutfromAllSystem to logout from system.
+        content:
+          application/json:
+            schema:
+              $ref: '../schemas/tokenSchema.yaml#/Token-logout-Request'
+            examples:
+              LogoutRequest: 
+                $ref: '../schemas/tokenSchema.yaml#/components/examples/logoutRequest'
+        required: true
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '../schemas/tokenSchema.yaml#/Token-logout-Response'
+              examples:
+                LogoutResponse: 
+                  $ref: '../schemas/tokenSchema.yaml#/components/examples/logoutResponse'
