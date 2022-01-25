@@ -10,6 +10,8 @@ import java.util.UUID;
 import javax.annotation.PostConstruct;
 import javax.servlet.http.HttpServletRequest;
 
+import org.apache.commons.lang3.StringUtils;
+
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.ExpiredJwtException;
 import io.jsonwebtoken.JwtException;
@@ -130,6 +132,10 @@ public class TokenHelper {
      */
     private static  String getRefreshTokenId(String userId, String Id) {
         return userId +"_" + Id;
+    }
+    
+    public static String getUUIDFromRefreshTokenId(RefreshTokenDetails refreshTokenDetails) {
+       return StringUtils.removeStart(refreshTokenDetails.getRefreshTokenId(), refreshTokenDetails.getUserId() + "_");
     }
     
     /**

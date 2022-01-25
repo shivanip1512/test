@@ -9,6 +9,7 @@ import java.util.stream.Collectors;
 import javax.annotation.PostConstruct;
 import javax.servlet.http.HttpServletRequest;
 
+import org.apache.commons.lang3.StringUtils;
 import org.apache.logging.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
@@ -87,8 +88,9 @@ public class ApiAuthenticationController {
                 if (cacheRefreshToken.equals(refreshToken)) {
                     response = TokenHelper.setTokenTypeAndExpiresIn(response);
                     String newAccessToken = TokenHelper.createToken(Integer.valueOf(refreshTokenDetails.getUserId()));
+                    String uuid = TokenHelper.getUUIDFromRefreshTokenId(refreshTokenDetails);
                     RefreshTokenDetails newRefreshTokenDetails = TokenHelper.createRefreshTokenWithUUID(Integer.valueOf(refreshTokenDetails.getUserId()),
-                                                                                                        refreshTokenDetails.getRefreshTokenId());
+                                                                                                        uuid);
                     response.setAccessToken(newAccessToken);
                     response.setRefreshToken(newRefreshTokenDetails.getRefreshToken());
                     // Update latest refresh token in cache
