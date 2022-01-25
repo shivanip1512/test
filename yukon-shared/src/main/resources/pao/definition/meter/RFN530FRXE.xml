@@ -50,6 +50,11 @@
         <pointInfo name="Delivered kVArh (Rate B kVArh)" attributes="KVARH_RATE_B"/>
         <pointInfo name="Delivered kVArh (Rate C kVArh)" attributes="KVARH_RATE_C"/>
         <pointInfo name="Delivered kVArh (Rate D kVArh)" attributes="KVARH_RATE_D"/>
+        <pointInfo name="Delivered kVArh (Quadrant 1)" attributes="DELIVERED_KVARH_Q1"/>
+        <pointInfo name="Delivered kVArh (Quadrant 1) (Rate A kVArh)" attributes="DELIVERED_KVARH_Q1_RATE_A"/>
+        <pointInfo name="Delivered kVArh (Quadrant 1) (Rate B kVArh)" attributes="DELIVERED_KVARH_Q1_RATE_B"/>
+        <pointInfo name="Delivered kVArh (Quadrant 1) (Rate C kVArh)" attributes="DELIVERED_KVARH_Q1_RATE_C"/>
+        <pointInfo name="Delivered kVArh (Quadrant 1) (Rate D kVArh)" attributes="DELIVERED_KVARH_Q1_RATE_D"/>
         <pointInfo name="Delivered kW" init="true" attributes="DELIVERED_DEMAND,DEMAND"/>
         <pointInfo name="Delivered kW Rate A Load Profile" attributes="DELIVERED_KW_RATE_A_LOAD_PROFILE"/>
         <pointInfo name="Delivered kW Rate B Load Profile" attributes="DELIVERED_KW_RATE_B_LOAD_PROFILE"/>
@@ -143,6 +148,11 @@
         <pointInfo name="Received kVArh (Rate B kVArh)" attributes="RECEIVED_KVARH_RATE_B"/>
         <pointInfo name="Received kVArh (Rate C kVArh)" attributes="RECEIVED_KVARH_RATE_C"/>
         <pointInfo name="Received kVArh (Rate D kVArh)" attributes="RECEIVED_KVARH_RATE_D"/>
+        <pointInfo name="Received kVArh (Quadrant 4)" attributes="RECEIVED_KVARH_Q4"/>
+        <pointInfo name="Received kVArh (Quadrant 4) (Rate A kVArh)" attributes="RECEIVED_KVARH_Q4_RATE_A"/>
+        <pointInfo name="Received kVArh (Quadrant 4) (Rate B kVArh)" attributes="RECEIVED_KVARH_Q4_RATE_B"/>
+        <pointInfo name="Received kVArh (Quadrant 4) (Rate C kVArh)" attributes="RECEIVED_KVARH_Q4_RATE_C"/>
+        <pointInfo name="Received kVArh (Quadrant 4) (Rate D kVArh)" attributes="RECEIVED_KVARH_Q4_RATE_D"/>
         <pointInfo name="Received kW Load Profile" attributes="RECEIVED_KW_LOAD_PROFILE"/>
         <pointInfo name="Received kW Rate A Load Profile" attributes="RECEIVED_KW_RATE_A_LOAD_PROFILE"/>
         <pointInfo name="Received kW Rate B Load Profile" attributes="RECEIVED_KW_RATE_B_LOAD_PROFILE"/>
