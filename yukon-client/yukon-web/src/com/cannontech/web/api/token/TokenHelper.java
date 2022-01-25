@@ -10,6 +10,8 @@ import java.util.UUID;
 import javax.annotation.PostConstruct;
 import javax.servlet.http.HttpServletRequest;
 
+import org.apache.commons.lang3.StringUtils;
+
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.ExpiredJwtException;
 import io.jsonwebtoken.JwtException;
@@ -57,12 +59,11 @@ public class TokenHelper {
     /**
      * Generate refresh JWT token based on different claims (Issuer, Subject, Audience , IssuedAt, Expiration)
      */
-    public static RefreshTokenDetails createRefreshToken(Integer userId) {
+    private static RefreshTokenDetails createRefreshToken(Integer userId, String uuid) {
         ZonedDateTime now = ZonedDateTime.now();
         ZonedDateTime refreshExpirationDateTime = now.plus(refreshTokenValidityInMilliSeconds, ChronoUnit.MILLIS);
         Date issueDate = Date.from(now.toInstant());
         Date refreshExpirationDate = Date.from(refreshExpirationDateTime.toInstant());
-        String uuid = UUID.randomUUID().toString();
         String token = Jwts.builder()
                 .setId(uuid)
                 .setIssuer("Yukon")
@@ -76,6 +77,14 @@ public class TokenHelper {
         return tokenDetails;
     }
     
+    public static RefreshTokenDetails createRefreshTokenWithUUID(Integer userId, String uuid) {
+        return createRefreshToken(userId, uuid);
+    }
+    
+    public static RefreshTokenDetails createRefreshToken(Integer userId) {
+        String uuid = UUID.randomUUID().toString();
+         return createRefreshToken(userId, uuid);
+    }
     
     /**
      * Set access token Expiry duration and token type in token response.
@@ -123,6 +132,10 @@ public class TokenHelper {
      */
     private static  String getRefreshTokenId(String userId, String Id) {
         return userId +"_" + Id;
+    }
+    
+    public static String getUUIDFromRefreshTokenId(RefreshTokenDetails refreshTokenDetails) {
+       return StringUtils.removeStart(refreshTokenDetails.getRefreshTokenId(), refreshTokenDetails.getUserId() + "_");
     }
     
     /**
