@@ -42,7 +42,7 @@ import com.google.common.collect.Multimap;
  */
 public class SmartNotificationDeciderServiceImpl implements SmartNotificationDeciderService, MessageListener {
         
-    private static Logger snLogger = YukonLogManager.getSmartNotificationsLogger();
+    private static Logger snLogger = YukonLogManager.getSmartNotificationsLogger(SmartNotificationDeciderServiceImpl.class);
     
     @Autowired @Qualifier("main") private ScheduledExecutor scheduledExecutor;
     @Autowired private YukonJmsTemplateFactory jmsTemplateFactory;

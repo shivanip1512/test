@@ -199,6 +199,7 @@
             <xs:enumeration value="DBM" />
             <xs:enumeration value="THERMS"/>
             <xs:enumeration value="DB" />
+            <xs:enumeration value="CCF" />
         </xs:restriction>
     </xs:simpleType>
 </xs:schema>

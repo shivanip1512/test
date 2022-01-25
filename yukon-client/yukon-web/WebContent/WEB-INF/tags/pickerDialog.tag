@@ -46,6 +46,7 @@
 <%@ attribute name="removeValue" description="Value to set the item to when cleared.  Default will be blank" %>
 <%@ attribute name="maxNumSelections" type="java.lang.Integer" description="An upper limit on the number of selections that the user can make. This can only be set if multiSelectMode is enabled." %>
 
+
 <cti:default var="linkType" value="normal"/>
 <cti:msg2 var="okText" key="yukon.common.okButton"/>
 <c:if test="${!empty okButtonKey}">
@@ -130,7 +131,8 @@
                         <cti:icon id="picker-${id}-show-selected-icon" 
                                   href="javascript:${id}.showSelected.call(${id})" 
                                   nameKey="zoom" 
-                                  icon="icon-magnifier"/>
+                                  icon="icon-magnifier"
+                                  classes="MT5"/>
                     </c:if>
                 </c:when>
                 <c:when test="${linkType == 'selectionLabel'}">
@@ -153,7 +155,8 @@
                         <cti:icon id="picker-${id}-show-selected-icon" 
                                   href="javascript:${id}.showSelected.call(${id})" 
                                   nameKey="zoom" 
-                                  icon="icon-magnifier"/>
+                                  icon="icon-magnifier"
+                                  classes="MT5"/>
                     </c:if>
                 </c:when>
                 <c:otherwise>

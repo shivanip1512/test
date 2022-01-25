@@ -12,7 +12,6 @@
 	<classpathentry kind="lib" path="/third-party/jcommon.jar"/>
 	<classpathentry kind="lib" path="/third-party/jcpagelayout450K.jar"/>
 	<classpathentry kind="lib" path="/third-party/jfreechart.jar"/>
-	<classpathentry kind="lib" path="/third-party/jfreereport.jar"/>
 	<classpathentry kind="lib" path="/third-party/xbean-spring-4.5.jar"/>
 	<classpathentry kind="lib" path="/third-party/spring-integration-core-5.5.1.jar"/>
 	<classpathentry kind="lib" path="/third-party/spring-integration-jms-5.5.1.jar"/>

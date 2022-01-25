@@ -6,7 +6,7 @@ import java.io.Serializable;
  * Created on Oct 10, 2003 
  * @author snebben
  *
- * Properties for a tableModel's JFreeReport display/location.
+ * Properties for a tableModel's Report display/location.
  */
 public class ColumnProperties implements Serializable
 {

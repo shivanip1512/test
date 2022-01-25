@@ -9,9 +9,16 @@ th:hover {
 th[data-sorted] .icon {
     margin: 0;
     float: none;
-    background-position: 16px 16px;
+    padding-left:30px;
+    margin-left:5px;
 }
-th[data-sorted-direction="ascending"] .icon { background-position: -208px -48px; }
+th[data-sorted-direction="ascending"] .icon { 
+	background-image: url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" enable-background="new 0 0 24 24" fill="%23727e84" height="18" viewBox="0 0 24 24" width="18"><g><path d="M0,0h24v24H0V0z" fill="none"/></g><g><g><g><path d="M4,12l1.41,1.41L11,7.83V20h2V7.83l5.58,5.59L20,12l-8-8L4,12z"/></g></g></g></svg>');
+}
 th[data-sorted-direction="descending"] .icon,
-th[data-sorted="false"]:hover:not(.action-column) .icon { background-position: -176px -48px; }
-th.action-column .icon-cog { background-position: -560px -80px; }
+th[data-sorted="false"]:hover:not(.action-column) .icon { 
+	background-image: url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" fill="%23727e84" height="18" viewBox="0 0 24 24" width="18"><path d="M0 0h24v24H0V0z" fill="none"/><path d="M20 12l-1.41-1.41L13 16.17V4h-2v12.17l-5.58-5.59L4 12l8 8 8-8z"/></svg>');
+}
+th.action-column .icon { 
+	padding-left:0px;
+}

@@ -27,29 +27,29 @@
     <c:choose>
         <c:when test="${type == 'link' && not empty pageScope.key}">
             <a class="button naked">
-                <c:if test="${showIcon}"><i class="icon ${icon}"></i></c:if>
+                <c:if test="${showIcon}"><cti:icon icon="${icon}"/></c:if>
                 <c:choose>
                     <c:when test="${not empty pageScope.label}"><span class="b-label">${pageScope.label}</span></c:when>
                     <c:otherwise><span class="b-label"><cti:msg2 key="${pageScope.key}"/></span></c:otherwise>
                 </c:choose>
-                <c:if test="${showArrow}"><i class="icon icon-bullet-arrow-down"></i></c:if>
+                <c:if test="${showArrow}"><cti:icon icon="icon-bullet-arrow-down"/></c:if>
             </a>
         </c:when>
         <c:when test="${type == 'button'}">
             <cti:default var="key" value="yukon.common.actions"/>
             <button role="button" class="button">
-                <c:if test="${showIcon}"><i class="icon ${icon}"></i></c:if>
+                <c:if test="${showIcon}"><cti:icon icon="${icon}"/></c:if>
                 <c:if test="${showLabel}">
                     <c:choose>
                         <c:when test="${not empty pageScope.label}"><span class="b-label">${pageScope.label}</span></c:when>
                         <c:otherwise><span class="b-label"><cti:msg2 key="${pageScope.key}"/></span></c:otherwise>
                     </c:choose>
                 </c:if>
-                <c:if test="${showArrow}"><i class="icon icon-bullet-arrow-down"></i></c:if>
+                <c:if test="${showArrow}"><cti:icon icon="icon-bullet-arrow-down"/></c:if>
             </button>
         </c:when>
         <c:otherwise>
-            <a><i class="icon ${icon} M0 fn"></i></a>
+            <a><cti:icon icon="${icon}" classes="M0 fn"/></a>
         </c:otherwise>
     </c:choose>
     <ul class="dropdown-menu dn ${pageScope.menuClasses}" role="menu"><jsp:doBody/></ul>

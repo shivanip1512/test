@@ -69,6 +69,18 @@
   </tag>
   
   <tag>
+    <name>getIconSvg</name>
+    <description>Get the SVG for a specific icon class.</description>
+    <tag-class>com.cannontech.web.taglib.GetIconSvgTag</tag-class>
+    <body-content>empty</body-content>
+    <attribute>
+      <name>iconClass</name>
+      <required>true</required>
+      <rtexprvalue>true</rtexprvalue>
+    </attribute>
+  </tag>
+  
+  <tag>
     <name>getUsersTimezone</name>
     <description>Retrieve the Users Timezone from Configuration Settings.</description>
     <tag-class>com.cannontech.web.taglib.GetUsersTimezoneTag</tag-class>

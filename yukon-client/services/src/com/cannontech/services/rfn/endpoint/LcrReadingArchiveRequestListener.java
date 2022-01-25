@@ -69,6 +69,8 @@ public class LcrReadingArchiveRequestListener extends ArchiveRequestListenerBase
     private List<Worker> workers;
     private final AtomicInteger archivedReadings = new AtomicInteger();
     private final AtomicInteger numPausedQueues = new AtomicInteger();
+    private static AtomicInteger archivedRequestsReceived = new AtomicInteger();
+    private static AtomicInteger pointDataProduced = new AtomicInteger();
 
     public class Worker extends ConverterBase {
         
@@ -79,6 +81,7 @@ public class LcrReadingArchiveRequestListener extends ArchiveRequestListenerBase
         @Override
         public Optional<String> processData(RfnDevice rfnDevice, RfnLcrArchiveRequest request) {
             incrementProcessedArchiveRequest();
+            archivedRequestsReceived.getAndIncrement();
             Instant startTime = new Instant();
             
             // Make sure dispatch message handling isn't blocked up.
@@ -106,7 +109,7 @@ public class LcrReadingArchiveRequestListener extends ArchiveRequestListenerBase
                 byte[] payload = reading.getData().getPayload();
                 Schema schema = ParsingService.getSchema(payload);
                 try {
-                    strategies.get(schema).parseRfLcrReading(request, rfnDevice, archivedReadings);
+                    strategies.get(schema).parseRfLcrReading(request, rfnDevice, archivedReadings, pointDataProduced);
                 } catch (ParseException e) {
                     // Acknowledge the request to prevent NM from sending back that data which can't be parsed.
                     sendAcknowledgement(request);
@@ -219,6 +222,19 @@ public class LcrReadingArchiveRequestListener extends ArchiveRequestListenerBase
     @ManagedAttribute
     public int getNumPausedQueues() {
         return numPausedQueues.get();
+    }
+
+    public static Integer getArchiveRequestsReceivedCount() {
+        Integer count = archivedRequestsReceived.get();
+        archivedRequestsReceived = new AtomicInteger();
+        return count;
+    }
+
+    // Return current point data produced count and resets it after returning.
+    public static Integer getPointDataCount() {
+        Integer currentCount = pointDataProduced.get();
+        pointDataProduced = new AtomicInteger();
+        return currentCount;
     }
 
     @Autowired

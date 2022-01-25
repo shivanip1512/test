@@ -35,4 +35,5 @@
         container-class="com.cannontech.services.jms.ContextLoggingMessageListenerContainer">
         <jms:listener destination="yukon.notif.obj.simulator.EatonCloudRuntimeCalcSimulatonRequest" ref="eatonCloudRuntimeCalcServiceListener" method="startSimulation"/>
     </jms:listener-container>
+     <bean class="com.cannontech.dr.eatonCloud.service.impl.EatonCloudSendControlServiceImpl"/>
 </beans>

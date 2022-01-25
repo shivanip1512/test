@@ -30,7 +30,7 @@
     <entry key="yukon.web.modules.amr.validation.review.deleteInfo"><![CDATA[
         <ul>
             <li>Mark flagged values that you would like to remove from the database.
-            <li>Choose <i class="icon icon-cross fn"></i> to delete the row.
+            <li>Choose <i class="icon icon-cross fn"><svg xmlns="http://www.w3.org/2000/svg" fill="#727e84" height="18" viewBox="0 0 25 25" width="18"><path d="M0 0h24v24H0z" fill="none"/><path d="M6 19c0 1.1.9 2 2 2h8c1.1 0 2-.9 2-2V7H6v12zM19 4h-3.5l-1-1h-5l-1 1H5v2h14V4z"/></svg></i> to delete the row.
         </ul>
     
     ]]></entry>
@@ -38,7 +38,7 @@
     <entry key="yukon.web.modules.amr.validation.review.acceptInfo"><![CDATA[
         <ul>
             <li>Mark flagged values that you would like to unflag by marking them as accepted values.
-            <li>Choose <i class="icon icon-tick fn"></i> to to accept the row.
+            <li>Choose <i class="icon icon-tick fn"><svg xmlns="http://www.w3.org/2000/svg" fill="#39b620" height="18" viewBox="0 0 25 25" width="18"><path d="M0 0h24v24H0z" fill="none"/><path d="M9 16.2L4.8 12l-1.4 1.4L9 19 21 7l-1.4-1.4L9 16.2z"/></svg></i> to to accept the row.
         </ul>
     ]]></entry>
     

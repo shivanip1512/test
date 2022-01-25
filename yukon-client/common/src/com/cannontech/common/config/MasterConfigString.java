@@ -17,6 +17,8 @@ public enum MasterConfigString {
     DB_JAVA_DRIVER,
     DB_JAVA_URL(Encryption.ENCRYPTED),
     DB_JAVA_VALIDATION_QUERY,
+    
+    DEV_FORCE_SECRET_ROTATION,
 
     EXCLUDED_POINT_QUALITIES, //YUK-11910
     

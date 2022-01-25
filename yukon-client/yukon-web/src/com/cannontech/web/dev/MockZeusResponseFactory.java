@@ -94,15 +94,14 @@ public class MockZeusResponseFactory {
                 .filter(pao -> pao.getPaoType() == PaoType.LM_GROUP_ECOBEE)
                 .collect(Collectors.toList());
 
-        // Considering first group as a parent group of other groups.
-        String parentGroupId = String.valueOf(paoObjects.get(0).getLiteID());
+        // Considering i89uUYUuioyhyu36hsidch9s8NUYGUA group as a parent group of other groups.
         paoObjects.forEach(pao -> {
 
             ZeusGroup group = new ZeusGroup();
             group.setGroupId(String.valueOf(pao.getLiteID()));
             group.setName(String.valueOf(pao.getLiteID()));
             if (!groups.isEmpty()) {
-                group.setParentGroupId(parentGroupId);
+                group.setParentGroupId("i89uUYUuioyhyu36hsidch9s8NUYGUA");
             }
             group.setProgramId(programId);
             groups.add(group);
@@ -119,11 +118,12 @@ public class MockZeusResponseFactory {
             group.setGroupId(String.valueOf("8000"));
             group.setName("EcobeeGroupDecrepency");
             if (!groups.isEmpty()) {
-                group.setParentGroupId(parentGroupId);
+                group.setParentGroupId("i89uUYUuioyhyu36hsidch9s8NUYGUA");
             }
             groups.add(group);
         }
         ZeusGroupResponse response = new ZeusGroupResponse();
+        groups.get(0).setGroupId("i89uUYUuioyhyu36hsidch9s8NUYGUA");
         response.setGroups(groups);
         return response;
     }

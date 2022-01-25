@@ -45,7 +45,7 @@ public class SmartNotificationDailyDigestService implements MessageListener {
     @Autowired @Qualifier("main") private ScheduledExecutor scheduledExecutor;
     @Autowired private List<SmartNotificationDecider> deciders;
     @Autowired private SmartNotificationDeciderService deciderService;
-    private static Logger snLogger = YukonLogManager.getCommsLogger();
+    private static Logger snLogger = YukonLogManager.getSmartNotificationsLogger(SmartNotificationDailyDigestService.class);
    
     @PostConstruct
     private void scheduleDailyDigest() {

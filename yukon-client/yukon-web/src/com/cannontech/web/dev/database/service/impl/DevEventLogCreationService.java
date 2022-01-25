@@ -715,7 +715,6 @@ public class DevEventLogCreationService {
                 itronEventLogService.addServicePoint(accountNumber, userName);
                 itronEventLogService.removeHANDeviceFromServicePoint(macAddress);
                 
-                itronEventLogService.addMacAddressToGroup(macAddress, groupName);
                 itronEventLogService.getGroupIdFromItron(groupName);
                 itronEventLogService.optOut(accountNumber, yukonGroupId, macAddress);
                 itronEventLogService.sendEnrollmentRequest(accountNumber, programId);
@@ -1339,8 +1338,9 @@ public class DevEventLogCreationService {
                 int dutyCyclePercent = 50;
                 int dutyCyclePeriod = 900;
                 int criticality = 100;
-                eatonCloudEventLogService.sendShed(deviceLabel, guid, dutyCyclePercent, dutyCyclePeriod, criticality, 1);
-                eatonCloudEventLogService.sendRestore(deviceLabel, guid, 1);
+                eatonCloudEventLogService.sendShed(deviceLabel, "1", "1", guid, dutyCyclePercent, dutyCyclePeriod, criticality,
+                        1);
+                eatonCloudEventLogService.sendRestore(deviceLabel, guid, "1", 1);
             }
         });
         eventLogExecutables = ImmutableMap.copyOf(executables);
@@ -1369,7 +1369,7 @@ public class DevEventLogCreationService {
         HARDWARE(HardwareEventLogService.class, 23),
         INFRASTRUCTURE(InfrastructureEventLogService.class, 2),
         INVENTORY_CONFIG(InventoryConfigEventLogService.class, 5),
-        ITRON(ItronEventLogService.class, 14),
+        ITRON(ItronEventLogService.class, 13),
         METERING(MeteringEventLogService.class, 15),
         MULTISPEAK(MultispeakEventLogService.class, 35),
         NEST(NestEventLogService.class, 12),

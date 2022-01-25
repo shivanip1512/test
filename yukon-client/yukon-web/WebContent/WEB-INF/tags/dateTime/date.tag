@@ -90,11 +90,12 @@
                         autocomplete="off" />
                 </span>
             </c:if>
+            <c:set var="errorClass" value="${displayValidationToRight ? 'fn' : ''}"/>
             <c:if test="${status.error and (empty pageScope.hideErrors or hideErrors == false)}">
                 <c:if test="${!displayValidationToRight}">
                     <br>
                 </c:if>
-                <form:errors path="${path}" cssClass="error" />
+                <form:errors path="${path}" cssClass="error ${errorClass}"/>
             </c:if>
         </spring:bind>
     </c:when>

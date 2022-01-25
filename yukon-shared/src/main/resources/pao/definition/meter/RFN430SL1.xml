@@ -31,7 +31,6 @@
         <pointInfo name="Bad Upgrade Security Param" attributes="BAD_UPGRADE_SECURITY_PARAM"/>
         <pointInfo name="Blink Count" init="true" attributes="RFN_BLINK_COUNT"/>
         <pointInfo name="Blink Restore Count" init="true" attributes="RFN_BLINK_RESTORE_COUNT"/>
-        <pointInfo name="Coincident Cumulative Peak kVAr"/>
         <pointInfo name="Coincident Power Factor" attributes="POWER_FACTOR_COIN"/>
         <pointInfo name="Coincident Power Factor at Delivered Peak kW Rate A" attributes="COIN_POWER_FACTOR_AT_DELIVERED_PEAK_KW_RATE_A"/>
         <pointInfo name="Coincident Power Factor at Delivered Peak kW Rate B" attributes="COIN_POWER_FACTOR_AT_DELIVERED_PEAK_KW_RATE_B"/>
@@ -60,7 +59,6 @@
         <pointInfo name="kVA" attributes="KVA"/>
         <pointInfo name="kVA at Peak kW Coincidental" attributes="KVA_PEAK_DEMAND_COIN"/>
         <pointInfo name="kVA Load Profile" attributes="KVA_LOAD_PROFILE"/>
-        <pointInfo name="kVAr" attributes="KVAR"/>
         <pointInfo name="kW" attributes="DEMAND,INSTANTANEOUS_KW"/>
         <pointInfo name="Low Battery Warning" attributes="LOW_BATTERY_WARNING"/>
         <pointInfo name="Low Loss Potential" attributes="LOW_LOSS_POTENTIAL"/>
@@ -87,7 +85,6 @@
         <pointInfo name="Outage Restore Count" init="true" attributes="RFN_OUTAGE_RESTORE_COUNT"/>
         <pointInfo name="Outage Status" init="true" attributes="OUTAGE_STATUS"/>
         <pointInfo name="Outages" init="true" attributes="OUTAGE_LOG"/>
-        <pointInfo name="Peak kVAr" attributes="PEAK_KVAR"/>
         <pointInfo name="Peak kW" init="true" attributes="PEAK_DEMAND"/>
         <pointInfo name="Peak kW (Rate A kW)" init="true" attributes="PEAK_DEMAND_RATE_A"/>
         <pointInfo name="Peak kW (Rate B kW)" attributes="PEAK_DEMAND_RATE_B"/>

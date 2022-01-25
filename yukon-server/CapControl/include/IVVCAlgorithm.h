@@ -72,7 +72,7 @@ class IVVCAlgorithm
                                      const long zoneId,
                                      bool & dataIsValid );
 
-        bool determineWatchPoints(CtiCCSubstationBusPtr subbus, bool sendScan, std::set<PointRequest>& pointRequests, IVVCStrategy* strategy);
+        bool determineWatchPoints(IVVCStatePtr state, CtiCCSubstationBusPtr subbus, bool sendScan, std::set<PointRequest>& pointRequests, IVVCStrategy* strategy);
         bool determineDmvWatchPoints(CtiCCSubstationBusPtr subbus, bool sendScan, std::set<PointRequest>& pointRequests, ControlStrategy::ControlMethodType strategyControlMethod, std::set<long> & dmvWattVarPointIDs );
 
         double calculateTargetPFVars(const double targetPF, const double wattValue);
@@ -111,7 +111,7 @@ class IVVCAlgorithm
         virtual bool busAnalysisState(IVVCStatePtr state, CtiCCSubstationBusPtr subbus, IVVCStrategy* strategy, DispatchConnectionPtr dispatchConnection);
 
         void setupNextBankToVerify(IVVCStatePtr state, CtiCCSubstationBusPtr subbus, Cti::CapControl::EventLogEntries &ccEvents);
-        bool allRegulatorsInRemoteMode(const long subbusId) const;
+        bool allRegulatorsInRemoteMode(IVVCStatePtr state, CtiCCSubstationBusPtr subbus) const;
 
         void sendDisableRemoteControl( CtiCCSubstationBusPtr subbus );
         void handleCommsLost(IVVCStatePtr state, CtiCCSubstationBusPtr subbus);

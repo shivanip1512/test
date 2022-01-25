@@ -38,6 +38,7 @@ yukon.widget.gatewayInfo = (function () {
             
             if (_initialized) return;
             _text = yukon.fromJson('#gateway-text');
+            
             /** Edit popup was opened, adjust test connection buttons. */
             $(document).on('yukon:assets:gateway:edit:load', function (ev) {
                 yukon.assets.gateway.shared.adjustTestConnectionButtons();

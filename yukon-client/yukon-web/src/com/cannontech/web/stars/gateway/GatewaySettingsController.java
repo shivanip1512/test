@@ -63,6 +63,7 @@ public class GatewaySettingsController {
     @Autowired private RfnGatewayService rfnGatewayService;
     @Autowired private ServerDatabaseCache cache;
     @Autowired private YukonUserContextMessageSourceResolver messageResolver;
+    @Autowired private GatewayControllerHelper helper;
 
     @CheckPermissionLevel(property = YukonRoleProperty.MANAGE_INFRASTRUCTURE, level = HierarchyPermissionLevel.CREATE)
     @RequestMapping("/gateways/create")
@@ -70,6 +71,18 @@ public class GatewaySettingsController {
         
         model.addAttribute("mode", PageEditMode.CREATE);
         GatewaySettings settings = new GatewaySettings();
+        
+        settings.setNmPort(RfnGatewayService.GATEWAY_DEFAULT_PORT);
+        
+        //get all NM IP Address/Port combos
+        model.addAttribute("nmIPAddressPorts", helper.getAllGatewayNMIPPorts());
+        
+        // prefill with the most used nm ip address and port
+        GatewayNMIPAddressPort mostUsedNMIPAddressPort = helper.getMostUsedGatewayNMIPPort();
+        if (mostUsedNMIPAddressPort != null) {
+        	settings.setNmIpAddress(mostUsedNMIPAddressPort.getNmIpAddress());
+        	settings.setNmPort(mostUsedNMIPAddressPort.getNmPort());
+        }
         
         settings.setUpdateServerUrl(globalSettingDao.getString(GlobalSettingType.RFN_FIRMWARE_UPDATE_SERVER));
 
@@ -99,6 +112,7 @@ public class GatewaySettingsController {
             @ModelAttribute("settings") GatewaySettings settings,
             BindingResult result) {
         
+        model.addAttribute("nmIPAddressPorts", helper.getAllGatewayNMIPPorts());
         validator.validate(settings, result);
         
         if (result.hasErrors()) {

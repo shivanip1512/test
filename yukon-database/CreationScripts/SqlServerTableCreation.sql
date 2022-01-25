@@ -1,7 +1,7 @@
 /*==============================================================*/
 /* Database name:  YukonDatabase                                */
 /* DBMS name:      Microsoft SQL Server 2005                    */
-/* Created on:     10/11/2021 10:52:40 AM                       */
+/* Created on:     1/5/2022 8:03:49 PM                          */
 /*==============================================================*/
 
 
@@ -10123,6 +10123,7 @@ INSERT INTO UnitMeasure VALUES ( 56,'MB', 0, 'Megabytes', '(none)');
 INSERT INTO UnitMeasure VALUES ( 57,'dBm', 0, 'Decibel-Milliwatts', '(none)');
 INSERT INTO UnitMeasure VALUES ( 58,'Therms', 0, 'Therms', '(none)');
 INSERT INTO UnitMeasure VALUES ( 59,'dB', 0, 'Decibels', '(none)');
+INSERT INTO UnitMeasure VALUES ( 60,'CCF', 0, 'Centum Cubic Feet', '(none)');
 
 /*==============================================================*/
 /* Table: UsageThresholdReport                                  */
@@ -10960,9 +10961,10 @@ INSERT INTO YukonListEntry VALUES (2034, 1005, 0, 'LCR-6700 (RFN)', 1337);
 INSERT INTO YukonListEntry VALUES (2035, 1005, 0, 'Nest', 1338);
 INSERT INTO YukonListEntry VALUES (2036, 1005, 0, 'LCR-6601S', 1339);
 INSERT INTO YukonListEntry VALUES (2037, 1005, 0, 'LCR-6600S', 1340);
+INSERT INTO YukonListEntry VALUES (2038, 1005, 0, 'LCR-6200S', 1344);
 
-INSERT INTO YukonListEntry VALUES (2038, 1005, 0, 'LCR-6200C', 1342);
-INSERT INTO YukonListEntry VALUES (2039, 1005, 0, 'LCR-6600C', 1343);
+INSERT INTO YukonListEntry VALUES (2039, 1005, 0, 'LCR-6200C', 1342);
+INSERT INTO YukonListEntry VALUES (2040, 1005, 0, 'LCR-6600C', 1343);
 
 insert into yukonlistentry values (10101, 1067, 0, 'CustomerAccount', 0);
 insert into yukonlistentry values (10102, 1067, 0, 'Inventory', 0);
