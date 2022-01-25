@@ -87,11 +87,12 @@ public class ApiAuthenticationController {
                 if (cacheRefreshToken.equals(refreshToken)) {
                     response = TokenHelper.setTokenTypeAndExpiresIn(response);
                     String newAccessToken = TokenHelper.createToken(Integer.valueOf(refreshTokenDetails.getUserId()));
-                    RefreshTokenDetails newRefreshTokenDetails = TokenHelper.createRefreshToken(Integer.valueOf(refreshTokenDetails.getUserId()));
+                    RefreshTokenDetails newRefreshTokenDetails = TokenHelper.createRefreshTokenWithUUID(Integer.valueOf(refreshTokenDetails.getUserId()),
+                                                                                                        refreshTokenDetails.getRefreshTokenId());
                     response.setAccessToken(newAccessToken);
                     response.setRefreshToken(newRefreshTokenDetails.getRefreshToken());
                     // Update latest refresh token in cache
-                    tokenCache.put(refreshTokenDetails.getRefreshTokenId(), newRefreshTokenDetails.getRefreshToken());
+                    tokenCache.put(newRefreshTokenDetails.getRefreshTokenId(), newRefreshTokenDetails.getRefreshToken());
 
                 } else {
                     // Delete refresh token from cache

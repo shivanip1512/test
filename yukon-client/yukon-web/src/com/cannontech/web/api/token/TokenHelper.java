@@ -57,12 +57,11 @@ public class TokenHelper {
     /**
      * Generate refresh JWT token based on different claims (Issuer, Subject, Audience , IssuedAt, Expiration)
      */
-    public static RefreshTokenDetails createRefreshToken(Integer userId) {
+    private static RefreshTokenDetails createRefreshToken(Integer userId, String uuid) {
         ZonedDateTime now = ZonedDateTime.now();
         ZonedDateTime refreshExpirationDateTime = now.plus(refreshTokenValidityInMilliSeconds, ChronoUnit.MILLIS);
         Date issueDate = Date.from(now.toInstant());
         Date refreshExpirationDate = Date.from(refreshExpirationDateTime.toInstant());
-        String uuid = UUID.randomUUID().toString();
         String token = Jwts.builder()
                 .setId(uuid)
                 .setIssuer("Yukon")
@@ -76,6 +75,14 @@ public class TokenHelper {
         return tokenDetails;
     }
     
+    public static RefreshTokenDetails createRefreshTokenWithUUID(Integer userId, String uuid) {
+        return createRefreshToken(userId, uuid);
+    }
+    
+    public static RefreshTokenDetails createRefreshToken(Integer userId) {
+        String uuid = UUID.randomUUID().toString();
+         return createRefreshToken(userId, uuid);
+    }
     
     /**
      * Set access token Expiry duration and token type in token response.
