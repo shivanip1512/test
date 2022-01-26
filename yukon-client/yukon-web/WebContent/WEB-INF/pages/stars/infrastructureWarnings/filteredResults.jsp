@@ -13,7 +13,7 @@
             <cm:dropdown icon="icon-cog">
                 <cm:dropdownOption key="yukon.common.collectionActions" icon="icon-cog-go" classes="js-collection-action" data-collection-action="${collectionActionsType}"/>
                 <cm:dropdownOption icon="icon-csv" key="yukon.common.download" classes="js-download-warnings"/>
-                <cm:dropdownOption icon="icon-map-sat" key="yukon.common.mapDevices" classes="js-collection-action" data-collection-action="${mappingType}"/>
+                <cm:dropdownOption icon="icon-map" key="yukon.common.mapDevices" classes="js-collection-action" data-collection-action="${mappingType}"/>
             </cm:dropdown>
         </span>
     </c:if>

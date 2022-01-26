@@ -145,7 +145,15 @@ var yg = {
     	iconError: '<cti:getIconSvg iconClass="icon-error"/>',
     	iconAdd: '<cti:getIconSvg iconClass="icon-add"/>',
     	iconStar: '<cti:getIconSvg iconClass="icon-star"/>',
-       	iconFavoriteNot: '<cti:getIconSvg iconClass="icon-favorite-not"/>'
+       	iconFavoriteNot: '<cti:getIconSvg iconClass="icon-favorite-not"/>',
+       	iconPlusGreen: '<cti:getIconSvg iconClass="icon-plus-green"/>',
+       	iconCross: '<cti:getIconSvg iconClass="icon-cross"/>',
+       	iconDelete: '<cti:getIconSvg iconClass="icon-delete"/>',
+       	iconExpand: '<cti:getIconSvg iconClass="icon-expand"/>',
+       	iconCollapse: '<cti:getIconSvg iconClass="icon-collapse"/>',
+       	iconTick: '<cti:getIconSvg iconClass="icon-tick"/>',
+       	iconDatabaseAdd: '<cti:getIconSvg iconClass="icon-database-add"/>',
+       	iconArrowForward: '<cti:getIconSvg iconClass="icon-arrow-forward"/>'
     },
     
     timezone: '<cti:getUsersTimezone/>',

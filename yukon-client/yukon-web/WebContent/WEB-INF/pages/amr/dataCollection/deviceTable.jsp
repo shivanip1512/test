@@ -93,7 +93,7 @@
                         <cti:param name="collectionType" value="idList"/>
                         <cti:param name="idList.ids" value="${deviceId}"/>
                     </cti:url>
-                    <cm:dropdownOption icon="icon-map-sat" key=".mapDevices" href="${mapUrl}" newTab="true"/>     
+                    <cm:dropdownOption icon="icon-map" key=".mapDevices" href="${mapUrl}" newTab="true"/>     
                     <cti:url var="readUrl" value="/group/groupMeterRead/homeCollection">
                         <cti:param name="collectionType" value="idList"/>
                         <cti:param name="idList.ids" value="${deviceId}"/>           
