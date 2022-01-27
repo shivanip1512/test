@@ -15,8 +15,8 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 public class StaleData {
     
     public static enum UpdateStyle implements DisplayableEnum, DatabaseRepresentationSource {
-        ALWAYS(0),
-        ON_CHANGE(1);
+        ALWAYS(1),
+        ON_CHANGE(2);
         
         private int updateType;
         
@@ -64,7 +64,7 @@ public class StaleData {
     
     public StaleData(Integer pointId) {
         this.pointId = pointId;
-        this.updateStyle = 0;
+        this.updateStyle = UpdateStyle.ALWAYS.updateType;
         this.time = 5;
     }
    

@@ -4218,12 +4218,48 @@
             </modifiers>
         </point>
         <!-- alternate definition in case of 2 quadrant metering -->
-        <point name="Delivered kVArh" icdExcludedTypes="RFN520FAX,RFN520FAXD,RFN530FAX,&focusAxGen2Base;">
+        <point name="Delivered kVArh (Quadrant 1)" icdExcludedTypes="RFN520FAX,RFN520FAXD,RFN530FAX,&focusAxGen2Base;">
             <uom>Varh</uom>
             <multiplier value=".001"/>
             <parseSiPrefix/>
             <modifiers match="equal">
                 <modifier>Quadrant 1</modifier>
+            </modifiers>
+        </point>
+        <point name="Delivered kVArh (Quadrant 1) (Rate A kVArh)" icdExcludedTypes="RFN520FAX,RFN520FAXD,RFN530FAX,&focusAxGen2Base;">
+            <uom>Varh</uom>
+            <multiplier value=".001"/>
+            <parseSiPrefix/>
+            <modifiers match="equal">
+                <modifier>Quadrant 1</modifier>
+                <modifier>TOU Rate A</modifier>
+            </modifiers>
+        </point>
+        <point name="Delivered kVArh (Quadrant 1) (Rate B kVArh)" icdExcludedTypes="RFN520FAX,RFN520FAXD,RFN530FAX,&focusAxGen2Base;">
+            <uom>Varh</uom>
+            <multiplier value=".001"/>
+            <parseSiPrefix/>
+            <modifiers match="equal">
+                <modifier>Quadrant 1</modifier>
+                <modifier>TOU Rate B</modifier>
+            </modifiers>
+        </point>
+        <point name="Delivered kVArh (Quadrant 1) (Rate C kVArh)" icdExcludedTypes="RFN520FAX,RFN520FAXD,RFN530FAX,&focusAxGen2Base;">
+            <uom>Varh</uom>
+            <multiplier value=".001"/>
+            <parseSiPrefix/>
+            <modifiers match="equal">
+                <modifier>Quadrant 1</modifier>
+                <modifier>TOU Rate C</modifier>
+            </modifiers>
+        </point>
+        <point name="Delivered kVArh (Quadrant 1) (Rate D kVArh)" icdExcludedTypes="RFN520FAX,RFN520FAXD,RFN530FAX,&focusAxGen2Base;">
+            <uom>Varh</uom>
+            <multiplier value=".001"/>
+            <parseSiPrefix/>
+            <modifiers match="equal">
+                <modifier>Quadrant 1</modifier>
+                <modifier>TOU Rate D</modifier>
             </modifiers>
         </point>
         
@@ -4236,6 +4272,52 @@
                 <modifier>Quadrant 4</modifier>
             </modifiers>
         </point>
+        <!-- alternate definition in case of 2 quadrant metering -->
+        <point name="Received kVArh (Quadrant 4)" icdExcludedTypes="RFN520FAX,RFN520FAXD,RFN530FAX,&focusAxGen2Base;">
+            <uom>Varh</uom>
+            <multiplier value=".001"/>
+            <parseSiPrefix/>
+            <modifiers match="equal">
+                <modifier>Quadrant 4</modifier>
+            </modifiers>
+        </point>
+        <point name="Received kVArh (Quadrant 4) (Rate A kVArh)" icdExcludedTypes="RFN520FAX,RFN520FAXD,RFN530FAX,&focusAxGen2Base;">
+            <uom>Varh</uom>
+            <multiplier value=".001"/>
+            <parseSiPrefix/>
+            <modifiers match="equal">
+                <modifier>Quadrant 4</modifier>
+                <modifier>TOU Rate A</modifier>
+            </modifiers>
+        </point>
+        <point name="Received kVArh (Quadrant 4) (Rate B kVArh)" icdExcludedTypes="RFN520FAX,RFN520FAXD,RFN530FAX,&focusAxGen2Base;">
+            <uom>Varh</uom>
+            <multiplier value=".001"/>
+            <parseSiPrefix/>
+            <modifiers match="equal">
+                <modifier>Quadrant 4</modifier>
+                <modifier>TOU Rate B</modifier>
+            </modifiers>
+        </point>
+        <point name="Received kVArh (Quadrant 4) (Rate C kVArh)" icdExcludedTypes="RFN520FAX,RFN520FAXD,RFN530FAX,&focusAxGen2Base;">
+            <uom>Varh</uom>
+            <multiplier value=".001"/>
+            <parseSiPrefix/>
+            <modifiers match="equal">
+                <modifier>Quadrant 4</modifier>
+                <modifier>TOU Rate C</modifier>
+            </modifiers>
+        </point>
+        <point name="Received kVArh (Quadrant 4) (Rate D kVArh)" icdExcludedTypes="RFN520FAX,RFN520FAXD,RFN530FAX,&focusAxGen2Base;">
+            <uom>Varh</uom>
+            <multiplier value=".001"/>
+            <parseSiPrefix/>
+            <modifiers match="equal">
+                <modifier>Quadrant 4</modifier>
+                <modifier>TOU Rate D</modifier>
+            </modifiers>
+        </point>
+        
         <point name="Net kVArh" icdExcludedTypes="RFN520FAX,RFN520FAXD,RFN530FAX,&focusAxGen2Base;">
             <uom>Varh</uom>
             <multiplier value=".001"/>

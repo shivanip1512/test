@@ -120,7 +120,9 @@ public class ApiExceptionHandler extends ResponseEntityExceptionHandler {
         logApiException(request, ex, uniqueKey);
 
         if (isNewApiErrorSupported(request)) {
+            String errorMessage = ex.getMessage();
             ApiErrorModel apiErrorModel = buildGlobalErrorResponse(ApiErrorDetails.AUTHENTICATION_INVALID, request, uniqueKey);
+            apiErrorModel.setDetail(errorMessage);
             return new ResponseEntity<Object>(apiErrorModel, new HttpHeaders(), HttpStatus.UNAUTHORIZED);
         } else {
             final ApiError apiError = new ApiError(HttpStatus.UNAUTHORIZED.value(), "Authentication Required", uniqueKey);

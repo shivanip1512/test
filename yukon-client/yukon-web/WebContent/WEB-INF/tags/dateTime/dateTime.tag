@@ -80,6 +80,9 @@
             <cti:displayForPageEditModes modes="VIEW">${dateTimeValue}</cti:displayForPageEditModes>
             <cti:displayForPageEditModes modes="EDIT,CREATE">
                 <c:if test="${status.error}"><c:set var="cssClass" value="${cssClass} error"/></c:if>
+                <c:if test="${status.error and (empty pageScope.hideErrors or hideErrors == false)}">
+                    <c:set var="wrapperClass" value="${wrapperClass} date-time-error"/>       
+                </c:if>
                 <span class="datetimeEntry_wrap ${wrapperClass}">
                     <form:input id="${id}" 
                         path="${path}" 
@@ -111,6 +114,9 @@
                 ${dateTimeValue}
             </cti:displayForPageEditModes>
             <cti:displayForPageEditModes modes="EDIT,CREATE">
+            <c:if test="${status.error and (empty pageScope.hideErrors or hideErrors == false)}">
+                <c:set var="wrapperClass" value="${wrapperClass} date-time-error"/>       
+            </c:if>
                 <span class="datetimeEntry_wrap ${wrapperClass}">
                     <input id="${id}" 
                         <c:if test="${!empty pageScope.name}">name="${pageScope.name}"</c:if>
