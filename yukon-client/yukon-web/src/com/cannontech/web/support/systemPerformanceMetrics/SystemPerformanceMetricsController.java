@@ -22,8 +22,10 @@ import com.cannontech.common.chart.model.ChartInterval;
 import com.cannontech.common.chart.model.ChartValue;
 import com.cannontech.common.chart.model.ConverterType;
 import com.cannontech.database.data.lite.LitePoint;
+import com.cannontech.database.data.point.PointType;
 import com.cannontech.user.YukonUserContext;
 import com.cannontech.web.support.systemPerformanceMetrics.service.SystemPerformanceMetricsService;
+import com.cannontech.yukon.system.metrics.message.YukonMetricPointDataType;
 import com.google.common.collect.Maps;
 
 @Controller
@@ -68,10 +70,13 @@ public class SystemPerformanceMetricsController {
             Map<String, Object> graphJSON = Maps.newHashMap();
             graphJSON.put("pointId", systemPoint.getPointID());
             graphJSON.put("pointName", systemPoint.getPointName());
-            /* TODO: ChartInterval.DAY, ConverterType.RAW kind of hardcoded value. We need decide how to retrieve those values.
-                         Created YUK-25718 for this.*/
+            ChartInterval chartIntervel = YukonMetricPointDataType.getChartInterval(systemPoint.getPointOffset(),
+                    PointType.getForId(systemPoint.getPointType()));
+            ConverterType converterType = YukonMetricPointDataType.getConverterType(systemPoint.getPointOffset(),
+                    PointType.getForId(systemPoint.getPointType()));
+
             List<ChartValue<Double>> pointData = systemPerformanceMetricsService.getPointData(systemPoint.getPointID(), startDate,
-                    endDate, userContext, ChartInterval.DAY, ConverterType.RAW);
+                    endDate, userContext, chartIntervel, converterType);
             graphJSON.put("pointData", pointData);
             graphAsJSON.put(systemPoint.getLiteID(), graphJSON);
         }
