@@ -35,6 +35,7 @@ protected:
 
     virtual TlvList       getTlvsToSend() const;
     virtual unsigned char getResponseCommandCode() const = 0;
+    virtual unsigned      getCountFieldSize() const;
 
     std::string decodeHeader             ( const Bytes &response );
     std::string decodeMetricsIds         ( const Bytes &response );
@@ -64,7 +65,8 @@ protected:
     {
         Operation_SetChannelSelectionConfiguration  = 0x00,
         Operation_GetChannelSelectionConfiguration  = 0x01,
-        Operation_GetChannelSelectionActiveChannels = 0x02
+        Operation_GetChannelSelectionActiveChannels = 0x02,
+        Operation_GetChannelSelectionAvailableChannels = 0x03
     };
 
     enum
@@ -76,6 +78,7 @@ protected:
     RfnChannelSelectionCommand() = default;
 
     virtual unsigned char getExpectedTlvType() const = 0;
+    virtual std::string   getTlvDescriptiveName() const = 0;
 
 public:
     RfnCommandResult decodeCommand( const CtiTime now,
@@ -96,6 +99,7 @@ class IM_EX_DEVDB RfnSetChannelSelectionCommand : public RfnChannelSelectionComm
     unsigned char getOperation() const;
 
     virtual unsigned char getExpectedTlvType() const;
+    std::string getTlvDescriptiveName() const override;
 
 public:
     RfnSetChannelSelectionCommand( const MetricIds& metrics );
@@ -111,6 +115,7 @@ class IM_EX_DEVDB RfnGetChannelSelectionCommand : public RfnChannelSelectionComm
     unsigned char getOperation() const;
 
     virtual unsigned char getExpectedTlvType() const;
+    std::string getTlvDescriptiveName() const override;
 };
 
 /**
@@ -122,6 +127,21 @@ class IM_EX_DEVDB RfnGetChannelSelectionFullDescriptionCommand : public RfnChann
     unsigned char getOperation() const;
 
     virtual unsigned char getExpectedTlvType() const;
+    std::string getTlvDescriptiveName() const override;
+};
+
+/**
+ * Get All Available Channel Command
+ */
+class IM_EX_DEVDB RfnGetChannelSelectionAllAvailableCommand : public RfnChannelSelectionCommand,
+       InvokerFor<RfnGetChannelSelectionAllAvailableCommand>
+{
+    unsigned char getOperation() const;
+
+    virtual unsigned char getExpectedTlvType() const;
+    std::string getTlvDescriptiveName() const override;
+
+    unsigned getCountFieldSize() const override;
 };
 
 /**
