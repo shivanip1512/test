@@ -26,7 +26,9 @@ enum CtiCCEventType_t
     capControlIvvcRemoteControlEvent = 20,
     capControlIvvcScanOperation = 21,
     capControlIvvcSetPointOperation = 22,
-    capControlIvvcPowerFlowIndication = 23
+    capControlIvvcPowerFlowIndication = 23,
+    capControlIvvcAnalysisSkipped = 24,
+    capControlIvvcAnalysisState = 25
 };
 
 enum CtiCCEventSubtype_t

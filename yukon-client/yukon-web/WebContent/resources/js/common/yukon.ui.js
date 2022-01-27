@@ -747,6 +747,10 @@ yukon.ui = (function () {
                 });
             }
             
+            if (options.okText === yg.text.deleteButton) {
+                options.okClass += ' delete';
+            }
+            
             // OK Button
             buttons.push({
                 text : options.okText,
@@ -857,6 +861,10 @@ yukon.ui = (function () {
                     at: 'center',
                     of: window
                 };
+            
+            if (popup.is('[data-max-height]')) {
+                options.maxHeight = popup.data('maxHeight');
+            }
             
             if (popup.is('[data-title]')) options.title = popup.data('title');
             if (popup.is('[title]')) options.title = popup.attr('title');

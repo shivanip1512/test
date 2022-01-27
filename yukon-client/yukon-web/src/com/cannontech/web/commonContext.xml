@@ -264,6 +264,24 @@
             </list>
         </property>
     </bean>
+    
+    <bean name="versacomGroupPicker" class="com.cannontech.web.picker.PaoPermissionCheckingPicker">
+        <property name="permission" value="LM_VISIBLE"/>
+        <property name="sqlFilters">
+            <list>
+                <bean class="com.cannontech.common.search.pao.db.VersacomLoadGroupFilter"/>
+            </list>
+        </property>
+    </bean>
+    
+    <bean name="expresscomGroupPicker" class="com.cannontech.web.picker.PaoPermissionCheckingPicker">
+        <property name="permission" value="LM_VISIBLE"/>
+        <property name="sqlFilters">
+            <list>
+                <bean class="com.cannontech.common.search.pao.db.ExpresscomLoadGroupFilter"/>
+            </list>
+        </property>
+    </bean>
 
     <bean name="lmGroupPaoPermissionCheckingPicker" class="com.cannontech.web.picker.PaoPermissionCheckingPicker">
         <property name="permission" value="LM_VISIBLE"/>
@@ -386,6 +404,8 @@
     <bean name="dashboardUsersPicker" class="com.cannontech.web.picker.DashboardUsersPicker" />
 
     <bean name="dmvTestPicker" class="com.cannontech.web.picker.DmvTestPicker" />
+    
+    <bean name="gatewayNmIpAddressPortPicker" class="com.cannontech.web.picker.GatewayNMIPAddressPortPicker" />
     
     <bean name="nonResidentailUserPicker" class="com.cannontech.web.picker.NonResidentailUserPicker">
         <property name="searcher" ref="userSearcherLucene"/>

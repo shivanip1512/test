@@ -115,6 +115,7 @@ $(function () { yukon.dev.rfn.init(); });
             <li><a href="viewMappingSimulator"><i:inline key=".mappingSimulator.pageName"/></a></li>
             <li><a href="gatewaySimulator"><i:inline key=".viewGatewayDataSimulator.pageName"/></a></li>
             <li><a href="viewRfnMeterSimulator"><i:inline key=".rfnMeterSimulator.pageName"/></a></li>
+            <li><a href="viewRfnDeviceDeleteSimulator"><i:inline key=".rfnDeviceDeleteSimulator.pageName"/></a></li>
         </ul>
     </div>
 </div>

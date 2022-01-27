@@ -50,19 +50,13 @@ public class EcobeeBuilder implements HardwareTypeExtensionProvider {
      */
     public PaoIdentifier createZeusDevice(int inventoryId, String serialNumber, HardwareType hardwareType) {
         try {
-            boolean shouldCreateDevice = ecobeeZeusCommunicationService.isDeviceRegistered(serialNumber);
-            if (shouldCreateDevice) {
-                CompleteDevice ecobeePao = new CompleteDevice();
-                ecobeePao.setPaoName(serialNumber);
-                paoPersistenceService.createPaoWithDefaultPoints(ecobeePao, hardwareTypeToPaoType.get(hardwareType));
-                // Update the Stars table with the device id
-                inventoryBaseDao.updateInventoryBaseDeviceId(inventoryId, ecobeePao.getPaObjectId());
-                return ecobeePao.getPaoIdentifier();
-            } else {
-                log.error("Not creating the device as the provided thermostat serrial number is invalid or thermostat is"
-                        + " not connected yet.");
-                throw new DeviceCreationException("Thermostat not registered in Ecobee portal or it's yet to be connected.");
-            }
+            ecobeeZeusCommunicationService.createDevice(serialNumber);
+            CompleteDevice ecobeePao = new CompleteDevice();
+            ecobeePao.setPaoName(serialNumber);
+            paoPersistenceService.createPaoWithDefaultPoints(ecobeePao, hardwareTypeToPaoType.get(hardwareType));
+            // Update the Stars table with the device id
+            inventoryBaseDao.updateInventoryBaseDeviceId(inventoryId, ecobeePao.getPaObjectId());
+            return ecobeePao.getPaoIdentifier();
         } catch (Exception e) {
             log.error("Unable to create device.", e);
             throw new DeviceCreationException(e.getMessage(), "invalidDeviceCreation", e);

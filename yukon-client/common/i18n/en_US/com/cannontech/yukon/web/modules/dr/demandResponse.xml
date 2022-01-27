@@ -528,7 +528,7 @@
 <entry key="yukon.web.modules.dr.ecobee.zeusDiscrepancyType.EXTRANEOUS_DEVICE">Device "{2}" does not correspond to any Yukon device</entry>
 <entry key="yukon.web.modules.dr.ecobee.zeusDiscrepancyType.MISSING_GROUP.detail">Ecobee group "{0}" is missing. To fix this issue, Yukon will create the group in ecobee.</entry>
 <entry key="yukon.web.modules.dr.ecobee.zeusDiscrepancyType.EXTRANEOUS_GROUP.detail">Ecobee group "{1}" does not correspond to any Yukon group. To fix this issue, Yukon will delete the group.</entry>
-<entry key="yukon.web.modules.dr.ecobee.zeusDiscrepancyType.MISSING_DEVICE.detail">Ecobee is missing the device "{2}". Yukon cannot fix this as it cannot create device in Zeus. Contact Ecobee for device creation.</entry>
+<entry key="yukon.web.modules.dr.ecobee.zeusDiscrepancyType.MISSING_DEVICE.detail">Ecobee is missing the device "{2}". To fix this issue, Yukon will create or enroll the device in ecobee.</entry>
 <entry key="yukon.web.modules.dr.ecobee.zeusDiscrepancyType.MISLOCATED_DEVICE.detail.unenroll">Device "{2}" is in the wrong ecobee group. To fix this issue, Yukon will unenroll the device from group "{1}".</entry>
 <entry key="yukon.web.modules.dr.ecobee.zeusDiscrepancyType.MISLOCATED_DEVICE.detail.enroll">Device "{2}" is in the wrong ecobee group. To fix this issue, Yukon will enroll the device to group "{0}".</entry>
 <entry key="yukon.web.modules.dr.ecobee.zeusDiscrepancyType.EXTRANEOUS_DEVICE.detail">Device "{2}" in ecobee does not correspond to any Yukon device. To fix this issue, create and enroll the device in Yukon.</entry>

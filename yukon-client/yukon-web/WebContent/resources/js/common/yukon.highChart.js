@@ -110,6 +110,7 @@ yukon.highChart = (function () {
     
                         return tooltipHtml;
                     },
+                    positioner: jsonResponse.tooltip ? jsonResponse.tooltip.positioner : '',
                 },
                 yAxis: jsonResponse.yaxis,
                 series: jsonResponse.seriesDetails,

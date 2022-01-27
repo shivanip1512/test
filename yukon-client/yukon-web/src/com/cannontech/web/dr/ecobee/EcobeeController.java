@@ -28,6 +28,7 @@ import org.springframework.web.bind.annotation.InitBinder;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.ResponseBody;
+import org.springframework.web.client.RestClientException;
 
 import com.cannontech.clientutils.YukonLogManager;
 import com.cannontech.common.i18n.MessageSourceAccessor;
@@ -37,6 +38,8 @@ import com.cannontech.core.service.DateFormattingService;
 import com.cannontech.core.service.DateFormattingService.DateFormatEnum;
 import com.cannontech.database.data.lite.LiteYukonUser;
 import com.cannontech.database.incrementer.NextValueHelper;
+import com.cannontech.dr.ecobee.EcobeeAuthenticationException;
+import com.cannontech.dr.ecobee.EcobeeCommunicationException;
 import com.cannontech.dr.ecobee.model.EcobeeReadResult;
 import com.cannontech.dr.ecobee.model.EcobeeZeusDiscrepancyCategory;
 import com.cannontech.dr.ecobee.model.EcobeeZeusReconciliationReport;
@@ -204,7 +207,7 @@ public class EcobeeController {
     }
     
     @RequestMapping(value="/ecobee/runReport")
-    public String runReport() {
+    public String runReport() throws RestClientException, EcobeeCommunicationException, EcobeeAuthenticationException {
         ecobeeZeusReconciliationService.runReconciliationReport();
         return "";
     }
@@ -215,7 +218,7 @@ public class EcobeeController {
             YukonUserContext userContext,
             Integer reportId,
             Integer errorId
-            ) throws IllegalArgumentException {
+            ) throws IllegalArgumentException, RestClientException, EcobeeAuthenticationException {
         
         
         Map<String, Object> json = new HashMap<>();
@@ -246,7 +249,7 @@ public class EcobeeController {
     public @ResponseBody List<Map<String, Object>> fixAllIssues(
             YukonUserContext userContext,
             Integer reportId,
-            FlashScope flash) {
+            FlashScope flash) throws RestClientException, EcobeeAuthenticationException {
 
         List<Map<String, Object>> fixResponse = new ArrayList<>();
         MessageSourceAccessor accessor = messageSourceResolver.getMessageSourceAccessor(userContext);

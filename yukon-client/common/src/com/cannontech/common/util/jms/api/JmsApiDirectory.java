@@ -15,6 +15,7 @@ import static com.cannontech.common.util.jms.api.JmsApiCategory.SIMULATOR_MANAGE
 import static com.cannontech.common.util.jms.api.JmsApiCategory.SMART_NOTIFICATION;
 import static com.cannontech.common.util.jms.api.JmsApiCategory.WIDGET_REFRESH;
 import static com.cannontech.common.util.jms.api.JmsCommunicatingService.NETWORK_MANAGER;
+import static com.cannontech.common.util.jms.api.JmsCommunicatingService.YUKON_CLOUD_SERVICE;
 import static com.cannontech.common.util.jms.api.JmsCommunicatingService.YUKON_EIM;
 import static com.cannontech.common.util.jms.api.JmsCommunicatingService.YUKON_FIELD_SIMULATOR;
 import static com.cannontech.common.util.jms.api.JmsCommunicatingService.YUKON_LOAD_MANAGEMENT;
@@ -80,6 +81,9 @@ import com.cannontech.common.rfn.message.datastreaming.device.DeviceDataStreamin
 import com.cannontech.common.rfn.message.datastreaming.device.DeviceDataStreamingConfigResponse;
 import com.cannontech.common.rfn.message.datastreaming.gateway.GatewayDataStreamingInfoRequest;
 import com.cannontech.common.rfn.message.datastreaming.gateway.GatewayDataStreamingInfoResponse;
+import com.cannontech.common.rfn.message.device.RfnDeviceDeleteConfirmationReply;
+import com.cannontech.common.rfn.message.device.RfnDeviceDeleteInitialReply;
+import com.cannontech.common.rfn.message.device.RfnDeviceDeleteRequest;
 import com.cannontech.common.rfn.message.gateway.GatewayActionResponse;
 import com.cannontech.common.rfn.message.gateway.GatewayArchiveRequest;
 import com.cannontech.common.rfn.message.gateway.GatewayCollectionRequest;
@@ -142,10 +146,12 @@ import com.cannontech.services.ecobee.authToken.message.ZeusEcobeeAuthTokenReque
 import com.cannontech.services.ecobee.authToken.message.ZeusEcobeeAuthTokenResponse;
 import com.cannontech.services.systemDataPublisher.service.model.SystemData;
 import com.cannontech.services.systemDataPublisher.yaml.model.CloudDataConfigurations;
-import com.cannontech.simulators.message.request.FieldSimulatorStatusRequest;
-import com.cannontech.simulators.message.request.ModifyFieldSimulatorRequest;
 import com.cannontech.simulators.message.request.EatonCloudDataRetrievalSimulatonRequest;
 import com.cannontech.simulators.message.request.EatonCloudRuntimeCalcSimulatonRequest;
+import com.cannontech.simulators.message.request.EatonCloudSecretRotationSimulationRequest;
+import com.cannontech.simulators.message.request.FieldSimulatorStatusRequest;
+import com.cannontech.simulators.message.request.ItronRuntimeCalcSimulatonRequest;
+import com.cannontech.simulators.message.request.ModifyFieldSimulatorRequest;
 import com.cannontech.simulators.message.request.SimulatorRequest;
 import com.cannontech.simulators.message.response.FieldSimulatorStatusResponse;
 import com.cannontech.simulators.message.response.ModifyFieldSimulatorResponse;
@@ -157,7 +163,7 @@ import com.cannontech.stars.dr.jms.message.OptOutOptInJmsMessage;
 import com.cannontech.support.rfn.message.RfnSupportBundleRequest;
 import com.cannontech.support.rfn.message.RfnSupportBundleResponse;
 import com.cannontech.thirdparty.messaging.SmartUpdateRequestMessage;
-import com.cannontech.simulators.message.request.ItronRuntimeCalcSimulatonRequest;
+import com.cannontech.yukon.system.metrics.message.YukonMetric;
 
 /**
  * This is intended to be the single repository for all JmsApi information in the Yukon Java code.<br><br>
@@ -1070,11 +1076,10 @@ public final class JmsApiDirectory {
             .logger(YukonLogManager.getRfnLogger())
             .build();
     
-    public static final JmsApi<Serializable,?,?> RFN_DEVICE_CREATION_ALERT =
+    public static final JmsApi<Serializable,?,?> NEW_ALERT_CREATION =
             JmsApi.builder(Serializable.class)
-                  .name("RFN Device Creation Alert")
-                  .description("Yukon Service Manager passes alerts from RFN Device Creation Service to Yukon "
-                          + "Webserver AlertService when RFN device fails to be created")
+                  .name("New Alert Creation")
+                  .description("Yukon Service Manager passes alerts to Webserver to be created")
                   .communicationPattern(NOTIFICATION)
                   .queue(new JmsQueue("com.eaton.eas.yukon.alert"))
                   .requestMessage(Serializable.class)
@@ -1318,8 +1323,7 @@ public final class JmsApiDirectory {
                   .receiver(NETWORK_MANAGER)
                   .timeToLive(Duration.standardMinutes(5))
                   .build();
-    
-    
+     
     public static final JmsApi<EatonCloudDataRetrievalSimulatonRequest,?,?> EATON_CLOUD_SIM_DEVICE_DATA_RETRIEVAL_REQUEST = 
             JmsApi.builder(EatonCloudDataRetrievalSimulatonRequest.class)
                   .name("Eaton Cloud Device Auto Creation Simulation Request")
@@ -1327,6 +1331,17 @@ public final class JmsApiDirectory {
                   .communicationPattern(NOTIFICATION)
                   .queue(new JmsQueue("yukon.notif.obj.simulator.EatonCloudDataRetrievalSimulatonRequest"))
                   .requestMessage(EatonCloudDataRetrievalSimulatonRequest.class)
+                  .sender(YUKON_WEBSERVER)
+                  .receiver(YUKON_SERVICE_MANAGER)
+                  .build();
+    
+    public static final JmsApi<EatonCloudSecretRotationSimulationRequest,?,?> EATON_CLOUD_SIM_SECRET_ROTATION_REQUEST = 
+            JmsApi.builder(EatonCloudSecretRotationSimulationRequest.class)
+                  .name("Eaton Cloud Secret Rotation Simulation Request")
+                  .description("WS sends request to SM rotate secret1 and secret2")
+                  .communicationPattern(NOTIFICATION)
+                  .queue(new JmsQueue("yukon.notif.obj.simulator.EatonCloudSecretRotationSimulationRequest"))
+                  .requestMessage(EatonCloudSecretRotationSimulationRequest.class)
                   .sender(YUKON_WEBSERVER)
                   .receiver(YUKON_SERVICE_MANAGER)
                   .build();
@@ -1378,7 +1393,40 @@ public final class JmsApiDirectory {
                   .sender(YUKON_WEBSERVER)
                   .receiver(YUKON_SERVICE_MANAGER)
                   .build();
-                  
+
+    public static final JmsApi<RfnDeviceDeleteRequest, RfnDeviceDeleteInitialReply, RfnDeviceDeleteConfirmationReply> RFN_DEVICE_DELETE = JmsApi
+            .builder(RfnDeviceDeleteRequest.class, RfnDeviceDeleteInitialReply.class, RfnDeviceDeleteConfirmationReply.class)
+            .name("Device Delete Request")
+            .description("Request is sent from Yukon to NM to delete a RFN device."
+                    + "NM send a an acknowledgement confirmimg the presence/absence of the device in the NM Db."
+                    + "NM will then send a second response confirmimg the deletion failure or success.")
+            .communicationPattern(REQUEST_ACK_RESPONSE)
+            .queue(new JmsQueue("com.eaton.eas.yukon.networkmanager.RfnDeviceDeleteRequest"))
+            .ackQueue(JmsQueue.TEMP_QUEUE)
+            .responseQueue(new JmsQueue("com.eaton.eas.yukon.networkmanager.RfnDeviceDeleteConfirmationReply"))
+            .requestMessage(RfnDeviceDeleteRequest.class)
+            .ackMessage(RfnDeviceDeleteInitialReply.class)
+            .responseMessage(RfnDeviceDeleteConfirmationReply.class)
+            .sender(YUKON_WEBSERVER)
+            .receiver(NETWORK_MANAGER)
+            .receiver(YUKON_SERVICE_MANAGER)
+            .sender(YUKON_SIMULATORS)
+            .build();
+
+    public static final JmsApi<YukonMetric, ?, ?> YUKON_METRIC = JmsApi.builder(YukonMetric.class)
+            .name("Yukon Metric")
+            .description("Multiple services publish system metrics data to this topic. Different consumers "
+                    + "will process data as per their requirment.")
+            .topic(true)
+            .communicationPattern(NOTIFICATION)
+            .queue(new JmsQueue("com.eaton.eas.yukon.metric"))
+            .requestMessage(YukonMetric.class)
+            .sender(YUKON_WEBSERVER)
+            .sender(YUKON_SERVICE_MANAGER)
+            .receiver(YUKON_SERVICE_MANAGER)
+            .receiver(YUKON_CLOUD_SERVICE)
+            .build();
+
     /*
      * WARNING: JmsApiDirectoryTest will fail if you don't add each new JmsApi to the category map below!
      */
@@ -1415,10 +1463,11 @@ public final class JmsApiDirectory {
                 NM_HEARTBEAT,
                 PORTER_DYNAMIC_PAOINFO,
                 RF_SUPPORT_BUNDLE,
-                RFN_DEVICE_CREATION_ALERT,
+                NEW_ALERT_CREATION,
                 SYSTEM_DATA,
                 ZEUS_ECOBEE_AUTH_TOKEN,
-                DATABASE_CHANGE_EVENT_REQUEST);
+                DATABASE_CHANGE_EVENT_REQUEST,
+                YUKON_METRIC);
         
         addApis(jmsApis, RFN_LCR, 
                 RFN_EXPRESSCOM_BROADCAST, 
@@ -1467,6 +1516,7 @@ public final class JmsApiDirectory {
                 RF_ALARM_ARCHIVE,
                 RF_EVENT_ARCHIVE,
                 RFN_DEVICE_ARCHIVE,
+                RFN_DEVICE_DELETE,
                 RFN_STATUS_ARCHIVE,
                 RFN_NODE_WIFI_COMM_ARCHIVE,
                 RFN_RELAY_CELL_COMM_ARCHIVE,
@@ -1498,7 +1548,8 @@ public final class JmsApiDirectory {
                 SIMULATOR, 
                 EATON_CLOUD_SIM_DEVICE_DATA_RETRIEVAL_REQUEST, 
                 EATON_CLOUD_SIM_RUNTIME_CALC_START_REQUEST,
-                ITRON_SIM_RUNTIME_CALC_START_REQUEST);
+                ITRON_SIM_RUNTIME_CALC_START_REQUEST,
+                EATON_CLOUD_SIM_SECRET_ROTATION_REQUEST);
 
         return jmsApis;
     }

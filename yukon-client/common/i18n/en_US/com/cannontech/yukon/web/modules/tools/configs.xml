@@ -285,6 +285,7 @@
 
     <entry key="yukon.web.modules.tools.configs.category.rfnDemand.title">RFN Demand</entry>
     <entry key="yukon.web.modules.tools.configs.category.rfnDemand.definition">Demand settings for single-phase RFN meters.</entry>
+    <entry key="yukon.web.modules.tools.configs.category.rfnDemand.warning">These settings only apply to RFN meters if Advanced Metrology Preferred is enabled.</entry>
     <entry key="yukon.web.modules.tools.configs.category.rfnDemand.demandInterval">Demand Interval</entry>
     <entry key="yukon.web.modules.tools.configs.category.rfnDemand.demandInterval.description">Interval in minutes over which most recent demand is calculated.</entry>
 
@@ -294,11 +295,7 @@
     <entry key="yukon.web.modules.tools.configs.category.profile.profileInterval.description">Interval in minutes over which profile values are kept.</entry>
 
     <entry key="yukon.web.modules.tools.configs.category.demandFreeze.title">Demand Freeze</entry>
-    <entry key="yukon.web.modules.tools.configs.category.demandFreeze.definition">
-            <![CDATA[Demand freeze settings for meters.<br/>
-            These settings always apply to RFN-500 Focus AX meters with 9.5+ firmware, but only apply to other RFN meters if Advanced Metrology Preferred is enabled.
-        ]]>
-    </entry>
+    <entry key="yukon.web.modules.tools.configs.category.demandFreeze.definition">Demand freeze settings for meters.</entry>
     <entry key="yukon.web.modules.tools.configs.category.demandFreeze.warning">These settings always apply to RFN-500 Focus AX meters with 9.5+ firmware, but only apply to other RFN meters if Advanced Metrology Preferred is enabled.</entry>
     <entry key="yukon.web.modules.tools.configs.category.demandFreeze.demandFreezeDay">Scheduled Demand Freeze Day</entry>
     <entry key="yukon.web.modules.tools.configs.category.demandFreeze.demandFreezeDay.description">The day of scheduled demand freeze/reset. 0 disables demand freeze. 32 indicates last day of month.</entry>
@@ -419,11 +416,7 @@
     <entry key="yukon.web.modules.tools.configs.category.mct470PrecannedTable.tableType.description">Table to use. Use caution when changing.</entry>
 
     <entry key="yukon.web.modules.tools.configs.category.tou.title">Time of Use</entry>
-    <entry key="yukon.web.modules.tools.configs.category.tou.definition">
-                <![CDATA[The time of use schedules devices will apply to any data collected. For MCT-470 devices, the TOU schedules will only apply to data collected through their KYZ inputs.<br/>
-            These settings only apply to RFN meters if Advanced Metrology Preferred is enabled.
-        ]]>
-    </entry>
+    <entry key="yukon.web.modules.tools.configs.category.tou.definition">The time of use schedules devices will apply to any data collected. For MCT-470 devices, the TOU schedules will only apply to data collected through their KYZ inputs.</entry>
     <entry key="yukon.web.modules.tools.configs.category.tou.warning">These settings only apply to RFN meters if Advanced Metrology Preferred is enabled.</entry>
     <entry key="yukon.web.modules.tools.configs.category.tou.enableTou">Enable TOU</entry>
     <entry key="yukon.web.modules.tools.configs.category.tou.enableTou.description">When true, the device also stores usage into its TOU rate registers based on the TOU schedule specified below.</entry>
