@@ -87,7 +87,7 @@
                                 <td>
                                     <cm:dropdown icon="icon-cog" triggerClasses="js-view-attribute-${attributeId} ${viewClass}">
                                         <cm:dropdownOption key=".edit" icon="icon-pencil" classes="js-edit-attribute" data-attribute-id="${attributeId}"/>
-                                        <cm:dropdownOption id="delete-attribute-${attributeId}" key=".delete" icon="icon-cross" 
+                                        <cm:dropdownOption id="delete-attribute-${attributeId}" key=".delete" icon="icon-delete" 
                                             data-ok-event="yukon:attribute:delete" classes="js-hide-dropdown" data-attribute-id="${attributeId}"/>
                                         <d:confirm on="#delete-attribute-${attributeId}" nameKey="confirmDelete" argument="${attr.name}"  />
                                         <cti:url var="deleteUrl" value="/admin/config/attribute/${attributeId}/delete"/>

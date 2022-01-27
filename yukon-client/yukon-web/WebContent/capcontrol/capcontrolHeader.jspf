@@ -72,7 +72,7 @@
                 <tags:dynamicChooseOption optionId="enabled">
                     <cti:msg2 var="disableSystem" key=".disableSystem.label"/>
                     <cti:msg2 var="commandWarning" key=".command.confirm" argument="${disableSystem}"/>
-                    <cm:dropdownOption id="systemOn" icon="icon-delete" classes="js-system-command" data-command-id="28" 
+                    <cm:dropdownOption id="systemOn" icon="icon-disable" classes="js-system-command" data-command-id="28" 
                         data-command-warning="${commandWarning}" label="${disableSystem}"/>
                 </tags:dynamicChooseOption>
                 <tags:dynamicChooseOption optionId="disabled">

@@ -179,7 +179,7 @@ $(function() {
                                             <td>
                                                 <cti:button nameKey="remove" type="submit" name="removeOperatorUserGroup" 
                                                     value="${userGroup.userGroupId}" classes="fr MR0"
-                                                    renderMode="buttonImage" icon="icon-cross"/>
+                                                    renderMode="buttonImage" icon="icon-remove"/>
                                             </td>
                                         </c:if>
                                     </tr>
