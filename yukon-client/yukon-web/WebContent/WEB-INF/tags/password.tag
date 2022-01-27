@@ -37,10 +37,15 @@
     	input.prop('disabled', false);
     });
     
-/*     <c:if test="${maskValue}">
-		alert("Masking values");
-		document.getElementsByName(${path})[0].val('********');
-    </c:if> */
+    $(document).ready(function() {
+	    <c:if test="${maskValue}">
+			var sensitiveField = $('input[name=' + $.escapeSelector('${path}') + ']');
+			console.log(sensitiveField.val());
+	    	if (sensitiveField.val() != '') {
+	    		sensitiveField.attr("value", "********");
+	    	}
+	    </c:if>
+    });
 </script>
 
 <spring:bind path="${path}">
@@ -59,7 +64,7 @@
 </c:if>
 
 <div class="dib M0">
-    <form:password path="${path}" disabled="${pageScope.disabled}" size="${pageScope.size}" maxlength="${pageScope.maxlength}" 
+    <form:password path="${path}" readonly="${pageScope.disabled}" size="${pageScope.size}" maxlength="${pageScope.maxlength}" 
         autocomplete="${autocomplete}" cssClass="${inputClass} ${pageScope.cssClass}" showPassword="${showPassword}" tabindex="${tabindex}" placeholder="${placeholder}"/>
     <c:if test="${includeShowHideButton}">
          <tags:check classes="fr M0" onclick="showHideData(this.checked, '${path}');" name="showHideDataField">
