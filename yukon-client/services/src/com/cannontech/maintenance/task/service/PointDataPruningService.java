@@ -12,7 +12,7 @@ public interface PointDataPruningService {
     
     /**
      * Delete duplicate point data.
-     * @return number of records deleted
+     * @return array of number of records deleted and ID of last duplicate found
      */
-    int deleteDuplicatePointData(Instant processEndTime);
+    Integer[] deleteDuplicatePointData(Instant processEndTime);
 }
