@@ -37,7 +37,7 @@ public class RfnMeterReadingArchiveRequestsQueueSizeProducer extends YukonMetric
 
     @Override
     public YukonMetric produce() {
-        long queueSize = helper.getQueueSize(ApplicationId.SERVICE_MANAGER, queueName);
+        long queueSize = Long.valueOf(String.valueOf(yukonMetricCache.get(key).getValue()));
         YukonMetric metric = new YukonMetric(getYukonMetricPointInfo(), queueSize, new DateTime());
         if (queueSize > thresholdValue) {
             debug(metric, log, thresholdValue);
