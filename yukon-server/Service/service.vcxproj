@@ -361,6 +361,7 @@ if exist $(OutDir)$(TargetName).pdb xcopy /d/y/f $(OutDir)$(TargetName).pdb $(So
     </ClCompile>
     <ClCompile Include="ServiceMetricQuery.cpp" />
     <ClCompile Include="ServiceMetricReporter.cpp" />
+    <ClCompile Include="YukonMetricTracker.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="include\cservice.h" />
@@ -370,6 +371,7 @@ if exist $(OutDir)$(TargetName).pdb xcopy /d/y/f $(OutDir)$(TargetName).pdb $(So
     <ClInclude Include="include\precomp.h" />
     <ClInclude Include="include\ServiceMetricQuery.h" />
     <ClInclude Include="include\ServiceMetricReporter.h" />
+    <ClInclude Include="include\YukonMetricTracker.h" />
   </ItemGroup>
   <ItemGroup>
     <ResourceCompile Include="..\versioninfo.rc" />
