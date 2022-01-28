@@ -1,5 +1,7 @@
 package com.cannontech.yukon.system.metrics.producer;
 
+import java.util.concurrent.ConcurrentHashMap;
+
 import javax.annotation.PostConstruct;
 
 import org.apache.logging.log4j.Logger;
@@ -17,7 +19,14 @@ import com.cannontech.yukon.system.metrics.producer.service.YukonMetricThreshold
 public class RfnLcrReadingArchiveRequestsQueueSizeProducer extends YukonMetricThresholdProducer {
     private static final Logger log = YukonLogManager.getLogger(RfnLcrReadingArchiveRequestsQueueSizeProducer.class);
     private static final String queueName = JmsApiDirectory.RFN_LCR_READ_ARCHIVE.getQueueName();
-    private static int thresholdValue;
+    private static final String key = "yukonMetricKey";
+    private static ConcurrentHashMap<String, YukonMetric> yukonMetricCache = new ConcurrentHashMap<String, YukonMetric>(1);
+    private static long thresholdValue;
+    private static int escapeValveTime = 15;
+    private static int intervalAfterEscapeValve = 5;
+    private boolean shouldNotifyForThresholdValue;
+    private DateTime firstNotifiedTime;
+
     @Autowired private YukonMetricHelper helper;
 
     @PostConstruct
@@ -29,7 +38,11 @@ public class RfnLcrReadingArchiveRequestsQueueSizeProducer extends YukonMetricTh
     public YukonMetric produce() {
         long queueSize = helper.getQueueSize(ApplicationId.SERVICE_MANAGER, queueName);
         YukonMetric metric = new YukonMetric(getYukonMetricPointInfo(), queueSize, new DateTime());
-        debug(metric, log, thresholdValue);
+        if (queueSize > thresholdValue) {
+            debug(metric, log, thresholdValue);
+        } else {
+            debug(metric, log);
+        }
         return metric;
     }
 
@@ -45,7 +58,45 @@ public class RfnLcrReadingArchiveRequestsQueueSizeProducer extends YukonMetricTh
 
     @Override
     public boolean watch() {
-        return helper.getQueueSize(ApplicationId.SERVICE_MANAGER, queueName) > thresholdValue;
+        long currentQueueSize = Long.valueOf(String.valueOf(yukonMetricCache.get(key).getValue()));
+
+        if (currentQueueSize > thresholdValue && !shouldNotifyForThresholdValue) {
+            shouldNotifyForThresholdValue = true;
+            firstNotifiedTime = new DateTime();
+        }
+        if (currentQueueSize < thresholdValue) {
+            shouldNotifyForThresholdValue = false;
+        }
+        boolean escapeValveFlag = false;
+        if (shouldNotifyForThresholdValue) {
+            escapeValveFlag = helper.checkForEscapeValve(escapeValveTime, firstNotifiedTime, intervalAfterEscapeValve);
+        }
+        return shouldNotifyForThresholdValue && escapeValveFlag;
+    }
+
+    @Override
+    protected YukonMetric checkPreviousValue() {
+        long currentQueueSize = helper.getQueueSize(ApplicationId.SERVICE_MANAGER, queueName);
+        YukonMetric cachedValue = yukonMetricCache.get(key);
+        if (cachedValue != null) {
+            long cachedQueueSize = Long.valueOf(String.valueOf(yukonMetricCache.get(key).getValue()));
+            if ((cachedQueueSize < thresholdValue && currentQueueSize > thresholdValue)
+                    || cachedQueueSize > thresholdValue && currentQueueSize < thresholdValue) {
+                return cachedValue;
+            }
+        }
+        yukonMetricCache.put(key, new YukonMetric(getYukonMetricPointInfo(), currentQueueSize, DateTime.now()));
+        return null;
+    }
+
+    @Override
+    public long getPeriodInMinutes() {
+        return 60;
+    }
+
+    @Override
+    public boolean shouldGenerateIntervalData() {
+        return true;
     }
 
 }
