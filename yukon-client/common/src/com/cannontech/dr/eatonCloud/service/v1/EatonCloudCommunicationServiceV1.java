@@ -33,7 +33,6 @@ public interface EatonCloudCommunicationServiceV1 {
      * @param includeDetail - Indicates whether to return devices detail information from their device profiles. (Optional)
      * @return site info containing device details
      * @throws EatonCloudCommunicationExceptionV1
-     * @throws EatonCloudException
      * 
      * 200 OK
      * 400 Bad Request
@@ -59,7 +58,6 @@ public interface EatonCloudCommunicationServiceV1 {
      * @return TimeSeries data for a set of devices over an interval
      *         
      * @throws EatonCloudCommunicationExceptionV1
-     * @throws EatonCloudException
      * 
      * 200 OK
      * 400 Bad Request
@@ -72,7 +70,6 @@ public interface EatonCloudCommunicationServiceV1 {
      * EatonCloudCommunicationExceptionV1 contains the status
      * @return EatonCloudCommandResponseV1
      * @throws EatonCloudCommunicationExceptionV1
-     * @throws EatonCloudException
      * 
      * 200 OK
      * 400 Bad Request
@@ -89,7 +86,6 @@ public interface EatonCloudCommunicationServiceV1 {
      * @param recursive
      * @return device details
      * @throws EatonCloudCommunicationExceptionV1
-     * @throws EatonCloudException
      * 
      * 200 OK
      * 400 Bad Request
@@ -106,7 +102,6 @@ public interface EatonCloudCommunicationServiceV1 {
     /**
      * @return Service account details
      * @throws EatonCloudCommunicationExceptionV1
-     * @throws EatonCloudException
      */
     EatonCloudServiceAccountDetailV1 getServiceAccountDetail() throws EatonCloudCommunicationExceptionV1;
 
@@ -115,7 +110,6 @@ public interface EatonCloudCommunicationServiceV1 {
      * @param secretNumber 1 - secret1, 2 - secret2
      * @return new secret
      * @throws EatonCloudCommunicationExceptionV1
-     * @throws EatonCloudException
      */
     EatonCloudSecretValueV1 rotateAccountSecret(int secretNumber) throws EatonCloudCommunicationExceptionV1;
 }

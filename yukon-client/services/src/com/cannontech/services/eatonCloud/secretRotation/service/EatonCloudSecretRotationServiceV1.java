@@ -193,7 +193,7 @@ public class EatonCloudSecretRotationServiceV1 {
                     log.error("({} of {}) {} rotation failed. Alert created:{}", currentTry.get(), numberOfTimesToRetry, secret,
                             AlertType.EATON_CLOUD_CREDENTIAL_UPDATE_FAILURE, e);
                     secretRotations.remove(type);
-                    eatonCloudEventLogService.secretRotationFailed(secret, YukonUserContext.system.getYukonUser(), e.getMessage(),
+                    eatonCloudEventLogService.secretRotationFailed(secret, YukonUserContext.system.getYukonUser(), e.getDisplayMessage(),
                             currentTry.get());
                     createAlert(AlertType.EATON_CLOUD_CREDENTIAL_UPDATE_FAILURE, secret, secretExpiryTime.toDate());
                     validateSecret(type);

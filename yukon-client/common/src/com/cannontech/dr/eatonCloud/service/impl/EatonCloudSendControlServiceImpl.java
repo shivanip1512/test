@@ -262,7 +262,7 @@ public class EatonCloudSendControlServiceImpl implements EatonCloudSendControlSe
                         "[external event id: {} ({} of {})] Error sending shed command device id:{} guid:{} name:{} relay:{}",
                         eventId, tryNumber, totalTries, deviceId,
                         guid, deviceName, command.getVirtualRelayId(), e);
-                processError(eventId, deviceName, deviceId, guid, command, e.getMessage(), tryNumber);
+                processError(eventId, deviceName, deviceId, guid, command, e.getDisplayMessage(), tryNumber);
             }
         });
 

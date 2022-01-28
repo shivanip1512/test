@@ -292,9 +292,9 @@ public class YukonSecurityController {
                     DateFormattingService.DateFormatEnum.DATEHM_12, userContext);
             model.put("ecobeeKeyZeusGeneratedDateTime", ecobeeZeusDateGenerated);
         } catch (NoSuchElementException e) {
-            //log.debug("Ecobee Zeus Key Creation time is not available, may be it is not generated yet.");
+            log.debug("Ecobee Zeus Key Creation time is not available, may be it is not generated yet.");
         } catch (Exception e) {
-            //log.error("Error while retrieving Ecobee Zeus encryption keys. ", e);
+            log.error("Error while retrieving Ecobee Zeus encryption keys. ", e);
         }
        
         DynamicPaoInfo dynamicPaoInfo = paoDao.getDynamicPaoInfo(InfoKey.ECOBEEZEUS);
