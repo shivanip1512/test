@@ -2,25 +2,26 @@ package com.cannontech.yukon.system.metrics.message;
 
 import static com.google.common.base.Preconditions.checkArgument;
 
+import com.cannontech.common.chart.model.ChartInterval;
+import com.cannontech.common.chart.model.ConverterType;
 import com.cannontech.database.data.point.PointType;
 import com.google.common.collect.ImmutableMap;
 import com.google.common.collect.ImmutableSet;
 
 public enum YukonMetricPointDataType {
     RFN_METER_READING_ARCHIVE_REQUESTS_RECEIVED(YukonMetricPointInfo.RFN_METER_READING_ARCHIVE_REQUESTS_RECEIVED, 1032,
-            PointType.Analog, "RFN Meter Reading Archive Requests Received"),
+            PointType.Analog, "RFN Meter Reading Archive Requests Received", ChartInterval.HOUR, ConverterType.DELTA_WATER),
     RFN_METER_READING_ARCHIVE_REQUESTS_POINT_DATA_GENERATED_COUNT(
             YukonMetricPointInfo.RFN_METER_READING_ARCHIVE_POINT_DATA_GENERATED_COUNT, 1034, PointType.Analog,
-            "RFN Meter Reading Archive Point Data Generated Count"),
+            "RFN Meter Reading Archive Point Data Generated Count", ChartInterval.HOUR, ConverterType.DELTA_WATER),
     RFN_LCR_READING_ARCHIVE_REQUESTS_RECEIVED(YukonMetricPointInfo.RFN_LCR_READING_ARCHIVE_REQUESTS_RECEIVED, 1035, PointType.Analog,
-            "RFN LCR Reading Archive Requests Received"),
+            "RFN LCR Reading Archive Requests Received", ChartInterval.HOUR, ConverterType.DELTA_WATER),
     RFN_LCR_READING_ARCHIVE_REQUESTS_QUEUE_SIZE(YukonMetricPointInfo.RFN_LCR_READING_ARCHIVE_REQUESTS_QUEUE_SIZE, 1036,
-            PointType.Analog, "RFN LCR Reading Archive Requests Queue Size"),
+            PointType.Analog, "RFN LCR Reading Archive Requests Queue Size", ChartInterval.DAY, ConverterType.RAW),
     RFN_METER_READING_ARCHIVE_REQUESTS_QUEUE_SIZE(YukonMetricPointInfo.RFN_METER_READING_ARCHIVE_REQUESTS_QUEUE_SIZE, 1037,
-            PointType.Analog, "RFN Meter Reading Archive Requests Queue Size"),
+            PointType.Analog, "RFN Meter Reading Archive Requests Queue Size", ChartInterval.DAY, ConverterType.RAW),
     RFN_LCR_READING_POINT_DATA_GENERATED_COUNT(YukonMetricPointInfo.RFN_LCR_READING_POINT_DATA_GENERATED_COUNT, 1038,
-            PointType.Analog, "RFN LCR Reading Archive Point Data Generated Count");
-
+            PointType.Analog, "RFN LCR Reading Archive Point Data Generated Count", ChartInterval.HOUR, ConverterType.DELTA_WATER);
 
 
     private final static ImmutableSet<YukonMetricPointInfo> lookupByYukonMetricPointInfo;
@@ -42,12 +43,19 @@ public enum YukonMetricPointDataType {
     private Integer offset;
     private PointType type;
     private String name;
+    private ChartInterval chartInterval;
+    private ConverterType converterType;
 
-    YukonMetricPointDataType(YukonMetricPointInfo pointInfo, Integer offset, PointType type, String name) {
+
+
+    private YukonMetricPointDataType(YukonMetricPointInfo pointInfo, Integer offset, PointType type, String name,
+            ChartInterval chartInterval, ConverterType converterType) {
         this.pointInfo = pointInfo;
         this.offset = offset;
         this.type = type;
         this.name = name;
+        this.chartInterval = chartInterval;
+        this.converterType = converterType;
     }
 
     public YukonMetricPointInfo getPointInfo() {
@@ -64,6 +72,14 @@ public enum YukonMetricPointDataType {
 
     public String getName() {
         return name;
+    }
+
+    public ChartInterval getChartInterval() {
+        return chartInterval;
+    }
+
+    public ConverterType getConverterType() {
+        return converterType;
     }
 
     public static boolean isPointData(YukonMetricPointInfo pointInfo) {
@@ -85,5 +101,27 @@ public enum YukonMetricPointDataType {
             }
         }
         return false;
+    }
+
+    public static ChartInterval getChartInterval(Integer offset, PointType pointType) {
+        checkArgument(offset != null);
+        checkArgument(pointType != null);
+        for (YukonMetricPointDataType metricPointDataType : lookupByPointInfo.values()) {
+            if (metricPointDataType.getOffset().equals(offset) && metricPointDataType.getType() == pointType) {
+                return metricPointDataType.getChartInterval();
+            }
+        }
+        throw new IllegalArgumentException("Invalid Offset and Point type");
+    }
+
+    public static ConverterType getConverterType(Integer offset, PointType pointType) {
+        checkArgument(offset != null);
+        checkArgument(pointType != null);
+        for (YukonMetricPointDataType metricPointDataType : lookupByPointInfo.values()) {
+            if (metricPointDataType.getOffset().equals(offset) && metricPointDataType.getType() == pointType) {
+                return metricPointDataType.getConverterType();
+            }
+        }
+        throw new IllegalArgumentException("Invalid Offset and Point type");
     }
 }
