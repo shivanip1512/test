@@ -166,7 +166,7 @@ public class EcobeeZeusCommunicationServiceImpl implements EcobeeZeusCommunicati
     @Override
     public void enroll(int lmGroupId, String serialNumber, int inventoryId, int programId, boolean updateDeviceMapping) {
         synchronized (this) {
-            if (isDeviceEnrolled(serialNumber)) {
+            if (isDeviceEnrolled(serialNumber) || isDeviceNotYetConnected(serialNumber)) {
                 String zeusGroupId = StringUtils.EMPTY;
                 List<String> zeusGroupIds = ecobeeZeusGroupService.getZeusGroupIdsForLmGroup(lmGroupId, programId);
                 // For new system and when there are no suitable Ecobee group available for enrollment, create a new Ecobee group.
@@ -193,6 +193,24 @@ public class EcobeeZeusCommunicationServiceImpl implements EcobeeZeusCommunicati
             String thermostatGroupID = retrieveThermostatGroupID();
             String listThermostatsURL = getUrlBase() + "tstatgroups/" + thermostatGroupID + "/thermostats?enrollment_state="
                     + ZeusThermostatState.ENROLLED + "&thermostat_ids=" + serialNumber;
+
+            ResponseEntity<ZeusThermostatsResponse> responseEntity = (ResponseEntity<ZeusThermostatsResponse>) requestHelper
+                    .callEcobeeAPIForObject(listThermostatsURL, HttpMethod.GET, ZeusThermostatsResponse.class);
+            return responseEntity.getStatusCode() == HttpStatus.OK
+                    && CollectionUtils.isNotEmpty(responseEntity.getBody().getThermostats());
+        } catch (RestClientException | EcobeeAuthenticationException e) {
+            throw new EcobeeCommunicationException("Error occurred while communicating Ecobee API.", e);
+        }
+    }
+
+    /**
+     * Check the thermostat status in root group. If status is NOT_YET_CONNECTED, return true else return false.
+     */
+    public boolean isDeviceNotYetConnected(String serialNumber) {
+        try {
+            String thermostatGroupID = retrieveThermostatGroupID();
+            String listThermostatsURL = getUrlBase() + "tstatgroups/" + thermostatGroupID + "/thermostats?enrollment_state="
+                    + ZeusThermostatState.NOT_YET_CONNECTED + "&thermostat_ids=" + serialNumber;
 
             ResponseEntity<ZeusThermostatsResponse> responseEntity = (ResponseEntity<ZeusThermostatsResponse>) requestHelper
                     .callEcobeeAPIForObject(listThermostatsURL, HttpMethod.GET, ZeusThermostatsResponse.class);

@@ -104,12 +104,13 @@ public class EcobeeMockApiController {
             @RequestParam(name = "page", required = false, defaultValue = "0") Integer pageNumber) {
         if (state != null && CollectionUtils.isNotEmpty(thermostatIds)) {
             int deviceStatusResponse = zeusEcobeeDataConfiguration.getDeviceStatus();
-            if (deviceStatusResponse == 0) {
+            if (deviceStatusResponse == 0 || deviceStatusResponse == 1) {
                 ZeusThermostatsResponse response = new ZeusThermostatsResponse();
                 List<ZeusThermostat> thermostats = new ArrayList<ZeusThermostat>();
                 ZeusThermostat thermostat = new ZeusThermostat();
                 thermostat.setSerialNumber(thermostatIds.get(0));
-                thermostat.setState(ZeusThermostatState.ENROLLED);
+                thermostat.setState(
+                        deviceStatusResponse == 0 ? ZeusThermostatState.ENROLLED : ZeusThermostatState.NOT_YET_CONNECTED);
                 thermostats.add(thermostat);
                 response.setThermostats(thermostats);
                 return new ResponseEntity<>(response, HttpStatus.OK);
