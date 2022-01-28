@@ -530,11 +530,21 @@ INIT_ATTRIBUTE( NetDeliveredkVArhRateB,                             "NET_DELIVER
 INIT_ATTRIBUTE( NetDeliveredkVArhRateC,                             "NET_DELIVERED_KVARH_RATE_C" );
 INIT_ATTRIBUTE( NetDeliveredkVArhRateD,                             "NET_DELIVERED_KVARH_RATE_D" );
 
+INIT_ATTRIBUTE( DeliveredkVArhQ1,                                   "DELIVERED_KVARH_Q1" );
+INIT_ATTRIBUTE( DeliveredkVArhQ1RateA,                              "DELIVERED_KVARH_Q1_RATE_A" );
+INIT_ATTRIBUTE( DeliveredkVArhQ1RateB,                              "DELIVERED_KVARH_Q1_RATE_B" );
+INIT_ATTRIBUTE( DeliveredkVArhQ1RateC,                              "DELIVERED_KVARH_Q1_RATE_C" );
+INIT_ATTRIBUTE( DeliveredkVArhQ1RateD,                              "DELIVERED_KVARH_Q1_RATE_D" );
 INIT_ATTRIBUTE( ReceivedkVArh,                                      "RECEIVED_KVARH" );
 INIT_ATTRIBUTE( ReceivedkVArhRateA,                                 "RECEIVED_KVARH_RATE_A" );
 INIT_ATTRIBUTE( ReceivedkVArhRateB,                                 "RECEIVED_KVARH_RATE_B" );
 INIT_ATTRIBUTE( ReceivedkVArhRateC,                                 "RECEIVED_KVARH_RATE_C" );
 INIT_ATTRIBUTE( ReceivedkVArhRateD,                                 "RECEIVED_KVARH_RATE_D" );
+INIT_ATTRIBUTE( ReceivedkVArhQ4,                                    "RECEIVED_KVARH_Q4" );
+INIT_ATTRIBUTE( ReceivedkVArhQ4RateA,                               "RECEIVED_KVARH_Q4_RATE_A" );
+INIT_ATTRIBUTE( ReceivedkVArhQ4RateB,                               "RECEIVED_KVARH_Q4_RATE_B" );
+INIT_ATTRIBUTE( ReceivedkVArhQ4RateC,                               "RECEIVED_KVARH_Q4_RATE_C" );
+INIT_ATTRIBUTE( ReceivedkVArhQ4RateD,                               "RECEIVED_KVARH_Q4_RATE_D" );
 INIT_ATTRIBUTE( NetReceivedkVArh,                                   "NET_RECEIVED_KVARH" );
 INIT_ATTRIBUTE( NetReceivedkVArhRateA,                              "NET_RECEIVED_KVARH_RATE_A" );
 INIT_ATTRIBUTE( NetReceivedkVArhRateB,                              "NET_RECEIVED_KVARH_RATE_B" );

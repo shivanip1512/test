@@ -12,7 +12,7 @@ yukon.support.systemPerformanceMetrics = (function() {
     
     var
     _initialized = false,
-    
+
     _sparklineDefaultOptions = {
             chart: {
                 backgroundColor: null,
@@ -34,34 +34,70 @@ yukon.support.systemPerformanceMetrics = (function() {
             },
             xAxis: {
                 type: 'datetime',
+                dateTimeLabelFormats: {
+                    millisecond: '%H:%M:%S.%L',
+                    second: '%H:%M:%S',
+                    minute: '%H:%M',
+                    hour: '%H:%M',
+                    day: '%b %e',
+                    week: '%b %e',
+                    month: '%b \'%y',
+                    year: '%Y'
+                },
                 labels: {
-                    enabled: false
+                    enabled: true,
+                    style: {
+                        fontSize: '9px'
+                    }
                 },
                 title: {
                     text: null
                 },
                 startOnTick: false,
                 endOnTick: false,
-                tickPositions: []
+                tickAmount: 3
             },
             yAxis: {
                 endOnTick: false,
                 startOnTick: false,
                 labels: {
-                    enabled: false
+                    enabled: true,
+                    style: {
+                        fontSize: '9px'
+                    }
                 },
                 title: {
                     text: null
                 },
-                tickPositions: [0]
+                tickAmount: 3
             },
             legend: {
                 enabled: false
             },
+            time: {
+                timezone: yg.timezone
+            },
             tooltip: {
                 hideDelay: 0,
                 outside: true,
-                shared: true
+                style: {
+                    fontSize: "10px",
+                    width: "200px",
+                },
+                formatter: function () {
+                    var tooltipHtml = '';
+                    tooltipHtml += "<span style='color:" + this.color + "'>\u25CF</span>&nbsp;" + this.series.name + "</br>";
+                    tooltipHtml += this.point.formattedValue + " " + this.point.units + "</br>";
+                    tooltipHtml += moment(this.point.x).tz(yg.timezone).format(yg.formats.date.both_with_ampm);
+                    return tooltipHtml;
+                },
+                positioner: function() {
+                    var chartPosition = this.chart.pointer.getChartPosition();
+                    return {
+                        x: chartPosition.left + this.chart.hoverPoint.plotX,
+                        y: chartPosition.top + this.chart.hoverPoint.plotY + 10
+                    }
+                }
             },
             plotOptions: {
                 series: {
@@ -103,17 +139,16 @@ yukon.support.systemPerformanceMetrics = (function() {
                 var count = 0;
                 $.each(data, function (key, value) {
                     var data = [];
-                        if (value.pointData != null) {
-                            value.pointData.forEach(function (item, index) {
-                                data.push([item.time, item.value]);
-                            });
-                        }
+                    if (value.pointData != null) {
+                        value.pointData.forEach(function (item, index) {
+                            data.push({x: item.time, y: item.value, formattedValue: item.formattedValue, units: item.units});
+                        });
+                    }
                     var row = $('<tr></tr>'),
                         pointNameTableCell = $('<td></td>').attr({'data-point-id': value.pointId})
                                                            .css({'width': '20%'})
                                                            .appendTo(row),
-                        anchorTag = $('<a></a>').text(value.pointName)
-                                                .attr({'href': '#'})
+                        anchorTag = $('<a class="js-metrics cp"></a>').text(value.pointName).attr({'data-point-id': value.pointId})
                                                 .appendTo(pointNameTableCell),
                         chartTableCell = $('<td></td>').attr({id: value.pointId, class: 'js-chart-cell', 'data-point-data': JSON.stringify(value.pointData)})
                                                        .appendTo(row);
@@ -125,17 +160,34 @@ yukon.support.systemPerformanceMetrics = (function() {
                         chart: {
                             renderTo: chartTableCell
                         },
+                        xAxis: {
+                            min: Date.parse(startDate),
+                            max: Date.parse(endDate)
+                        },
                         series: [{
+                            name: value.pointName,
                             data: data
                         }]
                     };
 
                     var options = Highcharts.merge(_sparklineDefaultOptions, sparklineOptions);
-
                     chartTableCell.highcharts(options);
-
                 });
             });
+            
+            $(document).on('click', '.js-metrics', function (ev) {
+                var pointId = $(this).data('pointId'),
+                    popup = $('.js-point-data-dialog');
+                popup.load(yukon.url('/meter/historicalReadings/view?pointId=' + pointId), function () {
+                	popup.dialog({
+                        title : popup.find('.js-popup-title').val(),
+                        width : 800,
+                        height: 400,
+                        autoOpen : true
+                    });
+                });
+            });
+            
             _initialized = true;
         }
     };
