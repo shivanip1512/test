@@ -121,8 +121,7 @@ public class EatonCloudSecretRotationServiceV1 {
             EatonCloudServiceAccountDetailV1 detail = eatonCloudCommunicationService.getServiceAccountDetail();
             globalSettingsToSecret.keySet().stream().sorted().forEach(type -> rotateAndValidateSecret(detail, type));
         } catch (EatonCloudCommunicationExceptionV1 e) {
-            log.error("Account info retrieval failed:{}",
-                    new GsonBuilder().setPrettyPrinting().create().toJson(e.getErrorMessage()));
+            log.error("Account info retrieval failed", e);
             //validating existing secrets
             globalSettingsToSecret.keySet().forEach(type -> validateSecret(type));
         }
@@ -155,7 +154,7 @@ public class EatonCloudSecretRotationServiceV1 {
             } catch (EatonCloudCommunicationExceptionV1 e) {
                 if (currentTry.get() == numberOfTimesToRetry) {
                     log.error("({} of {}) {} token retrieval failed. Alert created:{}", currentTry.get(), numberOfTimesToRetry,
-                            secret, e.getDisplayMessage(), AlertType.EATON_CLOUD_CREDENTIAL_INVALID);
+                            secret, AlertType.EATON_CLOUD_CREDENTIAL_INVALID, e);
                     secretValidations.remove(type);
                     eatonCloudEventLogService.tokenRetrievalFailed(secret, e.getDisplayMessage(), currentTry.get());
                     createAlert(AlertType.EATON_CLOUD_CREDENTIAL_INVALID, secret, null);
