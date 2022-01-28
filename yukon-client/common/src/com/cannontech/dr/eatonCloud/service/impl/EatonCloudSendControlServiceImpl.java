@@ -44,7 +44,6 @@ import com.cannontech.common.util.Range;
 import com.cannontech.common.util.ScheduledExecutor;
 import com.cannontech.core.dao.DeviceDao;
 import com.cannontech.database.data.lite.LiteYukonPAObject;
-import com.cannontech.dr.eatonCloud.model.EatonCloudException;
 import com.cannontech.dr.eatonCloud.model.v1.EatonCloudCommandRequestV1;
 import com.cannontech.dr.eatonCloud.model.v1.EatonCloudCommandResponseV1;
 import com.cannontech.dr.eatonCloud.model.v1.EatonCloudCommunicationExceptionV1;
@@ -250,9 +249,14 @@ public class EatonCloudSendControlServiceImpl implements EatonCloudSendControlSe
                             command.getVirtualRelayId());
 
                 } else {
-                    throw new EatonCloudException(response.getMessage());
+                    totalFailed.getAndIncrement();
+                    log.error(
+                            "[external event id: {} ({} of {})] Error: {} sending shed command device id:{} guid:{} name:{} relay:{}",
+                            eventId, tryNumber, totalTries, response.getMessage(), deviceId,
+                            guid, deviceName, command.getVirtualRelayId());
+                    processError(eventId, deviceName, deviceId, guid, command, response.getMessage(), tryNumber);
                 }
-            } catch (EatonCloudCommunicationExceptionV1 | EatonCloudException e) {
+            } catch (EatonCloudCommunicationExceptionV1 e) {
                 totalFailed.getAndIncrement();
                 log.error(
                         "[external event id: {} ({} of {})] Error sending shed command device id:{} guid:{} name:{} relay:{}",
@@ -363,9 +367,9 @@ public class EatonCloudSendControlServiceImpl implements EatonCloudSendControlSe
             try {
                 eatonCloudCommunicationService.sendCommand(guid, new EatonCloudCommandRequestV1("LCR_Control", params));
                 eatonCloudEventLogService.sendRestore(deviceName, guid, eventId.toString(), command.getVirtualRelayId());
-            } catch (EatonCloudCommunicationExceptionV1 | EatonCloudException e) {
+            } catch (EatonCloudCommunicationExceptionV1 e) {
                 totalFailed.getAndIncrement();
-                eatonCloudEventLogService.sendRestoreFailed(deviceName, guid, truncateErrorForEventLog(e.getMessage()),
+                eatonCloudEventLogService.sendRestoreFailed(deviceName, guid, truncateErrorForEventLog(e.getDisplayMessage()),
                         eventId.toString(), command.getVirtualRelayId());
                 log.error("[external event id:{}] Error sending restore command device id:{} guid:{} name:{} relay:{}", eventId, deviceId, guid,
                          deviceName, command.getVirtualRelayId(), e);

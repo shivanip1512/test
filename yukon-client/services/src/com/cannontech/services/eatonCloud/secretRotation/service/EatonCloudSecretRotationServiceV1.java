@@ -154,16 +154,14 @@ public class EatonCloudSecretRotationServiceV1 {
                 log.info("({} of {}) {} token retrieval successful.", currentTry.get(), numberOfTimesToRetry, secret);
             } catch (EatonCloudCommunicationExceptionV1 e) {
                 if (currentTry.get() == numberOfTimesToRetry) {
-                    log.error("({} of {}) {} token retrieval failed:{} alert created:{}", currentTry.get(), numberOfTimesToRetry,
-                            secret,
-                            e.getMessage(), AlertType.EATON_CLOUD_CREDENTIAL_INVALID);
+                    log.error("({} of {}) {} token retrieval failed. Alert created:{}", currentTry.get(), numberOfTimesToRetry,
+                            secret, e.getDisplayMessage(), AlertType.EATON_CLOUD_CREDENTIAL_INVALID);
                     secretValidations.remove(type);
-                    eatonCloudEventLogService.tokenRetrievalFailed(secret, e.getMessage(), currentTry.get());
+                    eatonCloudEventLogService.tokenRetrievalFailed(secret, e.getDisplayMessage(), currentTry.get());
                     createAlert(AlertType.EATON_CLOUD_CREDENTIAL_INVALID, secret, null);
                 } else {
-                    log.error("({} of {}) {} token retrieval failed:{} Next try in {} minutes.", currentTry.get(),
-                            numberOfTimesToRetry, secret,
-                            e.getMessage(), retryIntervalMinutes);
+                    log.error("({} of {}) {} token retrieval failed. Next try in {} minutes.", currentTry.get(),
+                            numberOfTimesToRetry, secret, retryIntervalMinutes, e);
                     executor.schedule(() -> validateSecret(type), retryIntervalMinutes, TimeUnit.MINUTES);
                     currentTry.incrementAndGet();
                     secretValidations.put(type, currentTry);
@@ -192,17 +190,16 @@ public class EatonCloudSecretRotationServiceV1 {
                 validateSecret(type);
             } catch (EatonCloudCommunicationExceptionV1 e) {
                 if (currentTry.get() == numberOfTimesToRetry) {
-                    log.error("({} of {}) {} rotation failed:{} alert created:{}", currentTry.get(), numberOfTimesToRetry, secret,
-                            e.getMessage(), AlertType.EATON_CLOUD_CREDENTIAL_UPDATE_FAILURE);
+                    log.error("({} of {}) {} rotation failed. Alert created:{}", currentTry.get(), numberOfTimesToRetry, secret,
+                            AlertType.EATON_CLOUD_CREDENTIAL_UPDATE_FAILURE, e);
                     secretRotations.remove(type);
                     eatonCloudEventLogService.secretRotationFailed(secret, YukonUserContext.system.getYukonUser(), e.getMessage(),
                             currentTry.get());
                     createAlert(AlertType.EATON_CLOUD_CREDENTIAL_UPDATE_FAILURE, secret, secretExpiryTime.toDate());
                     validateSecret(type);
                 } else {
-                    log.error("({} of {}) {} secret rotation failed:{} Next try in {} minutes.", currentTry.get(),
-                            numberOfTimesToRetry, secret,
-                            e.getMessage(), retryIntervalMinutes);
+                    log.error("({} of {}) {} secret rotation failed. Next try in {} minutes.", currentTry.get(),
+                            numberOfTimesToRetry, secret, retryIntervalMinutes, e);
                     executor.schedule(() -> rotateSecret(type, secretExpiryTime), retryIntervalMinutes, TimeUnit.MINUTES);
                     currentTry.incrementAndGet();
                     secretRotations.put(type, currentTry);

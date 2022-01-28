@@ -35,7 +35,6 @@ import com.cannontech.common.util.Range;
 import com.cannontech.common.util.jms.YukonJmsTemplate;
 import com.cannontech.common.util.jms.YukonJmsTemplateFactory;
 import com.cannontech.common.util.jms.api.JmsApiDirectory;
-import com.cannontech.dr.eatonCloud.model.EatonCloudException;
 import com.cannontech.dr.eatonCloud.model.EatonCloudRetrievalUrl;
 import com.cannontech.dr.eatonCloud.model.EatonCloudVersion;
 import com.cannontech.dr.eatonCloud.model.v1.EatonCloudCommandRequestV1;
@@ -65,7 +64,6 @@ import com.cannontech.system.GlobalSettingType;
 import com.cannontech.system.dao.GlobalSettingDao;
 import com.cannontech.web.common.flashScope.FlashScope;
 import com.cannontech.web.security.annotation.CheckCparm;
-import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.common.base.Strings;
 import com.google.gson.GsonBuilder;
@@ -128,7 +126,6 @@ public class EatonCloudSimulatorController {
                 json.put("secret1Token", token1.getToken());
             } catch (Exception e) {
                 json.put("secret1Token", "Date doesn't exist");
-                log.error("Error", e);
             }
 
             try {
@@ -136,7 +133,6 @@ public class EatonCloudSimulatorController {
                 json.put("secret2Token", token2.getToken());
             } catch (Exception e) {
                 json.put("secret2Token", "Date doesn't exist");
-                log.error("Error", e);
             }
 
             try {
@@ -198,6 +194,7 @@ public class EatonCloudSimulatorController {
         } catch (ExecutionException e) {
             log.error("Error", e);
         }
+        
         flashScope.setConfirm(YukonMessageSourceResolvable.createDefaultWithoutCode("Failed to update simulator settings"));
         return "redirect:home";
     }
@@ -259,7 +256,7 @@ public class EatonCloudSimulatorController {
             }
         } catch (EatonCloudCommunicationExceptionV1 e) {
             processError(json, e);
-        } catch (EatonCloudException | JsonProcessingException e) {
+        } catch (Exception e) {
             log.error("Error", e);
             json.put("alertError", e.getMessage());
         } 
