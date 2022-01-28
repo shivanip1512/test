@@ -80,15 +80,35 @@ yukon.support.systemPerformanceMetrics = (function() {
             tooltip: {
                 hideDelay: 0,
                 outside: true,
+                shared: true,
                 style: {
                     fontSize: "10px",
                     width: "200px",
                 },
                 formatter: function () {
-                    var tooltipHtml = '';
+                    var tooltipHtml = '',
+                        firstPoint = true,
+                        pointsArray = this.points;
+                    $.each(pointsArray, function(index, item) {
+                        //check for more points in series with same x
+                        var seriesPoints = item.series.data;
+                        $.each(seriesPoints, function(i, seriesPoint) {
+                            if (seriesPoint.x == item.point.x) {
+                                if (!firstPoint) {
+                                    tooltipHtml += "<br>";
+                                }
+                                tooltipHtml += seriesPoint.tooltip;
+                                firstPoint = false;
+                            }
+                        });
+                    });
+                    
+                    
+                    /*
                     tooltipHtml += "<span style='color:" + this.color + "'>\u25CF</span>&nbsp;" + this.series.name + "</br>";
                     tooltipHtml += this.point.formattedValue + " " + this.point.units + "</br>";
                     tooltipHtml += moment(this.point.x).tz(yg.timezone).format(yg.formats.date.both_with_ampm);
+                    */
                     return tooltipHtml;
                 },
                 positioner: function() {
@@ -113,7 +133,7 @@ yukon.support.systemPerformanceMetrics = (function() {
                         radius: 1,
                         states: {
                             hover: {
-                                radius: 2
+                                radius: 0.5
                             }
                         }
                     },
