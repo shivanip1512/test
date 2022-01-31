@@ -8,7 +8,6 @@
 namespace Cti {
 
 YukonMetricTracker::YukonMetricTracker() {}
-using json = nlohmann::json;
 
 YukonMetricTracker::YukonMetricTracker(const std::string pointInfo, int64_t value, long long timeStamp) {}
 
