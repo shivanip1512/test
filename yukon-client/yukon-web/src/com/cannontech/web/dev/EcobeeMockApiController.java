@@ -99,10 +99,9 @@ public class EcobeeMockApiController {
     @IgnoreCsrfCheck
     @GetMapping("tstatgroups/{thermostatGroupID}/thermostats")
     public ResponseEntity<Object> retrieveThermostats(@PathVariable String thermostatGroupID,
-            @RequestParam(name = "enrollment_state", required = false) ZeusThermostatState state,
             @RequestParam(name = "thermostat_ids", required = false) List<String> thermostatIds,
             @RequestParam(name = "page", required = false, defaultValue = "0") Integer pageNumber) {
-        if (state != null && CollectionUtils.isNotEmpty(thermostatIds)) {
+        if (CollectionUtils.isNotEmpty(thermostatIds)) {
             int deviceStatusResponse = zeusEcobeeDataConfiguration.getDeviceStatus();
             if (deviceStatusResponse == 0 || deviceStatusResponse == 1) {
                 ZeusThermostatsResponse response = new ZeusThermostatsResponse();
