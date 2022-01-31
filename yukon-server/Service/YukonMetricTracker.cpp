@@ -3,7 +3,6 @@
 #include <json.hpp>
 #include "amq_connection.h"
 #include "amq_topics.h"
-#include <json.h>
 
 namespace Cti {
 
