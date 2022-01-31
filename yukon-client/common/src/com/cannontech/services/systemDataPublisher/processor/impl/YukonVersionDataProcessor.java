@@ -8,10 +8,10 @@ import com.cannontech.clientutils.YukonLogManager;
 import com.cannontech.common.version.VersionTools;
 import com.cannontech.yukon.system.metrics.message.YukonMetric;
 import com.cannontech.yukon.system.metrics.message.YukonMetricPointInfo;
-import com.cannontech.yukon.system.metrics.producer.service.YukonMetricStartupProducer;
+import com.cannontech.yukon.system.metrics.producer.service.YukonMetricIntervalProducer;
 
 @Service
-public class YukonVersionDataProcessor extends YukonMetricStartupProducer {
+public class YukonVersionDataProcessor extends YukonMetricIntervalProducer {
     private static final Logger log = YukonLogManager.getLogger(YukonVersionDataProcessor.class);
 
     @Override
@@ -29,6 +29,11 @@ public class YukonVersionDataProcessor extends YukonMetricStartupProducer {
     @Override
     public YukonMetricPointInfo getYukonMetricPointInfo() {
         return YukonMetricPointInfo.YUKON_VERSION;
+    }
+
+    @Override
+    public long getPeriodInMinutes() {
+        return 1440;
     }
 
 }
