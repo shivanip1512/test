@@ -76,7 +76,8 @@ public class EcobeeZeusCommunicationServiceImpl implements EcobeeZeusCommunicati
     @Override
     public void createDevice(String serialNumber) {
         try {
-            if (!isDeviceEnrolled(serialNumber)) {
+            ZeusThermostat zeusThermostat = retrieveThermostatFromRootGroup(serialNumber);
+            if (zeusThermostat.getState() != ZeusThermostatState.ENROLLED) {
                 String thermostatGroupID = retrieveThermostatGroupID();
                 String listThermostatsURL = getUrlBase() + "tstatgroups/" + thermostatGroupID + "/thermostats";
                 ZeusCreateDevice device = new ZeusCreateDevice(ZeusThermostatState.NOT_YET_CONNECTED, List.of(serialNumber));
@@ -166,7 +167,8 @@ public class EcobeeZeusCommunicationServiceImpl implements EcobeeZeusCommunicati
     @Override
     public void enroll(int lmGroupId, String serialNumber, int inventoryId, int programId, boolean updateDeviceMapping) {
         synchronized (this) {
-            if (isDeviceEnrolled(serialNumber)) {
+            ZeusThermostatState thermostatState = retrieveThermostatFromRootGroup(serialNumber).getState();
+            if (thermostatState == ZeusThermostatState.ENROLLED || thermostatState == ZeusThermostatState.NOT_YET_CONNECTED) {
                 String zeusGroupId = StringUtils.EMPTY;
                 List<String> zeusGroupIds = ecobeeZeusGroupService.getZeusGroupIdsForLmGroup(lmGroupId, programId);
                 // For new system and when there are no suitable Ecobee group available for enrollment, create a new Ecobee group.
@@ -180,24 +182,25 @@ public class EcobeeZeusCommunicationServiceImpl implements EcobeeZeusCommunicati
                     ecobeeZeusGroupService.updateProgramId(zeusGroupId, programId);
                 }
             } else {
-                throw new EnrollmentException("Enrollment failed as serial number " + serialNumber + " is not in ENROLLED state.");
+                throw new EnrollmentException("Enrollment failed as serial number " +
+                        serialNumber + " is not in ENROLLED or NOT_YET_CONNECTED state.");
             }
         }
     }
 
     /**
-     * Check the thermostat status in root group. If status is ENROLLED, return true else return false.
+     * Retrieve thermostat from the root group. 
      */
-    public boolean isDeviceEnrolled(String serialNumber) {
+    public ZeusThermostat retrieveThermostatFromRootGroup(String serialNumber) {
         try {
-            String thermostatGroupID = retrieveThermostatGroupID();
-            String listThermostatsURL = getUrlBase() + "tstatgroups/" + thermostatGroupID + "/thermostats?enrollment_state="
-                    + ZeusThermostatState.ENROLLED + "&thermostat_ids=" + serialNumber;
-
-            ResponseEntity<ZeusThermostatsResponse> responseEntity = (ResponseEntity<ZeusThermostatsResponse>) requestHelper
-                    .callEcobeeAPIForObject(listThermostatsURL, HttpMethod.GET, ZeusThermostatsResponse.class);
-            return responseEntity.getStatusCode() == HttpStatus.OK
-                    && CollectionUtils.isNotEmpty(responseEntity.getBody().getThermostats());
+            String rootThermostatGroupID = retrieveThermostatGroupID();
+            List<ZeusThermostat> zeusThermostats = getThermostatsInGroup(rootThermostatGroupID, serialNumber);
+            if (CollectionUtils.size(zeusThermostats) == 1) {
+                return zeusThermostats.get(0);
+            } else {
+                throw new EcobeeCommunicationException("No or more than one device found for the serial number in root"
+                        + " thermostat group.");
+            }
         } catch (RestClientException | EcobeeAuthenticationException e) {
             throw new EcobeeCommunicationException("Error occurred while communicating Ecobee API.", e);
         }
@@ -611,8 +614,11 @@ public class EcobeeZeusCommunicationServiceImpl implements EcobeeZeusCommunicati
     }
 
     @Override
-    public List<ZeusThermostat> getThermostatsInGroup(String thermostatGroupID) {
+    public List<ZeusThermostat> getThermostatsInGroup(String thermostatGroupID, String... serialNumbers) {
         String getThermostatsURL = getUrlBase() + "tstatgroups/" + thermostatGroupID + "/thermostats";
+        if (serialNumbers != null && serialNumbers.length > 0) {
+            getThermostatsURL = getThermostatsURL.concat("?thermostat_ids=").concat(String.join(",", serialNumbers));
+        }
         List<ZeusThermostat> zeusThermostats = new ArrayList<>();
         try {
             ResponseEntity<ZeusThermostatsResponse> responseEntity = (ResponseEntity<ZeusThermostatsResponse>) requestHelper
