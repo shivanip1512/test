@@ -8,8 +8,3 @@ const IM_EX_MSG OutboundTopic
 { "com.eaton.eas.yukon.metric" };
 
 }
-
-
-
-
-    

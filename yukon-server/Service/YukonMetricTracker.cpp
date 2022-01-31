@@ -1,18 +1,18 @@
-#include "include\YukonMetricTracker.h"
-#include "include\YukonMetricTracker.h"
 #include "precompiled.h"
 #include "YukonMetricTracker.h"
-#include "../../../../environment/libraries/nlohmann/3.1.2/json.hpp"
+#include <json.hpp>
 #include "amq_connection.h"
 #include "amq_topics.h"
+#include <json.h>
 
 namespace Cti {
 
 YukonMetricTracker::YukonMetricTracker() {}
+using json = nlohmann::json;
 
-YukonMetricTracker::YukonMetricTracker(static const std::string pointInfo, int64_t value, long long timeStamp) {}
+YukonMetricTracker::YukonMetricTracker(const std::string pointInfo, int64_t value, long long timeStamp) {}
 
-void YukonMetricTracker::sendYukonMetricMessage(static const std::string pointInfo, int64_t value, long long timeStamp)
+void YukonMetricTracker::sendYukonMetricMessage(const std::string pointInfo, int64_t value, long long timeStamp)
 {
     using json = nlohmann::json;
     using namespace Cti::Messaging;
