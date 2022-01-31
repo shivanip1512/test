@@ -1,7 +1,7 @@
 /*==============================================================*/
 /* Database name:  YukonDatabase                                */
 /* DBMS name:      ORACLE Version 9i                            */
-/* Created on:     1/20/2022 6:19:20 PM                         */
+/* Created on:     1/31/2022 3:32:53 PM                         */
 /*==============================================================*/
 
 
@@ -11072,6 +11072,9 @@ create table Zone  (
    ZoneType             VARCHAR2(40)                    not null,
    constraint PK_Zone primary key (ZoneId)
 );
+
+alter table Zone
+   add constraint AK_ZONENAME_ZONE unique (ZoneName);
 
 /*==============================================================*/
 /* View: CBCConfiguration2_View                                 */

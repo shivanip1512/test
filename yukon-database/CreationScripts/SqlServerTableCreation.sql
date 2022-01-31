@@ -1,7 +1,7 @@
 /*==============================================================*/
 /* Database name:  YukonDatabase                                */
 /* DBMS name:      Microsoft SQL Server 2005                    */
-/* Created on:     1/20/2022 6:15:24 PM                         */
+/* Created on:     1/31/2022 3:36:19 PM                         */
 /*==============================================================*/
 
 
@@ -11727,6 +11727,10 @@ create table Zone (
    ZoneType             varchar(40)          not null,
    constraint PK_Zone primary key (ZoneId)
 )
+go
+
+alter table Zone
+   add constraint AK_ZONENAME_ZONE unique (ZoneName)
 go
 
 /*==============================================================*/
