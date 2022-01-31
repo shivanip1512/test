@@ -228,8 +228,8 @@ public class PointApiValidator<T extends PointBaseModel<?>> extends SimpleValida
                 YukonApiValidationUtils.checkRange(errors, "staleData.time", staleData.getTime(), 0, 99999999, false);
             }
             if (staleData.getUpdateStyle() != null) {
-                if (!(staleData.getUpdateStyle() == 1 || staleData.getUpdateStyle() == 0)) {
-                    errors.rejectValue( "staleData.updateStyle", ApiErrorDetails.INVALID_VALUE.getCodeString(), new Object[] { "0 - 1" }, "");
+                if (!(staleData.getUpdateStyle() == 1 || staleData.getUpdateStyle() == 2)) {
+                    errors.rejectValue( "staleData.updateStyle", ApiErrorDetails.INVALID_VALUE.getCodeString(), new Object[] { "1 - 2" }, "");
                 }
             }
         }

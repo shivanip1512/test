@@ -169,7 +169,7 @@
 	</form:form>
 	<br />
 	<cti:url var="validateSecretsUrl" value="validateSecrets" />
-	<form:form id="validateSecretsForm" action="${rotateSecretsUrl}"
+	<form:form id="validateSecretsForm" action="${validateSecretsUrl}"
 		method="post">
 		<tags:nameValueContainer>
 			<cti:button label="Start Automatic Secret Validation" type="submit" />

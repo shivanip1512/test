@@ -144,12 +144,9 @@ import com.cannontech.message.porter.message.MeterProgramValidationResponse;
 import com.cannontech.services.configurationSettingMessage.model.ConfigurationSettings;
 import com.cannontech.services.ecobee.authToken.message.ZeusEcobeeAuthTokenRequest;
 import com.cannontech.services.ecobee.authToken.message.ZeusEcobeeAuthTokenResponse;
-import com.cannontech.services.systemDataPublisher.service.model.SystemData;
-import com.cannontech.services.systemDataPublisher.yaml.model.CloudDataConfigurations;
 import com.cannontech.simulators.message.request.EatonCloudDataRetrievalSimulatonRequest;
 import com.cannontech.simulators.message.request.EatonCloudRuntimeCalcSimulatonRequest;
 import com.cannontech.simulators.message.request.EatonCloudSecretRotationSimulationRequest;
-import com.cannontech.simulators.message.request.EatonCloudSimulatorStatisticsRequest;
 import com.cannontech.simulators.message.request.FieldSimulatorStatusRequest;
 import com.cannontech.simulators.message.request.ItronRuntimeCalcSimulatonRequest;
 import com.cannontech.simulators.message.request.ModifyFieldSimulatorRequest;
@@ -1166,18 +1163,6 @@ public final class JmsApiDirectory {
                   .receiver(YUKON_WEBSERVER)
                   .build();
 
-    public static final JmsApi<SystemData,?,?> SYSTEM_DATA =
-            JmsApi.builder(SystemData.class)
-                  .name("Yukon System Data")
-                  .description("Yukon Service Manager takes Yukon System Data and passes it to Yukon Message Broker on a topic.")
-                  .topic(true)
-                  .communicationPattern(NOTIFICATION)
-                  .queue(new JmsQueue("com.eaton.eas.SystemData"))
-                  .requestMessage(SystemData.class)
-                  .sender(YUKON_SERVICE_MANAGER)
-                  .receiver(YUKON_WEBSERVER)
-                  .build();
-
     public static final JmsApi<ConfigurationSettings,?,?> CLOUD_CONFIGURATION_SETTINGS =
             JmsApi.builder(ConfigurationSettings.class)
                   .name("Cloud Configuration Settings")
@@ -1187,21 +1172,6 @@ public final class JmsApiDirectory {
                   .requestMessage(ConfigurationSettings.class)
                   .sender(YUKON_SERVICE_MANAGER)
                   .receiver(YUKON_SERVICE_MANAGER)
-                  .build();
-
-    public static final JmsApi<CloudDataConfigurations,?,?> CLOUD_DATA_CONFIGURATIONS =
-            JmsApi.builder(CloudDataConfigurations.class)
-                  .name("Yukon Cloud Data")
-                  .description("Yukon Service Manager processes the data definition for cloud integrations and publishes"
-                          + " it on a topic for other services to use")
-                  .topic(true)
-                  .communicationPattern(NOTIFICATION)
-                  .queue(new JmsQueue("com.eaton.eas.cloud.CloudDataConfigurations"))
-                  .requestMessage(CloudDataConfigurations.class)
-                  .sender(YUKON_SERVICE_MANAGER)
-                  .receiver(YUKON_SERVICE_MANAGER)
-                  .receiver(NETWORK_MANAGER)
-                  .logger(YukonLogManager.getRfnLogger())
                   .build();
 
     public static final JmsApi<DynamicPaoInfoRequest,?,DynamicPaoInfoResponse> PORTER_DYNAMIC_PAOINFO =
@@ -1324,19 +1294,7 @@ public final class JmsApiDirectory {
                   .receiver(NETWORK_MANAGER)
                   .timeToLive(Duration.standardMinutes(5))
                   .build();
-    
-    
-    public static final JmsApi<EatonCloudSimulatorStatisticsRequest,?,?> EATON_CLOUD_SIM_STATISTICS_REQUEST = 
-            JmsApi.builder(EatonCloudSimulatorStatisticsRequest.class)
-                  .name("Eaton Cloud Device Auto Creation Simulation Request")
-                  .description("WS sends request to SM to get simulator statistics")
-                  .communicationPattern(NOTIFICATION)
-                  .queue(new JmsQueue("yukon.notif.obj.simulator.EatonCloudSimulatorStatisticsRequest"))
-                  .requestMessage(EatonCloudSimulatorStatisticsRequest.class)
-                  .sender(YUKON_WEBSERVER)
-                  .receiver(YUKON_SERVICE_MANAGER)
-                  .build();
-    
+     
     public static final JmsApi<EatonCloudDataRetrievalSimulatonRequest,?,?> EATON_CLOUD_SIM_DEVICE_DATA_RETRIEVAL_REQUEST = 
             JmsApi.builder(EatonCloudDataRetrievalSimulatonRequest.class)
                   .name("Eaton Cloud Device Auto Creation Simulation Request")
@@ -1467,7 +1425,6 @@ public final class JmsApiDirectory {
                 ARCHIVE_STARTUP, 
                 BROKER_SYSTEM_METRICS,
                 CLOUD_CONFIGURATION_SETTINGS,
-                CLOUD_DATA_CONFIGURATIONS,
                 EATON_CLOUD_AUTH_TOKEN,
                 LM_ADDRESS_NOTIFICATION,
                 LM_EATON_CLOUD_SCHEDULED_CYCLE_COMMAND,
@@ -1477,7 +1434,6 @@ public final class JmsApiDirectory {
                 PORTER_DYNAMIC_PAOINFO,
                 RF_SUPPORT_BUNDLE,
                 NEW_ALERT_CREATION,
-                SYSTEM_DATA,
                 ZEUS_ECOBEE_AUTH_TOKEN,
                 DATABASE_CHANGE_EVENT_REQUEST,
                 YUKON_METRIC);
@@ -1562,8 +1518,7 @@ public final class JmsApiDirectory {
                 EATON_CLOUD_SIM_DEVICE_DATA_RETRIEVAL_REQUEST, 
                 EATON_CLOUD_SIM_RUNTIME_CALC_START_REQUEST,
                 ITRON_SIM_RUNTIME_CALC_START_REQUEST,
-                EATON_CLOUD_SIM_SECRET_ROTATION_REQUEST,
-                EATON_CLOUD_SIM_STATISTICS_REQUEST);
+                EATON_CLOUD_SIM_SECRET_ROTATION_REQUEST);
 
         return jmsApis;
     }

@@ -528,11 +528,21 @@ public enum BuiltInAttribute implements Attribute, DisplayableEnum {
     NET_DELIVERED_KVARH_RATE_C("Net Delivered kVArh Rate C", AttributeGroup.REACTIVE),
     NET_DELIVERED_KVARH_RATE_D("Net Delivered kVArh Rate D", AttributeGroup.REACTIVE),
 
+    DELIVERED_KVARH_Q1("Delivered kVArh (Quadrant 1)", AttributeGroup.REACTIVE),
+    DELIVERED_KVARH_Q1_RATE_A("Delivered kVArh (Quadrant 1) Rate A", AttributeGroup.REACTIVE),
+    DELIVERED_KVARH_Q1_RATE_B("Delivered kVArh (Quadrant 1) Rate B", AttributeGroup.REACTIVE),
+    DELIVERED_KVARH_Q1_RATE_C("Delivered kVArh (Quadrant 1) Rate C", AttributeGroup.REACTIVE),
+    DELIVERED_KVARH_Q1_RATE_D("Delivered kVArh (Quadrant 1) Rate D", AttributeGroup.REACTIVE),
     RECEIVED_KVARH("Received kVArh", AttributeGroup.REACTIVE),
     RECEIVED_KVARH_RATE_A("Received kVArh Rate A", AttributeGroup.REACTIVE),
     RECEIVED_KVARH_RATE_B("Received kVArh Rate B", AttributeGroup.REACTIVE),
     RECEIVED_KVARH_RATE_C("Received kVArh Rate C", AttributeGroup.REACTIVE),
     RECEIVED_KVARH_RATE_D("Received kVArh Rate D", AttributeGroup.REACTIVE),
+    RECEIVED_KVARH_Q4("Received kVArh (Quadrant 4)", AttributeGroup.REACTIVE),
+    RECEIVED_KVARH_Q4_RATE_A("Received kVArh (Quadrant 4) Rate A", AttributeGroup.REACTIVE),
+    RECEIVED_KVARH_Q4_RATE_B("Received kVArh (Quadrant 4) Rate B", AttributeGroup.REACTIVE),
+    RECEIVED_KVARH_Q4_RATE_C("Received kVArh (Quadrant 4) Rate C", AttributeGroup.REACTIVE),
+    RECEIVED_KVARH_Q4_RATE_D("Received kVArh (Quadrant 4) Rate D", AttributeGroup.REACTIVE),
     NET_RECEIVED_KVARH("Net Received kVArh", AttributeGroup.REACTIVE),
     NET_RECEIVED_KVARH_RATE_A("Net Received kVArh Rate A", AttributeGroup.REACTIVE),
     NET_RECEIVED_KVARH_RATE_B("Net Received kVArh Rate B", AttributeGroup.REACTIVE),
@@ -856,6 +866,8 @@ public enum BuiltInAttribute implements Attribute, DisplayableEnum {
     private static Set<BuiltInAttribute> itronLcrAttributes;
     
     private static Set<BuiltInAttribute> calculableAttributes;
+    
+    private static Set<BuiltInAttribute> canCreateNegativeCalculations;
 
     static {
 
@@ -880,6 +892,7 @@ public enum BuiltInAttribute implements Attribute, DisplayableEnum {
         buildVoltageAttributes();
         buildItronLcrAttributes();
         buildCalculableAttributes();
+        buildCanCreateNegativeCalculations();
     }
 
     /**
@@ -1242,6 +1255,15 @@ public enum BuiltInAttribute implements Attribute, DisplayableEnum {
                                                NET_KWH_RATE_C,
                                                NET_KWH_RATE_D);
     }
+    
+    private static void buildCanCreateNegativeCalculations() {
+
+        canCreateNegativeCalculations = ImmutableSet.of(NET_KWH,
+                                                        NET_KWH_RATE_A,
+                                                        NET_KWH_RATE_B,
+                                                        NET_KWH_RATE_C,
+                                                        NET_KWH_RATE_D);
+    }
 
     private String defaultDescription;
     private AttributeGroup attributeGroup;
@@ -1262,6 +1284,10 @@ public enum BuiltInAttribute implements Attribute, DisplayableEnum {
 
     public boolean isReadableProfile() {
         return readableProfileAttributes.contains(this);
+    }
+
+    public boolean canCreateNegativeCalcualations() {
+        return canCreateNegativeCalculations.contains(this);
     }
 
     public static Map<AttributeGroup, Set<BuiltInAttribute>> getStandardGroupedAttributes() {
