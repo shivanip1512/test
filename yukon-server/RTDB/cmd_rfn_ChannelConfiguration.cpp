@@ -387,12 +387,6 @@ RfnChannelConfigurationCommand::TlvList RfnChannelConfigurationCommand::getTlvsT
     return TlvList();
 }
 
-unsigned RfnChannelConfigurationCommand::getCountFieldSize() const
-{
-    return 1;   // the size of the field, in bytes, that holds the count of the metric IDs / qualifiers returned in the tlv
-}
-
-
 RfnCommand::Bytes RfnChannelConfigurationCommand::getCommandData()
 {
     return getBytesFromTlvs( getTlvsToSend() );
@@ -463,13 +457,22 @@ bool isValidRecordingMetric( const unsigned metricId )
     return metricId && ((metricId % 1000) != 256);
 }
 
+std::string RfnChannelConfigurationCommand::decodeActiveChannelDescriptors( const Bytes &response )
+{
+    return decodeChannelDescriptors( response, 1 );     // tlv type 2 - metric count field size is 1 byte
+}
 
-std::string RfnChannelConfigurationCommand::decodeChannelDescriptors( const Bytes &response )
+std::string RfnChannelConfigurationCommand::decodeAllChannelDescriptors( const Bytes &response )
+{
+    return decodeChannelDescriptors( response, 2 );     // tlv type 3 - metric count field size is 2 bytes
+}
+
+std::string RfnChannelConfigurationCommand::decodeChannelDescriptors( const Bytes &response, unsigned count_fieldLength )
 {
     validate( Condition( response.size() >= 1, ClientErrors::InvalidData )
             << "Number of bytes for channel descriptors received 0, expected >= 1" );
 
-    unsigned offset = getCountFieldSize();
+    unsigned offset = count_fieldLength;
 
     const unsigned totalChannelDescriptors = getValueFromBytes_bEndian( response, 0, offset );
     const unsigned expectedSize = offset + (totalChannelDescriptors * 4);
@@ -541,7 +544,8 @@ std::string RfnChannelConfigurationCommand::decodeChannelDescriptors( const Byte
 
 const RfnChannelSelectionCommand::LongTlvList RfnChannelSelectionCommand::longTlvs {
     TlvType_ChannelSelection_Configuration,
-    TlvType_ChannelSelection_ActiveChannels
+    TlvType_ChannelSelection_ActiveChannels,
+    TlvType_ChannelSelection_AvailableChannels
 };
 
 unsigned char RfnChannelSelectionCommand::getCommandCode() const
@@ -580,13 +584,18 @@ std::string RfnChannelSelectionCommand::decodeTlvs( const TlvList& tlvs, const u
     {
         case TlvType_ChannelSelection_Configuration :
         {
-            return getTlvDescriptiveName() + ":\n"
+            return "Channel Selection Configuration:\n"
                 + decodeMetricsIds( tlv.value );
         }
         case TlvType_ChannelSelection_ActiveChannels :
         {
-            return getTlvDescriptiveName() + ":\n"
-                + decodeChannelDescriptors( tlv.value );
+            return "Channel Registration Full Description:\n"
+                + decodeActiveChannelDescriptors( tlv.value );
+        }
+        case TlvType_ChannelSelection_AvailableChannels:
+        {
+            return "All Available Channels:\n"
+                + decodeAllChannelDescriptors( tlv.value );
         }
         default:
         {
@@ -632,11 +641,6 @@ unsigned char RfnSetChannelSelectionCommand::getExpectedTlvType() const
     return TlvType_ChannelSelection_ActiveChannels;
 }
 
-std::string RfnSetChannelSelectionCommand::getTlvDescriptiveName() const
-{
-    return "Channel Registration Full Description";
-}
-
 //----------------------------------------------------------------------------
 // Class RfnGetChannelSelectionCommand
 //----------------------------------------------------------------------------
@@ -649,11 +653,6 @@ unsigned char RfnGetChannelSelectionCommand::getOperation() const
 unsigned char RfnGetChannelSelectionCommand::getExpectedTlvType() const
 {
     return TlvType_ChannelSelection_Configuration;
-}
-
-std::string RfnGetChannelSelectionCommand::getTlvDescriptiveName() const
-{
-    return "Channel Selection Configuration";
 }
 
 //----------------------------------------------------------------------------
@@ -670,11 +669,6 @@ unsigned char RfnGetChannelSelectionFullDescriptionCommand::getExpectedTlvType()
     return TlvType_ChannelSelection_ActiveChannels;
 }
 
-std::string RfnGetChannelSelectionFullDescriptionCommand::getTlvDescriptiveName() const
-{
-    return "Channel Registration Full Description";
-}
-
 //----------------------------------------------------------------------------
 // Class RfnGetChannelSelectionAllAvailableCommand
 //----------------------------------------------------------------------------
@@ -686,17 +680,7 @@ unsigned char RfnGetChannelSelectionAllAvailableCommand::getOperation() const
 
 unsigned char RfnGetChannelSelectionAllAvailableCommand::getExpectedTlvType() const
 {
-    return TlvType_ChannelSelection_ActiveChannels;
-}
-
-std::string RfnGetChannelSelectionAllAvailableCommand::getTlvDescriptiveName() const
-{
-    return "All Available Channels";
-}
-
-unsigned RfnGetChannelSelectionAllAvailableCommand::getCountFieldSize() const
-{
-    return 2;   // the size of the field, in bytes, that holds the count of the metric IDs / qualifiers returned in the tlv
+    return TlvType_ChannelSelection_AvailableChannels;
 }
 
 //----------------------------------------------------------------------------
@@ -777,7 +761,7 @@ std::string SetConfigurationCommand::decodeTlv( const TypeLengthValue& tlv )
     validate( Condition( tlv.type == TlvType_ChannelIntervalRecording_ActiveChannels, ClientErrors::InvalidData )
              << "Unexpected TLV of type (" << tlv.type << "), expected (" << (unsigned)TlvType_ChannelIntervalRecording_ActiveChannels << ")" );
 
-    return "Channel Interval Recording Full Description:\n" + decodeChannelDescriptors( tlv.value );
+    return "Channel Interval Recording Full Description:\n" + decodeActiveChannelDescriptors( tlv.value );
 }
 
 unsigned SetConfigurationCommand::getIntervalRecordingSeconds() const
@@ -872,7 +856,7 @@ std::string GetActiveConfigurationCommand::decodeActiveConfiguration( const Byte
 
     return "Interval Recording: " + std::to_string(_intervalRecordingSecondsReceived) + " seconds\n" +
            "Interval Reporting: " + std::to_string(_intervalReportingSecondsReceived) + " seconds\n" +
-           decodeChannelDescriptors( Bytes(response.begin() + 8, response.end()) );
+           decodeActiveChannelDescriptors( Bytes(response.begin() + 8, response.end()) );
 }
 
 unsigned GetActiveConfigurationCommand::getIntervalRecordingSeconds() const

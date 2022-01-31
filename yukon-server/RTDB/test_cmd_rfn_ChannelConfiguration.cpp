@@ -1696,7 +1696,7 @@ BOOST_AUTO_TEST_CASE( test_RfnGetChannelSelectionAllAvailableCommand )
         const std::vector<unsigned char> response
         {
             0x79, 0x03, 0x00, 0x01,     // command code + operation + status + 1 tlv
-            0x02,                       // tlv type 2
+            0x03,                       // tlv type 3
             0x01, 0xfa,                 // tlv size (2-bytes)
             0x00, 0x7e,                 // number of metrics descriptor (2-bytes)
             0x00, 0x01, 0x00, 0x00,   0x00, 0x02, 0x00, 0x00,   0x00, 0x03, 0x00, 0x00,   0x00, 0x04, 0x00, 0x00,

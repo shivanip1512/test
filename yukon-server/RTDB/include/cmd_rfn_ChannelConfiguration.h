@@ -35,11 +35,13 @@ protected:
 
     virtual TlvList       getTlvsToSend() const;
     virtual unsigned char getResponseCommandCode() const = 0;
-    virtual unsigned      getCountFieldSize() const;
 
     std::string decodeHeader             ( const Bytes &response );
     std::string decodeMetricsIds         ( const Bytes &response );
-    std::string decodeChannelDescriptors ( const Bytes &response );
+
+    std::string decodeActiveChannelDescriptors ( const Bytes &response );
+    std::string decodeAllChannelDescriptors ( const Bytes &response );
+    std::string decodeChannelDescriptors ( const Bytes &response, unsigned count_fieldLength );
 };
 
 /**
@@ -72,13 +74,13 @@ protected:
     enum
     {
         TlvType_ChannelSelection_Configuration  = 0x01,
-        TlvType_ChannelSelection_ActiveChannels = 0x02
+        TlvType_ChannelSelection_ActiveChannels = 0x02,
+        TlvType_ChannelSelection_AvailableChannels = 0x03
     };
 
     RfnChannelSelectionCommand() = default;
 
     virtual unsigned char getExpectedTlvType() const = 0;
-    virtual std::string   getTlvDescriptiveName() const = 0;
 
 public:
     RfnCommandResult decodeCommand( const CtiTime now,
@@ -99,7 +101,6 @@ class IM_EX_DEVDB RfnSetChannelSelectionCommand : public RfnChannelSelectionComm
     unsigned char getOperation() const;
 
     virtual unsigned char getExpectedTlvType() const;
-    std::string getTlvDescriptiveName() const override;
 
 public:
     RfnSetChannelSelectionCommand( const MetricIds& metrics );
@@ -115,7 +116,6 @@ class IM_EX_DEVDB RfnGetChannelSelectionCommand : public RfnChannelSelectionComm
     unsigned char getOperation() const;
 
     virtual unsigned char getExpectedTlvType() const;
-    std::string getTlvDescriptiveName() const override;
 };
 
 /**
@@ -127,7 +127,6 @@ class IM_EX_DEVDB RfnGetChannelSelectionFullDescriptionCommand : public RfnChann
     unsigned char getOperation() const;
 
     virtual unsigned char getExpectedTlvType() const;
-    std::string getTlvDescriptiveName() const override;
 };
 
 /**
@@ -139,9 +138,6 @@ class IM_EX_DEVDB RfnGetChannelSelectionAllAvailableCommand : public RfnChannelS
     unsigned char getOperation() const;
 
     virtual unsigned char getExpectedTlvType() const;
-    std::string getTlvDescriptiveName() const override;
-
-    unsigned getCountFieldSize() const override;
 };
 
 /**
