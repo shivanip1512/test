@@ -1557,6 +1557,8 @@ RFN-500 Node in L & G Focus AX (with Advanced Metrology):
     - VA-hours Net:                         { Unit: *VAh,    Modifiers: [ *Q1, *Q2, *Q3, *Q4, *Net         ], Models: *__-RX-23 }
     - Peak Delivered Demand:                { Unit: *W,      Modifiers: [ *Q1, *Q4, *Max                   ], Models: *AX-RX-23 }
     - Time of Peak Delivered Demand:        { Unit: *s,      Modifiers: [ *Coin1                           ], Models: *AX-RX-23 }
+    - Peak Received Demand:                	{ Unit: *W,      Modifiers: [ *Q2, *Q3, *Max                   ], Models: *AX-RX-23 }
+    - Time of Peak Received Demand:         { Unit: *s,      Modifiers: [ *Coin1                           ], Models: *AX-RX-23 }
     - Frozen Peak Delivered Demand:         { Unit: *W,      Modifiers: [ *Q1, *Q4, *Max, *Prev            ], Models: *AX-RX-23 }
     - Time of Frozen Peak Delivered Demand: { Unit: *s,      Modifiers: [ *Coin1, *Prev                    ], Models: *AX-RX-23 }
     - Daily Peak Delivered Demand:          { Unit: *W,      Modifiers: [ *Q1, *Q4, *DayMax                ], Models: *AX-RX-23 }
@@ -1593,6 +1595,8 @@ RFN-500 Node in L & G Focus AX (with Advanced Metrology):
     - VA-hours Net Rate A:                  { Unit: *VAh,    Modifiers: [ *Q1, *Q2, *Q3, *Q4, *Net, *RateA ], Models: *__-RX-23 } 
     - Peak Demand Rate A:                   { Unit: *W,      Modifiers: [ *Q1, *Q4, *Max, *RateA           ], Models: *AX-RX-23 }
     - Time of Peak Demand Rate A:           { Unit: *s,      Modifiers: [ *RateA                           ], Models: *AX-RX-23 }
+    - Peak Received Demand Rate A:          { Unit: *W,      Modifiers: [ *Q2, *Q3, *Max, *RateA           ], Models: *AX-RX-23 }
+    - Time of Peak Received Demand Rate A:  { Unit: *s,      Modifiers: [ *RateA                           ], Models: *AX-RX-23 }
     - Frozen Peak Demand Rate A:            { Unit: *W,      Modifiers: [ *Q1, *Q4, *Max, *RateA, *Prev    ], Models: *AX-RX-23 }
     - Time of Frozen Peak Demand Rate A:    { Unit: *s,      Modifiers: [ *RateA, *Prev                    ], Models: *AX-RX-23 }
     - Peak Delivered Var Rate A:            { Unit: *Var,    Modifiers: [ *Q1, *Q2, *Max, *RateA           ], Models: *__-RX-23 } 
@@ -1619,6 +1623,8 @@ RFN-500 Node in L & G Focus AX (with Advanced Metrology):
     - VA-hours Net Rate B:                  { Unit: *VAh,    Modifiers: [ *Q1, *Q2, *Q3, *Q4, *Net, *RateB ], Models: *__-RX-23 } 
     - Peak Demand Rate B:                   { Unit: *W,      Modifiers: [ *Q1, *Q4, *Max, *RateB           ], Models: *AX-RX-23 }
     - Time of Peak Demand Rate B:           { Unit: *s,      Modifiers: [ *RateB                           ], Models: *AX-RX-23 }
+    - Peak Received Demand Rate B:          { Unit: *W,      Modifiers: [ *Q2, *Q3, *Max, *RateB           ], Models: *AX-RX-23 }
+    - Time of Peak Received Demand Rate B:  { Unit: *s,      Modifiers: [ *RateB                           ], Models: *AX-RX-23 }
     - Frozen Peak Demand Rate B:            { Unit: *W,      Modifiers: [ *Q1, *Q4, *Max, *RateB, *Prev    ], Models: *AX-RX-23 }
     - Time of Frozen Peak Demand Rate B:    { Unit: *s,      Modifiers: [ *RateB, *Prev                    ], Models: *AX-RX-23 }
     - Peak Delivered Var Rate B:            { Unit: *Var,    Modifiers: [ *Q1, *Q2, *Max, *RateB           ], Models: *__-RX-23 } 
@@ -1645,6 +1651,8 @@ RFN-500 Node in L & G Focus AX (with Advanced Metrology):
     - VA-hours Net Rate C:                  { Unit: *VAh,    Modifiers: [ *Q1, *Q2, *Q3, *Q4, *Net, *RateC ], Models: *__-RX-23 } 
     - Peak Demand Rate C:                   { Unit: *W,      Modifiers: [ *Q1, *Q4, *Max, *RateC           ], Models: *AX-RX-23 }
     - Time of Peak Demand Rate C:           { Unit: *s,      Modifiers: [ *RateC                           ], Models: *AX-RX-23 }
+    - Peak Received Demand Rate C:          { Unit: *W,      Modifiers: [ *Q2, *Q3, *Max, *RateC           ], Models: *AX-RX-23 }
+    - Time of Peak Received Demand Rate C:  { Unit: *s,      Modifiers: [ *RateC                           ], Models: *AX-RX-23 }
     - Frozen Peak Demand Rate C:            { Unit: *W,      Modifiers: [ *Q1, *Q4, *Max, *RateC, *Prev    ], Models: *AX-RX-23 }
     - Time of Frozen Peak Demand Rate C:    { Unit: *s,      Modifiers: [ *RateC, *Prev                    ], Models: *AX-RX-23 }
     - Peak Delivered Var Rate C:            { Unit: *Var,    Modifiers: [ *Q1, *Q2, *Max, *RateC           ], Models: *__-RX-23 } 
@@ -1671,6 +1679,8 @@ RFN-500 Node in L & G Focus AX (with Advanced Metrology):
     - VA-hours Net Rate D:                  { Unit: *VAh,    Modifiers: [ *Q1, *Q2, *Q3, *Q4, *Net, *RateD ], Models: *__-RX-23 } 
     - Peak Demand Rate D:                   { Unit: *W,      Modifiers: [ *Q1, *Q4, *Max, *RateD           ], Models: *AX-RX-23 }
     - Time of Peak Demand Rate D:           { Unit: *s,      Modifiers: [ *RateD                           ], Models: *AX-RX-23 }
+    - Peak Received Demand Rate D:          { Unit: *W,      Modifiers: [ *Q2, *Q3, *Max, *RateD           ], Models: *AX-RX-23 }
+    - Time of Peak Received Demand Rate D:  { Unit: *s,      Modifiers: [ *RateD                           ], Models: *AX-RX-23 }
     - Frozen Peak Demand Rate D:            { Unit: *W,      Modifiers: [ *Q1, *Q4, *Max, *RateD, *Prev    ], Models: *AX-RX-23 }
     - Time of Frozen Peak Demand Rate D:    { Unit: *s,      Modifiers: [ *RateD, *Prev                    ], Models: *AX-RX-23 }
     - Peak Delivered Var Rate D:            { Unit: *Var,    Modifiers: [ *Q1, *Q2, *Max, *RateD           ], Models: *__-RX-23 } 
@@ -1686,6 +1696,7 @@ RFN-500 Node in L & G Focus AX (with Advanced Metrology):
     - Minimum Daily Voltage:                { Unit: *V,      Modifiers: [ *DayMin, *milli                  ], Models: *AX-RX-23 }
     - Coincident Time of Minimum Daily Voltage: { Unit: *s,  Modifiers: [                                  ], Models: *AX-RX-23 }
     - Interval Demand:                      { Unit: *W,      Modifiers: [ *Q1, *Q4                         ], Models: *AX-RX-23 }
+    - Received Interval Demand:             { Unit: *W,      Modifiers: [ *Q2, *Q3                         ], Models: *AX-RX-23 }
     - Delivered Var:                        { Unit: *Var,    Modifiers: [ *Q1, *Q2                         ], Models: *__-RX-23 } 
     - Total Var:                            { Unit: *Var,    Modifiers: [ *Q1, *Q2, *Q3, *Q4               ], Models: *__-RX-23 }
     - VA Q1 + Q2 + Q4:                      { Unit: *VA,     Modifiers: [ *Q1, *Q2, *Q4                    ], Models: *__-RX-23 }
@@ -1729,6 +1740,8 @@ RFN-500 Node in L & G Focus AXe (with Advanced Metrology):
     - VA-hours Net:                         { Unit: *VAh,    Modifiers: [ *Q1, *Q2, *Q3, *Q4, *Net         ], Models: *___-RXe-23 }
     - Peak Delivered Demand:                { Unit: *W,      Modifiers: [ *Q1, *Q4, *Max                   ], Models: *AXe-RXe-23 }
     - Time of Peak Delivered Demand:        { Unit: *s,      Modifiers: [ *Coin1                           ], Models: *AXe-RXe-23 }
+    - Peak Received Demand:                 { Unit: *W,      Modifiers: [ *Q2, *Q3, *Max                   ], Models: *AXe-RXe-23 }
+    - Time of Peak Received Demand:        	{ Unit: *s,      Modifiers: [ *Coin1                           ], Models: *AXe-RXe-23 }
     - Frozen Peak Delivered Demand:         { Unit: *W,      Modifiers: [ *Q1, *Q4, *Max, *Prev            ], Models: *AXe-RXe-23 }
     - Time of Frozen Peak Delivered Demand: { Unit: *s,      Modifiers: [ *Coin1, *Prev                    ], Models: *AXe-RXe-23 }
     - Daily Peak Delivered Demand:          { Unit: *W,      Modifiers: [ *Q1, *Q4, *DayMax                ], Models: *AXe-RXe-23 }
@@ -1765,6 +1778,8 @@ RFN-500 Node in L & G Focus AXe (with Advanced Metrology):
     - VA-hours Net Rate A:                  { Unit: *VAh,    Modifiers: [ *Q1, *Q2, *Q3, *Q4, *Net, *RateA ], Models: *___-RXe-23 } 
     - Peak Demand Rate A:                   { Unit: *W,      Modifiers: [ *Q1, *Q4, *Max, *RateA           ], Models: *AXe-RXe-23 }
     - Time of Peak Demand Rate A:           { Unit: *s,      Modifiers: [ *RateA                           ], Models: *AXe-RXe-23 }
+    - Peak Received Demand Rate A:          { Unit: *W,      Modifiers: [ *Q2, *Q3, *Max, *RateA           ], Models: *AXe-RXe-23 }
+    - Time of Peak Received Demand Rate A:  { Unit: *s,      Modifiers: [ *RateA                           ], Models: *AXe-RXe-23 }
     - Frozen Peak Demand Rate A:            { Unit: *W,      Modifiers: [ *Q1, *Q4, *Max, *RateA, *Prev    ], Models: *AXe-RXe-23 }
     - Time of Frozen Peak Demand Rate A:    { Unit: *s,      Modifiers: [ *RateA, *Prev                    ], Models: *AXe-RXe-23 }
     - Peak Delivered Var Rate A:            { Unit: *Var,    Modifiers: [ *Q1, *Q2, *Max, *RateA           ], Models: *___-RXe-23 } 
@@ -1791,6 +1806,8 @@ RFN-500 Node in L & G Focus AXe (with Advanced Metrology):
     - VA-hours Net Rate B:                  { Unit: *VAh,    Modifiers: [ *Q1, *Q2, *Q3, *Q4, *Net, *RateB ], Models: *___-RXe-23 } 
     - Peak Demand Rate B:                   { Unit: *W,      Modifiers: [ *Q1, *Q4, *Max, *RateB           ], Models: *AXe-RXe-23 }
     - Time of Peak Demand Rate B:           { Unit: *s,      Modifiers: [ *RateB                           ], Models: *AXe-RXe-23 }
+    - Peak Received Demand Rate B:          { Unit: *W,      Modifiers: [ *Q2, *Q3, *Max, *RateB           ], Models: *AXe-RXe-23 }
+    - Time of Peak Received Demand Rate B:  { Unit: *s,      Modifiers: [ *RateB                           ], Models: *AXe-RXe-23 }
     - Frozen Peak Demand Rate B:            { Unit: *W,      Modifiers: [ *Q1, *Q4, *Max, *RateB, *Prev    ], Models: *AXe-RXe-23 }
     - Time of Frozen Peak Demand Rate B:    { Unit: *s,      Modifiers: [ *RateB, *Prev                    ], Models: *AXe-RXe-23 }
     - Peak Delivered Var Rate B:            { Unit: *Var,    Modifiers: [ *Q1, *Q2, *Max, *RateB           ], Models: *___-RXe-23 } 
@@ -1817,6 +1834,8 @@ RFN-500 Node in L & G Focus AXe (with Advanced Metrology):
     - VA-hours Net Rate C:                  { Unit: *VAh,    Modifiers: [ *Q1, *Q2, *Q3, *Q4, *Net, *RateC ], Models: *___-RXe-23 } 
     - Peak Demand Rate C:                   { Unit: *W,      Modifiers: [ *Q1, *Q4, *Max, *RateC           ], Models: *AXe-RXe-23 }
     - Time of Peak Demand Rate C:           { Unit: *s,      Modifiers: [ *RateC                           ], Models: *AXe-RXe-23 }
+    - Peak Received Demand Rate C:          { Unit: *W,      Modifiers: [ *Q2, *Q3, *Max, *RateC           ], Models: *AXe-RXe-23 }
+    - Time of Peak Received Demand Rate C:  { Unit: *s,      Modifiers: [ *RateC                           ], Models: *AXe-RXe-23 }
     - Frozen Peak Demand Rate C:            { Unit: *W,      Modifiers: [ *Q1, *Q4, *Max, *RateC, *Prev    ], Models: *AXe-RXe-23 }
     - Time of Frozen Peak Demand Rate C:    { Unit: *s,      Modifiers: [ *RateC, *Prev                    ], Models: *AXe-RXe-23 }
     - Peak Delivered Var Rate C:            { Unit: *Var,    Modifiers: [ *Q1, *Q2, *Max, *RateC           ], Models: *___-RXe-23 } 
@@ -1843,6 +1862,8 @@ RFN-500 Node in L & G Focus AXe (with Advanced Metrology):
     - VA-hours Net Rate D:                  { Unit: *VAh,    Modifiers: [ *Q1, *Q2, *Q3, *Q4, *Net, *RateD ], Models: *___-RXe-23 } 
     - Peak Demand Rate D:                   { Unit: *W,      Modifiers: [ *Q1, *Q4, *Max, *RateD           ], Models: *AXe-RXe-23 }
     - Time of Peak Demand Rate D:           { Unit: *s,      Modifiers: [ *RateD                           ], Models: *AXe-RXe-23 }
+    - Peak Received Demand Rate D:          { Unit: *W,      Modifiers: [ *Q2, *Q3, *Max, *RateD           ], Models: *AXe-RXe-23 }
+    - Time of Peak Received Demand Rate D:  { Unit: *s,      Modifiers: [ *RateD                           ], Models: *AXe-RXe-23 }
     - Frozen Peak Demand Rate D:            { Unit: *W,      Modifiers: [ *Q1, *Q4, *Max, *RateD, *Prev    ], Models: *AXe-RXe-23 }
     - Time of Frozen Peak Demand Rate D:    { Unit: *s,      Modifiers: [ *RateD, *Prev                    ], Models: *AXe-RXe-23 }
     - Peak Delivered Var Rate D:            { Unit: *Var,    Modifiers: [ *Q1, *Q2, *Max, *RateD           ], Models: *___-RXe-23 } 
@@ -1858,6 +1879,7 @@ RFN-500 Node in L & G Focus AXe (with Advanced Metrology):
     - Minimum Daily Voltage:                { Unit: *V,      Modifiers: [ *DayMin, *milli                  ], Models: *AXe-RXe-23 }
     - Coincident Time of Minimum Daily Voltage: { Unit: *s,  Modifiers: [                                  ], Models: *AXe-RXe-23 }
     - Interval Demand:                      { Unit: *W,      Modifiers: [ *Q1, *Q4                         ], Models: *AXe-RXe-23 }
+    - Received Interval Demand:             { Unit: *W,      Modifiers: [ *Q2, *Q3                         ], Models: *AXe-RXe-23 }
     - Delivered Var:                        { Unit: *Var,    Modifiers: [ *Q1, *Q2                         ], Models: *___-RXe-23 }
     - Total Var:                            { Unit: *Var,    Modifiers: [ *Q1, *Q2, *Q3, *Q4               ], Models: *___-RXe-23 }
     - VA Q1 + Q2 + Q4:                      { Unit: *VA,     Modifiers: [ *Q1, *Q2, *Q4                    ], Models: *___-RXe-23 }
