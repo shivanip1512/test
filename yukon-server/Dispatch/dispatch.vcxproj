@@ -359,6 +359,7 @@ if exist $(OutDir)$(TargetName).pdb xcopy /d/y/f $(OutDir)$(TargetName).pdb $(So
     <ClCompile Include="con_mgr_vg.cpp">
     </ClCompile>
     <ClCompile Include="ctivangogh.cpp" />
+    <ClCompile Include="DispatchMetricTracker.cpp" />
     <ClCompile Include="dispmain.cpp">
     </ClCompile>
     <ClCompile Include="dispsvc.cpp">
@@ -384,6 +385,7 @@ if exist $(OutDir)$(TargetName).pdb xcopy /d/y/f $(OutDir)$(TargetName).pdb $(So
     <ClInclude Include="include\con_mgr_vg.h" />
     <ClInclude Include="include\control_history_association.h" />
     <ClInclude Include="include\ctivangogh.h" />
+    <ClInclude Include="include\DispatchMetricTracker.h" />
     <ClInclude Include="include\dispsvc.h" />
     <ClInclude Include="include\exe_ptchg.h" />
     <ClInclude Include="include\exe_signal.h" />

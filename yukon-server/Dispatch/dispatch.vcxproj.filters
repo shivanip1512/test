@@ -75,6 +75,9 @@
     <ClCompile Include="rph_archiver.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="DispatchMetricTracker.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="include\con_mgr_vg.h">
@@ -129,6 +132,9 @@
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="include\rph_archiver.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="include\DispatchMetricTracker.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>
