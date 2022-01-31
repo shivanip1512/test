@@ -9,6 +9,7 @@
 
 <%@ attribute name="path" required="true" %>
 <%@ attribute name="disabled" type="java.lang.Boolean" %>
+<%@ attribute name="readonly" type="java.lang.Boolean" description="If true, the field will look disabled but still submit the value." %>
 <%@ attribute name="size" %>
 <%@ attribute name="maxlength" %>
 <%@ attribute name="autocomplete" 
@@ -34,15 +35,16 @@
     	var path = $(this).data('fieldPath'),
     		input = $('input[name=' + $.escapeSelector(path) + ']');
     	input.val("");
+    	input.prop('readonly', false);
     	input.prop('disabled', false);
     });
     
     $(document).ready(function() {
 	    <c:if test="${maskValue}">
 			var sensitiveField = $('input[name=' + $.escapeSelector('${path}') + ']');
-			console.log(sensitiveField.val());
 	    	if (sensitiveField.val() != '') {
-	    		sensitiveField.attr("value", "********");
+	    		var maskedValue = sensitiveField.val().replace(/./g, '*');
+	    		sensitiveField.attr("value", maskedValue);
 	    	}
 	    </c:if>
     });
@@ -64,7 +66,7 @@
 </c:if>
 
 <div class="dib M0">
-    <form:password path="${path}" readonly="${pageScope.disabled}" size="${pageScope.size}" maxlength="${pageScope.maxlength}" 
+    <form:password path="${path}" disabled="${pageScope.disabled}" readonly="${pageScope.readonly}" size="${pageScope.size}" maxlength="${pageScope.maxlength}" 
         autocomplete="${autocomplete}" cssClass="${inputClass} ${pageScope.cssClass}" showPassword="${showPassword}" tabindex="${tabindex}" placeholder="${placeholder}"/>
     <c:if test="${includeShowHideButton}">
          <tags:check classes="fr M0" onclick="showHideData(this.checked, '${path}');" name="showHideDataField">

@@ -142,13 +142,6 @@ public class GlobalSettingUpdateDaoImpl implements GlobalSettingUpdateDao {
         
         Object value = setting.getValue();
         
-        //change masked value back to current setting
-    	if (currentSetting.isNonViewableSensitiveInformation()) {
-    		if (value.equals("********")) {
-    			setting.setValue(currentSetting.getValue());
-    		}
-    	}
-        
         if (value == null) {
             if (currentValue != null) {
                 isChanged = true;
