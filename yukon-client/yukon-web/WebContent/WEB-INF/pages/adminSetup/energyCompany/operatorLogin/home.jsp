@@ -37,7 +37,7 @@
                     datatype: "json"
                 }).done(function (jsonResponse, textStatus, jqXHR) {
                     icon.removeClass("icon-accept");
-                    icon.removeClass("icon-delete");
+                    icon.removeClass("icon-disable");
                     icon.removeClass("icon-spinner");
                     icon.addClass(jsonResponse.icon);
                     icon.attr("title",jsonResponse.loginStatus);

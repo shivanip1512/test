@@ -48,7 +48,7 @@
                 <cm:dropdownOption key="yukon.web.modules.tools.tdc.copy" icon="icon-disk-multiple"
             data-display-id="${display.displayId}" data-copy-title="${copyTitle}" 
             classes="js-tdc-copy"/>
-            <cm:dropdownOption id="deleteCustomDisplay_${display.displayId}" key=".display.DELETE" icon="icon-cross"
+            <cm:dropdownOption id="deleteCustomDisplay_${display.displayId}" key=".display.DELETE" icon="icon-delete"
                 data-display-id="${display.displayId}" data-ok-event="yukon:display:remove"/>
             <d:confirm on="#deleteCustomDisplay_${display.displayId}" nameKey="confirmDelete" argument="${display.name}"/>
             <li class="divider"/>

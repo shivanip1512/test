@@ -71,7 +71,7 @@
                                                             id="disableScheduleItem_${job.id}"
                                                             key="yukon.web.components.button.disable.label"
                                                             data-href="${disableUrl}"
-                                                            icon="icon-delete" />
+                                                            icon="icon-disable" />
                                                     </c:if>
                                                     <cti:url
                                                         var="deleteUrl"
@@ -80,7 +80,7 @@
                                                         id="deleteScheduleItem_${job.id}"
                                                         key="yukon.web.components.button.delete.label"
                                                         data-href="${deleteUrl}"
-                                                        icon="icon-cross" />
+                                                        icon="icon-delete" />
 
                                                     <d:confirm
                                                         on="#deleteScheduleItem_${job.id}"
@@ -101,13 +101,13 @@
                                                         <cm:dropdownOption
                                                             id="disableScheduleItem_${job.id}"
                                                             key="yukon.web.components.button.disable.label"
-                                                            icon="icon-delete"
+                                                            icon="icon-disable"
                                                             disabled="true" />
                                                     </c:if>
                                                     <cm:dropdownOption
                                                         id="deleteScheduleItem_${job.id}"
                                                         key="yukon.web.components.button.delete.label"
-                                                        icon="icon-cross"
+                                                        icon="icon-delete"
                                                         disabled="true" />
                                                 </c:otherwise>
                                             </c:choose>

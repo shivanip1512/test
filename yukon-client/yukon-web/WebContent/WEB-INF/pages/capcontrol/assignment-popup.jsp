@@ -11,7 +11,7 @@ $(function() {
         var selectedItem = ui.item;
         selectedItem
         .find('.js-remove, .js-add').toggleClass('js-remove js-add')
-        .find('.icon').toggleClass('icon-plus-green icon-cross');
+        .find('.icon').toggleClass('icon-plus-green icon-remove');
         
         // Show/hide movers.
         selectedItem.find('.select-box-item-movers').toggle(!remove);      
@@ -78,7 +78,7 @@ $(function() {
             <div id="assigned" class="select-box-selected js-with-movables" data-item-selector=".select-box-item" style="min-height:150px;">
                 <c:forEach var="item" items="${assigned}" varStatus="status">
                     <div class="select-box-item cm" data-id="${item.id}">${fn:escapeXml(item.name)}
-                        <cti:button icon="icon-cross" renderMode="buttonImage" classes="select-box-item-remove js-remove"/>
+                        <cti:button icon="icon-remove" renderMode="buttonImage" classes="select-box-item-remove js-remove"/>
                         <div class="select-box-item-movers">
                             <c:set var="disabled" value="${status.first}"/>
                             <cti:button icon="icon-bullet-go-up" renderMode="buttonImage"

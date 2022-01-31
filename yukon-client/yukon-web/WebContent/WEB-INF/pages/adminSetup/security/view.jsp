@@ -237,12 +237,12 @@
                                             <c:choose>
                                                 <c:when test="${key.currentlyUsed}">
                                                     <cti:msg2 key=".deleteKeyBtnDisabledTitle" var="title"/>
-                                                    <cti:button renderMode="buttonImage" disabled="true" title="${title}" icon="icon-cross" />
+                                                    <cti:button renderMode="buttonImage" disabled="true" title="${title}" icon="icon-delete" />
                                                 </c:when>
                                                 <c:otherwise>
                                                     <cti:msg2 key=".deleteKeyBtnTitle" var="title"/>
                                                     <cti:button renderMode="buttonImage" id="deleteKeyBtn_${key.encryptionKeyId}" title="${title}" 
-                                                        icon="icon-cross" data-ok-event="yukon:admin:security:submitForm" data-form-id="keys_${key.encryptionKeyId}"/>
+                                                        icon="icon-delete" data-ok-event="yukon:admin:security:submitForm" data-form-id="keys_${key.encryptionKeyId}"/>
                                                     <d:confirm on="#deleteKeyBtn_${key.encryptionKeyId}" nameKey="confirmDelete" argument="${key.name}"/>
                                                 </c:otherwise>
                                             </c:choose>

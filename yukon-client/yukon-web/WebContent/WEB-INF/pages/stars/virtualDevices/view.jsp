@@ -24,7 +24,7 @@
         <cti:checkRolesAndProperties value="ENDPOINT_PERMISSION" level="OWNER">
             <li class="divider" />
             <cm:dropdownOption key="yukon.web.components.button.delete.label" classes="js-hide-dropdown" id="deleteVirtualDevice"
-                        icon="icon-cross" data-ok-event="yukon:virtualDevice:delete" />
+                        icon="icon-delete" data-ok-event="yukon:virtualDevice:delete" />
             <d:confirm on="#deleteVirtualDevice" nameKey="confirmDelete" argument="${name}" />
             <cti:url var="deleteUrl" value="/stars/virtualDevice/${id}/delete" />
             <form:form id="delete-virtualDevice-form" action="${deleteUrl}" method="delete">

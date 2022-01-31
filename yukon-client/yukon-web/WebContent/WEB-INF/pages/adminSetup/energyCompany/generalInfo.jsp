@@ -126,7 +126,7 @@ $(function() {
                                                     <td>
                                                         <cti:button nameKey="remove" type="submit" name="remove"
                                                             value="${company.energyCompanyId}" renderMode="buttonImage" 
-                                                            classes="fr MR0" icon="icon-cross"/>
+                                                            classes="fr MR0" icon="icon-remove"/>
                                                     </td>
                                                 </c:if>
                                             </tr>
@@ -215,7 +215,7 @@ $(function() {
                                                 <td>
                                                     <cti:button nameKey="remove" type="submit" 
                                                         name="removeCustomerUserGroup" value="${userGroup.userGroupId}" 
-                                                        renderMode="buttonImage" icon="icon-cross" classes="fr MR0"/>
+                                                        renderMode="buttonImage" icon="icon-remove" classes="fr MR0"/>
                                                 </td>
                                             </tr>
                                         </c:forEach>

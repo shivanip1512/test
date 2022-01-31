@@ -60,7 +60,7 @@
                                     <cti:csrfToken var="csrfToken"/>
                                     <a class="deleteAssignment" data-ok-event="yukon_da_schedules_remove" 
                                        data-csrf-token="${csrfToken}" data-pao-id="${item.paoId}" data-event-id="${item.eventId}">
-                                        <cti:icon icon="icon-cross"/>
+                                        <cti:icon icon="icon-delete"/>
                                         <i:inline key=".substation.remove.label"/>
                                     </a>
                                     <cti:list var="confirmArgument">
@@ -77,10 +77,10 @@
                                     <c:choose>
                                         <c:when test="${item.disableOvUv == 'Y'}">
                                             <cm:dropdownOption icon="icon-accept" value="${item.eventId}" key=".scheduleAssignments.enableOvuv" classes="js-enable-ovuv"/>
-                                            <cm:dropdownOption icon="icon-delete" value="${item.eventId}" key=".scheduleAssignments.disableOvuv" classes="js-disable-ovuv dn"/>
+                                            <cm:dropdownOption icon="icon-disable" value="${item.eventId}" key=".scheduleAssignments.disableOvuv" classes="js-disable-ovuv dn"/>
                                         </c:when>
                                         <c:otherwise>
-                                            <cm:dropdownOption icon="icon-delete" value="${item.eventId}" key=".scheduleAssignments.disableOvuv" classes="js-disable-ovuv"/>
+                                            <cm:dropdownOption icon="icon-disable" value="${item.eventId}" key=".scheduleAssignments.disableOvuv" classes="js-disable-ovuv"/>
                                             <cm:dropdownOption icon="icon-accept" value="${item.eventId}" key=".scheduleAssignments.enableOvuv" classes="js-enable-ovuv dn"/>
                                         </c:otherwise>
                                     </c:choose>

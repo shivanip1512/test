@@ -95,7 +95,7 @@
                                 <c:choose>
                                     <c:when test="${schedule.isUpdating() || schedule.isDisabled()}">
                                         <cm:dropdownOption key="yukon.common.start" icon="icon-bullet-go" disabled="true"/>
-                                        <cm:dropdownOption key="yukon.common.cancel" icon="icon-cross" disabled="true"/>
+                                        <cm:dropdownOption key="yukon.common.cancel" icon="icon-disable" disabled="true"/>
                                     </c:when>
                                     <c:when test="${schedule.isRunning() || schedule.isPending()}">
                                         <cm:dropdownOption key="yukon.common.start" icon="icon-bullet-go" disabled="true"/>
@@ -109,7 +109,7 @@
                                         <div id="startDialog-${id}" class="dn" data-dialog
                                             data-title="<cti:msg2 key=".start.dialogTitle"/>" data-width="500" data-ok-text="<cti:msg2 key="yukon.common.start"/>"
                                             data-url="${startStopUrl}" data-event="yukon:schedule:start"></div>            
-                                        <cm:dropdownOption key="yukon.common.cancel" icon="icon-cross" disabled="true"/>
+                                        <cm:dropdownOption key="yukon.common.cancel" icon="icon-disable" disabled="true"/>
                                     </c:otherwise>
                                 </c:choose>
                                 <c:choose>
