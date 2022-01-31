@@ -113,6 +113,10 @@ public class EatonCloudSimulatorController {
         Map<String, Object> json = new HashMap<>();
         String url = settingDao.getString(GlobalSettingType.EATON_CLOUD_URL);
 
+        json.put("secret1Token", "None");
+        json.put("secret2Token", "None");
+        json.put("cachedToken", "None");
+        
         if (url.contains("localhost") || url.contains("127.0.0.1")) {
             if (restTemplate == null) {
                 restTemplate = new RestTemplate();
@@ -125,14 +129,12 @@ public class EatonCloudSimulatorController {
                 EatonCloudTokenV1 token1 = retrieveNewToken(GlobalSettingType.EATON_CLOUD_SECRET, serviceAccountId);
                 json.put("secret1Token", token1.getToken());
             } catch (Exception e) {
-                json.put("secret1Token", "Date doesn't exist");
             }
 
             try {
                 EatonCloudTokenV1 token2 = retrieveNewToken(GlobalSettingType.EATON_CLOUD_SECRET2, serviceAccountId);
                 json.put("secret2Token", token2.getToken());
             } catch (Exception e) {
-                json.put("secret2Token", "Date doesn't exist");
             }
 
             try {
@@ -144,8 +146,6 @@ public class EatonCloudSimulatorController {
             }
         } else {
             json.put("cachedBy", "Cloud");
-            json.put("secret1Token", "Simulator Only");
-            json.put("secret2Token", "Simulator Only");
             json.put("secret1Expiration", null);
             json.put("secret2Expiration", null);
         }       
@@ -154,7 +154,6 @@ public class EatonCloudSimulatorController {
             String cachedToken = eatonCloudCommunicationServiceV1.getToken().getToken();
             json.put("cachedToken", cachedToken);
         } catch (Exception e) {
-            json.put("cachedToken", "Date doesn't exist");
             log.error("Error", e);
         }
         
