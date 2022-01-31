@@ -33,13 +33,14 @@ public class DeviceDataMonitor implements PointMonitor, Serializable, Comparable
     }
 
     public DeviceDataMonitor(Integer id, String name, String groupName, DeviceGroup group, boolean enabled,
-            List<DeviceDataMonitorProcessor> processors) {
+            List<DeviceDataMonitorProcessor> processors, boolean notifyOnAlarmOnly) {
         this.id = id;
         this.groupName = groupName;
         this.name = name.trim();
         this.enabled = enabled;
         this.processors = processors;
         this.group = group;
+        this.notifyOnAlarmOnly = notifyOnAlarmOnly;
     }
 
     public Integer getId() {
@@ -149,6 +150,7 @@ public class DeviceDataMonitor implements PointMonitor, Serializable, Comparable
         result = prime * result + ((groupName == null) ? 0 : groupName.hashCode());
         result = prime * result + ((id == null) ? 0 : id.hashCode());
         result = prime * result + ((name == null) ? 0 : name.hashCode());
+        result = prime * result + (notifyOnAlarmOnly ? 1231 : 1237);
         result = prime * result + ((processors == null) ? 0 : processors.hashCode());
         return result;
     }
@@ -189,6 +191,9 @@ public class DeviceDataMonitor implements PointMonitor, Serializable, Comparable
         } else if (!name.equals(other.name)) {
             return false;
         }
+        if (notifyOnAlarmOnly != other.notifyOnAlarmOnly) {
+            return false;
+        }
         if (processors == null) {
             if (other.processors != null) {
                 return false;
@@ -206,8 +211,11 @@ public class DeviceDataMonitor implements PointMonitor, Serializable, Comparable
     
     @Override
     public String toString() {
-        return String
-                .format("DeviceDataMonitor [id=%s, name=%s, groupName=%s, enabled=%s]",
-                        id, name, groupName, enabled);
+        return String.format("DeviceDataMonitor [groupName=%s, id=%s, name=%s, enabled=%s, notifyOnAlarmOnly=%s]",
+                             groupName,
+                             id,
+                             name,
+                             enabled,
+                             notifyOnAlarmOnly);
     }
 }

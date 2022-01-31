@@ -14,7 +14,7 @@ import com.cannontech.common.pao.attribute.model.Attribute;
 import com.cannontech.common.pao.definition.model.PaoPointIdentifier;
 import com.cannontech.core.dynamic.AsyncDynamicDataSource;
 import com.cannontech.core.dynamic.PointValueHolder;
-import com.cannontech.core.dynamic.PointValueQualityHolder;
+import com.cannontech.core.dynamic.PointValueQualityTagHolder;
 import com.cannontech.core.dynamic.RichPointData;
 import com.cannontech.core.service.PointFormattingService;
 import com.cannontech.core.service.PointFormattingService.Format;
@@ -76,10 +76,9 @@ public class AttributeDynamicDataSource {
      */
     public RichPointData getRichPointData(YukonPao pao, Attribute attribute) {
         LitePoint litePoint = attributeService.getPointForAttribute(pao, attribute);
-        PointValueQualityHolder pointValueHolder = asyncDynamicDataSource.getPointValue(litePoint.getPointID());
+        PointValueQualityTagHolder pointValueHolder = asyncDynamicDataSource.getPointValue(litePoint.getPointID());
         PaoPointIdentifier paoPointIdentifier = PaoPointIdentifier.createPaoPointIdentifier(litePoint, pao);
         
-        RichPointData richPointData = new RichPointData(pointValueHolder, paoPointIdentifier);
-        return richPointData;
+        return new RichPointData(pointValueHolder, paoPointIdentifier);
     }
 }

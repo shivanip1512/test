@@ -102,7 +102,7 @@
                 </cti:displayForPageEditModes>
                 
                 <tags:nameValue2 nameKey=".notifyOnAlarmOnly">
-                    <tags:switchButton path="notifyOnAlarmOnly"/>
+                    <tags:switchButton path="notifyOnAlarmOnly" offNameKey=".enabledfalse" onNameKey=".enabledtrue"/>
                 </tags:nameValue2>
                 
                 <tags:nameValue2 excludeColon="true">
