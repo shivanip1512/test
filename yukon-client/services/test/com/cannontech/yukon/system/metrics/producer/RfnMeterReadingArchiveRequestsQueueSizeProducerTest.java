@@ -49,7 +49,7 @@ public class RfnMeterReadingArchiveRequestsQueueSizeProducerTest {
     }
 
     @Test
-    public void testWatch_QueueSizeGraterThanThresholdValue_1() {
+    public void testWatch_QueueSizeGreaterThanThresholdValue_1() {
         RfnMeterReadingArchiveRequestsQueueSizeProducer producer = new RfnMeterReadingArchiveRequestsQueueSizeProducer();
         ConcurrentHashMap<String, YukonMetric> yukonMetricCache = new ConcurrentHashMap<String, YukonMetric>(1);
         YukonMetric metric = new YukonMetric();
@@ -70,7 +70,7 @@ public class RfnMeterReadingArchiveRequestsQueueSizeProducerTest {
     }
 
     @Test
-    public void testWatch_QueueSizeGraterThanThresholdValue_2() {
+    public void testWatch_QueueSizeGreaterThanThresholdValue_2() {
         RfnMeterReadingArchiveRequestsQueueSizeProducer producer = new RfnMeterReadingArchiveRequestsQueueSizeProducer();
         ConcurrentHashMap<String, YukonMetric> yukonMetricCache = new ConcurrentHashMap<String, YukonMetric>(1);
         YukonMetric metric = new YukonMetric();
@@ -91,7 +91,7 @@ public class RfnMeterReadingArchiveRequestsQueueSizeProducerTest {
     }
 
     @Test
-    public void testCheckPreveousValue_1() {
+    public void testCheckPreviousValue_1() {
 
         RfnMeterReadingArchiveRequestsQueueSizeProducer producer = new RfnMeterReadingArchiveRequestsQueueSizeProducer();
         ConcurrentHashMap<String, YukonMetric> yukonMetricCache = new ConcurrentHashMap<String, YukonMetric>(1);
@@ -108,7 +108,7 @@ public class RfnMeterReadingArchiveRequestsQueueSizeProducerTest {
     }
 
     @Test
-    public void testCheckPreveousValue_2() {
+    public void testCheckPreviousValue_2() {
         RfnMeterReadingArchiveRequestsQueueSizeProducer producer = new RfnMeterReadingArchiveRequestsQueueSizeProducer();
         ConcurrentHashMap<String, YukonMetric> yukonMetricCache = new ConcurrentHashMap<String, YukonMetric>(1);
         YukonMetric metric = new YukonMetric();
@@ -131,7 +131,7 @@ public class RfnMeterReadingArchiveRequestsQueueSizeProducerTest {
     }
 
     @Test
-    public void testCheckPreveousValue_3() {
+    public void testCheckPreviousValue_3() {
         RfnMeterReadingArchiveRequestsQueueSizeProducer producer = new RfnMeterReadingArchiveRequestsQueueSizeProducer();
         ConcurrentHashMap<String, YukonMetric> yukonMetricCache = new ConcurrentHashMap<String, YukonMetric>(1);
         YukonMetric metric = new YukonMetric();
@@ -152,7 +152,7 @@ public class RfnMeterReadingArchiveRequestsQueueSizeProducerTest {
     }
 
     @Test
-    public void testCheckPreveousValue_4() {
+    public void testCheckPreviousValue_4() {
         RfnMeterReadingArchiveRequestsQueueSizeProducer producer = new RfnMeterReadingArchiveRequestsQueueSizeProducer();
         ConcurrentHashMap<String, YukonMetric> yukonMetricCache = new ConcurrentHashMap<String, YukonMetric>(1);
         YukonMetric metric = new YukonMetric();
