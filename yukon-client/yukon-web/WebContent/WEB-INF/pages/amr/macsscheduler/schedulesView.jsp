@@ -95,7 +95,7 @@
                                 <c:choose>
                                     <c:when test="${schedule.isUpdating() || schedule.isDisabled()}">
                                         <cm:dropdownOption key="yukon.common.start" icon="icon-bullet-go" disabled="true"/>
-                                        <cm:dropdownOption key="yukon.common.cancel" icon="icon-disable" disabled="true"/>
+                                        <cm:dropdownOption key="yukon.common.cancel" icon="icon-cross" disabled="true"/>
                                     </c:when>
                                     <c:when test="${schedule.isRunning() || schedule.isPending()}">
                                         <cm:dropdownOption key="yukon.common.start" icon="icon-bullet-go" disabled="true"/>
@@ -109,21 +109,21 @@
                                         <div id="startDialog-${id}" class="dn" data-dialog
                                             data-title="<cti:msg2 key=".start.dialogTitle"/>" data-width="500" data-ok-text="<cti:msg2 key="yukon.common.start"/>"
                                             data-url="${startStopUrl}" data-event="yukon:schedule:start"></div>            
-                                        <cm:dropdownOption key="yukon.common.cancel" icon="icon-disable" disabled="true"/>
+                                        <cm:dropdownOption key="yukon.common.cancel" icon="icon-cross" disabled="true"/>
                                     </c:otherwise>
                                 </c:choose>
                                 <c:choose>
                                     <c:when test="${schedule.isUpdating()}">
                                         <cm:dropdownOption key="yukon.common.enable" icon="icon-accept" disabled="true"/>
-                                        <cm:dropdownOption key="yukon.common.disable" icon="icon-delete" disabled="true"/>
+                                        <cm:dropdownOption key="yukon.common.disable" icon="icon-disable" disabled="true"/>
                                     </c:when>
                                     <c:when test="${schedule.isDisabled()}">
                                         <cm:dropdownOption key="yukon.common.enable" icon="icon-accept" classes="js-script-toggle" data-schedule-id="${id}"/>
-                                        <cm:dropdownOption key="yukon.common.disable" icon="icon-delete" disabled="true"/>
+                                        <cm:dropdownOption key="yukon.common.disable" icon="icon-disable" disabled="true"/>
                                     </c:when>
                                     <c:otherwise>
                                         <cm:dropdownOption key="yukon.common.enable" icon="icon-accept" disabled="true"/>
-                                        <cm:dropdownOption key="yukon.common.disable" icon="icon-delete" classes="js-script-toggle" data-schedule-id="${id}"/>
+                                        <cm:dropdownOption key="yukon.common.disable" icon="icon-disable" classes="js-script-toggle" data-schedule-id="${id}"/>
                                     </c:otherwise>
                                 </c:choose>
                             </cm:dropdown>

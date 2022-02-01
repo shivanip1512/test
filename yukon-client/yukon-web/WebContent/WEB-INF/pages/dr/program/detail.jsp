@@ -184,7 +184,7 @@
 				<cti:checkPaoAuthorization permission="CONTROL_COMMAND" pao="${program}" invert="true">
 					<%-- Actions are disabled if the user does not have CONTROL_COMMAND for LM objects --%>
 					<cti:msg2 var="noProgramControl" key=".noControl" />
-					<cm:dropdownOption icon="" disabled="true" key=".actions.start" title="${noProgramControl}" />
+					<cm:dropdownOption icon="icon-control-play-blue" disabled="true" key=".actions.start" title="${noProgramControl}" />
 					<cm:dropdownOption icon="icon-control-stop-blue" disabled="true" key=".actions.stop" title="${noProgramControl}" />
 					<cm:dropdownOption icon="icon-cog-edit" disabled="true" key=".actions.changeGears" title="${noProgramControl}" />
 					<cm:dropdownOption icon="icon-disable" disabled="true" key=".actions.disable" title="${noProgramControl}" />
