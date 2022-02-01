@@ -144,6 +144,7 @@ var yg = {
     	iconHelp: '<cti:getIconSvg iconClass="icon-help"/>',
     	iconError: '<cti:getIconSvg iconClass="icon-error"/>',
     	iconAdd: '<cti:getIconSvg iconClass="icon-add"/>',
+    	iconAccept: '<cti:getIconSvg iconClass="icon-accept"/>',
     	iconStar: '<cti:getIconSvg iconClass="icon-star"/>',
        	iconFavoriteNot: '<cti:getIconSvg iconClass="icon-favorite-not"/>',
        	iconPlusGreen: '<cti:getIconSvg iconClass="icon-plus-green"/>',
