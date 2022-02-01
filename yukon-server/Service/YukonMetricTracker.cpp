@@ -6,9 +6,8 @@
 
 namespace Cti {
 
-YukonMetricTracker::YukonMetricTracker() {}
-
-YukonMetricTracker::YukonMetricTracker(const std::string pointInfo, int64_t value, long long timeStamp) {}
+const std::string YukonMetricTracker::RPH_INSERTS = "RPH_INSERTS";
+const std::string YukonMetricTracker::RPH_QUEUE_SIZE = "RPH_QUEUE_SIZE";
 
 void YukonMetricTracker::sendYukonMetricMessage(const std::string pointInfo, int64_t value, long long timeStamp)
 {
