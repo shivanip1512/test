@@ -73,6 +73,7 @@
                                 <th><i:inline key=".stateActionsTable.prevState" /></th>
                                 <th><i:inline key=".stateActionsTable.nextState" /></th>
                                 <th><i:inline key=".stateActionsTable.action" /></th>
+                                <th><i:inline key=".stateActionsTable.notifyOnAlarmOnly" /></th>
                             </tr>
                         </thead>
                         <tfoot></tfoot>
@@ -83,6 +84,15 @@
                                     <td>${nextStateStrings[status.index]}</td>
                                     <td>
                                         <i:inline key="${row.actionTypeEnum}" />
+                                    </td>
+                                    
+                                    <c:if test="${row.notifyOnAlarmOnly}"><c:set var="notifyClass" value="success"/></c:if>
+                                    <c:if test="${!row.notifyOnAlarmOnly}"><c:set var="notifyClass" value="error"/></c:if>
+                                    <c:set var="notifyOnAlarmOnlyEnabled"><i:inline key=".enabled${row.notifyOnAlarmOnly}"/></c:set>
+                                    <td>
+                                        <span class="${notifyClass}">
+                                            ${notifyOnAlarmOnlyEnabled}
+                                        </span>
                                     </td>
                                 </tr>
                             </c:forEach>

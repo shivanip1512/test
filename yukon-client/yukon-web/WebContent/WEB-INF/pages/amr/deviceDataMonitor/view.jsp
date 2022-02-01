@@ -102,6 +102,11 @@
             <c:if test="${monitor.enabled}"><c:set var="clazz" value="success"/></c:if>
             <c:if test="${!monitor.enabled}"><c:set var="clazz" value="error"/></c:if>
             <tags:nameValue2 nameKey=".status" valueClass="${clazz}">${monitoringEnabled}</tags:nameValue2>
+            
+            <c:if test="${monitor.notifyOnAlarmOnly}"><c:set var="notifyClass" value="success"/></c:if>
+            <c:if test="${!monitor.notifyOnAlarmOnly}"><c:set var="notifyClass" value="error"/></c:if>
+            <tags:nameValue2 nameKey=".notifyOnAlarmOnly" valueClass="${notifyClass}">${notifyOnAlarmOnlyEnabled}</tags:nameValue2>
+            
         </tags:nameValueContainer2>
     </tags:sectionContainer2>
     </cti:msgScope>

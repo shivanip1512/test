@@ -17,6 +17,7 @@
     <entry key="yukon.web.modules.amr.statusPointMonitor.stateActionsTable.prevState">Previous State</entry>
     <entry key="yukon.web.modules.amr.statusPointMonitor.stateActionsTable.nextState">Next State</entry>
     <entry key="yukon.web.modules.amr.statusPointMonitor.stateActionsTable.action">MultiSpeak Event Type</entry>
+    <entry key="yukon.web.modules.amr.statusPointMonitor.stateActionsTable.notifyOnAlarmOnly">Notify On Alarms Only</entry>
     <entry key="yukon.web.modules.amr.statusPointMonitor.stateActionsTable.helpText"><![CDATA[
          The outage event processors define the rules that cause a Multispeak Outage Detection Event to be sent to all MultiSpeak vendors supporting the OA_Server.
          <br><br>
@@ -26,7 +27,11 @@
          <br><br>
          Action: The message to be sent to all multispeak vendors supporting ODEventNotification messages.
          <br><br>
+         Notify On Alarms Only: Alarms are sent quickly from the meter when the status changes, but delivery is not guaranteed. Events fill in missed alarms, are used for non-critical status changes, and have guaranteed delivery, but are only sent on the standard data reporting interval which may contain stale data. This setting is typically used in outage processing to prevent notifications on stale event data.
+         <br><br>
     ]]></entry>
+    <entry key="yukon.web.modules.amr.statusPointMonitor.enabledtrue">Enabled</entry>
+    <entry key="yukon.web.modules.amr.statusPointMonitor.enabledfalse">Disabled</entry>
     <entry key="yukon.web.modules.amr.statusPointMonitor.monitoring">Monitoring</entry>
 
     <!-- StatusPointMonitorsWidget render.jsp -->
