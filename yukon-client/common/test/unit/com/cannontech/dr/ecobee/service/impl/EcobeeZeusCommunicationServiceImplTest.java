@@ -44,4 +44,14 @@ public class EcobeeZeusCommunicationServiceImplTest {
         
     }
 
+    @Test
+    public void test_getNewGroupName() {
+        assertTrue(ReflectionTestUtils.invokeMethod(service, "getNewGroupName", "1234", 1234, 222).equals("1234_1_222"),
+                "Group name must be 1234_1_222");
+        assertTrue(ReflectionTestUtils.invokeMethod(service, "getNewGroupName", "1234_1_222", 1234, 222).equals("1234_2_222"),
+                "Group name must be 1234_1_222");
+        assertTrue(ReflectionTestUtils.invokeMethod(service, "getNewGroupName", "1234_2_222", 1234, 222).equals("1234_3_222"),
+                "Group name must be 1234_1_222");
+    }
+
 }
