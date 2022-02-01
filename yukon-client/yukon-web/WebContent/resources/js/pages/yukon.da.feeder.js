@@ -44,9 +44,9 @@ yukon.da.feeder = (function () {
         //update buttons
         item
         .find('.js-remove-capbank, .js-add-capbank').toggleClass('js-remove-capbank js-add-capbank')
-        .find('.icon').toggleClass('icon-plus-green icon-cross');
+        .find('.icon').toggleClass('icon-plus-green icon-remove');
         item.find('.icon-plus-green').html(yg.iconSvg.iconPlusGreen);
-        item.find('.icon-cross').html(yg.iconSvg.iconCross);
+        item.find('.icon-remove').html(yg.iconSvg.iconRemove);
         
         // Insert or remove item from trip order and close order
         if (remove) {
