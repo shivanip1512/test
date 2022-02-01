@@ -41,7 +41,7 @@ protected:
 
     std::string decodeActiveChannelDescriptors ( const Bytes &response );
     std::string decodeAllChannelDescriptors ( const Bytes &response );
-    std::string decodeChannelDescriptors ( const Bytes &response, unsigned count_fieldLength );
+    std::string decodeChannelDescriptors ( const Bytes &response, const unsigned count_fieldLength );
 };
 
 /**

@@ -467,7 +467,7 @@ std::string RfnChannelConfigurationCommand::decodeAllChannelDescriptors( const B
     return decodeChannelDescriptors( response, 2 );     // tlv type 3 - metric count field size is 2 bytes
 }
 
-std::string RfnChannelConfigurationCommand::decodeChannelDescriptors( const Bytes &response, unsigned count_fieldLength )
+std::string RfnChannelConfigurationCommand::decodeChannelDescriptors( const Bytes &response, const unsigned count_fieldLength )
 {
     validate( Condition( response.size() >= 1, ClientErrors::InvalidData )
             << "Number of bytes for channel descriptors received 0, expected >= 1" );
