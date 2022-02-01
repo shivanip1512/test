@@ -68,7 +68,7 @@
                                             <input type="hidden" name="savedName" value="${attr.name}"/>
                                             <spring:bind path="name">
                                                 <c:set var="errorClass" value="${status.error ? 'error' : ''}"/>
-                                                <form:input path="name" maxlength="60" size="60" cssClass="${errorClass}"/>
+                                                <form:input path="name" maxlength="60" size="50" cssClass="${errorClass}"/>
                                             </spring:bind>
                                             <div class="button-group">
                                                 <cti:msg2 var="cancelText" key=".cancelChanges"/>
