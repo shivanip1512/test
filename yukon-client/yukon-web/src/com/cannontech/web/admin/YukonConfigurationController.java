@@ -237,19 +237,19 @@ public class YukonConfigurationController {
         Set<GlobalSettingType> globalSettingTypes = GlobalSettingType.getSettingsForCategory(command.getCategory());
         Map<GlobalSettingType, Object> values = command.getValues();
 
-        for (GlobalSettingType globalSettingType : globalSettingTypes) {
-        	if (globalSettingType.isNonViewableSensitiveInformation()) {
-        		Object value = values.get(globalSettingType);
-                Pattern pattern = Pattern.compile("^[*]*$");
-                if (value != null) {
-                	Matcher m = pattern.matcher(value.toString());
-	        		if (m.matches()) {
-	        	        GlobalSetting currentSetting = globalSettingDao.getSetting(globalSettingType);
-	        	        values.put(globalSettingType, currentSetting.getValue());
-	        		}
-                }
-        	}
-        }
+		for (GlobalSettingType globalSettingType : globalSettingTypes) {
+			if (globalSettingType.isNonViewableSensitiveInformation()) {
+				Object value = values.get(globalSettingType);
+				Pattern pattern = Pattern.compile("^[*]*$");
+				if (value != null) {
+					Matcher m = pattern.matcher(value.toString());
+					if (m.matches()) {
+						GlobalSetting currentSetting = globalSettingDao.getSetting(globalSettingType);
+						values.put(globalSettingType, currentSetting.getValue());
+					}
+				}
+			}
+		}
         
         globalSettingValidator.doValidation(command, result);
         GlobalSettingSubCategory category = command.getCategory();
