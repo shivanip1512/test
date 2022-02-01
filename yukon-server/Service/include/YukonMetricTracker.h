@@ -1,15 +1,14 @@
 #pragma once
-#include <boost/container/string.hpp>
+#include <string>
 
 namespace Cti {
 
 class YukonMetricTracker
 {
 public:
-	YukonMetricTracker();
-	YukonMetricTracker(const std::string pointInfo, int64_t value, long long timeStamp);
+	YukonMetricTracker(){}
 
-	void sendYukonMetricMessage(const std::string pointInfo, int64_t value, long long timeStamp);
+	void sendYukonMetricMessage(const std::string pointInfo, int64_t value, std::string timeStamp);
 	static const std::string RPH_INSERTS;
 	static const std::string RPH_QUEUE_SIZE;
 

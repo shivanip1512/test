@@ -22,9 +22,9 @@ public enum YukonMetricPointDataType {
     RFN_METER_READING_ARCHIVE_REQUESTS_QUEUE_SIZE(YukonMetricPointInfo.RFN_METER_READING_ARCHIVE_REQUESTS_QUEUE_SIZE, 1037,
             PointType.Analog, "RFN Meter Reading Archive Requests Queue Size"),
     RFN_LCR_READING_POINT_DATA_GENERATED_COUNT(YukonMetricPointInfo.RFN_LCR_READING_POINT_DATA_GENERATED_COUNT, 1038,
-            PointType.Analog, "RFN LCR Reading Archive Point Data Generated Count");
-
-
+            PointType.Analog, "RFN LCR Reading Archive Point Data Generated Count"),
+    RPH_INSERTS(YukonMetricPointInfo.RPH_INSERTS, 1039,
+            PointType.Analog, "RPH Inserts Generated Count");
 
     private final static ImmutableSet<YukonMetricPointInfo> lookupByYukonMetricPointInfo;
     private final static ImmutableMap<YukonMetricPointInfo, YukonMetricPointDataType> lookupByPointInfo;

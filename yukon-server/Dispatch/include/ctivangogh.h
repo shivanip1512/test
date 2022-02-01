@@ -32,6 +32,7 @@
 #include "rtdb.h"
 #include "connection_client.h"
 #include "rph_archiver.h"
+#include "DispatchMetricTracker.h"
 
 class CtiPointRegistrationMsg;
 class CtiPointBase;
@@ -84,6 +85,7 @@ private:
 
     CtiSignalManager           _signalManager;
     CtiTagManager              _tagManager;
+    Cti::DispatchMetricTracker _tracker;
 
     CtiClientConnection*       _notificationConnection;
     bool ShutdownOnThreadTimeout;

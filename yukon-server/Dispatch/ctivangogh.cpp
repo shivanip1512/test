@@ -40,6 +40,7 @@
 #include "ctidate.h"
 #include "MessageCounter.h"
 #include "ServiceMetricReporter.h"
+#include "DispatchMetricTracker.h"
 
 #include <boost/tuple/tuple_comparison.hpp>
 #include <boost/ptr_container/ptr_deque.hpp>
@@ -289,7 +290,7 @@ void CtiVanGogh::VGMainThread()
         _pendingOpThread.setSignalManager( &_signalManager );
         _pendingOpThread.start();
 
-        _rphArchiver.start();
+        _rphArchiver.start(&_tracker);
 
         _archiveThread    = boost::thread(&CtiVanGogh::VGArchiverThread,       this);
         _timedOpThread    = boost::thread(&CtiVanGogh::VGTimedOperationThread, this);

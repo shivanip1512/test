@@ -16,6 +16,7 @@
 
 #include "coroutine_util.h"
 #include "std_helper.h"
+#include "DispatchMetricTracker.h"
 
 #include <boost/range/adaptor/indirected.hpp>
 #include <boost/range/adaptor/filtered.hpp>
@@ -100,6 +101,8 @@ bool RawPointHistoryArchiver::writeArchiveDataToDB(Cti::Database::DatabaseConnec
         {
             const unsigned rowsWritten = trackingIds.size();
             const unsigned rowsRemaining = archiverQueueSize();
+            
+            tracker->submitRows(rowsWritten);
 
             std::string trackingInfo = 
                 boost::accumulate(trackingIds, ""s, [](std::string s1, std::string s2) {
@@ -378,7 +381,7 @@ auto RawPointHistoryArchiver::getArchiveStatus(const CtiTableRawPointHistory& ro
 }
 
 
-void RawPointHistoryArchiver::start()
+void RawPointHistoryArchiver::start(DispatchMetricTracker* tracker)
 {
     _archiverThread.start();
 }
