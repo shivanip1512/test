@@ -256,12 +256,14 @@ public class MapController {
                 if (type.isWifiDevice() || type.isCellularDevice()) {
                     String commStatus = accessor.getMessage(mapNetworkKey + "commStatus.RF");
                     LitePoint commStatusPoint = attributeService.findPointForAttribute(pao, BuiltInAttribute.COMM_STATUS);
-                    PointValueQualityHolder commStatusValue = asyncDynamicDataSource.getPointValue(commStatusPoint.getPointID());
-                    if ((int)commStatusValue.getValue() == CommStatusState.CONNECTED.getRawState()) {
-                        if (type.isWifiDevice()) {
-                            commStatus = accessor.getMessage(mapNetworkKey + "commStatus.WiFi");
-                        } else {
-                            commStatus = accessor.getMessage(mapNetworkKey + "commStatus.Cellular");
+                    if (commStatusPoint != null) {
+                        PointValueQualityHolder commStatusValue = asyncDynamicDataSource.getPointValue(commStatusPoint.getPointID());
+                        if ((int)commStatusValue.getValue() == CommStatusState.CONNECTED.getRawState()) {
+                            if (type.isWifiDevice()) {
+                                commStatus = accessor.getMessage(mapNetworkKey + "commStatus.WiFi");
+                            } else {
+                                commStatus = accessor.getMessage(mapNetworkKey + "commStatus.Cellular");
+                            }
                         }
                     }
                     model.addAttribute("commStatus", commStatus);

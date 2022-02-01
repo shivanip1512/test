@@ -187,19 +187,22 @@ INSERT INTO UnitMeasure VALUES ( 60,'CCF', 0, 'Centum Cubic Feet', '(none)');
 INSERT INTO DBUpdates VALUES ('YUK-25562', '9.2.0', SYSDATE);
 /* @end YUK-25562 */
 
-/* @start YUK-25742 */
-DELETE FROM POINTANALOG WHERE POINTID = (SELECT POINTID FROM POINT where POINTNAME = 'RFN Meter Reading Archive Requests Pushed');
+/* @start YUK-25792 */
+DROP INDEX INDX_EventType;
 
-DELETE FROM POINTUNIT WHERE POINTID = (SELECT POINTID FROM POINT where POINTNAME = 'RFN Meter Reading Archive Requests Pushed');
+CREATE INDEX INDX_EventLog_EvntTime_EvntLogId_EvntType ON EventLog (
+   EventTime DESC,
+   EventLogId DESC,
+   EventType ASC
+);
 
-DELETE FROM POINTALARMING WHERE POINTID = (SELECT POINTID FROM POINT where POINTNAME = 'RFN Meter Reading Archive Requests Pushed');
+CREATE INDEX INDX_EventLog_EvntTime_EvntLogID ON EventLog (
+   EventTime DESC,
+   EventLogId DESC
+);
 
-DELETE FROM POINT WHERE POINTNAME = 'RFN Meter Reading Archive Requests Pushed';
-
-UPDATE POINT SET POINTNAME = 'RFN Meter Reading Archive Point Data Generated Count' WHERE POINTNAME = 'Rfn Meter Reading Archive Requests Pt Data Generated Count';
-
-INSERT INTO DBUpdates VALUES ('YUK-25742', '9.2.0', SYSDATE);
-/* @end YUK-25742 */
+INSERT INTO DBUpdates VALUES ('YUK-25792', '9.2.0', SYSDATE);
+/* @end YUK-25792 */
 
 /***********************************************************************************/
 /* VERSION INFO                                                                    */

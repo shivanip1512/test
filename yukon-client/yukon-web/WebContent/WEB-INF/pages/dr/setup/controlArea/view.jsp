@@ -162,7 +162,7 @@
                         <c:set var="controlWindowClass" value="${controlWindowEnabled ? '' : 'dn'}"/>
                         <tags:nameValue2 nameKey=".startTime" data-toggle-group="controlWindow" rowClass="${controlWindowClass}">
                             <input type="hidden" id="dailyStartTimeInMinutes" name="dailyStartTimeInMinutes" value="${controlArea.dailyStartTimeInMinutes}"/>
-                            <dt:time name="dailyStartTime" id="dailyStartTime" value="${dailyStartTime}" cssClass="${startTimeError ? 'error' : ''}"/>
+                            <dt:time name="dailyStartTime" id="dailyStartTime" value="${dailyStartTime}" wrapClass="${startTimeError ? 'date-time-error' : ''}" />
                             <c:if test="${not empty startTimeError}">
                                 <div class="error">
                                     <cti:msg2 var="invalidStartTime" key="yukon.web.modules.dr.setup.controlArea.error.invalid.startTime"/>
@@ -172,7 +172,7 @@
                         </tags:nameValue2>
                         <tags:nameValue2 nameKey=".stopTime" data-toggle-group="controlWindow" rowClass="${controlWindowClass}">
                             <input type="hidden" id="dailyStopTimeInMinutes" name="dailyStopTimeInMinutes" value="${controlArea.dailyStopTimeInMinutes}"/>
-                            <dt:time name="dailyStopTime" id="dailyStopTime" value="${dailyStopTime}" cssClass="${stopTimeError ? 'error' : ''}"/>
+                            <dt:time name="dailyStopTime" id="dailyStopTime" value="${dailyStopTime}" wrapClass="${stopTimeError ? 'date-time-error' : ''}" />
                             <c:if test="${not empty stopTimeError}">
                                 <div class="error">
                                     <cti:msg2 var="invalidStopTime" key="yukon.web.modules.dr.setup.controlArea.error.invalid.StopTime"/>

@@ -43,6 +43,68 @@
    </target>
 
    <!-- Run unit tests - will stop running if a failure or error occurs during a test -->
-   <target name="runUnitTests" description="Run all unit tests, stop on failure" />
+    <target name="runUnitTests" description="Run all unit tests, stop on failure" depends="compileUnitTests">
+            <antcall target="executeTests">
+                <param name="halt" value="yes"/>
+                <param name="srcdir" value="test/unit"/>
+                <param name="destdir" value="test/build/unit" />
+            </antcall>
+    </target>
+
+    <!-- Compile unit tests - will compile all unit tests -->
+        <target name="compileUnitTests">
+            <antcall target="compileTests">
+                <param name="srcdir" value="test/unit"/>
+                <param name="destdir" value="test/build/unit" />
+            </antcall>
+    </target>
+    <target name="compileTests">
+        <delete dir="${destdir}" />
+        <mkdir dir="${destdir}" />
+        <javac srcdir="${srcdir}"
+               destdir="${destdir}"
+               target="${yukon.javac.target}"
+               source="${yukon.javac.source}"
+               debug="${yukon.javac.debug}">
+            <compilerarg compiler="org.eclipse.jdt.core.JDTCompilerAdapter" line="-11 -nowarn"/>
+            <classpath>
+                <fileset dir="${yukon.lib}">
+                    <include name="**/*.jar" />
+                </fileset>
+            </classpath>
+        </javac>
+    </target>
+
+    <!-- Run tests. This target must be supplied a halt and destdir property -->
+    <target name="executeTests">
+        <property name="test.results.dir" value="test/testResults"/>
+        <!-- Clear out any old results -->
+        <delete dir="${test.results.dir}" />
+        <mkdir dir="${test.results.dir}" />
+
+        <!-- Run all tests (currently looks for all classes whose name ends with 'Test') -->
+        <jacoco:agent property="jacocoagent" destfile="${yukon.lib}/coverage/common-jacoco.exec" xmlns:jacoco="antlib:org.jacoco.ant" exclclassloader="sun.reflect.DelegatingClassLoader:javassist.Loader" />
+        <java classname="org.junit.platform.console.ConsoleLauncher" fork="true" failonerror="${halt}">
+            <classpath id="junit.class.path">
+                <pathelement location="${srcdir}" />
+                <pathelement location="${destdir}" />
+                <fileset dir="${yukon.lib}">
+                    <include name="**/*.jar" />
+                    <exclude name="**/WebContent/**" />
+                </fileset>
+            </classpath>
+            <arg value="--scan-classpath"/>
+            <arg line="--reports-dir ${test.results.dir}"/>
+            <jvmarg value="${jacocoagent}"/>
+        </java>
+        <!-- Create the html reports for test results -->
+        <property name="test.results.dir" value="test/unitTestResults" />
+        <junitreport todir="${test.results.dir}">
+            <fileset dir="${test.results.dir}">
+                <include name="TEST-*.xml" />
+            </fileset>
+            <report todir="${test.results.dir}" />
+        </junitreport>
+    </target>
 
 </project>

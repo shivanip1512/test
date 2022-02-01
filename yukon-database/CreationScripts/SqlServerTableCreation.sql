@@ -1,7 +1,7 @@
 /*==============================================================*/
 /* Database name:  YukonDatabase                                */
 /* DBMS name:      Microsoft SQL Server 2005                    */
-/* Created on:     1/5/2022 8:03:49 PM                          */
+/* Created on:     1/20/2022 6:15:24 PM                         */
 /*==============================================================*/
 
 
@@ -5869,10 +5869,21 @@ create table EventLog (
 go
 
 /*==============================================================*/
-/* Index: INDX_EventType                                        */
+/* Index: INDX_EventLog_EvntTime_EvntLogId_EvntType             */
 /*==============================================================*/
-create index INDX_EventType on EventLog (
+create index INDX_EventLog_EvntTime_EvntLogId_EvntType on EventLog (
+EventTime DESC,
+EventLogId DESC,
 EventType ASC
+)
+go
+
+/*==============================================================*/
+/* Index: INDX_EventLog_EvntTime_EvntLogID                      */
+/*==============================================================*/
+create index INDX_EventLog_EvntTime_EvntLogID on EventLog (
+EventTime DESC,
+EventLogId DESC
 )
 go
 
