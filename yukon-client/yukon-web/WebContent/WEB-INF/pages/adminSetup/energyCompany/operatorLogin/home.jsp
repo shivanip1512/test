@@ -40,6 +40,8 @@
                     icon.removeClass("icon-disable");
                     icon.removeClass("icon-spinner");
                     icon.addClass(jsonResponse.icon);
+                    $('.icon-accept').html(yg.iconSvg.iconAccept);
+                    $('.icon-disable').html(yg.iconSvg.iconDisable);
                     icon.attr("title",jsonResponse.loginStatus);
                 }).fail(function(jqXHR, textStatus, errorThrown) {
                     icon.removeClass("icon-spinner");

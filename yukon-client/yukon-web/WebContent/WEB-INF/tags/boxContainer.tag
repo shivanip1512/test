@@ -76,7 +76,7 @@
                 <cti:button renderMode="image" icon="icon-bullet-go-down" classes="widget-controls js-move-down"/>
                 <cti:button renderMode="image" icon="icon-bullet-go-left" classes="widget-controls js-move-left"/>
                 <cti:button renderMode="image" icon="icon-bullet-go" classes="widget-controls js-move-right"/>
-                <cti:button renderMode="image" icon="icon-remove" classes="widget-controls js-remove"/>
+                <cti:button renderMode="image" icon="icon-delete" classes="widget-controls js-remove"/>
             </c:if>
         </div>
     </div>

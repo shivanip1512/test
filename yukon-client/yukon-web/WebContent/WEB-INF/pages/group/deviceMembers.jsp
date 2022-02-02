@@ -44,10 +44,10 @@
             									<input type="hidden" name="deviceId" value="${device.paoIdentifier.paoId}" />
             									<input type="hidden" name="groupName" value="${fn:escapeXml(group.fullName)}" />
             									<input type="hidden" name="showDevices" value="true" />
-            									<cti:button nameKey="add" type="submit" renderMode="image" icon="icon-cross"/>
+            									<cti:button nameKey="add" type="submit" renderMode="image" icon="icon-remove"/>
             								</form>
             							</c:when>
-            							<c:otherwise><cti:icon icon="icon-cross" classes="disabled"/></c:otherwise>
+            							<c:otherwise><cti:icon icon="icon-remove" classes="disabled"/></c:otherwise>
             						</c:choose>
             					</td>
                             </c:if>
@@ -62,7 +62,7 @@
             <div class="action-area stacked">
                 <button id="removeAllDevicesButton" data-ok-event="yukon:devicegroup:removealldevices" value="${removeAllDevicesFromGroupLabel}" 
                         title="${removeAllDevicesFromGroupDescription}">
-                    <cti:icon icon="icon-cross"/><span class="b-label">${removeAllDevicesFromGroupLabel}</span>
+                    <cti:icon icon="icon-remove"/><span class="b-label">${removeAllDevicesFromGroupLabel}</span>
                 </button>
                 <d:confirm on="#removeAllDevicesButton" nameKey="membersContainer.confirmRemove"/>
                 <img id="removeAllDevicesWaitImg" src="<cti:url value="/WebConfig/yukon/Icons/spinner.gif"/>" style="display:none;">
