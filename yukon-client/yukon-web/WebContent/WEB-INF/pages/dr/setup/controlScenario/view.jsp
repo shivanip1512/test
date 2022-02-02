@@ -79,7 +79,7 @@
         
         <cti:displayForPageEditModes modes="VIEW">
             <tags:sectionContainer2 nameKey="assignedPrograms" styleClass="select-box">
-                <div class="js-table-container scroll-sm">
+                <div class="js-table-container scroll-lg">
                     <table id="js-assigned-programs-table" class="compact-results-table dashed">
                         <thead>
                             <tr>
