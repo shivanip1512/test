@@ -148,6 +148,7 @@ var yg = {
     	iconStar: '<cti:getIconSvg iconClass="icon-star"/>',
        	iconFavoriteNot: '<cti:getIconSvg iconClass="icon-favorite-not"/>',
        	iconPlusGreen: '<cti:getIconSvg iconClass="icon-plus-green"/>',
+       	iconDisable: '<cti:getIconSvg iconClass="icon-disable"/>',
        	iconCross: '<cti:getIconSvg iconClass="icon-cross"/>',
        	iconRemove: '<cti:getIconSvg iconClass="icon-remove"/>',
        	iconDelete: '<cti:getIconSvg iconClass="icon-delete"/>',

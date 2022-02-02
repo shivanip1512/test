@@ -37,11 +37,11 @@
                     datatype: "json"
                 }).done(function (jsonResponse, textStatus, jqXHR) {
                     icon.removeClass("icon-accept");
-                    icon.removeClass("icon-delete");
+                    icon.removeClass("icon-disable");
                     icon.removeClass("icon-spinner");
                     icon.addClass(jsonResponse.icon);
                     $('.icon-accept').html(yg.iconSvg.iconAccept);
-                    $('.icon-delete').html(yg.iconSvg.iconDelete);
+                    $('.icon-disable').html(yg.iconSvg.iconDisable);
                     icon.attr("title",jsonResponse.loginStatus);
                 }).fail(function(jqXHR, textStatus, errorThrown) {
                     icon.removeClass("icon-spinner");
