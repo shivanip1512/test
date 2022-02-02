@@ -234,29 +234,81 @@ public class EcobeeZeusCommunicationServiceImpl implements EcobeeZeusCommunicati
             ZeusGroup group = new ZeusGroup(newName, getZeusProgramId());
             ZeusThermostatGroup zeusThermostatGroup = new ZeusThermostatGroup(group, criteriaSelector);
 
-            ResponseEntity<Map> responseEntity = (ResponseEntity<Map>) requestHelper.callEcobeeAPIForObject(
-                    createThermostatGroupURL, HttpMethod.POST, Map.class, zeusThermostatGroup);
+            ResponseEntity<Map> responseEntity = createGroupWithNewName(zeusThermostatGroup, createThermostatGroupURL);
 
             if (responseEntity.getStatusCode() == HttpStatus.CREATED) {
-                Map<String, String> responseFields = (Map<String, String>) responseEntity.getBody().get("group");
-                zeusGroupId = responseFields.get("id");
-                String groupName = responseFields.get("name");
-                String yukonGroupName = cache.getAllPaosMap().get(lmGroupId).getPaoName();
-                ecobeeZeusGroupService.mapGroupIdToZeusGroup(lmGroupId, zeusGroupId, groupName, programId);
-                log.info("Zeus group with ID: {} and Name: {} created successfully on Ecobee and Mapped to Yukon LM group {}.",
-                        zeusGroupId, groupName, yukonGroupName);
+                zeusGroupId = processCreatedResponse(responseEntity, lmGroupId, programId);
             } else if (responseEntity.getStatusCode() == HttpStatus.PARTIAL_CONTENT) {
-                Map<String, Object> response = (Map<String, Object>) responseEntity.getBody();
-                List<String> failedThermostatIds = (List<String>) response.get("failed_thermostat_ids");
-                failedThermostatIds.stream()
-                        .forEach(thermostatId -> log.error("Unable to create the thermostat group with thermostat id {}",
-                                thermostatId));
-                throw new EnrollmentException("Enrolment not completed successfully for all the thermostats.");
+                processPartialContentResponse(responseEntity);
+            } else if (responseEntity.getStatusCode() == HttpStatus.CONFLICT) {
+                // For HttpStatus.CONFLICT, try creating the group with new name until group creation is successful
+                while (true) {
+                    newName = getNewGroupName(newName, lmGroupId, programId);
+                    zeusThermostatGroup.getGroup().setName(newName);
+                    responseEntity = createGroupWithNewName(zeusThermostatGroup, createThermostatGroupURL);
+                    if (responseEntity.getStatusCode() == HttpStatus.CONFLICT) {
+                        continue;
+                    } else if (responseEntity.getStatusCode() == HttpStatus.CREATED) {
+                        zeusGroupId = processCreatedResponse(responseEntity, lmGroupId, programId);
+                        break;
+                    } else if (responseEntity.getStatusCode() == HttpStatus.PARTIAL_CONTENT) {
+                        processPartialContentResponse(responseEntity);
+                    }
+                }
             }
         } catch (RestClientException | EcobeeAuthenticationException e) {
             throw new EcobeeCommunicationException("Error occurred while communicating Ecobee API.", e);
         }
         return zeusGroupId;
+    }
+
+    /**
+     * Process HttpStatus.PARTIAL_CONTENT response for create ecobee group request.
+     */
+    private void processPartialContentResponse(ResponseEntity<Map> responseEntity) {
+        Map<String, Object> response = (Map<String, Object>) responseEntity.getBody();
+        List<String> failedThermostatIds = (List<String>) response.get("failed_thermostat_ids");
+        failedThermostatIds.stream()
+                .forEach(thermostatId -> log.error("Unable to create the thermostat group with thermostat id {}",
+                        thermostatId));
+        throw new EnrollmentException("Enrolment not completed successfully for all the thermostats.");
+    }
+
+    /**
+     * Process HttpStatus.CREATED response for create ecobee group request.
+     */
+    private String processCreatedResponse(ResponseEntity<Map> responseEntity, int lmGroupId, int programId) {
+        Map<String, String> responseFields = (Map<String, String>) responseEntity.getBody().get("group");
+        String zeusGroupId = responseFields.get("id");
+        String groupName = responseFields.get("name");
+        String yukonGroupName = cache.getAllPaosMap().get(lmGroupId).getPaoName();
+        ecobeeZeusGroupService.mapGroupIdToZeusGroup(lmGroupId, zeusGroupId, groupName, programId);
+        log.info("Zeus group with ID: {} and Name: {} created successfully on Ecobee and Mapped to Yukon LM group {}.",
+                zeusGroupId, groupName, yukonGroupName);
+        return zeusGroupId;
+
+    }
+
+    /**
+     * Make API call to ecobee for creating a group.
+     */
+    private ResponseEntity<Map> createGroupWithNewName(ZeusThermostatGroup zeusThermostatGroup, String createThermostatGroupURL)
+            throws RestClientException, EcobeeAuthenticationException {
+        return (ResponseEntity<Map>) requestHelper.callEcobeeAPIForObject(createThermostatGroupURL, HttpMethod.POST, Map.class,
+                zeusThermostatGroup);
+    }
+
+    /**
+     * Return new group name based on current group name.
+     */
+    private String getNewGroupName(String name, int lmGroupId, int programId) {
+        if (StringUtils.contains(name, "_")) {
+            String[] tokens = name.split("_");
+            int newSuffix = Integer.valueOf(tokens[1]) + 1;
+            return tokens[0].concat("_" + Integer.toString(newSuffix) + "_").concat(tokens[2]);
+        } else {
+            return Integer.toString(lmGroupId).concat("_1_").concat(Integer.toString(programId));
+        }
     }
 
     @Override
