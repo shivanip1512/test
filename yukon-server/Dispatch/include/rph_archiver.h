@@ -20,7 +20,7 @@ public:
     RawPointHistoryArchiver(const bool &shutdownOnThreadTimeout, void (*shutdownFunc)(const std::string& who));
     ~RawPointHistoryArchiver();  //  defer destructor definition to allow unique_ptr of incomplete types
 
-    void start();
+    void start(DispatchMetricTracker* tracker);
 
     std::vector<std::unique_ptr<CtiTableRawPointHistory>> _archiverQueue;
     std::mutex _archiverLock;

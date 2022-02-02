@@ -1,12 +1,13 @@
 #pragma once
 #include <string>
+#include "dlldefs.h"
 
 namespace Cti {
 
-class YukonMetricTracker
+class IM_EX_SERVICE YukonMetricTracker
 {
 public:
-	YukonMetricTracker(){}
+	YukonMetricTracker(){};
 
 	void sendYukonMetricMessage(const std::string pointInfo, int64_t value, std::string timeStamp);
 	static const std::string RPH_INSERTS;
