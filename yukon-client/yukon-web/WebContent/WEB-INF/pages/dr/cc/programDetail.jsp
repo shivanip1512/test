@@ -105,7 +105,7 @@
                 <c:forEach var="assignedProgramGroup" items="${assignedProgramGroups}">
                     <tr>
                         <td>
-                            <cti:button renderMode="buttonImage" icon="icon-delete" data-group="${assignedProgramGroup.id}"/>
+                            <cti:button renderMode="buttonImage" icon="icon-remove" data-group="${assignedProgramGroup.id}"/>
                             <input type="hidden" name="assignedGroup" value="${assignedProgramGroup.id}">
                             ${fn:escapeXml(assignedProgramGroup.name)}
                         </td>
@@ -143,7 +143,7 @@
                 <c:forEach var="assignedNotifGroupEntry" items="${assignedNotificationGroups}">
                     <tr>
                         <td>
-                            <cti:button renderMode="buttonImage" icon="icon-delete" data-notif-group="${assignedNotifGroupEntry.notificationGroupID}"/>
+                            <cti:button renderMode="buttonImage" icon="icon-remoev" data-notif-group="${assignedNotifGroupEntry.notificationGroupID}"/>
                             <input type="hidden" name="assignedNotifGroup" value="${assignedNotifGroupEntry.notificationGroupID}">
                             ${fn:escapeXml(assignedNotifGroupEntry.notificationGroupName)}
                         </td>
