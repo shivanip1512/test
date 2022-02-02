@@ -49,6 +49,7 @@ public class RfnOutagesWidget extends AdvancedWidgetControllerBase {
     private final static ImmutableSet<Attribute> attributes;
     static {
         Builder<Attribute> b = ImmutableSet.builder();
+        b.add(BuiltInAttribute.RFN_BLINK_RESTORE_COUNT);
         b.add(BuiltInAttribute.RFN_BLINK_COUNT);
         b.add(BuiltInAttribute.RFN_OUTAGE_COUNT);
         b.add(BuiltInAttribute.BLINK_COUNT);
