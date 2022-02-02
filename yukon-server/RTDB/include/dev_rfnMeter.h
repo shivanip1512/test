@@ -84,11 +84,14 @@ protected:
     virtual YukonError_t executePutConfigMetrology(CtiRequestMsg *pReq, CtiCommandParser &parse, ReturnMsgList &returnMsgs, RfnIndividualCommandList &rfnRequests);
     virtual YukonError_t executeGetConfigMetrology(CtiRequestMsg *pReq, CtiCommandParser &parse, ReturnMsgList &returnMsgs, RfnIndividualCommandList &rfnRequests);
 
+    YukonError_t executeGetConfigAvailableChannels(CtiRequestMsg *pReq, CtiCommandParser &parse, ReturnMsgList &returnMsgs, RfnIndividualCommandList &rfnRequests);
+
     void handleCommandResult( const Commands::RfnConfigNotificationCommand & cmd ) override;
     void handleCommandResult( const Commands::RfnTemperatureAlarmCommand   & cmd ) override;
     void handleCommandResult( const Commands::RfnSetChannelSelectionCommand   & cmd ) override;
     void handleCommandResult( const Commands::RfnGetChannelSelectionCommand   & cmd ) override;
     void handleCommandResult( const Commands::RfnGetChannelSelectionFullDescriptionCommand   & cmd ) override;
+    void handleCommandResult( const Commands::RfnGetChannelSelectionAllAvailableCommand   & cmd ) override;
     void handleCommandResult( const Commands::RfnChannelIntervalRecording::GetConfigurationCommand       & cmd ) override;
     void handleCommandResult( const Commands::RfnChannelIntervalRecording::GetActiveConfigurationCommand & cmd ) override;
     void handleCommandResult( const Commands::RfnChannelIntervalRecording::SetConfigurationCommand       & cmd ) override;
