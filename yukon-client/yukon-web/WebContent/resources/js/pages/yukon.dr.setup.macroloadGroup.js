@@ -27,8 +27,6 @@ yukon.dr.setup.macroloadGroup = (function() {
                         ui.item.closest('.js-with-movables').trigger('yukon:ordered-selection:added-removed');
                     }
                 });
-            } else {
-                $("#js-assigned-load-groups-table").scrollTableBody({rowsToDisplay: 20});
             }
             
             $(document).on('click', '#js-save', function (event) {

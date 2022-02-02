@@ -56,7 +56,6 @@ yukon.adminSetup.attributes = (function () {
             
             if (_initialized) return;
             
-            $('.js-attributes-table').scrollTableBody();
             $('.js-selected-attributes').chosen({'width': '350px'});
             $('.js-selected-device-types').chosen({'width': '350px'});
             

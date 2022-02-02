@@ -40,9 +40,8 @@
                 </div>
             </form:form>
             
-            <div style="width:60%;" class="PT10">
-                <c:set var="tableClass" value="${attributes.size() > 10 ? 'js-attributes-table' : ''}"/>
-                <table class="compact-results-table no-stripes has-actions ${tableClass}">
+            <div style="width:60%;" class="MT10 js-table-container scroll-sm">
+                <table class="compact-results-table no-stripes has-actions">
                     <thead>
                         <tr>
                             <th><i:inline key=".attributeName"></i:inline></th>
