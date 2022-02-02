@@ -1,24 +1,29 @@
-#include "precompiled.h"
 #include "YukonMetricTracker.h"
-#include <json.hpp>
+
 #include "amq_connection.h"
 #include "amq_topics.h"
+
+#include <json.hpp>
+
+#include <format>
 
 namespace Cti {
 
 const std::string YukonMetricTracker::RPH_INSERTS = "RPH_INSERTS";
 const std::string YukonMetricTracker::RPH_QUEUE_SIZE = "RPH_QUEUE_SIZE";
 
-void YukonMetricTracker::sendYukonMetricMessage(const std::string pointInfo, int64_t value, long long timeStamp)
+void YukonMetricTracker::sendYukonMetricMessage(const std::string pointInfo, int64_t value, std::chrono::system_clock::time_point timestamp)
 {
     using json = nlohmann::json;
-    using namespace Cti::Messaging;
+    using Cti::Messaging::ActiveMQConnectionManager;
     using Cti::Messaging::ActiveMQ::Topics::OutboundTopic;
+
+    const auto timestamp8601 = std::format("{:%FT%TZ}", timestamp);
 
     json j = {
         {"pointInfo", pointInfo},
         {"value", value},
-        {"timeStamp", timeStamp}
+        {"timeStamp", timestamp8601}
     };
 
     std::string yukonMetricMessage = j.dump();
