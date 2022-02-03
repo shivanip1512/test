@@ -23,7 +23,7 @@
                     <c:forEach var="program" items="${controlScenario.allPrograms}" varStatus="status">
                         <tr id ="js-assigned-program-${program.programId}" data-id="${program.programId}">
                             <tags:hidden path="allPrograms[${status.count-1}].programId"/>
-                            <td><cti:button icon="icon-cross" renderMode="buttonImage" classes="js-remove"/></td>
+                            <td><cti:button icon="icon-remove" renderMode="buttonImage" classes="js-remove"/></td>
                             <td class="wbba vam">
                                 <cti:deviceName deviceId="${program.programId}"/>
                             </td>

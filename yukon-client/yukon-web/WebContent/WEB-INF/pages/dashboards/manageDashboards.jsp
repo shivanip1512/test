@@ -59,13 +59,13 @@
                                             <c:when test="${user.userID == dashboard.owner.userID && dashboard.visibility != 'SYSTEM'}">
                                                 <cti:url var="editUrl" value="/dashboards/${dashboardId}/edit"/>
                                                 <cm:dropdownOption key=".edit" icon="icon-pencil" href="${editUrl}" />
-                                                <cm:dropdownOption id="deleteDashboard_${dashboardId}" key=".delete" icon="icon-cross"
+                                                <cm:dropdownOption id="deleteDashboard_${dashboardId}" key=".delete" icon="icon-delete"
                                                     data-dashboard-id="${dashboardId}" data-ok-event="yukon:dashboard:remove" />
                                                 <d:confirm on="#deleteDashboard_${dashboardId}" nameKey="confirmDelete" argument="${dashboard.name}"/>
                                             </c:when>
                                             <c:otherwise>
                                                 <cm:dropdownOption key=".edit" icon="icon-pencil" disabled="true" />
-                                                <cm:dropdownOption key=".delete" icon="icon-cross" disabled="true" />
+                                                <cm:dropdownOption key=".delete" icon="icon-delete" disabled="true" />
                                             </c:otherwise>
                                         </c:choose>
                                     </cm:dropdown>

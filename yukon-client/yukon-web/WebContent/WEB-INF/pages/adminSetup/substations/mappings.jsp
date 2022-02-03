@@ -97,7 +97,7 @@
                                          data-id="${item.id}">${fn:escapeXml(item.name)}
                                         <input type="hidden" value="${route.id}" class="route-id">
                                     
-                                        <cti:button icon="icon-cross" renderMode="buttonImage" 
+                                        <cti:button icon="icon-remove" renderMode="buttonImage" 
                                                     classes="select-box-item-remove js-remove-route"/>
                                         <div class="select-box-item-movers">
                                             <c:set var="disabled" value="${status.first}"/>

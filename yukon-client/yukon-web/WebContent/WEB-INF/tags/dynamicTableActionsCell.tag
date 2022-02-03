@@ -15,7 +15,7 @@
 </c:if>
 
 <td class="actions">
-    <cti:button renderMode="buttonImage" nameKey="remove" classes="js-remove-btn fr" icon="icon-cross"/>
+    <cti:button renderMode="buttonImage" nameKey="remove" classes="js-remove-btn fr" icon="icon-remove"/>
     <c:if test="${!skipMoveButtons}">
         <cti:button renderMode="buttonImage" nameKey="up.disabled" disabled="true" classes="disabledMoveUpBtn right fr" icon="icon-bullet-go-up"/>
         <cti:button renderMode="buttonImage" nameKey="up" classes="moveUpBtn right fr" icon="icon-bullet-go-up"/> 

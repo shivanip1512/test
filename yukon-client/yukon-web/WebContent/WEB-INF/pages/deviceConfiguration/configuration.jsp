@@ -116,8 +116,8 @@
                                                     <cti:param name="paoType" value="${type.key}"/>
                                                 </cti:url>
                                                 
-                                                <cti:button nameKey="remove" icon="icon-cross" renderMode="image" 
-                                                    id="remove-${type.key}" classes="remove-item fr vh" 
+                                                <cti:button nameKey="remove" icon="icon-remove" renderMode="image" 
+                                                    id="remove-${type.key}" classes="remove-item fr vh MR0" 
                                                     href="${removeUrl}"/>
                                                 
                                             </c:if>

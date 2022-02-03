@@ -33,7 +33,7 @@
                 <li class="divider"></li>
 
                 <!-- Delete -->
-                <cm:dropdownOption icon="icon-cross" key="yukon.web.components.button.delete.label" classes="js-hide-dropdown" id="js-delete-option"
+                <cm:dropdownOption icon="icon-delete" key="yukon.web.components.button.delete.label" classes="js-hide-dropdown" id="js-delete-option"
                     data-ok-event="yukon:load-program:delete" />
                 <cti:msg2 var="userWarningMessage" key="yukon.web.modules.dr.setup.loadProgram.delete.warning"/>
                 <d:confirm on="#js-delete-option" nameKey="confirmDelete" argument="${loadProgram.name}" userMessage="${userWarningMessage}" userMessageClass="warning"/>
@@ -136,7 +136,7 @@
                                         <div id="${item.id}" class="select-box-item cm js-assigned-gear wrbw" data-id="${item.id}">
                                             <cti:url var="viewUrl" value="/dr/setup/loadProgram/gear/${item.id}?mode=${mode}"/> 
                                             <a href="${viewUrl}" class="js-gear-details-link">${fn:escapeXml(item.name)}</a>
-                                            <cti:button icon="icon-cross" renderMode="buttonImage" classes="select-box-item-remove js-gear-remove"
+                                            <cti:button icon="icon-remove" renderMode="buttonImage" classes="select-box-item-remove js-gear-remove"
                                                         id="js-remove-gear-${item.id}" data-ok-event="yukon:dr:setup:program:gearRemoved"
                                                         data-id="${item.id}"/>
                                             <d:confirm on="#js-remove-gear-${item.id}" nameKey="confirmRemove" argument="${item.name}"/>
@@ -151,7 +151,7 @@
                                 </div>
                                 <div class="select-box-item cm js-assigned-gear js-template-gears-row dn" data-id="0">
                                     <span class="js-gear-name wrbw"></span>
-                                    <cti:button icon="icon-cross" renderMode="buttonImage" classes="select-box-item-remove js-gear-remove"
+                                    <cti:button icon="icon-remove" renderMode="buttonImage" classes="select-box-item-remove js-gear-remove"
                                                 data-ok-event="yukon:dr:setup:program:gearRemoved"/>
                                     <div class="select-box-item-movers">
                                         <cti:button icon="icon-bullet-go-up" renderMode="buttonImage" classes="left select-box-item-up js-move-up" />
@@ -297,7 +297,7 @@
                                             <div class="select-box-item cm js-assigned-groups wrbw" data-id="${item.groupId}">
                                                 <cti:deviceName deviceId="${item.groupId}" />
 
-                                                <cti:button icon="icon-cross" renderMode="buttonImage" classes="select-box-item-remove js-group-remove" />
+                                                <cti:button icon="icon-remove" renderMode="buttonImage" classes="select-box-item-remove js-group-remove" />
                                                 <div class="select-box-item-movers">
                                                     <c:set var="disabled" value="${status.first}" />
                                                     <cti:button icon="icon-bullet-go-up" renderMode="buttonImage" classes="left select-box-item-up js-move-up"
@@ -311,7 +311,7 @@
                                     </div>
                                     <div class="select-box-item cm js-assigned-groups js-template-group-row dn wrbw" data-id="0">
                                         <span class="js-group-name"></span>
-                                        <cti:button icon="icon-cross" renderMode="buttonImage" classes="select-box-item-remove js-group-remove" />
+                                        <cti:button icon="icon-remove" renderMode="buttonImage" classes="select-box-item-remove js-group-remove" />
                                         <div class="select-box-item-movers">
                                             <cti:button icon="icon-bullet-go-up" renderMode="buttonImage" classes="left select-box-item-up js-move-up" />
                                             <cti:button icon="icon-bullet-go-down" renderMode="buttonImage" classes="right select-box-item-down js-move-down" disabled="${true}" />
@@ -386,7 +386,7 @@
                                                 <c:forEach var="item" items="${loadProgram.memberControl}" varStatus="status">
                                                     <div class="select-box-item cm js-assigned-members wrbw" data-id="${item.subordinateProgId}">
                                                         <cti:deviceName deviceId="${item.subordinateProgId}" />
-                                                        <cti:button icon="icon-cross" renderMode="buttonImage" classes="select-box-item-remove js-member-remove" />
+                                                        <cti:button icon="icon-remove" renderMode="buttonImage" classes="select-box-item-remove js-member-remove" />
                                                         <div class="select-box-item-movers">
                                                             <c:set var="disabled" value="${status.first}" />
                                                             <cti:button icon="icon-bullet-go-up" renderMode="buttonImage" classes="left select-box-item-up js-move-up"
@@ -400,7 +400,7 @@
                                             </div>
                                             <div class="select-box-item cm js-assigned-members js-template-member-row dn wrbw" data-id="0">
                                                 <span class="js-member-name"></span>
-                                                <cti:button icon="icon-cross" renderMode="buttonImage" classes="select-box-item-remove js-member-remove" />
+                                                <cti:button icon="icon-remove" renderMode="buttonImage" classes="select-box-item-remove js-member-remove" />
                                                 <div class="select-box-item-movers">
                                                     <cti:button icon="icon-bullet-go-up" renderMode="buttonImage" classes="left select-box-item-up js-move-up" />
                                                     <cti:button icon="icon-bullet-go-down" renderMode="buttonImage" classes="right select-box-item-down js-move-down" disabled="${true}" />
@@ -503,7 +503,7 @@
                                                 <tags:hidden path="notification.assignedNotificationGroups[${status.index}].notificationGrpName" />
                                                 ${fn:escapeXml(item.notificationGrpName)}
 
-                                                <cti:button icon="icon-cross" renderMode="buttonImage" classes="select-box-item-remove js-notification-group-remove" />
+                                                <cti:button icon="icon-remove" renderMode="buttonImage" classes="select-box-item-remove js-notification-group-remove" />
                                                 <div class="select-box-item-movers">
                                                     <c:set var="disabled" value="${status.first}" />
                                                     <cti:button icon="icon-bullet-go-up" renderMode="buttonImage" classes="left select-box-item-up js-move-up"
@@ -517,7 +517,7 @@
                                     </div>
                                     <div class="select-box-item cm js-assigned-notification-groups js-template-notification-row dn" data-id="0">
                                         <span class="js-notification-group-name"></span>
-                                        <cti:button icon="icon-cross" renderMode="buttonImage" classes="select-box-item-remove js-notification-group-remove" />
+                                        <cti:button icon="icon-remove" renderMode="buttonImage" classes="select-box-item-remove js-notification-group-remove" />
                                         <div class="select-box-item-movers">
                                             <cti:button icon="icon-bullet-go-up" renderMode="buttonImage" classes="left select-box-item-up js-move-up" />
                                             <cti:button icon="icon-bullet-go-down" renderMode="buttonImage" classes="right select-box-item-down js-move-down" disabled="${true}" />

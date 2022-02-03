@@ -105,7 +105,7 @@
                                 <cti:param name="analysisId" value="${analysis.analysisId}"/>
                             </cti:url>
                             <cti:button id="delete-result-${analysis.analysisId}" nameKey="remove" renderMode="image" 
-                                    icon="icon-cross" href="${deleteUrl}"/>
+                                    icon="icon-delete" href="${deleteUrl}"/>
                             <d:confirm on="#delete-result-${analysis.analysisId}" nameKey="list.deleteConfirmation" 
                                     argument="${attribName}"/>
                         </div>

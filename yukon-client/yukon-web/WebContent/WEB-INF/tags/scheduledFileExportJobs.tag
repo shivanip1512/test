@@ -104,7 +104,7 @@
                                                     </c:if>
                                                     </c:otherwise>
                                         </c:choose>
-                                        <cm:dropdownOption classes="js-delete-job" id="delete-job-${job.id}" data-job-id="${job.id}" icon="icon-cross" key="components.button.delete.label" data-ok-event="yukon.job.delete"/>
+                                        <cm:dropdownOption classes="js-delete-job" id="delete-job-${job.id}" data-job-id="${job.id}" icon="icon-delete" key="components.button.delete.label" data-ok-event="yukon.job.delete"/>
                                     </cm:dropdown>
                                     <d:confirm on="#delete-job-${job.id}" nameKey="confirmDelete" argument="${job.name}"/>
                                 </td>

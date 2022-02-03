@@ -37,9 +37,11 @@
                     datatype: "json"
                 }).done(function (jsonResponse, textStatus, jqXHR) {
                     icon.removeClass("icon-accept");
-                    icon.removeClass("icon-delete");
+                    icon.removeClass("icon-disable");
                     icon.removeClass("icon-spinner");
                     icon.addClass(jsonResponse.icon);
+                    $('.icon-accept').html(yg.iconSvg.iconAccept);
+                    $('.icon-disable').html(yg.iconSvg.iconDisable);
                     icon.attr("title",jsonResponse.loginStatus);
                 }).fail(function(jqXHR, textStatus, errorThrown) {
                     icon.removeClass("icon-spinner");
@@ -95,7 +97,7 @@
                                         <c:set var="disabled" value="false" />
                                     </c:otherwise>
                                 </c:choose>
-                                <cti:button id="remove_${login.userID}" name="remove" ecId="${ecId}" userId="${login.userID}" renderMode="buttonImage" icon="icon-cross" classes="fr js-remove" disabled="${disabled}" />
+                                <cti:button id="remove_${login.userID}" name="remove" ecId="${ecId}" userId="${login.userID}" renderMode="buttonImage" icon="icon-remove" classes="fr js-remove" disabled="${disabled}" />
                             </td>
                         </tr>
                     </c:forEach>

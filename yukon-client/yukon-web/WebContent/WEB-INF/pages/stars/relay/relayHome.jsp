@@ -31,7 +31,7 @@
         
         <cti:checkRolesAndProperties value="ENDPOINT_PERMISSION" level="OWNER">
             <li class="divider"/>
-            <cm:dropdownOption id="deleteRelay" icon="icon-cross" key="components.button.delete.label" 
+            <cm:dropdownOption id="deleteRelay" icon="icon-delete" key="components.button.delete.label" 
                                data-ok-event="yukon:relay:delete" />
             <d:confirm on="#deleteRelay" nameKey="confirmDelete" argument="${deviceName}" />
             <cti:url var="deleteUrl" value="/stars/relay/${deviceId}"/>
