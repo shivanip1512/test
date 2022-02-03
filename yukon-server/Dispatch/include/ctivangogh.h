@@ -32,7 +32,6 @@
 #include "rtdb.h"
 #include "connection_client.h"
 #include "rph_archiver.h"
-#include "DispatchMetricTracker.h"
 
 class CtiPointRegistrationMsg;
 class CtiPointBase;
