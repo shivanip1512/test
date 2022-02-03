@@ -24,10 +24,8 @@ yukon.dr.setup.list = (function() {
             if (!$("#js-load-program-types").is(":visible")) {
                 $("#js-load-program-types").val("").trigger("chosen:updated");
                 $("#js-operational-states").val("").trigger("chosen:updated");
-                
             }
             if (!$("#js-gear-types").is(":visible")) {
-            
                 $("#js-gear-types").val("").trigger("chosen:updated");
                 var picker = yukon.pickers['programPicker'];
                 picker.clearSelected();
