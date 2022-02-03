@@ -40,7 +40,6 @@
 #include "ctidate.h"
 #include "MessageCounter.h"
 #include "ServiceMetricReporter.h"
-#include "DispatchMetricTracker.h"
 
 #include <boost/tuple/tuple_comparison.hpp>
 #include <boost/ptr_container/ptr_deque.hpp>
