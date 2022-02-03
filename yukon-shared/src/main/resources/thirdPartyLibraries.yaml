@@ -4937,6 +4937,20 @@ Network Manager :
     jira : NM-1733
     notes :
 
+  - filename : jdom-2.0.6.1.jar
+    yukon group : XML parsing
+    project : JDOM
+    version : 2.0.6.1
+    project URL : "http://www.jdom.org/"
+    license : Apache-like with no acknowledgement clause
+    license URLs : "https://raw.github.com/hunterhacker/jdom/master/LICENSE.txt"
+    maven URL : "https://mvnrepository.com/artifact/org.jdom/jdom"
+    md5 : 94712b87adf5d7d7849d7140486e3045
+    sha1 : 8F0B5D56ACEB8E33C8E49BDB024DEDA74AE0CF8F
+    updated : 2022-02-03
+    jira : NM-2290
+    notes :
+
   - filename : jgoodies-common.jar
     yukon group : Launch4j
     project : Launch4j
