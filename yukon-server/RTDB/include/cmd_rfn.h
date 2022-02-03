@@ -49,6 +49,7 @@ class RfnRemoteDisconnectSetConfigurationCommand;
 class RfnSetChannelSelectionCommand;
 class RfnGetChannelSelectionCommand;
 class RfnGetChannelSelectionFullDescriptionCommand;
+class RfnGetChannelSelectionAllAvailableCommand;
 namespace RfnChannelIntervalRecording {
 class GetConfigurationCommand;
 class GetActiveConfigurationCommand;
@@ -118,6 +119,7 @@ struct RfnResultHandlerInvoker
         virtual void handleCommandResult(const RfnSetChannelSelectionCommand &)                       {}
         virtual void handleCommandResult(const RfnGetChannelSelectionCommand &)                       {}
         virtual void handleCommandResult(const RfnGetChannelSelectionFullDescriptionCommand &)        {}
+        virtual void handleCommandResult(const RfnGetChannelSelectionAllAvailableCommand &)           {}
         virtual void handleCommandResult(const RfnChannelIntervalRecording::SetConfigurationCommand &)        {}
         virtual void handleCommandResult(const RfnChannelIntervalRecording::GetConfigurationCommand &)        {}
         virtual void handleCommandResult(const RfnChannelIntervalRecording::GetActiveConfigurationCommand &)  {}

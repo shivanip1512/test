@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8" standalone="no"?>
 <points xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="../../points.xsd">
     <highestOffsets>
-        <analog offset="1040"/>
+        <analog offset="1046"/>
     </highestOffsets>
     <!--- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -Analog- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -->
     <point offset="1007" type="Analog">
@@ -185,12 +185,48 @@
         <decimalplaces value="0"/>
     </point>
     <point offset="1039" type="Analog">
+        <name>Network Manager CPU Usage</name>
+        <multiplier value="1"/>
+        <unitofmeasure value="PERCENT"/>
+        <decimalplaces value="2"/>
+    </point>
+    <point offset="1040" type="Analog">
+        <name>Network Manager Memory Usage</name>
+        <multiplier value="1" />
+        <unitofmeasure value="MEGABYTES" />
+        <decimalplaces value="0"/>
+    </point>
+        <point offset="1041" type="Analog">
+        <name>Network Manager Billing reads Count</name>
+        <multiplier value="1" />
+        <unitofmeasure value="COUNTS" />
+        <decimalplaces value="0"/>
+    </point>
+        <point offset="1042" type="Analog">
+        <name>Network Manager Interval Data Count</name>
+        <multiplier value="1" />
+        <unitofmeasure value="COUNTS" />
+        <decimalplaces value="0"/>
+    </point>
+        <point offset="1043" type="Analog">
+        <name>Network Manager Profiling Data Count</name>
+        <multiplier value="1" />
+        <unitofmeasure value="COUNTS" />
+        <decimalplaces value="0"/>
+    </point>
+        <point offset="1044" type="Analog">
+        <name>Network Manager LCR Data Count</name>
+        <multiplier value="1" />
+        <unitofmeasure value="COUNTS" />
+        <decimalplaces value="0"/>
+    </point>
+    	<point offset="1045" type="Analog">
         <name>RPH Inserts Generated Count</name>
         <multiplier value="1" />
         <unitofmeasure value="COUNTS" />
         <decimalplaces value="0"/>
     </point>
-    <point offset="1040" type="Analog">
+    	<point offset="1046" type="Analog">
         <name>RPH Queue Size</name>
         <multiplier value="1" />
         <unitofmeasure value="COUNTS" />
