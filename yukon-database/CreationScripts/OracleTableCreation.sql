@@ -1,7 +1,7 @@
 /*==============================================================*/
 /* Database name:  YukonDatabase                                */
 /* DBMS name:      ORACLE Version 9i                            */
-/* Created on:     1/20/2022 6:19:20 PM                         */
+/* Created on:     1/31/2022 6:12:27 PM                         */
 /*==============================================================*/
 
 
@@ -3143,6 +3143,7 @@ create table DeviceDataMonitor  (
    Name                 VARCHAR2(255)                   not null,
    GroupName            VARCHAR2(255)                   not null,
    Enabled              CHAR(1)                         not null,
+   NotifyOnAlarmOnly    CHAR(1)                         not null,
    constraint PK_DeviceDataMonitor primary key (MonitorId)
 );
 
@@ -9122,6 +9123,7 @@ create table StatusPointMonitorProcessor  (
    PrevState            VARCHAR2(255)                   not null,
    NextState            VARCHAR2(255)                   not null,
    ActionType           VARCHAR2(255)                   not null,
+   NotifyOnAlarmOnly    CHAR(1)                         not null,
    constraint PK_StatPointMonProcId primary key (StatusPointMonitorProcessorId)
 );
 

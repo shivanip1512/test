@@ -7,9 +7,7 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.HashSet;
 import java.util.List;
-import java.util.Set;
 
 import org.apache.commons.lang3.StringUtils;
 import org.easymock.EasyMock;
@@ -20,6 +18,8 @@ import org.springframework.web.client.RestClientException;
 
 import com.cannontech.dr.ecobee.EcobeeAuthenticationException;
 import com.cannontech.dr.ecobee.dao.EcobeeZeusGroupDao;
+import com.cannontech.dr.ecobee.message.ZeusThermostat;
+import com.cannontech.dr.ecobee.message.ZeusThermostatState;
 import com.cannontech.dr.ecobee.model.EcobeeZeusDiscrepancyType;
 import com.cannontech.dr.ecobee.model.EcobeeZeusGroupDeviceMapping;
 import com.cannontech.dr.ecobee.model.discrepancy.EcobeeZeusDiscrepancy;
@@ -260,7 +260,9 @@ public class EcobeeZeusReconciliationServiceTest {
     public void test_checkForMissingDevices_3(List<String> yukonSerialNumbers, Multimap<String, String> ecobeeSerialNumberToGroupMapping, Multimap<Integer, String> yukonGroupToDevicesMap) throws RestClientException, EcobeeAuthenticationException {
         
         EcobeeZeusCommunicationService communicationService = EasyMock.createMock(EcobeeZeusCommunicationService.class);
-        EasyMock.expect(communicationService.isDeviceEnrolled("6")).andStubReturn(false);
+        ZeusThermostat thermostat = new ZeusThermostat();
+        thermostat.setState(ZeusThermostatState.NOT_YET_CONNECTED);
+        EasyMock.expect(communicationService.retrieveThermostatFromRootGroup("6")).andStubReturn(thermostat);
         EasyMock.expect(communicationService.retrieveThermostatGroupID()).andStubReturn("10000");
         EasyMock.replay(communicationService);
         ReflectionTestUtils.setField(ecobeeZeusReconciliationService, "communicationService", communicationService);
@@ -279,7 +281,9 @@ public class EcobeeZeusReconciliationServiceTest {
     public void test_checkForMissingDevices_4(List<String> yukonSerialNumbers, Multimap<String, String> ecobeeSerialNumberToGroupMapping, Multimap<Integer, String> yukonGroupToDevicesMap) throws RestClientException, EcobeeAuthenticationException {
 
         EcobeeZeusCommunicationService communicationService = EasyMock.createMock(EcobeeZeusCommunicationService.class);
-        EasyMock.expect(communicationService.isDeviceEnrolled("6")).andStubReturn(true);
+        ZeusThermostat thermostat = new ZeusThermostat();
+        thermostat.setState(ZeusThermostatState.ENROLLED);
+        EasyMock.expect(communicationService.retrieveThermostatFromRootGroup("6")).andStubReturn(thermostat);
         EasyMock.expect(communicationService.retrieveThermostatGroupID()).andStubReturn("10000");
         EasyMock.replay(communicationService);
         ReflectionTestUtils.setField(ecobeeZeusReconciliationService, "communicationService", communicationService);

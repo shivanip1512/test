@@ -144,7 +144,7 @@
                                     <cti:button id="remove_${user.userID}" 
                                         nameKey="remove" name="remove" classes="fr show-on-hover" 
                                         value="${group.groupID}" type="submit" 
-                                        renderMode="buttonImage" icon="icon-remove"/>
+                                        renderMode="buttonImage" icon="icon-cross"/>
                                 </td>
                             </tr>
                         </c:forEach>

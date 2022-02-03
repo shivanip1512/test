@@ -55,7 +55,7 @@
                                 <c:if test="${item.pointId != 0}">
                                     ${fn:escapeXml(item.deviceName)} - ${fn:escapeXml(item.pointName)}
                                 </c:if>
-                                <cti:button icon="icon-remove" renderMode="buttonImage"
+                                <cti:button icon="icon-cross" renderMode="buttonImage"
                                     classes="select-box-item-remove js-remove" />
                                 <div class="select-box-item-movers">
                                     <c:set var="disabled" value="${status.first}" />
@@ -72,7 +72,7 @@
                     </div>
                     <div class="dn template-row select-box-item cm" data-id="0"
                             style="min-height: 35px;">
-                            <cti:button icon="icon-remove" renderMode="buttonImage"
+                            <cti:button icon="icon-cross" renderMode="buttonImage"
                                 classes="select-box-item-remove js-remove" />
                             <div class="select-box-item-movers">
                                 <cti:button icon="icon-bullet-go-up" renderMode="buttonImage"

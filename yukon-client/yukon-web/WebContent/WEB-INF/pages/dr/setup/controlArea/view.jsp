@@ -218,7 +218,7 @@
                                             <tr>
                                                 <tags:hidden path="programAssignment[${status.index}].programId"/>
                                                 <td>
-                                                    <cti:button icon="icon-remove" renderMode="buttonImage" classes="js-remove" data-id="${program.programId}"/>
+                                                    <cti:button icon="icon-cross" renderMode="buttonImage" classes="js-remove" data-id="${program.programId}"/>
                                                 </td>
                                                 <td>
                                                     <cti:deviceName deviceId="${program.programId}"/>
@@ -241,7 +241,7 @@
                                 <tr class="js-template-row dn">
                                     <input type="hidden" class="js-program-id" name="programAssignment[0].programId" disabled="disabled"/>
                                     <td>                                            
-                                        <cti:button icon="icon-remove" renderMode="buttonImage" classes="js-remove" data-id="0"/>
+                                        <cti:button icon="icon-cross" renderMode="buttonImage" classes="js-remove" data-id="0"/>
                                     </td>
                                     <td class="js-program-name vam"></td>
                                     <td>

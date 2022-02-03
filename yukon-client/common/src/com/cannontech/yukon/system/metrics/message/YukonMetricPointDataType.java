@@ -21,8 +21,19 @@ public enum YukonMetricPointDataType {
     RFN_METER_READING_ARCHIVE_REQUESTS_QUEUE_SIZE(YukonMetricPointInfo.RFN_METER_READING_ARCHIVE_REQUESTS_QUEUE_SIZE, 1037,
             PointType.Analog, "RFN Meter Reading Archive Requests Queue Size", ChartInterval.DAY, ConverterType.RAW),
     RFN_LCR_READING_POINT_DATA_GENERATED_COUNT(YukonMetricPointInfo.RFN_LCR_READING_POINT_DATA_GENERATED_COUNT, 1038,
-            PointType.Analog, "RFN LCR Reading Archive Point Data Generated Count", ChartInterval.HOUR, ConverterType.DELTA_WATER);
-
+            PointType.Analog, "RFN LCR Reading Archive Point Data Generated Count", ChartInterval.HOUR, ConverterType.DELTA_WATER),
+    NM_CPU_USAGE(YukonMetricPointInfo.NM_CPU_USAGE, 1039, 
+            PointType.Analog, "Network Manager CPU Usage", ChartInterval.HOUR, ConverterType.RAW), 
+    NM_MEMORY_USAGE(YukonMetricPointInfo.NM_MEMORY_USAGE, 1040, 
+            PointType.Analog, "Network Manager Memory Usage", ChartInterval.HOUR, ConverterType.RAW),
+    BILLING_DATA_COUNT(YukonMetricPointInfo.BILLING_DATA_COUNT, 1041, 
+            PointType.Analog, "Network Manager Billing reads Count", ChartInterval.HOUR, ConverterType.RAW), 
+    INTERVAL_DATA_COUNT(YukonMetricPointInfo.INTERVAL_DATA_COUNT, 1042, 
+            PointType.Analog, "Network Manager Interval Data Count", ChartInterval.HOUR, ConverterType.RAW),
+    PROFILE_DATA_COUNT(YukonMetricPointInfo.PROFILE_DATA_COUNT, 1043, 
+            PointType.Analog, "Network Manager Profiling Data Count", ChartInterval.HOUR, ConverterType.RAW),
+    GENERIC_DATA_POINT_COUNT(YukonMetricPointInfo.GENERIC_DATA_POINT_COUNT, 1044, 
+            PointType.Analog, "Network Manager LCR Data Count", ChartInterval.HOUR, ConverterType.RAW);
 
     private final static ImmutableSet<YukonMetricPointInfo> lookupByYukonMetricPointInfo;
     private final static ImmutableMap<YukonMetricPointInfo, YukonMetricPointDataType> lookupByPointInfo;

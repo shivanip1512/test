@@ -294,7 +294,7 @@
                                                                 <div class="dib">
                                                                     <span id="removeGroupButton" data-ok-event="yukon:devicegroup:removegroup"
                                                                           data-form-id="${subId}removeSubGroupForm">
-                                                                        <a href="#"><cti:icon icon="icon-remove"/></a>
+                                                                        <a href="#"><cti:icon icon="icon-cross"/></a>
                                                                     </span>
                                                                     <d:confirm on="#removeGroupButton" nameKey="removeGroup.areYouSure"/>
                                                                 </div>
@@ -302,7 +302,7 @@
                                                         </c:when>
                                                         <c:otherwise>
                                                             <cti:msg2 var="cannotDeleteGroupLinkTitle" key=".cannotDeleteGroupLinkTitle"/>
-                                                            <cti:icon icon="icon-remove" disabled="disabled" title="${cannotDeleteGroupLinkTitle}"/>
+                                                            <cti:icon icon="icon-cross" disabled="disabled" title="${cannotDeleteGroupLinkTitle}"/>
                                                         </c:otherwise>
                                                     </c:choose>
                                                 </td>

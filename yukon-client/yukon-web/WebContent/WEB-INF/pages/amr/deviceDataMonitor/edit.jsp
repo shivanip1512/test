@@ -101,6 +101,10 @@
                     <tags:nameValue2 nameKey=".status" valueClass="${clazz}">${monitoringEnabled}</tags:nameValue2>
                 </cti:displayForPageEditModes>
                 
+                <tags:nameValue2 nameKey=".notifyOnAlarmOnly">
+                    <tags:switchButton path="notifyOnAlarmOnly" offNameKey=".enabledfalse" onNameKey=".enabledtrue"/>
+                </tags:nameValue2>
+                
                 <tags:nameValue2 excludeColon="true">
                     <a href="javascript:void(0);" id="refresh-violations" class="dn" data-add-key="">
                         <cti:icon icon="icon-arrow-refresh"/>
@@ -158,7 +162,7 @@
                                     <div class="js-states"><input type="hidden" name="" value="" data-name="processors[0].state"></div>
                                 </td>
                                 <td class="actions">
-                                    <cti:button nameKey="delete" renderMode="buttonImage" classes="js-remove-btn fr" icon="icon-remove"/>
+                                    <cti:button nameKey="delete" renderMode="buttonImage" classes="js-remove-btn fr" icon="icon-cross"/>
                                 </td>
                             </tr>
                             <tags:dynamicTableUndoRow columnSpan="4" nameKey="dynamicTable.undoRow"/>
@@ -267,7 +271,7 @@
                                     </span>
                                 </td>
                                 <td class="actions">
-                                    <cti:button nameKey="delete" renderMode="buttonImage" classes="js-remove-btn fr" icon="icon-remove"/>
+                                    <cti:button nameKey="delete" renderMode="buttonImage" classes="js-remove-btn fr" icon="icon-cross"/>
                                 </td>
                             </tr>
                             <tags:dynamicTableUndoRow columnSpan="3" nameKey="dynamicTable.undoRow"/>

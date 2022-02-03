@@ -20,7 +20,7 @@
                 <td></td>
                 <td></td>
                 <td>
-                    <cti:button icon="icon-remove" renderMode="buttonImage" classes="js-remove fr M0"/>
+                    <cti:button icon="icon-cross" renderMode="buttonImage" classes="js-remove fr M0"/>
                     <cti:button icon="icon-pencil" renderMode="buttonImage" classes="js-edit fr"/>
                 </td>
             </tr>
@@ -40,7 +40,7 @@
                 <td></td>
                 <td>
                     <div class="button-group fr wsnw oh">
-                        <cti:button icon="icon-remove" classes="js-remove fn M0" renderMode="buttonImage" />
+                        <cti:button icon="icon-cross" classes="js-remove fn M0" renderMode="buttonImage" />
                         <cti:button icon="icon-pencil" classes="js-edit fn" renderMode="buttonImage" />
                         <cti:button icon="icon-bullet-go-up" classes="js-up right fn M0" renderMode="buttonImage" />
                         <cti:button icon="icon-bullet-go-down" classes="js-down left fn M0" renderMode="buttonImage" />
@@ -143,7 +143,7 @@
                                 <td><span>${fn:escapeXml(attribute.daysPrevious)}</span></td>
                                 <td>
                                     <cti:displayForPageEditModes modes="CREATE,EDIT">
-                                        <cti:button icon="icon-remove" renderMode="buttonImage" classes="js-remove fr M0"/>
+                                        <cti:button icon="icon-cross" renderMode="buttonImage" classes="js-remove fr M0"/>
                                         <cti:button icon="icon-pencil" renderMode="buttonImage" classes="js-edit fr"/>
                                     </cti:displayForPageEditModes>
                                 </td>
@@ -219,7 +219,7 @@
                             <td>
                                 <cti:displayForPageEditModes modes="CREATE,EDIT">
                                     <div class="button-group fr wsnw oh">
-                                        <cti:button icon="icon-remove" classes="js-remove fn M0" renderMode="buttonImage" />
+                                        <cti:button icon="icon-cross" classes="js-remove fn M0" renderMode="buttonImage" />
                                         <cti:button icon="icon-pencil" classes="js-edit fn" renderMode="buttonImage" />
                                         <c:set var="disableUp" value="${row.first}" />
                                         <c:set var="disableDown" value="${row.last}" />

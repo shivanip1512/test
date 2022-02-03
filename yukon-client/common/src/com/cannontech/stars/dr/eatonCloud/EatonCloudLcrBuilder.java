@@ -23,7 +23,6 @@ import com.cannontech.core.dao.DeviceDao;
 import com.cannontech.core.dao.NotFoundException;
 import com.cannontech.core.dao.PaoDao;
 import com.cannontech.core.dao.PaoDao.InfoKey;
-import com.cannontech.dr.eatonCloud.model.EatonCloudException;
 import com.cannontech.dr.eatonCloud.model.v1.EatonCloudCommunicationExceptionV1;
 import com.cannontech.dr.eatonCloud.model.v1.EatonCloudDeviceDetailV1;
 import com.cannontech.dr.eatonCloud.service.v1.EatonCloudCommunicationServiceV1;
@@ -85,12 +84,12 @@ public class EatonCloudLcrBuilder implements HardwareTypeExtensionProvider {
             Range<Instant> range =  new Range<Instant>(end.toInstant(), false, start.toInstant(), true);
             try {
                 readService.collectDataForRead(pao.getDeviceId(), range);
-            } catch (EatonCloudCommunicationExceptionV1 | EatonCloudException e) {
+            } catch (EatonCloudCommunicationExceptionV1 e) {
                 log.error("Unable to read device:{}", pao, e);
             }
-        } catch (EatonCloudCommunicationExceptionV1 | EatonCloudException e) {
+        } catch (EatonCloudCommunicationExceptionV1 e) {
             log.error("Unable to create device.", e);
-            throw new DeviceCreationException(e.getMessage(), "invalidDeviceCreation", e);
+            throw new DeviceCreationException(e.getDisplayMessage(), "invalidDeviceCreation", e);
         }
     }
     

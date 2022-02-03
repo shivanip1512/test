@@ -150,7 +150,6 @@ var yg = {
        	iconPlusGreen: '<cti:getIconSvg iconClass="icon-plus-green"/>',
        	iconDisable: '<cti:getIconSvg iconClass="icon-disable"/>',
        	iconCross: '<cti:getIconSvg iconClass="icon-cross"/>',
-       	iconRemove: '<cti:getIconSvg iconClass="icon-remove"/>',
        	iconDelete: '<cti:getIconSvg iconClass="icon-delete"/>',
        	iconExpand: '<cti:getIconSvg iconClass="icon-expand"/>',
        	iconCollapse: '<cti:getIconSvg iconClass="icon-collapse"/>',
