@@ -102,7 +102,8 @@ bool RawPointHistoryArchiver::writeArchiveDataToDB(Cti::Database::DatabaseConnec
             const unsigned rowsWritten = trackingIds.size();
             const unsigned rowsRemaining = archiverQueueSize();
             
-            tracker->submitRows(rowsWritten);
+            tracker.submitRows(rowsWritten);
+            tracker.submitQueueSize(rowsRemaining);
 
             std::string trackingInfo = 
                 boost::accumulate(trackingIds, ""s, [](std::string s1, std::string s2) {
@@ -381,9 +382,10 @@ auto RawPointHistoryArchiver::getArchiveStatus(const CtiTableRawPointHistory& ro
 }
 
 
-void RawPointHistoryArchiver::start(DispatchMetricTracker* tracker)
+void RawPointHistoryArchiver::start()
 {
     _archiverThread.start();
+    tracker.start();
 }
 
 bool RawPointHistoryArchiver::isRunning()
@@ -394,6 +396,7 @@ bool RawPointHistoryArchiver::isRunning()
 void RawPointHistoryArchiver::interrupt()
 {
     _archiverThread.interrupt();
+    tracker.interrupt();
 }
 
 bool RawPointHistoryArchiver::tryJoinFor(const std::chrono::seconds duration)
@@ -404,6 +407,7 @@ bool RawPointHistoryArchiver::tryJoinFor(const std::chrono::seconds duration)
 void RawPointHistoryArchiver::terminate()
 {
     _archiverThread.terminateThread();
+    tracker.terminateThread();
 }
 
 
@@ -537,7 +541,7 @@ void RawPointHistoryArchiver::submitRows(std::vector<std::unique_ptr<CtiTableRaw
 unsigned RawPointHistoryArchiver::archiverQueueSize()
 {
     std::lock_guard<std::mutex> lock(_archiverLock);
-
+    
     return _archiverQueue.size();
 }
 

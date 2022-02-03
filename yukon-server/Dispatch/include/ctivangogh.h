@@ -85,8 +85,6 @@ private:
 
     CtiSignalManager           _signalManager;
     CtiTagManager              _tagManager;
-    Cti::DispatchMetricTracker _tracker;
-
     CtiClientConnection*       _notificationConnection;
     bool ShutdownOnThreadTimeout;
 

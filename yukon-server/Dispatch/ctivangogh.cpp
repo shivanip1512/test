@@ -290,7 +290,7 @@ void CtiVanGogh::VGMainThread()
         _pendingOpThread.setSignalManager( &_signalManager );
         _pendingOpThread.start();
 
-        _rphArchiver.start(&_tracker);
+        _rphArchiver.start();
 
         _archiveThread    = boost::thread(&CtiVanGogh::VGArchiverThread,       this);
         _timedOpThread    = boost::thread(&CtiVanGogh::VGTimedOperationThread, this);
