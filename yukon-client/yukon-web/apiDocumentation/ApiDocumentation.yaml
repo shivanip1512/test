@@ -18,6 +18,10 @@ security:
 paths:
   /token:
     $ref: 'api/tokenApi.yaml#/token-generate'
+  /refreshToken:
+     $ref: 'api/tokenApi.yaml#/refreshToken'
+  /logout:
+     $ref: 'api/tokenApi.yaml#/logout' 
 
   /devices/commChannels:
     $ref: 'api/commChannelsApi.yaml#/post-operation'
@@ -126,7 +130,7 @@ components:
       scheme: bearer
       bearerFormat: JWT
 tags:
-  - name: Token Generation
+  - name: Authentication
   - name: Comm Channel
   - name: Trend
   - name: Load Group

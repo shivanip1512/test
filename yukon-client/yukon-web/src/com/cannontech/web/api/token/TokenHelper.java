@@ -10,6 +10,8 @@ import java.util.UUID;
 import javax.annotation.PostConstruct;
 import javax.servlet.http.HttpServletRequest;
 
+import org.apache.commons.lang3.StringUtils;
+
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.ExpiredJwtException;
 import io.jsonwebtoken.JwtException;
@@ -57,14 +59,13 @@ public class TokenHelper {
     /**
      * Generate refresh JWT token based on different claims (Issuer, Subject, Audience , IssuedAt, Expiration)
      */
-    public static String createRefreshToken(Integer userId) {
+    private static RefreshTokenDetails createRefreshToken(Integer userId, String uuid) {
         ZonedDateTime now = ZonedDateTime.now();
         ZonedDateTime refreshExpirationDateTime = now.plus(refreshTokenValidityInMilliSeconds, ChronoUnit.MILLIS);
         Date issueDate = Date.from(now.toInstant());
         Date refreshExpirationDate = Date.from(refreshExpirationDateTime.toInstant());
-
         String token = Jwts.builder()
-                .setId(UUID.randomUUID().toString())
+                .setId(uuid)
                 .setIssuer("Yukon")
                 .setSubject(String.valueOf(userId))
                 .setAudience("Web")
@@ -72,15 +73,23 @@ public class TokenHelper {
                 .setExpiration(refreshExpirationDate)
                 .signWith(refreshSecretKey)
                 .compact();
-
-        return token;
+        RefreshTokenDetails tokenDetails = new RefreshTokenDetails(getRefreshTokenId(String.valueOf(userId), uuid), token, userId);
+        return tokenDetails;
+    }
+    
+    public static RefreshTokenDetails createRefreshTokenWithUUID(Integer userId, String uuid) {
+        return createRefreshToken(userId, uuid);
+    }
+    
+    public static RefreshTokenDetails createRefreshToken(Integer userId) {
+        String uuid = UUID.randomUUID().toString();
+         return createRefreshToken(userId, uuid);
     }
     
     /**
      * Set access token Expiry duration and token type in token response.
      */
-    public static TokenResponse setTokenTypeAndExpiresIn() {
-        TokenResponse response = new TokenResponse();
+    public static TokenResponse setTokenTypeAndExpiresIn(TokenResponse response ) {
         response.setExpiresIn(tokenValidityInMilliSeconds);
         response.setTokenType(BEARER);
         return response;
@@ -105,6 +114,44 @@ public class TokenHelper {
     public static String getUserId(String token) {
         final Claims claims = getAllClaimsFromToken(token);
         return claims.getSubject();
+    }
+  
+    /**
+     * Return refreshTokenDetails and also validate token based on secretKey.
+     */
+    public static RefreshTokenDetails getRefreshTokenDetails(String token) {
+        final Claims claims = getAllClaimsFromRefreshToken(token);
+        RefreshTokenDetails refreshTokenDetails = new RefreshTokenDetails(getRefreshTokenId(claims.getSubject(), claims.getId()),
+                                                                          token,
+                                                                          Integer.valueOf(claims.getSubject()));
+        return refreshTokenDetails;
+    }
+    
+    /**
+     * Return RefreshTokenId (UserId_UUID)
+     */
+    private static  String getRefreshTokenId(String userId, String Id) {
+        return userId +"_" + Id;
+    }
+    
+    public static String getUUIDFromRefreshTokenId(RefreshTokenDetails refreshTokenDetails) {
+       return StringUtils.removeStart(refreshTokenDetails.getRefreshTokenId(), refreshTokenDetails.getUserId() + "_");
+    }
+    
+    /**
+     * Validate refresh token and return claims (Issuer, Subject, Audience , IssuedAt) associated with token.
+     * If token is expired or invalid then throw {AuthenticationException} exception.
+     */
+    private static Claims getAllClaimsFromRefreshToken(String token) {
+        try {
+            Claims claims = Jwts.parser()
+                    .setSigningKey(refreshSecretKey)
+                    .parseClaimsJws(token)
+                    .getBody();
+            return claims;
+        } catch (IllegalArgumentException | JwtException ex) {
+            throw new AuthenticationException("Expired or invalid Refresh token");
+        }
     }
 
     /**
@@ -132,6 +179,20 @@ public class TokenHelper {
     public static boolean checkExpiredJwt(String token) {
         try {
             Jwts.parser().setSigningKey(secretKey).parseClaimsJws(token);
+        } catch (SignatureException | ExpiredJwtException jwtException) {
+            // "JWT Token is expired or Old Sessions stick in reboot"
+            return true;
+        }
+        return false;
+    }
+    
+    /**
+     *  Check expiration of refresh token
+     *  if token is valid then return true otherwise false.
+     */
+    public static boolean checkRefreshTokenExpiredJwt(String token) {
+        try {
+            Jwts.parser().setSigningKey(refreshSecretKey).parseClaimsJws(token);
         } catch (SignatureException | ExpiredJwtException jwtException) {
             // "JWT Token is expired or Old Sessions stick in reboot"
             return true;

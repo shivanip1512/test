@@ -120,6 +120,12 @@ a,
 .page-size a:visited {
     color: @primary-color;
 }
+
+.vertical-menu li.selected a {
+    font-weight: 600;
+    background-color: rgba(25, 118, 210, 0.08); 
+}
+
 .primary-background {
     background-color: @primary-color; 
     color: white;
@@ -408,7 +414,7 @@ input[type=radio] {
 /* VERTICAL MENUS */
 #LeftColumn .info-fragment, #LeftColumn .bumper {border-right: 1px solid #ccc;}
 #LeftColumn .bumper {min-height: 120px;}
-#LeftColumn .info-fragment {font-size: .9em;}
+#LeftColumn .info-fragment {font-size: .9em; border-bottom: 3px solid #ccc;}
 .vertical-menu {
     border-right: 1px solid;
     border-color: rgba(0, 0, 0, 0.12);
@@ -450,13 +456,13 @@ input[type=radio] {
     min-width: 90px;
     position: relative;
     min-height: 48px;
-    text-align: center;
     cursor: pointer;
     vertical-align: middle !important;
-	justify-content: center;
-	display: flex;
-	align-items: center;
-	text-decoration: none;
+    justify-content: left;
+    display: flex;
+    align-items: center;
+    text-decoration: none;
+    padding-left: 5px;
 }
 
 .side-tabs {
@@ -1005,7 +1011,7 @@ ul.selectable li.selected {
 .titled-container > .title-bar .title {
 	display: inline-block;
 	color: @primary-color; 
-	font-size: .875rem; 
+	font-size: 1rem; 
 	font-weight: 600; 
 	line-height: 1;
 }
@@ -1614,7 +1620,7 @@ hr.dashed,
 .datetimeEntry_wrap {
     display: inline-block;
     overflow: hidden;
-    background: #ccc;
+    background: #fff;
     border-radius: @border-radius;
     float: left;
     margin-right: 5px;
@@ -1630,8 +1636,11 @@ hr.dashed,
     font-size: 14px !important; /* jquery ui is messing up the font-size */
 }
 .datetimeEntry_wrap img { 
-	margin: 5px;
-	padding-top: 5px; 
+    margin: 5px;
+    padding-top: 5px; 
+}
+.datetimeEntry_wrap:focus-within {
+    border: 2px solid @primary-color;
 }
 .timeOffsetWrap img {
     margin-left: 8px;
@@ -1658,6 +1667,33 @@ input.timePicker,
 input.timeOffsetPicker,
 input.dateTimePicker {
     border-radius: @border-radius 0 0 @border-radius;
+}
+
+.datetimeEntry_wrap.date-time-error{
+    border: 2px solid @red !important;
+}
+
+input.datePicker,
+input.timePicker,
+input.timeOffsetPicker,
+input.dateTimePicker { 
+    background: #fff;
+    border: none !important;
+}
+
+input.datePicker:hover,
+input.timePicker:hover,
+input.timeOffsetPicker:hover,
+input.dateTimePicker:hover { 
+    background: none !important;
+    border: none !important;
+};
+input.datePicker:focus,
+input.timePicker:focus,
+input.timeOffsetPicker:focus,
+input.dateTimePicker:focus
+ {
+    border: none !important;
 }
 input.datePicker { width: 114px ;}
 input.timePicker { width: 74px; }
@@ -2117,15 +2153,32 @@ li:hover .show-on-hover {
     margin-right:10px;
 }
 
+.ui-accordion {
+    border-radius: 4px !important;
+}
+
 .ui-accordion-header {
-    background: whitesmoke !important;
-    color: black !important;
-    border: 1px solid #ccc !important;
+    background: rgba(0, 0, 0, 0.03) !important;
+    color: rgba(0, 0, 0, 0.87) !important;
+    border: 1px solid rgba(0, 0, 0, 0.12) !important;
+    border-radius: 0 !important;
+    margin: 0 !important;
+    font-size: 1rem !important;
+    line-height: 1.5;
+    letter-spacing: 0;
+    font-weight: 400 !important;
+    align-items: center !important;
+    justify-content: center;
+    box-sizing: border-box;
+    user-select: none;
+    vertical-align: middle !important;
+    min-height: 48px;
+    padding: 10px 16px !important;
+    transition: min-height 150ms cubic-bezier(0.4, 0, 0.2, 1) 0ms,background-color 150ms cubic-bezier(0.4, 0, 0.2, 1) 0ms;
 }
 
 .ui-accordion-header-active {
-    border: 1px solid @primary-color !important;
-    background: #dedede !important;
+    border: 1px solid rgba(0, 0, 0, .12) !important;
 }
 
 .ui-accordion-header-icon {
@@ -2136,6 +2189,15 @@ li:hover .show-on-hover {
 .ui-accordion-header-active .ui-accordion-header-icon {
     background-image: url(../Icons/icons.png) !important;
     background-position: -176px -48px !important;
+}
+
+.ui-accordion .ui-accordion-content {
+    padding: 16px !important;
+    border-top: 1px solid rgba(0, 0, 0, .125) !important;
+    font-size: 1rem;
+    line-height: 1.5;
+    letter-spacing: 0;
+    font-weight: 400;
 }
 
 .small-font-orange-color-text {

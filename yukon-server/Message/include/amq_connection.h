@@ -93,7 +93,7 @@ public:
     template<class Msg>
     struct SimpleCallbackFor : CallbackFor<Msg>
     {
-        using Function = type;
+        using Function = CallbackFor<Msg>::type;
         
         SimpleCallbackFor(Function f) : fn { f } {}
 

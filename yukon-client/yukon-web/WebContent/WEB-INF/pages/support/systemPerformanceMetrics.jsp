@@ -50,6 +50,6 @@
             </table>
         </div>
     </div>
-    
+    <div data-dialog class="js-point-data-dialog"></div>
     <cti:includeScript link="/resources/js/pages/yukon.support.systemPerformanceMetrics.js" />
 </cti:standardPage>

@@ -90,14 +90,11 @@ public class EatonCloudServiceAccountDetailV1 implements Serializable {
     }
     
     public Instant getExpiryTime(int secretNumber) {
-        Date time1 = getSecrets().stream()
-                .filter(s -> s.getName().equals("secret" + secretNumber))
+        return getSecrets().stream()
+                .filter(secret -> secret.getName().equals("secret" + secretNumber))
                 .findFirst()
-                .orElse(null)
-                .getExpiryTime();
-        if (time1 == null) {
-            return null;
-        }
-        return new Instant(time1);
+                .map(secret -> secret.getExpiryTime())
+                .map(date -> new Instant(date))
+                .orElse(null);
     }
 }

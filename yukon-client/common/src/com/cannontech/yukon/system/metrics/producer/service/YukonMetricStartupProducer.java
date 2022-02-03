@@ -6,6 +6,7 @@ import java.util.concurrent.TimeUnit;
 
 import javax.annotation.PostConstruct;
 
+import org.apache.logging.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import com.cannontech.yukon.system.metrics.message.YukonMetric;
@@ -26,5 +27,14 @@ public abstract class YukonMetricStartupProducer implements YukonMetricProducer 
                 }
             }
         }, 1, TimeUnit.MINUTES);
+    }
+
+    /**
+     * Debug message for startup data
+     */
+    public void debug(YukonMetric metric, Logger log) {
+        if (log.isDebugEnabled()) {
+            log.debug("Publishing Yukon metric interval data " + metric + " to the topic");
+        }
     }
 }
