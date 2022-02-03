@@ -143,7 +143,7 @@
                 <c:forEach var="assignedNotifGroupEntry" items="${assignedNotificationGroups}">
                     <tr>
                         <td>
-                            <cti:button renderMode="buttonImage" icon="icon-remoev" data-notif-group="${assignedNotifGroupEntry.notificationGroupID}"/>
+                            <cti:button renderMode="buttonImage" icon="icon-remove" data-notif-group="${assignedNotifGroupEntry.notificationGroupID}"/>
                             <input type="hidden" name="assignedNotifGroup" value="${assignedNotifGroupEntry.notificationGroupID}">
                             ${fn:escapeXml(assignedNotifGroupEntry.notificationGroupName)}
                         </td>
