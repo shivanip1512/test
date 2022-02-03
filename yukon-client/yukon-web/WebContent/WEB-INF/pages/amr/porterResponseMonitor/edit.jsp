@@ -64,7 +64,7 @@
                         <option value="${state.liteID}">${fn:escapeXml(state.stateText)}</option>
                     </c:forEach>
                 </select>
-                <cti:button classes="js-remove fr" icon="icon-cross" renderMode="buttonImage"/>
+                <cti:button classes="js-remove fr" icon="icon-remove" renderMode="buttonImage"/>
                 <cti:button classes="js-up right fr" icon="icon-bullet-go-up" renderMode="buttonImage"/>
                 <cti:button classes="js-down left fr" icon="icon-bullet-go-down" renderMode="buttonImage" disabled="true"/>
             </td>
@@ -159,7 +159,7 @@
                                         <form:option value="${state.liteID}">${fn:escapeXml(state.stateText)}</form:option>
                                     </c:forEach>
                                 </form:select>
-                                <cti:button classes="js-remove fr" icon="icon-cross" renderMode="buttonImage"/>
+                                <cti:button classes="js-remove fr" icon="icon-remove" renderMode="buttonImage"/>
                                 <cti:button classes="js-up right fr" icon="icon-bullet-go-up" renderMode="buttonImage"/>
                                 <cti:button classes="js-down left fr" icon="icon-bullet-go-down" renderMode="buttonImage"/>
                             </td>
