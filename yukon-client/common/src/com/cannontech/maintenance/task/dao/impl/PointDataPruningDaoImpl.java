@@ -104,24 +104,24 @@ public class PointDataPruningDaoImpl implements PointDataPruningDao {
     }
 
     @Override
-    public Integer[] deleteDuplicatePointData(Range<Instant> dateRange, boolean noLockRequired, int lastChangeId) {
+    public int deleteDuplicatePointData(Range<Instant> dateRange, boolean noLockRequired) {
         log.debug("Query execution started for date range - " + dateRange);
         SqlStatementBuilder deleteDuplicatePointDataQuery;
-        Integer[] returnArray = new Integer[2];
+        int rowsDeleted = 0;
         try {
             if (dbVendorResolver.getDatabaseVendor().isOracle()) {
                 deleteDuplicatePointDataQuery = buildDeleteDuplicatePointDataOracleQuery(dateRange);
-                returnArray[0] = jdbcTemplate.update(deleteDuplicatePointDataQuery);
+                rowsDeleted = jdbcTemplate.update(deleteDuplicatePointDataQuery);
             } else {
-                deleteDuplicatePointDataQuery = buildDeleteDuplicatePointDataMSSQLQuery(dateRange, noLockRequired, lastChangeId);
-                returnArray = jdbcTemplate.queryForList (deleteDuplicatePointDataQuery.getSql(), Integer.class, deleteDuplicatePointDataQuery.getArguments()).toArray(returnArray);
+                deleteDuplicatePointDataQuery = buildDeleteDuplicatePointDataMSSQLQuery(dateRange, noLockRequired);
+                rowsDeleted = jdbcTemplate.queryForInt(deleteDuplicatePointDataQuery);
             }
         } catch (TransientDataAccessResourceException e) {
             log.error("Error when deleting duplicate data " + e);
         }
         log.debug("Query execution finished for date range - " + dateRange);
-        log.debug("Rows deleted for this range = " + returnArray[0]);
-        return returnArray;
+        log.debug("Rows deleted for this range = " + rowsDeleted);
+        return rowsDeleted;
     }
 
     private SqlStatementBuilder buildDeleteDuplicatePointDataOracleQuery(Range<Instant> dateRange) {
@@ -148,14 +148,12 @@ public class PointDataPruningDaoImpl implements PointDataPruningDao {
         return sql;
     }
     
-    private SqlStatementBuilder buildDeleteDuplicatePointDataMSSQLQuery(Range<Instant> dateRange, boolean noLockRequired, int lastChangeId) {
+    private SqlStatementBuilder buildDeleteDuplicatePointDataMSSQLQuery(Range<Instant> dateRange, boolean noLockRequired) {
         SqlStatementBuilder sql = new SqlStatementBuilder();
 
         sql.append("BEGIN");
         sql.append("DECLARE @TotalDeleted int");
         sql.append("SET @TotalDeleted = 0;");
-        sql.append("DECLARE @LastChangeId int");
-        sql.append("SET @LastChangeId = 0;");
         sql.append(    "IF OBJECT_ID(N'#TempRph', N'U') IS NOT NULL");
         sql.append(    "DROP TABLE #TempRph");
         sql.append(    "SELECT TOP ( ");
@@ -170,17 +168,11 @@ public class PointDataPruningDaoImpl implements PointDataPruningDao {
         }
         sql.append(        "WHERE Timestamp").gte(dateRange.getMin());
         sql.append(        "AND Timestamp").lte(dateRange.getMax());
-        sql.append(        "AND CHANGEID").gt(lastChangeId);
-        sql.append(        "AND (CHANGEID").lt(lastChangeId + (10 * BATCH_SIZE));
-        sql.append(          "OR 0").gte(lastChangeId);
-        sql.append(        ")");
         sql.append(        "AND PointId IN (");
         sql.append(            "SELECT PointId ");
         sql.append(            "FROM Point p ");
         sql.append(              "JOIN YukonPaobject pao ON p.PaobjectId = pao.PaobjectId)");
         sql.append(    ") a  WHERE RN > 1");
-
-        sql.append(    "SET @LastChangeId = (SELECT MAX(CHANGEID) FROM #TempRph)");
 
         sql.append(    "DECLARE @Rowcount INT = 1");
         sql.append(    "WHILE @Rowcount > 0");
@@ -199,7 +191,7 @@ public class PointDataPruningDaoImpl implements PointDataPruningDao {
         sql.append(    "COMMIT TRANSACTION");
         sql.append(    "END");
         sql.append(    "DROP TABLE #TempRph");
-        sql.append(    "SELECT * FROM (VALUES (@TotalDeleted), (@LastChangeId)) returnArray(vals)");
+        sql.append(    "SELECT @TotalDeleted AS totaldeleted");
         sql.append("END");
 
         return sql;

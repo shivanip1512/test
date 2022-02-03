@@ -62,12 +62,10 @@ public class PointDataPruningServiceImpl implements PointDataPruningService {
     }
 
     @Override
-    public Integer[] deleteDuplicatePointData(Instant processEndTime) {
+    public int deleteDuplicatePointData(Instant processEndTime) {
         int totalRowsdeleted = 0;
         boolean noLockRequired =
             configurationSource.getBoolean(MasterConfigBoolean.MAINTENANCE_DUPLICATE_POINT_DATA_NOLOCK_REQUIRED, true);
-        int lastChangeId = 0;
-        Integer[] returnArray = new Integer[] {totalRowsdeleted, lastChangeId};
         Integer daysInDuration =
             configurationSource.getInteger(MasterConfigInteger.MAINTENANCE_DUPLICATE_POINT_DATA_DELETE_DURATION, 60);
         int noOfMonthsConfigured = globalSettingDao.getInteger(GlobalSettingType.RFN_INCOMING_DATA_TIMESTAMP_LIMIT);
@@ -80,22 +78,22 @@ public class PointDataPruningServiceImpl implements PointDataPruningService {
         Instant start = Instant.now();
         Duration monthInDuration = Period.months(noOfMonths).toDurationTo(start);
         Instant fromTimestamp = Instant.now();
+        Duration deletionDuration = Period.days(daysInDuration).toDurationTo(fromTimestamp);
+        Instant toTimestamp = fromTimestamp.minus(deletionDuration);
         Instant limit = start.minus(monthInDuration);
         log.debug(
             "Overall duration for which duplicate records should be deleted = From " + limit + " To " + fromTimestamp);
         log.info("Duplicate point data deletion started.");
-        while (isEnoughTimeAvailable(processEndTime) && fromTimestamp.isAfter(limit)) {
-            Duration deletionDuration = Period.days(daysInDuration).toDurationTo(fromTimestamp);
-            Instant toTimestamp = fromTimestamp.minus(deletionDuration);
-            Range<Instant> dateRange = Range.inclusive(toTimestamp, fromTimestamp);
-            // returns array of [rowsDeleted, lastChangeId]
-            returnArray = pointDataPruningDao.deleteDuplicatePointData(dateRange, noLockRequired, lastChangeId);
-            totalRowsdeleted = totalRowsdeleted + returnArray[0];
-            if (returnArray[0] == 0) {
-                fromTimestamp = toTimestamp;
+        while (isEnoughTimeAvailable(processEndTime) && fromTimestamp.isAfter(limit) && toTimestamp.compareTo(fromTimestamp) < 0) {
+            Instant nextTimestamp = toTimestamp.plus(Period.days(7).toDurationFrom(toTimestamp));
+            if (nextTimestamp.compareTo(fromTimestamp) > 0) {
+                nextTimestamp = fromTimestamp;
             }
-            if (returnArray[1] != null) {
-                lastChangeId = returnArray[1];
+            Range<Instant> dateRange = Range.inclusive(toTimestamp, nextTimestamp);
+            int rowsDeleted = pointDataPruningDao.deleteDuplicatePointData(dateRange, noLockRequired);
+            totalRowsdeleted = totalRowsdeleted + rowsDeleted;
+            if (rowsDeleted == 0 && nextTimestamp.compareTo(fromTimestamp) <= 0) {
+                toTimestamp = nextTimestamp;
             }
         }
         Instant finish = new Instant();
@@ -103,6 +101,6 @@ public class PointDataPruningServiceImpl implements PointDataPruningService {
         log.info("Duplicate point data deletion finished. Deleted " + totalRowsdeleted + " records in "
             + secondsTaken.getSeconds() + " seconds");
         systemEventLogService.rphDeleteDuplicates(totalRowsdeleted, start, finish);
-        return returnArray;
+        return totalRowsdeleted;
     }
 }
