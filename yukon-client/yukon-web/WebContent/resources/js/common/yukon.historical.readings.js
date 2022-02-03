@@ -22,7 +22,7 @@ yukon.historical.readings = (function () {
             $(".js-trend-container_" + pointId).removeClass("dn");
             $("#trend-graph_" + pointId).html(response);
             $("#duration_" + pointId).closest(".ui-widget-content").dialog({
-                width : 800,
+                width : 830,
                 height : 500,
                 resizeStop: function(event, ui) {
                     yukon.highChart.redrawTrendChart($(this), ui);
