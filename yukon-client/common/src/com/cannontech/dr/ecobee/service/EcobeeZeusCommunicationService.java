@@ -69,7 +69,7 @@ public interface EcobeeZeusCommunicationService {
     /**
      * Get thermostats for the group. 
      */
-    List<ZeusThermostat> getThermostatsInGroup(String groupId);
+    List<ZeusThermostat> getThermostatsInGroup(String groupId, String...serialNumbers);
 
     /**
      * Initiates a Setpoint demand response event in Ecobee.
@@ -111,10 +111,10 @@ public interface EcobeeZeusCommunicationService {
      * Get root group. 
      */
     String retrieveThermostatGroupID() throws RestClientException, EcobeeAuthenticationException;
-    
+
     /**
-     * Check enrollment state for device. 
+     * Retrieve thermostat from the root group. 
      */
-    boolean isDeviceEnrolled(String yukonSerialNumber);
-    
+    ZeusThermostat retrieveThermostatFromRootGroup(String yukonSerialNumber);
+
 }

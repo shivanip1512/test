@@ -4,7 +4,10 @@ import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 import java.util.concurrent.ExecutionException;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 import javax.annotation.PostConstruct;
 import javax.servlet.http.HttpServletRequest;
@@ -29,6 +32,7 @@ import com.cannontech.i18n.YukonUserContextMessageSourceResolver;
 import com.cannontech.system.GlobalSettingCategory;
 import com.cannontech.system.GlobalSettingSubCategory;
 import com.cannontech.system.GlobalSettingType;
+import com.cannontech.system.dao.GlobalSettingDao;
 import com.cannontech.system.dao.GlobalSettingEditorDao;
 import com.cannontech.system.dao.GlobalSettingUpdateDao;
 import com.cannontech.system.model.GlobalSetting;
@@ -55,6 +59,7 @@ public class YukonConfigurationController {
     
     @Autowired private GlobalSettingEditorDao globalSettingEditorDao;
     @Autowired private GlobalSettingUpdateDao globalSettingUpdateDao;
+    @Autowired private GlobalSettingDao globalSettingDao;
     @Autowired private YukonUserContextMessageSourceResolver resolver;
     
     private GlobalSettingValidator globalSettingValidator = new GlobalSettingValidator();
@@ -227,6 +232,24 @@ public class YukonConfigurationController {
                        YukonUserContext context, 
                        ModelMap map, 
                        FlashScope flashScope) throws Exception {
+    	
+    	//change masked values back before validation/saving
+        Set<GlobalSettingType> globalSettingTypes = GlobalSettingType.getSettingsForCategory(command.getCategory());
+        Map<GlobalSettingType, Object> values = command.getValues();
+
+		for (GlobalSettingType globalSettingType : globalSettingTypes) {
+			if (globalSettingType.isNonViewableSensitiveInformation()) {
+				Object value = values.get(globalSettingType);
+				Pattern pattern = Pattern.compile("^[*]*$");
+				if (value != null) {
+					Matcher m = pattern.matcher(value.toString());
+					if (m.matches()) {
+						GlobalSetting currentSetting = globalSettingDao.getSetting(globalSettingType);
+						values.put(globalSettingType, currentSetting.getValue());
+					}
+				}
+			}
+		}
         
         globalSettingValidator.doValidation(command, result);
         GlobalSettingSubCategory category = command.getCategory();

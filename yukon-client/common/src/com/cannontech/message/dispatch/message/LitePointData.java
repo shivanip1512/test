@@ -50,6 +50,16 @@ public class LitePointData extends LiteBase implements PointValueQualityTagHolde
     }
 
     @Override
+    public boolean isTagsOldTimestamp() {
+        return (tags & PointData.TAG_POINT_OLD_TIMESTAMP) != 0;
+    }
+    
+    @Override
+    public boolean isTagsUnsolicited() {
+        return (tags & PointData.TAG_POINT_DATA_UNSOLICITED) != 0;
+    }
+    
+    @Override
     public int getType() {
         return type;
     }

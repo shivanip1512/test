@@ -97,7 +97,7 @@ public class AsyncDynamicDataSourceImpl implements AsyncDynamicDataSource, Messa
     @PostConstruct
     public void initialize() {
         log.info("source id: " + applicationSourceIdentifier);
-        this.dispatchConnection.addMessageListener(this);
+        dispatchConnection.addMessageListener(this);
     }
 
     @Override
@@ -162,7 +162,7 @@ public class AsyncDynamicDataSourceImpl implements AsyncDynamicDataSource, Messa
     }
       
     @Override
-    public PointValueQualityHolder getPointValue(int pointId){
+    public PointValueQualityTagHolder getPointValue(int pointId){
         return getPointData(pointId);
     }
     
@@ -353,7 +353,7 @@ public class AsyncDynamicDataSourceImpl implements AsyncDynamicDataSource, Messa
 
         // make sure we release the lock before calling the listeners
         for (PointDataListener listener : listeners) {
-            boolean newData = !pointData.getTagsOldTimestamp();
+            boolean newData = !pointData.isTagsOldTimestamp();
             boolean listenerWantsAll = listener instanceof AllPointDataListener;
             if (newData || listenerWantsAll ) {
                 listener.pointDataReceived(pointData);
@@ -479,7 +479,7 @@ public class AsyncDynamicDataSourceImpl implements AsyncDynamicDataSource, Messa
     }
 
     @Override
-    public Set<? extends PointValueQualityHolder> getPointDataOnce(Set<Integer> pointIds) {
+    public Set<? extends PointValueQualityTagHolder> getPointDataOnce(Set<Integer> pointIds) {
         return getPointData(pointIds, false);
     }
 
