@@ -42,10 +42,10 @@ yukon.admin.substations = (function () {
         //update buttons
         item.find('.js-remove-route, .js-add-route')
             .toggleClass('js-remove-route js-add-route')
-            .find('.icon').toggleClass('icon-plus-green icon-remove');
+            .find('.icon').toggleClass('icon-plus-green icon-cross');
         
         item.find('.icon-plus-green').html(yg.iconSvg.iconPlusGreen);
-        item.find('.icon-remove').html(yg.iconSvg.iconRemove);
+        item.find('.icon-cross').html(yg.iconSvg.iconCross);
         
         // Show/hide movers.
         item.find('.select-box-item-movers').toggle(!remove);

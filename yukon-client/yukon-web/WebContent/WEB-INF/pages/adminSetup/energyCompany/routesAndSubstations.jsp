@@ -58,7 +58,7 @@
 	                                                    <c:if test="${route.value.deletable}">
 	                                                        <td class="remove-column">
 	                                                            <div class="dib">
-	                                                                <cti:button nameKey="remove" name="removeRoute" value="${route.key.yukonID}" type="submit" renderMode="image" icon="icon-remove"/>
+	                                                                <cti:button nameKey="remove" name="removeRoute" value="${route.key.yukonID}" type="submit" renderMode="image" icon="icon-cross"/>
 	                                                            </div>
 	                                                        </td>
 	                                                    </c:if>
@@ -124,7 +124,7 @@
 	                                    <tr>
 	                                        <td><spring:escapeBody htmlEscape="true">${substation.substationName}</spring:escapeBody></td>
 	                                        <td class="dib">
-                                                <cti:button nameKey="remove" renderMode="image" type="submit" name="removeSubstation" value="${substation.substationID}" icon="icon-remove"/>
+                                                <cti:button nameKey="remove" renderMode="image" type="submit" name="removeSubstation" value="${substation.substationID}" icon="icon-cross"/>
 	                                        </td>
 	                                    </tr>
 	                                </c:forEach>

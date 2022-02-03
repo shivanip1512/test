@@ -69,7 +69,7 @@ $(function() {
                 <c:forEach var="item" items="${assigned}" varStatus="status">
                     <div class="select-box-item cm"
                          data-id="${item.id}">${fn:escapeXml(item.name)}
-                        <cti:button icon="icon-remove" renderMode="buttonImage" classes="select-box-item-remove js-remove-capbank"/>
+                        <cti:button icon="icon-cross" renderMode="buttonImage" classes="select-box-item-remove js-remove-capbank"/>
 
                         <div class="select-box-item-movers">
                             <c:set var="disabled" value="${status.first}"/>

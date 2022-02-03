@@ -97,7 +97,7 @@
                                         <c:set var="disabled" value="false" />
                                     </c:otherwise>
                                 </c:choose>
-                                <cti:button id="remove_${login.userID}" name="remove" ecId="${ecId}" userId="${login.userID}" renderMode="buttonImage" icon="icon-remove" classes="fr js-remove" disabled="${disabled}" />
+                                <cti:button id="remove_${login.userID}" name="remove" ecId="${ecId}" userId="${login.userID}" renderMode="buttonImage" icon="icon-cross" classes="fr js-remove" disabled="${disabled}" />
                             </td>
                         </tr>
                     </c:forEach>

@@ -88,7 +88,7 @@
                                     <div class="select-box-item cm js-assigned-load-group" data-id="${item.id}">
                                         <cti:deviceName deviceId="${item.id}"/>
                                     
-                                        <cti:button icon="icon-remove" renderMode="buttonImage" classes="select-box-item-remove js-remove"/>
+                                        <cti:button icon="icon-cross" renderMode="buttonImage" classes="select-box-item-remove js-remove"/>
                                         <div class="select-box-item-movers">
                                             <c:set var="disabled" value="${status.first}"/>
                                             <cti:button icon="icon-bullet-go-up" renderMode="buttonImage"
@@ -102,7 +102,7 @@
                             </div>
                             <div class="select-box-item cm js-assigned-load-group js-template-row dn" data-id="0">
                                 <span class="js-load-group-name"></span>
-                                <cti:button icon="icon-remove" renderMode="buttonImage" classes="select-box-item-remove js-remove"/>
+                                <cti:button icon="icon-cross" renderMode="buttonImage" classes="select-box-item-remove js-remove"/>
                                 <div class="select-box-item-movers">
                                     <cti:button icon="icon-bullet-go-up" renderMode="buttonImage" classes="left select-box-item-up js-move-up"/>
                                     <cti:button icon="icon-bullet-go-down" renderMode="buttonImage" classes="right select-box-item-down js-move-down" disabled="${true}"/>

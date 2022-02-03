@@ -35,7 +35,7 @@
                             <option value="${eventType}">${eventType}</option>
                         </c:forEach>
                     </select>
-                    <cti:button nameKey="delete" renderMode="buttonImage" icon="icon-remove" classes="js-remove fr" />
+                    <cti:button nameKey="delete" renderMode="buttonImage" icon="icon-cross" classes="js-remove fr" />
                 </td>
             </tr>
         </table>
@@ -165,7 +165,7 @@
                                             <form:option value="${eventType}">${eventType}</form:option>
                                         </c:forEach>
                                     </form:select>
-                                    <cti:button renderMode="buttonImage" icon="icon-remove" classes="js-remove fr" />
+                                    <cti:button renderMode="buttonImage" icon="icon-cross" classes="js-remove fr" />
                                 </td>
                             </tr>
                         </c:forEach>

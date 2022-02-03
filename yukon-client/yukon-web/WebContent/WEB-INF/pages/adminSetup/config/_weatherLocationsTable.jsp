@@ -75,7 +75,7 @@
                             </span>
                             <cti:button id="deleteWeatherLocation_${weatherLocation.paoIdentifier.paoId}"
                                 href="removeWeatherLocation?paoId=${weatherLocation.paoIdentifier.paoId}" nameKey="remove"
-                                renderMode="image" icon="icon-remove" classes="fr"/>
+                                renderMode="image" icon="icon-cross" classes="fr"/>
                             <d:confirm on="#deleteWeatherLocation_${weatherLocation.paoIdentifier.paoId}"
                                  nameKey="confirmDelete" argument="${fn:escapeXml(weatherLocation.name)}"/>
                         </td>

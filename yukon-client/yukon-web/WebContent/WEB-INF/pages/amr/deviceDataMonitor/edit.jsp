@@ -158,7 +158,7 @@
                                     <div class="js-states"><input type="hidden" name="" value="" data-name="processors[0].state"></div>
                                 </td>
                                 <td class="actions">
-                                    <cti:button nameKey="delete" renderMode="buttonImage" classes="js-remove-btn fr" icon="icon-remove"/>
+                                    <cti:button nameKey="delete" renderMode="buttonImage" classes="js-remove-btn fr" icon="icon-cross"/>
                                 </td>
                             </tr>
                             <tags:dynamicTableUndoRow columnSpan="4" nameKey="dynamicTable.undoRow"/>
@@ -267,7 +267,7 @@
                                     </span>
                                 </td>
                                 <td class="actions">
-                                    <cti:button nameKey="delete" renderMode="buttonImage" classes="js-remove-btn fr" icon="icon-remove"/>
+                                    <cti:button nameKey="delete" renderMode="buttonImage" classes="js-remove-btn fr" icon="icon-cross"/>
                                 </td>
                             </tr>
                             <tags:dynamicTableUndoRow columnSpan="3" nameKey="dynamicTable.undoRow"/>

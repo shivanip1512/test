@@ -35,7 +35,7 @@
                             <c:if test="${isEditable}">
                                 <cti:button classes="js-edit fn" icon="icon-pencil"
                                     renderMode="buttonImage" />
-                                <cti:button classes="js-remove fn" icon="icon-remove"
+                                <cti:button classes="js-remove fn" icon="icon-cross"
                                     renderMode="buttonImage" />
                             </c:if>
                             <c:if test="${isEditable && applianceCategory.consumerSelectable}">

@@ -27,7 +27,7 @@
                             <td>${fn:escapeXml(pao.paoName)}</td>
                             <td><i:inline key="${pao.paoType}"/></td>
                             <td class="remove-column">
-                                <cti:button renderMode="buttonImage" classes="show-on-hover js-delete" icon="icon-remove"/>
+                                <cti:button renderMode="buttonImage" classes="show-on-hover js-delete" icon="icon-cross"/>
                             </td>
                         </tr>
                     </c:forEach>
@@ -60,7 +60,7 @@
                             <td>${fn:escapeXml(pao.paoName)}</td>
                             <td><i:inline key="${pao.paoType}"/></td>
                             <td>
-                                <cti:button renderMode="buttonImage" classes="fr show-on-hover js-delete" icon="icon-remove"/>
+                                <cti:button renderMode="buttonImage" classes="fr show-on-hover js-delete" icon="icon-cross"/>
                             </td>
                         </tr>
                     </c:forEach>
@@ -85,7 +85,7 @@
         <td></td>
         <td></td>
         <td>
-            <cti:button renderMode="buttonImage" classes="fr show-on-hover js-delete" icon="icon-remove"/>
+            <cti:button renderMode="buttonImage" classes="fr show-on-hover js-delete" icon="icon-cross"/>
         </td>
     </tr>
 </table>
