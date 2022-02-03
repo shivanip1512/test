@@ -114,7 +114,7 @@ public class EatonCloudDataReadServiceImpl implements EatonCloudDataReadService 
                         .getTimeSeriesValues(List.of(request), queryRange);
                 timeSeriesResults.addAll(result);
             } catch (Exception e) {
-                log.error("Guid:" + request.getDeviceGuid() + " Read Failed:" + e.getMessage(), e);
+                log.error("Guid:" + request.getDeviceGuid(), e);
                 if(throwErrorIfFailed) {
                     throw e;
                 }

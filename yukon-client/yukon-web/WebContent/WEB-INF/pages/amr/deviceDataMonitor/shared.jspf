@@ -17,6 +17,7 @@
         <tags:nameValue2 nameKey=".violationsGroup"><i:inline key=".violationsGroup.help"/></tags:nameValue2>
         <tags:nameValue2 nameKey=".violations"><i:inline key=".violationsCount.help"/></tags:nameValue2>
         <tags:nameValue2 nameKey=".status"><i:inline key=".monitoring.help"/></tags:nameValue2>
+        <tags:nameValue2 nameKey=".notifyOnAlarmOnly"><i:inline key=".notifyOnAlarmOnly.help"/></tags:nameValue2>
     </tags:nameValueContainer2>
 </div>
 
@@ -100,4 +101,6 @@
 <span class="js-violation-report-links dn">&nbsp;${violationReportLinks}</span>
 
 <c:set var="monitoringEnabled"><i:inline key=".enabled${monitor.enabled}"/></c:set>
+
+<c:set var="notifyOnAlarmOnlyEnabled"><i:inline key=".enabled${monitor.notifyOnAlarmOnly}"/></c:set>
 </cti:displayForPageEditModes>

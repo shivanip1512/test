@@ -15,6 +15,7 @@ import com.cannontech.clientutils.YukonLogManager;
 import com.cannontech.common.device.model.SimpleDevice;
 import com.cannontech.common.pao.attribute.model.BuiltInAttribute;
 import com.cannontech.core.dynamic.PointValueQualityHolder;
+import com.cannontech.core.dynamic.PointValueQualityTagHolder;
 import com.cannontech.database.data.point.PointType;
 import com.google.common.collect.Range;
 
@@ -43,8 +44,15 @@ class ViolationHelper {
     /**
      * Returns violating devices for monitor (unit test)
      */
-    static Set<SimpleDevice> findViolatingDevices(DeviceDataMonitor monitor, Map<BuiltInAttribute, Map<Integer, SimpleDevice>> attributeToPoints, Map<Integer, Integer> pointIdsToStateGroup, Map<Integer, PointValueQualityHolder> pointValues) {
+    static ViolatingDevices findViolatingDevices(DeviceDataMonitor monitor, 
+            Map<BuiltInAttribute, Map<Integer, SimpleDevice>> attributeToPoints, 
+            Map<Integer, Integer> pointIdsToStateGroup, 
+            Map<Integer, PointValueQualityTagHolder> pointValues) {
+        
         Set<SimpleDevice> violatingDevices = new HashSet<>();
+        // This is the set to use if the monitor is "notify on alarms only"
+        Set<SimpleDevice> alarmsOnlyViolatingDevices = new HashSet<>();
+        
         if (!pointValues.isEmpty()) {
             for (Entry<BuiltInAttribute, Map<Integer, SimpleDevice>> entry : attributeToPoints.entrySet()) {
                 List<DeviceDataMonitorProcessor> processor = monitor.getProcessors(entry.getKey());
@@ -53,15 +61,19 @@ class ViolationHelper {
                     int pointId = pointToDevice.getKey();
                     int stateGroupId = pointIdsToStateGroup.get(pointId);
                     if (!violatingDevices.contains(device)) {
-                        PointValueQualityHolder valuetHolder = pointValues.get(pointId);
-                        if (isViolating(processor, stateGroupId, valuetHolder)) {
+                        PointValueQualityTagHolder valueHolder = pointValues.get(pointId);
+                        if (isViolating(processor, stateGroupId, valueHolder)) {
                             violatingDevices.add(device);
+                            
+                            if (valueHolder.isTagsUnsolicited()) {
+                                alarmsOnlyViolatingDevices.add(device);
+                            }
                         }
                     }
                 }
             }
         }
-        return violatingDevices;
+        return new ViolatingDevices(violatingDevices, alarmsOnlyViolatingDevices);
     }
 
     /**

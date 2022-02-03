@@ -1954,6 +1954,10 @@ void  CtiCommandParser::doParseGetConfig(const string &_CmdStr)
                 _cmd["voltage_profile_state"] = true;
             }
         }
+        if( containsString(CmdStr, " availablechannels") )
+        {
+            _cmd["available_channels"] = CtiParseValue("TRUE");
+        }
 
         setFlags(flag);
     }
