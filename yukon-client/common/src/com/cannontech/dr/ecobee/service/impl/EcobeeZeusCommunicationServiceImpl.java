@@ -199,7 +199,7 @@ public class EcobeeZeusCommunicationServiceImpl implements EcobeeZeusCommunicati
                 return zeusThermostats.get(0);
             } else {
                 throw new EcobeeCommunicationException("Number of device(s) found for the serial number in root"
-                        + " thermostat group: " + zeusThermostats.size());
+                        + " thermostat group: " + CollectionUtils.size(zeusThermostats));
             }
         } catch (RestClientException | EcobeeAuthenticationException e) {
             throw new EcobeeCommunicationException("Error occurred while communicating Ecobee API.", e);
