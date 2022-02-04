@@ -4488,7 +4488,21 @@ Network Manager :
     updated : 2021-08-13
     jira : NM-1733
     notes : Geronimo J2EE Management 1.1
-    
+
+  - filename : guava-18.0.jar
+    yukon group : Google Guava
+    project : Google Guava
+    version : 18.0
+    project URL : "https://github.com/google/guava"
+    license : Apache 2.0
+    license URLs : "https://opensource.org/licenses/Apache-2.0"
+    maven URL : "https://mvnrepository.com/artifact/com.google.guava/guava/18.0"
+    md5 : 947641f6bb535b1d942d1bc387c45290
+    sha1 : cce0823396aa693798f8882e64213b1772032b09
+    updated : 2022-02-03
+    jira : NM-2310
+    notes : 
+
   - filename : gwt-dev.jar
     yukon group : Google Web Toolkit
     project : Google Web Toolkit
