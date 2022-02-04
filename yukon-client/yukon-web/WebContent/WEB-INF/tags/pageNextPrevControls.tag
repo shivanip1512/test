@@ -11,12 +11,12 @@
         <c:when test="${previousNeeded}">
             <cti:msg2 var="prevTitle" key="yukon.common.paging.previousIcon.alt"/>
             <button class="button naked" title="${prevTitle}">
-                <i class="icon icon-resultset-previous-gray"></i>
+                <cti:icon icon="icon-resultset-previous-gray"/>
             </button>
         </c:when>
         <c:otherwise>
             <button class="button naked fade-half cd" disabled="disabled">
-                <i class="icon icon-resultset-previous-gray"></i>
+                <cti:icon icon="icon-resultset-previous-gray"/>
             </button>
         </c:otherwise>
     </c:choose>
@@ -26,12 +26,12 @@
         <c:when test="${nextNeeded}">
             <cti:msg2 var="nextTitle" key="yukon.common.paging.nextIcon.alt"/>
             <button class="button naked" title="${nextTitle}">
-                <i class="icon icon-resultset-next-gray"></i>
+                <cti:icon icon="icon-resultset-next-gray"/>
             </button>
         </c:when>
         <c:otherwise>
             <button class="button naked fade-half cd" disabled="disabled">
-                <i class="icon icon-resultset-next-gray"></i>
+                <cti:icon icon="icon-resultset-next-gray"/>
             </button>
         </c:otherwise>
     </c:choose>

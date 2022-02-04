@@ -14,6 +14,7 @@ import com.cannontech.common.pao.YukonPao;
 import com.cannontech.common.pao.definition.dao.PaoDefinitionDao;
 import com.cannontech.common.pao.definition.model.PaoTag;
 import com.cannontech.common.pao.definition.model.PaoTypeIcon;
+import com.cannontech.web.i18n.IconSvg;
 
 @Configurable(value="paoTypeIconTagPrototype", autowire=Autowire.BY_NAME)
 public class PaoTypeIconTag extends YukonTagSupport {
@@ -37,7 +38,9 @@ public class PaoTypeIconTag extends YukonTagSupport {
             getJspContext().setAttribute(var, classname);
         } else {
             if (StringUtils.isNotBlank(classname)) {
-                getJspContext().getOut().print("<i class=\"icon " + classname + "\"></i>");
+                getJspContext().getOut().print("<i class=\"icon " + classname + "\">"
+                	+ IconSvg.getIconForClass(classname).getSvg()
+                	+ "</i>");
             }
         }
         

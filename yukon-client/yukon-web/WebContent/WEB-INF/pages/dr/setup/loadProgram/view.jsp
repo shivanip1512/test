@@ -33,7 +33,7 @@
                 <li class="divider"></li>
 
                 <!-- Delete -->
-                <cm:dropdownOption icon="icon-cross" key="yukon.web.components.button.delete.label" classes="js-hide-dropdown" id="js-delete-option"
+                <cm:dropdownOption icon="icon-delete" key="yukon.web.components.button.delete.label" classes="js-hide-dropdown" id="js-delete-option"
                     data-ok-event="yukon:load-program:delete" />
                 <cti:msg2 var="userWarningMessage" key="yukon.web.modules.dr.setup.loadProgram.delete.warning"/>
                 <d:confirm on="#js-delete-option" nameKey="confirmDelete" argument="${loadProgram.name}" userMessage="${userWarningMessage}" userMessageClass="warning"/>

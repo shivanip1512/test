@@ -192,7 +192,7 @@ dt, dd { font-size: 16px; }
 <h4 class="subtle">Example: Page Buttons</h4>
 <pre class="code prettyprint">
 &lt;div id=&quot;page-buttons&quot; class=&quot;dn&quot;&gt;
-    &lt;cti:button icon=&quot;icon-brick&quot; label=&quot;Play Legos&quot;/&gt; 
+    &lt;cti:button icon=&quot;icon-pencil&quot; label=&quot;Edit&quot;/&gt; 
 &lt;/div&gt;
 </pre>
 

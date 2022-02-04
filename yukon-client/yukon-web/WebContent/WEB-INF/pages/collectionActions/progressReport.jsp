@@ -61,7 +61,7 @@
                             <cti:param name="${cp.key}" value="${cp.value}"/>
                         </c:forEach>
                     </cti:url>
-                    <cm:dropdownOption icon="icon-map-sat" key=".mapDevices" href="${mapDevicesUrl}" newTab="true"/>
+                    <cm:dropdownOption icon="icon-map" key=".mapDevices" href="${mapDevicesUrl}" newTab="true"/>
                     <cti:url var="readAttributeUrl" value="/group/groupMeterRead/homeCollection">
                         <c:forEach items="${result.inputs.collection.collectionParameters}" var="cp">
                             <cti:param name="${cp.key}" value="${cp.value}"/>

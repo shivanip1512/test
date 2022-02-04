@@ -71,7 +71,7 @@
                                 <cm:dropdownOption classes="js-edit-survey" icon="icon-pencil" 
                                     data-survey-id="${optOutSurveyId}"
                                     key="components.button.edit.label"/>
-                                <cm:dropdownOption classes="js-delete-survey" icon="icon-cross" 
+                                <cm:dropdownOption classes="js-delete-survey" icon="icon-delete" 
                                     data-survey-id="${optOutSurveyId}"
                                     key="components.button.delete.label"/>
                             </cm:dropdown>

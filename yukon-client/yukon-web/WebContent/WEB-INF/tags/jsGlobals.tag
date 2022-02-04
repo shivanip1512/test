@@ -138,6 +138,26 @@ var yg = {
         confirmRemoveTitle: '<cti:msg2 key="yukon.web.components.ajaxConfirm.confirmRemove.title"/>'
     },
     
+    iconSvg: {
+    	iconCloseX: '<cti:getIconSvg iconClass="icon-close-x"/>',
+    	iconMagnifier: '<cti:getIconSvg iconClass="icon-magnifier"/>',
+    	iconHelp: '<cti:getIconSvg iconClass="icon-help"/>',
+    	iconError: '<cti:getIconSvg iconClass="icon-error"/>',
+    	iconAdd: '<cti:getIconSvg iconClass="icon-add"/>',
+    	iconAccept: '<cti:getIconSvg iconClass="icon-accept"/>',
+    	iconStar: '<cti:getIconSvg iconClass="icon-star"/>',
+       	iconFavoriteNot: '<cti:getIconSvg iconClass="icon-favorite-not"/>',
+       	iconPlusGreen: '<cti:getIconSvg iconClass="icon-plus-green"/>',
+       	iconDisable: '<cti:getIconSvg iconClass="icon-disable"/>',
+       	iconCross: '<cti:getIconSvg iconClass="icon-cross"/>',
+       	iconDelete: '<cti:getIconSvg iconClass="icon-delete"/>',
+       	iconExpand: '<cti:getIconSvg iconClass="icon-expand"/>',
+       	iconCollapse: '<cti:getIconSvg iconClass="icon-collapse"/>',
+       	iconTick: '<cti:getIconSvg iconClass="icon-tick"/>',
+       	iconDatabaseAdd: '<cti:getIconSvg iconClass="icon-database-add"/>',
+       	iconArrowForward: '<cti:getIconSvg iconClass="icon-arrow-forward"/>'
+    },
+    
     timezone: '<cti:getUsersTimezone/>',
     
     // Role properties

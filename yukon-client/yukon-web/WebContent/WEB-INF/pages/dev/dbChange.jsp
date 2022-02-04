@@ -201,7 +201,7 @@
         </div>
         <div class="stacked clearfix">
             <span class="fl">Result: <span data-result>Success</Span> x<span data-num-times></span></span>
-            <i data-resubmit-button class="icon icon-arrow-rotate-clockwise js-re-submit"></i>
+            <cti:icon icon="icon-arrow-rotate-clockwise" classes="js-re-submit"/>
         </div>
     </div>
 </cti:standardPage>

@@ -14,7 +14,7 @@
 <span id="templateIcons" style="display: none">
 <cti:button nameKey="up" classes="moveAnswerUp" renderMode="image" icon="icon-bullet-go-up"/>
 <cti:button nameKey="down" classes="moveAnswerDown" renderMode="image" icon="icon-bullet-go-down"/>
-<cti:button nameKey="deleteAnswer" classes="deleteAnswer" renderMode="image" icon="icon-cross"/>
+<cti:button nameKey="deleteAnswer" classes="deleteAnswer" renderMode="image" icon="icon-delete"/>
 <cti:button nameKey="up.disabled" renderMode="image" disabled="true" icon="icon-bullet-go-up"/>
 <cti:button nameKey="down.disabled" renderMode="image" disabled="true" icon="icon-bullet-go-down"/>
 </span>
@@ -68,7 +68,7 @@
                     <cti:url var="deleteUrl" value="delete">
                         <cti:param name="surveyId" value="${surveyId}"/>
                     </cti:url>
-                    <cti:button id="delete-survey" nameKey="sampleXml"  label="Delete Survey" href="${deleteUrl}" renderMode="labeledImage" icon="icon-cross"/>
+                    <cti:button id="delete-survey" nameKey="sampleXml"  label="Delete Survey" href="${deleteUrl}" renderMode="labeledImage" icon="icon-delete"/>
                     <d:confirm on="#delete-survey" nameKey="confirmDelete"
                             argument="${survey.surveyName}"/>
                 </li>
@@ -156,7 +156,7 @@
                                 <d:confirm on="#deleteBtn${question.surveyQuestionId}"
                                     nameKey="confirmDelete"
                                     argument="${question.questionKey}"/>
-                                <cti:button id="deleteBtn${question.surveyQuestionId}" icon="icon-cross"
+                                <cti:button id="deleteBtn${question.surveyQuestionId}" icon="icon-delete"
                                     nameKey="deleteQuestion" renderMode="image" href="${deleteUrl}"/>
                             </c:if>
                         </td>

@@ -68,14 +68,15 @@
 <div class="dib M0">
     <form:password path="${path}" disabled="${pageScope.disabled}" readonly="${pageScope.readonly}" size="${pageScope.size}" maxlength="${pageScope.maxlength}" 
         autocomplete="${autocomplete}" cssClass="${inputClass} ${pageScope.cssClass}" showPassword="${showPassword}" tabindex="${tabindex}" placeholder="${placeholder}"/>
-    <c:if test="${includeShowHideButton}">
-         <tags:check classes="fr M0" onclick="showHideData(this.checked, '${path}');" name="showHideDataField">
-             <i title="<i:inline key="yukon.web.modules.adminSetup.config.showHideData"/>" class="icon icon-eye"></i>
+			<c:if test="${includeShowHideButton}">
+				<cti:msg2 var="showHideDataMsg" key="yukon.web.modules.adminSetup.config.showHideData" />
+				<tags:check classes="fr M0" onclick="showHideData(this.checked, '${path}');" name="showHideDataField">
+             	<cti:icon icon="icon-eye" title="${showHideDataMsg}"/>
          </tags:check>
     </c:if>
     <c:if test="${includeClearButton}">
     	<cti:msg2 var="clearButtonText" key="yukon.web.modules.adminSetup.config.clearData"/>
-    	<cti:button renderMode="buttonImage" icon="icon-cancel" classes="fr M0 js-clear-data" title="${clearButtonText}" data-field-path="${path}"/>
+    	<cti:button renderMode="buttonImage" icon="icon-cross" classes="fr M0 js-clear-data" title="${clearButtonText}" data-field-path="${path}"/>
     </c:if>
 </div>
 <c:if test="${status.error}"><br><form:errors path="${path}" cssClass="error"/><br/></c:if>
