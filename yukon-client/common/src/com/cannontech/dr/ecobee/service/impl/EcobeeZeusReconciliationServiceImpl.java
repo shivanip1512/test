@@ -399,7 +399,8 @@ public class EcobeeZeusReconciliationServiceImpl implements EcobeeZeusReconcilia
                 // if no ecobee groups found for this device
                 else {
                     // if the device is not in Enrolled state in root group
-                    if (!communicationService.isDeviceEnrolled(serialNumber)) {
+                    ZeusThermostat thermostat = communicationService.retrieveThermostatFromRootGroup(serialNumber);
+                    if (thermostat.getState() != ZeusThermostatState.ENROLLED) {
                         // using root group as correct path since Yukon will add this device to Root group in NOT_YET_CONNECTED
                         // state
                         errorsList.add(new EcobeeZeusMissingDeviceDiscrepancy(serialNumber,

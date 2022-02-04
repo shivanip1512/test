@@ -141,6 +141,7 @@ public class GlobalSettingUpdateDaoImpl implements GlobalSettingUpdateDao {
         String currentComments = currentSetting.getComments();
         
         Object value = setting.getValue();
+        
         if (value == null) {
             if (currentValue != null) {
                 isChanged = true;

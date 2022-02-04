@@ -62,8 +62,8 @@ public class EcobeeMockServiceTestController {
     
     private static final List<String> descrepencyStatus = ImmutableList.of("NONE(0)", "ALL(1)");
     private static final List<String> paginatedStatus = ImmutableList.of("NO(0)", "YES(1)");
-    private static final List<String> deviceStatus = ImmutableList.of("ENROLLED(0)", "NOT_YET_CONNECTED(0)", "PENDING(0)",
-            "REMOVED(0)", "REJECTED(0)");
+    private static final List<String> deviceStatus = ImmutableList.of("ENROLLED(0)", "NOT_YET_CONNECTED(1)", "PENDING(2)",
+            "REMOVED(3)", "REJECTED(4)");
 
     @Autowired private ZeusEcobeeDataConfiguration zeusEcobeeDataConfiguration;
     @Autowired private EcobeeZeusJwtTokenAuthService ecobeeZeusJwtTokenAuthService;

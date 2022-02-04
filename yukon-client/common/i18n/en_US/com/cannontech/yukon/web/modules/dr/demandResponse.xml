@@ -61,7 +61,7 @@
 <entry key="yukon.web.modules.dr.paoType.LM_METER_DISCONNECT_PROGRAM">Meter Disconnect Program</entry>
 <entry key="yukon.web.modules.dr.paoType.LM_NEST_PROGRAM">Nest Program</entry>
 <entry key="yukon.web.modules.dr.paoType.LM_GROUP_DIGI_SEP">Digi SEP Group</entry>
-<entry key="yukon.web.modules.dr.paoType.LM_GROUP_EATON_CLOUD">Eaton Cloud</entry>
+<entry key="yukon.web.modules.dr.paoType.LM_GROUP_EATON_CLOUD">Eaton Cloud Group</entry>
 <entry key="yukon.web.modules.dr.paoType.LM_GROUP_ECOBEE">ecobee Group</entry>
 <entry key="yukon.web.modules.dr.paoType.LM_GROUP_HONEYWELL">Honeywell Group</entry>
 <entry key="yukon.web.modules.dr.paoType.LM_GROUP_ITRON">Itron Group</entry>

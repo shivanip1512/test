@@ -50,7 +50,7 @@ public class AlarmArchiveRequestListener extends ArchiveRequestListenerBase<RfnA
             if (device.getPaoIdentifier().getPaoType().isMeter() || 
                     device.getPaoIdentifier().getPaoType().isRfRelay()) {
                 List<PointData> messagesToSend = Lists.newArrayListWithExpectedSize(3);
-                rfnMeterEventService.processEvent(device, archiveRequest.getAlarm(), messagesToSend);
+                rfnMeterEventService.processEvent(device, archiveRequest.getAlarm(), messagesToSend, true);
 
                 trackingIds = trackValues(messagesToSend);
 
@@ -59,7 +59,7 @@ public class AlarmArchiveRequestListener extends ArchiveRequestListenerBase<RfnA
                 processedAlarmArchiveRequest.addAndGet(messagesToSend.size());
     
                 if (log.isDebugEnabled()) {
-                    log.debug(messagesToSend.size() + " PointDatas generated for RfnAlarmArchiveRequest");
+                    log.debug("{} PointDatas generated for RfnAlarmArchiveRequest", messagesToSend.size());
                 }
             }
             sendAcknowledgement(archiveRequest);
