@@ -163,7 +163,7 @@
                                 </td>
                             </c:if>
                             <c:if test="${display.type == cti:constantValue('com.cannontech.common.tdc.model.DisplayType.CUSTOM_DISPLAYS')}">
-                                <td class="action-column">
+                                <td class="action-column" style="padding-right:18px">
                                     <cm:dropdown triggerClasses="fr vh">
                                         <tags:dynamicChoose updaterString="TDC/ALARM_COUNT_POINT/${row.pointId}" 
                                                 suffix="${row.pointId}">
@@ -299,5 +299,5 @@
         <tags:pagingResultsControls adjustPageCount="true" result="${result}"/>
     </c:if>
 </div>
-<cti:includeScript link="/resources/js/lib/sortable/sortable.js"/>
-<cti:includeCss link="/resources/js/lib/sortable/sortable.css"/>
+<%-- <cti:includeScript link="/resources/js/lib/sortable/sortable.js"/>
+<cti:includeCss link="/resources/js/lib/sortable/sortable.css"/> --%>

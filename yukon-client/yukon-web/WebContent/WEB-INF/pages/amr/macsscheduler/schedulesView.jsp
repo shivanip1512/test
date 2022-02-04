@@ -115,15 +115,15 @@
                                 <c:choose>
                                     <c:when test="${schedule.isUpdating()}">
                                         <cm:dropdownOption key="yukon.common.enable" icon="icon-accept" disabled="true"/>
-                                        <cm:dropdownOption key="yukon.common.disable" icon="icon-delete" disabled="true"/>
+                                        <cm:dropdownOption key="yukon.common.disable" icon="icon-disable" disabled="true"/>
                                     </c:when>
                                     <c:when test="${schedule.isDisabled()}">
                                         <cm:dropdownOption key="yukon.common.enable" icon="icon-accept" classes="js-script-toggle" data-schedule-id="${id}"/>
-                                        <cm:dropdownOption key="yukon.common.disable" icon="icon-delete" disabled="true"/>
+                                        <cm:dropdownOption key="yukon.common.disable" icon="icon-disable" disabled="true"/>
                                     </c:when>
                                     <c:otherwise>
                                         <cm:dropdownOption key="yukon.common.enable" icon="icon-accept" disabled="true"/>
-                                        <cm:dropdownOption key="yukon.common.disable" icon="icon-delete" classes="js-script-toggle" data-schedule-id="${id}"/>
+                                        <cm:dropdownOption key="yukon.common.disable" icon="icon-disable" classes="js-script-toggle" data-schedule-id="${id}"/>
                                     </c:otherwise>
                                 </c:choose>
                             </cm:dropdown>

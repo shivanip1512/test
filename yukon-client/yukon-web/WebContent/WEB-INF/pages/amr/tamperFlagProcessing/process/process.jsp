@@ -41,7 +41,7 @@
                                 <cti:param name="collectionType" value="group"/>
                                 <cti:param name="group.name" value="${tamperFlagMonitor.groupName}"/>
                             </cti:url>
-                            <cm:dropdownOption icon="icon-map-sat" key="yukon.web.components.button.map.label" href="${mapUrl}"/>
+                            <cm:dropdownOption icon="icon-map" key="yukon.web.components.button.map.label" href="${mapUrl}"/>
                             <cti:url var="collectionActionUrl" value="/bulk/collectionActions" htmlEscape="true">
                                 <cti:param name="collectionType" value="group"/>
                                 <cti:param name="group.name" value="${tamperFlagMonitor.groupName}"/>
@@ -68,7 +68,7 @@
                                 <cti:param name="collectionType" value="group"/>
                                 <cti:param name="group.name" value="${tamperFlagGroupBase}${tamperFlagMonitor.name}"/>
                             </cti:url>
-                            <cm:dropdownOption icon="icon-map-sat" key="yukon.web.components.button.map.label" href="${mapUrl}"/>
+                            <cm:dropdownOption icon="icon-map" key="yukon.web.components.button.map.label" href="${mapUrl}"/>
                             <cti:url var="collectionActionUrl" value="/bulk/collectionActions" htmlEscape="true">
                                 <cti:param name="collectionType" value="group"/>
                                 <cti:param name="group.name" value="${tamperFlagGroupBase}${tamperFlagMonitor.name}"/>

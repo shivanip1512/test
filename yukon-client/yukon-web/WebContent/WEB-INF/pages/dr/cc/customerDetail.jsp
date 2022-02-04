@@ -63,7 +63,7 @@
                         <c:forEach var="activeProgram" items="${customerModel.activePrograms}" varStatus="status">
                             <tr>
                                 <td>
-                                    <cti:button renderMode="buttonImage" icon="icon-delete" data-program-id="${activeProgram.paoId}"/>
+                                    <cti:button renderMode="buttonImage" icon="icon-cross" data-program-id="${activeProgram.paoId}"/>
                                     <form:hidden path="activePrograms[${status.index}].paoId"/>
                                     <form:hidden path="activePrograms[${status.index}].paoName"/>
                                     ${fn:escapeXml(activeProgram.paoName)}

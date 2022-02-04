@@ -239,6 +239,28 @@ ALTER TABLE Zone ADD CONSTRAINT AK_ZONENAME_ZONE UNIQUE (ZoneName);
 INSERT INTO DBUpdates VALUES ('YUK-25003', '9.2.0', SYSDATE);
 /* @end YUK-25003 */
 
+/* @start YUK-25754 */
+ALTER TABLE DeviceDataMonitor 
+ADD NotifyOnAlarmOnly CHAR(1) NULL;
+
+UPDATE DeviceDataMonitor 
+SET NotifyOnAlarmOnly = 0; -- disable
+
+ALTER TABLE DeviceDataMonitor 
+MODIFY NotifyOnAlarmOnly CHAR(1) NOT NULL;
+
+ALTER TABLE StatusPointMonitorProcessor 
+ADD NotifyOnAlarmOnly CHAR(1);
+
+UPDATE StatusPointMonitorProcessor 
+SET NotifyOnAlarmOnly = 0; -- disable
+
+ALTER TABLE StatusPointMonitorProcessor 
+MODIFY NotifyOnAlarmOnly CHAR(1) NOT NULL;
+
+INSERT INTO DBUpdates VALUES ('YUK-25754', '9.2.0', SYSDATE);
+/* @end YUK-25754 */
+
 /***********************************************************************************/
 /* VERSION INFO                                                                    */
 /* Inserted when update script is run, stays commented out until the release build */

@@ -49,10 +49,10 @@
             <cti:button id="target-lm-group-btn" icon="icon-database-add" 
                     nameKey="loadGroup" data-show="#load-group-row" classes="${clazz}"/>
             <c:set var="clazz" value="${target == 'EXPRESSCOM' ? 'on' : ''}"/>
-            <cti:button id="target-expresscom-btn" icon="icon-textfield" nameKey="expressCom" 
+            <cti:button id="target-expresscom-btn" icon="icon-arrow-forward" nameKey="expressCom" 
                     data-show="#serial-number-row, #route-row" data-type="EXPRESSCOM_SERIAL" classes="${clazz}"/>
             <c:set var="clazz" value="${target == 'VERSACOM' ? 'on' : ''}"/>
-            <cti:button id="target-versacom-btn" icon="icon-textfield" nameKey="versaCom" 
+            <cti:button id="target-versacom-btn" icon="icon-arrow-forward" nameKey="versaCom" 
                     data-show="#serial-number-row, #route-row" data-type="VERSACOM_SERIAL" classes="${clazz}"/>
         </div>
     </tags:nameValue2>
@@ -240,7 +240,7 @@
         <c:forEach var="target" items="${recentTargets}">
             <c:set var="label" value="${fn:escapeXml(target.label)}"/>
             <c:set var="type" value="${target.target.target}"/>
-            <c:set var="icon" value="${type == 'DEVICE' || type == 'LOAD_GROUP' ? 'icon-database-add' : 'icon-textfield'}"/>
+            <c:set var="icon" value="${type == 'DEVICE' || type == 'LOAD_GROUP' ? 'icon-database-add' : 'icon-arrow-forward'}"/>
             <cm:dropdownOption icon="${icon}"
                 data-type="${type}"
                 data-pao-id="${target.target.paoId}"

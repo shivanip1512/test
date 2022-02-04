@@ -96,7 +96,7 @@
             <cm:dropdown icon="icon-cog">
                 <cm:dropdownOption key=".collectionActions" icon="icon-cog-go" classes="js-collection-action" data-collection-action="${collectionActionsType}"/> 
                 <cm:dropdownOption icon="icon-csv" key=".download" classes="js-download"/>  
-                <cm:dropdownOption icon="icon-map-sat" key=".mapDevices" classes="js-collection-action" data-collection-action="${mappingType}"/>
+                <cm:dropdownOption icon="icon-map" key=".mapDevices" classes="js-collection-action" data-collection-action="${mappingType}"/>
                 <cm:dropdownOption icon="icon-read" key=".readAttribute" classes="js-collection-action" data-collection-action="${readAttributeType}"/>          
                 <cm:dropdownOption icon="icon-ping" key=".sendCommand" classes="js-collection-action" data-collection-action="${sendCommandType}"/>
             </cm:dropdown>

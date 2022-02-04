@@ -11,7 +11,6 @@ import org.springframework.web.client.ResponseErrorHandler;
 
 import com.cannontech.clientutils.YukonLogManager;
 import com.cannontech.common.util.JsonUtils;
-import com.google.gson.GsonBuilder;
 
 /**
  * Error handler for PX White REST API calls. Treats any 4xx or 5xx response as an error, and throws a
@@ -29,9 +28,6 @@ public class EatonCloudErrorHandlerV1 implements ResponseErrorHandler {
             body = StreamUtils.copyToString(response.getBody(), Charset.defaultCharset());
             EatonCloudErrorV1 error = parseErrorMessage(body);
             exception = new EatonCloudCommunicationExceptionV1(error);
-            log.error("Parsed error status: {} response : {} formatted response: {} ", status, body,
-                    new GsonBuilder().setPrettyPrinting().create().toJson(exception.getErrorMessage()),
-                    exception);
         } catch (Exception e) {
             exception = new EatonCloudCommunicationExceptionV1();
             log.error("Unable to parse error for status: {} response body: {}", status, body, e);

@@ -84,7 +84,7 @@
                                 <c:if test="${not empty archivedValuesExporter.deviceCollection.deviceCount}">
                                     <span class="b-label fl"><i:inline key="${archivedValuesExporter.deviceCollection.description}" htmlEscape="true"/></span>
                                 </c:if>
-                                <i class="icon icon-folder-edit"></i>
+                                <cti:icon icon="icon-folder-edit"/>
                             </a>
                             <c:if test="${archivedValuesExporter.deviceCollection.deviceCount > 0}">
                                 <tags:selectedDevicesPopup deviceCollection="${deviceCollection}"/>

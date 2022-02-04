@@ -1,7 +1,7 @@
 /*==============================================================*/
 /* Database name:  YukonDatabase                                */
 /* DBMS name:      Microsoft SQL Server 2005                    */
-/* Created on:     1/31/2022 3:36:19 PM                         */
+/* Created on:     1/31/2022 5:54:21 PM                         */
 /*==============================================================*/
 
 
@@ -3358,6 +3358,7 @@ create table DeviceDataMonitor (
    Name                 varchar(255)         not null,
    GroupName            varchar(255)         not null,
    Enabled              char(1)              not null,
+   NotifyOnAlarmOnly    char(1)              not null,
    constraint PK_DeviceDataMonitor primary key (MonitorId)
 )
 go
@@ -9704,6 +9705,7 @@ create table StatusPointMonitorProcessor (
    PrevState            varchar(255)         not null,
    NextState            varchar(255)         not null,
    ActionType           varchar(255)         not null,
+   NotifyOnAlarmOnly    char(1)              not null,
    constraint PK_StatPointMonProcId primary key (StatusPointMonitorProcessorId)
 )
 go

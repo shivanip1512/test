@@ -158,6 +158,10 @@ YukonError_t RfnMeterDevice::executeGetConfig(CtiRequestMsg* pReq, CtiCommandPar
     {
         return executeGetConfigVoltageProfile(pReq, parse, returnMsgs, rfnRequests);
     }
+    if( parse.isKeyValid("available_channels") )
+    {
+        return executeGetConfigAvailableChannels(pReq, parse, returnMsgs, rfnRequests);
+    }
 
     return ClientErrors::NoMethod;
 }
@@ -1052,6 +1056,11 @@ void RfnMeterDevice::storeChannelSelections( const Commands::RfnChannelConfigura
     setDynamicInfo( CtiTableDynamicPaoInfoIndexed::Key_RFN_MidnightMetrics, paoMetrics );
 }
 
+void RfnMeterDevice::handleCommandResult( const Commands::RfnGetChannelSelectionAllAvailableCommand & cmd )
+{
+    // When we actually need to use this data we'll want to store it in dynamicPaoInfo...
+}
+
 void RfnMeterDevice::handleCommandResult( const Commands::RfnChannelIntervalRecording::GetConfigurationCommand & cmd )
 {
     //  Don't do anything with this yet - this command returns the filter, not the enabled channels!
@@ -1196,6 +1205,18 @@ void RfnMeterDevice::storeMetrologyEnable(const Commands::RfnMetrologyCommand::M
     constexpr auto Enable = Commands::RfnMetrologyCommand::MetrologyState::Enable;
 
     setDynamicInfo(CtiTableDynamicPaoInfo::Key_RFN_MetrologyLibraryEnabled, state == Enable);
+}
+
+YukonError_t RfnMeterDevice::executeGetConfigAvailableChannels(CtiRequestMsg *pReq, CtiCommandParser &parse, ReturnMsgList &returnMsgs, RfnIndividualCommandList &rfnRequests)
+{
+    if ( ! hasRfnFirmwareSupportIn( 9.6 ) )
+    {
+        return ClientErrors::NoMethod;
+    }
+
+    rfnRequests.push_back( std::make_unique<Commands::RfnGetChannelSelectionAllAvailableCommand>() );
+
+    return ClientErrors::None;
 }
 
 }

@@ -35,6 +35,14 @@
                             <option value="${eventType}">${eventType}</option>
                         </c:forEach>
                     </select>
+                    
+                </td>
+                <td>
+                    <select name="processors[?].notifyOnAlarmOnly" class="js-row-notify-on-alarm-only">
+                        <option value="false" selected><cti:msg2 key=".enabledfalse"/></option>
+                        <option value="true"><cti:msg2 key=".enabledtrue"/></option>
+                    </select>
+                    
                     <cti:button nameKey="delete" renderMode="buttonImage" icon="icon-cross" classes="js-remove fr" />
                 </td>
             </tr>
@@ -127,6 +135,7 @@
                             <th><i:inline key=".stateActionsTable.prevState" /></th>
                             <th><i:inline key=".stateActionsTable.nextState" /></th>
                             <th><i:inline key=".stateActionsTable.action" /></th>
+                            <th><i:inline key=".stateActionsTable.notifyOnAlarmOnly" /></th>
                         </tr>
                     </thead>
                     <tfoot></tfoot>
@@ -164,6 +173,16 @@
                                         <c:forEach items="${eventTypes}" var="eventType">
                                             <form:option value="${eventType}">${eventType}</form:option>
                                         </c:forEach>
+                                    </form:select>
+                                </td>
+                                <td>
+                                    <form:select path="processors[${status.index}].notifyOnAlarmOnly">
+                                        <form:option value="false">
+                                            <cti:msg2 key=".enabledfalse" />
+                                        </form:option>
+                                        <form:option value="true">
+                                            <cti:msg2 key=".enabledtrue" />
+                                        </form:option>
                                     </form:select>
                                     <cti:button renderMode="buttonImage" icon="icon-cross" classes="js-remove fr" />
                                 </td>

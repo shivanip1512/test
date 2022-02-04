@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8" standalone="no"?>
 <points xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="../../points.xsd">
     <highestOffsets>
-        <analog offset="1038"/>
+        <analog offset="1044"/>
     </highestOffsets>
     <!--- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -Analog- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -->
     <point offset="1007" type="Analog">
@@ -180,6 +180,42 @@
     </point>
     <point offset="1038" type="Analog">
         <name>RFN LCR Reading Archive Point Data Generated Count</name>
+        <multiplier value="1" />
+        <unitofmeasure value="COUNTS" />
+        <decimalplaces value="0"/>
+    </point>
+    <point offset="1039" type="Analog">
+        <name>Network Manager CPU Usage</name>
+        <multiplier value="1"/>
+        <unitofmeasure value="PERCENT"/>
+        <decimalplaces value="2"/>
+    </point>
+    <point offset="1040" type="Analog">
+        <name>Network Manager Memory Usage</name>
+        <multiplier value="1" />
+        <unitofmeasure value="MEGABYTES" />
+        <decimalplaces value="0"/>
+    </point>
+        <point offset="1041" type="Analog">
+        <name>Network Manager Billing reads Count</name>
+        <multiplier value="1" />
+        <unitofmeasure value="COUNTS" />
+        <decimalplaces value="0"/>
+    </point>
+        <point offset="1042" type="Analog">
+        <name>Network Manager Interval Data Count</name>
+        <multiplier value="1" />
+        <unitofmeasure value="COUNTS" />
+        <decimalplaces value="0"/>
+    </point>
+        <point offset="1043" type="Analog">
+        <name>Network Manager Profiling Data Count</name>
+        <multiplier value="1" />
+        <unitofmeasure value="COUNTS" />
+        <decimalplaces value="0"/>
+    </point>
+        <point offset="1044" type="Analog">
+        <name>Network Manager LCR Data Count</name>
         <multiplier value="1" />
         <unitofmeasure value="COUNTS" />
         <decimalplaces value="0"/>

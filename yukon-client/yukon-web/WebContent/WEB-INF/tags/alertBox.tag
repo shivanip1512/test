@@ -22,7 +22,7 @@
 
 <div id="user-message" class="user-message ${type} ${classes}" style="${style}">
     <c:if test="${includeCloseButton}">
-        <i class="cp fr icon icon-close-x" onclick="$(this).parent().addClass('dn');"></i>
+        <cti:button icon="icon-close-x" renderMode="image" classes="cp fr" onclick="$(this).parent().addClass('dn');"/>
     </c:if>
     <c:if test="${not empty imgUrl}">
         <img class="vam" src="${imgUrl}" style="${imgCss}">

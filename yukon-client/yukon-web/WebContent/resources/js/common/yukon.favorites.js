@@ -92,8 +92,10 @@ yukon.favorites = (function () {
 
         if (isOn) {
             icon.removeClass(iconOff).addClass(iconOn);
+            icon.html(yg.iconSvg.iconStar);
         } else {
             icon.removeClass(iconOn).addClass(iconOff);
+            icon.html(yg.iconSvg.iconFavoriteNot);
         }
     },
 

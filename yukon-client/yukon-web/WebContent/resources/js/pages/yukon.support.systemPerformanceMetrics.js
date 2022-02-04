@@ -166,6 +166,7 @@ yukon.support.systemPerformanceMetrics = (function() {
                         },
                         series: [{
                             name: value.pointName,
+                            findNearestPointBy: 'xy',
                             data: data
                         }]
                     };
