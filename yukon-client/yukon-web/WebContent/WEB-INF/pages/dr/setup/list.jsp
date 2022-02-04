@@ -70,7 +70,7 @@
                     <c:set var="displayLoadProgramFilters" value="${isFilterByLoadProgramSelected ? '' : 'dn'}"/>
                     
                     <tags:selectWithItems items="${filterByTypes}" path="filterByType" id="js-filter-by-type" inputClass="vat MR5"/>
-                    <tags:input path="name" placeholder="${namePlaceholder}" inputClass="vat MR5" id="js-name"/>
+                    <tags:input path="name" placeholder="${namePlaceholder}" inputClass="vat MR5" id="js-name" autocomplete="nofill"/>
                     <div class="js-load-group-types-container dib ${displayLoadGroupFilters} MR10">
                         <tags:selectWithItems items="${loadGroupTypes}" path="types" dataPlaceholder="${selectLbl}" 
                                               id="js-load-group-types"/>
