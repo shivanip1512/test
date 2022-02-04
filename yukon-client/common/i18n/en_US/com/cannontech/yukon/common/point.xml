@@ -101,7 +101,7 @@
     <entry key="yukon.common.attribute.builtInAttribute.DELIVERED_KWH_RATE_B">Delivered kWh Rate B</entry>
     <entry key="yukon.common.attribute.builtInAttribute.DELIVERED_KWH_RATE_C">Delivered kWh Rate C</entry>
     <entry key="yukon.common.attribute.builtInAttribute.DELIVERED_KWH_RATE_D">Delivered kWh Rate D</entry>
-    <entry key="yukon.common.attribute.builtInAttribute.RECEIVED_DEMAND">Received kW</entry>
+    <entry key="yukon.common.attribute.builtInAttribute.RECEIVED_DEMAND">Received Demand</entry>
     <entry key="yukon.common.attribute.builtInAttribute.DEMAND_PEAK_KVA_COIN">Demand at Peak kVa Coincidental</entry>
     <entry key="yukon.common.attribute.builtInAttribute.INSTANTANEOUS_KW">Instantaneous kW</entry>
     <entry key="yukon.common.attribute.builtInAttribute.SUM_KW">Sum kW</entry>
