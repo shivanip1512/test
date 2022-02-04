@@ -237,7 +237,7 @@ IF @DuplicateZones > 0
 END;
 GO
 /* @end-block */
-ALTER TABLE Zone ADD CONSTRAINT Ak_ZoneName UNIQUE (ZoneName);
+ALTER TABLE Zone ADD CONSTRAINT AK_ZONENAME_ZONE UNIQUE (ZoneName);
 
 INSERT INTO DBUpdates VALUES ('YUK-25003', '9.2.0', GETDATE());
 /* @end YUK-25003 */
