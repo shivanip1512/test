@@ -204,5 +204,11 @@
         <pointInfo name="Sum kVA" attributes="SUM_KVA"/>
         <pointInfo name="kVA (Quadrants 1 2 4)" attributes="KVA_Q124"/>
         <pointInfo name="Sum Peak kVA Frozen" attributes="SUM_PEAK_KVA_FROZEN"/>
+        <pointInfo name="Received kW" attributes="RECEIVED_DEMAND"/>
+        <pointInfo name="Received Peak kW" attributes="RECEIVED_PEAK_DEMAND"/>
+        <pointInfo name="Received Peak kW (Rate A kW)" attributes="RECEIVED_PEAK_DEMAND_RATE_A"/>
+        <pointInfo name="Received Peak kW (Rate B kW)" attributes="RECEIVED_PEAK_DEMAND_RATE_B"/>
+        <pointInfo name="Received Peak kW (Rate C kW)" attributes="RECEIVED_PEAK_DEMAND_RATE_C"/>
+        <pointInfo name="Received Peak kW (Rate D kW)" attributes="RECEIVED_PEAK_DEMAND_RATE_D"/>
     </pointInfos>
 </pao>
