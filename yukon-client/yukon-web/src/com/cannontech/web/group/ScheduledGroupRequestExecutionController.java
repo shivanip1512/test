@@ -201,7 +201,7 @@ public class ScheduledGroupRequestExecutionController {
         if (editMode) {
             pageEditMode = PageEditMode.EDIT;
             mav.addObject("disabled", existingJob.isDisabled());
-            mav.addObject("status", scheduledGroupRequestExecutionDao.getStatusByJobId(existingJob.getId()));
+            mav.addObject("jobStatus", scheduledGroupRequestExecutionDao.getStatusByJobId(existingJob.getId()));
             mav.addObject("futureStart", true);
         }
         mav.addObject("mode", pageEditMode);
