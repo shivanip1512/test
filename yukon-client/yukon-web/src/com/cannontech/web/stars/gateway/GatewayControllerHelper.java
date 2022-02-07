@@ -291,9 +291,13 @@ public class GatewayControllerHelper {
     public Set<GatewayNMIPAddressPort> getAllGatewayNMIPPorts() {
     	Set<GatewayNMIPAddressPort> nmIPAddressPorts = new HashSet<GatewayNMIPAddressPort>();
         Set<RfnGateway> allGateways = rfnGatewayService.getAllGateways();
-        nmIPAddressPorts = allGateways.stream()
+        allGateways.removeIf(g -> g.getData() == null);
+        nmIPAddressPorts = allGateways
+                .stream()
                 .filter(g -> g.getData().getNmIpAddress() != null && g.getData().getNmPort() != null)
-                .map(g -> { return (new GatewayNMIPAddressPort(g.getData().getNmIpAddress(), g.getData().getNmPort()));})
+                .map(g -> {
+                    return (new GatewayNMIPAddressPort(g.getData().getNmIpAddress(), g.getData().getNmPort()));
+                })
                 .collect(Collectors.toSet());
     	
     	return nmIPAddressPorts;
@@ -302,6 +306,7 @@ public class GatewayControllerHelper {
     
     public GatewayNMIPAddressPort getMostUsedGatewayNMIPPort() {
         Set<RfnGateway> allGateways = rfnGatewayService.getAllGateways();
+        allGateways.removeIf(g -> g.getData() == null);
         String mostNmIpAddress = allGateways.stream()
                 .filter(g -> g.getData().getNmIpAddress() != null)
                 // summarize NmIpAddress
