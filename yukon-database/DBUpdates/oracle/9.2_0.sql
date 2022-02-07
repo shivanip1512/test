@@ -205,6 +205,7 @@ INSERT INTO DBUpdates VALUES ('YUK-25792', '9.2.0', SYSDATE);
 /* @end YUK-25792 */
 
 /* @start YUK-25003 */
+/* @start-block */
 DECLARE
     v_countConstraint NUMBER := 0;
 BEGIN
@@ -214,6 +215,7 @@ BEGIN
     END IF;
 END;
 /
+/* @end-block */
 /* @error warn-once */
 /* @start-block */
 DECLARE

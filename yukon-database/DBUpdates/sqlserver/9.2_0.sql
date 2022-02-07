@@ -208,6 +208,7 @@ INSERT INTO DBUpdates VALUES ('YUK-25792', '9.2.0', GETDATE());
 /* @end YUK-25792 */
 
 /* @start YUK-25003 */
+/* @start-block */
 BEGIN
 DECLARE @constraintExists NUMERIC = (SELECT COUNT(*) FROM sys.key_constraints WHERE name = 'AK_ZoneName');
 
@@ -217,7 +218,7 @@ DECLARE @constraintExists NUMERIC = (SELECT COUNT(*) FROM sys.key_constraints WH
         END;
 END;
 GO
-
+/* @end-block */
 /* @error warn-once */
 /* @start-block */
 BEGIN
