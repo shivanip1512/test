@@ -146,7 +146,7 @@
                                         <c:if test="${!route.encrypted}">
                                             <c:if test="${fn:length(encryptionKeys) > 0}">
                                                 <d:confirm on="#add_EncryptionBtn_${route.paobjectId}" nameKey="confirmAdd" argument="${fn:escapeXml(route.paoName)}" />
-                                                <form:select id="keyNameSelect${route.paobjectId}" path="encryptionKeyId" style="width:100%">
+                                                <form:select id="keyNameSelect${route.paobjectId}" path="encryptionKeyId" style="width:85%">
                                                     <c:forEach items="${encryptionKeys}" var="key">
                                                         <form:option value="${key.encryptionKeyId}">${fn:escapeXml(key.name)}</form:option>
                                                     </c:forEach>
@@ -214,7 +214,10 @@
                                 <form:form id="keys_${key.encryptionKeyId}" method="POST" action="deleteKey" autocomplete="off">
                                     <cti:csrfToken/>
                                     <tr>
-                                        <td><input type="hidden" name="encryptionKeyId" value="${key.encryptionKeyId}" />${fn:escapeXml(key.name)}</td>
+                                        <td style="width: 55%;">
+                                            <input type="hidden" name="encryptionKeyId" value="${key.encryptionKeyId}" />
+                                            <span class="wrbw">${fn:escapeXml(key.name)}</span>
+                                        </td>
                                         <td id="keyStatus_${key.encryptionKeyId}">
                                             <c:if test="${key.isValid}">
                                                 <span class="success"><i:inline key=".validKey" /></span>
