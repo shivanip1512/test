@@ -341,11 +341,11 @@ span.fancytree-node {
     
         .ui-dialog-titlebar-close {
             border: none;
-            height: 16px !important;
-            width: 16px !important;
-            background-image: url(../Icons/icons.png);
-            background-position: -352px -400px;
+            height: 18px !important;
+            width: 18px !important;
+            background-image: url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" fill="%23727e84" height="18" viewBox="0 0 24 24" width="18"><path d="M19 6.41L17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z"/><path d="M0 0h24v24H0z" fill="none"/></svg>');
             background-repeat: no-repeat;
+			background-color: white !important;
             margin-right: 5px;
             margin-top: -8px;
             
@@ -513,11 +513,11 @@ span.fancytree-node {
     }
     .ui-dialog-titlebar-close {
         border: none;
-        height: 16px !important;
-        width: 16px !important;
-        background-image: url(../Icons/icons.png);
-        background-position: -352px -400px;
+        height: 18px !important;
+        width: 18px !important;
+        background-image: url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" fill="%23727e84" height="18" viewBox="0 0 24 24" width="18"><path d="M19 6.41L17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z"/><path d="M0 0h24v24H0z" fill="none"/></svg>');
         background-repeat: no-repeat;
+		background-color: white !important;
         top: 22px;
         right: 10px;
         
@@ -783,24 +783,24 @@ span.fancytree-node {
             top:auto;
             margin:auto;
 
-            background-image: url(../Icons/icons.png);
             background-repeat: no-repeat;
             display: inline-block;
-            height: 16px;
-            line-height: 16px;
-            max-width: 16px;
+            height: 18px;
+            line-height: 18px;
+            max-width: 18px;
             overflow: hidden;
-            text-indent: -9999px;
-            width: 16px;
+            width: 18px;
 
             /* icon-resultset-previous-gray */
             &.ui-icon-circle-triangle-w {
-                background-position: -144px -416px;
+				background-image: url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" fill="%23727e84" height="18" viewBox="0 0 24 24" width="18"><path d="M0 0h24v24H0V0z" fill="none"/><path d="M15.41 16.59L10.83 12l4.58-4.59L14 6l-6 6 6 6 1.41-1.41z"/></svg>');
+				background-position: unset;
             }
             /* .icon-resultset-next-gray */
             &.ui-icon-circle-triangle-e {
-                background-position: -128px -416px;
-            }
+				background-image: url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" fill="%23727e84" height="18" viewBox="0 0 24 24" width="18"><path d="M0 0h24v24H0V0z" fill="none"/><path d="M8.59 16.59L13.17 12 8.59 7.41 10 6l6 6-6 6-1.41-1.41z"/></svg>');
+				background-position: unset;
+			}
         }
     }
     
@@ -909,7 +909,8 @@ span.fancytree-node {
 }
 
 input[readonly], input[readonly="readonly"] {
-    opacity: .7;
+    opacity: .3;
+	pointer-events: none;
 }
 
 .opacityOff {
@@ -973,14 +974,15 @@ span.error {
     float: left;
 }
 
-div.ui-widget-content div.action-area {
+div.ui-dialog-content .action-area {
     margin-left: -24px;
     margin-right: -24px;
     padding: 20px 5px 5px 10px !important;
     border-top: 1px solid #ccc;
 }
 
-.js-table-container thead th {
-    position: sticky;
-    top: 0;
+div.action-area {
+    margin-left: -6px;
+    margin-right: 2px;
+    padding: 4px 3px 4px 3px !important;
 }
