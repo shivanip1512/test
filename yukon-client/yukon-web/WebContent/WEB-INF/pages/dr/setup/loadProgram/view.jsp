@@ -579,5 +579,4 @@
     <cti:includeScript link="YUKON_TIME_FORMATTER" />
     <cti:includeScript link="/resources/js/pages/yukon.dr.setup.program.js" />
     <cti:includeScript link="/resources/js/pages/yukon.dr.setup.programGear.js" />
-    <cti:includeScript link="JQUERY_SCROLL_TABLE_BODY" />
 </cti:msgScope>

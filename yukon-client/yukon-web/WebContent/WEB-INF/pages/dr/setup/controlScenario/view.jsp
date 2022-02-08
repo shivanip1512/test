@@ -79,31 +79,33 @@
         
         <cti:displayForPageEditModes modes="VIEW">
             <tags:sectionContainer2 nameKey="assignedPrograms" styleClass="select-box">
-                <table id="js-assigned-programs-table" class="compact-results-table dashed">
-                    <thead>
-                        <tr>
-                            <th width="45%"><i:inline key=".name"/></th>
-                            <th width="15%"><i:inline key=".startOffset"/></th>
-                            <th width="15%"><i:inline key=".stopOffset"/></th>
-                            <th width="25%"><i:inline key=".startGear"/></th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        <c:forEach var="program" items="${controlScenario.allPrograms}">
+                <div class="js-table-container scroll-lg">
+                    <table id="js-assigned-programs-table" class="compact-results-table dashed">
+                        <thead>
                             <tr>
-                                <td>
-                                    <cti:url var="viewProgramUrl" value='/dr/setup/loadProgram/${program.programId}'/>
-                                    <a href="${viewProgramUrl}">
-                                        <cti:deviceName deviceId="${program.programId}"/>
-                                    </a>
-                                </td>
-                                <td><dt:timeOffset value="${fn:escapeXml(program.startOffsetInMinutes)}"/></td>
-                                <td><dt:timeOffset value="${fn:escapeXml(program.stopOffsetInMinutes)}"/></td>
-                                <td>${fn:escapeXml(program.gears[0].gearName)}</td>
+                                <th width="45%"><i:inline key=".name"/></th>
+                                <th width="15%"><i:inline key=".startOffset"/></th>
+                                <th width="15%"><i:inline key=".stopOffset"/></th>
+                                <th width="25%"><i:inline key=".startGear"/></th>
                             </tr>
-                        </c:forEach>
-                    </tbody>
-                </table>
+                        </thead>
+                        <tbody>
+                            <c:forEach var="program" items="${controlScenario.allPrograms}">
+                                <tr>
+                                    <td>
+                                        <cti:url var="viewProgramUrl" value='/dr/setup/loadProgram/${program.programId}'/>
+                                        <a href="${viewProgramUrl}">
+                                            <cti:deviceName deviceId="${program.programId}"/>
+                                        </a>
+                                    </td>
+                                    <td><dt:timeOffset value="${fn:escapeXml(program.startOffsetInMinutes)}"/></td>
+                                    <td><dt:timeOffset value="${fn:escapeXml(program.stopOffsetInMinutes)}"/></td>
+                                    <td>${fn:escapeXml(program.gears[0].gearName)}</td>
+                                </tr>
+                            </c:forEach>
+                        </tbody>
+                    </table>
+                </div>
             </tags:sectionContainer2>
         </cti:displayForPageEditModes>
 
@@ -124,6 +126,5 @@
         </div>
     </form:form>
     <cti:includeScript link="/resources/js/pages/yukon.dr.setup.controlScenario.js" />
-    <cti:includeScript link="JQUERY_SCROLL_TABLE_BODY"/>
     <dt:pickerIncludes/>
 </cti:standardPage>

@@ -282,7 +282,6 @@
         
     </form:form>
         
-    <cti:includeScript link="JQUERY_SCROLL_TABLE_BODY"/>
     <cti:includeScript link="YUKON_TIME_FORMATTER"/>
     <cti:includeScript link="/resources/js/pages/yukon.dr.setup.controlArea.js"/>
     <cti:includeScript link="/resources/js/pages/yukon.dr.setup.controlArea.trigger.js" />
