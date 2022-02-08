@@ -35,7 +35,7 @@ public class PointDataPruningDaoImpl implements PointDataPruningDao {
             }
             log.debug(deleteSql);
         } catch (TransientDataAccessResourceException e) {
-            log.error("Error when deleting RPH data " + e);
+            log.error("Error when deleting RPH data {}", e);
         }
         return rowsDeleted;
     }
@@ -105,7 +105,7 @@ public class PointDataPruningDaoImpl implements PointDataPruningDao {
 
     @Override
     public int deleteDuplicatePointData(Range<Instant> dateRange, boolean noLockRequired) {
-        log.debug("Query execution started for date range - " + dateRange);
+        log.debug("Query execution started for date range - {}", dateRange);
         SqlStatementBuilder deleteDuplicatePointDataQuery;
         int rowsDeleted = 0;
         try {
@@ -117,10 +117,10 @@ public class PointDataPruningDaoImpl implements PointDataPruningDao {
                 rowsDeleted = jdbcTemplate.queryForInt(deleteDuplicatePointDataQuery);
             }
         } catch (TransientDataAccessResourceException e) {
-            log.error("Error when deleting duplicate data " + e);
+            log.error("Error when deleting duplicate data {}", e);
         }
-        log.debug("Query execution finished for date range - " + dateRange);
-        log.debug("Rows deleted for this range = " + rowsDeleted);
+        log.debug("Query execution finished for date range - {}", dateRange);
+        log.debug("Rows deleted for this range = {}", rowsDeleted);
         return rowsDeleted;
     }
 
