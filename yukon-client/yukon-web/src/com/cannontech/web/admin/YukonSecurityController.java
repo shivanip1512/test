@@ -68,7 +68,6 @@ import com.cannontech.core.service.DateFormattingService;
 import com.cannontech.database.data.lite.LiteYukonUser;
 import com.cannontech.database.db.pao.EncryptedRoute;
 import com.cannontech.database.db.security.EncryptionKey;
-import com.cannontech.dr.eatonCloud.model.EatonCloudException;
 import com.cannontech.dr.eatonCloud.model.v1.EatonCloudCommunicationExceptionV1;
 import com.cannontech.dr.ecobee.message.ZeusEncryptionKey;
 import com.cannontech.dr.ecobee.message.ZeusShowPushConfig;
@@ -230,11 +229,12 @@ public class YukonSecurityController {
         model.addAttribute("encryptedRoutes", encryptedRouteDao.getAllEncryptedRoutes());
         
         try {
-        	EatonCloudSecretExpiryTime secretExpirations = eatonCloudSecretRotationServiceV1.getSecretExpiryTime();
+            EatonCloudSecretExpiryTime secretExpirations = eatonCloudSecretRotationServiceV1.getSecretExpiryTime();
             model.addAttribute("brightlayerSecretKeyExpiration", secretExpirations);
-        } catch (EatonCloudCommunicationExceptionV1 | EatonCloudException e) {
-         	log.error("Error occurred retrieving Brightlayer Secret Expirations", e);
-         	model.addAttribute("secretExpirationError", accessor.getMessage(baseKey + ".secretsBox.secretExpirationRetrieveError", e.getMessage()));
+        } catch (EatonCloudCommunicationExceptionV1 e) {
+            log.error("Error occurred retrieving Brightlayer Secret Expirations", e);
+            model.addAttribute("secretExpirationError",
+                    accessor.getMessage(baseKey + ".secretsBox.secretExpirationRetrieveError", e.getDisplayMessage()));
         }
         
         model.addAttribute("encryptionKey", encryptionKey);
@@ -329,13 +329,13 @@ public class YukonSecurityController {
     
     @PostMapping("/config/security/refreshSecret")
     public String refreshSecret(Integer secretNumber, LiteYukonUser user, FlashScope flashScope) {
-    	try {
-    		eatonCloudSecretRotationServiceV1.rotateSecret(secretNumber, user);
-    		flashScope.setConfirm(new YukonMessageSourceResolvable(baseKey + ".secretsBox.secretRotationSuccess", secretNumber));
-    	} catch (EatonCloudCommunicationExceptionV1 | EatonCloudException e) {
-    		log.error("Error occurred refreshing the Brightlayer Secret", e);
-    		flashScope.setError(new YukonMessageSourceResolvable(baseKey + ".secretsBox.secretRotationError", secretNumber, e.getMessage()));
-    	}
+        try {
+            eatonCloudSecretRotationServiceV1.rotateSecret(secretNumber, user);
+            flashScope.setConfirm(new YukonMessageSourceResolvable(baseKey + ".secretsBox.secretRotationSuccess", secretNumber));
+        } catch (EatonCloudCommunicationExceptionV1 e) {
+            log.error("Error occurred refreshing the Brightlayer Secret", e);
+            flashScope.setError(new YukonMessageSourceResolvable(baseKey + ".secretsBox.secretRotationError", secretNumber, e.getDisplayMessage()));
+        }
         return "redirect:view";
     }
 

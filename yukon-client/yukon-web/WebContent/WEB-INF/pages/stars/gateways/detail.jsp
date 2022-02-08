@@ -41,7 +41,7 @@
                         classes="js-edit ${clazz}"/>
             </cti:checkRolesAndProperties>
             <cti:checkRolesAndProperties value="MANAGE_INFRASTRUCTURE" level="OWNER">
-                <cm:dropdownOption icon="icon-cross" key="components.button.delete.label" id="gateway-delete"
+                <cm:dropdownOption icon="icon-delete" key="components.button.delete.label" id="gateway-delete"
                     data-ok-event="yukon:assets:gateways:delete"/>
             </cti:checkRolesAndProperties>
         </cm:dropdown>

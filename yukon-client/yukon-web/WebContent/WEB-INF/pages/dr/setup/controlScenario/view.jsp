@@ -28,7 +28,7 @@
             <!-- Delete -->
             <cti:checkRolesAndProperties value="DR_SETUP_PERMISSION" level="OWNER">
                 <li class="divider"></li>
-                <cm:dropdownOption icon="icon-cross" key="yukon.web.components.button.delete.label" classes="js-hide-dropdown"
+                <cm:dropdownOption icon="icon-delete" key="yukon.web.components.button.delete.label" classes="js-hide-dropdown"
                                id="js-delete-option" data-ok-event="yukon:control-scenario:delete"/>
             
                 <d:confirm on="#js-delete-option" nameKey="confirmDelete" argument="${controlScenario.name}" />

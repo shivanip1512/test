@@ -60,7 +60,7 @@
                     <td>
                         <c:if test="${program.isUnused()}">
                             <cm:dropdown icon="icon-cog">
-                                <cm:dropdownOption id="deleteProgram-${program.programInfo.guid}" icon="icon-cross" key="yukon.web.components.button.delete.label"
+                                <cm:dropdownOption id="deleteProgram-${program.programInfo.guid}" icon="icon-delete" key="yukon.web.components.button.delete.label"
                                     data-program-guid="${program.programInfo.guid}" data-ok-event="yukon:program:delete"/>
                                 <d:confirm on="#deleteProgram-${program.programInfo.guid}" nameKey="confirmDelete" argument="${program.programInfo.name}"/>
                             </cm:dropdown>

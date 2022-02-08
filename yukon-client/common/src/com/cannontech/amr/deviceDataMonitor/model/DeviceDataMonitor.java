@@ -3,7 +3,6 @@ package com.cannontech.amr.deviceDataMonitor.model;
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Optional;
 import java.util.stream.Collectors;
 
 import com.cannontech.amr.MonitorEvaluatorStatus;
@@ -24,6 +23,7 @@ public class DeviceDataMonitor implements PointMonitor, Serializable, Comparable
     private Integer id;
     private String name;
     private boolean enabled = true;
+    private boolean notifyOnAlarmOnly = false;
     private transient DeviceGroup group;
     private transient StoredDeviceGroup violationGroup;
     private List<DeviceDataMonitorProcessor> processors = LazyList.ofInstance(DeviceDataMonitorProcessor.class);
@@ -33,13 +33,14 @@ public class DeviceDataMonitor implements PointMonitor, Serializable, Comparable
     }
 
     public DeviceDataMonitor(Integer id, String name, String groupName, DeviceGroup group, boolean enabled,
-            List<DeviceDataMonitorProcessor> processors) {
+            List<DeviceDataMonitorProcessor> processors, boolean notifyOnAlarmOnly) {
         this.id = id;
         this.groupName = groupName;
         this.name = name.trim();
         this.enabled = enabled;
         this.processors = processors;
         this.group = group;
+        this.notifyOnAlarmOnly = notifyOnAlarmOnly;
     }
 
     public Integer getId() {
@@ -50,6 +51,7 @@ public class DeviceDataMonitor implements PointMonitor, Serializable, Comparable
         this.id = id;
     }
 
+    @Override
     public String getGroupName() {
         return groupName;
     }
@@ -58,6 +60,7 @@ public class DeviceDataMonitor implements PointMonitor, Serializable, Comparable
         this.groupName = groupName;
     }
 
+    @Override
     public String getName() {
         return name;
     }
@@ -72,6 +75,14 @@ public class DeviceDataMonitor implements PointMonitor, Serializable, Comparable
 
     public void setEnabled(boolean enabled) {
         this.enabled = enabled;
+    }
+    
+    public boolean isNotifyOnAlarmOnly() {
+        return notifyOnAlarmOnly;
+    }
+    
+    public void setNotifyOnAlarmOnly(boolean enabled) {
+        notifyOnAlarmOnly = enabled;
     }
 
     public List<DeviceDataMonitorProcessor> getProcessors() {
@@ -139,6 +150,7 @@ public class DeviceDataMonitor implements PointMonitor, Serializable, Comparable
         result = prime * result + ((groupName == null) ? 0 : groupName.hashCode());
         result = prime * result + ((id == null) ? 0 : id.hashCode());
         result = prime * result + ((name == null) ? 0 : name.hashCode());
+        result = prime * result + (notifyOnAlarmOnly ? 1231 : 1237);
         result = prime * result + ((processors == null) ? 0 : processors.hashCode());
         return result;
     }
@@ -179,6 +191,9 @@ public class DeviceDataMonitor implements PointMonitor, Serializable, Comparable
         } else if (!name.equals(other.name)) {
             return false;
         }
+        if (notifyOnAlarmOnly != other.notifyOnAlarmOnly) {
+            return false;
+        }
         if (processors == null) {
             if (other.processors != null) {
                 return false;
@@ -196,8 +211,11 @@ public class DeviceDataMonitor implements PointMonitor, Serializable, Comparable
     
     @Override
     public String toString() {
-        return String
-                .format("DeviceDataMonitor [id=%s, name=%s, groupName=%s, enabled=%s]",
-                        id, name, groupName, enabled);
+        return String.format("DeviceDataMonitor [groupName=%s, id=%s, name=%s, enabled=%s, notifyOnAlarmOnly=%s]",
+                             groupName,
+                             id,
+                             name,
+                             enabled,
+                             notifyOnAlarmOnly);
     }
 }

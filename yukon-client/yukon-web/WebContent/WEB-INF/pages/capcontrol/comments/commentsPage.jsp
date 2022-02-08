@@ -76,7 +76,7 @@
                                 </td>
                                 <c:if test="${modifyPermission}">
                                     <td class="remove-column">
-                                        <cti:button nameKey="remove" renderMode="image" onclick="yukon.da.comments.deleteComment(${comment.id})" classes="center" icon="icon-cross"/>
+                                        <cti:button nameKey="remove" renderMode="image" onclick="yukon.da.comments.deleteComment(${comment.id})" classes="center" icon="icon-delete"/>
                                     </td>
                                 </c:if>
                             </tr>

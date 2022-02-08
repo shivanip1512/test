@@ -97,6 +97,7 @@
         ]]>
     </entry>
     <entry key="yukon.web.modules.adminSetup.config.showHideData">Show/Hide Data</entry>
+    <entry key="yukon.web.modules.adminSetup.config.clearData">Clear Data</entry>
     <entry key="yukon.common.imagePicker.title">Choose Image</entry>
     <entry key="yukon.common.imagePicker.name">Name</entry>
     <entry key="yukon.common.imagePicker.category">Category</entry>

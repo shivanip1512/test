@@ -1,6 +1,6 @@
 package com.cannontech.amr.monitors.impl;
 
-import static org.joda.time.DateTime.now;
+import static org.joda.time.DateTime.*;
 
 import java.util.Date;
 import java.util.List;
@@ -32,6 +32,7 @@ import com.cannontech.core.dao.PointDao;
 import com.cannontech.core.dao.RawPointHistoryDao;
 import com.cannontech.core.dao.RawPointHistoryDao.Order;
 import com.cannontech.core.dynamic.PointValueHolder;
+import com.cannontech.core.dynamic.PointValueQualityTagHolder;
 import com.cannontech.core.dynamic.RichPointData;
 import com.cannontech.core.dynamic.RichPointDataListener;
 import com.cannontech.database.data.lite.LitePoint;
@@ -129,7 +130,7 @@ public class StatusPointMonitorProcessorFactory extends MonitorProcessorFactoryB
             
             trackingLogger.acceptId(richPointData);
 
-            PointValueHolder nextValue = richPointData.getPointValue();
+            PointValueQualityTagHolder nextValue = richPointData.getPointValue();
             PointValueHolder previousValue = null; // store this outside the loop because it is valid for every processor 
             
             if (log.isDebugEnabled()) {
@@ -137,6 +138,8 @@ public class StatusPointMonitorProcessorFactory extends MonitorProcessorFactoryB
             }
             
             for (StatusPointMonitorProcessor statusPointMonitorProcessor : statusPointMonitor.getProcessors()) {
+                
+                
                 
                 boolean needPreviousValue = previousValue == null && needPreviousValue(statusPointMonitorProcessor); 
                 if (needPreviousValue) {
@@ -146,6 +149,14 @@ public class StatusPointMonitorProcessorFactory extends MonitorProcessorFactoryB
                 boolean shouldSendMessage = shouldSendMessage(statusPointMonitorProcessor, nextValue, previousValue);
 
                 if (shouldSendMessage) {                  
+                    
+                    // If processor is "notify on alarms only," only process point data marked "unsolicited"
+                    if (statusPointMonitorProcessor.isNotifyOnAlarmOnly() && !nextValue.isTagsUnsolicited()) {
+                        log.debug("Ignoring point data from event. Processor is set to notify on alarms only. Processor={}", 
+                                statusPointMonitorProcessor);
+                        break;
+                    }
+                    
                     OutageJmsMessage outageJmsMessage = new OutageJmsMessage();
                     outageJmsMessage.setSource(statusPointMonitor.getName());
                     outageJmsMessage.setActionType(statusPointMonitorProcessor.getActionTypeEnum());

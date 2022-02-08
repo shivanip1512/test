@@ -67,14 +67,14 @@
                                             <input type="hidden" name="savedName" value="${attr.name}"/>
                                             <spring:bind path="name">
                                                 <c:set var="errorClass" value="${status.error ? 'error' : ''}"/>
-                                                <form:input path="name" maxlength="60" size="60" cssClass="${errorClass}"/>
+                                                <form:input path="name" maxlength="60" size="50" cssClass="${errorClass}"/>
                                             </spring:bind>
                                             <div class="button-group">
                                                 <cti:msg2 var="cancelText" key=".cancelChanges"/>
                                                 <cti:msg2 var="saveText" key=".save"/>
                                                 <cti:button renderMode="buttonImage" icon="icon-disk" type="submit"
                                                     data-attribute-id="${attributeId}" title="${saveText}" classes="ML0"/>
-                                                <cti:button renderMode="buttonImage" icon="icon-delete" classes="js-cancel-edit-attribute MR0" 
+                                                <cti:button renderMode="buttonImage" icon="icon-cross" classes="js-cancel-edit-attribute MR0" 
                                                     data-attribute-id="${attributeId}" title="${cancelText}"/>
                                             </div>
                                             <spring:bind path="name">
@@ -86,7 +86,7 @@
                                 <td>
                                     <cm:dropdown icon="icon-cog" triggerClasses="js-view-attribute-${attributeId} ${viewClass}">
                                         <cm:dropdownOption key=".edit" icon="icon-pencil" classes="js-edit-attribute" data-attribute-id="${attributeId}"/>
-                                        <cm:dropdownOption id="delete-attribute-${attributeId}" key=".delete" icon="icon-cross" 
+                                        <cm:dropdownOption id="delete-attribute-${attributeId}" key=".delete" icon="icon-delete" 
                                             data-ok-event="yukon:attribute:delete" classes="js-hide-dropdown" data-attribute-id="${attributeId}"/>
                                         <d:confirm on="#delete-attribute-${attributeId}" nameKey="confirmDelete" argument="${attr.name}"  />
                                         <cti:url var="deleteUrl" value="/admin/config/attribute/${attributeId}/delete"/>

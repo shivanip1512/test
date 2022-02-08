@@ -11,6 +11,7 @@ import javax.management.remote.JMXConnector;
 
 import org.apache.activemq.broker.jmx.DestinationViewMBean;
 import org.apache.logging.log4j.Logger;
+import org.joda.time.DateTime;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import com.cannontech.clientutils.YukonLogManager;
@@ -24,12 +25,12 @@ public class YukonMetricHelper {
     @Autowired private JmxConnectorHelper helper;
     @Autowired private ConfigurationSource configurationSource;
 
-    private static int thresholdValue;
+    private static long thresholdValue;
 
     @PostConstruct
     public void init() {
-        thresholdValue = configurationSource.getInteger("RFN_METER_DATA_WORKER_COUNT", 5)
-                * configurationSource.getInteger("RFN_METER_DATA_WORKER_QUEUE_SIZE", 500);
+        thresholdValue = configurationSource.getLong("RFN_METER_DATA_WORKER_COUNT", 5)
+                * configurationSource.getLong("RFN_METER_DATA_WORKER_QUEUE_SIZE", 500);
     }
 
     /**
@@ -54,7 +55,23 @@ public class YukonMetricHelper {
     /**
      * Return dynamically calculated threshold value for archive requests.
      */
-    public int getThresholdValueForArchiveRequests() {
+    public long getThresholdValueForArchiveRequests() {
         return thresholdValue;
+    }
+
+    /**
+     * Return true if "escape valve" condition is satisfied. For example switch to 5 minute interval
+     * data(intervalAfterEscapeValve) after the first 15 minutes(escapeValveTime).
+     */
+    public boolean checkForEscapeValve(int escapeValveTime, DateTime firstNotifiedTime, int intervalAfterEscapeValve) {
+        boolean escapeValveAcheived = DateTime.now().minusMinutes(escapeValveTime).isAfter(firstNotifiedTime);
+        boolean shouldWatchAfterEscapevalve = false;
+        if (escapeValveAcheived) {
+            int minutesDifference = DateTime.now().getMinuteOfDay() - firstNotifiedTime.getMinuteOfDay();
+            if (minutesDifference % intervalAfterEscapeValve == 0) {
+                shouldWatchAfterEscapevalve = true;
+            }
+        }
+        return !escapeValveAcheived || shouldWatchAfterEscapevalve;
     }
 }

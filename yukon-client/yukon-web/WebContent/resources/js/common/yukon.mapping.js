@@ -76,73 +76,73 @@ yukon.mapping = (function () {
     _styles = { 
         'METER_ELECTRIC': new ol.style.Style({ 
             image: new ol.style.Icon({ 
-                src: yukon.url('/WebConfig/yukon/Icons/marker-meter-elec-grey.png'), 
+                src: yukon.url('/WebConfig/yukon/Icons/marker-meter-elec-grey.svg'), 
                 scale: _deviceScale, 
                 anchor: _anchor }), 
             zIndex: _iconZIndex }),
         'METER_PLC_ELECTRIC': new ol.style.Style({ 
             image: new ol.style.Icon({ 
-                src: yukon.url('/WebConfig/yukon/Icons/marker-meter-plc-elec-grey.png'), 
+                src: yukon.url('/WebConfig/yukon/Icons/marker-meter-plc-elec-grey.svg'), 
                 scale: _deviceScale, 
                 anchor: _anchor }), 
             zIndex: _iconZIndex }),
         'METER_WIFI_ELECTRIC': new ol.style.Style({ 
             image: new ol.style.Icon({ 
-                src: yukon.url('/WebConfig/yukon/Icons/marker-meter-wifi-grey.png'), 
+                src: yukon.url('/WebConfig/yukon/Icons/marker-meter-wifi-grey.svg'), 
                 scale: _relayScale, 
                 anchor: _anchor }), 
             zIndex: _relayZIndex }),
         'METER_WATER': new ol.style.Style({ 
             image: new ol.style.Icon({ 
-                src: yukon.url('/WebConfig/yukon/Icons/marker-meter-water-grey.png'), 
+                src: yukon.url('/WebConfig/yukon/Icons/marker-meter-water-grey.svg'), 
                 scale: _deviceScale, 
                 anchor: _anchor }), 
             zIndex: _iconZIndex }),
         'METER_GAS': new ol.style.Style({ 
             image: new ol.style.Icon({ 
-                src: yukon.url('/WebConfig/yukon/Icons/marker-meter-gas-grey.png'), 
+                src: yukon.url('/WebConfig/yukon/Icons/marker-meter-gas-grey.svg'), 
                 scale: _deviceScale, 
                 anchor: _anchor }), 
             zIndex: _iconZIndex }),
         'TRANSMITTER': new ol.style.Style({ 
             image: new ol.style.Icon({ 
-                src: yukon.url('/WebConfig/yukon/Icons/marker-transmitter-grey.png'), 
+                src: yukon.url('/WebConfig/yukon/Icons/marker-transmitter-grey.svg'), 
                 scale: _gatewayScale, 
                 anchor: _anchor }), 
             zIndex: _gatewayZIndex }),
         'RELAY': new ol.style.Style({ 
             image: new ol.style.Icon({ 
-                src: yukon.url('/WebConfig/yukon/Icons/marker-relay-grey.png'), 
+                src: yukon.url('/WebConfig/yukon/Icons/marker-relay-grey.svg'), 
                 scale: _relayScale, 
                 anchor: _anchor }), 
             zIndex: _relayZIndex }),
         'RELAY_CELLULAR': new ol.style.Style({
             image: new ol.style.Icon({
-                src: yukon.url('/WebConfig/yukon/Icons/marker-relay-cell-grey.png'),
+                src: yukon.url('/WebConfig/yukon/Icons/marker-relay-cell-grey.svg'),
                 scale: _relayScale,
                 anchor: _anchor }),
             zIndex: _relayZIndex }),
         'LCR' : new ol.style.Style({ 
             image: new ol.style.Icon({ 
-                src: yukon.url('/WebConfig/yukon/Icons/marker-lcr-grey.png'), 
+                src: yukon.url('/WebConfig/yukon/Icons/marker-lcr-grey.svg'), 
                 scale: _deviceScale, 
                 anchor: _anchor }), 
             zIndex: _iconZIndex }),
         'PLC_LCR' : new ol.style.Style({ 
             image: new ol.style.Icon({ 
-                src: yukon.url('/WebConfig/yukon/Icons/marker-plc-lcr-grey.png'), 
+                src: yukon.url('/WebConfig/yukon/Icons/marker-plc-lcr-grey.svg'), 
                 scale: _deviceScale, 
                 anchor: _anchor }), 
             zIndex: _iconZIndex }),
         'THERMOSTAT' : new ol.style.Style({ 
             image: new ol.style.Icon({ 
-                src: yukon.url('/WebConfig/yukon/Icons/marker-thermostat-grey.png'), 
+                src: yukon.url('/WebConfig/yukon/Icons/marker-thermostat-grey.svg'), 
                 scale: _deviceScale, 
                 anchor: _anchor }), 
             zIndex: _iconZIndex }),
         'GENERIC_GREY': new ol.style.Style({ 
             image: new ol.style.Icon({ 
-                src: yukon.url('/WebConfig/yukon/Icons/marker-generic.png'), 
+                src: yukon.url('/WebConfig/yukon/Icons/marker-generic.svg'), 
                 scale: _deviceScale, 
                 anchor: _anchor }), 
             zIndex: _iconZIndex }),

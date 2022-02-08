@@ -1,5 +1,12 @@
-<%@ taglib prefix="tags" tagdir="/WEB-INF/tags" %>
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core"%>
+<%@ taglib prefix="cti" uri="http://cannontech.com/tags/cti" %>
+<%@ taglib prefix="tags" tagdir="/WEB-INF/tags" %>
+
+<style>
+.MT35 {
+	margin-top:.35em;
+}
+</style>
 
 <c:set var="dummyEntryRow" value="${entryIndex lt 0}"/>
 
@@ -13,7 +20,7 @@
     </div>
     <div class="column two nogutter fr" style="position:relative">
         <div style="position:absolute; top:1.65em; left:-2em">
-             <i class="icon icon-arrow-right fl" style="margin-top:.35em"></i>
+             <cti:icon icon="icon-arrow-right" classes="fl MT35"/>
              <div class="fr">
                     <tags:inputBindOptional
                     bindPath="${not dummyEntryRow}"
