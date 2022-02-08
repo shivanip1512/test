@@ -6,6 +6,7 @@ public class StatusPointMonitorProcessor {
     private String prevState;
     private String nextState;
     private OutageActionType actionType;
+    private boolean notifyOnAlarmOnly = false;
     
     public void setStatusPointMonitorProcessorId(Integer statusPointMonitorProcessorId) {
         this.statusPointMonitorProcessorId = statusPointMonitorProcessorId;
@@ -13,6 +14,14 @@ public class StatusPointMonitorProcessor {
     
     public Integer getStatusPointMonitorProcessorId() {
         return statusPointMonitorProcessorId;
+    }
+    
+    public boolean isNotifyOnAlarmOnly() {
+        return notifyOnAlarmOnly;
+    }
+    
+    public void setNotifyOnAlarmOnly(boolean enabled) {
+        notifyOnAlarmOnly = enabled;
     }
     
     public void setPrevState(String prevState) {
@@ -94,46 +103,55 @@ public class StatusPointMonitorProcessor {
     public int hashCode() {
         final int prime = 31;
         int result = 1;
-        result = prime * result
-                 + ((actionType == null) ? 0 : actionType.hashCode());
-        result = prime * result
-                 + ((nextState == null) ? 0 : nextState.hashCode());
-        result = prime * result
-                 + ((prevState == null) ? 0 : prevState.hashCode());
+        result = prime * result + ((actionType == null) ? 0 : actionType.hashCode());
+        result = prime * result + ((nextState == null) ? 0 : nextState.hashCode());
+        result = prime * result + (notifyOnAlarmOnly ? 1231 : 1237);
+        result = prime * result + ((prevState == null) ? 0 : prevState.hashCode());
         return result;
     }
 
     @Override
     public boolean equals(Object obj) {
-        if (this == obj)
+        if (this == obj) {
             return true;
-        if (obj == null)
+        }
+        if (obj == null) {
             return false;
-        if (getClass() != obj.getClass())
+        }
+        if (getClass() != obj.getClass()) {
             return false;
+        }
         StatusPointMonitorProcessor other = (StatusPointMonitorProcessor) obj;
-        if (actionType == null) {
-            if (other.actionType != null)
-                return false;
-        } else if (!actionType.equals(other.actionType))
+        if (actionType != other.actionType) {
             return false;
+        }
         if (nextState == null) {
-            if (other.nextState != null)
+            if (other.nextState != null) {
                 return false;
-        } else if (!nextState.equals(other.nextState))
+            }
+        } else if (!nextState.equals(other.nextState)) {
             return false;
+        }
+        if (notifyOnAlarmOnly != other.notifyOnAlarmOnly) {
+            return false;
+        }
         if (prevState == null) {
-            if (other.prevState != null)
+            if (other.prevState != null) {
                 return false;
-        } else if (!prevState.equals(other.prevState))
+            }
+        } else if (!prevState.equals(other.prevState)) {
             return false;
+        }
         return true;
     }
 
     @Override
     public String toString() {
-        return String.format("StatusPointMonitorProcessor [actionType=%s, nextState=%s, prevState=%s, statusPointMonitorProcessorId=%s]",
-                             actionType, nextState, prevState,
-                             statusPointMonitorProcessorId);
+        return String.format("StatusPointMonitorProcessor [statusPointMonitorProcessorId=%s, prevState=%s, nextState=%s, actionType=%s, notifyOnAlarmOnly=%s]",
+                             statusPointMonitorProcessorId,
+                             prevState,
+                             nextState,
+                             actionType,
+                             notifyOnAlarmOnly);
     }
 }

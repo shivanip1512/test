@@ -300,6 +300,7 @@ std::optional<DeviceTypes> resolvePaoIdXmlType( const std::string & type )
         { "ZIGBEE_ENDPOINT",             _unmapped_ },
 
         //  --- Itron ---
+        { "LCR6200S",                    _unmapped_ },
         { "LCR6600S",                    _unmapped_ },
         { "LCR6601S",                    _unmapped_ },
 

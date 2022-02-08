@@ -1,5 +1,6 @@
 package com.cannontech.web.dev;
 
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
@@ -7,6 +8,7 @@ import java.util.Map;
 import java.util.UUID;
 
 import org.apache.commons.codec.digest.DigestUtils;
+import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -23,12 +25,15 @@ import org.springframework.web.bind.annotation.RequestParam;
 
 import com.cannontech.common.config.MasterConfigBoolean;
 import com.cannontech.dr.ecobee.message.ZeusAuthenticationRequest;
+import com.cannontech.dr.ecobee.message.ZeusCreateDevice;
 import com.cannontech.dr.ecobee.message.ZeusCreatePushConfig;
 import com.cannontech.dr.ecobee.message.ZeusDemandResponseRequest;
 import com.cannontech.dr.ecobee.message.ZeusErrorResponse;
 import com.cannontech.dr.ecobee.message.ZeusShowPushConfig;
+import com.cannontech.dr.ecobee.message.ZeusThermostat;
 import com.cannontech.dr.ecobee.message.ZeusThermostatGroup;
 import com.cannontech.dr.ecobee.message.ZeusThermostatState;
+import com.cannontech.dr.ecobee.message.ZeusThermostatsResponse;
 import com.cannontech.web.security.annotation.CheckCparm;
 import com.cannontech.web.security.annotation.IgnoreCsrfCheck;
 
@@ -74,25 +79,14 @@ public class EcobeeMockApiController {
         return new ResponseEntity<>(responseMap, HttpStatus.OK);
     }
 
-    
-    
     @IgnoreCsrfCheck
-    @GetMapping("tstatgroups/{thermostatGroupID}/thermostats")
-    public ResponseEntity<Object> retrieveThermostats(@PathVariable String thermostatGroupID,
-            @RequestParam(name = "enrollment_state", required = false) ZeusThermostatState state,
-            @RequestParam(name = "thermostat_ids", required = false) List<String> thermostatIds,
-            @RequestParam(name = "page", required = false, defaultValue = "0") Integer pageNumber) {
+    @PutMapping("tstatgroups/{thermostatGroupID}/thermostats")
+    public ResponseEntity<Object> addThermostats(@PathVariable String thermostatGroupID, @RequestBody ZeusCreateDevice device) {
         int createDeviceCode = zeusEcobeeDataConfiguration.getCreateDevice();
         if (createDeviceCode == 0) {
-            if (thermostatIds == null) {
-                if (zeusEcobeeDataConfiguration.getPaginatedResponse() == 1) {
-                    return responseFactory.getPaginatedThermostatsInGroup(thermostatGroupID, pageNumber);
-                } else {
-                    return new ResponseEntity<>(responseFactory.getThermostatsInGroup(thermostatGroupID), HttpStatus.OK);
-                }
-            } else {
-                return new ResponseEntity<>(responseFactory.retrieveThermostats(thermostatIds), HttpStatus.OK);
-            }
+            Map<String, Integer> responseMap = new HashMap<String, Integer>();
+            responseMap.put("added", 1);
+            return new ResponseEntity<>(responseMap, HttpStatus.OK);
         } else if (createDeviceCode == 1) {
             return new ResponseEntity<>(getUnauthorizedResponse(), HttpStatus.UNAUTHORIZED);
         } else if (createDeviceCode == 3) {
@@ -101,7 +95,36 @@ public class EcobeeMockApiController {
             return new ResponseEntity<>(getBadRequestResponse(), HttpStatus.BAD_REQUEST);
         }
     }
-    
+
+    @IgnoreCsrfCheck
+    @GetMapping("tstatgroups/{thermostatGroupID}/thermostats")
+    public ResponseEntity<Object> retrieveThermostats(@PathVariable String thermostatGroupID,
+            @RequestParam(name = "thermostat_ids", required = false) List<String> thermostatIds,
+            @RequestParam(name = "page", required = false, defaultValue = "0") Integer pageNumber) {
+        if (CollectionUtils.isNotEmpty(thermostatIds)) {
+            int deviceStatusResponse = zeusEcobeeDataConfiguration.getDeviceStatus();
+            if (deviceStatusResponse == 0 || deviceStatusResponse == 1) {
+                ZeusThermostatsResponse response = new ZeusThermostatsResponse();
+                List<ZeusThermostat> thermostats = new ArrayList<ZeusThermostat>();
+                ZeusThermostat thermostat = new ZeusThermostat();
+                thermostat.setSerialNumber(thermostatIds.get(0));
+                thermostat.setState(
+                        deviceStatusResponse == 0 ? ZeusThermostatState.ENROLLED : ZeusThermostatState.NOT_YET_CONNECTED);
+                thermostats.add(thermostat);
+                response.setThermostats(thermostats);
+                return new ResponseEntity<>(response, HttpStatus.OK);
+            } else {
+                return new ResponseEntity<>(new ZeusThermostatsResponse(), HttpStatus.OK);
+            }
+        }
+        int pagenatedResponse = zeusEcobeeDataConfiguration.getPaginatedResponse();
+        if (pagenatedResponse == 1) {
+            return responseFactory.getPaginatedThermostatsInGroup(thermostatGroupID, pageNumber);
+        } else {
+            return new ResponseEntity<>(responseFactory.getThermostatsInGroup(thermostatGroupID), HttpStatus.OK);
+        }
+    }
+
     @IgnoreCsrfCheck
     @DeleteMapping("tstatgroups/{thermostatGroupID}/thermostats")
     public ResponseEntity<Object> deleteThermostats(@PathVariable String thermostatGroupID,

@@ -27,7 +27,7 @@
             </span>
             <span class="criteria-value">${fn:escapeXml(pageScope.value)}</span>
         </div>
-        <i class="icon icon-bullet-arrow-down">&nbsp;</i>
+        &nbsp;<cti:icon icon="icon-bullet-arrow-down"/>
     </button>
     <ul class="dropdown-menu criteria-menu dn ${pageScope.menuClasses}"><jsp:doBody/></ul>
 </div>

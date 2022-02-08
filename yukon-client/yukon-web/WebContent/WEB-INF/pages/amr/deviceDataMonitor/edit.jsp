@@ -101,6 +101,10 @@
                     <tags:nameValue2 nameKey=".status" valueClass="${clazz}">${monitoringEnabled}</tags:nameValue2>
                 </cti:displayForPageEditModes>
                 
+                <tags:nameValue2 nameKey=".notifyOnAlarmOnly">
+                    <tags:switchButton path="notifyOnAlarmOnly" offNameKey=".enabledfalse" onNameKey=".enabledtrue"/>
+                </tags:nameValue2>
+                
                 <tags:nameValue2 excludeColon="true">
                     <a href="javascript:void(0);" id="refresh-violations" class="dn" data-add-key="">
                         <cti:icon icon="icon-arrow-refresh"/>

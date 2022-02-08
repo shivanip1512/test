@@ -35,7 +35,7 @@ var yg = {
             long_date_time_hm: 'MMM DD hh:mm A',
             both_with_ampm: 'MM/DD/YYYY hh:mm:ss A',
             date: 'MM/DD/YYYY',
-
+            date_hms_12: 'MM/DD/YYYY hh:mm:ss a'
         },
         phone: <cti:msg2 key="yukon.common.phoneNumberFormatting.formats"/>
     },
@@ -136,6 +136,26 @@ var yg = {
         remove: '<cti:msg2 key="yukon.web.components.ajaxConfirm.confirmRemove.ok"/>',
         confirmRemoveMessage: '<cti:msg2 key="yukon.web.components.ajaxConfirm.confirmRemove.message"/>',
         confirmRemoveTitle: '<cti:msg2 key="yukon.web.components.ajaxConfirm.confirmRemove.title"/>'
+    },
+    
+    iconSvg: {
+    	iconCloseX: '<cti:getIconSvg iconClass="icon-close-x"/>',
+    	iconMagnifier: '<cti:getIconSvg iconClass="icon-magnifier"/>',
+    	iconHelp: '<cti:getIconSvg iconClass="icon-help"/>',
+    	iconError: '<cti:getIconSvg iconClass="icon-error"/>',
+    	iconAdd: '<cti:getIconSvg iconClass="icon-add"/>',
+    	iconAccept: '<cti:getIconSvg iconClass="icon-accept"/>',
+    	iconStar: '<cti:getIconSvg iconClass="icon-star"/>',
+       	iconFavoriteNot: '<cti:getIconSvg iconClass="icon-favorite-not"/>',
+       	iconPlusGreen: '<cti:getIconSvg iconClass="icon-plus-green"/>',
+       	iconDisable: '<cti:getIconSvg iconClass="icon-disable"/>',
+       	iconCross: '<cti:getIconSvg iconClass="icon-cross"/>',
+       	iconDelete: '<cti:getIconSvg iconClass="icon-delete"/>',
+       	iconExpand: '<cti:getIconSvg iconClass="icon-expand"/>',
+       	iconCollapse: '<cti:getIconSvg iconClass="icon-collapse"/>',
+       	iconTick: '<cti:getIconSvg iconClass="icon-tick"/>',
+       	iconDatabaseAdd: '<cti:getIconSvg iconClass="icon-database-add"/>',
+       	iconArrowForward: '<cti:getIconSvg iconClass="icon-arrow-forward"/>'
     },
     
     timezone: '<cti:getUsersTimezone/>',

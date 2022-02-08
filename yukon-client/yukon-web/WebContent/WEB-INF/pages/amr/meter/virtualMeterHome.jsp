@@ -28,7 +28,7 @@
         </cti:checkRolesAndProperties>
         <!-- Delete Meter Button -->
         <cti:checkRolesAndProperties value="ENDPOINT_PERMISSION" level="OWNER">
-            <cm:dropdownOption id="deleteMeter" key="yukon.web.modules.amr.delete" classes="js-hide-dropdown" icon="icon-cross"  
+            <cm:dropdownOption id="deleteMeter" key="yukon.web.modules.amr.delete" classes="js-hide-dropdown" icon="icon-delete"  
                                data-ok-event="yukon:meter:delete"/>
             <d:confirm on="#deleteMeter"  nameKey="confirmDelete" argument="${deviceName}"/>
             <cti:url var="deleteUrl" value="/meter/${id}"/>

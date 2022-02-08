@@ -167,6 +167,7 @@ public enum PaoType implements DisplayableEnum, DatabaseRepresentationSource {
     LCR6600_RFN(DeviceTypes.LCR6600_RFN, "LCR-6600 RFN", PaoCategory.DEVICE, PaoClass.RFMESH),
     LCR6700_RFN(DeviceTypes.LCR6700_RFN, "LCR-6700 RFN", PaoCategory.DEVICE, PaoClass.RFMESH),
     
+    LCR6200S(DeviceTypes.LCR6200S, "LCR-6200S", PaoCategory.DEVICE, PaoClass.ITRON),
     LCR6600S(DeviceTypes.LCR6600S, "LCR-6600S", PaoCategory.DEVICE, PaoClass.ITRON),
     LCR6601S(DeviceTypes.LCR6601S, "LCR-6601S", PaoCategory.DEVICE, PaoClass.ITRON),
 
@@ -615,6 +616,7 @@ public enum PaoType implements DisplayableEnum, DatabaseRepresentationSource {
         rfMeterTypes = Sets.intersection(rfTypes, meterTypes).immutableCopy();
         
         itronTypes = ImmutableSet.of(
+            LCR6200S,
             LCR6600S,
             LCR6601S
         );
@@ -824,7 +826,8 @@ public enum PaoType implements DisplayableEnum, DatabaseRepresentationSource {
         
         batteryAnalysisTypes = ImmutableSet.of(
             RFW201,
-            RFG201
+            RFG201,
+            RFG301
           );
         
         rfElectricTypes = Sets.difference(rfMeterTypes, Sets.union(waterMeterTypes, gasMeterTypes)).immutableCopy();

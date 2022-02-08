@@ -112,7 +112,7 @@
                 <div data-dialog
                     id="broadcast-config"
                     data-form
-                    data-width="500"
+                    data-width="550"
                     data-title="<cti:msg2 key=".rfPerformance.configure.title"/>"
                     data-load-event="yukon.dr.rf.config.load"
                     class="dn">

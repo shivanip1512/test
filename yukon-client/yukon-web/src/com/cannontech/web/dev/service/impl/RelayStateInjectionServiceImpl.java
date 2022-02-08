@@ -77,6 +77,12 @@ public class RelayStateInjectionServiceImpl implements RelayStateInjectionServic
                     BuiltInAttribute.RELAY_2_LOAD_STATE
                 )
         );
+        
+        supportedTypesAndRelays.putAll(
+                PaoType.LCR6200S, Lists.newArrayList(
+                    BuiltInAttribute.RELAY_1_LOAD_STATE
+                )
+        );
     }
     
     @Override

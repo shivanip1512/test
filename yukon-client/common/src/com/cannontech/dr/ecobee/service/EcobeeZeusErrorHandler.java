@@ -32,6 +32,7 @@ public class EcobeeZeusErrorHandler implements ResponseErrorHandler {
     @Override
     public boolean hasError(ClientHttpResponse response) throws IOException {
         return response.getStatusCode().series() == HttpStatus.Series.SERVER_ERROR
-                || response.getStatusCode().series() == HttpStatus.Series.CLIENT_ERROR;
+                || (response.getStatusCode().series() == HttpStatus.Series.CLIENT_ERROR
+                        && response.getStatusCode() != HttpStatus.CONFLICT);
     }
 }

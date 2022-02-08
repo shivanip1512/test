@@ -103,7 +103,7 @@
                          
                          <cti:displayForPageEditModes modes="EDIT">
                              <tags:nameValue name="${scheduleStateLabel}">
-                                 <cti:msg key="yukon.common.device.schedules.state.${status}"/>
+                                 <cti:msg key="yukon.common.device.schedules.state.${jobStatus}"/>
                              </tags:nameValue>
                          </cti:displayForPageEditModes>
                          
@@ -125,7 +125,7 @@
                             label="${updateButtonText}" 
                             busy="true"
                             classes="primary action"/>
-                        <c:if test="${status ne 'RUNNING'}">
+                        <c:if test="${jobStatus ne 'RUNNING'}">
                             <c:choose>
                                 <c:when test="${disabled}">
                                     <cti:button onclick="$('#toggleJobEnabledForm').submit();" label="${enableJobButtonText}" busy="true"/>
@@ -191,7 +191,7 @@
                         
                         <cti:displayForPageEditModes modes="EDIT">
                             <tags:nameValue name="${scheduleStateLabel}">
-                                <cti:msg key="yukon.common.device.schedules.state.${status}"/>
+                                <cti:msg key="yukon.common.device.schedules.state.${jobStatus}"/>
                             </tags:nameValue>
                         </cti:displayForPageEditModes>
                         
@@ -205,7 +205,7 @@
                         <cti:displayForPageEditModes modes="EDIT">
         
                             <cti:button type="submit" label="${updateButtonText}" busy="true" classes="primary action"/>
-                            <c:if test="${status ne 'RUNNING'}">
+                            <c:if test="${jobStatus ne 'RUNNING'}">
                             <c:choose>
                                 <c:when test="${disabled}">
                                     <cti:button onclick="$('#toggleJobEnabledForm').submit();" label="${enableJobButtonText}" busy="true"/>

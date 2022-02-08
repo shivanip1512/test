@@ -366,6 +366,9 @@ BOOST_AUTO_TEST_CASE(test_isKnownUnsupportedDevice)
     BOOST_CHECK(isKnownUnsupportedDevice("lcr-6200 rfn"));
     BOOST_CHECK(isKnownUnsupportedDevice("lcr-6600 rfn"));
     BOOST_CHECK(isKnownUnsupportedDevice("lcr-6700 rfn"));
+    BOOST_CHECK(isKnownUnsupportedDevice("lcr-6200c"));
+    BOOST_CHECK(isKnownUnsupportedDevice("lcr-6600c"));
+    BOOST_CHECK(isKnownUnsupportedDevice("lcr-6200s"));
     BOOST_CHECK(isKnownUnsupportedDevice("lcr-6600s"));
     BOOST_CHECK(isKnownUnsupportedDevice("lcr-6601s"));
     BOOST_CHECK(isKnownUnsupportedDevice("weather location"));

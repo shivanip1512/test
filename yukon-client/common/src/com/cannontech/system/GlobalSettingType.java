@@ -138,6 +138,7 @@ public enum GlobalSettingType implements DisplayableEnum {
     EATON_CLOUD_DEVICE_READ_INTERVAL_MINUTES(GlobalSettingSubCategory.DR, integerType(), 60),
     EATON_CLOUD_SERVICE_ACCOUNT_ID(GlobalSettingSubCategory.DR, stringType(), null, GlobalSettingTypeValidators.guidValidator),
     EATON_CLOUD_SECRET(GlobalSettingSubCategory.DR, stringType(), null),
+    EATON_CLOUD_SECRET2(GlobalSettingSubCategory.DR, stringType(), null),
     EATON_CLOUD_URL(GlobalSettingSubCategory.DR, stringType(), "https://blu-dr-api.eaton.com", GlobalSettingTypeValidators.urlValidator),
 
     // Web Server
@@ -263,7 +264,8 @@ public enum GlobalSettingType implements DisplayableEnum {
                 NETWORK_MANAGER_DB_PASSWORD,
                 CLOUD_IOT_HUB_CONNECTION_STRING,
                 EATON_CLOUD_SERVICE_ACCOUNT_ID,
-                EATON_CLOUD_SECRET);
+                EATON_CLOUD_SECRET,
+                EATON_CLOUD_SECRET2);
         }
 
     private GlobalSettingType(GlobalSettingSubCategory category, InputType<?> type, Object defaultValue) {

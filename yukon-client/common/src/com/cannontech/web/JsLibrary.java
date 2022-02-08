@@ -44,7 +44,6 @@ public enum JsLibrary {
     JQUERY_UI_WIDGET("/resources/js/lib/fileupload/jquery.ui.widget.js"), // https://github.com/blueimp/jQuery-File-Upload/wiki/Basic-plugin
 
     YUKON_HIGHCHART("/resources/js/common/yukon.highChart.js"), //in-house
-    JQUERY_SCROLL_TABLE_BODY("/resources/js/lib/scrollTableBody/jquery.scrollTableBody.js"), // https://github.com/nheldman/jquery.scrollTableBody/
 
     HIGH_STOCK("/resources/js/lib/highstock/highstock.js",
                "/resources/js/lib/highstock/highstock.src.js"),

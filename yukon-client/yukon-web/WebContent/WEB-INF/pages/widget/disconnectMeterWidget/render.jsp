@@ -42,7 +42,7 @@
                     <div style="float:right; width:250px;">
                         <cti:checkRolesAndProperties value="ENDPOINT_PERMISSION" level="UPDATE">
                             <cti:button classes="left" nameKey="edit" renderMode="buttonImage" icon="icon-pencil" data-popup="#disconnect-meter-popup"/>
-                            <cti:button nameKey="delete" icon="icon-cross" renderMode="buttonImage" id="delete-btn" 
+                            <cti:button nameKey="delete" icon="icon-delete" renderMode="buttonImage" id="delete-btn" 
                                 data-ok-event="yukon:widget:meter:disconnect:delete:addr"/>
                             <tags:widgetActionUpdate method="uploadConfig" nameKey="Upload" classes="M0" icon="icon-upload"
                                 container="${widgetParameters.widgetId}_results" renderMode="buttonImage" title="${uploadTitle}"/>

@@ -18,7 +18,8 @@
              data-title="<cti:msg2 key=".edit.title"/>"
              data-url="${editUrl}"
              data-id="${gateway.paoIdentifier.paoId}"
-             data-width="580" 
+             data-width="680" 
+             data-height="600"
              data-event="yukon:assets:gateway:save" 
              data-load-event="yukon:assets:gateway:edit:load" 
              data-ok-text="<cti:msg2 key="components.button.save.label"/>"></div>

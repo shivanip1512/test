@@ -70,6 +70,18 @@
                     url: '${pageScope.chartUrl}',
                     dataType : 'json'
                 }).done(function (response, textStatus, jqXHR) {
+                    var tooltipProperties = {
+                        tooltip: {
+                            positioner: function(_, _, point) {
+                                var chartPosition = this.chart.pointer.getChartPosition();
+                                return {
+                                    x: chartPosition.left + point.plotX,
+                                    y: chartPosition.top + point.plotY + 50
+                                }
+                            }
+                        }
+                    };
+                    response = $.extend({}, tooltipProperties, response),
                     yukon.highChart.buildChart($("#js-chart-container-${uniqueId}"), response, "${pageScope.title}", "${chartHeight}", "${chartWidth}");
                 });
             });

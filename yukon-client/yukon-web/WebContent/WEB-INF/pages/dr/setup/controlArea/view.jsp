@@ -30,7 +30,7 @@
             </cti:checkRolesAndProperties>
             <cti:checkRolesAndProperties value="DR_SETUP_PERMISSION" level="OWNER">
                 <li class="divider"></li>
-                <cm:dropdownOption icon="icon-cross" key="yukon.web.components.button.delete.label" classes="js-hide-dropdown" id="delete-option" data-ok-event="yukon:controlArea:delete"/>
+                <cm:dropdownOption icon="icon-delete" key="yukon.web.components.button.delete.label" classes="js-hide-dropdown" id="delete-option" data-ok-event="yukon:controlArea:delete"/>
             
                 <d:confirm on="#delete-option" nameKey="confirmDelete" argument="${controlArea.name}" />
                 <cti:url var="deleteUrl" value="/dr/setup/controlArea/${controlArea.controlAreaId}/delete"/>
@@ -162,7 +162,7 @@
                         <c:set var="controlWindowClass" value="${controlWindowEnabled ? '' : 'dn'}"/>
                         <tags:nameValue2 nameKey=".startTime" data-toggle-group="controlWindow" rowClass="${controlWindowClass}">
                             <input type="hidden" id="dailyStartTimeInMinutes" name="dailyStartTimeInMinutes" value="${controlArea.dailyStartTimeInMinutes}"/>
-                            <dt:time name="dailyStartTime" id="dailyStartTime" value="${dailyStartTime}" cssClass="${startTimeError ? 'error' : ''}"/>
+                            <dt:time name="dailyStartTime" id="dailyStartTime" value="${dailyStartTime}" wrapClass="${startTimeError ? 'date-time-error' : ''}" />
                             <c:if test="${not empty startTimeError}">
                                 <div class="error">
                                     <cti:msg2 var="invalidStartTime" key="yukon.web.modules.dr.setup.controlArea.error.invalid.startTime"/>
@@ -172,7 +172,7 @@
                         </tags:nameValue2>
                         <tags:nameValue2 nameKey=".stopTime" data-toggle-group="controlWindow" rowClass="${controlWindowClass}">
                             <input type="hidden" id="dailyStopTimeInMinutes" name="dailyStopTimeInMinutes" value="${controlArea.dailyStopTimeInMinutes}"/>
-                            <dt:time name="dailyStopTime" id="dailyStopTime" value="${dailyStopTime}" cssClass="${stopTimeError ? 'error' : ''}"/>
+                            <dt:time name="dailyStopTime" id="dailyStopTime" value="${dailyStopTime}" wrapClass="${stopTimeError ? 'date-time-error' : ''}" />
                             <c:if test="${not empty stopTimeError}">
                                 <div class="error">
                                     <cti:msg2 var="invalidStopTime" key="yukon.web.modules.dr.setup.controlArea.error.invalid.StopTime"/>
@@ -217,7 +217,7 @@
                                         <c:forEach var="program" items="${controlArea.programAssignment}" varStatus="status">
                                             <tr>
                                                 <tags:hidden path="programAssignment[${status.index}].programId"/>
-                                                <td>                                            
+                                                <td>
                                                     <cti:button icon="icon-cross" renderMode="buttonImage" classes="js-remove" data-id="${program.programId}"/>
                                                 </td>
                                                 <td>
@@ -282,7 +282,6 @@
         
     </form:form>
         
-    <cti:includeScript link="JQUERY_SCROLL_TABLE_BODY"/>
     <cti:includeScript link="YUKON_TIME_FORMATTER"/>
     <cti:includeScript link="/resources/js/pages/yukon.dr.setup.controlArea.js"/>
     <cti:includeScript link="/resources/js/pages/yukon.dr.setup.controlArea.trigger.js" />

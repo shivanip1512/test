@@ -88,13 +88,16 @@ Route Response Schema:
   title: Route
   type: object
   properties:
-    routeId:
+    deviceId:
       type: integer
       description: 'Unique identifier for Route.'
     deviceName:
       type: string
       maxLength: 60
       description: 'Name for the route.'
+    deviceType:
+      type: string
+      description: 'Type of Route'
     signalTransmitterId:
       type: integer
       description: 'Id for the signal transmitter.'
@@ -111,7 +114,7 @@ components:
     Route Request:
       value:
         deviceName: Test Route
-        signalTransmitterId: 5
+        signalTransmitterId: 12339
         defaultRoute: true
         carrierRoute:
           busNumber: 1
@@ -121,13 +124,14 @@ components:
           resetRptSettings: true
         repeaters:
           - repeaterId: 787
-            variableBits: 5
+            variableBits: 7
             repeaterOrder: 1
     Route Response:
       value:
-        id: 7
+        deviceId: 7
         deviceName: Test Route
-        signalTransmitterId: 5
+        deviceType: ROUTE_CCU
+        signalTransmitterId: 12339
         defaultRoute: true
         carrierRoute:
           busNumber: 1
@@ -137,7 +141,7 @@ components:
           resetRptSettings: true
         repeaters:
           - repeaterId: 787
-            variableBits: 5
+            variableBits: 7
             repeaterOrder: 1
     List Routes:
       value:

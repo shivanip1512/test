@@ -23,8 +23,6 @@ yukon.dr.setup.controlScenario = (function() {
             if ($("#js-inline-picker-container").is(":visible")) {
                 yukon.pickers['js-available-programs-picker'].show();
                 $("#js-assigned-programs-table select").width("100px");
-            } else {
-                $("#js-assigned-programs-table").scrollTableBody({rowsToDisplay: 20});
             }
             
             $(document).on("yukon:control-scenario:delete", function () {

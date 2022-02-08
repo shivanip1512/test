@@ -12,7 +12,7 @@ import com.fasterxml.jackson.annotation.JsonInclude.Include;
 import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 
-@JsonPropertyOrder({ "id", "name", "type", "signalTransmitterId", "defaultRoute", "carrierRoute", "repeaters" })
+@JsonPropertyOrder({ "deviceId", "deviceName", "deviceType", "signalTransmitterId", "defaultRoute", "carrierRoute", "repeaters" })
 @JsonIgnoreProperties(value = { "id" }, allowGetters = true, ignoreUnknown = true)
 @JsonInclude(Include.NON_NULL)
 @JsonDeserialize(using = JsonDeserializeRouteTypeLookup.class)

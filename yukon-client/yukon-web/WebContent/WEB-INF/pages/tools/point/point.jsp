@@ -109,7 +109,7 @@
                         </tags:nameValue2>
 
                         <tags:nameValue2 nameKey="yukon.common.units">
-                            <tags:selectWithItems path="pointBase.pointUnit.uomID" items="${unitMeasures}" 
+                            <tags:selectWithItems id="units" path="pointBase.pointUnit.uomID" items="${unitMeasures}" 
                                 itemValue="id" itemLabel="abbreviation" inputClass="${viewMode ? '' : 'js-init-chosen'}"/>
                         </tags:nameValue2>
 
@@ -122,8 +122,12 @@
                         </tags:nameValue2>
             
                         <tags:nameValue2 nameKey=".stateGroup">
-                            <tags:selectWithItems path="pointBase.point.stateGroupID" items="${stateGroups}" 
-                                itemValue="liteID" itemLabel="stateGroupName" inputClass="${viewMode ? '' : 'js-init-chosen'}"/>
+                            <tags:selectWithItems id="state-group"
+                                                  path="pointBase.point.stateGroupID"
+                                                  items="${stateGroups}" 
+                                                  itemValue="liteID" 
+                                                  itemLabel="stateGroupName" 
+                                                  inputClass="${viewMode ? '' : 'js-init-chosen'}"/>
 
                         </tags:nameValue2>
                     </tags:nameValueContainer2>
@@ -147,7 +151,7 @@
                         </c:if>
 
                         <tags:nameValue2 nameKey=".stateGroup">
-                            <tags:selectWithItems path="pointBase.point.stateGroupID" items="${stateGroups}" 
+                            <tags:selectWithItems id="state-group" path="pointBase.point.stateGroupID" items="${stateGroups}" 
                                 itemValue="liteID" itemLabel="stateGroupName" 
                                 inputClass="${viewMode ? '' : 'js-init-chosen'} js-state-group"/>
                         </tags:nameValue2>

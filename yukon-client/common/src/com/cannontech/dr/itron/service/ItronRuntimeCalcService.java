@@ -3,9 +3,11 @@ package com.cannontech.dr.itron.service;
 import java.util.List;
 import java.util.Map;
 
+import org.apache.logging.log4j.Logger;
 import org.joda.time.DateTime;
 import org.joda.time.Instant;
 
+import com.cannontech.clientutils.YukonLogManager;
 import com.cannontech.common.pao.PaoType;
 import com.cannontech.common.pao.YukonPao;
 import com.cannontech.common.pao.definition.model.PaoPointIdentifier;
@@ -18,13 +20,23 @@ import com.cannontech.dr.service.impl.DatedRuntimeStatus;
 import com.cannontech.dr.service.impl.DatedShedtimeStatus;
 import com.cannontech.dr.service.impl.RuntimeStatus;
 import com.cannontech.dr.service.impl.ShedtimeStatus;
+import com.cannontech.simulators.message.request.ItronRuntimeCalcSimulatonRequest;
 
 public class ItronRuntimeCalcService extends RuntimeCalcSchedulerService {
+    private static final Logger log = YukonLogManager.getLogger(ItronRuntimeCalcService.class);
+    
+    public void startSimulation(ItronRuntimeCalcSimulatonRequest request) {
+        log.info("Simulated Runtime Calculation Started");
+        calculateDataLogs();
+        log.info("Simulated Runtime Calculation Completed");
+    }
+    
     {
         dataLogAttributes = ItronRelayDataLogs.getDataLogAttributes();
         relayStatusAttributes = ItronRelayDataLogs.getRelayStatusAttributes();
         types = PaoType.getItronTypes();
     }
+    
 
     @Override
     protected DatedRuntimeStatus getRuntimeStatusFromPoint(PointValueHolder pointValue) {

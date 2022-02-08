@@ -31,7 +31,7 @@
         
         <cti:checkRolesAndProperties value="ENDPOINT_PERMISSION" level="OWNER">
             <li class="divider"/>
-            <cm:dropdownOption id="deleteRelay" icon="icon-cross" key="components.button.delete.label" 
+            <cm:dropdownOption id="deleteRelay" icon="icon-delete" key="components.button.delete.label" 
                                data-ok-event="yukon:relay:delete" />
             <d:confirm on="#deleteRelay" nameKey="confirmDelete" argument="${deviceName}" />
             <cti:url var="deleteUrl" value="/stars/relay/${deviceId}"/>
@@ -42,7 +42,7 @@
     </div>
     
     <tags:widgetContainer deviceId="${deviceId}" identify="false">
-        <div class="column-12-12 clear">
+        <div class="column-12-12 clear clearfix">
             <div class="one column">
                 <tags:widget bean="relayInformationWidget"/>
                 <c:if test="${showCellularConnection}"><tags:widget bean="cellularConnectionWidget"/></c:if>
@@ -63,6 +63,9 @@
                 <cti:includeScript link="JQUERY_TREE_HELPERS"/>
                 <cti:includeCss link="/resources/js/lib/dynatree/skin/ui.dynatree.css"/>
             </div>
+        </div>
+        <div>
+            <tags:widget bean="devicePointsWidget" />
         </div>
     </tags:widgetContainer>
     <cti:includeScript link="/resources/js/pages/yukon.assets.relay.details.js"/>

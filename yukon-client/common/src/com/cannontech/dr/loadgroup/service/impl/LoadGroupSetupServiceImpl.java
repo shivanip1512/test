@@ -143,7 +143,7 @@ public class LoadGroupSetupServiceImpl implements LoadGroupSetupService {
 
     @Override
     @Transactional
-    public LoadGroupBase copyNew(int loadGroupId, LMCopy lmCopy, LiteYukonUser liteYukonUser) {
+    public LoadGroupBase copy(int loadGroupId, LMCopy lmCopy, LiteYukonUser liteYukonUser) {
     
         Optional<LiteYukonPAObject> liteLoadGroup =dbCache.getAllLMGroups()
                                                           .stream()
@@ -249,9 +249,4 @@ public class LoadGroupSetupServiceImpl implements LoadGroupSetupService {
         loadGroupPoint.setStartControlRawState(new LMDto(lmGroupPoint.getLMGroupPoint().getStartControlRawState(), rawStateName));
     }
 
-	@Override
-	public int copy(int id, LMCopy lmCopy, LiteYukonUser liteYukonUser) {
-		// TODO Auto-generated method stub
-		return 0;
-	}
 }

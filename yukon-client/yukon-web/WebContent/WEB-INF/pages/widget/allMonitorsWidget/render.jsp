@@ -66,10 +66,10 @@
                                 <cti:param name="monitorId" value="${monitor.id}"/>
                                 <cti:param name="violationsOnly" value="true"/>
                             </cti:url>
-                            <cm:dropdownOption icon="icon-map-sat" key="yukon.web.modules.amr.mapViolations" 
+                            <cm:dropdownOption icon="icon-map" key="yukon.web.modules.amr.mapViolations" 
                                                href="${mapUrl}" newTab="true"/>
                             <cm:dropdownOption key="yukon.common.disable" classes="js-toggle-status js-disable-${monitorType}-${monitor.id} ${!monitor.enabled? 'dn': ''}" 
-                                               icon="icon-delete"/>
+                                               icon="icon-disable"/>
                             <cm:dropdownOption key="yukon.common.enable" classes="js-toggle-status js-enable-${monitorType}-${monitor.id} ${monitor.enabled? 'dn': ''}" 
                                                icon="icon-accept"/>
                         </cm:dropdown>
@@ -133,9 +133,9 @@
                                 <cti:param name="monitorId" value="${monitorId}"/>
                                 <cti:param name="violationsOnly" value="true"/>
                             </cti:url>
-                            <cm:dropdownOption icon="icon-map-sat" key="yukon.web.modules.amr.mapViolations" href="${mapUrl}" newTab="true"/>
+                            <cm:dropdownOption icon="icon-map" key="yukon.web.modules.amr.mapViolations" href="${mapUrl}" newTab="true"/>
                             <cm:dropdownOption key="yukon.common.disable" classes="js-toggle-status js-disable-${monitorType}-${monitorId} ${!(isOutageEnabled)? 'dn': ''}" 
-                                               icon="icon-delete"/>
+                                               icon="icon-disable"/>
                             <cm:dropdownOption key="yukon.common.enable" classes="js-toggle-status js-enable-${monitorType}-${monitorId} ${isOutageEnabled? 'dn': ''}" 
                                                icon="icon-accept"/>
                         </cm:dropdown>
@@ -203,9 +203,9 @@
                                 <cti:param name="group.name" value="${tamperFlagGroupBase}${monitor.name}"/>
                                 <cti:param name="violationsOnly" value="true"/>
                             </cti:url>
-                            <cm:dropdownOption icon="icon-map-sat" key="yukon.web.modules.amr.mapViolations" href="${mapUrl}" newTab="true"/>
+                            <cm:dropdownOption icon="icon-map" key="yukon.web.modules.amr.mapViolations" href="${mapUrl}" newTab="true"/>
                             <cm:dropdownOption key="yukon.common.disable" classes="js-toggle-status js-disable-${monitorType}-${monitorId} ${!(isTamperEnabled)? 'dn': ''}" 
-                                               icon="icon-delete"/>
+                                               icon="icon-disable"/>
                             <cm:dropdownOption key="yukon.common.enable" classes="js-toggle-status js-enable-${monitorType}-${monitorId} ${isTamperEnabled? 'dn': ''}" 
                                                icon="icon-accept"/>
                         </cm:dropdown>
@@ -265,9 +265,9 @@
                             <cti:param name="collectionType" value="group"/>
                             <cti:param name="group.name" value="${monitor.groupName}"/>
                         </cti:url>
-                        <cm:dropdownOption icon="icon-map-sat" key="yukon.web.components.button.map.label" href="${mapUrl}" newTab="true"/>
+                        <cm:dropdownOption icon="icon-map" key="yukon.web.components.button.map.label" href="${mapUrl}" newTab="true"/>
                         <cm:dropdownOption key="yukon.common.disable" classes="js-toggle-status js-disable-${monitorType}-${monitorId} ${!(isStatusEnabled)? 'dn': ''}" 
-                                               icon="icon-delete"/>
+                                               icon="icon-disable"/>
                         <cm:dropdownOption key="yukon.common.enable" classes="js-toggle-status js-enable-${monitorType}-${monitorId} ${isStatusEnabled? 'dn': ''}" 
                                                icon="icon-accept"/>
                     </cm:dropdown>
@@ -326,9 +326,9 @@
                             <cti:param name="collectionType" value="group"/>
                             <cti:param name="group.name" value="${monitor.groupName}"/>
                         </cti:url>
-                        <cm:dropdownOption icon="icon-map-sat" key="yukon.web.components.button.map.label" href="${mapUrl}" newTab="true"/>
+                        <cm:dropdownOption icon="icon-map" key="yukon.web.components.button.map.label" href="${mapUrl}" newTab="true"/>
                         <cm:dropdownOption key="yukon.common.disable" classes="js-toggle-status js-disable-${monitorType}-${monitor.monitorId} ${!(isPorterEnabled)? 'dn': ''}" 
-                                               icon="icon-delete"/>
+                                               icon="icon-disable"/>
                         <cm:dropdownOption key="yukon.common.enable" classes="js-toggle-status js-enable-${monitorType}-${monitor.monitorId} ${isPorterEnabled? 'dn': ''}" 
                                                icon="icon-accept"/>
                     </cm:dropdown>
@@ -395,9 +395,9 @@
                             <cti:param name="collectionType" value="group"/>
                             <cti:param name="group.name" value="${monitor.groupName}"/>
                         </cti:url>
-                        <cm:dropdownOption icon="icon-map-sat" key="yukon.web.components.button.map.label" href="${mapUrl}" newTab="true"/>
+                        <cm:dropdownOption icon="icon-map" key="yukon.web.components.button.map.label" href="${mapUrl}" newTab="true"/>
                         <cm:dropdownOption key="yukon.common.disable" classes="js-toggle-status js-disable-${monitorType}-${monitorId} ${!(isValidationEnabled)? 'dn': ''}" 
-                                               icon="icon-delete"/>
+                                               icon="icon-disable"/>
                         <cm:dropdownOption key="yukon.common.enable" classes="js-toggle-status js-enable-${monitorType}-${monitorId} ${isValidationEnabled? 'dn': ''}" 
                                                icon="icon-accept"/>
                     </cm:dropdown>

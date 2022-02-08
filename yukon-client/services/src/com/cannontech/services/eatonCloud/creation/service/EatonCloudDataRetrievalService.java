@@ -79,6 +79,11 @@ public class EatonCloudDataRetrievalService {
      */
     @PostConstruct
     public void init() {
+        String siteGuid = getSiteGuid();
+        if (Strings.isNullOrEmpty(siteGuid)) {
+            return;
+        }
+        
         jmsTemplate = jmsTemplateFactory.createTemplate(JmsApiDirectory.SIMULATORS);
         
         //hours
@@ -103,10 +108,6 @@ public class EatonCloudDataRetrievalService {
     }
 
     private void readCloudLCRs() {
-        if (Strings.isNullOrEmpty(getSiteGuid())) {
-            return;
-        }
-        
         if (isRunningDeviceRead.get() == true) {
             log.debug("Eaton Cloud LCR read all task is already running.");
             return;
@@ -130,10 +131,6 @@ public class EatonCloudDataRetrievalService {
      */
     private void autoCreateCloudLCRs() {
         try {
-            String siteGuid = getSiteGuid();
-            if (Strings.isNullOrEmpty(siteGuid)) {
-                return;
-            }
             // if the auto creation is running, exit, otherwise set isRunning to "true" and continue
             if (isRunningDeviceCreation.get() == true) {
                 log.debug("Eaton Cloud LCR auto creation task is already running.");
@@ -145,7 +142,7 @@ public class EatonCloudDataRetrievalService {
             // get list of Yukon devices (LCR6200C, 6600C) from DeviceGuid
             List<String> yukonGuids = deviceDao.getGuids();
 
-            List<EatonCloudSiteV1> sites = eatonCloudCommunicationServiceV1.getSites(siteGuid);
+            List<EatonCloudSiteV1> sites = eatonCloudCommunicationServiceV1.getSites(getSiteGuid());
             
             List<EatonCloudSiteDeviceV1> devicesToCreate = 
                     sites.stream()
@@ -247,7 +244,7 @@ public class EatonCloudDataRetrievalService {
         var now = DateTime.now();
         int readInterval = settingDao.getInteger(GlobalSettingType.EATON_CLOUD_DEVICE_READ_INTERVAL_MINUTES);
         DateTime startTime = now.minusMinutes(readInterval);
-        startTime = startTime.minusMinutes(startTime.getMinuteOfHour());
+        startTime = startTime.withMinuteOfHour(0).withSecondOfMinute(0).withMillisOfSecond(0);
         return new Range<Instant>(startTime.toInstant(), false, now.toInstant(), false);
     }
 

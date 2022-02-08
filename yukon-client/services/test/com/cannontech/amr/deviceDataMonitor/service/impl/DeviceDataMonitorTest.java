@@ -1,16 +1,8 @@
 package com.cannontech.amr.deviceDataMonitor.service.impl;
 
-import static com.cannontech.amr.deviceDataMonitor.model.ProcessorType.GREATER;
-import static com.cannontech.amr.deviceDataMonitor.model.ProcessorType.LESS;
-import static com.cannontech.amr.deviceDataMonitor.model.ProcessorType.OUTSIDE;
-import static com.cannontech.amr.deviceDataMonitor.model.ProcessorType.RANGE;
-import static com.cannontech.amr.deviceDataMonitor.model.ProcessorType.STATE;
-import static com.cannontech.common.pao.attribute.model.BuiltInAttribute.COMM_STATUS;
-import static com.cannontech.common.pao.attribute.model.BuiltInAttribute.DELIVERED_DEMAND;
-import static com.cannontech.common.pao.attribute.model.BuiltInAttribute.DISCONNECT_STATUS;
-import static org.junit.jupiter.api.Assertions.assertFalse;
-import static org.junit.jupiter.api.Assertions.assertNull;
-import static org.junit.jupiter.api.Assertions.assertTrue;
+import static com.cannontech.amr.deviceDataMonitor.model.ProcessorType.*;
+import static com.cannontech.common.pao.attribute.model.BuiltInAttribute.*;
+import static org.junit.jupiter.api.Assertions.*;
 
 import java.lang.reflect.InvocationTargetException;
 import java.util.ArrayList;
@@ -35,6 +27,7 @@ import com.cannontech.common.pao.attribute.service.AttributeServiceImpl;
 import com.cannontech.common.pao.definition.dao.PaoDefinitionDaoImpl;
 import com.cannontech.common.point.PointQuality;
 import com.cannontech.core.dynamic.PointValueQualityHolder;
+import com.cannontech.core.dynamic.PointValueQualityTagHolder;
 import com.cannontech.database.data.lite.LiteState;
 import com.cannontech.database.data.lite.LiteStateGroup;
 import com.cannontech.database.data.point.PointType;
@@ -78,9 +71,9 @@ public class DeviceDataMonitorTest {
         processor.setRangeMin(5.0);
         processor.setRangeMax(10.0);
         processors.add(processor);
-        DeviceDataMonitor monitor = new DeviceDataMonitor(1, "test", null, null, true, processors);
+        DeviceDataMonitor monitor = new DeviceDataMonitor(1, "test", null, null, true, processors, true);
 
-        Map<Integer, PointValueQualityHolder> pointValues = new HashMap<>();
+        Map<Integer, PointValueQualityTagHolder> pointValues = new HashMap<>();
         // violating
         pointValues.put(1, getPointValue(PointType.Status, 1));
         // violating
@@ -124,7 +117,8 @@ public class DeviceDataMonitorTest {
         pointToDevice.put(7, DEVICE_7);
         attributeToPoints.put(DELIVERED_DEMAND, pointToDevice);
                 
-        Set<SimpleDevice> devices = ViolationHelper.findViolatingDevices(monitor, attributeToPoints, pointIdsToStateGroup, pointValues);
+        ViolatingDevices violatingDevices = ViolationHelper.findViolatingDevices(monitor, attributeToPoints, pointIdsToStateGroup, pointValues);
+        Set<SimpleDevice> devices = violatingDevices.getViolatingDevices();
         
         Set<SimpleDevice> violating = Sets.newHashSet(DEVICE_1,DEVICE_2, DEVICE_5, DEVICE_6 );        
         Set<SimpleDevice> notViolating =  Sets.newHashSet(DEVICE_3, DEVICE_4, DEVICE_7);
@@ -250,8 +244,8 @@ public class DeviceDataMonitorTest {
         assertFalse(ViolationHelper.isViolating(processor, null, pointData));
     }
 
-    private PointValueQualityHolder getPointValue(PointType type, double value) {
-        return new PointValueQualityHolder() {
+    private PointValueQualityTagHolder getPointValue(PointType type, double value) {
+        return new PointValueQualityTagHolder() {
 
             @Override
             public int getId() {
@@ -281,6 +275,21 @@ public class DeviceDataMonitorTest {
             @Override
             public PointType getPointType() {
                 return type;
+            }
+
+            @Override
+            public long getTags() {
+                return 0;
+            }
+
+            @Override
+            public boolean isTagsOldTimestamp() {
+                return false;
+            }
+
+            @Override
+            public boolean isTagsUnsolicited() {
+                return false;
             }
         };
     }

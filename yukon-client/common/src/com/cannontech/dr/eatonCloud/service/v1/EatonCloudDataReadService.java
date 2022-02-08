@@ -24,7 +24,7 @@ public interface EatonCloudDataReadService {
     /**
      * Retrieves point data for the specified device from the Eaton Cloud.
      * 
-     * @throws EatonCloudCommunicationExceptionV1 or EatonCloudException if the data was not retrieved
+     * @throws EatonCloudCommunicationExceptionV1 if the data was not retrieved
      */
     Multimap<PaoIdentifier, PointData> collectDataForRead(Integer deviceId, Range<Instant> range);
 }

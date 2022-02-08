@@ -58,7 +58,7 @@
                     <cm:dropdown icon="icon-cog">
                         <c:choose>
                             <c:when test="${dashboard.visibility != 'SYSTEM'}">
-                                <cm:dropdownOption id="deleteDashboard_${dashboardId}" key=".delete" icon="icon-cross"
+                                <cm:dropdownOption id="deleteDashboard_${dashboardId}" key=".delete" icon="icon-delete"
                                     data-dashboard-id="${dashboardId}" data-ok-event="yukon:dashboard:remove" />
                                 <d:confirm on="#deleteDashboard_${dashboardId}" nameKey="confirmDelete" argument="${dashboard.name}"/>
                                 <input type="hidden" id="selectedPickerValues${dashboardId}" class="js-user-id">
@@ -71,7 +71,7 @@
                                 </li>
                             </c:when>
                             <c:otherwise>
-                                <cm:dropdownOption key=".delete" icon="icon-cross" disabled="true" />
+                                <cm:dropdownOption key=".delete" icon="icon-delete" disabled="true" />
                                 <cm:dropdownOption key=".changeOwner" icon="icon-user-edit" disabled="true" />
                             </c:otherwise>
                         </c:choose>

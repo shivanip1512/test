@@ -521,11 +521,21 @@ public:
     static const Attribute  NetDeliveredkVArhRateC;
     static const Attribute  NetDeliveredkVArhRateD;
 
+    static const Attribute  DeliveredkVArhQ1;
+    static const Attribute  DeliveredkVArhQ1RateA;
+    static const Attribute  DeliveredkVArhQ1RateB;
+    static const Attribute  DeliveredkVArhQ1RateC;
+    static const Attribute  DeliveredkVArhQ1RateD;
     static const Attribute  ReceivedkVArh;
     static const Attribute  ReceivedkVArhRateA;
     static const Attribute  ReceivedkVArhRateB;
     static const Attribute  ReceivedkVArhRateC;
     static const Attribute  ReceivedkVArhRateD;
+    static const Attribute  ReceivedkVArhQ4;
+    static const Attribute  ReceivedkVArhQ4RateA;
+    static const Attribute  ReceivedkVArhQ4RateB;
+    static const Attribute  ReceivedkVArhQ4RateC;
+    static const Attribute  ReceivedkVArhQ4RateD;
     static const Attribute  NetReceivedkVArh;
     static const Attribute  NetReceivedkVArhRateA;
     static const Attribute  NetReceivedkVArhRateB;
@@ -638,6 +648,10 @@ public:
 
     static const Attribute  RegisterRemoval;
     static const Attribute  MagnetTampering;
+    static const Attribute  Pulse1SwitchFailure;
+    static const Attribute  Pulse2SwitchFailure;
+    static const Attribute  NodeCommissionEvent;
+    static const Attribute  LostAssociation;
 
     static const Attribute  TamperNoUsageOver24Hours;
     static const Attribute  TamperReverseWhDetected;

@@ -141,6 +141,7 @@ public class GlobalSettingUpdateDaoImpl implements GlobalSettingUpdateDao {
         String currentComments = currentSetting.getComments();
         
         Object value = setting.getValue();
+        
         if (value == null) {
             if (currentValue != null) {
                 isChanged = true;
@@ -197,7 +198,7 @@ public class GlobalSettingUpdateDaoImpl implements GlobalSettingUpdateDao {
                 if (user == null) {
                     user = UserUtils.getYukonUser();
                 }
-                if (setting.isSensitiveInformation()) {
+                if (setting.isSensitiveInformation() || setting.isNonViewableSensitiveInformation()) {
                     systemEventLogService.sensitiveGlobalSettingChanged(user, setting.getType());
                 } else {
                     systemEventLogService.globalSettingChanged(user, setting.getType(),
