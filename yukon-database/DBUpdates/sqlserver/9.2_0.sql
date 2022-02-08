@@ -235,7 +235,7 @@ FROM
         JOIN DYNAMICPOINTDISPATCH dpdOutTotal on outTotal.POINTID=dpdOutTotal.POINTID
         JOIN DYNAMICPOINTDISPATCH dpdOutCount on outCount.POINTID=dpdOutCount.POINTID
         JOIN DYNAMICPOINTDISPATCH dpdResBlink on resBlink.POINTID=dpdResBlink.POINTID
-        LEFT JOIN DYNAMICPOINTDISPATCH dpdOutBlink on outBlink.POINTID=dpdOutBlink.POINTID
+        LEFT JOIN DYNAMICPOINTDISPATCH dpdOutBlink on outBlink.POINTID=dpdOutBlink.POINTID AND dpdOutBlink.QUALITY != 0
 WHERE
     outTotal.POINTTYPE='CalcAnalog'
         AND outTotal.POINTOFFSET='0'
