@@ -8,6 +8,7 @@ import java.util.Map.Entry;
 import org.apache.commons.lang3.RandomStringUtils;
 import org.joda.time.Instant;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -285,6 +286,7 @@ public class YukonUserDaoImpl implements YukonUserDao {
     public void deleteUser(Integer userId) {
         
         // Remove existing contacts before removing username
+        try {
         SqlStatementBuilder detachContactFromLogin = new SqlStatementBuilder();
         detachContactFromLogin.append("UPDATE Contact");
         detachContactFromLogin.append("SET LoginId").eq(UserUtils.USER_NONE_ID);
@@ -308,7 +310,10 @@ public class YukonUserDaoImpl implements YukonUserDao {
         jdbcTemplate.update(sql);
         
         dbChangeManager.processDbChange(userId, DBChangeMsg.CHANGE_YUKON_USER_DB, DBChangeMsg.CAT_YUKON_USER,
-            DBChangeMsg.CAT_YUKON_USER, DbChangeType.DELETE);
+                DBChangeMsg.CAT_YUKON_USER, DbChangeType.DELETE);
+    } catch (DataIntegrityViolationException e) {
+        throw new DataIntegrityViolationException("Failed to delete User");
+    }
     }
     
     @Override

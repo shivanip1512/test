@@ -1,6 +1,7 @@
 package com.cannontech.web.admin.energyCompany.operatorLogin;
 
 import java.io.IOException;
+import java.sql.SQLException;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
@@ -12,6 +13,7 @@ import javax.servlet.http.HttpServletResponse;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.MessageSourceResolvable;
+import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.ModelMap;
 import org.springframework.validation.BindingResult;
@@ -352,12 +354,16 @@ public class OperatorLoginController {
         checkPermissionsAndSetupModel(energyCompanyInfoFragment, modelMap, userContext);
         
         // Delete user
-        yukonUserDao.deleteUser(operatorLogin.getUserId());
-        usersEventLogService.userDeleted(operatorLogin.getUsername(), userContext.getYukonUser());
-        
-        // Add message
-        flashScope.setConfirm(new YukonMessageSourceResolvable("yukon.web.modules.adminSetup.operatorLogin.operatorLoginDeleted"));
-        
+        try {
+            yukonUserDao.deleteUser(operatorLogin.getUserId());
+            usersEventLogService.userDeleted(operatorLogin.getUsername(), userContext.getYukonUser());
+            // Add message
+            flashScope.setConfirm(
+                    new YukonMessageSourceResolvable("yukon.web.modules.adminSetup.operatorLogin.operatorLoginDeleted"));
+        } catch (DataIntegrityViolationException e) {
+            flashScope.setError(
+                    new YukonMessageSourceResolvable("yukon.web.modules.adminSetup.operatorLogin.operatorDeleteFailure"));
+        }
         return "redirect:home";
     }
     
