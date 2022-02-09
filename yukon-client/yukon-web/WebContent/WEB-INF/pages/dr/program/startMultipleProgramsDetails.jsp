@@ -130,7 +130,7 @@ $( function () {
     <input type="hidden" name="from" value="details"/>
     <form:hidden path="now"/>
 
-    <table class="compact-results-table stacked">
+    <table class="stacked">
         <thead>
             <tr>
                 <th><cti:msg2 key=".startTime"/></th>
@@ -180,7 +180,7 @@ $( function () {
     <cti:msg2 var="boxTitle" key=".programs"/>
     <tags:sectionContainer title="${boxTitle}">
         <div class="scroll-md">
-            <table class="compact-results-table dashed">
+            <table class="dashed">
                 <thead>
                     <tr>
                         <th><cti:msg2 key=".startProgramName"/></th>
