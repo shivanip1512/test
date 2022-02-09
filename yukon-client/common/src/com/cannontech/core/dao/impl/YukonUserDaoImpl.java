@@ -308,7 +308,7 @@ public class YukonUserDaoImpl implements YukonUserDao {
         jdbcTemplate.update(sql);
         
         dbChangeManager.processDbChange(userId, DBChangeMsg.CHANGE_YUKON_USER_DB, DBChangeMsg.CAT_YUKON_USER,
-                DBChangeMsg.CAT_YUKON_USER, DbChangeType.DELETE);
+            DBChangeMsg.CAT_YUKON_USER, DbChangeType.DELETE);
     }
     
     @Override
