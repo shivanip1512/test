@@ -1,7 +1,7 @@
 /*==============================================================*/
 /* Database name:  YukonDatabase                                */
 /* DBMS name:      Microsoft SQL Server 2005                    */
-/* Created on:     1/31/2022 5:54:21 PM                         */
+/* Created on:     2/9/2022 9:38:24 AM                          */
 /*==============================================================*/
 
 
@@ -5876,15 +5876,6 @@ create index INDX_EventLog_EvntTime_EvntLogId_EvntType on EventLog (
 EventTime DESC,
 EventLogId DESC,
 EventType ASC
-)
-go
-
-/*==============================================================*/
-/* Index: INDX_EventLog_EvntTime_EvntLogID                      */
-/*==============================================================*/
-create index INDX_EventLog_EvntTime_EvntLogID on EventLog (
-EventTime DESC,
-EventLogId DESC
 )
 go
 

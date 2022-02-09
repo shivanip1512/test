@@ -1,7 +1,7 @@
 /*==============================================================*/
 /* Database name:  YukonDatabase                                */
 /* DBMS name:      ORACLE Version 9i                            */
-/* Created on:     1/31/2022 6:12:27 PM                         */
+/* Created on:     2/9/2022 9:34:50 AM                          */
 /*==============================================================*/
 
 
@@ -5570,14 +5570,6 @@ create index INDX_EventLog_EvntTime_EvntLogId_EvntType on EventLog (
    EventTime DESC,
    EventLogId DESC,
    EventType ASC
-);
-
-/*==============================================================*/
-/* Index: INDX_EventLog_EvntTime_EvntLogID                      */
-/*==============================================================*/
-create index INDX_EventLog_EvntTime_EvntLogID on EventLog (
-   EventTime DESC,
-   EventLogId DESC
 );
 
 /*==============================================================*/

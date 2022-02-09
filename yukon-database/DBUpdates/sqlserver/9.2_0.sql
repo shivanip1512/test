@@ -235,6 +235,13 @@ GO
 INSERT INTO DBUpdates VALUES ('YUK-25754', '9.2.0', GETDATE());
 /* @end YUK-25754 */
 
+/* @start YUK-25874 */
+DROP INDEX INDX_EventLog_EvntTime_EvntLogID ON EventLog;
+GO
+
+INSERT INTO DBUpdates VALUES ('YUK-25874', '9.2.0', GETDATE());
+/* @end YUK-25874 */
+
 /***********************************************************************************/
 /* VERSION INFO                                                                    */
 /* Inserted when update script is run, stays commented out until the release build */
