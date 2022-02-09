@@ -24,6 +24,7 @@ import com.cannontech.yukon.IDatabaseCache;
  */
 public class LMApiValidatorHelper {
     @Autowired private IDatabaseCache serverDatabaseCache;
+
     /**
      * Checks whether the Pao name is unique or not
      */
@@ -33,7 +34,7 @@ public class LMApiValidatorHelper {
             errors.rejectValue(field, ApiErrorDetails.FIELD_REQUIRED.getCodeString(), new Object[] { fieldName }, "");
         }
     }
-    
+
     public void validateName(String paoName, Errors errors, String fieldName) {
         checkIfFieldRequired("name", errors, paoName, fieldName);
         if (!errors.hasFieldErrors("name")) {
@@ -44,7 +45,6 @@ public class LMApiValidatorHelper {
         }
     }
 
-    
     public void validateRoute(Errors errors, Integer routeId) {
         YukonApiValidationUtils.checkIfFieldRequired("routeId", errors, routeId, "Route Id");
         if (!errors.hasFieldErrors("routeId")) {
