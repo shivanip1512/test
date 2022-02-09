@@ -1,7 +1,7 @@
 #include "YukonMetricTracker.h"
-#include <json.hpp>
 #include "amq_connection.h"
 #include "amq_topics.h"
+#include <json.hpp>
 #include <format>
 
 namespace Cti {

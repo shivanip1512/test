@@ -221,13 +221,13 @@
         <decimalplaces value="0"/>
     </point>
     	<point offset="1045" type="Analog">
-        <name>RPH Inserts Generated Count</name>
+        <name>RawPointHistory Rows Inserted</name>
         <multiplier value="1" />
         <unitofmeasure value="COUNTS" />
         <decimalplaces value="0"/>
     </point>
     	<point offset="1046" type="Analog">
-        <name>RPH Queue Size</name>
+        <name>RawPointHistory Archiver Queue Size</name>
         <multiplier value="1" />
         <unitofmeasure value="COUNTS" />
         <decimalplaces value="0"/>
