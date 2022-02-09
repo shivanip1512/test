@@ -494,22 +494,24 @@ public class DeviceDataMonitorCalculationServiceImpl implements DeviceDataMonito
 
         Set<Integer> enteringViolationDeviceIds = new HashSet<>(newViolatingDeviceIds);
         enteringViolationDeviceIds.removeAll(oldViolatingDeviceIds);
-        log.debug("{} newly violating devices.");
+        log.debug("{} newly violating devices.", enteringViolationDeviceIds.size());
         if (monitor.isNotifyOnAlarmOnly()) {
             enteringViolationDeviceIds = enteringViolationDeviceIds.stream()
                     .filter(alarmOnlyDeviceIds::contains)
                     .collect(Collectors.toSet());
-            log.debug("Notify on alarm only: {} devices included in notification for entering violation.");
+            log.debug("Notify on alarm only: {} devices included in notification for entering violation.", 
+                   enteringViolationDeviceIds.size());
         }
         
         Set<Integer> exitingViolationDeviceIds = new HashSet<>(oldViolatingDeviceIds);
         exitingViolationDeviceIds.removeAll(newViolatingDeviceIds);
-        log.debug("{} devices exiting violation.");
+        log.debug("{} devices exiting violation.", exitingViolationDeviceIds.size());
         if (monitor.isNotifyOnAlarmOnly()) {
             exitingViolationDeviceIds = exitingViolationDeviceIds.stream()
                     .filter(alarmOnlyDeviceIds::contains)
                     .collect(Collectors.toSet());
-            log.debug("Notify on alarm only: {} devices included in notification for exiting violation.");
+            log.debug("Notify on alarm only: {} devices included in notification for exiting violation.", 
+                    exitingViolationDeviceIds.size());
         }
 
         List<SmartNotificationEvent> events = Lists.newArrayList(
