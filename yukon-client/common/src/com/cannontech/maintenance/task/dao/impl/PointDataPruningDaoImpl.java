@@ -35,7 +35,7 @@ public class PointDataPruningDaoImpl implements PointDataPruningDao {
             }
             log.debug(deleteSql);
         } catch (TransientDataAccessResourceException e) {
-            log.error("Error when deleting RPH data {}", e);
+            log.error("Error when deleting RPH data", e);
         }
         return rowsDeleted;
     }
