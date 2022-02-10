@@ -8,7 +8,6 @@ import java.util.stream.Collectors;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.validation.Errors;
 
-import com.cannontech.api.error.model.ApiErrorDetails;
 import com.cannontech.common.dr.setup.LMCopy;
 import com.cannontech.common.dr.setup.LoadGroupCopy;
 import com.cannontech.common.pao.PaoType;
@@ -76,7 +75,7 @@ public class LMValidatorHelper {
     private void validateUniquePaoName(String paoName, PaoType type, Errors errors, String fieldName) {
         LiteYukonPAObject unique = paoDao.findUnique(paoName, type);
         if (unique != null) {
-            errors.rejectValue("name", ApiErrorDetails.ALREADY_EXISTS.getCodeString() , new Object[] {fieldName}, "");
+            errors.rejectValue("name", key + "unique", new Object[] {fieldName}, "");
         }
     }
 

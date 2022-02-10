@@ -14,12 +14,12 @@ import com.cannontech.common.dr.setup.LMPaoDto;
 import com.cannontech.common.dr.setup.MacroLoadGroup;
 import com.cannontech.common.pao.PaoType;
 import com.cannontech.common.validator.SimpleValidator;
-import com.cannontech.web.api.dr.setup.LMValidatorHelper;
+import com.cannontech.web.api.dr.setup.LMApiValidatorHelper;
 
 @Service
 public class MacroLoadGroupValidator extends SimpleValidator<MacroLoadGroup> {
 
-    @Autowired private LMValidatorHelper lmValidatorHelper;
+    @Autowired private LMApiValidatorHelper lMApiValidatorHelper;
 
     public MacroLoadGroupValidator() {
         super(MacroLoadGroup.class);
@@ -28,8 +28,8 @@ public class MacroLoadGroupValidator extends SimpleValidator<MacroLoadGroup> {
     @Override
     protected void doValidation(MacroLoadGroup loadGroup, Errors errors) {
 
-        lmValidatorHelper.checkIfFieldRequired("type", errors, loadGroup.getType(), "Type");
-        lmValidatorHelper.validateNewPaoName(loadGroup.getName(), loadGroup.getType(), errors, "Name");
+        lMApiValidatorHelper.checkIfFieldRequired("type", errors, loadGroup.getType(), "Type");
+        lMApiValidatorHelper.validateNewPaoName(loadGroup.getName(), loadGroup.getType(), errors, "Name");
 
         if (!errors.hasFieldErrors("type")) {
             if (loadGroup.getType() != PaoType.MACRO_GROUP) {
@@ -59,7 +59,7 @@ public class MacroLoadGroupValidator extends SimpleValidator<MacroLoadGroup> {
        List<Integer> groupIds =assignedLoadGroups.stream()
                                                  .map(LMPaoDto::getId)
                                                  .collect(Collectors.toList());
-       return lmValidatorHelper.findDuplicates(groupIds);
+       return lMApiValidatorHelper.findDuplicates(groupIds);
 
     }
 
