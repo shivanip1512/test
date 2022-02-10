@@ -373,32 +373,33 @@ public class EcobeeZeusReconciliationServiceImpl implements EcobeeZeusReconcilia
                 if (CollectionUtils.isNotEmpty(ecobeeGrps)) {
                     List<Integer> progmIds = ecobeeZeusGroupDao.getProgramIdsByGroupId(groupId);
                     Integer invId = lmHardwareBaseDao.getBySerialNumber(serialNumber).getInventoryId();
+                    if (CollectionUtils.isNotEmpty(progmIds)) {
+                        progmIds.stream().forEach(progmId -> {
+                            String ecobeeGroupInYukon = new String();
+                            try {
+                                // getting ecobee group mapped with yukon group and thermostat
+                                ecobeeGroupInYukon = ecobeeZeusGroupDao.getZeusGroupId(groupId, invId,
+                                        progmId);
 
-                    progmIds.stream().forEach(progmId -> {
-                        String ecobeeGroupInYukon = new String();
-                        try {
-                            // getting ecobee group mapped with yukon group and thermostat
-                            ecobeeGroupInYukon = ecobeeZeusGroupDao.getZeusGroupId(groupId, invId,
-                                    progmId);
-
-                        } catch (NotFoundException e) {
-                        }
-                        // ecobeeGroupInYukon cannot be blank and should be present in Ecobee Groups.
-                        // If not present in Ecobee Groups, then this is a missing device
-                        if (StringUtils.isBlank(ecobeeGroupInYukon) || !ecobeeGrps.contains(ecobeeGroupInYukon)) {
-                            // using yukon group as correct path since Yukon will decide which ecobee groups to add to
-                            // while
-                            // fixing this discrepancy
-                            errorsList.add(new EcobeeZeusMissingDeviceDiscrepancy(serialNumber,
-                                    String.valueOf(groupId)));
-                        }
-                    });
+                            } catch (NotFoundException e) {
+                            }
+                            // ecobeeGroupInYukon cannot be blank and should be present in Ecobee Groups.
+                            // If not present in Ecobee Groups, then this is a missing device
+                            if (StringUtils.isBlank(ecobeeGroupInYukon) || !ecobeeGrps.contains(ecobeeGroupInYukon)) {
+                                // using yukon group as correct path since Yukon will decide which ecobee groups to add to
+                                // while
+                                // fixing this discrepancy
+                                errorsList.add(new EcobeeZeusMissingDeviceDiscrepancy(serialNumber,
+                                        String.valueOf(groupId)));
+                            }
+                        });
+                    }
                 }
                 // if no ecobee groups found for this device
                 else {
                     // if the device is not in Enrolled state in root group
                     ZeusThermostat thermostat = communicationService.retrieveThermostatFromRootGroup(serialNumber);
-                    //Ignore NOT_YET_CONNECTED devices from MissingDevice
+                    // Ignore NOT_YET_CONNECTED devices from MissingDevice
                     if (thermostat.getState() != ZeusThermostatState.NOT_YET_CONNECTED) {
                         if (thermostat.getState() != ZeusThermostatState.ENROLLED) {
                             // using root group as correct path since Yukon will add this device to Root group in
