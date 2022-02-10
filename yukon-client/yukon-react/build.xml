@@ -10,15 +10,17 @@
 
     <target name="build">
         <echo message="Building React Build Command - npm install --legacy-peer-deps"/>
-        <exec dir="" executable="npm.cmd" failonerror="true" failifexecutionfails="true">
+        <exec dir="" executable="cmd" failonerror="true" failifexecutionfails="true">
                  <arg value="/c"/>
+        	     <arg value="npm"/>
                  <arg value="install"/>
                  <arg value="--legacy-peer-deps"/>
         </exec>
 
     	<echo message="Building React Build Command - npm run build"/>
-        <exec dir="" executable="npm.cmd" failonerror="true" failifexecutionfails="true">
+        <exec dir="" executable="cmd" failonerror="true" failifexecutionfails="true">
                  <arg value="/c"/>
+        	     <arg value="npm"/>
                  <arg value="run"/>
                  <arg value="build"/>
         </exec>
