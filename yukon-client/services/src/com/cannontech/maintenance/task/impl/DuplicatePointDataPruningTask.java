@@ -13,8 +13,8 @@ public class DuplicatePointDataPruningTask implements MaintenanceTask {
 
     @Override
     public boolean doTask(Instant endOfTimeSlice) {
-        dataPruningService.deleteDuplicatePointData(endOfTimeSlice);
-        return true;
+        int numDeleted = dataPruningService.deleteDuplicatePointData(endOfTimeSlice);
+        return numDeleted <= 1000;
     }
 
     @Override

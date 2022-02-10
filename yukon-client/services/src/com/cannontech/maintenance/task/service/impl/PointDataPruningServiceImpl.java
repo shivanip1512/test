@@ -76,9 +76,9 @@ public class PointDataPruningServiceImpl implements PointDataPruningService {
         log.debug("MAINTENANCE_DUPLICATE_POINT_DATA_NOLOCK_REQUIRED : {}", noLockRequired);
         log.debug("No Of Months for which duplicate data is to be deleted : {}", noOfMonths);
         Instant txnStart = Instant.now(); // Mark start time of the transaction
-        Duration monthInDuration = Period.months(noOfMonths).toDurationTo(txnStart); // Last 12 months
+        Duration monthInDuration = Period.months(noOfMonths).toDurationTo(txnStart);
         Instant toTimestamp = Instant.now(); // End of deletion interval
-        Duration deletionDuration = Period.days(daysInDuration).toDurationTo(toTimestamp); // Last 60 days
+        Duration deletionDuration = Period.days(daysInDuration).toDurationTo(toTimestamp);
         Instant fromTimestamp = toTimestamp.minus(deletionDuration); // Beginning of deletion interval 
         Instant limit = txnStart.minus(monthInDuration); // Oldest day deletion could go back to
         if (fromTimestamp.compareTo(limit) < 0) { // Only delete duplicates within limit
@@ -88,7 +88,7 @@ public class PointDataPruningServiceImpl implements PointDataPruningService {
             "Overall duration for which duplicate records should be deleted = From {} To {}", fromTimestamp, toTimestamp);
         log.info("Duplicate point data deletion started.");
         while (isEnoughTimeAvailable(processEndTime) && fromTimestamp.compareTo(toTimestamp) < 0) {
-            Instant nextTimestamp = fromTimestamp.plus(Period.days(7).toDurationFrom(fromTimestamp));
+            Instant nextTimestamp = fromTimestamp.plus(Duration.standardDays(7));
             if (nextTimestamp.compareTo(toTimestamp) > 0) {
                 nextTimestamp = toTimestamp;
             }
