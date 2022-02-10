@@ -17,8 +17,8 @@
             <input name="time" value="<cti:formatDate type="TIME" value="${pointValue.pointDataTimeStamp}"/>" size="10" type="text">
             <cti:button classes="dateTimeClear" label="Now"/>
         </td>
-        <td><tags:simpleSelect items="${qualities}" name="quality" selectedItem="${pointValue.pointQuality}"/></td>
-        <td>
+        <td class="vat"><tags:simpleSelect items="${qualities}" name="quality" selectedItem="${pointValue.pointQuality}"/></td>
+        <td class="vat">
             <c:if test="${status}">
                 <tags:simpleSelect items="${states}" name="value" itemLabel="stateText" itemValue="stateRawState" selectedValue="${statePointValue}"/>
             </c:if>
