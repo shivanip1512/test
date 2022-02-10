@@ -1,0 +1,35 @@
+<?xml version="1.0" ?>
+<project name="yukon-react" default="all" basedir="..">
+
+    <property file="${basedir}/yukon-build/build_version.properties"/>
+
+    <target name="all" depends="clean,build" />
+    <tstamp>
+        <format property="currenttime" pattern="yyyy-MM-dd HH:mm:ss z" locale="en,US"/>
+    </tstamp>
+
+    <target name="build">
+        <echo message="Building React Build Command - npm install --legacy-peer-deps"/>
+        <exec dir="" executable="npm.cmd" failonerror="true" failifexecutionfails="true">
+                 <arg value="/c"/>
+                 <arg value="install"/>
+                 <arg value="--legacy-peer-deps"/>
+        </exec>
+
+    	<echo message="Building React Build Command - npm run build"/>
+        <exec dir="" executable="npm.cmd" failonerror="true" failifexecutionfails="true">
+                 <arg value="/c"/>
+                 <arg value="run"/>
+                 <arg value="build"/>
+        </exec>
+    	
+    </target>
+
+    <target name="clean">
+       <delete dir="${basedir}/yukon-client/yukon-react/build" />
+       <delete dir="${basedir}/yukon-client/yukon-react/node_modules" />
+    </target>
+
+    <target name="runUnitTests" />
+
+</project>
