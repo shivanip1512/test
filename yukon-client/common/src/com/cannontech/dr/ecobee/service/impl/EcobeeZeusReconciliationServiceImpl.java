@@ -41,7 +41,6 @@ import com.cannontech.dr.ecobee.model.discrepancy.EcobeeZeusMissingDeviceDiscrep
 import com.cannontech.dr.ecobee.model.discrepancy.EcobeeZeusMissingGroupDiscrepancy;
 import com.cannontech.dr.ecobee.service.EcobeeZeusCommunicationService;
 import com.cannontech.dr.ecobee.service.EcobeeZeusReconciliationService;
-import com.cannontech.loadcontrol.loadgroup.dao.LoadGroupDao;
 import com.cannontech.stars.dr.hardware.dao.LmHardwareBaseDao;
 import com.google.common.collect.ArrayListMultimap;
 import com.google.common.collect.ImmutableList;
@@ -57,8 +56,7 @@ public class EcobeeZeusReconciliationServiceImpl implements EcobeeZeusReconcilia
     @Autowired private EcobeeEventLogService ecobeeEventLogService;
     @Autowired private LmHardwareBaseDao lmHardwareBaseDao;
     @Autowired private EcobeeZeusGroupDao ecobeeZeusGroupDao;
-    @Autowired private LoadGroupDao loadGroupDao;
-  
+
     // Fix issues in this order to avoid e.g. deleting an extraneous group containing a mislocated group.
     // (This should not be rearranged without some thought)
     private static final ImmutableList<EcobeeZeusDiscrepancyType> errorTypes = ImmutableList.of(
@@ -223,7 +221,7 @@ public class EcobeeZeusReconciliationServiceImpl implements EcobeeZeusReconcilia
                     communicationService.createDevice(error.getSerialNumber());
                 } else {
                     if (StringUtils.isNotBlank(error.getCorrectPath())) {
-                        List<Integer> programIds = loadGroupDao.getProgramIdsByGroupId(Integer.valueOf(error.getCorrectPath()));
+                        List<Integer> programIds = ecobeeZeusGroupDao.getProgramIdsByGroupId(Integer.valueOf(error.getCorrectPath()));
                         int invId = lmHardwareBaseDao.getBySerialNumber(error.getSerialNumber()).getInventoryId();
                         programIds.stream().forEach(programId -> {
                             communicationService.enroll(Integer.valueOf(error.getCorrectPath()), error.getSerialNumber(), invId,
@@ -373,7 +371,7 @@ public class EcobeeZeusReconciliationServiceImpl implements EcobeeZeusReconcilia
                 List<String> ecobeeGrps = new ArrayList<String>(ecobeeSerialNumberToGroupMapping.get(serialNumber));
                 // if ecobee groups are found for this device
                 if (CollectionUtils.isNotEmpty(ecobeeGrps)) {
-                    List<Integer> progmIds = loadGroupDao.getProgramIdsByGroupId(groupId);
+                    List<Integer> progmIds = ecobeeZeusGroupDao.getProgramIdsByGroupId(groupId);
                     Integer invId = lmHardwareBaseDao.getBySerialNumber(serialNumber).getInventoryId();
 
                     progmIds.stream().forEach(progmId -> {
@@ -400,16 +398,19 @@ public class EcobeeZeusReconciliationServiceImpl implements EcobeeZeusReconcilia
                 else {
                     // if the device is not in Enrolled state in root group
                     ZeusThermostat thermostat = communicationService.retrieveThermostatFromRootGroup(serialNumber);
-                    if (thermostat.getState() != ZeusThermostatState.ENROLLED) {
-                        // using root group as correct path since Yukon will add this device to Root group in NOT_YET_CONNECTED
-                        // state
-                        errorsList.add(new EcobeeZeusMissingDeviceDiscrepancy(serialNumber,
-                                communicationService.retrieveThermostatGroupID()));
-                    } else {
-                        // if device is in Enrolled state in root group but not in any ecobee groups, using Yukon group as correct
-                        // path since Yukon will decide correct ecobee group to add.
-                        errorsList.add(new EcobeeZeusMissingDeviceDiscrepancy(serialNumber,
-                                String.valueOf(groupId)));
+                    //Ignore NOT_YET_CONNECTED devices from MissingDevice
+                    if (thermostat.getState() != ZeusThermostatState.NOT_YET_CONNECTED) {
+                        if (thermostat.getState() != ZeusThermostatState.ENROLLED) {
+                            // using root group as correct path since Yukon will add this device to Root group in
+                            // NOT_YET_CONNECTED state
+                            errorsList.add(new EcobeeZeusMissingDeviceDiscrepancy(serialNumber,
+                                    communicationService.retrieveThermostatGroupID()));
+                        } else {
+                            // if device is in Enrolled state in root group but not in any ecobee groups, using Yukon group as
+                            // correct path since Yukon will decide correct ecobee group to add.
+                            errorsList.add(new EcobeeZeusMissingDeviceDiscrepancy(serialNumber,
+                                    String.valueOf(groupId)));
+                        }
                     }
                 }
             }
