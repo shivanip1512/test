@@ -5,14 +5,16 @@
 #include "amq_topics.h"
 #include "worker_thread.h"
 #include <chrono>
+#include <atomic>
 
 namespace Cti {
 
 
 DispatchMetricTracker::DispatchMetricTracker() : YukonMetricTracker(),
-                                                 _metricTracker(WorkerThread::Function([this]{DispatchMetricTrackerThread();}).name("_metricTracker"))
+                                                 _metricTracker(WorkerThread::Function([this] {DispatchMetricTrackerThread(); }).name("_metricTracker")),
+                                                 rowsSince5Mins{0},
+                                                 queueSizeSince5Mins{0}
 {};
-
 
 void DispatchMetricTracker::submitRows(long rows) 
 {

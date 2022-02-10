@@ -14,14 +14,13 @@ public:
     void submitRows(long rows);
     void submitQueueSize(long queueSize);
 
-    void DispatchMetricTrackerThread();
-
     void start();
     void interrupt();
     void terminateThread();
 
 private:
 
+    void DispatchMetricTrackerThread();
     void submitRowsToTopic();
     void submitQueueSizeToTopic();
 
