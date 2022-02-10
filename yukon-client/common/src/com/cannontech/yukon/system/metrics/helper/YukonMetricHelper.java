@@ -72,6 +72,6 @@ public class YukonMetricHelper {
                 shouldWatchAfterEscapevalve = true;
             }
         }
-        return !escapeValveAcheived || shouldWatchAfterEscapevalve;
+        return shouldWatchAfterEscapevalve;
     }
 }
