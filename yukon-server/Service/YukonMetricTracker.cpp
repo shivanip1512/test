@@ -1,10 +1,7 @@
 #include "YukonMetricTracker.h"
-
 #include "amq_connection.h"
 #include "amq_topics.h"
-
 #include <json.hpp>
-
 #include <format>
 
 namespace Cti {
@@ -23,7 +20,7 @@ void YukonMetricTracker::sendYukonMetricMessage(const std::string pointInfo, int
     json j = {
         {"pointInfo", pointInfo},
         {"value", value},
-        {"timeStamp", timestamp8601}
+        {"timestamp", timestamp8601}
     };
 
     std::string yukonMetricMessage = j.dump();

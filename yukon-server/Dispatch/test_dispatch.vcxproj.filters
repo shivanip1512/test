@@ -77,5 +77,8 @@
     <ClCompile Include="test_rph_archiver.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="DispatchMetricTracker.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
 </Project>
