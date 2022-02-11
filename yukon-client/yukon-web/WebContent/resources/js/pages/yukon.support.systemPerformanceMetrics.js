@@ -104,6 +104,7 @@ yukon.support.systemPerformanceMetrics = (function() {
                     animation: false,
                     lineWidth: 1,
                     shadow: false,
+                    turboThreshold: 5000,
                     states: {
                         hover: {
                             lineWidth: 1
@@ -156,6 +157,12 @@ yukon.support.systemPerformanceMetrics = (function() {
                     row.appendTo(appendToTableCssClass);
                     count++;
 
+                    var noDataText = yg.text.noData;
+                    if(value.pointData != null && value.pointData.length > 50)
+                    {
+                        noDataText = yg.text.exceedsDataLimit;
+                    }
+
                     var sparklineOptions = {
                         chart: {
                             renderTo: chartTableCell
@@ -167,8 +174,12 @@ yukon.support.systemPerformanceMetrics = (function() {
                         series: [{
                             name: value.pointName,
                             findNearestPointBy: 'xy',
-                            data: data
-                        }]
+                            data: data,
+                            
+                        }],
+                        lang: {
+                            noData: noDataText
+                        },
                     };
 
                     var options = Highcharts.merge(_sparklineDefaultOptions, sparklineOptions);
