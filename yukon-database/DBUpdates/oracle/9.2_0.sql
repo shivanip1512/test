@@ -276,7 +276,7 @@ CREATE GLOBAL TEMPORARY TABLE t_OutageCalcValuesTemp
    POINTID              NUMBER                          not null,
    TIMESTAMP            DATE                            not null,
    QUALITY              NUMBER                          not null,
-   VALUE                FLOAT                           not null,
+   VALUE                FLOAT                           not null
 ) ON COMMIT PRESERVE ROWS;
 
 /* Calculate the new values into the temp table */
