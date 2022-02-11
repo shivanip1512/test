@@ -36,6 +36,9 @@
     <ClCompile Include="ServiceMetricQuery.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="YukonMetricTracker.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="include\cservice.h">
@@ -57,6 +60,9 @@
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="include\ServiceMetricQuery.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="include\YukonMetricTracker.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>
