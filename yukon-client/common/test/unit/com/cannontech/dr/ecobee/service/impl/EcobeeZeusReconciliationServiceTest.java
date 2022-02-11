@@ -25,7 +25,6 @@ import com.cannontech.dr.ecobee.model.EcobeeZeusGroupDeviceMapping;
 import com.cannontech.dr.ecobee.model.discrepancy.EcobeeZeusDiscrepancy;
 import com.cannontech.dr.ecobee.service.EcobeeZeusCommunicationService;
 import com.cannontech.dr.ecobee.service.EcobeeZeusReconciliationService;
-import com.cannontech.loadcontrol.loadgroup.dao.LoadGroupDao;
 import com.cannontech.stars.dr.hardware.dao.LmHardwareBaseDao;
 import com.cannontech.stars.dr.hardware.model.LMHardwareBase;
 import com.google.common.collect.ArrayListMultimap;
@@ -138,7 +137,7 @@ public class EcobeeZeusReconciliationServiceTest {
     }
 
    public void prepareYukonData(Multimap<Integer, String> yukonGroupToDevicesMap, List<LMHardwareBase> devices,
-            LmHardwareBaseDao lmHardwareBaseDao2, LoadGroupDao loadGroupDao, EcobeeZeusGroupDao ecobeeZeusGroupDao) {
+            LmHardwareBaseDao lmHardwareBaseDao2, EcobeeZeusGroupDao ecobeeZeusGroupDao) {
        
        
         yukonGroupToDevicesMap.put(100, "1");
@@ -176,10 +175,7 @@ public class EcobeeZeusReconciliationServiceTest {
         EasyMock.replay(lmHardwareBaseDao);
         ReflectionTestUtils.setField(ecobeeZeusReconciliationService, "lmHardwareBaseDao", lmHardwareBaseDao);
 
-        EasyMock.expect(loadGroupDao.getProgramIdsByGroupId(100)).andStubReturn(List.of(1000));
-        EasyMock.replay(loadGroupDao);
-        ReflectionTestUtils.setField(ecobeeZeusReconciliationService, "loadGroupDao", loadGroupDao);
-
+        EasyMock.expect(ecobeeZeusGroupDao.getProgramIdsByGroupId(100)).andStubReturn(List.of(1000));
         EasyMock.expect(ecobeeZeusGroupDao.getZeusGroupId(100, 11, 1000)).andStubReturn("200");
         EasyMock.expect(ecobeeZeusGroupDao.getZeusGroupId(100, 12, 1000)).andStubReturn("200");
         EasyMock.expect(ecobeeZeusGroupDao.getZeusGroupId(100, 13, 1000)).andStubReturn("200");
@@ -214,10 +210,9 @@ public class EcobeeZeusReconciliationServiceTest {
         Multimap<Integer, String> yukonGroupToDevicesMap = ArrayListMultimap.create();
         List<LMHardwareBase> devices = new ArrayList<LMHardwareBase>();
         LmHardwareBaseDao lmHardwareBaseDao = EasyMock.createNiceMock(LmHardwareBaseDao.class);
-        LoadGroupDao loadGroupDao = EasyMock.createNiceMock(LoadGroupDao.class);
         EcobeeZeusGroupDao ecobeeZeusGroupDao = EasyMock.createNiceMock(EcobeeZeusGroupDao.class);
         
-        prepareYukonData(yukonGroupToDevicesMap, devices, lmHardwareBaseDao, loadGroupDao, ecobeeZeusGroupDao);
+        prepareYukonData(yukonGroupToDevicesMap, devices, lmHardwareBaseDao, ecobeeZeusGroupDao);
 
         Multimap<String, String> ecobeeSerialNumberToGroupMapping = prepareEcobeeData();
 
@@ -268,12 +263,7 @@ public class EcobeeZeusReconciliationServiceTest {
         ReflectionTestUtils.setField(ecobeeZeusReconciliationService, "communicationService", communicationService);
         ReflectionTestUtils.invokeMethod(ecobeeZeusReconciliationService, "checkForMissingAndExtraneousDevices",
                 yukonSerialNumbers, ecobeeSerialNumberToGroupMapping, errorsList, yukonGroupToDevicesMap);
-        assertTrue(errorsList.size() == 1, "Number of missing device should be 1");
-        errorsList.forEach(error -> {
-            assertTrue(error.getErrorType() == EcobeeZeusDiscrepancyType.MISSING_DEVICE, "Type should be MISSING_DEVICE");
-            assertTrue(error.getSerialNumber().equals("6"), "Missing device should be 6");
-            assertTrue(error.getCorrectPath().equals("10000"));
-        });
+        assertTrue(errorsList.size() == 0, "Number of missing device should be 0");
         errorsList.clear();
     }
 
@@ -306,6 +296,7 @@ public class EcobeeZeusReconciliationServiceTest {
         EasyMock.expect(ecobeeZeusGroupDao.getZeusGroupId(100, 13, 1000)).andStubReturn("200");
         EasyMock.expect(ecobeeZeusGroupDao.getZeusGroupId(100, 14, 1000)).andStubReturn("200");
         EasyMock.expect(ecobeeZeusGroupDao.getZeusGroupId(100, 15, 1000)).andStubReturn("200");
+        EasyMock.expect(ecobeeZeusGroupDao.getProgramIdsByGroupId(100)).andStubReturn(List.of(1000));
         EasyMock.replay(ecobeeZeusGroupDao);
         ReflectionTestUtils.setField(ecobeeZeusReconciliationService, "ecobeeZeusGroupDao", ecobeeZeusGroupDao);
 
@@ -369,7 +360,7 @@ public class EcobeeZeusReconciliationServiceTest {
             List<Integer> numbers = new ArrayList<>(Arrays.asList(1, 2, 3));
             return numbers;
         }).anyTimes();
-        
+
         lmHardwareBaseDao.getSerialNumberForInventoryId(1);
         expectLastCall().andAnswer(() -> {
             return "1";
@@ -432,7 +423,7 @@ public class EcobeeZeusReconciliationServiceTest {
         expectLastCall().andAnswer(() -> {
             return "3";
         }).anyTimes();
-        
+
         replay(ecobeeZeusGroupDao);
         replay(lmHardwareBaseDao);
 
