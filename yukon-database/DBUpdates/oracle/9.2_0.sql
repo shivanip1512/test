@@ -332,8 +332,13 @@ WHERE
             'RFN-530S4eAX', 'RFN-530S4eAXR', 'RFN-530S4eRX', 'RFN-530S4eRXR');
 
 /* Update DynamicPointDispatch with the new value */
-UPDATE 
-    dpd
+MERGE INTO 
+    DYNAMICPOINTDISPATCH dpd
+USING
+    t_OutageCalcValuesTemp t
+ON     
+    (dpd.POINTID=t.POINTID)
+WHEN MATCHED THEN UPDATE
 SET
     dpd.TIMESTAMP = 
         t.TIMESTAMP,
@@ -344,12 +349,9 @@ SET
     dpd.TAGS =
         0, 
     dpd.NEXTARCHIVE =
-        '2038-01-15 00:00:00', 
+        '15-JAN-2038', 
     dpd.millis =
-        0
-FROM
-    DYNAMICPOINTDISPATCH dpd
-        JOIN t_OutageCalcValuesTemp t on dpd.POINTID=t.POINTID;
+        0;
 
 /* @start-block */
 DECLARE
@@ -366,7 +368,7 @@ BEGIN
         VALUE, 
         millis)
     SELECT 
-        @maxChangeId + ROW_NUMBER() OVER (ORDER BY POINTID),
+        v_maxChangeId + ROW_NUMBER() OVER (ORDER BY POINTID),
         POINTID, 
         TIMESTAMP,
         QUALITY,
