@@ -189,7 +189,7 @@ public class LoadGroupSetupController {
 
             if (response.getStatusCode() == HttpStatus.UNPROCESSABLE_ENTITY) {
                 BindException error = new BindException(loadGroup, "loadGroup");
-                result = helper.populateBindingError(result, error, response);
+                result = helper.populateBindingErrorForApiErrorModel(result, error, response, "yukon.web.error.");
                 if (loadGroup.getType() != null) {
                     controllerHelper.setValidationMessageInFlash(result, flash, loadGroup.getType());
                 }
