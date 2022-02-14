@@ -14,7 +14,6 @@ import com.cannontech.common.dr.setup.LoadGroupCopy;
 import com.cannontech.common.pao.PaoType;
 import com.cannontech.common.pao.PaoUtils;
 import com.cannontech.common.validator.YukonApiValidationUtils;
-import com.cannontech.common.validator.YukonValidationUtils;
 import com.cannontech.common.validator.YukonValidationUtilsCommon;
 import com.cannontech.core.dao.PaoDao;
 import com.cannontech.database.data.lite.LiteYukonPAObject;
@@ -53,12 +52,15 @@ public class LMApiValidatorHelper {
             }
         }
     }
+    /**
+     * Validate Pao name.
+     */
     public void validateName(String paoName, Errors errors, String fieldName) {
-        checkIfFieldRequired("name", errors, paoName, fieldName);
+        YukonApiValidationUtils.checkIfFieldRequired("name", errors, paoName, fieldName);
         if (!errors.hasFieldErrors("name")) {
-            YukonValidationUtils.checkExceedsMaxLength(errors, "name", paoName, 60);
+            YukonApiValidationUtils.checkExceedsMaxLength(errors, "name", paoName, 60);
             if (!PaoUtils.isValidPaoName(paoName)) {
-                errors.rejectValue("name", "yukon.web.error.paoName.containsIllegalChars");
+                errors.rejectValue("name", ApiErrorDetails.ILLEGAL_CHARACTERS.getCodeString(), new Object[] { fieldName }, "");
             }
         }
     }
