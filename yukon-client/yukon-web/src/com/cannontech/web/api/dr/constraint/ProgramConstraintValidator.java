@@ -8,12 +8,10 @@ import com.cannontech.common.dr.setup.HolidayUsage;
 import com.cannontech.common.dr.setup.ProgramConstraint;
 import com.cannontech.common.validator.SimpleValidator;
 import com.cannontech.common.validator.YukonApiValidationUtils;
-import com.cannontech.web.api.dr.setup.LMApiValidatorHelper;
 import com.cannontech.yukon.IDatabaseCache;
 
 public class ProgramConstraintValidator extends SimpleValidator<ProgramConstraint> {
 
-    @Autowired LMApiValidatorHelper lmApiValidatorHelper;
     @Autowired private IDatabaseCache dbCache;
 
     public ProgramConstraintValidator() {
