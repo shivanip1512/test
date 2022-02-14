@@ -10,6 +10,7 @@ import org.apache.logging.log4j.Logger;
 import org.joda.time.Instant;
 import org.springframework.beans.factory.annotation.Autowired;
 
+import com.cannontech.amr.rfn.message.alarm.RfnAlarm;
 import com.cannontech.amr.rfn.message.event.RfnConditionDataType;
 import com.cannontech.amr.rfn.message.event.RfnConditionType;
 import com.cannontech.amr.rfn.message.event.RfnEvent;
@@ -47,11 +48,12 @@ public class RfnMeterEventService {
      * Process our event/alarm by first adding pointdata for our event type (i.e. the corresponding "Event Status"
      * status point), then continue on to our more specific processor
      */
-    public void processEvent(RfnDevice device, RfnEvent event, List<? super PointData> pointDatas, boolean isUnsolicited) {
+    public void processEvent(RfnDevice device, RfnEvent event, List<? super PointData> pointDatas) {
         log.debug("Event Received - event: " + event + " Device: " + device);
 
         Instant now = Instant.now();
         
+        boolean isUnsolicited = event instanceof RfnAlarm;
         boolean handledStatusEvent = handleRfnEventStatusEvents(device, event, pointDatas, now, isUnsolicited);
         RfnArchiveRequestProcessor processor = processorsMap.get(event.getType());
         if (processor != null) {
@@ -125,18 +127,9 @@ public class RfnMeterEventService {
             Instant timestamp,
             double pointValue,
             PointQuality quality,
-            Instant now) {
-        processAttributePointData(rfnDevice, pointDatas, attr, timestamp, pointValue, quality, now, false);
-    }
-    
-    private void processAttributePointData(RfnDevice rfnDevice,
-                                          List<? super PointData> pointDatas,
-                                          BuiltInAttribute attr,
-                                          Instant timestamp,
-                                          double pointValue,
-                                          PointQuality quality,
-                                          Instant now,
-                                          boolean isUnsolicited) {
+            Instant now,
+            boolean isUnsolicited) {
+        
         // create our attribute point if it doesn't exist yet
         attributeService.createPointForAttribute(rfnDevice, attr);
 
@@ -153,6 +146,7 @@ public class RfnMeterEventService {
         
         if (rfnDataValidator.isTimestampRecent(timestamp, now)) {
             pointDatas.add(pointData);
+            log.debug("Added PointData for alarm/event: {}. Unsolicited: {}", pointData, isUnsolicited);
         } else {
             log.warn("Timestamp invalid or old, discarding pointdata for " + rfnDevice + " " + attr + ": " + pointData);
         }        

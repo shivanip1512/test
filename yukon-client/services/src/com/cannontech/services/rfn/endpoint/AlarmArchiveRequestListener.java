@@ -50,7 +50,7 @@ public class AlarmArchiveRequestListener extends ArchiveRequestListenerBase<RfnA
             if (device.getPaoIdentifier().getPaoType().isMeter() || 
                     device.getPaoIdentifier().getPaoType().isRfRelay()) {
                 List<PointData> messagesToSend = Lists.newArrayListWithExpectedSize(3);
-                rfnMeterEventService.processEvent(device, archiveRequest.getAlarm(), messagesToSend, true);
+                rfnMeterEventService.processEvent(device, archiveRequest.getAlarm(), messagesToSend);
 
                 trackingIds = trackValues(messagesToSend);
 
