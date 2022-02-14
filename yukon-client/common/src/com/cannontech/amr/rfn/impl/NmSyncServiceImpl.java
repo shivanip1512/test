@@ -25,7 +25,7 @@ public class NmSyncServiceImpl implements NmSyncService {
     
  private static final int MINUTES_TO_WAIT_TO_SEND_STARTUP_REQUEST = 5;
     
-    private static final Logger log = YukonLogManager.getLogger(NmSyncServiceImpl.class);
+    private static final Logger log = YukonLogManager.getRfnLogger(NmSyncServiceImpl.class);
     
     @Autowired private ConnPool connPool;
     @Autowired private YukonJmsTemplateFactory jmsTemplateFactory;
@@ -44,7 +44,7 @@ public class NmSyncServiceImpl implements NmSyncService {
     public void sendSyncRequest() {
         RfnArchiveStartupNotification notif = new RfnArchiveStartupNotification();
         archiveStartupJmsTemplate.convertAndSend(notif);
-        log.info("Startup notification request has been sent to Network manager");
+        log.info("Startup notification ({}) request has been sent to Network manager", notif.getClass());
     }
     
     @Override

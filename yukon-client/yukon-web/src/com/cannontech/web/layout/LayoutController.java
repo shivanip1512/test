@@ -58,8 +58,8 @@ import com.cannontech.web.util.WebUtilityService;
 import com.google.common.base.Splitter;
 import com.google.common.base.Strings;
 import com.google.common.collect.ImmutableList;
-import com.google.common.collect.Lists;
 import com.google.common.collect.ImmutableList.Builder;
+import com.google.common.collect.Lists;
 
 @Controller
 public class LayoutController {
@@ -106,7 +106,6 @@ public class LayoutController {
         b.add(JsLibrary.JQUERY_COOKIE.getPath(dev));
         b.add(JsLibrary.HIGH_STOCK.getPath(dev));
         b.add(JsLibrary.HIGH_STOCK_NO_DATA.getPath(dev));
-        b.add(JsLibrary.JQUERY_SCROLL_TABLE_BODY.getPath(dev));
         libraryScriptFiles = b.build();
         
         b = ImmutableList.builder();

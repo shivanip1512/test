@@ -47,13 +47,13 @@ yukon.dr.setup.list = (function() {
             }
             
             if ($("#js-load-program-types").is(":visible")) {
-                $("#js-load-program-types").chosen({width: "290px"});
+                $("#js-load-program-types").chosen({width: "250px"});
                 $("#js-operational-states").chosen({width: "200px"});
                 $(".chosen-search-input").attr("autocomplete", "nofill");
             }
             
             if ($("#js-gear-types").is(":visible")) {
-                $("#js-gear-types").chosen({width: "250px"});
+                $("#js-gear-types").chosen({width: "240px"});
                 $(".chosen-search-input").attr("autocomplete", "nofill");
             }
             
@@ -66,7 +66,8 @@ yukon.dr.setup.list = (function() {
                 _filterResults(false);
             });
 
-            $('.js-program-container').find('span.b-label').css("maxWidth", "180px");
+            $('.js-program-container').find('span.b-label').css("maxWidth", "150px");
+            $('.js-program-container').find('span.b-label').css("marginRight", "-10px");
             $('.js-program-container').find('span.b-label').addClass("wrbw");
 
             $(document).on("click", ".js-gear-link", function (event) {

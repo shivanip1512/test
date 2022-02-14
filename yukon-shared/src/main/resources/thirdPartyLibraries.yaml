@@ -5133,88 +5133,88 @@ Network Manager :
     jira : none
     notes : 
 
-  - filename : log4j-1.2-api-2.17.0.jar
+  - filename : log4j-1.2-api-2.17.1.jar
     yukon group : Log4j
     project : Apache Log4j
-    version : 2.17.0
+    version : 2.17.1
     project URL : "https://logging.apache.org/log4j/2.x/"
     license : Apache 2.0
     license URLs : "https://logging.apache.org/log4j/2.x/license.html"
     maven URL : "n/a"
-    md5 : 0c95ec5afce732907310772107ef9f6a
-    sha1 : b62e94bea3c54b7512a6adfc86166ed3f062095b
-    updated : 2021-12-29
-    jira : NM-2275
+    md5 : a54a1f9fc3ce8352fb29cf66fbe07219
+    sha1 : DB3A7E7F07E878B92AC4A8F1100BEE8325D5713A
+    updated : 2022-02-09
+    jira : NM-2314
     notes : Apache Log4j API
 
-  - filename : log4j-api-2.17.0.jar
+  - filename : log4j-api-2.17.1.jar
     yukon group : Log4j
     project : Apache Log4j
-    version : 2.17.0
+    version : 2.17.1
     project URL : "https://logging.apache.org/log4j/2.x/"
     license : Apache 2.0
     license URLs : "https://logging.apache.org/log4j/2.x/license.html"
     maven URL : "n/a"
-    md5 : 4e4dc08c475a79f6b310e5cadcb9de19
-    sha1 : 0215451c98dd2673d3dd4257ec01d590ac4359e9
-    updated : 2021-12-29
-    jira : NM-2275
+    md5 : dfd5f2d81aba31583ee87fe16c7b78f8
+    sha1 : D771AF8E336E372FB5399C99EDABE0919AEAF5B2
+    updated : 2022-02-09
+    jira :  NM-2314
     notes : Apache Log4j API
 
-  - filename : log4j-appserver-2.17.0.jar
+  - filename : log4j-appserver-2.17.1.jar
     yukon group : Log4j
     project : Apache Log4j
-    version : 2.17.0
+    version : 2.17.1
     project URL : "https://logging.apache.org/log4j/2.x/"
     license : Apache 2.0
     license URLs : "https://logging.apache.org/log4j/2.x/license.html"
     maven URL : "n/a"
-    md5 : 21028cb226bc05ca0618bfc71312a2a1
-    sha1 : 5433c7a8eb43052129349f9eda033a24cdcc2898
-    updated : 2021-12-29
-    jira : NM-2275
+    md5 : ee8cba3f6e4e6fa0f5a950370c5f006e
+    sha1 : C3CB0896204FAA85BD93FAE01FF12E60FCA6DD44
+    updated : 2022-02-09
+    jira : NM-2314
     notes : Provide Log4j as the logging implementation for application servers
 
-  - filename : log4j-core-2.17.0.jar
+  - filename : log4j-core-2.17.1.jar
     yukon group : Log4j
     project : Apache Log4j
-    version : 2.17.0
+    version : 2.17.1
     project URL : "https://logging.apache.org/log4j/2.x/"
     license : Apache 2.0
     license URLs : "https://logging.apache.org/log4j/2.x/license.html"
     maven URL : "n/a"
-    md5 : 0ac2d4109e083ff8ef193a396c540ec2
-    sha1 : 2cc97f5b3328f5934224e3090e2b80dcfe3575b4
-    updated : 2021-12-29
-    jira : NM-2275
+    md5 : 8d2f5c52700336dae846b2c3ecde7a6e
+    sha1 : 779F60F3844DADC3EF597976FCB1E5127B1F343D
+    updated : 2022-02-09
+    jira : NM-2314
     notes : Apache Log4j Core
 
-  - filename : log4j-jcl-2.17.0.jar
+  - filename : log4j-jcl-2.17.1.jar
     yukon group : Log4j
     project : Apache Log4j
-    version : 2.17.0
+    version : 2.17.1
     project URL : "https://logging.apache.org/log4j/2.x/"
     license : Apache 2.0
     license URLs : "https://logging.apache.org/log4j/2.x/license.html"
     maven URL : "n/a"
-    md5 : 02a7c68a46b2bcdc223be339de4563ca
-    sha1 : 3c5e889f602c425d57c057f047d27632496e629a
-    updated : 2021-12-29
-    jira : NM-2275
+    md5 : 50e3476169613e40996674f7d700a54d
+    sha1 : 09A61078C937A2C064B73C3B2BF5801A86182533
+    updated : 2022-02-09
+    jira : NM-2314
     notes : Apache Commons Logging Bridge for Log4j
 
-  - filename : log4j-slf4j-impl-2.17.0.jar
+  - filename : log4j-slf4j-impl-2.17.1.jar
     yukon group : Log4j
     project : Apache Log4j
-    version : 2.17.0
+    version : 2.17.1
     project URL : "https://logging.apache.org/log4j/2.x/"
     license : Apache 2.0
     license URLs : "https://logging.apache.org/log4j/2.x/license.html"
     maven URL : "n/a"
-    md5 : 6b5349ca30f41229cdd399b47c1cd431
-    sha1 : bdc25c28728b399132d2f56d9353af0f65bec1be
-    updated : 2021-12-29
-    jira : NM-2275
+    md5 : 8d0e5934a9c341dbc3493d4039afd985
+    sha1 : 84692D456BCCE689355D33D68167875E486954DD
+    updated : 2022-02-09
+    jira : NM-2314
     notes : The Apache Log4j SLF4J API binding to Log4j 2 Core
 
   - filename : looks.jar
@@ -6184,18 +6184,6 @@ JavaScript :
     updated : 2017-08-30
     notes : "Includes several subsequent Eaton changes; open issue to add project to NPM at https://github.com/HubSpot/sortable/issues/30"
     
-  - project : scrollTableBody
-    version : 1.0.0
-    project URL : "https://github.com/nheldman/jquery.scrollTableBody/"
-    license : MIT
-    license URLs : "https://github.com/nheldman/jquery.scrollTableBody/blob/master/LICENSE"
-    npm URL : "n/a"
-    md5 : d5f8ab2117434f1d3d82129fe1aa67ad
-    sha1 : cd22d605b6c455743e708f2f4ba4428a6fe5d537
-    jira : YUK-20103
-    updated : 2019-05-37
-    notes : 
-
   - project : spectrum
     version : 1.8.1
     project URL : "https://github.com/bgrins/spectrum"

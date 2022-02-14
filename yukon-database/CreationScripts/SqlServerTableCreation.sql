@@ -11731,6 +11731,10 @@ create table Zone (
 )
 go
 
+alter table Zone
+   add constraint AK_ZONENAME_ZONE unique (ZoneName)
+go
+
 /*==============================================================*/
 /* View: CBCConfiguration2_View                                 */
 /*==============================================================*/

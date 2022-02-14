@@ -20,6 +20,7 @@ import com.cannontech.common.events.loggers.GatewayEventLogService;
 import com.cannontech.common.rfn.message.RfnIdentifier;
 import com.cannontech.common.rfn.message.gateway.GatewayArchiveRequest;
 import com.cannontech.common.rfn.model.RfnDevice;
+import com.cannontech.common.rfn.service.RfnDeviceLookupService;
 import com.cannontech.common.util.jms.YukonJmsTemplate;
 import com.google.common.collect.ImmutableList;
 
@@ -30,6 +31,7 @@ public class GatewayArchiveRequestListener extends ArchiveRequestListenerBase<Ga
     
     @Autowired private GatewayEventLogService gatewayEventLogService;
     @Autowired private NmSyncServiceImpl nmSyncService;
+    @Autowired private RfnDeviceLookupService rfnDeviceLookupService;
 
     @Resource(name = "missingGatewayFirstDataTimes") private Map<RfnIdentifier, Instant> missingGatewayFirstDataTimes;
     private List<Worker> workers;
@@ -44,10 +46,13 @@ public class GatewayArchiveRequestListener extends ArchiveRequestListenerBase<Ga
             if (missingGatewayFirstDataTimes.containsKey(identifier)) {
                 missingGatewayFirstDataTimes.remove(identifier);
             }
-
+            RfnDevice device = rfnDeviceLookupService.getDevice(identifier);
+            if(device != null) {
+                return device;
+            }
             try {
                 // Create the device in Yukon and send a DB change message
-                RfnDevice device = rfnDeviceCreationService.createGateway(identifier.getSensorSerialNumber(),
+                device = rfnDeviceCreationService.createGateway(identifier.getSensorSerialNumber(),
                     request.getRfnIdentifier());
                 log.debug("Created new gateway: " + device);
 

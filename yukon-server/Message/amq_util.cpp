@@ -290,10 +290,6 @@ const std::string& ManagedConnection::getBrokerUri() const
 /*-----------------------------------------------------------------------------
   Managed destination
 -----------------------------------------------------------------------------*/
-ManagedDestination::~ManagedDestination()
-{
-}
-
 std::string ManagedDestination::getDestPhysicalName() const
 {
     return destPhysicalName( *(this->getDestination()) );
@@ -306,10 +302,6 @@ ManagedProducer::ManagedProducer( cms::MessageProducer* producer ) :
     _producer( producer )
 {
     _producer->setDeliveryMode( cms::DeliveryMode::NON_PERSISTENT ); // set to NON_PERSISTENT
-}
-
-ManagedProducer::~ManagedProducer()
-{
 }
 
 void ManagedProducer::setTimeToLiveMillis( long long time )
@@ -332,10 +324,6 @@ void ManagedProducer::close()
 -----------------------------------------------------------------------------*/
 ManagedConsumer::ManagedConsumer( cms::MessageConsumer* consumer ) :
     _consumer( consumer )
-{
-}
-
-ManagedConsumer::~ManagedConsumer()
 {
 }
 
@@ -380,10 +368,6 @@ DestinationProducer::DestinationProducer( cms::Session &session, cms::Destinatio
 {
 }
 
-DestinationProducer::~DestinationProducer()
-{
-}
-
 const cms::Destination* DestinationProducer::getDestination() const
 {
     return _dest.get();
@@ -395,10 +379,6 @@ const cms::Destination* DestinationProducer::getDestination() const
 DestinationConsumer::DestinationConsumer( cms::MessageConsumer *consumer, cms::Destination *dest ) :
     ManagedConsumer( consumer ),
     _dest( dest )
-{
-}
-
-DestinationConsumer::~DestinationConsumer()
 {
 }
 
@@ -415,10 +395,6 @@ QueueProducer::QueueProducer( cms::Session &session, cms::Queue* dest ) :
 {
 }
 
-QueueProducer::~QueueProducer()
-{
-}
-
 /*-----------------------------------------------------------------------------
   Managed Queue message consumer
 -----------------------------------------------------------------------------*/
@@ -427,7 +403,11 @@ QueueConsumer::QueueConsumer( cms::Session &session, cms::Queue* dest ) :
 {
 }
 
-QueueConsumer::~QueueConsumer()
+/*-----------------------------------------------------------------------------
+  Managed topic message producer
+-----------------------------------------------------------------------------*/
+TopicProducer::TopicProducer(cms::Session& session, cms::Topic* dest) :
+    DestinationProducer(session.createProducer(dest), dest)
 {
 }
 
@@ -441,10 +421,6 @@ TopicConsumer::TopicConsumer( cms::Session &session, cms::Topic* dest ) :
 
 TopicConsumer::TopicConsumer( cms::Session &session, cms::Topic* dest, const std::string &selector ) :
      DestinationConsumer( session.createConsumer( dest, selector ), dest )
-{
-}
-
-TopicConsumer::~TopicConsumer()
 {
 }
 

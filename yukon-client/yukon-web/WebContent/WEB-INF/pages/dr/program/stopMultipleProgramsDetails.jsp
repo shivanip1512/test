@@ -222,7 +222,7 @@ $( function () {
     <form:hidden path="controlAreaId"/>
     <form:hidden path="scenarioId"/>
 
-    <table class="compact-results-table stacked">
+    <table class="compact-results-table stacked no-stripes no-borders">
         <tr>
             <th><cti:msg2 key=".stopTime"/></th>
         </tr>
@@ -244,7 +244,7 @@ $( function () {
     <cti:msg2 var="boxTitle" key=".programs"/>
     <tags:sectionContainer title="${boxTitle}">
         <div class="scroll-md">
-            <table class="compact-results-table dashed">
+            <table class="compact-results-table stacked no-stripes no-borders">
                 <tr>
                     <th><cti:msg2 key=".stopProgramName"/></th>
                     

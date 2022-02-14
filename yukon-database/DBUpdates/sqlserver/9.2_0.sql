@@ -207,6 +207,42 @@ GO
 INSERT INTO DBUpdates VALUES ('YUK-25792', '9.2.0', GETDATE());
 /* @end YUK-25792 */
 
+/* @start YUK-25003 */
+/* @start-block */
+BEGIN
+DECLARE @constraintExists NUMERIC = (SELECT COUNT(*) FROM sys.key_constraints WHERE name = 'AK_ZoneName');
+
+    IF @constraintExists > 0
+        BEGIN
+            ALTER TABLE Zone DROP CONSTRAINT AK_ZoneName;
+        END;
+END;
+GO
+/* @end-block */
+/* @error warn-once */
+/* @start-block */
+BEGIN
+    DECLARE @DuplicateZones NUMERIC = (SELECT COUNT(*) FROM (SELECT ZoneName, COUNT(*) AS temp_count FROM Zone GROUP BY ZoneName HAVING COUNT(*) > 1) AS temp_table)
+
+IF @DuplicateZones > 0
+    BEGIN
+        DECLARE @NewLine CHAR(2) = CHAR(13) + CHAR(10);
+        DECLARE @ErrorText VARCHAR(1024) = 'IVVC Zone Names are now required to be unique.' + @NewLine
+            + 'Setup has detected that IVVC Zones with duplicate names are present in the system.' + @NewLine
+            + 'In order to proceed with the update this must be manually resolved.' + @NewLine
+            + 'More information can be found in YUK-22834.' + @NewLine
+            + 'To locate Zones that have duplicated names you can use the query below:' + @NewLine
+            + 'SELECT ZoneName, COUNT(*) AS NumberOfOccurences FROM Zone GROUP BY ZoneName HAVING COUNT(*) > 1';
+        RAISERROR(@ErrorText, 16, 1);
+    END;
+END;
+GO
+/* @end-block */
+ALTER TABLE Zone ADD CONSTRAINT AK_ZONENAME_ZONE UNIQUE (ZoneName);
+
+INSERT INTO DBUpdates VALUES ('YUK-25003', '9.2.0', GETDATE());
+/* @end YUK-25003 */
+
 /* @start YUK-25754 */
 ALTER TABLE DeviceDataMonitor 
 ADD NotifyOnAlarmOnly CHAR(1) NULL;
@@ -234,6 +270,116 @@ GO
 
 INSERT INTO DBUpdates VALUES ('YUK-25754', '9.2.0', GETDATE());
 /* @end YUK-25754 */
+
+/* @start YUK-25614 */
+
+/* Calculate the new values into the temp table */
+SELECT
+    outTotal.POINTID
+        AS POINTID,
+    GETDATE()
+        AS TIMESTAMP,
+    CASE
+/* 5 = Normal quality */
+        WHEN (dpdOutBlink.QUALITY=5 AND dpdOutCount.QUALITY=5 AND dpdResBlink.QUALITY=5) THEN 5
+/* 18 = Estimated quality */
+        ELSE 18
+    END
+        AS QUALITY,
+    dpdOutCount.VALUE + dpdResBlink.VALUE + ISNULL(dpdOutBlink.VALUE, 0)
+        AS VALUE
+INTO 
+    #OutageCalcValuesTemp
+FROM 
+    POINT outTotal 
+        JOIN YukonPAObject y 
+            ON y.PAObjectID=outTotal.PAObjectID
+        JOIN CALCBASE cb
+            ON cb.POINTID=outTotal.POINTID
+        JOIN CALCCOMPONENT cc1 ON cc1.PointID=cb.POINTID and cc1.COMPONENTORDER=1 and cc1.COMPONENTTYPE='Operation' and cc1.OPERATION='+'
+        JOIN CALCCOMPONENT cc2 ON cc2.PointID=cb.POINTID and cc2.COMPONENTORDER=2 and cc2.COMPONENTTYPE='Operation' and cc2.OPERATION='+'
+        JOIN CALCCOMPONENT cc3 ON cc3.PointID=cb.POINTID and cc3.COMPONENTORDER=3 and cc3.COMPONENTTYPE='Operation' and cc3.OPERATION='+'
+        JOIN POINT outBlink ON outBlink.POINTID=cc1.COMPONENTPOINTID and outBlink.POINTTYPE='Analog' and outBlink.POINTOFFSET='20'
+        JOIN POINT outCount ON outCount.POINTID=cc2.COMPONENTPOINTID and outCount.POINTTYPE='Analog' and outCount.POINTOFFSET='22'
+        JOIN POINT resBlink ON resBlink.POINTID=cc3.COMPONENTPOINTID and resBlink.POINTTYPE='Analog' and resBlink.POINTOFFSET='21'
+        JOIN DYNAMICPOINTDISPATCH dpdOutTotal on outTotal.POINTID=dpdOutTotal.POINTID
+        JOIN DYNAMICPOINTDISPATCH dpdOutCount on outCount.POINTID=dpdOutCount.POINTID
+        JOIN DYNAMICPOINTDISPATCH dpdResBlink on resBlink.POINTID=dpdResBlink.POINTID
+        LEFT JOIN DYNAMICPOINTDISPATCH dpdOutBlink on outBlink.POINTID=dpdOutBlink.POINTID AND dpdOutBlink.QUALITY != 0
+WHERE
+    outTotal.POINTTYPE='CalcAnalog'
+        AND outTotal.POINTOFFSET='0'
+        AND (SELECT COUNT(PointID) FROM CALCCOMPONENT WHERE PointID=outTotal.POINTID)=3
+        AND dpdOutTotal.QUALITY != 0
+        AND dpdOutCount.QUALITY != 0
+        AND dpdResBlink.QUALITY != 0
+        AND y.Type in (
+            'RFN-410fL', 'RFN-410fX', 'RFN-410fD',
+            'RFN-420fL', 'RFN-420fX', 'RFN-420fD', 'RFN-420fRX', 'RFN-420fRD',
+            'RFN-410cL',
+            'RFN-420cL', 'RFN-420cD',
+            'WRL-420cL', 'WRL-420cD',
+            'RFN-430A3D', 'RFN-430A3T', 'RFN-430A3K', 'RFN-430A3R',
+            'RFN-430KV',
+            'RFN-430SL0', 'RFN-430SL1', 'RFN-430SL2', 'RFN-430SL3', 'RFN-430SL4',
+            'RFN-440-2131TD', 'RFN-440-2132TD', 'RFN-440-2133TD',
+            'RFN-510fL',
+            'RFN-520fAX', 'RFN-520fRX', 'RFN-520fAXD', 'RFN-520fRXD',
+            'RFN-520fAXe', 'RFN-520fRXe', 'RFN-520fAXeD', 'RFN-520fRXeD',
+            'RFN-530fAX', 'RFN-530fRX', 'RFN-530fAXe', 'RFN-530fRXe',
+            'RFN-530S4x',
+            'RFN-530S4eAX', 'RFN-530S4eAXR', 'RFN-530S4eRX', 'RFN-530S4eRXR');
+
+/* Update DynamicPointDispatch with the new value */
+UPDATE 
+    dpd
+SET
+    dpd.TIMESTAMP = 
+        t.TIMESTAMP,
+    dpd.QUALITY =
+        t.QUALITY,
+    dpd.VALUE =
+        t.VALUE, 
+    dpd.TAGS =
+        0, 
+    dpd.NEXTARCHIVE =
+        '2038-01-15 00:00:00', 
+    dpd.millis =
+        0
+FROM
+    DYNAMICPOINTDISPATCH dpd
+        JOIN #OutageCalcValuesTemp t on dpd.POINTID=t.POINTID;
+
+/* @start-block */
+BEGIN
+    DECLARE @maxChangeId NUMERIC = (SELECT ISNULL(MAX(CHANGEID), 0) FROM RAWPOINTHISTORY)
+
+/* Insert the new values into RPH */
+    INSERT INTO RAWPOINTHISTORY (
+        CHANGEID,
+        POINTID, 
+        TIMESTAMP, 
+        QUALITY, 
+        VALUE, 
+        millis)
+    SELECT 
+        @maxChangeId + ROW_NUMBER() OVER (ORDER BY POINTID),
+        POINTID, 
+        TIMESTAMP,
+        QUALITY,
+        VALUE,
+        0
+    FROM 
+        #OutageCalcValuesTemp;
+
+END;
+/* @end-block */
+
+/* Clean up */
+DROP TABLE #OutageCalcValuesTemp;
+
+INSERT INTO DBUpdates VALUES ('YUK-25614', '9.2.0', GETDATE());
+/* @end YUK-25614 */
 
 /***********************************************************************************/
 /* VERSION INFO                                                                    */
