@@ -11,10 +11,10 @@
         <tags:hidden path="from"/>
     </tags:nameValueContainer2>
     <div class="di pa MT10">
-    <div id="testEmail-tooltip" class="dn">
-        <cti:msg2 key="yukon.web.modules.adminSetup.config.testEmail.tooltip"/>
-    </div>
-    <cti:icon icon="icon-information" classes="M0 vatt fn" data-tooltip="#testEmail-tooltip"/>
+        <div id="testEmail-tooltip" class="dn">
+            <cti:msg2 key="yukon.web.modules.adminSetup.config.testEmail.tooltip"/>
+        </div>
+        <cti:icon icon="icon-information" classes="M0 vatt fn" data-tooltip="#testEmail-tooltip"/>
     </div>
 </form:form>
 
