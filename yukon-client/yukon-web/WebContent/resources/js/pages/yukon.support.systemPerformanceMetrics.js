@@ -157,8 +157,15 @@ yukon.support.systemPerformanceMetrics = (function() {
                     row.appendTo(appendToTableCssClass);
                     count++;
 
-                    var noDataText = yg.text.noData;
-                    if(value.pointData != null && value.pointData.length > 50)
+                    var noDataText = yg.text.noData,
+                        turboThreshold = 5000;
+                  
+                    /**
+                    * Turbo threshold is the maximum number data points for which the chart will be rendered.
+                    * Its default value is 1000. If our point data greater than turbo threshold, we display a
+                    * text message - "Results returned too much data. Please adjust date range."
+                    */
+                    if(value.pointData != null && value.pointData.length > turboThreshold)
                     {
                         noDataText = yg.text.exceedsDataLimit;
                     }
