@@ -8,9 +8,23 @@ import org.springframework.validation.Errors;
 import org.springframework.validation.ValidationUtils;
 
 import com.cannontech.api.error.model.ApiErrorDetails;
+import com.cannontech.common.pao.PaoUtils;
 import com.cannontech.common.util.Range;
 
 public class YukonApiValidationUtils extends ValidationUtils {
+    
+    /**
+     * Validate Pao name.
+     */
+    public static void validateName(String paoName, Errors errors, String fieldName) {
+        checkIfFieldRequired("name", errors, paoName, fieldName);
+        if (!errors.hasFieldErrors("name")) {
+            YukonApiValidationUtils.checkExceedsMaxLength(errors, "name", paoName, 60);
+            if (!PaoUtils.isValidPaoName(paoName)) {
+                errors.rejectValue("name", ApiErrorDetails.ILLEGAL_CHARACTERS.getCodeString(), new Object[] { fieldName }, "");
+            }
+        }
+    }
 
     public static boolean checkExceedsMaxLength(Errors errors, String field, String fieldValue, int max) {
         if (YukonValidationUtilsCommon.checkExceedsMaxLength(fieldValue, max)) {

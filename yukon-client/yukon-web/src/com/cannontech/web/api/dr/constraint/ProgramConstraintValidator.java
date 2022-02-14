@@ -23,7 +23,7 @@ public class ProgramConstraintValidator extends SimpleValidator<ProgramConstrain
     @Override
     protected void doValidation(ProgramConstraint programConstraint, Errors errors) {
         // Mandatory, max length(60) and special character check for name.
-        lmApiValidatorHelper.validateName(programConstraint.getName(), errors, "Name");
+        YukonApiValidationUtils.validateName(programConstraint.getName(), errors, "Name");
         if (!errors.hasFieldErrors("name")) {
             dbCache.getAllLMProgramConstraints()
                     .stream()
@@ -56,35 +56,35 @@ public class ProgramConstraintValidator extends SimpleValidator<ProgramConstrain
                 errors.rejectValue("holidayUsage", ApiErrorDetails.INVALID_VALUE.getCodeString(), new Object[] { "Holiday Usage" }, "");
             }
         }
-        lmApiValidatorHelper.checkIfFieldRequired("maxActivateSeconds", errors, programConstraint.getMaxActivateSeconds(), "Max Activate");
+        YukonApiValidationUtils.checkIfFieldRequired("maxActivateSeconds", errors, programConstraint.getMaxActivateSeconds(), "Max Activate");
         if (!errors.hasFieldErrors("maxActivateSeconds")) {
             YukonApiValidationUtils.checkRange(errors, "maxActivateSeconds", programConstraint.getMaxActivateSeconds(), 0, 99999, false);
         }
-        lmApiValidatorHelper.checkIfFieldRequired("maxDailyOps", errors, programConstraint.getMaxDailyOps(), "Max Daily Ops");
+        YukonApiValidationUtils.checkIfFieldRequired("maxDailyOps", errors, programConstraint.getMaxDailyOps(), "Max Daily Ops");
         if (!errors.hasFieldErrors("maxDailyOps")) {
             YukonApiValidationUtils.checkRange(errors, "maxDailyOps", programConstraint.getMaxDailyOps(), 0, 99999, false);
         }
-        lmApiValidatorHelper.checkIfFieldRequired("minActivateSeconds", errors, programConstraint.getMinActivateSeconds(), "Min Activate");
+        YukonApiValidationUtils.checkIfFieldRequired("minActivateSeconds", errors, programConstraint.getMinActivateSeconds(), "Min Activate");
         if (!errors.hasFieldErrors("minActivateSeconds")) {
             YukonApiValidationUtils.checkRange(errors, "minActivateSeconds", programConstraint.getMinActivateSeconds(), 0, 99999, false);
         }
-        lmApiValidatorHelper.checkIfFieldRequired("minRestartSeconds", errors, programConstraint.getMinRestartSeconds(), "Min Restart");
+        YukonApiValidationUtils.checkIfFieldRequired("minRestartSeconds", errors, programConstraint.getMinRestartSeconds(), "Min Restart");
         if (!errors.hasFieldErrors("minRestartSeconds")) {
             YukonApiValidationUtils.checkRange(errors, "minRestartSeconds", programConstraint.getMinRestartSeconds(), 0, 99999, false);
         }
-        lmApiValidatorHelper.checkIfFieldRequired("maxHoursDaily", errors, programConstraint.getMaxHoursDaily(), "Daily");
+        YukonApiValidationUtils.checkIfFieldRequired("maxHoursDaily", errors, programConstraint.getMaxHoursDaily(), "Daily");
         if (!errors.hasFieldErrors("maxHoursDaily")) {
             YukonApiValidationUtils.checkRange(errors, "maxHoursDaily", programConstraint.getMaxHoursDaily(), 0, 99999, false);
         }
-        lmApiValidatorHelper.checkIfFieldRequired("maxHoursMonthly", errors, programConstraint.getMaxHoursMonthly(), "Monthly");
+        YukonApiValidationUtils.checkIfFieldRequired("maxHoursMonthly", errors, programConstraint.getMaxHoursMonthly(), "Monthly");
         if (!errors.hasFieldErrors("maxHoursMonthly")) {
             YukonApiValidationUtils.checkRange(errors, "maxHoursMonthly", programConstraint.getMaxHoursMonthly(), 0, 99999, false);
         }
-        lmApiValidatorHelper.checkIfFieldRequired("maxHoursAnnually", errors, programConstraint.getMaxHoursAnnually(), "Annually");
+        YukonApiValidationUtils.checkIfFieldRequired("maxHoursAnnually", errors, programConstraint.getMaxHoursAnnually(), "Annually");
         if (!errors.hasFieldErrors("maxHoursAnnually")) {
             YukonApiValidationUtils.checkRange(errors, "maxHoursAnnually", programConstraint.getMaxHoursAnnually(), 0, 99999, false);
         }
-        lmApiValidatorHelper.checkIfFieldRequired("maxHoursSeasonal", errors, programConstraint.getMaxHoursSeasonal(), "Seasonal");
+        YukonApiValidationUtils.checkIfFieldRequired("maxHoursSeasonal", errors, programConstraint.getMaxHoursSeasonal(), "Seasonal");
         if (!errors.hasFieldErrors("maxHoursSeasonal")) {
             YukonApiValidationUtils.checkRange(errors, "maxHoursSeasonal", programConstraint.getMaxHoursSeasonal(), 0, 99999, false);
         }
