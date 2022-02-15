@@ -30,7 +30,7 @@ public class MacroLoadGroupValidator extends SimpleValidator<MacroLoadGroup> {
     protected void doValidation(MacroLoadGroup loadGroup, Errors errors) {
 
         YukonApiValidationUtils.checkIfFieldRequired("type", errors, loadGroup.getType(), "Type");
-        lmApiValidatorHelper.validateNewPaoName(loadGroup.getName(), loadGroup.getType(), errors, "Name");
+        YukonApiValidationUtils.validateNewPaoName(loadGroup.getName(), loadGroup.getType(), errors, "Name");
 
         if (!errors.hasFieldErrors("type")) {
             if (loadGroup.getType() != PaoType.MACRO_GROUP) {
