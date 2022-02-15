@@ -121,6 +121,7 @@
             <ant dir="${macs}" target="${dotarget}" />
             <ant dir="${report}" target="${dotarget}" />
         </parallel>
+    	<ant dir="${yukon-react}" target="${dotarget}" />
         <ant dir="${yukon-web}" target="${dotarget}" />
     </target>
 
