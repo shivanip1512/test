@@ -233,7 +233,7 @@
         <decimalplaces value="0"/>
     </point>
     <point offset="1047" type="Analog">
-        <name>RawPointHistory Average Write Time Per Row</name>
+        <name>RawPointHistory Average Insert Time Per Row</name>
         <multiplier value="1" />
         <unitofmeasure value="MS" />
         <decimalplaces value="3"/>

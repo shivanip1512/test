@@ -37,9 +37,9 @@ public enum YukonMetricPointDataType {
     RPH_INSERTS(YukonMetricPointInfo.RPH_INSERTS, 1045,
             PointType.Analog, "RawPointHistory Rows Inserted", ChartInterval.FIVEMINUTE, ConverterType.RAW),
     RPH_QUEUE_SIZE(YukonMetricPointInfo.RPH_QUEUE_SIZE, 1046,
-            PointType.Analog, "RawPointHistory Archiver Queue Size", ChartInterval.FIVEMINUTE, ConverterType.RAW);
+            PointType.Analog, "RawPointHistory Archiver Queue Size", ChartInterval.FIVEMINUTE, ConverterType.RAW),
     RPH_INSERT_MILLIS_PER_ROW(YukonMetricPointInfo.RPH_INSERT_MILLIS_PER_ROW, 1047, 
-            PointType.Analog, "RawPointHistory Average Write Time Per Row", ChartInterval.FIVEMINUTE, ConverterType.RAW);
+            PointType.Analog, "RawPointHistory Average Insert Time Per Row", ChartInterval.FIVEMINUTE, ConverterType.RAW);
 
     private final static ImmutableSet<YukonMetricPointInfo> lookupByYukonMetricPointInfo;
     private final static ImmutableMap<YukonMetricPointInfo, YukonMetricPointDataType> lookupByPointInfo;
