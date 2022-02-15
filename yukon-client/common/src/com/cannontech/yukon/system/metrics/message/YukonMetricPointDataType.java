@@ -33,7 +33,11 @@ public enum YukonMetricPointDataType {
     PROFILE_DATA_COUNT(YukonMetricPointInfo.PROFILE_DATA_COUNT, 1043, 
             PointType.Analog, "Network Manager Profiling Data Count", ChartInterval.HOUR, ConverterType.RAW),
     GENERIC_DATA_POINT_COUNT(YukonMetricPointInfo.GENERIC_DATA_POINT_COUNT, 1044, 
-            PointType.Analog, "Network Manager LCR Data Count", ChartInterval.HOUR, ConverterType.RAW);
+            PointType.Analog, "Network Manager LCR Data Count", ChartInterval.HOUR, ConverterType.RAW),
+    RPH_INSERTS(YukonMetricPointInfo.RPH_INSERTS, 1045,
+            PointType.Analog, "RawPointHistory Rows Inserted", ChartInterval.FIVEMINUTE, ConverterType.RAW),
+    RPH_QUEUE_SIZE(YukonMetricPointInfo.RPH_QUEUE_SIZE, 1046,
+            PointType.Analog, "RawPointHistory Archiver Queue Size", ChartInterval.FIVEMINUTE, ConverterType.RAW);
 
     private final static ImmutableSet<YukonMetricPointInfo> lookupByYukonMetricPointInfo;
     private final static ImmutableMap<YukonMetricPointInfo, YukonMetricPointDataType> lookupByPointInfo;

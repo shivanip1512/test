@@ -90,15 +90,14 @@ public class RfnMeterReadingArchiveRequestsQueueSizeProducer extends YukonMetric
 
         long currentQueueSize = helper.getQueueSize(ApplicationId.SERVICE_MANAGER, queueName);
         YukonMetric cachedValue = yukonMetricCache.get(key);
+        yukonMetricCache.put(key, new YukonMetric(getYukonMetricPointInfo(), currentQueueSize, DateTime.now()));
         if (cachedValue != null) {
-            long cachedQueueSize = Long.valueOf(String.valueOf(yukonMetricCache.get(key).getValue()));
+            long cachedQueueSize = Long.valueOf(String.valueOf(cachedValue.getValue()));
             if ((cachedQueueSize < thresholdValue && currentQueueSize > thresholdValue)
                     || cachedQueueSize > thresholdValue && currentQueueSize < thresholdValue) {
                 return cachedValue;
             }
         }
-        yukonMetricCache.put(key, new YukonMetric(getYukonMetricPointInfo(), currentQueueSize, DateTime.now()));
         return null;
-    
     }
 }

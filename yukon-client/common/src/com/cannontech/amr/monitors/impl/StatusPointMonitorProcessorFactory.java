@@ -139,8 +139,6 @@ public class StatusPointMonitorProcessorFactory extends MonitorProcessorFactoryB
             
             for (StatusPointMonitorProcessor statusPointMonitorProcessor : statusPointMonitor.getProcessors()) {
                 
-                
-                
                 boolean needPreviousValue = previousValue == null && needPreviousValue(statusPointMonitorProcessor); 
                 if (needPreviousValue) {
                     previousValue = getPreviousValueForPoint(nextValue);
@@ -163,7 +161,7 @@ public class StatusPointMonitorProcessorFactory extends MonitorProcessorFactoryB
                     outageJmsMessage.setPaoIdentifier(richPointData.getPaoPointIdentifier().getPaoIdentifier());
                     outageJmsMessage.setPointValueQualityHolder(richPointData.getPointValue());
                     
-                    log.debug("Outage message pushed to jms queue: " + outageJmsMessage);
+                    log.debug("Outage message pushed to jms queue: {}", outageJmsMessage);
                     jmsTemplate.convertAndSend(outageJmsMessage);
                     break; // once we've found a match, stop evaluating processors
                 }
