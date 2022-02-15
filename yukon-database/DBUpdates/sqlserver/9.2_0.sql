@@ -198,12 +198,6 @@ EventType ASC
 );
 GO
 
-CREATE INDEX INDX_EventLog_EvntTime_EvntLogID ON EventLog (
-EventTime DESC,
-EventLogId DESC
-);
-GO
-
 INSERT INTO DBUpdates VALUES ('YUK-25792', '9.2.0', GETDATE());
 /* @end YUK-25792 */
 
@@ -236,10 +230,13 @@ INSERT INTO DBUpdates VALUES ('YUK-25754', '9.2.0', GETDATE());
 /* @end YUK-25754 */
 
 /* @start YUK-25874 */
+/* @error ignore-begin */
 DROP INDEX INDX_EventLog_EvntTime_EvntLogID ON EventLog;
 GO
+/* @error ignore-end */
 
 INSERT INTO DBUpdates VALUES ('YUK-25874', '9.2.0', GETDATE());
+/ @error ignore-end */
 /* @end YUK-25874 */
 
 /***********************************************************************************/
