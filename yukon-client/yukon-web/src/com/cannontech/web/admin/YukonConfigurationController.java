@@ -124,6 +124,7 @@ public class YukonConfigurationController {
     
     @RequestMapping(value = "/config/view", method = RequestMethod.GET)
     public String view(ModelMap model, final YukonUserContext context) {
+        
         final MessageSourceAccessor accessor = resolver.getMessageSourceAccessor(context);
         
         Comparator<Pair<GlobalSettingSubCategory, String>> sorter = new Comparator<Pair<GlobalSettingSubCategory, String>>() {
@@ -202,12 +203,6 @@ public class YukonConfigurationController {
         model.addAttribute("category", category);
         model.addAttribute("categoryName", accessor.getMessage(category));
         Map<GlobalSettingType, GlobalSetting> settings = globalSettingEditorDao.getSettingsForCategory(category);
-
-        GlobalSetting s1 =settings.get(GlobalSettingType.EATON_CLOUD_SECRET);
-        System.out.println(s1.getLastChanged().toString(DateTimeFormat.forPattern("MM/dd/yyyy HH:mm:ss")));
-        
-        GlobalSetting s2 =settings.get(GlobalSettingType.EATON_CLOUD_SECRET2);
-        System.out.println(s2.getLastChanged().toString(DateTimeFormat.forPattern("MM/dd/yyyy HH:mm:ss")));
 
         GlobalSettingsEditorBean command = new GlobalSettingsEditorBean();
         command.setCategory(category);
