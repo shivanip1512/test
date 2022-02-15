@@ -24,6 +24,7 @@
 #include "Thrift/LMEcobeeCommandData_types.h"
 
 #include "std_helper.h"
+#include "message_serialization_util.h"
 
 #include <boost/optional.hpp>
 #include <boost/assign/list_of.hpp>
@@ -247,7 +248,7 @@ try
 
     reply.__set_rfnIdentifier(identifier);
 
-    reply.__set_timestamp( m.timestamp.seconds() );
+    reply.__set_timestamp(CtiTimeToMilliseconds(m.timestamp));
 
     std::set<Thrift::ChannelInfo> channelInfo;
 
