@@ -130,4 +130,9 @@ public interface EcobeeZeusGroupDao {
      * Update mappings with new zeus group Id.
      */
     void updateZeusGroupId(String oldZeusGroupId, String newZeusGroupId);
+
+    /**
+     * Return all programs mapped with the specified lmGroupId
+     */
+    List<Integer> getProgramIdsByGroupId(Integer lmGroupId);
 }

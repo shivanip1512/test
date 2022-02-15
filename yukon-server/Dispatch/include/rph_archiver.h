@@ -1,6 +1,7 @@
 #pragma once
 
 #include "worker_thread.h"
+#include "DispatchMetricTracker.h"
 
 #include <mutex>
 
@@ -63,6 +64,8 @@ protected:
 private:
 
     void mainThread();
+    
+    DispatchMetricTracker tracker;
 
     WorkerThread _archiverThread;
 
