@@ -12,10 +12,10 @@ public enum YukonMetricPointDataType {
     RFN_METER_READING_ARCHIVE_REQUESTS_RECEIVED(YukonMetricPointInfo.RFN_METER_READING_ARCHIVE_REQUESTS_RECEIVED, 1032,
             PointType.Analog, "RFN Meter Reading Archive Requests Received", ChartInterval.HOUR, ConverterType.DELTA_WATER),
     RFN_METER_READING_ARCHIVE_REQUESTS_POINT_DATA_GENERATED_COUNT(
-            YukonMetricPointInfo.RFN_METER_READING_ARCHIVE_POINT_DATA_GENERATED_COUNT, 1034, PointType.Analog,
-            "RFN Meter Reading Archive Point Data Generated Count", ChartInterval.HOUR, ConverterType.DELTA_WATER),
-    RFN_LCR_READING_ARCHIVE_REQUESTS_RECEIVED(YukonMetricPointInfo.RFN_LCR_READING_ARCHIVE_REQUESTS_RECEIVED, 1035, PointType.Analog,
-            "RFN LCR Reading Archive Requests Received", ChartInterval.HOUR, ConverterType.DELTA_WATER),
+            YukonMetricPointInfo.RFN_METER_READING_ARCHIVE_POINT_DATA_GENERATED_COUNT, 1034,
+            PointType.Analog, "RFN Meter Reading Archive Point Data Generated Count", ChartInterval.HOUR, ConverterType.DELTA_WATER),
+    RFN_LCR_READING_ARCHIVE_REQUESTS_RECEIVED(YukonMetricPointInfo.RFN_LCR_READING_ARCHIVE_REQUESTS_RECEIVED, 1035,
+            PointType.Analog, "RFN LCR Reading Archive Requests Received", ChartInterval.HOUR, ConverterType.DELTA_WATER),
     RFN_LCR_READING_ARCHIVE_REQUESTS_QUEUE_SIZE(YukonMetricPointInfo.RFN_LCR_READING_ARCHIVE_REQUESTS_QUEUE_SIZE, 1036,
             PointType.Analog, "RFN LCR Reading Archive Requests Queue Size", ChartInterval.DAY, ConverterType.RAW),
     RFN_METER_READING_ARCHIVE_REQUESTS_QUEUE_SIZE(YukonMetricPointInfo.RFN_METER_READING_ARCHIVE_REQUESTS_QUEUE_SIZE, 1037,
@@ -38,6 +38,8 @@ public enum YukonMetricPointDataType {
             PointType.Analog, "RawPointHistory Rows Inserted", ChartInterval.FIVEMINUTE, ConverterType.RAW),
     RPH_QUEUE_SIZE(YukonMetricPointInfo.RPH_QUEUE_SIZE, 1046,
             PointType.Analog, "RawPointHistory Archiver Queue Size", ChartInterval.FIVEMINUTE, ConverterType.RAW);
+    RPH_INSERT_MILLIS_PER_ROW(YukonMetricPointInfo.RPH_INSERT_MILLIS_PER_ROW, 1047, 
+            PointType.Analog, "RawPointHistory Average Write Time Per Row", ChartInterval.FIVEMINUTE, ConverterType.RAW);
 
     private final static ImmutableSet<YukonMetricPointInfo> lookupByYukonMetricPointInfo;
     private final static ImmutableMap<YukonMetricPointInfo, YukonMetricPointDataType> lookupByPointInfo;
