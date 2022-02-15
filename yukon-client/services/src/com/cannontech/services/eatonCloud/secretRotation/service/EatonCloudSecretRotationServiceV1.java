@@ -84,7 +84,7 @@ public class EatonCloudSecretRotationServiceV1 {
             executor.scheduleAtFixedRate(() -> {
                 rotateSecrets();
             }, 0, 1, TimeUnit.DAYS);
-        }, 5, TimeUnit.MINUTES);
+        }, 15, TimeUnit.MINUTES);
         initDebugOptions();
     }
 
