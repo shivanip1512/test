@@ -12,7 +12,9 @@ import com.cannontech.api.error.model.ApiErrorDetails;
 import com.cannontech.common.dr.setup.LMCopy;
 import com.cannontech.common.dr.setup.LoadGroupCopy;
 import com.cannontech.common.pao.PaoType;
+import com.cannontech.common.pao.PaoUtils;
 import com.cannontech.common.validator.YukonApiValidationUtils;
+import com.cannontech.core.dao.PaoDao;
 import com.cannontech.database.data.lite.LiteYukonPAObject;
 import com.cannontech.stars.util.ServletUtils;
 import com.cannontech.yukon.IDatabaseCache;
@@ -25,7 +27,7 @@ public class LMApiValidatorHelper {
     /**
      * Checks whether the Pao name is unique or not
      */
-
+    @Autowired private PaoDao paoDao;
     public void validateRoute(Errors errors, Integer routeId) {
         YukonApiValidationUtils.checkIfFieldRequired("routeId", errors, routeId, "Route Id");
         if (!errors.hasFieldErrors("routeId")) {
@@ -58,5 +60,41 @@ public class LMApiValidatorHelper {
             }
         }
     }
+    /**
+     * Checks whether the Pao name is unique or not
+     */
 
+    public  void validateNewPaoName(String paoName, PaoType type, Errors errors, String fieldName) {
+        validateName(paoName, errors, fieldName);
+        if (!errors.hasFieldErrors("name")) {
+            String paoId = ServletUtils.getPathVariable("id");
+            // Check if pao name already exists
+            if (type != null && (paoId == null || !(paoDao.getYukonPAOName(Integer.valueOf(paoId)).equalsIgnoreCase(paoName)))) {
+                validateUniquePaoName(paoName, type, errors, fieldName);
+            }
+        }
+    }
+     
+    /**
+     * Checks whether the Pao name is unique or not
+     */
+    private  void validateUniquePaoName(String paoName, PaoType type, Errors errors, String fieldName) {
+        LiteYukonPAObject unique = paoDao.findUnique(paoName, type);
+        if (unique != null) {
+            errors.rejectValue("name", ApiErrorDetails.ALREADY_EXISTS.getCodeString(), new Object[] { fieldName }, "");
+        }
+    }
+
+    /**
+     * Validate Pao name.
+     */
+    public  void validateName(String paoName, Errors errors, String fieldName) {
+        YukonApiValidationUtils.checkIfFieldRequired("name", errors, paoName, fieldName);
+        if (!errors.hasFieldErrors("name")) {
+            YukonApiValidationUtils.checkExceedsMaxLength(errors, "name", paoName, 60);
+            if (!PaoUtils.isValidPaoName(paoName)) {
+                errors.rejectValue("name", ApiErrorDetails.ILLEGAL_CHARACTERS.getCodeString(), new Object[] { fieldName }, "");
+            }
+        }
+    }
 }

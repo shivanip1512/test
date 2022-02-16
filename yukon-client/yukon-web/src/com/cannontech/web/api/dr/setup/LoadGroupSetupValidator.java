@@ -6,13 +6,14 @@ import org.springframework.validation.Errors;
 import com.cannontech.common.dr.setup.LoadGroupBase;
 import com.cannontech.common.pao.PaoType;
 import com.cannontech.common.validator.SimpleValidator;
-import com.cannontech.common.validator.YukonValidationUtils;
+import com.cannontech.common.validator.YukonApiValidationUtils;
 
 public class LoadGroupSetupValidator<T extends LoadGroupBase> extends SimpleValidator<T> {
 
-    @Autowired private LMValidatorHelper lmValidatorHelper;
 
     private final static String key = "yukon.web.modules.dr.setup.loadGroup.error.";
+    @Autowired
+    LMApiValidatorHelper lmApiValidatorHelper;
     public LoadGroupSetupValidator() {
         super((Class<T>) LoadGroupBase.class);
     }
@@ -24,13 +25,13 @@ public class LoadGroupSetupValidator<T extends LoadGroupBase> extends SimpleVali
     @Override
     protected void doValidation(T loadGroup, Errors errors) {
         // Type 
-        lmValidatorHelper.checkIfFieldRequired("type", errors, loadGroup.getType(), "Type");
+        YukonApiValidationUtils.checkIfFieldRequired("type", errors, loadGroup.getType(), "Type");
         // Group Name
-        lmValidatorHelper.validateNewPaoName(loadGroup.getName(), loadGroup.getType(), errors, "Name");
+        lmApiValidatorHelper.validateNewPaoName(loadGroup.getName(), loadGroup.getType(), errors, "Name");
         // kWCapacity
-        lmValidatorHelper.checkIfFieldRequired("kWCapacity", errors, loadGroup.getkWCapacity(), "kW Capacity");
+        YukonApiValidationUtils.checkIfFieldRequired("kWCapacity", errors, loadGroup.getkWCapacity(), "kW Capacity");
         if (!errors.hasFieldErrors("kWCapacity")) {
-            YukonValidationUtils.checkRange(errors, "kWCapacity", loadGroup.getkWCapacity(), 0.0, 99999.999, true);
+            YukonApiValidationUtils.checkRange(errors, "kWCapacity", loadGroup.getkWCapacity(), 0.0, 99999.999, true);
         }
         if (loadGroup.getType() == PaoType.MACRO_GROUP) {
             errors.rejectValue("type", key + "type.invalid", new Object[] { "load group" }, "");
