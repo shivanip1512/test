@@ -286,8 +286,8 @@ public class RfnPointMappingTest {
         //  Gas node not mapped in yukonPointMapping
         rfnPointMapping.remove(PaoType.RFG201);
         rfnPointMapping.remove(PaoType.RFG301);
-        rfnPointMapping.remove(PaoType.RFG301A);
-        rfnPointMapping.remove(PaoType.RFG301R);
+
+        compareMeterClassPoints(icd, rfnPointMapping, icd.gasNode, MeterClass.GAS_NODE);
 
         //  RFN-430kV unmapped in yukonPointMapping
         rfnPointMapping.remove(PaoType.RFN430KV);

@@ -80,6 +80,10 @@
     Next Gen Water Node:
         - &wtr2-pulse WTR2 Pulse-201
         #- &wtr2-encoder WTR2 Encoder-201
+    Gas Node:
+        #- &g301 EATON Pulse-301
+        - &g301a HNYWL AM-Pulse-301
+        - &g301r SENSU RW-Pulse-301
 
 Meter combinations:
     - &c1sx_c2sx [ *c1sx, *c2sx, *c2sx_w, *c2sx_sd, *c2sx_sd_w ] 
@@ -117,6 +121,8 @@ Meter combinations:
     - &ELO-_23 [ *elo2132TD, *elo2133TD ]
     - &ELO-__3 [ *elo2133TD ]
 
+    - &Gas-AR [ *g301a, *g301r ]
+
 Units of measure:
     &Wh     Wh   : Watt-Hour
     &Varh   Varh : Var-Hour
@@ -132,7 +138,6 @@ Units of measure:
     &gal    gal  : Gallon
     &ft3    ft^3 : Cubic feet
     &m3     m^3  : Cubic meters
-    &None   none : No units
     &W      W    : Watt
     &Var    Var  : Var
     &Q      Q    : Q
@@ -1915,6 +1920,14 @@ Next Gen Water Node:
     # Note: The metricId is incorrect for the Battery Voltage. It will be corrected in the future.
     # A new issue has been created for the required change, YUK-19834
     - Temperature:       { Unit: *C,    Modifiers: [        ], Metric ID: 257 }
+
+Gas Node:
+    - Gas Usage:         { Unit: ~,     Modifiers: [        ], Models: *Gas-AR }
+    - Gas Usage:         { Unit: *Unk,  Modifiers: [        ], Models: *Gas-AR }
+    - Gas Usage m3:      { Unit: *m3,   Modifiers: [        ], Models: *Gas-AR }
+    - Gas Usage ft3:     { Unit: *ft3,  Modifiers: [        ], Models: *Gas-AR }
+    - Battery Voltage:   { Unit: *V,    Modifiers: [ *milli ], Models: *Gas-AR }
+    - Temperature:       { Unit: *C,    Modifiers: [        ], Models: *Gas-AR }
 
 Metric IDs:
     1:   { name: "Watt hour delivered",                  Unit: *Wh,     Modifiers: [ *Q1, *Q4                              ] }
