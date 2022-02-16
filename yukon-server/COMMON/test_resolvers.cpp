@@ -250,8 +250,10 @@ BOOST_AUTO_TEST_CASE(test_resolveDeviceType)
     BOOST_CHECK_EQUAL(resolveDeviceType("rfw-201"),     TYPE_RFW201);
 
     //  --- RF gas meters ---
-    BOOST_CHECK_EQUAL(resolveDeviceType("rfg-201"), TYPE_RFG201);
-    BOOST_CHECK_EQUAL(resolveDeviceType("rfg-301"), TYPE_RFG301);
+    BOOST_CHECK_EQUAL(resolveDeviceType("rfg-201"),  TYPE_RFG201);
+    BOOST_CHECK_EQUAL(resolveDeviceType("rfg-301"),  TYPE_RFG301);
+    BOOST_CHECK_EQUAL(resolveDeviceType("rfg-301a"), TYPE_RFG301A);
+    BOOST_CHECK_EQUAL(resolveDeviceType("rfg-301r"), TYPE_RFG301R);
 
     //  --- RF Cellular IPLink Relays ---
     BOOST_CHECK_EQUAL(resolveDeviceType("crly-856"),    TYPE_CRLY856);
