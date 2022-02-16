@@ -30,7 +30,7 @@ void sendImpl(const std::string pointInfo, T value, std::chrono::system_clock::t
         { "value",     value         },
         { "timestamp", timestamp8601 }};
 
-    const auto yukonMetricMessage = j.dump();
+    const std::string yukonMetricMessage = j.dump();
 
     Messaging::ActiveMQConnectionManager::enqueueMessage(
         OutboundTopic::YukonMetricTopic, 
