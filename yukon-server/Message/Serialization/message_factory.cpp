@@ -248,7 +248,7 @@ try
 
     reply.__set_rfnIdentifier(identifier);
 
-    reply.__set_timestamp(CtiTimeToMilliseconds(m.timestamp));
+    reply.__set_timestamp(m.timestamp.seconds());
 
     std::set<Thrift::ChannelInfo> channelInfo;
 
@@ -286,7 +286,7 @@ try
 
     Rfn::RfnGetChannelConfigReplyMessage msg;
 
-    msg.timestamp           = thriftMsg.timestamp;
+    msg.timestamp            = thriftMsg.timestamp/1000;
 
     for ( const auto & entry : thriftMsg.channelInfo )
     {
