@@ -272,7 +272,6 @@ GO
 /* @error ignore-end */
 
 INSERT INTO DBUpdates VALUES ('YUK-25874', '9.2.0', GETDATE());
-/ @error ignore-end */
 /* @end YUK-25874 */
 
 /* @start YUK-25614 */
