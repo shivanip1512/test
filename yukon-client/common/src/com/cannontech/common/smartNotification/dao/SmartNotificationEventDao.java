@@ -27,7 +27,7 @@ public interface SmartNotificationEventDao {
     public enum SortBy {
         DEVICE_NAME("DeviceName"),
         TYPE("DeviceType"),
-        STATUS("Status"),
+        EVENTSTATUS("Status"),
         TIMESTAMP("Timestamp"),
         WARNING_TYPE("WarningType"),
         JOB_NAME("jobName"),
