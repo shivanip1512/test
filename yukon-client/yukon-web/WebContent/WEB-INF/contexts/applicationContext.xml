@@ -1561,4 +1561,6 @@
     <bean class="com.cannontech.web.api.macroRoute.service.impl.MacroRouteServiceImpl"/>
     
     <bean class="com.cannontech.web.dr.eatonCloud.service.impl.v1.EatonCloudSecretRotationServiceImplV1"/>
+    
+    <bean class="com.cannontech.common.validator.YukonApiValidationUtils"/>
 </beans>

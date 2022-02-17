@@ -2,6 +2,8 @@ package com.cannontech.common.validator;
 
 import java.util.List;
 
+import javax.annotation.PostConstruct;
+
 import org.apache.commons.lang3.StringUtils;
 import org.joda.time.Instant;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -18,14 +20,18 @@ import com.cannontech.stars.util.ServletUtils;
 
 public class YukonApiValidationUtils extends ValidationUtils {
     @Autowired private static PaoDao paoDao;
-    
+
+    public YukonApiValidationUtils(PaoDao paoDao) {
+        YukonApiValidationUtils.paoDao = paoDao;
+    }
+
     /**
      * Validate Pao name.
      */
     public static void validateName(String paoName, Errors errors, String fieldName) {
         checkIfFieldRequired("name", errors, paoName, fieldName);
         if (!errors.hasFieldErrors("name")) {
-            YukonApiValidationUtils.checkExceedsMaxLength(errors, "name", paoName, 60);
+            checkExceedsMaxLength(errors, "name", paoName, 60);
             if (!PaoUtils.isValidPaoName(paoName)) {
                 errors.rejectValue("name", ApiErrorDetails.ILLEGAL_CHARACTERS.getCodeString(), new Object[] { fieldName }, "");
             }
@@ -33,19 +39,19 @@ public class YukonApiValidationUtils extends ValidationUtils {
     }
 
     /**
-    * Checks whether the Pao name is unique or not
-    */
+     * Checks whether the Pao name is unique or not
+     */
 
-   public static void validateNewPaoName(String paoName, PaoType type, Errors errors, String fieldName) {
-       validateName(paoName, errors, fieldName);
-       if (!errors.hasFieldErrors("name")) {
-           String paoId = ServletUtils.getPathVariable("id");
-           // Check if pao name already exists
-           if (type != null && (paoId == null || !(paoDao.getYukonPAOName(Integer.valueOf(paoId)).equalsIgnoreCase(paoName)))) {
-               validateUniquePaoName(paoName, type, errors, fieldName);
-           }
-       }
-   }
+    public static void validateNewPaoName(String paoName, PaoType type, Errors errors, String fieldName) {
+        validateName(paoName, errors, fieldName);
+        if (!errors.hasFieldErrors("name")) {
+            String paoId = ServletUtils.getPathVariable("id");
+            // Check if pao name already exists
+            if (type != null && (paoId == null || !(paoDao.getYukonPAOName(Integer.valueOf(paoId)).equalsIgnoreCase(paoName)))) {
+                validateUniquePaoName(paoName, type, errors, fieldName);
+            }
+        }
+    }
     
    /**
     * Checks whether the Pao name is unique or not
