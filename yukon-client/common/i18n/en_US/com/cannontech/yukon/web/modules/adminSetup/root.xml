@@ -27,7 +27,7 @@
     <entry key="yukon.web.modules.adminSetup.config.testEmail.failure">An email could not be sent to {0} via SMTP host {1}</entry>
     <entry key="yukon.web.modules.adminSetup.config.testEmail.logSuccess">A test email was sent to {0} via SMTP host {1}</entry>
     <entry key="yukon.web.modules.adminSetup.config.testEmail.subject">[yukon] Yukon Test Email</entry>
-    <entry key="yukon.web.modules.adminSetup.config.testEmail.alert">A test email has been sent to {0}</entry>
+    <entry key="yukon.web.modules.adminSetup.config.testEmail.alert">A test email has been sent to notification server with email address {0}</entry>
     <entry key="yukon.web.modules.adminSetup.config.testEmail.tooltip">Test email will be sent only if the notification server is up.</entry>
     
     <entry key="yukon.web.modules.adminSetup.config.category.pageName">Yukon Configuration Settings</entry>

@@ -128,6 +128,7 @@
     <entry key="yukon.web.modules.operator.contactEdit.firstNameRequired">First Name Required</entry>
     <entry key="yukon.web.modules.operator.accountGeneral.email.invalid">Not a valid email address.</entry>
     <entry key="yukon.web.modules.operator.accountGeneral.email.required">Email is required.</entry>
+    <entry key="yukon.web.modules.operator.accountGeneral.from.email.required">Please configure Mail From Address in Yukon Services.</entry>
     
 	<!-- accountImport.jsp -->
 	<entry key="yukon.web.modules.operator.accountImport.pageName">Account Import</entry>
