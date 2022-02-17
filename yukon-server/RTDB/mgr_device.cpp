@@ -179,8 +179,16 @@ bool CtiDeviceManager::refreshDevices(Cti::RowReader &rdr)
             //  The device in this row is already in the list.  We need to
             //    update the list entry to the new settings
 
-            // Fills himself in from the reader
-            existing_device->DecodeDatabaseReader(rdr);
+            // Single failure should not fail the following devices
+            try
+            {
+                // Fills himself in from the reader
+                existing_device->DecodeDatabaseReader(rdr);
+            }
+            catch (...)
+            {
+                CTILOG_UNKNOWN_EXCEPTION_ERROR(dout);
+            }
 
             // Mark it updated...  should DecodeDatabaseReader() do this?
             existing_device->setUpdatedFlag();
@@ -194,8 +202,16 @@ bool CtiDeviceManager::refreshDevices(Cti::RowReader &rdr)
 
             if( new_device )
             {
-                // Fills himself in from the reader
-                new_device->DecodeDatabaseReader(rdr);
+                // Single failure should not fail the following devices
+                try
+                {
+                    // Fills himself in from the reader
+                    new_device->DecodeDatabaseReader(rdr);
+                }
+                catch (...)
+                {
+                    CTILOG_UNKNOWN_EXCEPTION_ERROR(dout);
+                }
 
                 // Mark it updated...  should DecodeDatabaseReader() do this?
                 new_device->setUpdatedFlag();
