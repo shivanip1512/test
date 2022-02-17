@@ -5,7 +5,7 @@ import PropTypes from 'prop-types';
 import { Link, Breadcrumbs, Typography, IconButton, Menu, MenuItem, ListItemIcon, ListItemText } from '@material-ui/core';
 import { Alert } from '@material-ui/lab';
 import { useTheme } from '@material-ui/core/styles';
-import { Spacer } from '@pxblue/react-components';
+import { Spacer } from '@brightlayer-ui/react-components';
 
 import StarBorderIcon from '@material-ui/icons/StarBorder';
 import MoreVertIcon from '@material-ui/icons/MoreVert';

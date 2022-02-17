@@ -3,7 +3,7 @@ import React from 'react';
 import {
     AuthUIContextProvider,
     useSecurityActions,
-} from '@pxblue/react-auth-workflow';
+} from '@brightlayer-ui/react-auth-workflow';
 
 import { ProjectAuthUIActions } from '../../actions/AuthUIActions';
 import { ProjectRegistrationUIActions } from '../../actions/RegistrationUIActions';

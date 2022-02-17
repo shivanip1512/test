@@ -3,12 +3,12 @@ import React, { Suspense } from 'react';
 import NavigationMenu from './NavigationMenu';
 import NavigationDrawer from './NavigationDrawer';
 import { ThemeProvider, createTheme } from '@material-ui/core/styles';
-import * as PXBThemes from '@pxblue/react-themes';
-import { DrawerLayout} from '@pxblue/react-components';
+import * as PXBThemes from '@brightlayer-ui/react-themes';
+import { DrawerLayout} from '@brightlayer-ui/react-components';
 import { Provider } from 'react-redux';
 
 import { I18nextProvider } from 'react-i18next';
-import { SecurityContextProvider, AuthNavigationContainer } from '@pxblue/react-auth-workflow';
+import { SecurityContextProvider, AuthNavigationContainer } from '@brightlayer-ui/react-auth-workflow';
 import AuthUIConfiguration from '../security/AuthUIConfiguration';
 import { routes } from '../../constants/routing';
 import yukoni18n from '../I18n/i18nConfig';

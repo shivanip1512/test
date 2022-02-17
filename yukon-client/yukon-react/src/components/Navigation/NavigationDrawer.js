@@ -3,17 +3,17 @@ import { useTranslation } from 'react-i18next';
 import { useSelector, useDispatch } from 'react-redux';
 import { useHistory } from 'react-router-dom';
 
-import { Drawer, DrawerHeader, DrawerBody, DrawerNavGroup, DrawerNavItem, DrawerFooter } from '@pxblue/react-components';
+import { Drawer, DrawerHeader, DrawerBody, DrawerNavGroup, DrawerNavItem, DrawerFooter } from '@brightlayer-ui/react-components';
 import Divider from '@material-ui/core/Divider';
 
 /*Icons*/
 import MenuIcon from '@material-ui/icons/Menu';
 import DashboardIcon from '@material-ui/icons/Dashboard';
 import PowerIcon from '@material-ui/icons/Power';
-import UtilityIcon from '@pxblue/icons-mui/Utility';
+import UtilityIcon from '@brightlayer-ui/icons-mui/Utility';
 import RepeatIcon from '@material-ui/icons/Repeat';
-import DeviceIcon from '@pxblue/icons-mui/Device';
-import SupportIcon from '@pxblue/icons-mui/Support';
+import DeviceIcon from '@brightlayer-ui/icons-mui/Device';
+import SupportIcon from '@brightlayer-ui/icons-mui/Support';
 import AccountTreeIcon from '@material-ui/icons/AccountTree';
 import BuildIcon from '@material-ui/icons/Build';
 import VerifiedUserIcon from '@material-ui/icons/VerifiedUser';
