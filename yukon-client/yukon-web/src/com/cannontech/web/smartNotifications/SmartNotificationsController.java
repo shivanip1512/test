@@ -487,7 +487,7 @@ public class SmartNotificationsController {
         boolean includeTypeRow = type == SmartNotificationEventType.INFRASTRUCTURE_WARNING;
         String deviceNameHeader = accessor.getMessage(EventSortBy.deviceName);
         String typeHeader = accessor.getMessage(EventSortBy.type);
-        String statusHeader = accessor.getMessage(EventSortBy.eventStatus);
+        String statusHeader = accessor.getMessage(EventSortBy.status);
         String timestampHeader = accessor.getMessage(EventSortBy.timestamp);
         String[] headerRow =
             includeTypeRow ? new String[] { deviceNameHeader, typeHeader, statusHeader, timestampHeader }
@@ -520,7 +520,7 @@ public class SmartNotificationsController {
     private String[] populateWatchdogWarningData(YukonUserContext userContext, List<String[]> dataRows,
             SearchResults<SmartNotificationEventData> eventData, SmartNotificationEventType type, String eventType, MessageSourceAccessor accessor) {
         String warningTypeHeader = accessor.getMessage(EventSortBy.warningType);
-        String statusHeader = accessor.getMessage(EventSortBy.eventStatus);
+        String statusHeader = accessor.getMessage(EventSortBy.status);
         String timestampHeader = accessor.getMessage(EventSortBy.timestamp);
         String[] headerRow = new String[] { warningTypeHeader, statusHeader, timestampHeader };
 
@@ -551,7 +551,7 @@ public class SmartNotificationsController {
 
         deviceName(SortBy.DEVICE_NAME),
         type(SortBy.TYPE),
-        eventStatus(SortBy.EVENTSTATUS), //dateTime.tag breaks if this is named "status"
+        status(SortBy.STATUS),
         timestamp(SortBy.TIMESTAMP),
         warningType(SortBy.WARNING_TYPE),
         scheduleName(SortBy.JOB_NAME),
