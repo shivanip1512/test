@@ -184,16 +184,16 @@ bool CtiDeviceManager::refreshDevices(Cti::RowReader &rdr)
             {
                 // Fills himself in from the reader
                 existing_device->DecodeDatabaseReader(rdr);
-                // Mark it updated...  should DecodeDatabaseReader() do this?
-                existing_device->setUpdatedFlag();
-
-                addAssociations(*existing_device);
             }
             catch (...)
             {
                 CTILOG_UNKNOWN_EXCEPTION_ERROR(dout);
             }
 
+            // Mark it updated...  should DecodeDatabaseReader() do this?
+            existing_device->setUpdatedFlag();
+
+            addAssociations(*existing_device);
         }
         else
         {
@@ -207,18 +207,19 @@ bool CtiDeviceManager::refreshDevices(Cti::RowReader &rdr)
                 {
                     // Fills himself in from the reader
                     new_device->DecodeDatabaseReader(rdr);
-                    // Mark it updated...  should DecodeDatabaseReader() do this?
-                    new_device->setUpdatedFlag();
-
-                    // Stuff it in the list
-                    _smartMap.insert(new_device->getID(), new_device);
-
-                    addAssociations(*new_device);
                 }
                 catch (...)
                 {
                     CTILOG_UNKNOWN_EXCEPTION_ERROR(dout);
                 }
+
+                // Mark it updated...  should DecodeDatabaseReader() do this?
+                new_device->setUpdatedFlag();
+
+                // Stuff it in the list
+                _smartMap.insert(new_device->getID(), new_device);
+
+                addAssociations(*new_device);
             }
         }
     }
