@@ -3,14 +3,13 @@ package com.cannontech.services.rfn.endpoint;
 import java.util.Date;
 import java.util.HashSet;
 import java.util.Map;
+import java.util.Map.Entry;
 import java.util.NoSuchElementException;
 import java.util.Optional;
 import java.util.Set;
-import java.util.Map.Entry;
 
 import javax.annotation.PostConstruct;
 
-import org.apache.logging.log4j.Level;
 import org.apache.logging.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 
@@ -37,14 +36,13 @@ import com.cannontech.services.rfn.RfnArchiveProcessor;
 import com.cannontech.services.rfn.RfnArchiveQueueHandler;
 
 public class RfnRelayCellularCommArchiveRequestListener implements RfnArchiveProcessor{
-    private static final Logger log = YukonLogManager.getLogger(RfnRelayCellularCommArchiveRequestListener.class);
     @Autowired private RfnArchiveQueueHandler queueHandler;
     @Autowired private AttributeService attributeService;
     @Autowired private RfnDeviceLookupService rfnDeviceLookupService;
     @Autowired private AsyncDynamicDataSource asyncDynamicDataSource;
     @Autowired private YukonJmsTemplateFactory jmsTemplateFactory;
 
-    private Logger rfnCommsLog = YukonLogManager.getRfnLogger();
+    private Logger log = YukonLogManager.getRfnLogger(RfnRelayCellularCommArchiveRequestListener.class);
     private YukonJmsTemplate jmsTemplate;
 
     @PostConstruct
@@ -68,9 +66,7 @@ public class RfnRelayCellularCommArchiveRequestListener implements RfnArchivePro
      * Handles message from NM, logs the message and put in on a queue.
      */
     public void handleArchiveRequest(RfnRelayCellularCommArchiveRequest request) {
-        if (rfnCommsLog.isEnabled(Level.INFO)) {
-            rfnCommsLog.log(Level.INFO, "<<< " + request.toString());
-        }
+        log.info("<<< " + request.toString());
         queueHandler.add(this, request);
     }
 
@@ -144,7 +140,7 @@ public class RfnRelayCellularCommArchiveRequestListener implements RfnArchivePro
         if (!referenceIds.isEmpty()) {
             RfnRelayCellularCommArchiveResponse response = new RfnRelayCellularCommArchiveResponse();
             response.setReferenceIDs(referenceIds);
-            log.debug("{} acknowledged ids {}", processor, response.getReferenceIDs());
+            log.info(">>> " + response.toString());
             jmsTemplate.convertAndSend(response);
         }
     }
