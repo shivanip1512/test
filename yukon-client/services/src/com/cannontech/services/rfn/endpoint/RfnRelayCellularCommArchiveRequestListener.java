@@ -66,7 +66,7 @@ public class RfnRelayCellularCommArchiveRequestListener implements RfnArchivePro
      * Handles message from NM, logs the message and put in on a queue.
      */
     public void handleArchiveRequest(RfnRelayCellularCommArchiveRequest request) {
-        log.info("<<< " + request.toString());
+        log.info("<<< {}", request.toString());
         queueHandler.add(this, request);
     }
 
@@ -140,7 +140,7 @@ public class RfnRelayCellularCommArchiveRequestListener implements RfnArchivePro
         if (!referenceIds.isEmpty()) {
             RfnRelayCellularCommArchiveResponse response = new RfnRelayCellularCommArchiveResponse();
             response.setReferenceIDs(referenceIds);
-            log.info(">>> " + response.toString());
+            log.info(">>> {}", response.toString());
             jmsTemplate.convertAndSend(response);
         }
     }
