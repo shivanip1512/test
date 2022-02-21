@@ -19,13 +19,17 @@ import com.cannontech.stars.util.ServletUtils;
 public class YukonApiValidationUtils extends ValidationUtils {
     @Autowired private static PaoDao paoDao;
     
+    public YukonApiValidationUtils(PaoDao paoDao) {
+        YukonApiValidationUtils.paoDao = paoDao;
+    }
+    
     /**
      * Validate Pao name.
      */
     public static void validateName(String paoName, Errors errors, String fieldName) {
         checkIfFieldRequired("name", errors, paoName, fieldName);
         if (!errors.hasFieldErrors("name")) {
-            YukonApiValidationUtils.checkExceedsMaxLength(errors, "name", paoName, 60);
+            checkExceedsMaxLength(errors, "name", paoName, 60);
             if (!PaoUtils.isValidPaoName(paoName)) {
                 errors.rejectValue("name", ApiErrorDetails.ILLEGAL_CHARACTERS.getCodeString(), new Object[] { fieldName }, "");
             }
