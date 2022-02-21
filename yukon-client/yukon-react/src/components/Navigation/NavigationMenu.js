@@ -2,10 +2,10 @@ import React from 'react';
 import { useTranslation } from 'react-i18next';
 import { useSelector } from 'react-redux';
 
-import { useSecurityActions } from '@pxblue/react-auth-shared';
+import { useSecurityActions } from '@brightlayer-ui/react-auth-shared';
 import { LocalStorage } from '../../store/local-storage';
 
-import { UserMenu, Spacer } from '@pxblue/react-components';
+import { UserMenu, Spacer } from '@brightlayer-ui/react-components';
 import { useTheme } from '@material-ui/core/styles';
 import AppBar from '@material-ui/core/AppBar';
 import Toolbar from '@material-ui/core/Toolbar';

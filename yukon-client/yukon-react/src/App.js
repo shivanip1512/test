@@ -4,9 +4,9 @@ import { I18nextProvider } from 'react-i18next';
 
 import yukoni18n from './components/I18n/i18nConfig';
 
-import { DrawerLayout} from '@pxblue/react-components';
+import { DrawerLayout} from '@brightlayer-ui/react-components';
 
-import { SecurityContextProvider, AuthNavigationContainer } from '@pxblue/react-auth-workflow';
+import { SecurityContextProvider, AuthNavigationContainer } from '@brightlayer-ui/react-auth-workflow';
 import AuthUIConfiguration from './components/security/AuthUIConfiguration';
 import { routes } from './constants/routing';
 

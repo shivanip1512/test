@@ -4,8 +4,8 @@ import { I18nextProvider } from 'react-i18next';
 
 import { CssBaseline, ThemeProvider, createTheme } from '@material-ui/core';
 
-import * as PXBThemes from '@pxblue/react-themes';
-import '@pxblue/react-themes/open-sans';
+import * as PXBThemes from '@brightlayer-ui/react-themes';
+import '@brightlayer-ui/react-themes/open-sans';
 
 import './index.css';
 

@@ -109,4 +109,27 @@ public class LoginCookieHelperImpl implements LoginCookieHelper {
         log.trace("No REMEMBER_ME_COOKIE cookie found in the request.");
         return "";
     }
+    
+    @Override
+    public void setTokensInCookie(HttpServletRequest request, HttpServletResponse response, String accessToken,
+            String refreshToken) {
+        
+        Cookie refreshTokenCookie = new Cookie("refresh_token", refreshToken);
+        Cookie accessTokenCookie = new Cookie("access_token", accessToken);
+        
+        setTokensInCookie(request, response, accessTokenCookie);
+        setTokensInCookie(request, response, refreshTokenCookie);
+    }
+    
+    private void setTokensInCookie(HttpServletRequest request, HttpServletResponse response, Cookie cookie) {
+        cookie.setHttpOnly(true);
+        cookie.setPath("/");
+
+        String contextPath = request.getContextPath();
+
+        if ("".equals(contextPath)) {
+            contextPath = "/";
+        }
+        response.addCookie(cookie);
+    }
 }

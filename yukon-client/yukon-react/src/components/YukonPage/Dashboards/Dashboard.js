@@ -12,13 +12,13 @@ import EmailIcon from '@material-ui/icons/Email';
 import ChevronRightIcon from '@material-ui/icons/ChevronRight';
 import SyncIcon from '@material-ui/icons/Sync';
 import EditIcon from '@material-ui/icons/Edit';
-import ConfigureIcon from '@pxblue/icons-mui/Configuration';
+import ConfigureIcon from '@brightlayer-ui/icons-mui/Configuration';
 import WarningIcon from '@material-ui/icons/Warning';
 import CheckCircleIcon from '@material-ui/icons/CheckCircle';
 import SearchIcon from '@material-ui/icons/Search';
 
-import { ScoreCard } from '@pxblue/react-components';
-import { InfoListItem } from '@pxblue/react-components';
+import { ScoreCard } from '@brightlayer-ui/react-components';
+import { InfoListItem } from '@brightlayer-ui/react-components';
 
 import PageHeader from '../../PageContents/PageHeader';
 import PageContents from '../../PageContents/PageContents';
