@@ -79,7 +79,7 @@
 <entry key="yukon.common.error.date.startBeforeStop">The start date must occur before the stop date.</entry>
 <entry key="yukon.common.error.date.invalid">The date entered is invalid.</entry>
 <entry key="yukon.common.error.date.oneInvalid">One of the dates entered is not a valid date.</entry>
-<entry key="yukon.common.error.date.exceedsRange">Date range interval must be atmost 6 months.</entry>
+<entry key="yukon.common.error.date.exceedsRange">Date range cannot exceed 6 months.</entry>
 
 <!-- http://trentrichardson.com/examples/timepicker/ -->
 <entry key="yukon.common.js.timePicker.timeOnlyTitle">Choose Time</entry>

@@ -116,8 +116,13 @@ public class SystemPerformanceMetricsController {
         });
     }
 
+    /**
+     * 1. Checks either start date is greater than end date or not. 
+     * 2. Checks Date range interval must not exceeds 6 months.
+     */
     private void validateFilterDates(ModelMap model, YukonUserContext userContext, Date startDate, Date endDate) {
         if (startDate != null && endDate != null) {
+            // Checks either start date is greater than end date or not. 
             if (startDate.compareTo(endDate) > 0) {
                 MessageSourceAccessor accessor = messageResolver.getMessageSourceAccessor(userContext);
                 String startBeforeStopErrorMessage = accessor.getMessage(".startBeforeStop");
@@ -130,7 +135,7 @@ public class SystemPerformanceMetricsController {
         if (startDate != null && endDate != null) {
             long duration = endDate.getTime() - startDate.getTime();
             long diffInDays = TimeUnit.MILLISECONDS.toDays(duration);
-            // if date range interval is greater than 6 months
+            // Checks date range interval is greater than 6 months
             if (diffInDays > 185) {
                 MessageSourceAccessor accessor = messageResolver.getMessageSourceAccessor(userContext);
                 String dateRangeExceeds = accessor.getMessage(baseKey + ".exceedsRange");
