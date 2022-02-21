@@ -1,7 +1,6 @@
 /* eslint-disable @typescript-eslint/no-unused-vars */
 import { AuthUIActions, SecurityContextActions } from '@brightlayer-ui/react-auth-workflow';
 import { LocalStorage } from '../store/local-storage';
-import axios from 'axios';
 
 const sleep = (ms: number): Promise<void> => new Promise((resolve) => setTimeout(resolve, ms));
 
@@ -85,26 +84,14 @@ export const ProjectAuthUIActions: AuthUIActionsWithSecurity = (securityHelper) 
      * @returns Resolve if code is credentials are valid, otherwise reject.
      */
     logIn: async (email: string, password: string, rememberMe: boolean): Promise<void> => {
-        
-        axios.post('/api/token', {
-            username: email,
-            password: password
-        }).then((response:any) => {
-            LocalStorage.saveAuthCredentials(email, email);
-            LocalStorage.saveRememberMeData(email, rememberMe);
-        })
-        .catch(function (error) {
-            console.log("error", error);
-            //handle error here
+
+        if (isRandomFailure()) {
             // reject(new Error('LOGIN.GENERIC_ERROR'));
-                throw new Error('ERRORS.LOGIN.INVALID_CREDENTIALS');
-        });
+            throw new Error('LOGIN.INVALID_CREDENTIALS');
+        }
 
-        
-
-        //dont want to set username /pwd in local storage
-        //LocalStorage.saveAuthCredentials(email, email);
-        //LocalStorage.saveRememberMeData(email, rememberMe);
+        LocalStorage.saveAuthCredentials(email, email);
+        LocalStorage.saveRememberMeData(email, rememberMe);
 
         //get the theme and store in browser local storage
         //storing in react store gets cleared after every old yukon page since it's counted as a refresh

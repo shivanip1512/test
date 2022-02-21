@@ -3,13 +3,11 @@ package com.cannontech.web.api.token;
 import java.security.Key;
 import java.time.ZonedDateTime;
 import java.time.temporal.ChronoUnit;
-import java.util.Arrays;
 import java.util.Date;
 import java.util.Optional;
 import java.util.UUID;
 
 import javax.annotation.PostConstruct;
-import javax.servlet.http.Cookie;
 import javax.servlet.http.HttpServletRequest;
 
 import org.apache.commons.lang3.StringUtils;
@@ -99,25 +97,13 @@ public class TokenHelper {
     
     /**
      * Retrieve token from request header (Authorization: Bearer <token>).
-     */        
+     */
     public static String resolveToken(HttpServletRequest req) {
 
-        String token;
-
-        if (req.getCookies() != null && req.getHeader("Authorization") == null) {
-            Optional<Cookie> accessToken = Arrays.stream(req.getCookies())
-                                                 .filter(cookie -> cookie.getName().equals("access_token"))
-                                                 .findAny();
-            if (accessToken.isPresent()) {
-                token = accessToken.get().getValue();
-                return token;
-            }
-        }
-
-        token = Optional.ofNullable(req.getHeader("Authorization"))
-                        .filter(s -> s.length() > BEARER.length() && s.startsWith(BEARER))
-                        .map(s -> s.substring(BEARER.length(), s.length()))
-                        .orElseThrow(() -> new AuthenticationException("No JWT token found in request headers"));
+        String token = Optional.ofNullable(req.getHeader("Authorization"))
+                               .filter(s -> s.length() > BEARER.length() && s.startsWith(BEARER))
+                               .map(s -> s.substring(BEARER.length(), s.length()))
+                               .orElseThrow(() -> new AuthenticationException("No JWT token found in request headers"));
 
         return token;
     }
