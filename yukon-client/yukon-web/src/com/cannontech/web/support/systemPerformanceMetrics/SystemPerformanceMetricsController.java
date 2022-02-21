@@ -36,6 +36,8 @@ import com.google.common.collect.Maps;
 @RequestMapping("/systemPerformanceMetrics/*")
 public class SystemPerformanceMetricsController {
 
+    private final static String baseKey = "yukon.common.error.date";
+
     @Autowired private SystemPerformanceMetricsService systemPerformanceMetricsService;
     @Autowired private YukonUserContextMessageSourceResolver messageResolver;
     
@@ -51,20 +53,9 @@ public class SystemPerformanceMetricsController {
             endDate = new DateTime().withTimeAtStartOfDay().plusDays(1).toDate();
         }
         
-        if (startDate != null && endDate != null) {
-            long duration  = endDate.getTime() - startDate.getTime();
-            long diffInDays = TimeUnit.MILLISECONDS.toDays(duration);
-            // if date range interval is greater than 6 months
-            if(diffInDays > 183) {
-                MessageSourceAccessor accessor = messageResolver.getMessageSourceAccessor(userContext);
-                String dateRangeExceeds = accessor.getMessage("yukon.common.error.date.exceedsRange");
-                startDate = new DateTime().withTimeAtStartOfDay().minus(Months.SIX).toDate();
-                endDate = new DateTime().withTimeAtStartOfDay().plusDays(1).toDate();
-                model.addAttribute("errorMsg", dateRangeExceeds);
-            }
-        }
         model.addAttribute("startDate", startDate);
         model.addAttribute("endDate", endDate);
+        validateFilterDates(model, userContext, startDate, endDate);
         return "systemPerformanceMetrics.jsp";
     }
 
@@ -123,5 +114,32 @@ public class SystemPerformanceMetricsController {
                 return format.format(date);
             }
         });
+    }
+
+    private void validateFilterDates(ModelMap model, YukonUserContext userContext, Date startDate, Date endDate) {
+        if (startDate != null && endDate != null) {
+            if (startDate.compareTo(endDate) > 0) {
+                MessageSourceAccessor accessor = messageResolver.getMessageSourceAccessor(userContext);
+                String startBeforeStopErrorMessage = accessor.getMessage(".startBeforeStop");
+                startDate = new DateTime().withTimeAtStartOfDay().minus(Months.TWO).toDate();
+                endDate = new DateTime().withTimeAtStartOfDay().plusDays(1).toDate();
+                model.addAttribute("errorMsg", startBeforeStopErrorMessage);
+            }
+        }
+
+        if (startDate != null && endDate != null) {
+            long duration = endDate.getTime() - startDate.getTime();
+            long diffInDays = TimeUnit.MILLISECONDS.toDays(duration);
+            // if date range interval is greater than 6 months
+            if (diffInDays > 185) {
+                MessageSourceAccessor accessor = messageResolver.getMessageSourceAccessor(userContext);
+                String dateRangeExceeds = accessor.getMessage(baseKey + ".exceedsRange");
+                startDate = new DateTime().withTimeAtStartOfDay().minus(Months.SIX).toDate();
+                endDate = new DateTime().withTimeAtStartOfDay().plusDays(1).toDate();
+                model.addAttribute("errorMsg", dateRangeExceeds);
+            }
+        }
+        model.addAttribute("startDate", startDate);
+        model.addAttribute("endDate", endDate);
     }
 }
