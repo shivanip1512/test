@@ -1,7 +1,7 @@
 /* eslint-disable @typescript-eslint/no-unused-vars */
 import { AuthUIActions, SecurityContextActions } from '@brightlayer-ui/react-auth-workflow';
 import { LocalStorage } from '../store/local-storage';
-import axios from '../axiosConfig'
+import axios from 'axios';
 
 const sleep = (ms: number): Promise<void> => new Promise((resolve) => setTimeout(resolve, ms));
 
@@ -40,7 +40,6 @@ export const ProjectAuthUIActions: AuthUIActionsWithSecurity = (securityHelper) 
         let authData;
 
         try {
-            await sleep(2000);
             authData = await LocalStorage.readAuthData();
         } catch (e) {
             // Restoring token failed
@@ -85,27 +84,27 @@ export const ProjectAuthUIActions: AuthUIActionsWithSecurity = (securityHelper) 
      *
      * @returns Resolve if code is credentials are valid, otherwise reject.
      */
-    logIn: async (username: string, password: string, rememberMe: boolean): Promise<void> => {
-        await sleep(1000);
-       
-        // throw new Error('My Custom Error');
-
-        if (isRandomFailure()) {
-            // reject(new Error('LOGIN.GENERIC_ERROR'));
-            throw new Error('LOGIN.INVALID_CREDENTIALS');
-        }
-        console.log('hiiiii', username)
-
+    logIn: async (email: string, password: string, rememberMe: boolean): Promise<void> => {
+        
         axios.post('/api/token', {
-            username: username,
+            username: email,
             password: password
         }).then((response:any) => {
-            console.log(response.data.accessToken)
+            LocalStorage.saveAuthCredentials(email, email);
+            LocalStorage.saveRememberMeData(email, rememberMe);
+        })
+        .catch(function (error) {
+            console.log("error", error);
+            //handle error here
+            // reject(new Error('LOGIN.GENERIC_ERROR'));
+                throw new Error('ERRORS.LOGIN.INVALID_CREDENTIALS');
         });
 
+        
 
-        LocalStorage.saveAuthCredentials(username, username);
-        LocalStorage.saveRememberMeData(username, rememberMe);
+        //dont want to set username /pwd in local storage
+        //LocalStorage.saveAuthCredentials(email, email);
+        //LocalStorage.saveRememberMeData(email, rememberMe);
 
         //get the theme and store in browser local storage
         //storing in react store gets cleared after every old yukon page since it's counted as a refresh
@@ -130,7 +129,7 @@ export const ProjectAuthUIActions: AuthUIActionsWithSecurity = (securityHelper) 
             });
         }*/
 
-        securityHelper.onUserAuthenticated({ email: username, userId: username, rememberMe: rememberMe });
+        securityHelper.onUserAuthenticated({ email: email, userId: email, rememberMe: rememberMe });
 
         //it looks like we'll need to reload the page if it's not a react page - I could not figure out how to get the URL it should go to after log in
     },

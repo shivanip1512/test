@@ -6,12 +6,14 @@ import * as actions from './redux/actions/index';
 
 let axiosInstance = axios.create();
 
-// Apply interceptor to request to attach JWT token
+//Apply interceptor to request to attach JWT token
 axiosInstance.interceptors.request.use(
     config => {
         let state = store.getState();
+
         // Add authorization header to all requests
-        config.headers['Authorization'] = 'Bearer ' + state.app.token;
+        //commented below line to check wheather httpCookie is working
+        //config.headers['Authorization'] = 'Bearer ' + state.app.token;
         return config;
     }, 
     error => {

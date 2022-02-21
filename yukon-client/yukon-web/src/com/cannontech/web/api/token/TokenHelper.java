@@ -1,142 +1,172 @@
 package com.cannontech.web.api.token;
 
-import java.security.Key;
-import java.time.ZonedDateTime;
-import java.time.temporal.ChronoUnit;
-import java.util.Date;
+import java.util.Arrays;
+import java.util.List;
+import java.util.Map;
 import java.util.Optional;
-import java.util.UUID;
+import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.TimeUnit;
+import java.util.stream.Collectors;
 
 import javax.annotation.PostConstruct;
+import javax.servlet.http.Cookie;
 import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
 
-import io.jsonwebtoken.Claims;
-import io.jsonwebtoken.ExpiredJwtException;
-import io.jsonwebtoken.JwtException;
-import io.jsonwebtoken.Jwts;
-import io.jsonwebtoken.SignatureAlgorithm;
-import io.jsonwebtoken.security.Keys;
-import io.jsonwebtoken.security.SignatureException;;
+import org.apache.logging.log4j.Logger;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.web.bind.annotation.RestController;
 
-public class TokenHelper {
+import com.cannontech.clientutils.YukonLogManager;
+import com.cannontech.common.exception.BadAuthenticationException;
+import com.cannontech.common.exception.PasswordExpiredException;
+import com.cannontech.common.util.ScheduledExecutor;
+import com.cannontech.core.authentication.service.AuthenticationService;
+import com.cannontech.database.data.lite.LiteYukonUser;
+import com.cannontech.web.login.LoginCookieHelper;
 
-    private static Key secretKey ;
-    private static Key refreshSecretKey ;
-    private static long tokenValidityInMilliSeconds = 900000; // 15 min
-    private static long refreshTokenValidityInMilliSeconds = 86400000;  // 24 hour
-    private static final String BEARER = "Bearer";
+@RestController
+public class ApiAuthenticationController {
+
+    private final Logger log = YukonLogManager.getLogger(ApiAuthenticationController.class);
+
+    @Autowired private AuthenticationService authenticationService;
+    @Autowired @Qualifier("main") private ScheduledExecutor scheduledExecutor;
+    @Autowired private LoginCookieHelper loginCookieHelper;
+    
+    private ConcurrentHashMap<String, String> tokenCache = new ConcurrentHashMap<>();
 
     @PostConstruct
-    protected void init() {
-        //TODO: Replace with RSA signature
-        secretKey = Keys.secretKeyFor(SignatureAlgorithm.HS512);
-        refreshSecretKey = Keys.secretKeyFor(SignatureAlgorithm.HS512);
+    public void removeExpiredRefreshTokenFromCache() {
+        scheduledExecutor.scheduleAtFixedRate(() -> {
+            for (Map.Entry<String, String> entry : tokenCache.entrySet()) {
+                if (TokenHelper.checkRefreshTokenExpiredJwt(entry.getValue())) {
+                    tokenCache.remove(entry.getKey());
+                }
+            }
+        }, 0, 1, TimeUnit.HOURS);
     }
 
-    /**
-     * Generate JWT token based on different claims (Issuer, Subject, Audience , IssuedAt, Expiration)
-     */
-    public static String createToken(Integer userId) {
+    @RequestMapping(value = "/token", method = RequestMethod.POST, produces = MediaType.APPLICATION_JSON_VALUE)
+    public ResponseEntity<TokenResponse> generateToken(HttpServletRequest request,HttpServletResponse resp, @RequestBody TokenRequest tokenRequest) {
 
-        ZonedDateTime now = ZonedDateTime.now();
-        ZonedDateTime expirationDateTime = now.plus(tokenValidityInMilliSeconds, ChronoUnit.MILLIS);
+        if (tokenRequest.getUsername() != null && tokenRequest.getPassword() != null) {
+            try {
+                TokenResponse response = new TokenResponse();
+                LiteYukonUser user = authenticationService.login(tokenRequest.getUsername(), tokenRequest.getPassword());
+                response = TokenHelper.setTokenTypeAndExpiresIn(response);
+                String accessToken = TokenHelper.createToken(user.getUserID());
+                response.setAccessToken(accessToken);
 
-        Date issueDate = Date.from(now.toInstant());
-        Date expirationDate = Date.from(expirationDateTime.toInstant());
-        String token = Jwts.builder()
-                .setIssuer("Yukon")
-                .setSubject(String.valueOf(userId))
-                .setAudience("Web")
-                .setIssuedAt(issueDate)
-                .setExpiration(expirationDate)
-                .signWith(secretKey)
-                .compact();
-        return token;
-    }
-   
-    /**
-     * Generate refresh JWT token based on different claims (Issuer, Subject, Audience , IssuedAt, Expiration)
-     */
-    public static String createRefreshToken(Integer userId) {
-        ZonedDateTime now = ZonedDateTime.now();
-        ZonedDateTime refreshExpirationDateTime = now.plus(refreshTokenValidityInMilliSeconds, ChronoUnit.MILLIS);
-        Date issueDate = Date.from(now.toInstant());
-        Date refreshExpirationDate = Date.from(refreshExpirationDateTime.toInstant());
+                RefreshTokenDetails refreshTokenDetails = TokenHelper.createRefreshToken(user.getUserID());
+                response.setRefreshToken(refreshTokenDetails.getRefreshToken());
 
-        String token = Jwts.builder()
-                .setId(UUID.randomUUID().toString())
-                .setIssuer("Yukon")
-                .setSubject(String.valueOf(userId))
-                .setAudience("Web")
-                .setIssuedAt(issueDate)
-                .setExpiration(refreshExpirationDate)
-                .signWith(refreshSecretKey)
-                .compact();
+                tokenCache.put(refreshTokenDetails.getRefreshTokenId(), response.getRefreshToken());
+                loginCookieHelper.setTokensInCookie(request, resp, response.getAccessToken(), response.getRefreshToken());
 
-        return token;
-    }
-    
-    /**
-     * Set access token Expiry duration and token type in token response.
-     */
-    public static TokenResponse setTokenTypeAndExpiresIn() {
-        TokenResponse response = new TokenResponse();
-        response.setExpiresIn(tokenValidityInMilliSeconds);
-        response.setTokenType(BEARER);
-        return response;
-    }
-    
-    /**
-     * Retrieve token from request header (Authorization: Bearer <token>).
-     */
-    public static String resolveToken(HttpServletRequest req) {
-
-        String token = Optional.ofNullable(req.getHeader("Authorization"))
-                               .filter(s -> s.length() > BEARER.length() && s.startsWith(BEARER))
-                               .map(s -> s.substring(BEARER.length(), s.length()))
-                               .orElseThrow(() -> new AuthenticationException("No JWT token found in request headers"));
-
-        return token;
+                log.info("User " + user.getUsername() + " (userid=" + user.getUserID() + ") has logged in from " + request.getRemoteAddr());
+                return new ResponseEntity<TokenResponse>(response, HttpStatus.OK);
+            } catch (BadAuthenticationException | PasswordExpiredException e) {
+                log.error(e);
+                throw new AuthenticationException("Authentication Failed. Username or Password not valid.");
+            }
+        } else {
+            throw new AuthenticationException("Username or Password not provided");
+        }
     }
 
-    /**
-     * Return UserId from token and also validate token based on secretKey.
-     */
-    public static String getUserId(String token) {
-        final Claims claims = getAllClaimsFromToken(token);
-        return claims.getSubject();
+    @RequestMapping(value = "/refreshToken", method = RequestMethod.POST, produces = MediaType.APPLICATION_JSON_VALUE)
+    public ResponseEntity<Object> generateRefreshToken(HttpServletRequest request, HttpServletResponse resp, @RequestBody RefreshTokenRequest tokenRequest) {
+
+        String refreshToken = null;
+        if (request.getCookies() != null) {
+            Optional<Cookie> refreshTokenCookie = Arrays.stream(request.getCookies())
+                                                        .filter(cookie -> cookie.getName().equals("refresh_token"))
+                                                        .findAny();
+            if (refreshTokenCookie.isPresent()) {
+                refreshToken = refreshTokenCookie.get().getValue();
+            }
+        }
+        if (refreshToken == null) {
+            refreshToken = tokenRequest.getRefreshToken();
+        }
+        
+        if (refreshToken != null) {
+            RefreshTokenDetails refreshTokenDetails = TokenHelper.getRefreshTokenDetails(refreshToken);
+            String cacheRefreshToken = tokenCache.get(refreshTokenDetails.getRefreshTokenId());
+
+            TokenResponse response = new TokenResponse();
+            if (cacheRefreshToken != null) {
+                if (cacheRefreshToken.equals(refreshToken)) {
+                    response = TokenHelper.setTokenTypeAndExpiresIn(response);
+                    String newAccessToken = TokenHelper.createToken(Integer.valueOf(refreshTokenDetails.getUserId()));
+                    String uuid = TokenHelper.getUUIDFromRefreshTokenId(refreshTokenDetails);
+                    RefreshTokenDetails newRefreshTokenDetails = TokenHelper.createRefreshTokenWithUUID(Integer.valueOf(refreshTokenDetails.getUserId()),
+                                                                                                        uuid);
+                    response.setAccessToken(newAccessToken);
+                    response.setRefreshToken(newRefreshTokenDetails.getRefreshToken());
+                    // Update latest refresh token in cache
+                    tokenCache.put(newRefreshTokenDetails.getRefreshTokenId(), response.getRefreshToken());
+                    loginCookieHelper.setTokensInCookie(request, resp, response.getAccessToken(), response.getRefreshToken());
+
+                } else {
+                    // Delete refresh token from cache
+                    tokenCache.remove(refreshTokenDetails.getRefreshTokenId());
+                    throw new AuthenticationException("Refresh token only valid for one-time use");
+                }
+
+            } else {
+                throw new AuthenticationException("Refresh token not valid.");
+            }
+            return new ResponseEntity<>(response, HttpStatus.OK);
+
+        } else {
+            throw new AuthenticationException("Refresh token not provided");
+        }
     }
 
-    /**
-     * Validate token and return claims (Issuer, Subject, Audience , IssuedAt) associated with token.
-     * If token is expired or invalid then throw {AuthenticationException} exception.
-     */
+    @RequestMapping(value = "/logout", method = RequestMethod.POST, produces = MediaType.APPLICATION_JSON_VALUE)
+    public ResponseEntity<Object> logout(HttpServletRequest request, @RequestBody LogoutRequest logoutRequest) {
 
-    private static Claims getAllClaimsFromToken(String token) {
-        try {
-            Claims claims = Jwts.parser()
-                                .setSigningKey(secretKey)
-                                .parseClaimsJws(token)
-                                .getBody();
-            return claims;
-        } catch (IllegalArgumentException | JwtException ex) {
-            throw new AuthenticationException("Expired or invalid JWT token");
+        if (logoutRequest.getRefreshToken() != null) {
+            try {
+                LogoutResponse logoutResponse = new LogoutResponse();
+                String refreshToken = logoutRequest.getRefreshToken();
+                RefreshTokenDetails refreshTokenDetails = TokenHelper.getRefreshTokenDetails(refreshToken);
+                String cacheRefreshToken = tokenCache.get(refreshTokenDetails.getRefreshTokenId());
+
+                if (cacheRefreshToken.equals(refreshToken)) {
+                    // Remove refreshtoken from cache
+                    if (logoutRequest.isLogoutfromAllSystem()) {
+                        List<String> refreshTokenIds = tokenCache.keySet()
+                                                                 .stream()
+                                                                 .filter(refreshTokenId -> refreshTokenId.startsWith(refreshTokenDetails.getUserId() + "_"))
+                                                                 .collect(Collectors.toList());
+                        refreshTokenIds.forEach(refreshTokenId -> {
+                            tokenCache.remove(refreshTokenId);
+                        });
+                    } else {
+                        tokenCache.remove(refreshTokenDetails.getRefreshTokenId());
+                    }
+                } else {
+                    throw new AuthenticationException("Refresh token not valid.");
+                }
+                logoutResponse.setLogout(true);
+                return new ResponseEntity<>(logoutResponse, HttpStatus.OK);
+            } catch (Exception e) {
+                throw new AuthenticationException("Expired or invalid Refresh token.");
+            }
+        } else {
+            throw new AuthenticationException("Refresh token not provided");
         }
 
-    }
-
-    /**
-     *  Check expiration of generated token
-     *  if token is valid then return true otherwise false.
-     */
-    public static boolean checkExpiredJwt(String token) {
-        try {
-            Jwts.parser().setSigningKey(secretKey).parseClaimsJws(token);
-        } catch (SignatureException | ExpiredJwtException jwtException) {
-            // "JWT Token is expired or Old Sessions stick in reboot"
-            return true;
-        }
-        return false;
     }
 
 }
