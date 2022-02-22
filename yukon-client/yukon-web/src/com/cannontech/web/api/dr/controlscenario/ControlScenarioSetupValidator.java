@@ -8,18 +8,16 @@ import org.apache.commons.collections4.CollectionUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.validation.Errors;
 
+import com.cannontech.api.error.model.ApiErrorDetails;
 import com.cannontech.common.dr.setup.ControlScenario;
 import com.cannontech.common.dr.setup.ProgramDetails;
 import com.cannontech.common.pao.PaoType;
 import com.cannontech.common.validator.SimpleValidator;
-import com.cannontech.common.validator.YukonValidationUtils;
-import com.cannontech.web.api.dr.setup.LMValidatorHelper;
+import com.cannontech.common.validator.YukonApiValidationUtils;
+import com.cannontech.web.api.dr.setup.LMApiValidatorHelper;
 
 public class ControlScenarioSetupValidator extends SimpleValidator<ControlScenario> {
-    private final static String key = "yukon.web.modules.dr.setup.controlScenario.error.";
-    private final static String requiredKey = "yukon.web.modules.dr.setup.error.required";
-    @Autowired private LMValidatorHelper lmValidatorHelper;
-
+    @Autowired LMApiValidatorHelper lmApiValidatorHelper;
     public ControlScenarioSetupValidator() {
         super(ControlScenario.class);
     }
@@ -27,26 +25,27 @@ public class ControlScenarioSetupValidator extends SimpleValidator<ControlScenar
     @Override
     protected void doValidation(ControlScenario scenario, Errors errors) {
 
-        lmValidatorHelper.validateNewPaoName(scenario.getName(), PaoType.LM_SCENARIO, errors, "Name");
+        YukonApiValidationUtils.validateNewPaoName(scenario.getName(), PaoType.LM_SCENARIO, errors, "Name");
 
         if (CollectionUtils.isNotEmpty(scenario.getAllPrograms())) {
             for (int i = 0; i < scenario.getAllPrograms().size(); i++) {
                 ProgramDetails program = scenario.getAllPrograms().get(i);
                 errors.pushNestedPath("allPrograms[" + i + "]");
                 if (program.getProgramId() == null) {
-                    lmValidatorHelper.checkIfFieldRequired("programId", errors, program.getProgramId(), "Program Id");
+                    YukonApiValidationUtils.checkIfFieldRequired("programId", errors, program.getProgramId(), "Program Id");
                 }
-                YukonValidationUtils.checkRange(errors, "startOffsetInMinutes", program.getStartOffsetInMinutes(), 0, 1439, true);
-                YukonValidationUtils.checkRange(errors, "stopOffsetInMinutes", program.getStopOffsetInMinutes(), 0, 1439, true);
+                YukonApiValidationUtils.checkRange(errors, "startOffsetInMinutes", program.getStartOffsetInMinutes(), 0, 1439, true);
+                YukonApiValidationUtils.checkRange(errors, "stopOffsetInMinutes", program.getStopOffsetInMinutes(), 0, 1439, true);
 
                 if (CollectionUtils.isEmpty(program.getGears())) {
-                    errors.rejectValue("gears", requiredKey, new Object[] { "Start Gear" }, "");
+                    errors.reject(ApiErrorDetails.FIELD_REQUIRED.getCodeString(), new Object[] { "Start Gear" }, "");
                 } else if (program.getGears().size() > 1) {
-                    errors.reject(key + "oneGear");
+                    errors.reject(ApiErrorDetails.ONE_GEAR.getCodeString(), new Object[] { 1, "Gear"}, "");
+                    //errors.reject(key + "oneGear");
                 } else if (program.getGears().get(0) == null) {
-                    lmValidatorHelper.checkIfFieldRequired("gears", errors, program.getGears().get(0), "Gear");
+                    YukonApiValidationUtils.checkIfFieldRequired("gears", errors, program.getGears().get(0), "Gear");
                 } else if(program.getGears().get(0).getGearNumber() == null) {
-                    lmValidatorHelper.checkIfFieldRequired("gears[0].gearNumber", errors, program.getGears().get(0).getGearNumber(), "Gear Number");
+                    YukonApiValidationUtils.checkIfFieldRequired("gears[0].gearNumber", errors, program.getGears().get(0).getGearNumber(), "Gear Number");
                 }
                 errors.popNestedPath();
             }
@@ -54,9 +53,9 @@ public class ControlScenarioSetupValidator extends SimpleValidator<ControlScenar
         if (CollectionUtils.isNotEmpty(scenario.getAllPrograms())) {
             List<Integer> programIds = new ArrayList<>();
             scenario.getAllPrograms().forEach(p -> programIds.add(p.getProgramId()));
-            Set<Integer> duplicateProgramsIds = lmValidatorHelper.findDuplicates(programIds);
+            Set<Integer> duplicateProgramsIds = lmApiValidatorHelper.findDuplicates(programIds);
             if (CollectionUtils.isNotEmpty(duplicateProgramsIds)) {
-                errors.reject(key + "assignedLoadPrograms.duplicate.notAllowed", new Object[] { duplicateProgramsIds }, "");
+                errors.reject(ApiErrorDetails.DUPLICATE_VALUE.getCodeString(), new Object[] { "Program Id", "Program Id", duplicateProgramsIds }, "");
             }
         }
     }

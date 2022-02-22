@@ -2,16 +2,66 @@ package com.cannontech.common.validator;
 
 import java.util.List;
 
+import javax.annotation.PostConstruct;
+
 import org.apache.commons.lang3.StringUtils;
 import org.joda.time.Instant;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.validation.Errors;
 import org.springframework.validation.ValidationUtils;
 
 import com.cannontech.api.error.model.ApiErrorDetails;
+import com.cannontech.common.pao.PaoType;
+import com.cannontech.common.pao.PaoUtils;
 import com.cannontech.common.util.Range;
+import com.cannontech.core.dao.PaoDao;
+import com.cannontech.database.data.lite.LiteYukonPAObject;
+import com.cannontech.stars.util.ServletUtils;
 
 public class YukonApiValidationUtils extends ValidationUtils {
+    @Autowired private static PaoDao paoDao;
 
+    public YukonApiValidationUtils(PaoDao paoDao) {
+        YukonApiValidationUtils.paoDao = paoDao;
+    }
+
+    /**
+     * Validate Pao name.
+     */
+    public static void validateName(String paoName, Errors errors, String fieldName) {
+        checkIfFieldRequired("name", errors, paoName, fieldName);
+        if (!errors.hasFieldErrors("name")) {
+            checkExceedsMaxLength(errors, "name", paoName, 60);
+            if (!PaoUtils.isValidPaoName(paoName)) {
+                errors.rejectValue("name", ApiErrorDetails.ILLEGAL_CHARACTERS.getCodeString(), new Object[] { fieldName }, "");
+            }
+        }
+    }
+
+    /**
+     * Checks whether the Pao name is unique or not
+     */
+
+    public static void validateNewPaoName(String paoName, PaoType type, Errors errors, String fieldName) {
+        validateName(paoName, errors, fieldName);
+        if (!errors.hasFieldErrors("name")) {
+            String paoId = ServletUtils.getPathVariable("id");
+            // Check if pao name already exists
+            if (type != null && (paoId == null || !(paoDao.getYukonPAOName(Integer.valueOf(paoId)).equalsIgnoreCase(paoName)))) {
+                validateUniquePaoName(paoName, type, errors, fieldName);
+            }
+        }
+    }
+    
+   /**
+    * Checks whether the Pao name is unique or not
+    */
+   private static void validateUniquePaoName(String paoName, PaoType type, Errors errors, String fieldName) {
+       LiteYukonPAObject unique = paoDao.findUnique(paoName, type);
+       if (unique != null) {
+           errors.rejectValue("name", ApiErrorDetails.ALREADY_EXISTS.getCodeString(), new Object[] { fieldName }, "");
+       }
+   }
     public static boolean checkExceedsMaxLength(Errors errors, String field, String fieldValue, int max) {
         if (YukonValidationUtilsCommon.checkExceedsMaxLength(fieldValue, max)) {
             errors.rejectValue(field, ApiErrorDetails.MAX_LENGTH_EXCEEDED.getCodeString(), new Object[] { max },
