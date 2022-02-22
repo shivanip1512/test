@@ -36,10 +36,12 @@ public class ProgramConstraintValidator extends SimpleValidator<ProgramConstrain
         }
         
         if (programConstraint.getSeasonSchedule() == null || programConstraint.getSeasonSchedule().getId() == null) {
-            errors.rejectValue("seasonSchedule", ApiErrorDetails.FIELD_REQUIRED.getCodeString(), new Object[] { "Season Schedule" }, "");
+            errors.rejectValue("seasonSchedule.id", ApiErrorDetails.FIELD_REQUIRED.getCodeString(),
+                    new Object[] { "Season Schedule" }, "");
         }
         if (programConstraint.getHolidaySchedule() == null || programConstraint.getHolidaySchedule().getId() == null) {
-            errors.rejectValue("holidaySchedule", ApiErrorDetails.FIELD_REQUIRED.getCodeString(), new Object[] { "Holiday Schedule" }, "");
+            errors.rejectValue("holidaySchedule.id", ApiErrorDetails.FIELD_REQUIRED.getCodeString(),
+                    new Object[] { "Holiday Schedule" }, "");
         }
         // Holiday schedule and holiday usage check.Holiday usage is mandatory when holiday schedule is
         // selected. When none select is selected id will be sent as 0
