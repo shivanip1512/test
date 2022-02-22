@@ -89,7 +89,7 @@ auto RfnMeterReadCommand::getResponseMessage() const -> std::optional<ReplyMsg>
 
 auto makeFailureResponse(const CtiTime now)
 {
-    Messaging::Rfn::RfnMeterReadDataReplyMsg response;
+    Messaging::Rfn::RfnMeterReadDataReplyMsg response {};
 
     response.replyType = Messaging::Rfn::RfnMeterReadingDataReplyType::FAILURE;
     response.data.timeStamp = now;

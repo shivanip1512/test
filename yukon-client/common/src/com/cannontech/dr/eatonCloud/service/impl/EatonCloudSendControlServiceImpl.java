@@ -1,7 +1,6 @@
 package com.cannontech.dr.eatonCloud.service.impl;
 
-import static com.cannontech.dr.recenteventparticipation.ControlEventDeviceStatus.FAILED_WILL_RETRY;
-import static com.cannontech.dr.recenteventparticipation.ControlEventDeviceStatus.UNKNOWN;
+import static com.cannontech.dr.recenteventparticipation.ControlEventDeviceStatus.*;
 
 import java.math.RoundingMode;
 import java.util.Iterator;
@@ -78,10 +77,10 @@ public class EatonCloudSendControlServiceImpl implements EatonCloudSendControlSe
     @Autowired private GlobalSettingDao settingDao;
 
     // eventId
-    private Map<Integer, ResendOptions> resendTries = new ConcurrentHashMap<Integer, ResendOptions>();
+    private Map<Integer, ResendOptions> resendTries = new ConcurrentHashMap<>();
 
     // <external event id, Pair<next read time, sent time>>
-    private Map<Integer, Pair<Instant, Instant>> nextRead = new ConcurrentHashMap<Integer, Pair<Instant, Instant>>();
+    private Map<Integer, Pair<Instant, Instant>> nextRead = new ConcurrentHashMap<>();
 
     private int failureNotificationPercent;
 
@@ -138,7 +137,7 @@ public class EatonCloudSendControlServiceImpl implements EatonCloudSendControlSe
                 Instant nextRead = entry.getValue().getKey();
                 Instant sendTime = entry.getValue().getValue();
                 if (nextRead.isEqualNow() || nextRead.isBeforeNow()) {
-                    Range<Instant> range = new Range<Instant>(sendTime, true, Instant.now(), true);
+                    Range<Instant> range = new Range<>(sendTime, true, Instant.now(), true);
                     Set<Integer> devicesToRead = recentEventParticipationDao.getDeviceIdsByExternalEventIdAndStatuses(eventId,
                             List.of(ControlEventDeviceStatus.SUCCESS_RECEIVED));
                     if (!devicesToRead.isEmpty()) {
@@ -154,7 +153,7 @@ public class EatonCloudSendControlServiceImpl implements EatonCloudSendControlSe
                                 sendTime.toDateTime().toString("MM-dd-yyyy HH:mm:ss.SSS"));
                     } else {
                         log.info(
-                                "[external event id: {}] Can't find find devices to read (READ AFTER SHED). Devices with status SUCCESS_RECEIVED not found for date range:{}-{} [original command sent at {}] ",
+                                "[external event id: {}] Found no devices that need verification read (READ AFTER SHED). Devices with status SUCCESS_RECEIVED not found for date range:{}-{} [original command sent at {}] ",
                                 eventId,
                                 range.getMin().toDateTime().toString("MM-dd-yyyy HH:mm:ss.SSS"),
                                 range.getMax().toDateTime().toString("MM-dd-yyyy HH:mm:ss.SSS"),

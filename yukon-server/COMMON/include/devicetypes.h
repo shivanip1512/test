@@ -119,6 +119,8 @@ enum DeviceTypes {
     // RF gas meters
     TYPE_RFG201,
     TYPE_RFG301,
+    TYPE_RFG301A,
+    TYPE_RFG301R,
 
     // RF Cellular IPLink Relay
     TYPE_CRLY856,

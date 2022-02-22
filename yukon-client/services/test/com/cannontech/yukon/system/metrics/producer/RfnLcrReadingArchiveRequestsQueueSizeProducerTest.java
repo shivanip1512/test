@@ -171,6 +171,6 @@ public class RfnLcrReadingArchiveRequestsQueueSizeProducerTest {
         // this should get published as its transition from 110 to 95 i.e just after threshold value.
         YukonMetric prevMetric = producer.checkPreviousValue();
         assertNotNull(prevMetric, "Must not be null");
-        assertEquals(110L, Long.valueOf(String.valueOf(prevMetric.getValue())));
+        assertEquals(95L, Long.valueOf(String.valueOf(prevMetric.getValue())));
     }
 }

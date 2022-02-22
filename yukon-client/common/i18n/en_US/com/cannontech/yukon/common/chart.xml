@@ -31,4 +31,7 @@
     <entry key="yukon.common.chart.yLabel.temperature">Temperature</entry>
     <entry key="yukon.common.chart.label.minTemperature">Minimum Temperature</entry>
     <entry key="yukon.common.chart.label.maxTemperature">Maximum Temperature</entry>
+
+    <entry key="yukon.common.chart.noData">No data to display</entry>
+    <entry key="yukon.common.chart.exceedsDataLimit">Results returned too much data. Please adjust date range.</entry>
 </properties>

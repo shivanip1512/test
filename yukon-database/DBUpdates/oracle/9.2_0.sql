@@ -196,11 +196,6 @@ CREATE INDEX INDX_EventLog_EvntTime_EvntLogId_EvntType ON EventLog (
    EventType ASC
 );
 
-CREATE INDEX INDX_EventLog_EvntTime_EvntLogID ON EventLog (
-   EventTime DESC,
-   EventLogId DESC
-);
-
 INSERT INTO DBUpdates VALUES ('YUK-25792', '9.2.0', SYSDATE);
 /* @end YUK-25792 */
 
@@ -264,6 +259,14 @@ MODIFY NotifyOnAlarmOnly CHAR(1) NOT NULL;
 INSERT INTO DBUpdates VALUES ('YUK-25754', '9.2.0', SYSDATE);
 /* @end YUK-25754 */
 
+/* @start YUK-25874 */
+/* @error ignore-begin */
+DROP INDEX INDX_EventLog_EvntTime_EvntLogID;
+/* @error ignore-end */
+
+INSERT INTO DBUpdates VALUES ('YUK-25874', '9.2.0', SYSDATE);
+/* @end YUK-25874 */
+
 /* @start YUK-25614 */
 
 /* @error ignore-begin */
@@ -276,7 +279,7 @@ CREATE GLOBAL TEMPORARY TABLE t_OutageCalcValuesTemp
    POINTID              NUMBER                          not null,
    TIMESTAMP            DATE                            not null,
    QUALITY              NUMBER                          not null,
-   VALUE                FLOAT                           not null,
+   VALUE                FLOAT                           not null
 ) ON COMMIT PRESERVE ROWS;
 
 /* Calculate the new values into the temp table */
@@ -332,8 +335,13 @@ WHERE
             'RFN-530S4eAX', 'RFN-530S4eAXR', 'RFN-530S4eRX', 'RFN-530S4eRXR');
 
 /* Update DynamicPointDispatch with the new value */
-UPDATE 
-    dpd
+MERGE INTO 
+    DYNAMICPOINTDISPATCH dpd
+USING
+    t_OutageCalcValuesTemp t
+ON     
+    (dpd.POINTID=t.POINTID)
+WHEN MATCHED THEN UPDATE
 SET
     dpd.TIMESTAMP = 
         t.TIMESTAMP,
@@ -344,12 +352,9 @@ SET
     dpd.TAGS =
         0, 
     dpd.NEXTARCHIVE =
-        '2038-01-15 00:00:00', 
+        '15-JAN-2038', 
     dpd.millis =
-        0
-FROM
-    DYNAMICPOINTDISPATCH dpd
-        JOIN t_OutageCalcValuesTemp t on dpd.POINTID=t.POINTID;
+        0;
 
 /* @start-block */
 DECLARE
@@ -366,7 +371,7 @@ BEGIN
         VALUE, 
         millis)
     SELECT 
-        @maxChangeId + ROW_NUMBER() OVER (ORDER BY POINTID),
+        v_maxChangeId + ROW_NUMBER() OVER (ORDER BY POINTID),
         POINTID, 
         TIMESTAMP,
         QUALITY,
@@ -389,4 +394,4 @@ INSERT INTO DBUpdates VALUES ('YUK-25614', '9.2.0', SYSDATE);
 /* VERSION INFO                                                                    */
 /* Inserted when update script is run, stays commented out until the release build */
 /***********************************************************************************/
-/* INSERT INTO CTIDatabase VALUES ('9.2', '18-OCT-2021', 'Latest Update', 0, SYSDATE); */
+INSERT INTO CTIDatabase VALUES ('9.2', '22-FEB-2022', 'Latest Update', 0, SYSDATE);

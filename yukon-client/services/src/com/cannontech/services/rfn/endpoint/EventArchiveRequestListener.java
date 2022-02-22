@@ -49,7 +49,7 @@ public class EventArchiveRequestListener extends ArchiveRequestListenerBase<RfnE
                     device.getPaoIdentifier().getPaoType().isRfRelay() || 
                     device.getPaoIdentifier().getPaoType().isRfda()) {
                 List<PointData> messagesToSend = Lists.newArrayListWithExpectedSize(3);
-                rfnMeterEventService.processEvent(device, eventRequest.getEvent(), messagesToSend, false);
+                rfnMeterEventService.processEvent(device, eventRequest.getEvent(), messagesToSend);
     
                 trackingIds = trackValues(messagesToSend);
                 
