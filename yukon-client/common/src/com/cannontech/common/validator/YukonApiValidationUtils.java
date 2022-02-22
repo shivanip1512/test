@@ -2,6 +2,8 @@ package com.cannontech.common.validator;
 
 import java.util.List;
 
+import javax.annotation.PostConstruct;
+
 import org.apache.commons.lang3.StringUtils;
 import org.joda.time.Instant;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -60,7 +62,6 @@ public class YukonApiValidationUtils extends ValidationUtils {
            errors.rejectValue("name", ApiErrorDetails.ALREADY_EXISTS.getCodeString(), new Object[] { fieldName }, "");
        }
    }
-
     public static boolean checkExceedsMaxLength(Errors errors, String field, String fieldValue, int max) {
         if (YukonValidationUtilsCommon.checkExceedsMaxLength(fieldValue, max)) {
             errors.rejectValue(field, ApiErrorDetails.MAX_LENGTH_EXCEEDED.getCodeString(), new Object[] { max },
