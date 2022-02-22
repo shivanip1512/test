@@ -20,6 +20,7 @@ public enum ApiErrorDetails {
     NO_HANDLER_FOUND(108, "No handler found", "No handler found."), // code : 100108
     HTTP_REQUEST_METHOD_NOT_SUPPORTED(109, "HTTP request method not supported", "HTTP request method not supported."), // code : 100109
     DUPLICATE_VALUE(110, "Duplicate not Allowed", "Duplicate value not Allowed"), // code : 100110
+    ONE_GEAR(111, "Only one gear Allowed", "Only one gear Allowed"), // code : 100111
 
     // Validation Errors
     INVALID_VALUE(ApiErrorCategory.VALIDATION_FAILED, 101, "Invalid value", "Invalid value for the field."), // code : 101101
