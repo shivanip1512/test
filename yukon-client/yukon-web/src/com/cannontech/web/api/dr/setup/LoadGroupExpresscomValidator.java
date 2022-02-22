@@ -8,7 +8,7 @@ import com.cannontech.common.dr.setup.LoadGroupExpresscom;
 
 @Service
 public class LoadGroupExpresscomValidator extends LoadGroupSetupValidator<LoadGroupExpresscom> {
-    @Autowired private LMValidatorHelper lmValidatorHelper;
+    @Autowired private LMApiValidatorHelper lmApiValidatorHelper;
 
     public LoadGroupExpresscomValidator() {
         super(LoadGroupExpresscom.class);
@@ -22,6 +22,6 @@ public class LoadGroupExpresscomValidator extends LoadGroupSetupValidator<LoadGr
     @Override
     protected void doValidation(LoadGroupExpresscom loadGroup, Errors errors) {
         // Route ID is mandatory for expresscom and should exists
-        lmValidatorHelper.validateRoute(errors, loadGroup.getRouteId());
+        lmApiValidatorHelper.validateRoute(errors, loadGroup.getRouteId());
     }
 }

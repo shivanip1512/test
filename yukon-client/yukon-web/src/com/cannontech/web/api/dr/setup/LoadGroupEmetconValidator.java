@@ -4,15 +4,15 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.validation.Errors;
 
+import com.cannontech.api.error.model.ApiErrorDetails;
 import com.cannontech.common.dr.setup.EmetconAddressUsage;
 import com.cannontech.common.dr.setup.LoadGroupEmetcon;
-import com.cannontech.common.validator.YukonValidationUtils;
+import com.cannontech.common.validator.YukonApiValidationUtils;
 
 @Service
 public class LoadGroupEmetconValidator extends LoadGroupSetupValidator<LoadGroupEmetcon> {
 
-    private final static String key = "yukon.web.modules.dr.setup.loadGroup.error.";
-    @Autowired private LMValidatorHelper lmValidatorHelper;
+    @Autowired private LMApiValidatorHelper lmApiValidatorHelper;
 
     public LoadGroupEmetconValidator() {
         super(LoadGroupEmetcon.class);
@@ -26,34 +26,34 @@ public class LoadGroupEmetconValidator extends LoadGroupSetupValidator<LoadGroup
     @Override
     protected void doValidation(LoadGroupEmetcon loadGroup, Errors errors) {
 
-        lmValidatorHelper.checkIfFieldRequired("addressUsage", errors, loadGroup.getAddressUsage(), "Address Usage");
+        YukonApiValidationUtils.checkIfFieldRequired("addressUsage", errors, loadGroup.getAddressUsage(), "Address Usage");
 
-        lmValidatorHelper.checkIfFieldRequired("relayUsage", errors, loadGroup.getRelayUsage(), "Relay Usage");
+        YukonApiValidationUtils.checkIfFieldRequired("relayUsage", errors, loadGroup.getRelayUsage(), "Relay Usage");
 
-        lmValidatorHelper.checkIfFieldRequired("goldAddress", errors, loadGroup.getGoldAddress(), "Gold Address");
+        YukonApiValidationUtils.checkIfFieldRequired("goldAddress", errors, loadGroup.getGoldAddress(), "Gold Address");
 
-        lmValidatorHelper.checkIfFieldRequired("silverAddress", errors, loadGroup.getSilverAddress(), "Silver Address");
+        YukonApiValidationUtils.checkIfFieldRequired("silverAddress", errors, loadGroup.getSilverAddress(), "Silver Address");
 
         // Validate routeID
-        lmValidatorHelper.validateRoute(errors, loadGroup.getRouteId());
+        lmApiValidatorHelper.validateRoute(errors, loadGroup.getRouteId());
 
         if (!errors.hasFieldErrors("goldAddress")) {
-            YukonValidationUtils.checkRange(errors, "goldAddress", loadGroup.getGoldAddress(), 0, 4, true);
+            YukonApiValidationUtils.checkRange(errors, "goldAddress", loadGroup.getGoldAddress(), 0, 4, true);
         }
 
         if (!errors.hasFieldErrors("goldAddress") && loadGroup.getAddressUsage() != null) {
             if (loadGroup.getAddressUsage() == EmetconAddressUsage.GOLD && loadGroup.getGoldAddress() == 0) {
-                errors.rejectValue("goldAddress", key + "goldAddress.invalidValue");
+                errors.rejectValue("goldAddress", ApiErrorDetails.INVALID_VALUE.getCodeString(), new Object[] {" 1 - 4 "}, "");
             }
         }
 
         if (!errors.hasFieldErrors("silverAddress")) {
-            YukonValidationUtils.checkRange(errors, "silverAddress", loadGroup.getSilverAddress(), 0, 60, true);
+            YukonApiValidationUtils.checkRange(errors, "silverAddress", loadGroup.getSilverAddress(), 0, 60, true);
         }
 
         if (!errors.hasFieldErrors("silverAddress") && loadGroup.getAddressUsage() != null) {
             if (loadGroup.getAddressUsage() == EmetconAddressUsage.SILVER && loadGroup.getSilverAddress() == 0) {
-                errors.rejectValue("silverAddress", key + "silverAddress.invalidValue");
+                errors.rejectValue("silverAddress", ApiErrorDetails.INVALID_VALUE.getCodeString(), new Object[] {" 1 - 60 "}, "");
             }
         }
     }
