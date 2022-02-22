@@ -123,7 +123,6 @@ public class RfnDeviceCreationServiceImpl implements RfnDeviceCreationService {
     }
 
     @Override
-    @Transactional
     public synchronized RfnDevice findOrCreate(RfnIdentifier newDeviceIdentifier) {
         try {
             return getOrCreate(newDeviceIdentifier);
