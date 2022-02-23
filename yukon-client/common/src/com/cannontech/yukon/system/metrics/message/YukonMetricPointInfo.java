@@ -42,5 +42,6 @@ public enum YukonMetricPointInfo {
     PROFILE_DATA_COUNT,
     GENERIC_DATA_POINT_COUNT,
     RPH_INSERTS,
+    RPH_INSERT_MILLIS_PER_ROW,
     RPH_QUEUE_SIZE;
 }

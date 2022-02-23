@@ -33,6 +33,7 @@ public class RfnOutageEventArchiveRequestProcessor extends RfnEventConditionData
     @Override
     public void process(RfnDevice device, RfnEvent event, List<? super PointData> pointDatas, Instant now) {
 
+        boolean isUnsolicited = event instanceof RfnAlarm;
         Instant eventInstant = instantOf(event);
         PointQuality quality = PointQuality.Normal;
         
@@ -45,7 +46,7 @@ public class RfnOutageEventArchiveRequestProcessor extends RfnEventConditionData
             }
         }
         
-        rfnMeterEventService.processAttributePointData(device, pointDatas, BuiltInAttribute.OUTAGE_STATUS, eventInstant, OutageStatus.BAD.getRawState(), quality, now);
+        rfnMeterEventService.processAttributePointData(device, pointDatas, BuiltInAttribute.OUTAGE_STATUS, eventInstant, OutageStatus.BAD.getRawState(), quality, now, isUnsolicited);
         rfnDeviceEventLogService.outageEventReceived(device.getRfnIdentifier().getSensorSerialNumber(), 
                                                      event.getClass().getSimpleName(), getRfnConditionType().name(), eventInstant, null);
 
@@ -56,7 +57,8 @@ public class RfnOutageEventArchiveRequestProcessor extends RfnEventConditionData
                                                            eventInstant, 
                                                            getLongEventData(event, RfnConditionDataType.COUNT), 
                                                            quality, 
-                                                           now);
+                                                           now,
+                                                           isUnsolicited);
         } catch (InvalidEventMessageException ex) {
             if (event instanceof RfnAlarm) {
                 log.trace("{} restore alarm received with no COUNT, not sending RFN_OUTAGE_COUNT update", device);

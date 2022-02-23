@@ -70,4 +70,9 @@ public class GlobalSettingDaoAdapter implements GlobalSettingDao {
     public boolean isDbChangeForSetting(DatabaseChangeEvent event, GlobalSettingType globalSettingType) {
         throw new MethodNotImplementedException();
     }
+
+    @Override
+    public boolean isDbChangeForSetting(DatabaseChangeEvent event) {
+        throw new MethodNotImplementedException();
+    }
 }

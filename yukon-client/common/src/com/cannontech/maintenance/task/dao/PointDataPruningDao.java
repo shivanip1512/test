@@ -18,8 +18,7 @@ public interface PointDataPruningDao {
      * 
      * @param dateRange : Date Range for which records have to be deleted
      * @param noLockRequired : NOLOCK will be added to the query if it is true
-     * @param lastChangeId : Greatest Change ID used so far, table search will start at that value
-     * @return array of no of records deleted for the given date range and lastChangeId.
+     * @return no of records deleted for the given date range.
      */
-    Integer[] deleteDuplicatePointData(Range<Instant> dateRange, boolean noLockRequired, int lastChangeId);
+    int deleteDuplicatePointData(Range<Instant> dateRange, boolean noLockRequired);
 }

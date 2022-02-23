@@ -285,7 +285,7 @@ try
 
     Rfn::RfnGetChannelConfigReplyMessage msg;
 
-    msg.timestamp           = thriftMsg.timestamp;
+    msg.timestamp            = thriftMsg.timestamp/1000;
 
     for ( const auto & entry : thriftMsg.channelInfo )
     {

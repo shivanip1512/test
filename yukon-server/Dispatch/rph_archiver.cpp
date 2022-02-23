@@ -97,12 +97,14 @@ bool RawPointHistoryArchiver::writeArchiveDataToDB(Cti::Database::DatabaseConnec
 
         auto trackingIds = writeRawPointHistory(conn, std::move(rowsToWrite));
 
+        const auto duration = timer.elapsed();
+
         if( ! trackingIds.empty() )
         {
             const unsigned rowsWritten = trackingIds.size();
             const unsigned rowsRemaining = archiverQueueSize();
             
-            tracker.submitRows(rowsWritten);
+            tracker.submitRows(rowsWritten, std::chrono::milliseconds{ duration });
             tracker.submitQueueSize(rowsRemaining);
 
             std::string trackingInfo = 
@@ -118,7 +120,7 @@ bool RawPointHistoryArchiver::writeArchiveDataToDB(Cti::Database::DatabaseConnec
                 trackingInfo = " Tracking: " + trackingInfo;
             }
 
-            CTILOG_INFO(dout, "RawPointHistory transaction completed in " << timer.elapsed() << "ms. Inserted " << rowsWritten << " rows. remaining: " << rowsRemaining << " rows." << trackingInfo);
+            CTILOG_INFO(dout, "RawPointHistory transaction completed in " << duration << "ms. Inserted " << rowsWritten << " rows. remaining: " << rowsRemaining << " rows." << trackingInfo);
 
             return rowsRemaining > MinRowsToWrite;
         }

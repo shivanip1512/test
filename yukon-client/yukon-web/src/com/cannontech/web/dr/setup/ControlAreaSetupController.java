@@ -175,7 +175,7 @@ public class ControlAreaSetupController {
 
             if (response.getStatusCode() == HttpStatus.UNPROCESSABLE_ENTITY) {
                 BindException error = new BindException(controlArea, "controlArea");
-                result = helper.populateBindingError(result, error, response);
+                result = helper.populateBindingErrorForApiErrorModel(result, error, response, "yukon.web.error.");
                 redirectAttributes.addFlashAttribute("triggerIds", triggerIds);
                 if (result.hasGlobalErrors()) {
 
