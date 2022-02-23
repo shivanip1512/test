@@ -85,7 +85,6 @@ public class ApiExceptionHandler extends ResponseEntityExceptionHandler {
      */
     @PostConstruct
     public void init() {
-        notSupportingUris.add(ApiURL.drLoadGroupUrl);
         notSupportingUris.add(ApiURL.drSetupFilterUrl);
         notSupportingUris.add(ApiURL.pickerBuildUrl.substring(0, ApiURL.pickerBuildUrl.lastIndexOf("/")));
         notSupportingUris.add(ApiURL.pickerSearchUrl);
