@@ -1,7 +1,7 @@
 /* eslint-disable @typescript-eslint/no-unused-vars */
 import { AuthUIActions, SecurityContextActions } from '@brightlayer-ui/react-auth-workflow';
 import { LocalStorage } from '../store/local-storage';
-import axios from 'axios';
+import axios from '../axiosConfig';
 
 const sleep = (ms: number): Promise<void> => new Promise((resolve) => setTimeout(resolve, ms));
 
@@ -94,7 +94,7 @@ export const ProjectAuthUIActions: AuthUIActionsWithSecurity = (securityHelper) 
             LocalStorage.saveRememberMeData(email, rememberMe);
         })
         .catch(function (error) {
-            console.log("error", error);
+            //console.log("error", error);
             //handle error here
             // reject(new Error('LOGIN.GENERIC_ERROR'));
                 throw new Error('ERRORS.LOGIN.INVALID_CREDENTIALS');
