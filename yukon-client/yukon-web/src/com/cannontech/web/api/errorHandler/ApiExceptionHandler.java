@@ -94,7 +94,6 @@ public class ApiExceptionHandler extends ResponseEntityExceptionHandler {
         notSupportingUris.add(ApiURL.drGearRetrieveUrl);
         notSupportingUris.add(ApiURL.drHolidayScheduleUrl);
         notSupportingUris.add(ApiURL.drSeasonScheduleUrl);
-        notSupportingUris.add(ApiURL.drControlAreaUrl);
         notSupportingUris.add(ApiURL.aggregateDataReportUrl);
     }
 
