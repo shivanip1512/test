@@ -214,7 +214,7 @@ public class MacroLoadGroupSetupController {
 
             if (response.getStatusCode() == HttpStatus.UNPROCESSABLE_ENTITY) {
                 BindException error = new BindException(macroLoadGroup, "macroLoadGroup");
-                result = helper.populateBindingError(result, error, response);
+                result = helper.populateBindingErrorForApiErrorModel(result, error, response, "yukon.web.error.");
                 if (result.hasFieldErrors("assignedLoadGroups")) {
                     flash.setError(result.getFieldError("assignedLoadGroups"));
                 }
