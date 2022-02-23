@@ -9,7 +9,6 @@ import com.cannontech.api.error.model.ApiErrorDetails;
 import com.cannontech.common.dr.setup.AddressUsage;
 import com.cannontech.common.dr.setup.LoadGroupRFNExpresscom;
 import com.cannontech.common.validator.YukonApiValidationUtils;
-import com.cannontech.common.validator.YukonValidationUtils;
 
 @Service
 public class LoadGroupRFNExpresscomValidator extends LoadGroupSetupValidator<LoadGroupRFNExpresscom> {
@@ -57,7 +56,7 @@ public class LoadGroupRFNExpresscomValidator extends LoadGroupSetupValidator<Loa
                         // Validate Serial
                         try {
                             Integer serialNumber = Integer.valueOf(loadGroup.getSerialNumber());
-                            YukonValidationUtils.checkRange(errors, "serialNumber", serialNumber, 0, 999999999, true);
+                            YukonApiValidationUtils.checkRange(errors, "serialNumber", serialNumber, 0, 999999999, true);
                         } catch (NumberFormatException e) {
                             // Reject value with invalid format message
                             errors.rejectValue("serialNumber", ApiErrorDetails.DOES_NOT_EXISTS.getCodeString(), new Object[] {"Serial Number"}, "");
