@@ -18,11 +18,11 @@ import com.cannontech.stars.util.ServletUtils;
 
 public class YukonApiValidationUtils extends ValidationUtils {
     @Autowired private static PaoDao paoDao;
-    
+
     public YukonApiValidationUtils(PaoDao paoDao) {
         YukonApiValidationUtils.paoDao = paoDao;
     }
-    
+
     /**
      * Validate Pao name.
      */
@@ -37,19 +37,19 @@ public class YukonApiValidationUtils extends ValidationUtils {
     }
 
     /**
-    * Checks whether the Pao name is unique or not
-    */
+     * Checks whether the Pao name is unique or not
+     */
 
-   public static void validateNewPaoName(String paoName, PaoType type, Errors errors, String fieldName) {
-       validateName(paoName, errors, fieldName);
-       if (!errors.hasFieldErrors("name")) {
-           String paoId = ServletUtils.getPathVariable("id");
-           // Check if pao name already exists
-           if (type != null && (paoId == null || !(paoDao.getYukonPAOName(Integer.valueOf(paoId)).equalsIgnoreCase(paoName)))) {
-               validateUniquePaoName(paoName, type, errors, fieldName);
-           }
-       }
-   }
+    public static void validateNewPaoName(String paoName, PaoType type, Errors errors, String fieldName) {
+        validateName(paoName, errors, fieldName);
+        if (!errors.hasFieldErrors("name")) {
+            String paoId = ServletUtils.getPathVariable("id");
+            // Check if pao name already exists
+            if (type != null && (paoId == null || !(paoDao.getYukonPAOName(Integer.valueOf(paoId)).equalsIgnoreCase(paoName)))) {
+                validateUniquePaoName(paoName, type, errors, fieldName);
+            }
+        }
+    }
     
    /**
     * Checks whether the Pao name is unique or not
