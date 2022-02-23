@@ -29,6 +29,7 @@ public class RfnRestoreEventArchiveRequestProcessor extends RfnOutageLogEventCon
     @Override
     public void process(RfnDevice device, RfnEvent event, List<? super PointData> pointDatas, Instant now) {
         
+        boolean isUnsolicited = event instanceof RfnAlarm;
         Instant eventInstant = instantOf(event);
         PointQuality pointQuality = PointQuality.Normal;
         
@@ -42,7 +43,9 @@ public class RfnRestoreEventArchiveRequestProcessor extends RfnOutageLogEventCon
             processOutageLog(device, event, pointDatas, now, eventInstant);
         }
         
-        rfnMeterEventService.processAttributePointData(device, pointDatas, BuiltInAttribute.OUTAGE_STATUS, eventInstant, OutageStatus.GOOD.getRawState(), pointQuality, now);
+        rfnMeterEventService.processAttributePointData(device, pointDatas, BuiltInAttribute.OUTAGE_STATUS, 
+                                                       eventInstant, OutageStatus.GOOD.getRawState(), pointQuality, now, 
+                                                       isUnsolicited);
         rfnDeviceEventLogService.outageEventReceived(device.getRfnIdentifier().getSensorSerialNumber(),
                                                      event.getClass().getSimpleName(), getRfnConditionType().name(), getEventStart(event), eventInstant);
         
@@ -53,7 +56,8 @@ public class RfnRestoreEventArchiveRequestProcessor extends RfnOutageLogEventCon
                                                            eventInstant, 
                                                            getLongEventData(event, RfnConditionDataType.COUNT), 
                                                            pointQuality, 
-                                                           now);
+                                                           now,
+                                                           isUnsolicited);
         } catch (InvalidEventMessageException ex) {
             if (event instanceof RfnAlarm) {
                 log.trace("{} restore alarm received with no COUNT, not sending RFN_OUTAGE_RESTORE_COUNT update", device);

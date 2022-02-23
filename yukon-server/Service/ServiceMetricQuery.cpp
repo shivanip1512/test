@@ -58,7 +58,7 @@ std::chrono::system_clock::time_point toTimePoint(const FILETIME filetime)
 
 processTimes_t ServiceMetricQuery::getProcessTimes()
 {
-    processTimes_t longTimes;
+    processTimes_t longTimes {};
     FILETIME creationTime, exitTime, kernelTime, userTime, currentTime;
 
     if( ! GetProcessTimes(GetCurrentProcess(), &creationTime, &exitTime, &kernelTime, &userTime) )

@@ -2595,6 +2595,8 @@
     <pointGroup>
         <paoType value="RFG201"/>
         <paoType value="RFG301"/>
+        <paoType value="RFG301A"/>
+        <paoType value="RFG301R"/>
         
         <point name="Gas Usage"> 
             <uom>-</uom>

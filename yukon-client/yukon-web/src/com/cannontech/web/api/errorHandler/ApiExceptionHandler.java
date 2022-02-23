@@ -89,14 +89,11 @@ public class ApiExceptionHandler extends ResponseEntityExceptionHandler {
         notSupportingUris.add(ApiURL.pickerBuildUrl.substring(0, ApiURL.pickerBuildUrl.lastIndexOf("/")));
         notSupportingUris.add(ApiURL.pickerSearchUrl);
         notSupportingUris.add(ApiURL.pickerIdSearchUrl);
-        notSupportingUris.add(ApiURL.drMacroLoadGroupUrl);
         notSupportingUris.add(ApiURL.drLoadProgramUrl);
         notSupportingUris.add(ApiURL.drGearRetrieveUrl);
-        notSupportingUris.add(ApiURL.drProgramConstraintUrl);
         notSupportingUris.add(ApiURL.drHolidayScheduleUrl);
         notSupportingUris.add(ApiURL.drSeasonScheduleUrl);
         notSupportingUris.add(ApiURL.drControlAreaUrl);
-        notSupportingUris.add(ApiURL.drControlScenarioUrl);
         notSupportingUris.add(ApiURL.aggregateDataReportUrl);
     }
 
