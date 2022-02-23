@@ -16,6 +16,7 @@
 <%@ attribute name="size" %>
 <%@ attribute name="property" %>
 <%@ attribute name="minPermissionLevel" %>
+<%@ attribute name="title" %>
 
 <tags:nameValue2 nameKey="${nameKey}" labelForId="${path}" rowClass="${rowClass}" nameClass="${nameClass}" 
         valueClass="${valueClass}">
@@ -31,5 +32,5 @@
     </c:if>
 
     <tags:input path="${path}" size="${pageScope.size}" maxlength="${pageScope.maxlength}" disabled="${disable}" 
-            inputClass="${pageScope.inputClass}" readonly="${readonly}"/>
+            inputClass="${pageScope.inputClass}" readonly="${readonly}" title="${title}"/>
 </tags:nameValue2>
