@@ -107,7 +107,7 @@ const CommChannelCreate = () => {
             <PageHeader breadcrumbs={breadcrumbs} pageTitle="Create Comm Channel"/>
             <PageContents>
                 <Paper style={{padding: theme.spacing(4)}}>
-                    <Input label="Name" name="name" value={name} maxLength={60} style={{width: '30%'}}
+                    <Input label="Name" name="deviceName" value={name} maxLength={60} style={{width: '30%'}}
                         onChange={handleNameChanged} validationSchema={validationSchema.name}/>
                     <Dropdown value={type} name="type" label="Type" onChange={handleTypeChanged} items={types}/>
                     <Input label="Port Number" name="portNumber" value={port} maxLength={5} 

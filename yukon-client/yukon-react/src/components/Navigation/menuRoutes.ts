@@ -45,7 +45,7 @@ export const VOLT_VAR_MENU: MenuItem[] = [
 export const ASSETS_MENU: MenuItem[] = [
     { titleKey: 'menu.dashboard', link: '/stars/operator/home'},
     { titleKey: 'menu.assets.gateways', link: '/stars/gateways'},
-    { titleKey: 'menu.assets.relays', link: '/stars/relays'},
+    { titleKey: 'menu.assets.relays', link: '/stars/relay'},
     { titleKey: 'menu.assets.rtus', link: '/stars/rtu-list'},
     { titleKey: 'menu.assets.virtualDevices', link: '/stars/virtualDevices'},
     { titleKey: 'menu.assets.optOutStatus', link: '/stars/operator/optOut/admin'},
