@@ -92,7 +92,6 @@ export const ProjectAuthUIActions: AuthUIActionsWithSecurity = (securityHelper) 
             }).then((response) => {
                 console.log('Everything is awesome.');
             }).catch((error:any) => {
-                console.log('Not good man :(');
                 console.warn(error.response.data.detail);
                 throw new Error (error.response.data.detail)
             })

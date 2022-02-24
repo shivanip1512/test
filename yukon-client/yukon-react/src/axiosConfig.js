@@ -32,26 +32,26 @@ axiosInstance.interceptors.response.use(
         const {dispatch} = store;
         let state = store.getState();
         dispatch(actions.clearAllAlerts());
-        // if (error.response) {
-        //     if (error.response.status === 401) {
-        //         //refresh token
-        //         console.log(error.response.message)
-        //         return axiosInstance.post('/api/token', {
-        //             username: state.app.username,
-        //             password: state.app.password
-        //         }).then(response => {
-        //             dispatch(actions.setToken(response.data.accessToken));
-        //             error.config.headers['Authorization'] = 'Bearer ' + response.data.accessToken;
-        //             return axiosInstance.request(error.config);
-        //         });
-        //     } else {
-        //         if (error.response.data.code === 101000) {
-        //             dispatch(actions.setValidationErrors(error.response.data.errors));
-        //         } else {
-        //             dispatch(actions.setFlashErrors(error.response.data.detail));
-        //         }
-        //     }
-        // }
+        if (error.response) {
+             if (error.response.status === 401) {
+          //       //refresh token
+          //       console.log(error.response.message)
+          //       return axiosInstance.post('/api/token', {
+          //           username: state.app.username,
+          //           password: state.app.password
+          //       }).then(response => {
+          //           dispatch(actions.setToken(response.data.accessToken));
+          //           error.config.headers['Authorization'] = 'Bearer ' + response.data.accessToken;
+          //           return axiosInstance.request(error.config);
+          //       });
+            } else {
+                if (error.response.data.code === 101000) {
+                    dispatch(actions.setValidationErrors(error.response.data.errors));
+                } else {
+                    dispatch(actions.setFlashErrors(error.response.data.detail));
+                }
+            }
+        }
         return Promise.reject(error);
     }
 );
