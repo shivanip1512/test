@@ -37,7 +37,7 @@ public abstract class RfnOutageLogEventConditionDataProcessorHelper extends RfnE
             var eventStart = new Instant(start);
             Long durationInSeconds = (end - start) / 1000;
             rfnMeterEventService.processAttributePointData(device, pointDatas, BuiltInAttribute.OUTAGE_LOG, eventStart,
-                    durationInSeconds, PointQuality.Normal, now);
+                    durationInSeconds, PointQuality.Normal, now, false);
 
             log.debug("OutageLog processed {} for Device: {} Event: {} Start: {} End: {} Duration: {} ", rfnConditionType,
                     device,

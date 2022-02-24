@@ -236,6 +236,8 @@ std::optional<DeviceTypes> resolvePaoIdXmlType( const std::string & type )
         //  --- RF gas meters ---
         { "RFG201",                      TYPE_RFG201 },
         { "RFG301",                      TYPE_RFG301 },
+        { "RFG301A",                     TYPE_RFG301A },
+        { "RFG301R",                     TYPE_RFG301R },
 
         //  --- RF Cellular IPLink Relays ---
         { "CRLY856",                     TYPE_CRLY856 },

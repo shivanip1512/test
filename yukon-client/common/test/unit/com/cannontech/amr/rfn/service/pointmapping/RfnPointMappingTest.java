@@ -286,13 +286,15 @@ public class RfnPointMappingTest {
         //  Gas node not mapped in yukonPointMapping
         rfnPointMapping.remove(PaoType.RFG201);
         rfnPointMapping.remove(PaoType.RFG301);
+        rfnPointMapping.remove(PaoType.RFG301A);
+        rfnPointMapping.remove(PaoType.RFG301R);
 
         //  RFN-430kV unmapped in yukonPointMapping
         rfnPointMapping.remove(PaoType.RFN430KV);
 
         
         rfnPointMapping.entrySet().stream()
-            .forEach(e -> fail(e.getKey() + " has " + e.getValue().size() + " unmapped points." 
+            .forEach(e -> fail(e.getKey() + " has " + e.getValue().size() + " points in rfnPointMapping that are not in yukonPointMappingIcd." 
                                       + "\nFirst entry: " + Iterables.getFirst(e.getValue().entrySet(), null)));
     }
 

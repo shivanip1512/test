@@ -9,7 +9,14 @@ yukon.namespace('yukon.support.systemPerformanceMetrics');
 yukon.support.systemPerformanceMetrics = (function() {
     
     'use strict';
-    
+
+    /**
+     * Turbo threshold is the maximum number data points for which the chart will be rendered.
+     * Its default value is 1000. If our point data greater than turbo threshold, we display a
+     * text message - "Results returned too much data. Please adjust date range."
+     */
+    const TURBO_THRESHOLD = 5000;
+
     var
     _initialized = false,
 
@@ -104,6 +111,7 @@ yukon.support.systemPerformanceMetrics = (function() {
                     animation: false,
                     lineWidth: 1,
                     shadow: false,
+                    turboThreshold: TURBO_THRESHOLD,
                     states: {
                         hover: {
                             lineWidth: 1
@@ -156,6 +164,11 @@ yukon.support.systemPerformanceMetrics = (function() {
                     row.appendTo(appendToTableCssClass);
                     count++;
 
+                    var noDataText = yg.text.noData;
+                    if(value.pointData != null && value.pointData.length > TURBO_THRESHOLD) {
+                        noDataText = yg.text.exceedsDataLimit;
+                    }
+
                     var sparklineOptions = {
                         chart: {
                             renderTo: chartTableCell
@@ -167,8 +180,12 @@ yukon.support.systemPerformanceMetrics = (function() {
                         series: [{
                             name: value.pointName,
                             findNearestPointBy: 'xy',
-                            data: data
-                        }]
+                            data: data,
+                            
+                        }],
+                        lang: {
+                            noData: noDataText
+                        },
                     };
 
                     var options = Highcharts.merge(_sparklineDefaultOptions, sparklineOptions);

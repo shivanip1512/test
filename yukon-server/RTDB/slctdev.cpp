@@ -282,6 +282,8 @@ const DeviceLookup deviceFactory {
     //  RF gas meters
     { TYPE_RFG201,       MakeDeviceFunc(makeDevice<Rfg201Device>) },
     { TYPE_RFG301,       MakeDeviceFunc(makeDevice<Rfg301Device>) },
+    { TYPE_RFG301A,      MakeDeviceFunc(makeDevice<Rfg301aDevice>) },
+    { TYPE_RFG301R,      MakeDeviceFunc(makeDevice<Rfg301rDevice>) },
     //  RF Cellular IPLink Relays
     { TYPE_CRLY856,      MakeDeviceFunc(makeDevice<RfCellularRelayDevice>) },
     //  Electronic meters
