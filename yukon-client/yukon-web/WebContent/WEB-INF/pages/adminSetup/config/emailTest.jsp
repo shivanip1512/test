@@ -7,7 +7,8 @@
 
 <form:form  class="js-no-submit-on-enter" id="adminSetup-testEmail-form" modelAttribute="email" action="emailTest" method="POST">  
     <tags:nameValueContainer2 tableClass="with-form-controls di">    
-        <tags:inputNameValue nameKey="yukon.web.modules.adminSetup.config.testEmail.email" path="to" size="40" maxlength="100" title="Test email will be sent only if the notification server is up."/>
+        <cti:msg key="yukon.web.modules.adminSetup.config.testEmail.tooltip" var="tooltip"/>
+        <tags:inputNameValue nameKey="yukon.web.modules.adminSetup.config.testEmail.email" path="to" size="40" maxlength="100" title="${tooltip}"/>
         <tags:hidden path="from"/>
     </tags:nameValueContainer2>
 </form:form>
