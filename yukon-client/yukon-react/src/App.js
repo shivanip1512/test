@@ -31,19 +31,18 @@ export const App = () => {
     return (
         <SecurityContextProvider>
             <AuthUIConfiguration>
-                <AuthNavigationContainer routeConfig={routes}>
+                <AuthNavigationContainer routeConfig={routes} loginErrorDisplayConfig={{err:"custom error"}}>
                     <I18nextProvider i18n={yukoni18n}>
                         <ScrollToTop/>
                         <DrawerLayout drawer={<NavigationDrawer yukonPath={window.configs.YUKON_API_URL} reactPath={window.configs.YUKON_REACT_URL} />}>
                             <NavigationMenu yukonPath={window.configs.YUKON_API_URL} reactPath={window.configs.YUKON_REACT_URL}/>
                             <Switch>
-                                {/* <Route exact path="/yukon-ui/login" component={LoginPage}/> */}
                                 <Route exact path="/yukon-ui/dashboard" component={DashboardPage}/>
                                 <Route exact path="/yukon-ui/dr/setup/list" component={DRSetupFilterPage}/>
                                 <Route exact path="/yukon-ui/dr/setup/test" component={DRTestPage}/>
                                 <Route exact path="/yukon-ui/stars/device/commChannel/create" component={CommChannelCreatePage}/>
                                 <Route path="/yukon-ui">
-                                    <Redirect to="/yukon-ui/login"/>
+                                    <Redirect to="/yukon-ui/dashboard"/>
                                 </Route>
                             </Switch>
                         </DrawerLayout>

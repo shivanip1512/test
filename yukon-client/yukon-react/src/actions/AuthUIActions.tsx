@@ -1,7 +1,7 @@
 /* eslint-disable @typescript-eslint/no-unused-vars */
 import { AuthUIActions, SecurityContextActions } from '@brightlayer-ui/react-auth-workflow';
 import { LocalStorage } from '../store/local-storage';
-import axios from '../axiosConfig';
+import axios from 'axios';
 
 const sleep = (ms: number): Promise<void> => new Promise((resolve) => setTimeout(resolve, ms));
 
@@ -85,22 +85,17 @@ export const ProjectAuthUIActions: AuthUIActionsWithSecurity = (securityHelper) 
      * @returns Resolve if code is credentials are valid, otherwise reject.
      */
     logIn: async (email: string, password: string, rememberMe: boolean): Promise<void> => {
-        
-        axios.post('/api/token', {
-            username: email,
-            password: password
-        }).then((response:any) => {
-            LocalStorage.saveAuthCredentials(email, email);
-            LocalStorage.saveRememberMeData(email, rememberMe);
-        })
-        .catch(function (error) {
-            //console.log("error", error);
-            //handle error here
-            // reject(new Error('LOGIN.GENERIC_ERROR'));
-                throw new Error('ERRORS.LOGIN.INVALID_CREDENTIALS');
-        });
 
-        
+    await   axios.post('/api/token', {
+                     username: email,
+                     password: password
+            }).then((response) => {
+                console.log('Everything is awesome.');
+            }).catch((error:any) => {
+                console.log('Not good man :(');
+                console.warn(error.response.data.detail);
+                throw new Error (error.response.data.detail)
+            })
 
         //dont want to set username /pwd in local storage
         //LocalStorage.saveAuthCredentials(email, email);
