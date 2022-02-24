@@ -183,7 +183,7 @@ public class YukonApiValidationUtils extends ValidationUtils {
         }
 
         if (fieldValue.compareTo(min) < 0 || fieldValue.compareTo(max) > 0) {
-            errors.rejectValue(field, ApiErrorDetails.VALUE_OUTSIDE_VALID_RANGE.getCodeString(), new Object[] {"" , min, max },
+            errors.rejectValue(field, ApiErrorDetails.VALUE_OUTSIDE_VALID_RANGE.getCodeString(), new Object[] { "" , min, max },
                     "Must be between " + min
                             + " and " + max + ".");
         }
