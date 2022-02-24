@@ -123,11 +123,11 @@ public class RfnDeviceCreationServiceImpl implements RfnDeviceCreationService {
     }
 
     @Override
-    @Transactional
     public synchronized RfnDevice findOrCreate(RfnIdentifier newDeviceIdentifier) {
         try {
             return getOrCreate(newDeviceIdentifier);
         } catch (Exception e) {
+            log.error("Unable to find or create device {}", newDeviceIdentifier, e);
             return null;
         }
     }
@@ -141,7 +141,6 @@ public class RfnDeviceCreationServiceImpl implements RfnDeviceCreationService {
     @Override
     @Transactional
     public synchronized RfnDevice getOrCreate(RfnIdentifier newDeviceIdentifier, Instant dataTimestamp) {
-        
         dataTimestamp = dataTimestamp == null ? new Instant() : dataTimestamp;
         
         if (newDeviceIdentifier == null || newDeviceIdentifier.is_Empty_()) {
