@@ -133,12 +133,6 @@ public class RfnDeviceCreationServiceImpl implements RfnDeviceCreationService {
     public synchronized RfnDevice getOrCreate(RfnIdentifier newDeviceIdentifier, Instant dataTimestamp) {
         dataTimestamp = dataTimestamp == null ? new Instant() : dataTimestamp;
         
-        
-        if(newDeviceIdentifier.getSensorSerialNumber().equals("900007878")) {
-            System.out.println(newDeviceIdentifier);
-            throw createRuntimeException("Unable to create or find device for " + newDeviceIdentifier);
-            
-        }
         if (newDeviceIdentifier == null || newDeviceIdentifier.is_Empty_()) {
             throw createRuntimeException("Unable to create or find device for " + newDeviceIdentifier);
         }
