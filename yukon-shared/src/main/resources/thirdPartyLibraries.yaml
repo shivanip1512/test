@@ -6093,10 +6093,10 @@ JavaScript :
     license : MIT
     license URLs : "https://github.com/jquery/jquery-ui/blob/master/LICENSE.txt"
     npm URL : "https://www.npmjs.com/package/jquery-ui/v/1.12.1"
-    md5 : cd3544d39d6b3b472e96f3d70fdbae4e
-    sha1 : 971d20060e6230517f3746c6fa118a7b153dd0cf
-    jira : YUK-18131
-    updated : 2018-05-18
+    md5 : 6ed695f7084201d40116fc40c97a0308
+    sha1 : 402c05143fcbcb71616d39d5541858907a5c917a
+    jira : YUK-25889
+    updated : 2022-02-22
     notes : "Yukon UI uses effects, widgets (dialog, Accordion..etc) from this library."
 
   - project : modernizr
