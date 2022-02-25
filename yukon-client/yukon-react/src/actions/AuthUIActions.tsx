@@ -85,21 +85,18 @@ export const ProjectAuthUIActions: AuthUIActionsWithSecurity = (securityHelper) 
      * @returns Resolve if code is credentials are valid, otherwise reject.
      */
     logIn: async (email: string, password: string, rememberMe: boolean): Promise<void> => {
-
+        //fetch access token 
     await   axios.post('/api/token', {
                      username: email,
                      password: password
             }).then((response) => {
-                console.log('Access token is fetched sucessfully');
+                LocalStorage.saveAuthCredentials(email, email);
+                LocalStorage.saveRememberMeData(email, rememberMe);
             }).catch((error:any) => {
                 console.warn(error.response.data.detail);
                 throw new Error('LOGIN.INVALID_CREDENTIALS');
-                //throw new Error (error.response.data.detail)
+                //throw new Error (error.response.data.detail) // uncomment this line to check custom error from API
             })
-
-        //dont want to set username /pwd in local storage
-        //LocalStorage.saveAuthCredentials(email, email);
-        //LocalStorage.saveRememberMeData(email, rememberMe);
 
         //get the theme and store in browser local storage
         //storing in react store gets cleared after every old yukon page since it's counted as a refresh
