@@ -6,6 +6,8 @@ import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.List;
 import java.util.Map;
+import java.util.concurrent.TimeUnit;
+
 import org.joda.time.DateTime;
 import org.joda.time.Months;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -21,8 +23,10 @@ import org.springframework.web.bind.annotation.ResponseBody;
 import com.cannontech.common.chart.model.ChartInterval;
 import com.cannontech.common.chart.model.ChartValue;
 import com.cannontech.common.chart.model.ConverterType;
+import com.cannontech.common.i18n.MessageSourceAccessor;
 import com.cannontech.database.data.lite.LitePoint;
 import com.cannontech.database.data.point.PointType;
+import com.cannontech.i18n.YukonUserContextMessageSourceResolver;
 import com.cannontech.user.YukonUserContext;
 import com.cannontech.web.support.systemPerformanceMetrics.service.SystemPerformanceMetricsService;
 import com.cannontech.yukon.system.metrics.message.YukonMetricPointDataType;
@@ -32,7 +36,10 @@ import com.google.common.collect.Maps;
 @RequestMapping("/systemPerformanceMetrics/*")
 public class SystemPerformanceMetricsController {
 
+    private final static String baseKey = "yukon.common.error.date";
+
     @Autowired private SystemPerformanceMetricsService systemPerformanceMetricsService;
+    @Autowired private YukonUserContextMessageSourceResolver messageResolver;
 
     @RequestMapping("/view")
     public String home(ModelMap model, @RequestParam(value = "startDate", required = false) Date startDate,
@@ -48,6 +55,7 @@ public class SystemPerformanceMetricsController {
 
         model.addAttribute("startDate", startDate);
         model.addAttribute("endDate", endDate);
+        validateFilterDates(model, userContext, startDate, endDate);
         return "systemPerformanceMetrics.jsp";
     }
 
@@ -106,5 +114,37 @@ public class SystemPerformanceMetricsController {
                 return format.format(date);
             }
         });
+    }
+    
+    /**
+     * 1. Checks either start date is greater than end date or not. 
+     * 2. Checks Date range interval must not exceeds 6 months.
+     */
+    private void validateFilterDates(ModelMap model, YukonUserContext userContext, Date startDate, Date endDate) {
+        if (startDate != null && endDate != null) {
+            // Checks either start date is greater than end date or not.
+            if (startDate.compareTo(endDate) > 0) {
+                MessageSourceAccessor accessor = messageResolver.getMessageSourceAccessor(userContext);
+                String startBeforeStopErrorMessage = accessor.getMessage(".startBeforeStop");
+                startDate = new DateTime().withTimeAtStartOfDay().minus(Months.TWO).toDate();
+                endDate = new DateTime().withTimeAtStartOfDay().plusDays(1).toDate();
+                model.addAttribute("errorMsg", startBeforeStopErrorMessage);
+            }
+        }
+
+        if (startDate != null && endDate != null) {
+            long duration = endDate.getTime() - startDate.getTime();
+            long diffInDays = TimeUnit.MILLISECONDS.toDays(duration);
+            // Checks date range interval is greater than 6 months
+            if (diffInDays > 185) {
+                MessageSourceAccessor accessor = messageResolver.getMessageSourceAccessor(userContext);
+                String dateRangeExceeds = accessor.getMessage(baseKey + ".exceedsRange");
+                startDate = new DateTime().withTimeAtStartOfDay().minus(Months.SIX).toDate();
+                endDate = new DateTime().withTimeAtStartOfDay().plusDays(1).toDate();
+                model.addAttribute("errorMsg", dateRangeExceeds);
+            }
+        }
+        model.addAttribute("startDate", startDate);
+        model.addAttribute("endDate", endDate);
     }
 }
