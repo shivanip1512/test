@@ -31,7 +31,7 @@ export const App = () => {
     return (
         <SecurityContextProvider>
             <AuthUIConfiguration>
-                <AuthNavigationContainer routeConfig={routes} loginErrorDisplayConfig={{err:"custom error"}}>
+                <AuthNavigationContainer routeConfig={routes}>
                     <I18nextProvider i18n={yukoni18n}>
                         <ScrollToTop/>
                         <DrawerLayout drawer={<NavigationDrawer yukonPath={window.configs.YUKON_API_URL} reactPath={window.configs.YUKON_REACT_URL} />}>

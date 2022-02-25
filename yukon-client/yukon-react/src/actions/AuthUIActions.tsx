@@ -90,10 +90,11 @@ export const ProjectAuthUIActions: AuthUIActionsWithSecurity = (securityHelper) 
                      username: email,
                      password: password
             }).then((response) => {
-                console.log('Everything is awesome.');
+                console.log('Access token is fetched sucessfully');
             }).catch((error:any) => {
                 console.warn(error.response.data.detail);
-                throw new Error (error.response.data.detail)
+                throw new Error('LOGIN.INVALID_CREDENTIALS');
+                //throw new Error (error.response.data.detail)
             })
 
         //dont want to set username /pwd in local storage
