@@ -123,16 +123,6 @@ public class RfnDeviceCreationServiceImpl implements RfnDeviceCreationService {
     }
 
     @Override
-    public synchronized RfnDevice findOrCreate(RfnIdentifier newDeviceIdentifier) {
-        try {
-            return getOrCreate(newDeviceIdentifier);
-        } catch (Exception e) {
-            log.error("Unable to find or create device {}", newDeviceIdentifier, e);
-            return null;
-        }
-    }
-    
-    @Override
     @Transactional
     public synchronized RfnDevice getOrCreate(RfnIdentifier newDeviceIdentifier) {
         return getOrCreate(newDeviceIdentifier, null);
@@ -143,6 +133,12 @@ public class RfnDeviceCreationServiceImpl implements RfnDeviceCreationService {
     public synchronized RfnDevice getOrCreate(RfnIdentifier newDeviceIdentifier, Instant dataTimestamp) {
         dataTimestamp = dataTimestamp == null ? new Instant() : dataTimestamp;
         
+        
+        if(newDeviceIdentifier.getSensorSerialNumber().equals("900007878")) {
+            System.out.println(newDeviceIdentifier);
+            throw createRuntimeException("Unable to create or find device for " + newDeviceIdentifier);
+            
+        }
         if (newDeviceIdentifier == null || newDeviceIdentifier.is_Empty_()) {
             throw createRuntimeException("Unable to create or find device for " + newDeviceIdentifier);
         }

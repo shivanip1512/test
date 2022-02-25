@@ -50,11 +50,6 @@ public interface RfnDeviceCreationService {
     RfnDevice getOrCreate(RfnIdentifier newDeviceIdentifier, Instant dataTimestamp);
     
     /**
-     * Same as above but return null if not found or was not able to create device
-     */
-    RfnDevice findOrCreate(RfnIdentifier identifier);
-    
-    /**
      * Same as above but throws exception
      * 
      * @throws RuntimeException if unable to create device. The exception is logged as warning. Calling method should deal with this exception.
