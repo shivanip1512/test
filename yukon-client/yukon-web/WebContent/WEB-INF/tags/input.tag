@@ -24,7 +24,7 @@
 <%@ attribute name="units" type="java.lang.String" description="The units to display to the right of the field (ex: Volts)." %>
 <%@ attribute name="password" type="java.lang.Boolean" description="If true, a password field is used. Default: false." %>
 <%@ attribute name="displayValidationToRight" type="java.lang.Boolean" description="If true, any validation will display to the right of the field. Default: false." %>
-<%@ attribute name="title" type="java.lang.String" description="text to display in tooltip on hover"%>
+<%@ attribute name="title" type="java.lang.String" description="Text to display in tooltip on hover."%>
 
 <cti:default var="password" value="${false}"/>
 <cti:default var="autocomplete" value="on"/>
