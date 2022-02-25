@@ -16,7 +16,7 @@
 <%@ attribute name="size" %>
 <%@ attribute name="property" %>
 <%@ attribute name="minPermissionLevel" %>
-<%@ attribute name="title" description="text to display in tooltip on hover"%>
+<%@ attribute name="title" description="Text to display in tooltip on hover."%>
 
 <tags:nameValue2 nameKey="${nameKey}" labelForId="${path}" rowClass="${rowClass}" nameClass="${nameClass}" 
         valueClass="${valueClass}">
