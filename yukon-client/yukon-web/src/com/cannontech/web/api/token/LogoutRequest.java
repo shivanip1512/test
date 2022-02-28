@@ -13,8 +13,7 @@ public class LogoutRequest {
 
     }
 
-    LogoutRequest(@JsonProperty(value = "refreshToken") String refreshToken,
-            @JsonProperty(value = "logoutfromAllSystem") boolean logoutfromAllSystem) {
+    LogoutRequest(@JsonProperty(value = "refreshToken") String refreshToken, @JsonProperty(value = "logoutfromAllSystem") boolean logoutfromAllSystem) {
         this.refreshToken = refreshToken;
         this.logoutfromAllSystem = logoutfromAllSystem;
 
