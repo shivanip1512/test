@@ -113,6 +113,7 @@ public class EimJavaLibraryTest {
         "netty-transport-native-unix-common-4.1.70.Final.jar", 
         "objenesis-1.2.jar",
         "opentest4j-1.2.0.jar",
+        "permit-reflect-0.4.jar",
         "poi.jar",
         "proton-j-0.33.8.jar",
         "protobuf-java-3.15.8.jar",
