@@ -1,15 +1,18 @@
 package com.cannontech.web.api.token;
 
+import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.TimeUnit;
 import java.util.stream.Collectors;
 
 import javax.annotation.PostConstruct;
+import javax.servlet.http.Cookie;
 import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
 
-import org.apache.commons.lang3.StringUtils;
 import org.apache.logging.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
@@ -27,6 +30,7 @@ import com.cannontech.common.exception.PasswordExpiredException;
 import com.cannontech.common.util.ScheduledExecutor;
 import com.cannontech.core.authentication.service.AuthenticationService;
 import com.cannontech.database.data.lite.LiteYukonUser;
+import com.cannontech.web.login.LoginCookieHelper;
 
 @RestController
 public class ApiAuthenticationController {
@@ -35,6 +39,8 @@ public class ApiAuthenticationController {
 
     @Autowired private AuthenticationService authenticationService;
     @Autowired @Qualifier("main") private ScheduledExecutor scheduledExecutor;
+    @Autowired private LoginCookieHelper loginCookieHelper;
+    
     private ConcurrentHashMap<String, String> tokenCache = new ConcurrentHashMap<>();
 
     @PostConstruct
@@ -49,7 +55,7 @@ public class ApiAuthenticationController {
     }
 
     @RequestMapping(value = "/token", method = RequestMethod.POST, produces = MediaType.APPLICATION_JSON_VALUE)
-    public ResponseEntity<TokenResponse> generateToken(HttpServletRequest request, @RequestBody TokenRequest tokenRequest) {
+    public ResponseEntity<TokenResponse> generateToken(HttpServletRequest request,HttpServletResponse resp, @RequestBody TokenRequest tokenRequest) {
 
         if (tokenRequest.getUsername() != null && tokenRequest.getPassword() != null) {
             try {
@@ -63,6 +69,7 @@ public class ApiAuthenticationController {
                 response.setRefreshToken(refreshTokenDetails.getRefreshToken());
 
                 tokenCache.put(refreshTokenDetails.getRefreshTokenId(), response.getRefreshToken());
+                loginCookieHelper.setTokensInCookie(request, resp, response.getAccessToken(), response.getRefreshToken());
 
                 log.info("User " + user.getUsername() + " (userid=" + user.getUserID() + ") has logged in from " + request.getRemoteAddr());
                 return new ResponseEntity<TokenResponse>(response, HttpStatus.OK);
@@ -76,10 +83,22 @@ public class ApiAuthenticationController {
     }
 
     @RequestMapping(value = "/refreshToken", method = RequestMethod.POST, produces = MediaType.APPLICATION_JSON_VALUE)
-    public ResponseEntity<Object> generateRefreshToken(HttpServletRequest request, @RequestBody RefreshTokenRequest tokenRequest) {
+    public ResponseEntity<Object> generateRefreshToken(HttpServletRequest request, HttpServletResponse resp, @RequestBody RefreshTokenRequest tokenRequest) {
 
-        if (tokenRequest.getRefreshToken() != null) {
-            String refreshToken = tokenRequest.getRefreshToken();
+        String refreshToken = null;
+        if (request.getCookies() != null) {
+            Optional<Cookie> refreshTokenCookie = Arrays.stream(request.getCookies())
+                                                        .filter(cookie -> cookie.getName().equals("refresh_token"))
+                                                        .findAny();
+            if (refreshTokenCookie.isPresent()) {
+                refreshToken = refreshTokenCookie.get().getValue();
+            }
+        }
+        if (refreshToken == null) {
+            refreshToken = tokenRequest.getRefreshToken();
+        }
+        
+        if (refreshToken != null) {
             RefreshTokenDetails refreshTokenDetails = TokenHelper.getRefreshTokenDetails(refreshToken);
             String cacheRefreshToken = tokenCache.get(refreshTokenDetails.getRefreshTokenId());
 
@@ -94,7 +113,8 @@ public class ApiAuthenticationController {
                     response.setAccessToken(newAccessToken);
                     response.setRefreshToken(newRefreshTokenDetails.getRefreshToken());
                     // Update latest refresh token in cache
-                    tokenCache.put(newRefreshTokenDetails.getRefreshTokenId(), newRefreshTokenDetails.getRefreshToken());
+                    tokenCache.put(newRefreshTokenDetails.getRefreshTokenId(), response.getRefreshToken());
+                    loginCookieHelper.setTokensInCookie(request, resp, response.getAccessToken(), response.getRefreshToken());
 
                 } else {
                     // Delete refresh token from cache

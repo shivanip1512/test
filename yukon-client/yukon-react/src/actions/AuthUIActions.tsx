@@ -1,7 +1,7 @@
 /* eslint-disable @typescript-eslint/no-unused-vars */
 import { AuthUIActions, SecurityContextActions } from '@brightlayer-ui/react-auth-workflow';
 import { LocalStorage } from '../store/local-storage';
-import axios from 'axios';
+import axios from '../axiosConfig';
 
 const sleep = (ms: number): Promise<void> => new Promise((resolve) => setTimeout(resolve, ms));
 
