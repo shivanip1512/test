@@ -294,6 +294,12 @@
             <fileset dir="${basedir}/yukon-install/JRE/bin" includes="jar.exe,hpi.dll,java.dll,verify.dll,zip.dll,jli.dll,msvcr71.dll" />
             <fileset dir="${webcontent.bag}" />
         </copy>
+
+    	<!-- Yukon React File Deploymenmt -->
+        <copy todir="${install.bag}/Yukon Web Deployment/yukon-ui" preservelastmodified="true">
+            <fileset dir="${basedir}/yukon-client/yukon-react/build" />
+        </copy>
+        
         <copy todir="${install.bag}/Yukon Web Deployment/ROOT/client" file="${basedir}/yukon-install/JRE/bin/server/jvm.dll" preservelastmodified="true"/>
         <copy todir="${install.bag}/Yukon Web Deployment/lib" file="${basedir}/yukon-install/JRE/lib/jrt-fs.jar" preservelastmodified="true"/>
         <copy todir="${install.bag}/Yukon Web Deployment/lib/i386" file="${basedir}/yukon-install/JRE/lib/jvm.cfg" preservelastmodified="true"/>
