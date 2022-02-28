@@ -60,9 +60,4 @@ public class RefreshTokenDetails {
             return false;
         return true;
     }
-
-<<<<<<< HEAD
-=======
- 
->>>>>>> refs/remotes/origin/feature/React-Integration
 }

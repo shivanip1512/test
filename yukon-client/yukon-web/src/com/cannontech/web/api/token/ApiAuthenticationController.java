@@ -1,6 +1,5 @@
 package com.cannontech.web.api.token;
 
-<<<<<<< HEAD
 import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
@@ -11,19 +10,9 @@ import java.util.stream.Collectors;
 
 import javax.annotation.PostConstruct;
 import javax.servlet.http.Cookie;
-=======
-import java.util.List;
-import java.util.Map;
-import java.util.concurrent.ConcurrentHashMap;
-import java.util.concurrent.TimeUnit;
-import java.util.stream.Collectors;
-
-import javax.annotation.PostConstruct;
->>>>>>> refs/remotes/origin/feature/React-Integration
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
-import org.apache.commons.lang3.StringUtils;
 import org.apache.logging.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
@@ -50,11 +39,8 @@ public class ApiAuthenticationController {
 
     @Autowired private AuthenticationService authenticationService;
     @Autowired @Qualifier("main") private ScheduledExecutor scheduledExecutor;
-<<<<<<< HEAD
     @Autowired private LoginCookieHelper loginCookieHelper;
-    
-=======
->>>>>>> refs/remotes/origin/feature/React-Integration
+
     private ConcurrentHashMap<String, String> tokenCache = new ConcurrentHashMap<>();
 
     @PostConstruct
@@ -69,11 +55,7 @@ public class ApiAuthenticationController {
     }
 
     @RequestMapping(value = "/token", method = RequestMethod.POST, produces = MediaType.APPLICATION_JSON_VALUE)
-<<<<<<< HEAD
     public ResponseEntity<TokenResponse> generateToken(HttpServletRequest request,HttpServletResponse resp, @RequestBody TokenRequest tokenRequest) {
-=======
-    public ResponseEntity<TokenResponse> generateToken(HttpServletRequest request, @RequestBody TokenRequest tokenRequest) {
->>>>>>> refs/remotes/origin/feature/React-Integration
 
         if (tokenRequest.getUsername() != null && tokenRequest.getPassword() != null) {
             try {
@@ -87,10 +69,7 @@ public class ApiAuthenticationController {
                 response.setRefreshToken(refreshTokenDetails.getRefreshToken());
 
                 tokenCache.put(refreshTokenDetails.getRefreshTokenId(), response.getRefreshToken());
-<<<<<<< HEAD
                 loginCookieHelper.setTokensInCookie(request, resp, response.getAccessToken(), response.getRefreshToken());
-=======
->>>>>>> refs/remotes/origin/feature/React-Integration
 
                 log.info("User " + user.getUsername() + " (userid=" + user.getUserID() + ") has logged in from " + request.getRemoteAddr());
                 return new ResponseEntity<TokenResponse>(response, HttpStatus.OK);
@@ -104,7 +83,6 @@ public class ApiAuthenticationController {
     }
 
     @RequestMapping(value = "/refreshToken", method = RequestMethod.POST, produces = MediaType.APPLICATION_JSON_VALUE)
-<<<<<<< HEAD
     public ResponseEntity<Object> generateRefreshToken(HttpServletRequest request, HttpServletResponse resp, @RequestBody RefreshTokenRequest tokenRequest) {
 
         String refreshToken = null;
@@ -137,7 +115,22 @@ public class ApiAuthenticationController {
                     // Update latest refresh token in cache
                     tokenCache.put(newRefreshTokenDetails.getRefreshTokenId(), response.getRefreshToken());
                     loginCookieHelper.setTokensInCookie(request, resp, response.getAccessToken(), response.getRefreshToken());
-=======
+
+                } else {
+                    // Delete refresh token from cache
+                    tokenCache.remove(refreshTokenDetails.getRefreshTokenId());
+                    throw new AuthenticationException("Refresh token only valid for one-time use");
+                }
+
+            } else {
+                throw new AuthenticationException("Refresh token not valid.");
+            }
+            return new ResponseEntity<>(response, HttpStatus.OK);
+
+        } else {
+            throw new AuthenticationException("Refresh token not provided");
+        }
+    }
     public ResponseEntity<Object> generateRefreshToken(HttpServletRequest request, @RequestBody RefreshTokenRequest tokenRequest) {
 
         if (tokenRequest.getRefreshToken() != null) {
@@ -157,8 +150,6 @@ public class ApiAuthenticationController {
                     response.setRefreshToken(newRefreshTokenDetails.getRefreshToken());
                     // Update latest refresh token in cache
                     tokenCache.put(newRefreshTokenDetails.getRefreshTokenId(), newRefreshTokenDetails.getRefreshToken());
->>>>>>> refs/remotes/origin/feature/React-Integration
-
                 } else {
                     // Delete refresh token from cache
                     tokenCache.remove(refreshTokenDetails.getRefreshTokenId());

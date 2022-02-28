@@ -34,9 +34,5 @@ public class LogoutRequest {
     public void setLogoutfromAllSystem(boolean logoutfromAllSystem) {
         this.logoutfromAllSystem = logoutfromAllSystem;
     }
+}
 
-<<<<<<< HEAD
-}
-=======
-}
->>>>>>> refs/remotes/origin/feature/React-Integration

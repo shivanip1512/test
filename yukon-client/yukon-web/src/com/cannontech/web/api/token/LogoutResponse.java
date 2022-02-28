@@ -10,9 +10,4 @@ public class LogoutResponse {
     public void setLogout(boolean logout) {
         this.logout = logout;
     }
-
-<<<<<<< HEAD
 }
-=======
-}
->>>>>>> refs/remotes/origin/feature/React-Integration
