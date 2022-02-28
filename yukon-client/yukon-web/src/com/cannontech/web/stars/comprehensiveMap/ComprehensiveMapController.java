@@ -64,6 +64,7 @@ import com.cannontech.common.rfn.service.RfnDeviceCreationService;
 import com.cannontech.common.rfn.service.RfnDeviceLookupService;
 import com.cannontech.common.rfn.service.RfnDeviceMetadataMultiService;
 import com.cannontech.common.rfn.service.RfnGatewayService;
+import com.cannontech.common.util.ExceptionToNullHelper;
 import com.cannontech.common.util.tree.Node;
 import com.cannontech.core.dao.NotFoundException;
 import com.cannontech.core.dao.PaoDao;
@@ -385,7 +386,7 @@ public class ComprehensiveMapController {
                     dataRow[11] = String.valueOf(routeData.getHopCount());
                     RfnIdentifier nextHop = routeData.getNextHopRfnIdentifier();
                     if (nextHop != null) {
-                        RfnDevice nextHopDevice = rfnDeviceCreationService.findOrCreate(nextHop);
+                        RfnDevice nextHopDevice = ExceptionToNullHelper.nullifyExceptions(() -> rfnDeviceCreationService.getOrCreate(nextHop));
                         if (nextHopDevice != null) {
                             dataRow[13] = nextHopDevice.getName();
                         }
