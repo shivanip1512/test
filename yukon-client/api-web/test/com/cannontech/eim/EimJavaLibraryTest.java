@@ -51,7 +51,7 @@ public class EimJavaLibraryTest {
         "ecj-4.20.jar",
         "el-api.jar",
         "geojson-jackson-1.1.jar",
-        "groovy-2.5.7.jar",
+        "groovy-4.0.0.jar",
         "groovy-all-2.4.11.jar",
         "groovy-patch.jar",
         "gson-1.7.2.jar",

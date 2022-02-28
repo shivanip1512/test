@@ -567,16 +567,16 @@ Java :
     jira : YUK-18347
     notes : 
   
-  - filename : commons-io-2.6.jar
+  - filename : commons-io-2.11.0.jar
     yukon group : Apache Commons
     project : Apache Commons IO
-    version : 2.6
+    version : 2.11.0
     project URL : "https://commons.apache.org/proper/commons-io/"
     license : Apache 2.0
     license URLs : "https://opensource.org/licenses/Apache-2.0"
-    maven URL : "https://mvnrepository.com/artifact/commons-io/commons-io/2.6"
-    md5 : 467c2a1f64319c99b5faf03fc78572af
-    sha1 : 815893df5f31da2ece4040fe0a12fd44b577afaf
+    maven URL : "https://mvnrepository.com/artifact/commons-io/commons-io/2.11.0"
+    md5 : 3b4b7ccfaeceeac240b804839ee1a1ca
+    sha1 : a2503f302b11ebde7ebc3df41daebe0e4eea3689
     updated : 2020-01-13
     jira : YUK-21104
     notes : 
@@ -777,16 +777,16 @@ Java :
     jira : YUK-11337
     notes : Geronimo J2EE Management 1.1
   
-  - filename : groovy-2.5.7.jar
+  - filename : groovy-4.0.0.jar
     yukon group : Yet Another Java Service Wrapper
     project : YAJSW
-    version : 2.5.7
+    version : 4.0.0
     project URL : "http://groovy-lang.org/" 
     license : Apache 2.0
     license URLs : "https://www.apache.org/licenses/LICENSE-2.0.txt"
-    maven URL : "https://mvnrepository.com/artifact/org.codehaus.groovy/groovy/2.5.7" 
-    md5 : da5d7df6713a271861606fd75a837992
-    sha1 : 99907efe4b69f800c42584386f5d668e4d952bd5
+    maven URL : "https://mvnrepository.com/artifact/org.codehaus.groovy/groovy/4.0.0" 
+    md5 : 8dbeb72abd33624e036539908826ac4c
+    sha1 : 6856ea9e77c50c52429d996a9ce194db8497e682
     updated : 2020-01-13
     jira : YUK-21104
     notes :
@@ -813,8 +813,8 @@ Java :
     license : Apache 2.0
     license URLs : "http://yajsw.sourceforge.net/#mozTocId236130"
     maven URL : n/a
-    md5 : fa0241d8df629309d2b3df4ffce9d51e
-    sha1 : aa468a8d48881e759129dd69462c4e3de1a33316
+    md5 : f9988a421e787d346ee0f9fdf51f9610
+    sha1 : 3efdac43ee89f31e21938b1cb161255de564d81c
     updated : 2020-12-14
     jira : YUK-22557
     notes : YAJSW specific patches for Groovy
@@ -1407,30 +1407,30 @@ Java :
     jira : YUK-24245
     notes :  
   
-  - filename : jna-5.3.1.jar
+  - filename : jna-5.10.0.jar
     yukon group : Yet Another Java Service Wrapper
     project : Java Native Access
-    version : 5.3.1
+    version : 5.10.0
     project URL : "https://github.com/java-native-access/jna"
     license : Apache 2.0, LGPL 2.1
     license URLs : "https://opensource.org/licenses/Apache-2.0"
-    maven URL : "https://mvnrepository.com/artifact/net.java.dev.jna/jna/5.3.1"
-    md5 : df3ad04f50fb50840eeb674210200f64
-    sha1 : 6eb9d07456c56b9c2560722e90382252f0f98405
+    maven URL : "https://mvnrepository.com/artifact/net.java.dev.jna/jna/5.10.0"
+    md5 : 2b884b01ad2f62d4f5dd11387a8bf799
+    sha1 : 7cf4c87dd802db50721db66947aa237d7ad09418
     updated : 2020-01-13
     jira : YUK-21104
     notes : 
   
-  - filename : jna-platform-5.3.1.jar
+  - filename : jna-platform-5.10.0.jar
     yukon group : Yet Another Java Service Wrapper
     project : Java Native Access
-    version : 5.3.1
+    version : 5.10.0
     project URL : "https://github.com/java-native-access/jna"
     license : Apache 2.0, LGPL 2.1
     license URLs : "https://opensource.org/licenses/Apache-2.0"
-    maven URL : "https://mvnrepository.com/artifact/net.java.dev.jna/jna-platform/5.3.1"
-    md5 : 078fb626e8879c55e7a0035f389ec30c
-    sha1 : 925049dd00b3def5ab561709a56b96055fa67011
+    maven URL : "https://mvnrepository.com/artifact/net.java.dev.jna/jna-platform/5.10.0"
+    md5 : c1ab841070c388ec32b77cdc05f084fb
+    sha1 : fbed7d9669dba47714ad0d4f4454290a997aee69
     updated : 2020-01-13
     jira : YUK-21104
     notes : Java Native Access Platform
@@ -2327,6 +2327,20 @@ Java :
     maven URL : https://mvnrepository.com/artifact/pentaho-reporting-engine/pentaho-reporting-engine-classic-core/7.0.0.5-89
     md5 : 59bb9662c8d4196f1f86ad45af24c558
     sha1 : e33a859163e3f4786cbb111693d6d5e0e4784088
+    updated : 2021-11-24
+    jira : YUK-25377
+    notes : pentaho reporting engine core
+   
+  - filename : permit-reflect-0.4.jar
+    yukon group : Yet Another Java Service Wrapper
+    project : Java Native Access
+    version : 5.3.1
+    project URL : "	https://github.com/nqzero/permit-reflect"
+    license : MIT
+    license URLs : "https://opensource.org/licenses/Apache-2.0"
+    maven URL : https://mvnrepository.com/artifact/com.nqzero/permit-reflect/0.4
+    md5 : 143be6361e27f5126710f60e907d6811
+    sha1 : 16b5d28e12779548c111da88324091118060c7ed
     updated : 2021-11-24
     jira : YUK-25377
     notes : pentaho reporting engine core
@@ -3291,8 +3305,8 @@ Java :
     license : Apache 2.0, LGPL 2.1
     license URLs : "https://opensource.org/licenses/Apache-2.0, https://opensource.org/licenses/LGPL-2.1"
     maven URL : "https://mvnrepository.com/artifact/org.rzo.yajsw/wrapper/11.11"
-    md5 : 593e33f29cfc57a73fdece620a826f16
-    sha1 : 1b6b85fea00360e9e95f7ced5157a141fc80542c
+    md5 : 660eb09a3a30be0089f69d2750f4d714
+    sha1 : ca0c1bb0cb63d66e9923d5432f82ce657698166c
     updated : 2020-12-14
     jira : YUK-22557
     notes : YAJSW Wrapper.  Maven version is 11.11, not 12.15.  Jar rebuilt to adjust classpath entries in MANIFEST.MF
@@ -3305,8 +3319,8 @@ Java :
     license : Apache 2.0, LGPL 2.1
     license URLs : "https://opensource.org/licenses/Apache-2.0, https://opensource.org/licenses/LGPL-2.1"
     maven URL : "https://mvnrepository.com/artifact/org.rzo.yajsw/wrapperApp/11.11"
-    md5 : cf9f8dbfc234f4a46fa7552cf29db70e
-    sha1 : 90f6003543f184a8fd8de08fca66311b43946129
+    md5 : e43b5475c3cb4ae81fc93c06c95ece56
+    sha1 : 34fbad2d6552c049c9b306fc358154b62e046b37
     updated : 2020-12-14
     jira : YUK-22557
     notes : YAJSW Wrapper App.  Maven version is 11.11, not 12.15.  Jar rebuilt to adjust classpath entries in MANIFEST.MF
