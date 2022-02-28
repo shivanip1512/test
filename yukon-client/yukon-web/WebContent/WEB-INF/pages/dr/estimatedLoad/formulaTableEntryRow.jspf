@@ -1,5 +1,6 @@
-<%@ taglib prefix="tags" tagdir="/WEB-INF/tags" %>
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core"%>
+<%@ taglib prefix="cti" uri="http://cannontech.com/tags/cti" %>
+<%@ taglib prefix="tags" tagdir="/WEB-INF/tags" %>
 
 <c:set var="dummyEntryRow" value="${entryIndex lt 0}"/>
 
@@ -23,7 +24,7 @@
     </div>
     <div class="output-column-container column two nogutter fr">
         <div class="output-column">
-             <i class="input-output-arrow icon icon-arrow-join-right fl"></i>
+             <cti:icon icon="icon-arrow-join-right" classes="input-output-arrow fl"/>
              <div class="fr">
                 <div class="js-formula-time-input_${dummyEntryRow ? '' : tableIndex}"
                     style="${timeInput ? '' : 'display:none'}">

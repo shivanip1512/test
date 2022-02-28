@@ -136,6 +136,34 @@ yukon.assets.gateway.list = (function () {
                 });
             });
             
+            /** 'Update' button clicked on the Update Gateways popup. */
+            $(document).on('yukon:assets:gateways:update', function (ev) {
+            	var popup = $('#update-gateways-popup'),
+                	btns = popup.closest('.ui-dialog').find('.ui-dialog-buttonset'),
+                	primary = btns.find('.js-primary-action'),
+                	secondary = btns.find('.js-secondary-action');
+                yukon.ui.busy(primary);
+                secondary.prop('disabled', true);
+                $('#update-gateways-form').ajaxSubmit({
+                    success: function (result, status, xhr, $form) {
+                        popup.dialog('close');
+                        if (result.successMessage) {
+                        	yukon.ui.alertSuccess(result.successMessage);
+                        }
+                        if (result.errorMessage) {
+                        	yukon.ui.alertError(result.errorMessage);
+                        }
+                    },
+                    error: function (xhr, status, error, $form) {
+                        popup.html(xhr.responseText);
+                    },
+                    complete: function () {
+                        yukon.ui.unbusy(primary);
+                        secondary.prop('disabled', false);
+                    }
+                });
+            });
+            
             $(document).on('click', '.js-download-network-map', function () {
                 $('.js-download-warning').removeClass('dn');
                 $(this).addClass('very-disabled-look');

@@ -7,21 +7,29 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.HashSet;
 import java.util.List;
-import java.util.Set;
 
 import org.apache.commons.lang3.StringUtils;
+import org.easymock.EasyMock;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.test.util.ReflectionTestUtils;
+import org.springframework.web.client.RestClientException;
 
+import com.cannontech.dr.ecobee.EcobeeAuthenticationException;
 import com.cannontech.dr.ecobee.dao.EcobeeZeusGroupDao;
+import com.cannontech.dr.ecobee.message.ZeusThermostat;
+import com.cannontech.dr.ecobee.message.ZeusThermostatState;
 import com.cannontech.dr.ecobee.model.EcobeeZeusDiscrepancyType;
 import com.cannontech.dr.ecobee.model.EcobeeZeusGroupDeviceMapping;
 import com.cannontech.dr.ecobee.model.discrepancy.EcobeeZeusDiscrepancy;
+import com.cannontech.dr.ecobee.service.EcobeeZeusCommunicationService;
 import com.cannontech.dr.ecobee.service.EcobeeZeusReconciliationService;
+import com.cannontech.loadcontrol.loadgroup.dao.LoadGroupDao;
 import com.cannontech.stars.dr.hardware.dao.LmHardwareBaseDao;
+import com.cannontech.stars.dr.hardware.model.LMHardwareBase;
+import com.google.common.collect.ArrayListMultimap;
+import com.google.common.collect.Multimap;
 
 public class EcobeeZeusReconciliationServiceTest {
     List<EcobeeZeusDiscrepancy> errorsList = new ArrayList<EcobeeZeusDiscrepancy>();
@@ -129,31 +137,208 @@ public class EcobeeZeusReconciliationServiceTest {
         });
     }
 
-    @Test
-    public void test_checkForMissingDevices() {
+   public void prepareYukonData(Multimap<Integer, String> yukonGroupToDevicesMap, List<LMHardwareBase> devices,
+            LmHardwareBaseDao lmHardwareBaseDao2, LoadGroupDao loadGroupDao, EcobeeZeusGroupDao ecobeeZeusGroupDao) {
+       
+       
+        yukonGroupToDevicesMap.put(100, "1");
+        yukonGroupToDevicesMap.put(100, "2");
+        yukonGroupToDevicesMap.put(100, "3");
+        yukonGroupToDevicesMap.put(100, "4");
+        yukonGroupToDevicesMap.put(100, "5");
+
+        LMHardwareBase device1 = new LMHardwareBase();
+        device1.setInventoryId(11);
+        devices.add(0, device1);
+        LMHardwareBase device2 = new LMHardwareBase();
+        device2.setInventoryId(12);
+        devices.add(1, device2);
+        LMHardwareBase device3 = new LMHardwareBase();
+        device3.setInventoryId(13);
+        devices.add(2, device3);
+        LMHardwareBase device4 = new LMHardwareBase();
+        device4.setInventoryId(14);
+        devices.add(3, device4);
+        LMHardwareBase device5 = new LMHardwareBase();
+        device5.setInventoryId(15);
+        devices.add(4, device5);
+        LMHardwareBase device6 = new LMHardwareBase();
+        device6.setInventoryId(16);
+        devices.add(5, device6);
+
+        LmHardwareBaseDao lmHardwareBaseDao = EasyMock.createNiceMock(LmHardwareBaseDao.class);
+        EasyMock.expect(lmHardwareBaseDao.getBySerialNumber("1")).andStubReturn(devices.get(0));
+        EasyMock.expect(lmHardwareBaseDao.getBySerialNumber("2")).andStubReturn(devices.get(1));
+        EasyMock.expect(lmHardwareBaseDao.getBySerialNumber("3")).andStubReturn(devices.get(2));
+        EasyMock.expect(lmHardwareBaseDao.getBySerialNumber("4")).andStubReturn(devices.get(3));
+        EasyMock.expect(lmHardwareBaseDao.getBySerialNumber("5")).andStubReturn(devices.get(4));
+        EasyMock.expect(lmHardwareBaseDao.getBySerialNumber("6")).andStubReturn(devices.get(5));
+        EasyMock.replay(lmHardwareBaseDao);
+        ReflectionTestUtils.setField(ecobeeZeusReconciliationService, "lmHardwareBaseDao", lmHardwareBaseDao);
+
+        EasyMock.expect(loadGroupDao.getProgramIdsByGroupId(100)).andStubReturn(List.of(1000));
+        EasyMock.replay(loadGroupDao);
+        ReflectionTestUtils.setField(ecobeeZeusReconciliationService, "loadGroupDao", loadGroupDao);
+
+        EasyMock.expect(ecobeeZeusGroupDao.getZeusGroupId(100, 11, 1000)).andStubReturn("200");
+        EasyMock.expect(ecobeeZeusGroupDao.getZeusGroupId(100, 12, 1000)).andStubReturn("200");
+        EasyMock.expect(ecobeeZeusGroupDao.getZeusGroupId(100, 13, 1000)).andStubReturn("200");
+        EasyMock.expect(ecobeeZeusGroupDao.getZeusGroupId(100, 14, 1000)).andStubReturn("200");
+        EasyMock.expect(ecobeeZeusGroupDao.getZeusGroupId(100, 15, 1000)).andStubReturn("200");
+        EasyMock.expect(ecobeeZeusGroupDao.getZeusGroupId(100, 16, 1000)).andStubReturn("200");
+        
+        EasyMock.expect(ecobeeZeusGroupDao.getZeusGroupId(100, 11, 1000)).andStubReturn("201");
+        EasyMock.expect(ecobeeZeusGroupDao.getZeusGroupId(100, 12, 1000)).andStubReturn("201");
+        EasyMock.replay(ecobeeZeusGroupDao);
+        ReflectionTestUtils.setField(ecobeeZeusReconciliationService, "ecobeeZeusGroupDao", ecobeeZeusGroupDao);
+
+    }
+
+    public Multimap<String, String> prepareEcobeeData() {
+        Multimap<String, String> ecobeeSerialNumberToGroupMapping = ArrayListMultimap.create();
+        ecobeeSerialNumberToGroupMapping.put("1", "200");
+        ecobeeSerialNumberToGroupMapping.put("2", "200");
+        ecobeeSerialNumberToGroupMapping.put("3", "200");
+        ecobeeSerialNumberToGroupMapping.put("4", "200");
+        ecobeeSerialNumberToGroupMapping.put("5", "200");
+        ecobeeSerialNumberToGroupMapping.put("1", "205");
+        ecobeeSerialNumberToGroupMapping.put("2", "205");
+        ecobeeSerialNumberToGroupMapping.put("1", "210");
+        ecobeeSerialNumberToGroupMapping.put("1", "215");
+        return ecobeeSerialNumberToGroupMapping;
+    }
+
+    @Test public void runTestCasesForMissingDevice() throws RestClientException, EcobeeAuthenticationException {
+        
         List<String> yukonSerialNumbers = new ArrayList<>(Arrays.asList("1", "2", "3", "4", "5"));
-        Set<String> ecobeeSerialNumbers = new HashSet<String>(Arrays.asList("1", "2", "3", "4", "5"));
+        Multimap<Integer, String> yukonGroupToDevicesMap = ArrayListMultimap.create();
+        List<LMHardwareBase> devices = new ArrayList<LMHardwareBase>();
+        LmHardwareBaseDao lmHardwareBaseDao = EasyMock.createNiceMock(LmHardwareBaseDao.class);
+        LoadGroupDao loadGroupDao = EasyMock.createNiceMock(LoadGroupDao.class);
+        EcobeeZeusGroupDao ecobeeZeusGroupDao = EasyMock.createNiceMock(EcobeeZeusGroupDao.class);
+        
+        prepareYukonData(yukonGroupToDevicesMap, devices, lmHardwareBaseDao, loadGroupDao, ecobeeZeusGroupDao);
 
+        Multimap<String, String> ecobeeSerialNumberToGroupMapping = prepareEcobeeData();
+
+        test_checkForMissingDevices_1(yukonSerialNumbers, ecobeeSerialNumberToGroupMapping, yukonGroupToDevicesMap);
+        test_checkForMissingDevices_2(yukonSerialNumbers, ecobeeSerialNumberToGroupMapping, yukonGroupToDevicesMap);
+        test_checkForMissingDevices_3(yukonSerialNumbers, ecobeeSerialNumberToGroupMapping, yukonGroupToDevicesMap);
+        test_checkForMissingDevices_4(yukonSerialNumbers, ecobeeSerialNumberToGroupMapping, yukonGroupToDevicesMap);
+        test_checkForMissingDevices_5(yukonSerialNumbers, ecobeeSerialNumberToGroupMapping, yukonGroupToDevicesMap);
+    }
+   
+    public void test_checkForMissingDevices_1(List<String> yukonSerialNumbers, Multimap<String, String> ecobeeSerialNumberToGroupMapping, Multimap<Integer, String> yukonGroupToDevicesMap) throws RestClientException, EcobeeAuthenticationException {
+        
         ReflectionTestUtils.invokeMethod(ecobeeZeusReconciliationService, "checkForMissingAndExtraneousDevices",
-                yukonSerialNumbers, ecobeeSerialNumbers, errorsList);
+                yukonSerialNumbers, ecobeeSerialNumberToGroupMapping, errorsList, yukonGroupToDevicesMap);
         assertTrue(errorsList.size() == 0, "Number of missing device should be 0");
-
+        
+        errorsList.clear();
+    }
+       
+    public void test_checkForMissingDevices_2(List<String> yukonSerialNumbers, Multimap<String, String> ecobeeSerialNumberToGroupMapping, Multimap<Integer, String> yukonGroupToDevicesMap) throws RestClientException, EcobeeAuthenticationException {
+        
+        ecobeeSerialNumberToGroupMapping.put("6", "220");
+        yukonGroupToDevicesMap.put(100, "6");
         yukonSerialNumbers.add("6");
+        
         ReflectionTestUtils.invokeMethod(ecobeeZeusReconciliationService, "checkForMissingAndExtraneousDevices",
-                yukonSerialNumbers, ecobeeSerialNumbers, errorsList);
+                yukonSerialNumbers, ecobeeSerialNumberToGroupMapping, errorsList, yukonGroupToDevicesMap);
         assertTrue(errorsList.size() == 1, "Number of missing device should be 1");
         errorsList.forEach(error -> {
             assertTrue(error.getErrorType() == EcobeeZeusDiscrepancyType.MISSING_DEVICE, "Type should be MISSING_DEVICE");
             assertTrue(error.getSerialNumber().equals("6"), "Missing device should be 6");
+            assertTrue(error.getCorrectPath().equals("100"));
         });
+        
+        ecobeeSerialNumberToGroupMapping.remove("6", "220");
+        errorsList.clear();
     }
+
+    
+    public void test_checkForMissingDevices_3(List<String> yukonSerialNumbers, Multimap<String, String> ecobeeSerialNumberToGroupMapping, Multimap<Integer, String> yukonGroupToDevicesMap) throws RestClientException, EcobeeAuthenticationException {
+        
+        EcobeeZeusCommunicationService communicationService = EasyMock.createMock(EcobeeZeusCommunicationService.class);
+        ZeusThermostat thermostat = new ZeusThermostat();
+        thermostat.setState(ZeusThermostatState.NOT_YET_CONNECTED);
+        EasyMock.expect(communicationService.retrieveThermostatFromRootGroup("6")).andStubReturn(thermostat);
+        EasyMock.expect(communicationService.retrieveThermostatGroupID()).andStubReturn("10000");
+        EasyMock.replay(communicationService);
+        ReflectionTestUtils.setField(ecobeeZeusReconciliationService, "communicationService", communicationService);
+        ReflectionTestUtils.invokeMethod(ecobeeZeusReconciliationService, "checkForMissingAndExtraneousDevices",
+                yukonSerialNumbers, ecobeeSerialNumberToGroupMapping, errorsList, yukonGroupToDevicesMap);
+        assertTrue(errorsList.size() == 1, "Number of missing device should be 1");
+        errorsList.forEach(error -> {
+            assertTrue(error.getErrorType() == EcobeeZeusDiscrepancyType.MISSING_DEVICE, "Type should be MISSING_DEVICE");
+            assertTrue(error.getSerialNumber().equals("6"), "Missing device should be 6");
+            assertTrue(error.getCorrectPath().equals("10000"));
+        });
+        errorsList.clear();
+    }
+
+    
+    public void test_checkForMissingDevices_4(List<String> yukonSerialNumbers, Multimap<String, String> ecobeeSerialNumberToGroupMapping, Multimap<Integer, String> yukonGroupToDevicesMap) throws RestClientException, EcobeeAuthenticationException {
+
+        EcobeeZeusCommunicationService communicationService = EasyMock.createMock(EcobeeZeusCommunicationService.class);
+        ZeusThermostat thermostat = new ZeusThermostat();
+        thermostat.setState(ZeusThermostatState.ENROLLED);
+        EasyMock.expect(communicationService.retrieveThermostatFromRootGroup("6")).andStubReturn(thermostat);
+        EasyMock.expect(communicationService.retrieveThermostatGroupID()).andStubReturn("10000");
+        EasyMock.replay(communicationService);
+        ReflectionTestUtils.setField(ecobeeZeusReconciliationService, "communicationService", communicationService);
+        ReflectionTestUtils.invokeMethod(ecobeeZeusReconciliationService, "checkForMissingAndExtraneousDevices",
+                yukonSerialNumbers, ecobeeSerialNumberToGroupMapping, errorsList, yukonGroupToDevicesMap);
+        assertTrue(errorsList.size() == 1, "Number of missing device should be 1");
+        errorsList.forEach(error -> {
+            assertTrue(error.getErrorType() == EcobeeZeusDiscrepancyType.MISSING_DEVICE, "Type should be MISSING_DEVICE");
+            assertTrue(error.getSerialNumber().equals("6"), "Missing device should be 6");
+            assertTrue(error.getCorrectPath().equals("100"));
+        });
+        errorsList.clear();
+    }
+    
+    public void test_checkForMissingDevices_5(List<String> yukonSerialNumbers, Multimap<String, String> ecobeeSerialNumberToGroupMapping, Multimap<Integer, String> yukonGroupToDevicesMap) throws RestClientException, EcobeeAuthenticationException {
+        
+        EcobeeZeusGroupDao ecobeeZeusGroupDao = EasyMock.createNiceMock(EcobeeZeusGroupDao.class);
+        EasyMock.expect(ecobeeZeusGroupDao.getZeusGroupId(100, 11, 1000)).andStubReturn("200");
+        EasyMock.expect(ecobeeZeusGroupDao.getZeusGroupId(100, 12, 1000)).andStubReturn("200");
+        EasyMock.expect(ecobeeZeusGroupDao.getZeusGroupId(100, 13, 1000)).andStubReturn("200");
+        EasyMock.expect(ecobeeZeusGroupDao.getZeusGroupId(100, 14, 1000)).andStubReturn("200");
+        EasyMock.expect(ecobeeZeusGroupDao.getZeusGroupId(100, 15, 1000)).andStubReturn("200");
+        EasyMock.replay(ecobeeZeusGroupDao);
+        ReflectionTestUtils.setField(ecobeeZeusReconciliationService, "ecobeeZeusGroupDao", ecobeeZeusGroupDao);
+
+        ecobeeSerialNumberToGroupMapping.put("6", "220");
+        ReflectionTestUtils.invokeMethod(ecobeeZeusReconciliationService, "checkForMissingAndExtraneousDevices",
+                yukonSerialNumbers, ecobeeSerialNumberToGroupMapping, errorsList, yukonGroupToDevicesMap);
+        assertTrue(errorsList.size() == 1, "Number of missing device should be 1");
+        errorsList.forEach(error -> {
+            assertTrue(error.getErrorType() == EcobeeZeusDiscrepancyType.MISSING_DEVICE, "Type should be MISSING_DEVICE");
+            assertTrue(error.getSerialNumber().equals("6"), "Missing device should be 6");
+            assertTrue(error.getCorrectPath().equals("100"));
+        });
+        
+        ecobeeSerialNumberToGroupMapping.remove("6", "220");
+        errorsList.clear();
+    }
+    
 
     public void test_checkForExtraneousDevices() {
         List<String> yukonSerialNumbers = new ArrayList<>(Arrays.asList("1", "2", "3"));
-        Set<String> ecobeeSerialNumbers = new HashSet<String>(Arrays.asList("1", "2", "3", "4", "5"));
+        // Set<String> ecobeeSerialNumbers = new HashSet<String>(Arrays.asList("1", "2", "3", "4", "5"));
+        Multimap<String, String> ecobeeSerialNumberToGroupMapping = ArrayListMultimap.create();
+        Multimap<Integer, String> yukonGroupToDevicesMap = ArrayListMultimap.create();
+
+        ecobeeSerialNumberToGroupMapping.put("1", "200");
+        ecobeeSerialNumberToGroupMapping.put("2", "200");
+        ecobeeSerialNumberToGroupMapping.put("3", "200");
+        ecobeeSerialNumberToGroupMapping.put("4", "200");
+        ecobeeSerialNumberToGroupMapping.put("5", "200");
 
         ReflectionTestUtils.invokeMethod(ecobeeZeusReconciliationService, "checkForMissingAndExtraneousDevices",
-                yukonSerialNumbers, ecobeeSerialNumbers, errorsList);
+                yukonSerialNumbers, ecobeeSerialNumberToGroupMapping, errorsList, yukonGroupToDevicesMap);
+
         assertTrue(errorsList.size() == 2, "Number of missing device should be 2");
         errorsList.forEach(error -> {
             assertTrue(error.getErrorType() == EcobeeZeusDiscrepancyType.MISSING_DEVICE, "Type should be MISSING_DEVICE");
@@ -184,7 +369,7 @@ public class EcobeeZeusReconciliationServiceTest {
             List<Integer> numbers = new ArrayList<>(Arrays.asList(1, 2, 3));
             return numbers;
         }).anyTimes();
-        
+
         lmHardwareBaseDao.getSerialNumberForInventoryId(1);
         expectLastCall().andAnswer(() -> {
             return "1";
@@ -247,7 +432,7 @@ public class EcobeeZeusReconciliationServiceTest {
         expectLastCall().andAnswer(() -> {
             return "3";
         }).anyTimes();
-        
+
         replay(ecobeeZeusGroupDao);
         replay(lmHardwareBaseDao);
 

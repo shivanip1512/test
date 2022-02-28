@@ -81,4 +81,10 @@ public interface RecentEventParticipationDao {
      * Returns all devices for event id and list of statuses
      */
     Set<Integer> getDeviceIdsByExternalEventIdAndStatuses(Integer externalEventId, List<ControlEventDeviceStatus> statuses);
+    
+    /**
+     * Changes result from: FAILED_WILL_RETRY to: FAILED for an event id. If event id is null changes result for all devices
+     * @return rows affected 
+     */
+    int failWillRetryDevices(Integer externalEventId);
 }

@@ -14,5 +14,5 @@
          <cm:dropdownOption id="cancel-job-btn-${jobId}" data-ok-event="yukon:schedule:cancel" data-job-id="${jobId}" key="yukon.common.cancel" icon="icon-cross"/>
          <d:confirm on="#cancel-job-btn-${jobId}" nameKey="cancelConfirm" argument="${jobWrapper.name}"/>
          <cm:dropdownOption id="enable-schedule-${jobId}" key="yukon.common.enable" icon="icon-accept" classes="js-schedule-toggle" data-job-id="${jobId}"/>
-         <cm:dropdownOption id="disable-schedule-${jobId}" key="yukon.common.disable" classes="js-schedule-toggle" data-job-id="${jobId}" icon="icon-delete"/>
+         <cm:dropdownOption id="disable-schedule-${jobId}" key="yukon.common.disable" classes="js-schedule-toggle" data-job-id="${jobId}" icon="icon-disable"/>
 </cm:dropdown>

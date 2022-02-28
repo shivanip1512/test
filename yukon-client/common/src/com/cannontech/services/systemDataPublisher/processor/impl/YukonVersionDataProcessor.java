@@ -1,25 +1,39 @@
 package com.cannontech.services.systemDataPublisher.processor.impl;
 
+import org.apache.logging.log4j.Logger;
+import org.joda.time.DateTime;
 import org.springframework.stereotype.Service;
 
+import com.cannontech.clientutils.YukonLogManager;
 import com.cannontech.common.version.VersionTools;
-import com.cannontech.services.systemDataPublisher.dao.impl.SystemDataProcessorHelper;
-import com.cannontech.services.systemDataPublisher.service.model.SystemData;
-import com.cannontech.services.systemDataPublisher.service.model.SystemDataFieldType.FieldType;
-import com.cannontech.services.systemDataPublisher.yaml.model.CloudDataConfiguration;
+import com.cannontech.yukon.system.metrics.message.YukonMetric;
+import com.cannontech.yukon.system.metrics.message.YukonMetricPointInfo;
+import com.cannontech.yukon.system.metrics.producer.service.YukonMetricIntervalProducer;
 
 @Service
-public class YukonVersionDataProcessor extends YukonDataProcessor {
+public class YukonVersionDataProcessor extends YukonMetricIntervalProducer {
+    private static final Logger log = YukonLogManager.getLogger(YukonVersionDataProcessor.class);
 
     @Override
-    public SystemData buildSystemData(CloudDataConfiguration cloudDataConfiguration) {
-        String yukonVersion = VersionTools.getYukonDetails();
-        SystemData systemData = SystemDataProcessorHelper.buildSystemData(cloudDataConfiguration, yukonVersion);
-        return systemData;
+    public YukonMetric produce() {
+        YukonMetric metric = new YukonMetric(getYukonMetricPointInfo(), VersionTools.getYukonDetails(), new DateTime());
+        debug(metric, log);
+        return metric;
     }
 
     @Override
-    public boolean supportsField(FieldType field) {
-        return field == FieldType.YUKON_VERSION;
+    public boolean shouldProduce() {
+        return true;
     }
+
+    @Override
+    public YukonMetricPointInfo getYukonMetricPointInfo() {
+        return YukonMetricPointInfo.YUKON_VERSION;
+    }
+
+    @Override
+    public long getPeriodInMinutes() {
+        return 1440;
+    }
+
 }

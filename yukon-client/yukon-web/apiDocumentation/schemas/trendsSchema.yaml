@@ -43,16 +43,16 @@ trendSeries:
         description: 'Color.'
         enum:
         - BLACK
+        - SKY
         - BLUE
-        - CYAN
-        - GREY
+        - TEAL
+        - GRAY
         - GREEN
-        - MAGENTA
+        - SAGE
         - ORANGE
-        - PINK
+        - PURPLE
         - WINE
         - YELLOW
-        - PURPLE
       axis:
         type: string
         default: LEFT

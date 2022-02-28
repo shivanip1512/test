@@ -23,7 +23,7 @@
                 <cti:msg2 var="toolTipMessage" key="yukon.web.modules.operator.commChannel.delete.devicesAssigned.error" argument="${fn:escapeXml(name)}"/>
             </c:if>
             <li class="divider"></li>
-            <cm:dropdownOption icon="icon-cross" title="${toolTipMessage}"  key="yukon.web.components.button.delete.label" classes="js-hide-dropdown" id="js-delete-option"
+            <cm:dropdownOption icon="icon-delete" title="${toolTipMessage}"  key="yukon.web.components.button.delete.label" classes="js-hide-dropdown" id="js-delete-option"
                                data-ok-event="yukon:commChannel:delete" disabled="${disableFlag}"/>
             <c:if test="${empty deviceNames}">
                 <d:confirm on="#js-delete-option" nameKey="confirmDelete" argument="${fn:escapeXml(name)}" />

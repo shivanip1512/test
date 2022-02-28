@@ -179,6 +179,8 @@ yukon.da.common = (function () {
                 item.appendTo(container)
                 .find('.js-remove, .js-add').toggleClass('js-remove js-add')
                 .find('.icon').toggleClass('icon-plus-green icon-cross');
+                item.find('.icon-plus-green').html(yg.iconSvg.iconPlusGreen);
+                item.find('.icon-cross').html(yg.iconSvg.iconCross);
                 
                 // Show/hide movers.
                 item.find('.select-box-item-movers').toggle(!remove);

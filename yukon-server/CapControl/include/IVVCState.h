@@ -204,6 +204,24 @@ class IVVCState
 
         bool showZoneRegulatorConfigMsg;
 
+
+        struct DeviceInformationEntry
+        {
+            long deviceID, pointID;
+            std::string deviceName, pointName;
+        };
+
+        using DeviceInformation = std::map<long, DeviceInformationEntry>;
+
+        DeviceInformation   deviceInformation;
+
+        std::set<long> disabledRegulators;
+
+        std::set<long> pfIndeterminateRegulators;
+        std::set<long> pfErrorRegulators;
+
+        std::set<std::string> commViolations;
+
     private:
 
         CtiTime _timeStamp;

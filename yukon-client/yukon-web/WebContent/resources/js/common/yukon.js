@@ -461,7 +461,8 @@ yukon.namespace = function (ns) {
             } else {
                 alertbox.html(messages[0]);
             }
-            alertbox.prepend("<i class=\"cp fr icon icon-close-x\" onclick=\"$(this).parent().addClass('dn');\"></i>");
+            alertbox.prepend("<i class=\"cp fr icon icon-close-x\" onclick=\"$(this).parent().addClass('dn');\">"
+            		+ yg.iconSvg.iconCloseX + "</i>");
         });
     };
     
@@ -647,7 +648,7 @@ yukon.namespace = function (ns) {
                 } else {
                     //  otherwise use the single event's icon
                     
-                    $('<i class="M0 icon ' + (firstEvent.icon || 'icon-blank') + '"/>')
+                    $('<i class="M0 icon ' + (firstEvent.icon || 'icon-blank') + '">' + (firstEvent.iconSvg || '') + '</i>')
                         .appendTo(span);
 
                     if (firstEvent.icon) {
@@ -672,7 +673,7 @@ yukon.namespace = function (ns) {
                     var text = '';
                     
                     if (shouldDisplayIcons) {
-                        text += '<i class="icon ' + (event.icon || 'icon-blank') + '"></i>'; 
+                        text += '<i class="icon ' + (event.icon || 'icon-blank') + '">' + (event.iconSvg || '') + '</i>'; 
                     }
                     
                     text += moment(event.timestamp).tz(yg.timezone).format(yg.formats.date.full);

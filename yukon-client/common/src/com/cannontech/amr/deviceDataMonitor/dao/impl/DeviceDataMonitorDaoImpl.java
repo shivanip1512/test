@@ -55,7 +55,7 @@ public class DeviceDataMonitorDaoImpl implements DeviceDataMonitorDao {
     @Autowired private DbChangeManager dbChangeManager;
 
     @PostConstruct
-    public void init() throws Exception {
+    public void init() {
         monitorTemplate = new SimpleTableAccessTemplate<>(yukonJdbcTemplate, nextValueHelper);
         monitorTemplate.setTableName("DeviceDataMonitor");
         monitorTemplate.setPrimaryKeyField("MonitorId");
@@ -68,21 +68,30 @@ public class DeviceDataMonitorDaoImpl implements DeviceDataMonitorDao {
         processorTemplate.setAdvancedFieldMapper(processorFieldMapper);
     }
 
-    private final YukonRowMapper<DeviceDataMonitor> monitorRowMapper = new YukonRowMapper<DeviceDataMonitor>() {
+    private final YukonRowMapper<DeviceDataMonitor> monitorRowMapper = new YukonRowMapper<>() {
         @Override
         public DeviceDataMonitor mapRow(YukonResultSet rs) throws SQLException {
-            DeviceDataMonitor ddm = new DeviceDataMonitor(rs.getInt("monitorId"), rs.getString("name"),
-                rs.getString("groupName"), deviceGroupService.findGroupName(rs.getString("groupName")),
-                rs.getInt("enabled") == 1 ? true : false, null);
+            DeviceDataMonitor ddm = new DeviceDataMonitor(
+                    rs.getInt("monitorId"), 
+                    rs.getString("name"),
+                    rs.getString("groupName"), 
+                    deviceGroupService.findGroupName(rs.getString("groupName")),
+                    isEnabled(rs.getInt("enabled")), 
+                    null, //no processors
+                    isEnabled(rs.getInt("notifyOnAlarmOnly")));
             StoredDeviceGroup violationGroup = deviceGroupEditorDao.getStoredGroup(SystemGroupEnum.DEVICE_DATA,
                 ddm.getViolationsDeviceGroupName(), true);
             ddm.setViolationGroup(violationGroup);
             return ddm;
         }
+        
+        private boolean isEnabled(int value) {
+            return value != 0;
+        }
     };
 
     private final YukonRowMapper<DeviceDataMonitorProcessor> processorRowMapper =
-        new YukonRowMapper<DeviceDataMonitorProcessor>() {
+        new YukonRowMapper<>() {
             @Override
             public DeviceDataMonitorProcessor mapRow(YukonResultSet rs) throws SQLException {
 
@@ -116,7 +125,7 @@ public class DeviceDataMonitorDaoImpl implements DeviceDataMonitorDao {
     @Override
     public List<DeviceDataMonitor> getAllMonitors() {
         SqlStatementBuilder sql = new SqlStatementBuilder();
-        sql.append("SELECT MonitorId, Name, GroupName, Enabled");
+        sql.append("SELECT MonitorId, Name, GroupName, Enabled, NotifyOnAlarmOnly");
         sql.append("FROM DeviceDataMonitor");
         sql.append("ORDER BY MonitorId");
 
@@ -134,7 +143,7 @@ public class DeviceDataMonitorDaoImpl implements DeviceDataMonitorDao {
     public DeviceDataMonitor getMonitorById(final Integer monitorId) throws NotFoundException {
 
         SqlStatementBuilder sql = new SqlStatementBuilder();
-        sql.append("SELECT MonitorId, Name, GroupName, Enabled");
+        sql.append("SELECT MonitorId, Name, GroupName, Enabled, NotifyOnAlarmOnly");
         sql.append("FROM DeviceDataMonitor");
         sql.append("WHERE MonitorId").eq(monitorId);
 
@@ -202,12 +211,13 @@ public class DeviceDataMonitorDaoImpl implements DeviceDataMonitorDao {
         return yukonJdbcTemplate.queryForInt(sql) > 0;
     }
 
-    private final AdvancedFieldMapper<DeviceDataMonitor> monitorFieldMapper = new AdvancedFieldMapper<DeviceDataMonitor>() {
+    private final AdvancedFieldMapper<DeviceDataMonitor> monitorFieldMapper = new AdvancedFieldMapper<>() {
         @Override
         public void extractValues(SqlParameterChildSink p, DeviceDataMonitor monitor) {
             p.addValue("Name", monitor.getName());
             p.addValue("GroupName", monitor.getGroupName());
             p.addValue("Enabled", monitor.isEnabled());
+            p.addValue("NotifyOnAlarmOnly", monitor.isNotifyOnAlarmOnly());
             p.addChildren(processorTemplate, monitor.getProcessors());
         }
 
@@ -222,7 +232,7 @@ public class DeviceDataMonitorDaoImpl implements DeviceDataMonitorDao {
         }
     };
 
-    private final AdvancedFieldMapper<DeviceDataMonitorProcessor> processorFieldMapper = new AdvancedFieldMapper<DeviceDataMonitorProcessor>() {
+    private final AdvancedFieldMapper<DeviceDataMonitorProcessor> processorFieldMapper = new AdvancedFieldMapper<>() {
         @Override
         public void extractValues(SqlParameterChildSink p, DeviceDataMonitorProcessor processor) {
             p.addValue("Attribute", processor.getAttribute());

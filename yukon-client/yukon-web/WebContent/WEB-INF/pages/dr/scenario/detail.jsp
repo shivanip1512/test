@@ -144,7 +144,7 @@
                                 		</cti:url>
                                 		<li>
                                     		<tags:simpleDialogLink titleKey="yukon.web.modules.dr.program.sendDisableProgramsConfirm.title" 
-                                        		dialogId="drDialog" actionUrl="${sendDisableProgramsUrl}" icon="icon-delete"
+                                        		dialogId="drDialog" actionUrl="${sendDisableProgramsUrl}" icon="icon-disable"
                                         		labelKey=".actions.disablePrograms"/>
                                 		</li>
                                     </c:when>
@@ -161,7 +161,7 @@
                             				<li>
                             				<cti:msg2 var="noEnableDisable" key=".scenarioDetail.actions.noEnableDisable"/>      
                                         	<a class="clearfix" title="${noEnableDisable}"> 
-                                				<cti:icon icon="icon-delete" classes="disabled" /> 
+                                				<cti:icon icon="icon-disable" classes="disabled" /> 
                                 					<span class="dib disabled">
                                     					<cti:msg2 key="yukon.web.modules.dr.scenarioDetail.actions.disablePrograms" />
                                				 		</span>

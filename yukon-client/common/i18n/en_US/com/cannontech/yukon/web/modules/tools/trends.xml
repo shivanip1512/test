@@ -112,5 +112,6 @@
     <entry key="yukon.web.modules.tools.trend.resetPeak.duration.SELECTED_DATE">Selected Date</entry>
     <entry key="yukon.web.modules.tools.trend.resetPeak.success">Reset peak performed successfully for {0}.</entry>
     <entry key="yukon.web.modules.tools.trend.resetPeak.failed">An error occurred while performing Reset Peak failed for {0}. Please check log for details.</entry>
+    
    
 </properties>

@@ -63,7 +63,7 @@ public class LoadProgramSetupApiController {
     @CheckPermissionLevel(property = YukonRoleProperty.DR_SETUP_PERMISSION, level = HierarchyPermissionLevel.CREATE)
     public ResponseEntity<Object> copy(@PathVariable int id, @Valid @RequestBody LoadProgramCopy loadProgramCopy,
             YukonUserContext userContext) {
-        LoadProgram copiedLoadProgram = loadProgramService.copyNew(id, loadProgramCopy, userContext.getYukonUser());
+        LoadProgram copiedLoadProgram = loadProgramService.copy(id, loadProgramCopy, userContext.getYukonUser());
         return new ResponseEntity<>(copiedLoadProgram, HttpStatus.OK);
     }
 

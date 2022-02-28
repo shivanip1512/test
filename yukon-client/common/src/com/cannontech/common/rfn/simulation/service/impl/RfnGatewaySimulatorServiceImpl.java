@@ -8,14 +8,17 @@ import java.util.List;
 import java.util.Map;
 import java.util.Random;
 import java.util.Set;
+import java.util.concurrent.atomic.AtomicBoolean;
 
 import javax.annotation.PostConstruct;
 import javax.jms.JMSException;
 import javax.jms.ObjectMessage;
 
+import org.apache.commons.lang3.StringUtils;
 import org.apache.logging.log4j.Logger;
 import org.joda.time.Duration;
 import org.springframework.beans.factory.annotation.Autowired;
+
 import com.cannontech.amr.rfn.dao.RfnDeviceDao;
 import com.cannontech.clientutils.YukonLogManager;
 import com.cannontech.common.rfn.message.RfnIdentifier;
@@ -67,32 +70,32 @@ public class RfnGatewaySimulatorServiceImpl implements RfnGatewaySimulatorServic
     
     private static Map<RfnIdentifier, GatewaySaveData> gatewayDataCache = new HashMap<>();
     
-    private volatile boolean autoDataReplyActive;
-    private volatile boolean autoDataReplyStopping;
-    private volatile SimulatedGatewayDataSettings gatewayDataSettings;
-    
-    private volatile boolean autoUpdateReplyActive;
-    private volatile boolean autoUpdateReplyStopping;
-    private volatile SimulatedUpdateReplySettings updateReplySettings;
-    
-    private volatile boolean autoCertificateUpgradeReplyActive;
-    private volatile boolean autoCertificateUpgradeReplyStopping;
-    private volatile SimulatedCertificateReplySettings certificateSettings;
-    
-    private volatile boolean autoFirmwareReplyActive;
-    private volatile boolean autoFirmwareReplyStopping;
-    private volatile SimulatedFirmwareReplySettings firmwareSettings;
-    
-    private volatile boolean autoFirmwareVersionReplyActive;
-    private volatile boolean autoFirmwareVersionReplyStopping;
-    private volatile SimulatedFirmwareVersionReplySettings firmwareVersionSettings;
+    private AtomicBoolean autoDataReplyActive = new AtomicBoolean(false);
+    private AtomicBoolean autoDataReplyStopping = new AtomicBoolean(false);
+    private SimulatedGatewayDataSettings gatewayDataSettings;
+
+    private AtomicBoolean autoUpdateReplyActive = new AtomicBoolean(false);
+    private AtomicBoolean autoUpdateReplyStopping = new AtomicBoolean(false);
+    private SimulatedUpdateReplySettings updateReplySettings;
+
+    private AtomicBoolean autoCertificateUpgradeReplyActive = new AtomicBoolean(false);
+    private AtomicBoolean autoCertificateUpgradeReplyStopping = new AtomicBoolean(false);
+    private SimulatedCertificateReplySettings certificateSettings;
+
+    private AtomicBoolean autoFirmwareReplyActive = new AtomicBoolean(false);
+    private AtomicBoolean autoFirmwareReplyStopping = new AtomicBoolean(false);
+    private SimulatedFirmwareReplySettings firmwareSettings;
+
+    private AtomicBoolean autoFirmwareVersionReplyActive = new AtomicBoolean(false);
+    private AtomicBoolean autoFirmwareVersionReplyStopping = new AtomicBoolean(false);
+    private SimulatedFirmwareVersionReplySettings firmwareVersionSettings;
 
     @Autowired private RfnGatewayService rfnGatewayService;
     @Autowired private YukonSimulatorSettingsDao yukonSimulatorSettingsDao;
     @Autowired private RfnDeviceDao rfnDeviceDao;
     @Autowired private YukonJmsTemplate jmsTemplate;
     @Autowired private YukonJmsTemplateFactory jmsTemplateFactory;
-
+    
     private YukonJmsTemplate rfGatewayDataUnsolicitedJmsTemplate;
     private YukonJmsTemplate rfGatewayArchiveJmsTemplate;
     private YukonJmsTemplate rfGatewayDeleteFromNmJmsTemplate;
@@ -103,6 +106,7 @@ public class RfnGatewaySimulatorServiceImpl implements RfnGatewaySimulatorServic
     private YukonJmsTemplate rfGatewayUpdateJmsTemplate;
     private YukonJmsTemplate rfGatewaySetConfigJmsTemplate;
     private YukonJmsTemplate rfGatewayDataJmsTemplate;
+
     public static final Duration incomingMessageWait = Duration.standardSeconds(1);
 
     @PostConstruct
@@ -128,7 +132,7 @@ public class RfnGatewaySimulatorServiceImpl implements RfnGatewaySimulatorServic
 
     @Override
     public boolean startAutoDataReply(SimulatedGatewayDataSettings settings) {
-        if (autoDataReplyActive) {
+        if (autoDataReplyActive.get()) {
             return false;
         } else {
             Set<RfnGateway> gateways = rfnGatewayService.getAllGateways();
@@ -140,15 +144,15 @@ public class RfnGatewaySimulatorServiceImpl implements RfnGatewaySimulatorServic
             autoDataThread.start();
             saveSettings(settings);
             gatewayDataSettings = settings;
-            autoDataReplyActive = true;
+            autoDataReplyActive.set(true);
             return true;
         }
     }
 
     @Override
     public void stopAutoDataReply() {
-        if (autoDataReplyActive) {
-            autoDataReplyStopping = true;
+        if (autoDataReplyActive.get()) {
+            autoDataReplyStopping.set(true);
             gatewayDataSettings = null;
             gatewayDataCache.clear();
         }
@@ -156,88 +160,88 @@ public class RfnGatewaySimulatorServiceImpl implements RfnGatewaySimulatorServic
     
     @Override
     public boolean startAutoUpdateReply(SimulatedUpdateReplySettings settings) {
-        if (autoUpdateReplyActive) {
+        if (autoUpdateReplyActive.get()) {
             return false;
         } else {
             Thread autoUpdateThread = getAutoUpdateThread(settings);
             autoUpdateThread.start();
             saveSettings(settings);
             updateReplySettings = settings;
-            autoUpdateReplyActive = true;
+            autoUpdateReplyActive.set(true);;
             return true;
         }
     }
     
     @Override
     public void stopAutoUpdateReply() {
-        if (autoUpdateReplyActive) {
-            autoUpdateReplyStopping = true;
+        if (autoUpdateReplyActive.get()) {
+            autoUpdateReplyStopping.set(true);
             updateReplySettings = null;
         }
     }
     
     @Override
     public boolean startAutoCertificateReply(SimulatedCertificateReplySettings settings) {
-        if (autoCertificateUpgradeReplyActive) {
+        if (autoCertificateUpgradeReplyActive.get()) {
             return false;
         } else {
             Thread autoCertificateThread = getAutoCertificateThread(settings);
             autoCertificateThread.start();
             saveSettings(settings);
             certificateSettings = settings;
-            autoCertificateUpgradeReplyActive = true;
+            autoCertificateUpgradeReplyActive.set(true);;
             return true;
         }
     }
 
     @Override
     public void stopAutoCertificateReply() {
-        if (autoCertificateUpgradeReplyActive) {
-            autoCertificateUpgradeReplyStopping = true;
+        if (autoCertificateUpgradeReplyActive.get()) {
+            autoCertificateUpgradeReplyStopping.set(true);
             certificateSettings = null;
         }
     }
     
     @Override
     public boolean startAutoFirmwareReply(SimulatedFirmwareReplySettings settings) {
-        if (autoFirmwareReplyActive) {
+        if (autoFirmwareReplyActive.get()) {
             return false;
         } else {
             Thread autoFirmwareThread = getAutoFirmwareThread(settings);
             autoFirmwareThread.start();
             saveSettings(settings);
             firmwareSettings = settings;
-            autoFirmwareReplyActive = true;
+            autoFirmwareReplyActive.set(true);
             return true;
         }
     }
     
     @Override
     public void stopAutoFirmwareReply() {
-        if (autoFirmwareReplyActive) {
-            autoFirmwareReplyStopping = true;
+        if (autoFirmwareReplyActive.get()) {
+            autoFirmwareReplyStopping.set(true);
             firmwareSettings = null;
         }
     }
     
     @Override
     public boolean startAutoFirmwareVersionReply(SimulatedFirmwareVersionReplySettings settings) {
-        if (autoFirmwareVersionReplyActive) {
+        if (autoFirmwareVersionReplyActive.get()) {
             return false;
         } else {
             Thread autoFirmwareVersionThread = getAutoFirmwareVersionThread(settings);
             autoFirmwareVersionThread.start();
             saveSettings(settings);
             firmwareVersionSettings = settings;
-            autoFirmwareVersionReplyActive = true;
+            autoFirmwareVersionReplyActive.set(true);
             return true;
         }
     }
     
     @Override
     public void stopAutoFirmwareVersionReply() {
-        if (autoFirmwareVersionReplyActive) {
-            autoFirmwareVersionReplyStopping = true;
+        if (autoFirmwareVersionReplyActive.get()) {
+            autoFirmwareVersionReplyStopping.set(true);
             firmwareVersionSettings = null;
         }
     }
@@ -282,7 +286,7 @@ public class RfnGatewaySimulatorServiceImpl implements RfnGatewaySimulatorServic
             @Override
             public void run() {
                 log.info("Auto firmware reply thread starting up.");
-                while (!autoFirmwareReplyStopping) {
+                while (!autoFirmwareReplyStopping.get()) {
                     try {
                         Object message = rfGatewayFirmwareUpgradeJmsTemplate.receive();
                         if (message != null && message instanceof ObjectMessage) {
@@ -301,8 +305,8 @@ public class RfnGatewaySimulatorServiceImpl implements RfnGatewaySimulatorServic
                 }
                 
                 log.info("Auto firmware reply thread shutting down.");
-                autoFirmwareReplyStopping = false;
-                autoFirmwareReplyActive = false;
+                autoFirmwareReplyStopping.set(false);;
+                autoFirmwareReplyActive.set(false);
             }
         };
         
@@ -318,7 +322,7 @@ public class RfnGatewaySimulatorServiceImpl implements RfnGatewaySimulatorServic
             @Override
             public void run() {
                 log.info("Auto firmware server version reply thread starting up.");
-                while (!autoFirmwareVersionReplyStopping) {
+                while (!autoFirmwareVersionReplyStopping.get()) {
                     try {
                         Object message = rfUpdateServerAvailableVersionJmsTemplate.receive();
                         if (message != null && message instanceof ObjectMessage) {
@@ -338,8 +342,8 @@ public class RfnGatewaySimulatorServiceImpl implements RfnGatewaySimulatorServic
                 }
                 
                 log.info("Auto firmware server version reply thread shutting down.");
-                autoFirmwareVersionReplyStopping = false;
-                autoFirmwareVersionReplyActive = false;
+                autoFirmwareVersionReplyStopping.set(false);
+                autoFirmwareVersionReplyActive.set(false);
             }
         };
         
@@ -355,7 +359,7 @@ public class RfnGatewaySimulatorServiceImpl implements RfnGatewaySimulatorServic
             @Override
             public void run() {
                 log.info("Auto certificate update reply thread starting up.");
-                while (!autoCertificateUpgradeReplyStopping) {
+                while (!autoCertificateUpgradeReplyStopping.get()) {
                     try {
                         Object message = rfGatewayCertificateUpdateJmsTemplate.receive();
                         if (message != null && message instanceof ObjectMessage) {
@@ -384,8 +388,8 @@ public class RfnGatewaySimulatorServiceImpl implements RfnGatewaySimulatorServic
                 }
                 
                 log.info("Auto certificate update reply thread shutting down.");
-                autoCertificateUpgradeReplyStopping = false;
-                autoCertificateUpgradeReplyActive = false;
+                autoCertificateUpgradeReplyStopping.set(false);
+                autoCertificateUpgradeReplyActive.set(false);
             }
             
             
@@ -402,7 +406,7 @@ public class RfnGatewaySimulatorServiceImpl implements RfnGatewaySimulatorServic
             @Override
             public void run() {
                 log.info("Auto update reply thread starting up.");
-                while (!autoUpdateReplyStopping) {
+                while (!autoUpdateReplyStopping.get()) {
                     try {
                         processGatewayUpdateMsg(settings);
                         processIpv6PrefixUpdateMsg(settings);
@@ -412,8 +416,8 @@ public class RfnGatewaySimulatorServiceImpl implements RfnGatewaySimulatorServic
                 }
                 
                 log.info("Auto update reply thread shutting down.");
-                autoUpdateReplyStopping = false;
-                autoUpdateReplyActive = false;
+                autoUpdateReplyStopping.set(false);
+                autoUpdateReplyActive.set(false);
             }
         };
         return autoUpdateRunner;
@@ -467,7 +471,7 @@ public class RfnGatewaySimulatorServiceImpl implements RfnGatewaySimulatorServic
             @Override
             public void run() {
                 log.info("Auto data reply thread starting up.");
-                while (!autoDataReplyStopping) {
+                while (!autoDataReplyStopping.get()) {
                     try {
                         
                         Object message = rfGatewayDataJmsTemplate.receive();
@@ -485,8 +489,8 @@ public class RfnGatewaySimulatorServiceImpl implements RfnGatewaySimulatorServic
                 }
                 
                 log.info("Auto data reply thread shutting down.");
-                autoDataReplyStopping = false;
-                autoDataReplyActive = false;
+                autoDataReplyStopping.set(false);
+                autoDataReplyActive.set(false);
             }
             
             
@@ -662,10 +666,15 @@ public class RfnGatewaySimulatorServiceImpl implements RfnGatewaySimulatorServic
         }
 
         GatewaySaveData cachedData = gatewayDataCache.get(rfnId);
+        
+        cachedData.setNmIpAddress(StringUtils.isEmpty(cachedData.getNmIpAddress()) ? "127.0.0.1" : cachedData.getNmIpAddress());
+        cachedData.setNmPort(cachedData.getNmPort() == null ? RfnGatewayService.GATEWAY_DEFAULT_PORT : cachedData.getNmPort());
+        cachedData.setPort(cachedData.getPort() == null ? RfnGatewayService.GATEWAY_DEFAULT_PORT : cachedData.getPort());
+                                                                          
         GatewayDataResponse response = 
                 DefaultGatewaySimulatorData.buildDataResponse(rfnId, cachedData, settings);
-       
-        response.setName(rfnDeviceDao.getDeviceForExactIdentifier(rfnId).getName());
+
+        
         
         return response;
     }
@@ -702,6 +711,12 @@ public class RfnGatewaySimulatorServiceImpl implements RfnGatewaySimulatorServic
                 if (newData.getUpdateServerUrl() == null && oldData.getUpdateServerUrl() != null) {
                     newData.setUpdateServerUrl(oldData.getUpdateServerUrl());
                 }
+                if (newData.getNmIpAddress() == null && oldData.getNmIpAddress()  != null) {
+                    newData.setNmIpAddress(oldData.getNmIpAddress());
+                }
+                if (newData.getNmPort() == null && oldData.getNmPort() != null) {
+                    newData.setNmPort(oldData.getNmPort());
+                }
             }
             gatewayDataCache.put(rfnId, newData);
         }
@@ -709,52 +724,52 @@ public class RfnGatewaySimulatorServiceImpl implements RfnGatewaySimulatorServic
     
     @Override
     public boolean isAutoDataReplyActive() {
-        return autoDataReplyActive;
+        return autoDataReplyActive.get();
     }
     
     @Override
     public boolean isAutoUpdateReplyActive() {
-        return autoUpdateReplyActive;
+        return autoUpdateReplyActive.get();
     }
     
     @Override
     public boolean isAutoCertificateUpgradeReplyActive() {
-        return autoCertificateUpgradeReplyActive;
+        return autoCertificateUpgradeReplyActive.get();
     }
     
     @Override
     public boolean isAutoFirmwareReplyActive() {
-        return autoFirmwareReplyActive;
+        return autoFirmwareReplyActive.get();
     }
     
     @Override
     public boolean isAutoFirmwareVersionReplyActive() {
-        return autoFirmwareVersionReplyActive;
+        return autoFirmwareVersionReplyActive.get();
     }
     
     @Override
     public boolean isAutoDataReplyStopping() {
-        return autoDataReplyStopping;
+        return autoDataReplyStopping.get();
     }
     
     @Override
     public boolean isAutoUpdateReplyStopping() {
-        return autoUpdateReplyStopping;
+        return autoUpdateReplyStopping.get();
     }
     
     @Override
     public boolean isAutoCertificateUpgradeReplyStopping() {
-        return autoCertificateUpgradeReplyStopping;
+        return autoCertificateUpgradeReplyStopping.get();
     }
     
     @Override
     public boolean isAutoFirmwareReplyStopping() {
-        return autoFirmwareReplyStopping;
+        return autoFirmwareReplyStopping.get();
     }
     
     @Override
     public boolean isAutoFirmwareVersionReplyStopping() {
-        return autoFirmwareVersionReplyStopping;
+        return autoFirmwareVersionReplyStopping.get();
     }
     
     public void saveSettings(SimulatedGatewayDataSettings settings) {

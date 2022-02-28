@@ -36,7 +36,7 @@
             <div class="fl">
                 <input type="text" name="liteContactNotifications[0].notification" maxlength="120"/>
             </div>
-            <span class="js-removeNotification"><i class="icon icon-cross"></i></span>
+            <span class="js-removeNotification"><cti:icon icon="icon-cross"/></span>
         </div>
     </div>
     

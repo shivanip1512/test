@@ -69,7 +69,7 @@
                                     <c:if test="${recentNote.modifiable}">
                                         <cti:button id="js-edit-note-btn-${noteId}" renderMode="buttonImage" icon="icon-pencil" 
                                             data-note-id="${noteId}" title="${editText}"/>
-                                        <cti:button id="js-delete-note-btn-${noteId}" renderMode="buttonImage" icon="icon-cross" 
+                                        <cti:button id="js-delete-note-btn-${noteId}" renderMode="buttonImage" icon="icon-delete" 
                                             data-note-id="${noteId}" data-ok-event="yukon:note:delete" title="${deleteText}"/>
                                         <d:confirm on="#js-delete-note-btn-${noteId}"  nameKey="confirmDelete"/>
                                     </c:if>

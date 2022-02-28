@@ -103,13 +103,7 @@ public class EventLogUIServiceImpl implements EventLogUIService {
                                                          Integer pageCount,
                                                          String filterText,
                                                          YukonUserContext userContext) {
-        
-        // There was no filter text supplied.  Return the whole list of event logs for the
-        // supplied time period time period.
-        if (StringUtils.isBlank(filterText)) {
-            return eventLogDao.getPagedSearchResultByCategories(eventCategories, startDate, 
-                                                                stopDate, start, pageCount);
-        }
+       
 
         SearchResults<EventLog> pagedSearchResultByCategories = 
             eventLogDao.getFilteredPagedSearchResultByCategories(eventCategories, 

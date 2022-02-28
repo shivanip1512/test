@@ -199,7 +199,7 @@ public class ControlAreaSetupServiceImpl implements ControlAreaSetupService {
     }
 
     @Override
-    public int copy(int id, LMCopy lmCopy, LiteYukonUser liteYukonUser) {
+    public ControlArea copy(int id, LMCopy lmCopy, LiteYukonUser liteYukonUser) {
         throw new UnsupportedOperationException("Not supported copy operation");
     }
 

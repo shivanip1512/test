@@ -104,7 +104,7 @@
 			<attribute name="org.eclipse.jst.component.dependency" value="../"/>
 		</attributes>
 	</classpathentry>
-    <classpathentry kind="lib" path="/third-party/jakarta.activation-api-2.0.1.jar">
+	<classpathentry kind="lib" path="/third-party/jakarta.activation-api-2.0.1.jar">
 		<attributes>
 			<attribute name="org.eclipse.jst.component.dependency" value="../"/>
 		</attributes>
@@ -314,7 +314,7 @@
 			<attribute name="org.eclipse.jst.component.dependency" value="../"/>
 		</attributes>
 	</classpathentry>
-	<classpathentry exported="true" kind="lib" path="/third-party/reactor-core-3.4.6.jar" sourcepath="/third-party/linked-sources/reactor-core-3.4.6.jar">
+	<classpathentry exported="true" kind="lib" path="/third-party/reactor-core-3.4.12.jar" sourcepath="/third-party/linked-sources/reactor-core-3.4.12.jar">
 		<attributes>
 			<attribute name="org.eclipse.jst.component.dependency" value="../"/>
 		</attributes>
@@ -405,30 +405,30 @@
 			<attribute name="org.eclipse.jst.component.dependency" value="../"/>
 		</attributes>
 	</classpathentry>
-	<classpathentry exported="true" kind="lib" path="/third-party/jackson-databind-2.12.3.jar" sourcepath="/third-party/linked-sources/jackson-databind-2.12.3-sources.jar">
+	<classpathentry exported="true" kind="lib" path="/third-party/jackson-databind-2.13.0.jar" sourcepath="/third-party/linked-sources/jackson-databind-2.13.0-sources.jar">
 		<attributes>
 			<attribute name="org.eclipse.jst.component.dependency" value="../"/>
 		</attributes>
 	</classpathentry>
-	<classpathentry exported="true" kind="lib" path="/third-party/jackson-core-2.12.3.jar" sourcepath="/third-party/linked-sources/jackson-core-2.12.3-sources.jar">
+	<classpathentry exported="true" kind="lib" path="/third-party/jackson-core-2.13.0.jar" sourcepath="/third-party/linked-sources/jackson-core-2.13.0-sources.jar">
 		<attributes>
 			<attribute name="org.eclipse.jst.component.dependency" value="../"/>
 		</attributes>
 	</classpathentry>
-	<classpathentry exported="true" kind="lib" path="/third-party/jackson-annotations-2.12.3.jar" sourcepath="/third-party/linked-sources/jackson-annotations-2.12.3-sources.jar">
+	<classpathentry exported="true" kind="lib" path="/third-party/jackson-annotations-2.13.0.jar" sourcepath="/third-party/linked-sources/jackson-annotations-2.13.0-sources.jar">
 		<attributes>
 			<attribute name="org.eclipse.jst.component.dependency" value="../"/>
 		</attributes>
 	</classpathentry>
-	<classpathentry exported="true" kind="lib" path="/third-party/jackson-dataformat-csv-2.9.6.jar" sourcepath="/third-party/linked-sources/jackson-annotations-2.10.1-sources.jar">
+	<classpathentry exported="true" kind="lib" path="/third-party/jackson-dataformat-csv-2.9.6.jar" sourcepath="/third-party/linked-sources/jackson-dataformat-csv-2.9.6-sources.jar">
 		<attributes>
 			<attribute name="org.eclipse.jst.component.dependency" value="../"/>
 		</attributes>
 	</classpathentry>
 	<classpathentry exported="true" kind="lib" path="/third-party/snakeyaml-1.18.2.jar" sourcepath="/third-party/linked-sources/snakeyaml-1.18.2-sources.jar"/>
-	<classpathentry kind="lib" path="/third-party/easymock-3.0.jar" sourcepath="/third-party/linked-sources/easymock-3.0-sources.jar"/>
+	<classpathentry exported="true" kind="lib" path="/third-party/easymock-3.0.jar" sourcepath="/third-party/linked-sources/easymock-3.0-sources.jar"/>
 	<classpathentry kind="lib" path="/third-party/objenesis-1.2.jar"/>
-	<classpathentry exported="true" kind="lib" path="/third-party/log4j-slf4j-impl-2.14.0.jar">
+	<classpathentry exported="true" kind="lib" path="/third-party/log4j-slf4j-impl-2.17.1.jar">
 		<attributes>
 			<attribute name="org.eclipse.jst.component.dependency" value="../"/>
 		</attributes>
@@ -475,7 +475,7 @@
 			<attribute name="org.eclipse.jst.component.dependency" value="../"/>
 		</attributes>
 	</classpathentry>
-	<classpathentry exported="true" kind="lib" path="/third-party/slf4j-api-1.7.30.jar">
+	<classpathentry exported="true" kind="lib" path="/third-party/slf4j-api-1.7.32.jar">
 		<attributes>
 			<attribute name="org.eclipse.jst.component.dependency" value="../"/>
 		</attributes>
@@ -517,17 +517,16 @@
 			<attribute name="org.eclipse.jst.component.dependency" value="../"/>
 		</attributes>
 	</classpathentry>
-	<classpathentry exported="true" kind="lib" path="/third-party/azure-core-1.17.0.jar"/>
-	<classpathentry exported="true" kind="lib" path="/third-party/azure-core-amqp-2.2.0.jar"/>
-	<classpathentry exported="true" kind="lib" path="/third-party/azure-core-http-netty-1.10.0.jar"/>
-	<classpathentry exported="true" kind="lib" path="/third-party/azure-messaging-servicebus-7.2.3.jar"/>
-	<classpathentry exported="true" kind="lib" path="/third-party/brave-5.13.3.jar"/>
-	<classpathentry exported="true" kind="lib" path="/third-party/brave-instrumentation-http-5.13.3.jar"/>
-	<classpathentry exported="true" kind="lib" path="/third-party/jackson-dataformat-xml-2.12.3.jar"/>
-	<classpathentry exported="true" kind="lib" path="/third-party/jackson-datatype-jsr310-2.12.3.jar"/>
-	<classpathentry exported="true" kind="lib" path="/third-party/jackson-module-jaxb-annotations-2.12.3.jar"/>
-	<classpathentry exported="true" kind="lib" path="/third-party/jakarta.activation-api-1.2.1.jar"/>
-	<classpathentry exported="true" kind="lib" path="/third-party/jakarta.xml.bind-api-2.3.2.jar"/>
+	<classpathentry exported="true" kind="lib" path="/third-party/azure-core-1.23.1.jar"/>
+	<classpathentry exported="true" kind="lib" path="/third-party/azure-core-amqp-2.3.5.jar"/>
+	<classpathentry exported="true" kind="lib" path="/third-party/azure-core-http-netty-1.11.4.jar"/>
+	<classpathentry exported="true" kind="lib" path="/third-party/azure-messaging-servicebus-7.5.1.jar"/>
+	<classpathentry exported="true" kind="lib" path="/third-party/jackson-dataformat-xml-2.13.0.jar"/>
+	<classpathentry exported="true" kind="lib" path="/third-party/jackson-datatype-jsr310-2.13.0.jar"/>
+	<classpathentry exported="true" kind="lib" path="/third-party/netty-resolver-dns-classes-macos-4.1.70.Final.jar"/>
+	<classpathentry exported="true" kind="lib" path="/third-party/netty-tcnative-classes-2.0.46.Final.jar"/>
+	<classpathentry exported="true" kind="lib" path="/third-party/netty-transport-classes-epoll-4.1.70.Final.jar"/>
+	<classpathentry exported="true" kind="lib" path="/third-party/netty-transport-classes-kqueue-4.1.70.Final.jar"/>
 	<classpathentry kind="lib" path="/third-party/jackson-datatype-joda-2.12.3.jar">
 		<attributes>
 			<attribute name="org.eclipse.jst.component.dependency" value="../"/>
@@ -539,34 +538,28 @@
 		</attributes>
 	</classpathentry>
 	<classpathentry exported="true" kind="lib" path="/third-party/logging-mailhandler-2.0.1.jar"/>
-	<classpathentry exported="true" kind="lib" path="/third-party/javax.mail-1.6.1.jar"/>
-	<classpathentry exported="true" kind="lib" path="/third-party/netty-buffer-4.1.65.Final.jar"/>
-	<classpathentry exported="true" kind="lib" path="/third-party/netty-codec-4.1.65.Final.jar"/>
-	<classpathentry exported="true" kind="lib" path="/third-party/netty-codec-dns-4.1.63.Final.jar"/>
-	<classpathentry exported="true" kind="lib" path="/third-party/netty-codec-http2-4.1.65.Final.jar"/>
-	<classpathentry exported="true" kind="lib" path="/third-party/netty-codec-http-4.1.65.Final.jar"/>
-	<classpathentry exported="true" kind="lib" path="/third-party/netty-codec-socks-4.1.65.Final.jar"/>
-	<classpathentry exported="true" kind="lib" path="/third-party/netty-common-4.1.65.Final.jar"/>
-	<classpathentry exported="true" kind="lib" path="/third-party/netty-handler-4.1.65.Final.jar"/>
-	<classpathentry exported="true" kind="lib" path="/third-party/netty-handler-proxy-4.1.65.Final.jar"/>
-	<classpathentry exported="true" kind="lib" path="/third-party/netty-resolver-4.1.65.Final.jar"/>
-	<classpathentry exported="true" kind="lib" path="/third-party/netty-resolver-dns-4.1.63.Final.jar"/>
-	<classpathentry exported="true" kind="lib" path="/third-party/netty-resolver-dns-native-macos-4.1.63.Final-osx-x86_64.jar"/>
-	<classpathentry exported="true" kind="lib" path="/third-party/netty-tcnative-boringssl-static-2.0.39.Final.jar"/>
-	<classpathentry exported="true" kind="lib" path="/third-party/netty-transport-4.1.65.Final.jar"/>
-	<classpathentry exported="true" kind="lib" path="/third-party/netty-transport-native-epoll-4.1.65.Final-linux-x86_64.jar"/>
-	<classpathentry exported="true" kind="lib" path="/third-party/netty-transport-native-kqueue-4.1.65.Final-osx-x86_64.jar"/>
-	<classpathentry exported="true" kind="lib" path="/third-party/netty-transport-native-unix-common-4.1.65.Final.jar"/>
+	<classpathentry exported="true" kind="lib" path="/third-party/netty-buffer-4.1.70.Final.jar"/>
+	<classpathentry exported="true" kind="lib" path="/third-party/netty-codec-4.1.70.Final.jar"/>
+	<classpathentry exported="true" kind="lib" path="/third-party/netty-codec-dns-4.1.70.Final.jar"/>
+	<classpathentry exported="true" kind="lib" path="/third-party/netty-codec-http2-4.1.70.Final.jar"/>
+	<classpathentry exported="true" kind="lib" path="/third-party/netty-codec-http-4.1.70.Final.jar"/>
+	<classpathentry exported="true" kind="lib" path="/third-party/netty-codec-socks-4.1.70.Final.jar"/>
+	<classpathentry exported="true" kind="lib" path="/third-party/netty-common-4.1.70.Final.jar"/>
+	<classpathentry exported="true" kind="lib" path="/third-party/netty-handler-4.1.70.Final.jar"/>
+	<classpathentry exported="true" kind="lib" path="/third-party/netty-handler-proxy-4.1.70.Final.jar"/>
+	<classpathentry exported="true" kind="lib" path="/third-party/netty-resolver-4.1.70.Final.jar"/>
+	<classpathentry exported="true" kind="lib" path="/third-party/netty-resolver-dns-4.1.70.Final.jar"/>
+	<classpathentry exported="true" kind="lib" path="/third-party/netty-resolver-dns-native-macos-4.1.70.Final-osx-x86_64.jar"/>
+	<classpathentry exported="true" kind="lib" path="/third-party/netty-tcnative-boringssl-static-2.0.46.Final.jar"/>
+	<classpathentry exported="true" kind="lib" path="/third-party/netty-transport-4.1.70.Final.jar"/>
+	<classpathentry exported="true" kind="lib" path="/third-party/netty-transport-native-epoll-4.1.70.Final-linux-x86_64.jar"/>
+	<classpathentry exported="true" kind="lib" path="/third-party/netty-transport-native-kqueue-4.1.70.Final-osx-x86_64.jar"/>
+	<classpathentry exported="true" kind="lib" path="/third-party/netty-transport-native-unix-common-4.1.70.Final.jar"/>
 	<classpathentry exported="true" kind="lib" path="/third-party/proton-j-0.33.8.jar"/>
 	<classpathentry exported="true" kind="lib" path="/third-party/qpid-proton-j-extensions-1.2.4.jar"/>
-	<classpathentry exported="true" kind="lib" path="/third-party/reactor-netty-1.0.7.jar"/>
-	<classpathentry exported="true" kind="lib" path="/third-party/reactor-netty-core-1.0.7.jar"/>
-	<classpathentry exported="true" kind="lib" path="/third-party/reactor-netty-http-1.0.7.jar"/>
-	<classpathentry exported="true" kind="lib" path="/third-party/reactor-netty-http-brave-1.0.7.jar"/>
-	<classpathentry exported="true" kind="lib" path="/third-party/woodstox-core-6.2.4.jar"/>
-	<classpathentry exported="true" kind="lib" path="/third-party/zipkin-2.23.2.jar"/>
-	<classpathentry exported="true" kind="lib" path="/third-party/zipkin-reporter-2.16.3.jar"/>
-	<classpathentry exported="true" kind="lib" path="/third-party/zipkin-reporter-brave-2.16.3.jar"/>
+	<classpathentry exported="true" kind="lib" path="/third-party/reactor-netty-core-1.0.13.jar"/>
+	<classpathentry exported="true" kind="lib" path="/third-party/reactor-netty-http-1.0.13.jar"/>
+	<classpathentry exported="true" kind="lib" path="/third-party/woodstox-core-6.2.6.jar"/>
 	<classpathentry kind="lib" path="/third-party/commons-configuration2-2.7.jar">
 		<attributes>
 			<attribute name="org.eclipse.jst.component.dependency" value="../"/>
@@ -587,23 +580,23 @@
 			<attribute name="org.eclipse.jst.component.dependency" value="../"/>
 		</attributes>
 	</classpathentry>
-	<classpathentry exported="true" kind="lib" path="/third-party/log4j-api-2.14.0.jar">
+	<classpathentry exported="true" kind="lib" path="/third-party/log4j-api-2.17.1.jar">
 		<attributes>
 			<attribute name="org.eclipse.jst.component.dependency" value="../"/>
 		</attributes>
 	</classpathentry>
-	<classpathentry exported="true" kind="lib" path="/third-party/log4j-core-2.14.0.jar">
+	<classpathentry exported="true" kind="lib" path="/third-party/log4j-core-2.17.1.jar">
 		<attributes>
 			<attribute name="org.eclipse.jst.component.dependency" value="../"/>
 		</attributes>
 	</classpathentry>
-	<classpathentry kind="lib" path="/third-party/log4j-jcl-2.14.0.jar">
+	<classpathentry kind="lib" path="/third-party/log4j-jcl-2.17.1.jar">
 		<attributes>
 			<attribute name="org.eclipse.jst.component.dependency" value="../"/>
 		</attributes>
 	</classpathentry>
 	<classpathentry kind="lib" path="/third-party/catalina.jar"/>
-	<classpathentry kind="lib" path="/third-party/tomcat-juli-9.0.50.jar"/>
+	<classpathentry kind="lib" path="/third-party/tomcat-juli-9.0.56.jar"/>
 	<classpathentry exported="true" kind="lib" path="/third-party/itronDeviceManagerTypes_v1_8.jar" sourcepath="/third-party/linked-sources/itronDeviceManagerTypes_v1_8_sources.jar">
 		<attributes>
 			<attribute name="org.eclipse.jst.component.dependency" value="../"/>

@@ -207,7 +207,7 @@ yukon.tools.dataExporterFormat = (function () {
             popup.load(_attributeUrl, function() {
                 popup.dialog({
                     title: _config.text.addAttribute,
-                    width: '450px',
+                    width: '470px',
                     classes: {
                     "ui-dialog": 'ov'
                 },
@@ -336,7 +336,7 @@ yukon.tools.dataExporterFormat = (function () {
                 popup.find('input[name=daysPrevious]').val(attribute.daysPrevious);
                 popup.dialog({
                    title: _config.text.editAttribute,
-                   width: '450px',
+                   width: '470px',
                    classes: {
                    "ui-dialog": 'ov'
                   },

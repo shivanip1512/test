@@ -19,8 +19,6 @@ yukon.dr.program.activityDetails = (function() {
 
                 if (_initialized) return;
 
-                $("#js-scroll-details-table").scrollTableBody({rowsToDisplay: 17});
-
                 _initialized = true;
             },
 

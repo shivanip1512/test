@@ -73,6 +73,10 @@
     <c:when test="${not empty pageScope.path}">
         <spring:bind path="${path}">
             <c:if test="${status.error}"><c:set var="cssClass">${pageScope.cssClass} error</c:set></c:if>
+            <c:if test="${status.error and (empty pageScope.hideErrors or hideErrors == false)}">
+                <c:set var="wrapperClass" value="${wrapperClass} date-time-error"/>       
+            </c:if>
+            
             <cti:displayForPageEditModes modes="VIEW">${status.value}</cti:displayForPageEditModes>
             <c:if test="${mode == 'EDIT' or mode == 'CREATE' or forceDisplayPicker or empty mode}">
                 <span class="datetimeEntry_wrap ${wrapperClass}">
@@ -90,17 +94,21 @@
                         autocomplete="off" />
                 </span>
             </c:if>
+            <c:set var="errorClass" value="${displayValidationToRight ? 'fn' : ''}"/>
             <c:if test="${status.error and (empty pageScope.hideErrors or hideErrors == false)}">
                 <c:if test="${!displayValidationToRight}">
                     <br>
                 </c:if>
-                <form:errors path="${path}" cssClass="error" />
+                <form:errors path="${path}" cssClass="error ${errorClass}"/>
             </c:if>
         </spring:bind>
     </c:when>
     <c:otherwise>
         <cti:displayForPageEditModes modes="VIEW">${dateValue}</cti:displayForPageEditModes>
         <cti:displayForPageEditModes modes="EDIT,CREATE">
+        <c:if test="${status.error and (empty pageScope.hideErrors or hideErrors == false)}">
+            <c:set var="wrapperClass" value="${wrapperClass} date-time-error"/>       
+        </c:if>
             <span class="datetimeEntry_wrap ${wrapperClass}">
                 <input id="${id}"
                     <c:if test="${!empty pageScope.name}">name="${pageScope.name}"</c:if>

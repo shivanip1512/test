@@ -32,7 +32,6 @@ protected:
     virtual void ParseArgs(DWORD argc, LPTSTR* argv);
 
     bool readCalcPoints( CtiCalculateThread *calcThread );
-    bool isDatabaseCalcPointID(const long aPointID);
     void parseMessage( const CtiMessage &message, CtiCalculateThread &calcThread );
     void terminateThreads( );
     void pauseInputThread();
@@ -64,6 +63,12 @@ private:
     void _registerForPoints();
 
     void handleDbChangeMsg ( const CtiDBChangeMsg  &, CtiCalculateThread & );
+    void handlePointChange ( const CtiDBChangeMsg  &, CtiCalculateThread & );
+    void handlePaoChange   ( const CtiDBChangeMsg  & );
+
+    bool isDatabaseCalcPointID ( const long aPointID );
+    bool isDatabaseCalcDeviceID( const long aDeviceID );
+
     void handleCommandMsg  ( const CtiCommandMsg   & );
     void handlePointDataMsg( const CtiPointDataMsg &, CtiCalculateThread & );
     void handleMultiMsg    ( const CtiMultiMsg     &, CtiCalculateThread & );

@@ -69,6 +69,9 @@ public class MultispeakValidator extends SimpleValidator<MultispeakModel> {
                 index++;
             }
         }
+
+        YukonValidationUtils.checkIllegalXmlCharacter(errors, "mspVendor.password", multispeakVendor.getPassword());
+        YukonValidationUtils.checkIllegalXmlCharacter(errors, "mspVendor.outPassword", multispeakVendor.getOutPassword());
     }
 
     private void validateInterfaceURL(String endpoint, int index, Errors errors) {
