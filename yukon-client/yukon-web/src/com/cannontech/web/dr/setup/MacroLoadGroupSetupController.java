@@ -153,7 +153,7 @@ public class MacroLoadGroupSetupController {
 
             if (responseEntity.getStatusCode() == HttpStatus.UNPROCESSABLE_ENTITY) {
                 BindException error = new BindException(lmCopy, "lmCopy");
-                helper.populateBindingError(result, error, responseEntity);
+                helper.populateBindingErrorForApiErrorModel(result, error, responseEntity,  "yukon.web.error.");
                 model.addAttribute("lmCopy", lmCopy);
                 model.addAttribute("loadGroupId", id);
                 response.setStatus(HttpStatus.BAD_REQUEST.value());
