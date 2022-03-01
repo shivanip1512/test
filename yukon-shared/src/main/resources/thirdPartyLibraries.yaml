@@ -94,16 +94,16 @@ Java :
   - filename : ahessian.jar
     yukon group : Yet Another Java Service Wrapper
     project : YAJSW
-    version : 12.15
+    version : 13.02
     project URL : "http://yajsw.sourceforge.net/"
     license : Apache 2.0, LGPL 2.1
     license URLs : "https://opensource.org/licenses/Apache-2.0, https://opensource.org/licenses/LGPL-2.1"
     maven URL : "https://mvnrepository.com/artifact/org.rzo.yajsw/ahessian/11.11"
     md5 : fdd01e8005a439af3c1b4922d01d7b79
     sha1 : 50ab91cbc6f6ae50cd5ec8a96ec7fb3a47300260
-    updated : 2020-12-14
-    jira : YUK-22557
-    notes : YAJSW - Asynchronous Hessian.  Maven version is 11.11, not 12.15
+    updated : 2022-03-01
+    jira : YUK-25904
+    notes : YAJSW - Asynchronous Hessian.  Maven version is 11.11, not 13.02
   
   - filename : annotations-api.jar
     yukon group : Tomcat
@@ -577,8 +577,8 @@ Java :
     maven URL : "https://mvnrepository.com/artifact/commons-io/commons-io/2.11.0"
     md5 : 3b4b7ccfaeceeac240b804839ee1a1ca
     sha1 : a2503f302b11ebde7ebc3df41daebe0e4eea3689
-    updated : 2020-01-13
-    jira : YUK-21104
+    updated : 2022-03-01
+    jira : YUK-25904
     notes : 
   
   - filename : commons-lang-2.6.jar
@@ -787,8 +787,8 @@ Java :
     maven URL : "https://mvnrepository.com/artifact/org.codehaus.groovy/groovy/4.0.0" 
     md5 : 8dbeb72abd33624e036539908826ac4c
     sha1 : 6856ea9e77c50c52429d996a9ce194db8497e682
-    updated : 2020-01-13
-    jira : YUK-21104
+    updated : 2022-03-01
+    jira : YUK-25904
     notes :
   
   - filename : groovy-all-2.4.11.jar
@@ -808,7 +808,7 @@ Java :
   - filename : groovy-patch.jar
     yukon group : Yet Another Java Service Wrapper 
     project : YAJSW
-    version : 12.15
+    version : 13.02
     project URL : "http://yajsw.sourceforge.net"
     license : Apache 2.0
     license URLs : "http://yajsw.sourceforge.net/#mozTocId236130"
@@ -1417,8 +1417,8 @@ Java :
     maven URL : "https://mvnrepository.com/artifact/net.java.dev.jna/jna/5.10.0"
     md5 : 2b884b01ad2f62d4f5dd11387a8bf799
     sha1 : 7cf4c87dd802db50721db66947aa237d7ad09418
-    updated : 2020-01-13
-    jira : YUK-21104
+    updated : 2022-03-01
+    jira : YUK-25904
     notes : 
   
   - filename : jna-platform-5.10.0.jar
@@ -1431,8 +1431,8 @@ Java :
     maven URL : "https://mvnrepository.com/artifact/net.java.dev.jna/jna-platform/5.10.0"
     md5 : c1ab841070c388ec32b77cdc05f084fb
     sha1 : fbed7d9669dba47714ad0d4f4454290a997aee69
-    updated : 2020-01-13
-    jira : YUK-21104
+    updated : 2022-03-01
+    jira : YUK-25904
     notes : Java Native Access Platform
   
   - filename : joda-time-2.3.jar
@@ -2341,8 +2341,8 @@ Java :
     maven URL : https://mvnrepository.com/artifact/com.nqzero/permit-reflect/0.4
     md5 : 143be6361e27f5126710f60e907d6811
     sha1 : 16b5d28e12779548c111da88324091118060c7ed
-    updated : 2021-11-24
-    jira : YUK-25377
+    updated : 2022-03-01
+    jira : YUK-25904
     notes : pentaho reporting engine core
     
   - filename : protobuf-java-3.15.8.jar
@@ -3300,30 +3300,44 @@ Java :
   - filename : wrapper.jar
     yukon group : Yet Another Java Service Wrapper
     project : YAJSW
-    version : 12.15
+    version : 13.02
     project URL : "http://yajsw.sourceforge.net/"
     license : Apache 2.0, LGPL 2.1
     license URLs : "https://opensource.org/licenses/Apache-2.0, https://opensource.org/licenses/LGPL-2.1"
     maven URL : "https://mvnrepository.com/artifact/org.rzo.yajsw/wrapper/11.11"
     md5 : 660eb09a3a30be0089f69d2750f4d714
     sha1 : ca0c1bb0cb63d66e9923d5432f82ce657698166c
-    updated : 2020-12-14
-    jira : YUK-22557
-    notes : YAJSW Wrapper.  Maven version is 11.11, not 12.15.  Jar rebuilt to adjust classpath entries in MANIFEST.MF
+    updated : 2022-03-01
+    jira : YUK-25904
+    notes : YAJSW Wrapper.  Maven version is 11.11, not 13.02.  Jar rebuilt to adjust classpath entries in MANIFEST.MF
   
   - filename : wrapperApp.jar
     yukon group : Yet Another Java Service Wrapper
     project : YAJSW
-    version : 12.15
+    version : 13.02
     project URL : "http://yajsw.sourceforge.net/"
     license : Apache 2.0, LGPL 2.1
     license URLs : "https://opensource.org/licenses/Apache-2.0, https://opensource.org/licenses/LGPL-2.1"
     maven URL : "https://mvnrepository.com/artifact/org.rzo.yajsw/wrapperApp/11.11"
     md5 : e43b5475c3cb4ae81fc93c06c95ece56
     sha1 : 34fbad2d6552c049c9b306fc358154b62e046b37
-    updated : 2020-12-14
-    jira : YUK-22557
-    notes : YAJSW Wrapper App.  Maven version is 11.11, not 12.15.  Jar rebuilt to adjust classpath entries in MANIFEST.MF
+    updated : 2022-03-01
+    jira : YUK-25904
+    notes : YAJSW Wrapper App.  Maven version is 11.11, not 13.02.  Jar rebuilt to adjust classpath entries in MANIFEST.MF
+  
+  - filename : wrapperApp9.jar
+    yukon group : Yet Another Java Service Wrapper
+    project : YAJSW
+    version : 13.02
+    project URL : "http://yajsw.sourceforge.net/"
+    license : Apache 2.0, LGPL 2.1
+    license URLs : "https://opensource.org/licenses/Apache-2.0, https://opensource.org/licenses/LGPL-2.1"
+    maven URL : "https://mvnrepository.com/artifact/org.rzo.yajsw/wrapperApp/11.11"
+    md5 : 9fbc65850ad53b0c41176c17407b7db6
+    sha1 : 3cc49c01e3612f12ad1403bad816daa6c1a288f4
+    updated : 2022-03-01
+    jira : YUK-25904
+    notes : YAJSW Wrapper App.  Maven version is 11.11, not 13.02.  Jar rebuilt to adjust classpath entries in MANIFEST.MF
   
   - filename : woodstox-core-6.2.6.jar
     yukon group : Azure

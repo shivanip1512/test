@@ -109,8 +109,9 @@
 	    </copy>
    	
 	    <copy todir="dist/wrapper">
-	      <fileset file="../third-party/wrapper.jar"/>
-		  <fileset file="../third-party/wrapperApp.jar"/>
+          <fileset file="../third-party/wrapper.jar"/>
+          <fileset file="../third-party/wrapperApp.jar"/>
+          <fileset file="../third-party/wrapperApp9.jar"/>
 	      <fileset file="../third-party/ahessian.jar"/>
           <fileset file="../third-party/commons-cli-1.4.jar"/>
           <fileset file="../third-party/commons-collections-3.2.2.jar"/>

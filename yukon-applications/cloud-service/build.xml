@@ -38,6 +38,7 @@
             <fileset dir="yukon-client/third-party">
                 <include name="wrapper.jar"/>
                 <include name="wrapperApp.jar"/>
+            	<include name="wrapperApp9.jar"/>
                 <include name="ahessian.jar"/>
                 <include name="commons-text-1.6.jar"/>
                 <include name="netty-all-4.1.36.Final.jar"/>

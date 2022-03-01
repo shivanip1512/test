@@ -171,6 +171,7 @@ public class EimJavaLibraryTest {
         "websocket-api.jar",
         "wrapper.jar",
         "wrapperApp.jar",
+        "wrapperApp9.jar",
         "wro4j-core-1.6.3.jar",
         "wro4j-extensions-1.6.3.jar",
         "xbean-spring-4.5.jar",
