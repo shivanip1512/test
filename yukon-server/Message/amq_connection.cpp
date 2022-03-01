@@ -848,7 +848,7 @@ ActiveMQ::DestinationProducer& ActiveMQConnectionManager::getDestinationProducer
         return **existingProducer;
     }
 
-    static const auto make_producer = lambda_overloads(
+    const auto make_producer = lambda_overloads(
         [&session](const ActiveMQ::Queues::OutboundQueue* queue) -> std::unique_ptr<ActiveMQ::DestinationProducer> {
             return ActiveMQ::createQueueProducer(session, queue->name);
         },
