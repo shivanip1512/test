@@ -123,16 +123,6 @@ public class RfnDeviceCreationServiceImpl implements RfnDeviceCreationService {
     }
 
     @Override
-    public synchronized RfnDevice findOrCreate(RfnIdentifier newDeviceIdentifier) {
-        try {
-            return getOrCreate(newDeviceIdentifier);
-        } catch (Exception e) {
-            log.error("Unable to find or create device {}", newDeviceIdentifier, e);
-            return null;
-        }
-    }
-    
-    @Override
     @Transactional
     public synchronized RfnDevice getOrCreate(RfnIdentifier newDeviceIdentifier) {
         return getOrCreate(newDeviceIdentifier, null);

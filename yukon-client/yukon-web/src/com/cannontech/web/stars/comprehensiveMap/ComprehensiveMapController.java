@@ -64,6 +64,7 @@ import com.cannontech.common.rfn.service.RfnDeviceCreationService;
 import com.cannontech.common.rfn.service.RfnDeviceLookupService;
 import com.cannontech.common.rfn.service.RfnDeviceMetadataMultiService;
 import com.cannontech.common.rfn.service.RfnGatewayService;
+import com.cannontech.common.util.ExceptionToNullHelper;
 import com.cannontech.common.util.tree.Node;
 import com.cannontech.core.dao.NotFoundException;
 import com.cannontech.core.dao.PaoDao;
@@ -292,8 +293,8 @@ public class ComprehensiveMapController {
     private String[] retrieveDownloadHeaderRow(YukonUserContext userContext) {
         MessageSourceAccessor accessor = messageSourceResolver.getMessageSourceAccessor(userContext);
         // device name, meter number, device type, sensor s/n, lat, long, primary gateway, comm status, mac address, node s/n,
-        // link cost, hop count, descendant count, next hop
-        String[] headerRow = new String[14];
+        // link cost, hop count, descendant count, next hop, path cost
+        String[] headerRow = new String[15];
 
         String baseKey = "yukon.web.modules.operator.mapNetwork.";
 
@@ -311,6 +312,7 @@ public class ComprehensiveMapController {
         headerRow[11] = accessor.getMessage("yukon.web.modules.operator.comprehensiveMap.colorCodeBy.HOP_COUNT");
         headerRow[12] = accessor.getMessage("yukon.web.modules.operator.comprehensiveMap.colorCodeBy.DESCENDANT_COUNT");
         headerRow[13] = accessor.getMessage("yukon.web.modules.operator.comprehensiveMap.nextHop");
+        headerRow[14] = accessor.getMessage(baseKey + "totalCost");
 
         return headerRow;
     }
@@ -384,11 +386,12 @@ public class ComprehensiveMapController {
                     dataRow[11] = String.valueOf(routeData.getHopCount());
                     RfnIdentifier nextHop = routeData.getNextHopRfnIdentifier();
                     if (nextHop != null) {
-                        RfnDevice nextHopDevice = rfnDeviceCreationService.findOrCreate(nextHop);
+                        RfnDevice nextHopDevice = ExceptionToNullHelper.nullifyExceptions(() -> rfnDeviceCreationService.getOrCreate(nextHop));
                         if (nextHopDevice != null) {
                             dataRow[13] = nextHopDevice.getName();
                         }
                     }
+                    dataRow[14] = String.valueOf(routeData.getTotalCost());
                 }
             }
             dataRows.add(dataRow);

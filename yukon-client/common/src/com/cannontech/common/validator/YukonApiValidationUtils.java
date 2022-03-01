@@ -51,6 +51,16 @@ public class YukonApiValidationUtils extends ValidationUtils {
         }
     }
     
+    public static void validateCopyPaoName(String paoName, Errors errors, String fieldName) {
+        validateName(paoName, errors, fieldName);
+
+        if (!errors.hasFieldErrors("name")) {
+            Integer paoId = Integer.valueOf(ServletUtils.getPathVariable("id"));
+            if (paoId != null) {
+                validateUniquePaoName(paoName, paoDao.getLiteYukonPAO(paoId).getPaoType(), errors, fieldName);
+            }
+        }
+    }
    /**
     * Checks whether the Pao name is unique or not
     */
