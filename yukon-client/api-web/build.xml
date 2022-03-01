@@ -107,7 +107,8 @@
         <include name="netty-transport-native-kqueue-4.1.70.Final-osx-x86_64.jar"/>
         <include name="notification.jar"/>
         <include name="org.osgi.core-4.1.0.jar"/>
-    	<include name="pentaho-reporting-engine-classic-core-7.0.0.5-89.jar"/>
+        <include name="pentaho-reporting-engine-classic-core-7.0.0.5-89.jar"/>
+        <include name="permit-reflect-0.4.jar"/>
         <include name="quartz-2.3.2.jar"/>
         <include name="saaj.jar"/>
         <include name="slf4j-api-1.7.32.jar"/>
