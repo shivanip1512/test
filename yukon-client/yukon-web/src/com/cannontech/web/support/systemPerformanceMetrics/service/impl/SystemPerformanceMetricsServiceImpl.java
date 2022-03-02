@@ -40,7 +40,7 @@ public class SystemPerformanceMetricsServiceImpl implements SystemPerformanceMet
         List<LitePoint> systemPoints = new ArrayList<LitePoint>();
         try {
             systemPoints = pointDao.getLitePointIdByDeviceId_PointType(Device.SYSTEM_DEVICE_ID, PointType.Analog);
-            systemPoints.removeIf(point -> !YukonMetricPointDataType.isYukonMetricType(point.getPointOffset(),
+            systemPoints.removeIf(point -> !YukonMetricPointDataType.isYukonMetricTypeDisplayable(point.getPointOffset(),
                     PointType.getForId(point.getPointType())));
         } catch (NotFoundException e) {
             log.error("No System points found in the database.");
