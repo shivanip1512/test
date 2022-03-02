@@ -18,7 +18,8 @@ public enum MeterClass {
     LGYR_S4("Landis and Gyr S4"),
     ELSTER_A3("Elster A3"),
     ELO("ELO"),
-    NEXT_GEN_WATER_NODE("Next Gen Water Node");
+    NEXT_GEN_WATER_NODE("Next Gen Water Node"),
+    GAS_NODE("Gas Node");
     
     private static Map<String, MeterClass> nameLookup;
     

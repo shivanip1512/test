@@ -253,7 +253,7 @@ public class LoadGroupSetupController {
 
             if (response.getStatusCode() == HttpStatus.UNPROCESSABLE_ENTITY) {
                 BindException error = new BindException(lmCopy, "lmCopy");
-                result = helper.populateBindingError(result, error, response);
+                result = helper.populateBindingErrorForApiErrorModel(result, error, response, "yukon.web.error.");
                 return bindAndForwardForCopy(lmCopy, result, model, servletResponse, id);
             }
 
