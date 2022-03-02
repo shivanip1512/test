@@ -63,7 +63,7 @@ public enum YukonMetricPointDataType {
     WATER_READ_RATE(YukonMetricPointInfo.WATER_READ_RATE, 1057,
             PointType.Analog, "Water Read Rate"),
     GAP_FILL_REQUESTS_24_HOURS(YukonMetricPointInfo.GAP_FILL_REQUESTS_24_HOURS, 1058,
-            PointType.Analog, "Gap Fill Requests (24 Hours)"),
+            PointType.Analog, "Gap Fill Requests (24 Hour)"),
     GATEWAY_RESET_COUNT_7_DAY(YukonMetricPointInfo.GATEWAY_RESET_COUNT_7_DAY, 1059,
             PointType.Analog, "Gateway Reset Count (7 Day)"),
     GATEWAYS_MISSING_TSYNCS_24_HOUR(YukonMetricPointInfo.GATEWAYS_MISSING_TSYNCS_24_HOUR, 1060,
@@ -81,7 +81,7 @@ public enum YukonMetricPointDataType {
     
     private final static ImmutableSet<YukonMetricPointInfo> lookupByYukonMetricPointInfo;
     private final static ImmutableMap<YukonMetricPointInfo, YukonMetricPointDataType> lookupByPointInfo;
-    private final static ImmutableMap<YukonMetricPointInfo, YukonMetricPointDataType> lookupByDispalyablePointInfo;
+    private final static ImmutableMap<YukonMetricPointInfo, YukonMetricPointDataType> lookupByDisplayablePointInfo;
 
     static {
         ImmutableSet.Builder<YukonMetricPointInfo> pointInfoBuilder = ImmutableSet.builder();
@@ -97,7 +97,7 @@ public enum YukonMetricPointDataType {
         }
         lookupByYukonMetricPointInfo = pointInfoBuilder.build();
         lookupByPointInfo = lookupByPointInfoBuilder.build();
-        lookupByDispalyablePointInfo = lookupByDispalyablePointInfoBuilder.build();
+        lookupByDisplayablePointInfo = lookupByDispalyablePointInfoBuilder.build();
     }
 
     private YukonMetricPointInfo pointInfo;
@@ -162,7 +162,7 @@ public enum YukonMetricPointDataType {
     public static boolean isYukonMetricTypeDisplayable(Integer offset, PointType pointType) {
         checkArgument(offset != null);
         checkArgument(pointType != null);
-        for (YukonMetricPointDataType metricPointDataType : lookupByDispalyablePointInfo.values()) {
+        for (YukonMetricPointDataType metricPointDataType : lookupByDisplayablePointInfo.values()) {
             if (metricPointDataType.getOffset().equals(offset) && metricPointDataType.getType() == pointType) {
                 return true;
             }
@@ -173,7 +173,7 @@ public enum YukonMetricPointDataType {
     public static ChartInterval getChartInterval(Integer offset, PointType pointType) {
         checkArgument(offset != null);
         checkArgument(pointType != null);
-        for (YukonMetricPointDataType metricPointDataType : lookupByDispalyablePointInfo.values()) {
+        for (YukonMetricPointDataType metricPointDataType : lookupByDisplayablePointInfo.values()) {
             if (metricPointDataType.getOffset().equals(offset) && metricPointDataType.getType() == pointType) {
                 return metricPointDataType.getChartInterval();
             }
@@ -184,7 +184,7 @@ public enum YukonMetricPointDataType {
     public static ConverterType getConverterType(Integer offset, PointType pointType) {
         checkArgument(offset != null);
         checkArgument(pointType != null);
-        for (YukonMetricPointDataType metricPointDataType : lookupByDispalyablePointInfo.values()) {
+        for (YukonMetricPointDataType metricPointDataType : lookupByDisplayablePointInfo.values()) {
             if (metricPointDataType.getOffset().equals(offset) && metricPointDataType.getType() == pointType) {
                 return metricPointDataType.getConverterType();
             }

@@ -305,7 +305,7 @@
         <decimalplaces value="0"/>
     </point>
     <point offset="1059" type="Analog">
-        <name>Gateway Reset Count</name>
+        <name>Gateway Reset Count (7 Day)</name>
         <multiplier value="1" />
         <unitofmeasure value="COUNTS" />
         <decimalplaces value="0"/>
