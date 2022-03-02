@@ -238,4 +238,112 @@
         <unitofmeasure value="MS" />
         <decimalplaces value="3"/>
     </point>
+    <point offset="1048" type="Analog">
+        <name>Electric Meter Count</name>
+        <multiplier value="1" />
+        <unitofmeasure value="COUNTS" />
+        <decimalplaces value="0"/>
+    </point>
+    <point offset="1049" type="Analog">
+        <name>Gas Meter Count</name>
+        <multiplier value="1" />
+        <unitofmeasure value="COUNTS" />
+        <decimalplaces value="0"/>
+    </point>
+    <point offset="1050" type="Analog">
+        <name>Gateway Count</name>
+        <multiplier value="1" />
+        <unitofmeasure value="COUNTS" />
+        <decimalplaces value="0"/>
+    </point>
+    <point offset="1051" type="Analog">
+        <name>Water Meter Count</name>
+        <multiplier value="1" />
+        <unitofmeasure value="COUNTS" />
+        <decimalplaces value="0"/>
+    </point>
+    <point offset="1052" type="Analog">
+        <name>Relays</name>
+        <multiplier value="1" />
+        <unitofmeasure value="COUNTS" />
+        <decimalplaces value="0"/>
+    </point>
+    <point offset="1053" type="Analog">
+        <name>RFN LCR</name>
+        <multiplier value="1" />
+        <unitofmeasure value="COUNTS" />
+        <decimalplaces value="0"/>
+    </point>
+    <point offset="1054" type="Analog">
+        <name>Data Completeness Electric</name>
+        <multiplier value="1" />
+        <unitofmeasure value="PERCENT" />
+        <decimalplaces value="0"/>
+    </point>
+    <point offset="1055" type="Analog">
+        <name>Data Completeness Water</name>
+        <multiplier value="1" />
+        <unitofmeasure value="PERCENT" />
+        <decimalplaces value="0"/>
+    </point>
+    <point offset="1056" type="Analog">
+        <name>Electric Read Rate</name>
+        <multiplier value="1" />
+        <unitofmeasure value="PERCENT" />
+        <decimalplaces value="0"/>
+    </point>
+    <point offset="1057" type="Analog">
+        <name>Water Read Rate</name>
+        <multiplier value="1" />
+        <unitofmeasure value="PERCENT" />
+        <decimalplaces value="0"/>
+    </point>
+    <point offset="1058" type="Analog">
+        <name>Gap Fill Requests (24 Hour)</name>
+        <multiplier value="1" />
+        <unitofmeasure value="COUNTS" />
+        <decimalplaces value="0"/>
+    </point>
+    <point offset="1059" type="Analog">
+        <name>Gateway Reset Count (7 Day)</name>
+        <multiplier value="1" />
+        <unitofmeasure value="COUNTS" />
+        <decimalplaces value="0"/>
+    </point>
+    <point offset="1060" type="Analog">
+        <name>Gateways Missing TSyncs (24 Hour)</name>
+        <multiplier value="1" />
+        <unitofmeasure value="COUNTS" />
+        <decimalplaces value="0"/>
+    </point>
+    <point offset="1061" type="Analog">
+        <name>Gateway Socket Error Count</name>
+        <multiplier value="1" />
+        <unitofmeasure value="COUNTS" />
+        <decimalplaces value="0"/>
+    </point>
+    <point offset="1062" type="Analog">
+        <name>Nodes Missing Route Table</name>
+        <multiplier value="1" />
+        <unitofmeasure value="COUNTS" />
+        <decimalplaces value="0"/>
+    </point>
+    <point offset="1063" type="Analog">
+        <name>Route Table Requests</name>
+        <multiplier value="1" />
+        <unitofmeasure value="COUNTS" />
+        <decimalplaces value="0"/>
+    </point>
+    <point offset="1064" type="Analog">
+        <name>Route Table Responses</name>
+        <multiplier value="1" />
+        <unitofmeasure value="COUNTS" />
+        <decimalplaces value="0"/>
+    </point>
+    <point offset="1065" type="Analog">
+        <name>RF Network Version</name>
+        <multiplier value="1" />
+        <unitofmeasure value="COUNTS" />
+        <decimalplaces value="0"/>
+    </point>
 </points>
