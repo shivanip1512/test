@@ -95,7 +95,8 @@ export const ProjectAuthUIActions: AuthUIActionsWithSecurity = (securityHelper) 
             }).catch((error:any) => {
                 console.warn(error.response.data.detail);
                 throw new Error('LOGIN.INVALID_CREDENTIALS');
-                //throw new Error (error.response.data.detail) // uncomment this line to check custom error from API
+                // uncomment this line to check custom error from API
+                //throw new Error (error.response.data.detail) 
             })
 
         //get the theme and store in browser local storage

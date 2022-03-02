@@ -73,11 +73,5 @@
             "substations": "Substations",
             "usersAndGroups": "Users and Groups"
         }
-    },
-    "ERRORS":{
-        "LOGIN": {
-            "INVALID_CREDENTIALS": "inavlid_credentials"
-        }
-    
-  
+    }  
 }
