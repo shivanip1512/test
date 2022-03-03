@@ -8,7 +8,7 @@ import com.cannontech.common.dr.gear.setup.fields.MasterCycleGearFields;
 import com.cannontech.database.db.device.lm.GearControlMethod;
 
 public class MasterCycleGearFieldsValidator extends ProgramGearFieldsValidator<MasterCycleGearFields> {
-    @Autowired private GearValidatorHelper gearValidatorHelper;
+    @Autowired private GearApiValidatorHelper gearApiValidatorHelper;
 
     public MasterCycleGearFieldsValidator() {
         super(MasterCycleGearFields.class);
@@ -26,37 +26,37 @@ public class MasterCycleGearFieldsValidator extends ProgramGearFieldsValidator<M
     @Override
     protected void doValidation(MasterCycleGearFields masterCycleGear, Errors errors) {
         // Check Control Percent
-        gearValidatorHelper.checkControlPercent(masterCycleGear.getControlPercent(), errors);
+        gearApiValidatorHelper.checkControlPercent(masterCycleGear.getControlPercent(), errors);
 
         // Check Cycle Period
-        gearValidatorHelper.checkCyclePeriod(masterCycleGear.getCyclePeriodInMinutes(), getControlMethod(), errors);
+        gearApiValidatorHelper.checkCyclePeriod(masterCycleGear.getCyclePeriodInMinutes(), getControlMethod(), errors);
 
         // Check Group Selection Method
-        gearValidatorHelper.checkGroupSelectionMethod(masterCycleGear.getGroupSelectionMethod(), errors);
+        gearApiValidatorHelper.checkGroupSelectionMethod(masterCycleGear.getGroupSelectionMethod(), errors);
 
         // Check Ramp In
         if (masterCycleGear.getRampInPercent() != null || masterCycleGear.getRampInIntervalInSeconds() != null) {
-            gearValidatorHelper.checkRampInPercentAndInterval(masterCycleGear.getRampInPercent(),
+            gearApiValidatorHelper.checkRampInPercentAndInterval(masterCycleGear.getRampInPercent(),
                 masterCycleGear.getRampInIntervalInSeconds(), errors);
         }
 
         // Check How to Stop Control
-        gearValidatorHelper.checkStopControlAndOrder(masterCycleGear.getHowToStopControl(),
+        gearApiValidatorHelper.checkStopControlAndOrder(masterCycleGear.getHowToStopControl(),
             masterCycleGear.getStopOrder(), errors);
 
         // Check for Ramp Out and Ramp Out Interval
         if (!errors.hasFieldErrors("howToStopControl")
             && (masterCycleGear.getHowToStopControl() == HowToStopControl.RampOutRestore
                 || masterCycleGear.getHowToStopControl() == HowToStopControl.RampOutTimeIn)) {
-            gearValidatorHelper.checkRampOutPercentAndInterval(masterCycleGear.getRampOutPercent(),
+            gearApiValidatorHelper.checkRampOutPercentAndInterval(masterCycleGear.getRampOutPercent(),
                 masterCycleGear.getRampOutIntervalInSeconds(), errors);
         }
 
         // Check Group Capacity Reduction
-        gearValidatorHelper.checkGroupCapacityReduction(masterCycleGear.getCapacityReduction(), errors);
+        gearApiValidatorHelper.checkGroupCapacityReduction(masterCycleGear.getCapacityReduction(), errors);
 
         // Check When To Change
-        gearValidatorHelper.checkWhenToChange(masterCycleGear.getWhenToChangeFields(), errors);
+        gearApiValidatorHelper.checkWhenToChange(masterCycleGear.getWhenToChangeFields(), errors);
     }
 
 }
