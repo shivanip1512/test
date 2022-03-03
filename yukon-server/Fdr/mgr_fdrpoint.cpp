@@ -312,9 +312,9 @@ bool CtiFDRManager::getPointsFromDB(const std::stringstream &ss, std::map<long,C
                 fdrPtr->getDestinationList().push_back(tmpDestination);
             }
         }
-        catch (FdrDatabaseException e)
+        catch(...)
         {
-            CTILOG_EXCEPTION_ERROR(dout, e, "DB load failed for point: " << fdrPtr->getPointID());
+            CTILOG_UNKNOWN_EXCEPTION_ERROR(dout, "DB load failed for the point with pointId: " << pointID);
         }
     }
 
