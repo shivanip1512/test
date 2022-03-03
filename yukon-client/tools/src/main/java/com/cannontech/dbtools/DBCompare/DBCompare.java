@@ -4,6 +4,7 @@ import java.sql.Connection;
 import java.sql.SQLException;
 
 import com.cannontech.clientutils.CTILogger;
+import com.cannontech.clientutils.YukonLogManager;
 import com.cannontech.clientutils.commandlineparameters.CommandLineParser;
 import com.cannontech.common.exception.StarsNotCreatedException;
 import com.cannontech.common.util.ApplicationId;
@@ -118,6 +119,7 @@ public class DBCompare extends MessageFrameAdaptor
     public static void main(String[] args) throws java.io.IOException 
     {
         CtiUtilities.setClientAppName(ApplicationId.DB_COMPARE);
+        YukonLogManager.initialize();
 
         if( args.length < 1 )  // the user did not enter any params
         {

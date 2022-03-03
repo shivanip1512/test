@@ -20,9 +20,11 @@ import org.springframework.jms.listener.adapter.MessageListenerAdapter;
 import org.springframework.scheduling.concurrent.ConcurrentTaskExecutor;
 
 import com.cannontech.clientutils.YukonLogManager;
+import com.cannontech.common.config.ConfigurationSource;
 import com.cannontech.common.pao.PaoType;
 import com.cannontech.common.pao.attribute.model.BuiltInAttribute;
 import com.cannontech.common.pao.attribute.service.AttributeService;
+import com.cannontech.common.point.PointQuality;
 import com.cannontech.common.util.ThreadCachingScheduledExecutorService;
 import com.cannontech.common.util.jms.api.JmsApiDirectory;
 import com.cannontech.core.dynamic.RichPointData;
@@ -40,13 +42,14 @@ public class DrAttributeDataJmsService implements RichPointDataListener {
     @Autowired private ConnectionFactory connectionFactory;
     @Autowired private ConcurrentTaskExecutor globalTaskExecutor;
     @Autowired private @Qualifier("main") ThreadCachingScheduledExecutorService executor;
+    @Autowired private ConfigurationSource configurationSource;
 
     private static Set<BuiltInAttribute> attributes = Sets.union(
             Sets.union(BuiltInAttribute.getVoltageAttributes(), BuiltInAttribute.getRelayDataAttributes()),
             BuiltInAttribute.getItronLcrAttributes());
     private static Set<PaoType> supportedPaoTypes = Sets.union(PaoType.getItronTypes(), PaoType.getTwoWayLcrTypes());
 
-    private static final int POINT_DATA_TO_SEND_AT_ONCE = 100;
+    private static int pointDataToSendAtOnce;
     private static final String defaultListenerMethod = "pointDataReceived";
     List<DrAttributeDataJmsMessage> relayDataAvailable = Collections.synchronizedList(new ArrayList<>());
     List<DrAttributeDataJmsMessage> voltageDataAvailable = Collections.synchronizedList(new ArrayList<>());
@@ -70,12 +73,14 @@ public class DrAttributeDataJmsService implements RichPointDataListener {
         scheduler.scheduleAtFixedRate(() -> {
             sendAlarmData();
         }, 10, 10, TimeUnit.SECONDS);
+        
+        pointDataToSendAtOnce = configurationSource.getInteger("MSP_POINT_DATA_TO_SEND_AT_ONCE", 100);
     }
 
     @Override
     public void pointDataReceived(RichPointData richPointData) {
-        
-        if (supportedPaoTypes.contains(richPointData.getPaoPointIdentifier().getPaoIdentifier().getPaoType())) {
+
+        if (supportedPaoTypes.contains(richPointData.getPaoPointIdentifier().getPaoIdentifier().getPaoType()) && richPointData.getPointValue().getPointQuality() != PointQuality.Uninitialized) {
             Set<BuiltInAttribute> supportedAttributes = attributeService.findAttributesForPoint(
                    richPointData.getPaoPointIdentifier().getPaoTypePointIdentifier(),
                    attributes);
@@ -132,9 +137,9 @@ public class DrAttributeDataJmsService implements RichPointDataListener {
                 log.debug("Sending " + dataType + " data " + dataToSend.size());
                 while (!dataToSend.isEmpty()) {
                     ArrayList<T> sendNow;
-                    if (dataToSend.size() >= POINT_DATA_TO_SEND_AT_ONCE) {
-                        sendNow = new ArrayList<>(dataToSend.subList(0, POINT_DATA_TO_SEND_AT_ONCE));
-                        dataToSend.subList(0, POINT_DATA_TO_SEND_AT_ONCE).clear();
+                    if (dataToSend.size() >= pointDataToSendAtOnce) {
+                        sendNow = new ArrayList<>(dataToSend.subList(0, pointDataToSendAtOnce));
+                        dataToSend.subList(0, pointDataToSendAtOnce).clear();
                     } else {
                         sendNow = new ArrayList<>(dataToSend.subList(0, dataToSend.size()));
                         dataToSend.subList(0, dataToSend.size()).clear();

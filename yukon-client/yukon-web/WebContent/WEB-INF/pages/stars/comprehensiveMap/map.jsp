@@ -24,7 +24,7 @@
     <input id="relayTypes" type="hidden" value="${relayPaoTypes}"/>
     <input id="wifiTypes" type="hidden" value="${wifiPaoTypes}"/>
     
-    <tags:alertBox classes="dn js-no-location-message" type="warning"><i:inline key=".missingLocations"/></tags:alertBox>
+    <%@ include file="/WEB-INF/pages/tools/map/mapWarnings.jsp" %>
         
     <div style="height:800px;">
         <div id="comprehensive-map-container" style="height:100%;width:100%;background:white;">
@@ -53,16 +53,16 @@
                         <tags:selectWithItems items="${hopCountOptions}" path="hopCount" inputClass="js-selected-hop-count" dataPlaceholder="${allPlaceholder}"/>&nbsp;&nbsp;
                     
                         <i:inline key=".colorCodeBy"/>&nbsp;
-                        <tags:selectWithItems items="${colorCodeByOptions}" path="colorCodeBy"/>
+                        <tags:selectWithItems items="${colorCodeByOptions}" path="colorCodeBy" inputClass="vam"/>
                         
-                        <cti:button nameKey="filter" classes="js-filter-map primary action fr vab" disabled="true"/>
+                        <cti:button nameKey="filter" classes="js-filter-map primary action fr vab MB5" disabled="true"/>
                     </div>
                     
                 </form:form>
                 <hr>
             </div>
             
-            <div id="filtered-devices" class="dn PB10">
+            <div id="filtered-devices" class="dn PB20">
                 <span class="fwn"><i:inline key="yukon.common.filteredResults"/></span>
                 <span class="badge js-number-devices"></span>&nbsp;<i:inline key="yukon.common.devices"/>
                 <input type="hidden" id="collection-group"/>
@@ -102,6 +102,7 @@
                 <cti:button renderMode="buttonImage" title="${elevation}" icon="icon-trend-up" classes="fr js-elevation-layer"/>
             </div>
             <div id="legend" class="dn" style="min-height:20px;"></div>
+            <%@ include file="/WEB-INF/pages/stars/mapNetwork/neighborsLegend.jsp" %>
             <%@ include file="routeUpdateDetails.jsp" %>
         </div>
     </div>

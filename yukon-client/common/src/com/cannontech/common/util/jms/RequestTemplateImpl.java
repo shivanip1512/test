@@ -3,7 +3,6 @@ package com.cannontech.common.util.jms;
 import java.io.Serializable;
 import java.util.UUID;
 
-import javax.jms.ConnectionFactory;
 import javax.jms.Destination;
 import javax.jms.JMSException;
 import javax.jms.Message;
@@ -31,9 +30,9 @@ public class RequestTemplateImpl<R extends Serializable> extends RequestReplyTem
      *        services (not Network Manager). This prevents message details from be logged to the RFN comms
      *        log.
      */
-    public RequestTemplateImpl(String configurationName, ConfigurationSource configurationSource,
-            ConnectionFactory connectionFactory, String requestQueueName, boolean isPubSubDomain, boolean isInternalMessage) {
-        super(configurationName, configurationSource, connectionFactory, requestQueueName, isPubSubDomain, isInternalMessage);
+    public RequestTemplateImpl(String configurationName, ConfigurationSource configurationSource, YukonJmsTemplate jmsTemplate,
+           boolean isInternalMessage) {
+        super(configurationName, configurationSource, jmsTemplate, isInternalMessage);
     }
 
     @Override
@@ -46,6 +45,8 @@ public class RequestTemplateImpl<R extends Serializable> extends RequestReplyTem
         DestinationResolver destinationResolver = new DynamicDestinationResolver();
         try {
             final String correlationId = UUID.randomUUID().toString();
+            final String requestQueueName = jmsTemplate.getDefaultDestinationName();
+            final boolean pubSubDomain = jmsTemplate.isPubSubDomain();
             final Destination requestQueue =
                 destinationResolver.resolveDestinationName(session, requestQueueName + ".Request", pubSubDomain);
             final Destination replyQueue =
@@ -56,9 +57,13 @@ public class RequestTemplateImpl<R extends Serializable> extends RequestReplyTem
             requestMessage.setJMSReplyTo(replyQueue);
             requestMessage.setJMSCorrelationID(correlationId);
             producer = session.createProducer(requestQueue);
-            producer.send(requestQueue, requestMessage);
+            log.trace("Sending requestMessage to producer: {}", requestMessage.toString());
+            
+            logRequest(requestPayload.toString());
+            sendMessage(producer, requestMessage);
 
-            handleReplyOrTimeout(callback, replyTimeout, consumer);
+            handleReplyOrTimeout(callback, replyTimeout, consumer, requestPayload.toString());
+            log.trace("Request replied or timed out: {}", requestMessage.toString());
         } finally {
             JmsUtils.closeMessageConsumer(consumer);
             JmsUtils.closeMessageProducer(producer);
@@ -66,16 +71,18 @@ public class RequestTemplateImpl<R extends Serializable> extends RequestReplyTem
     }
 
     private void handleReplyOrTimeout(JmsReplyHandler<R> callback, final Duration replyTimeout,
-            MessageConsumer replyConsumer) throws JMSException {
+            MessageConsumer replyConsumer, String requestPayload) throws JMSException {
         // Block for status response or until timeout.
         Message reply = replyConsumer.receive(replyTimeout.getMillis());
-
+        
         if (reply == null) {
+            logReply(requestPayload, "NULL");
             callback.handleTimeout();
             return;
         }
-
+        
         R reply1Payload = JmsHelper.extractObject(reply, callback.getExpectedType());
+        logReply(requestPayload, reply1Payload.toString());
         callback.handleReply(reply1Payload);
     }
 }

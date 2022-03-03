@@ -1,0 +1,148 @@
+MacroLoadGroup:
+  title: Macro Load Group
+  required:
+    - name
+    - type
+    - assignedLoadGroups
+  type: object
+  properties:
+    name:
+      type: string
+      maxLength: 60
+      description: 'Name of the macro load group.'
+    type:
+      type: string
+      description: 'Type of the macro load group.'
+      Enum: MACRO_GROUP
+    assignedLoadGroups:
+      description: 'Load groups that are assigned to the macro load group.'
+      $ref: '#/assignedLoadGroups'
+
+MacroLoadGroup Response Schema:
+  type: object
+  properties:
+    id:
+      type: integer
+      description: 'Unique identifier of the macro load group.'
+    name:
+      type: string
+      maxLength: 60
+      description: 'Name of the macro load group.'
+    type:
+      type: string
+      description: 'Type of the macro load group.'
+      Enum: MACRO_GROUP
+    assignedLoadGroups:
+      description: 'Load groups that are assigned to the macro load group.'
+      $ref: '#/assignedLoadGroups'
+
+assignedLoadGroups:
+  type: array
+  items:
+    type: object
+    properties:
+      id:
+        type: integer
+        description: 'Unique identifier of the assigned load group.'
+      name:
+        type: string
+        description: 'Name of the assigned load group.'
+      type:
+        type: string
+        description: 'Type of the assigned load group.'
+        enum:
+          - LM_GROUP_DIGI_SEP
+          - LM_GROUP_ECOBEE
+          - LM_GROUP_EMETCON
+          - LM_GROUP_EXPRESSCOMM
+          - LM_GROUP_HONEYWELL
+          - LM_GROUP_ITRON
+          - LM_GROUP_METER_DISCONNECT
+          - LM_GROUP_VERSACOM
+          - LM_GROUP_POINT
+          - LM_GROUP_MCT
+
+id:
+  title: id
+  required:
+    - id
+  type: object
+  properties:
+    id:
+      type: integer
+      description: 'Unique identifier of the macro load group.'
+
+MacroLoadGroupCopy:
+  title: Macro load group copy
+  required:
+    - LOAD_GROUP_COPY
+  type: object
+  properties:
+    LOAD_GROUP_COPY:
+      required:
+        - name
+      type: object
+      properties:
+        name:
+          type: string
+          maxLength: 60
+          description: 'Name for the macro load group.'
+ 
+MacroLoadGroupCopyResponse:
+  title: Macro Load Group Copy Response
+  type: object
+  properties:
+    id:
+      type: integer
+      description: 'Unique identifier of the copied macro load group.' 
+                       
+components:
+  examples:
+    MacroLoadGroup Request:
+      value:
+        name: Test Macro Load Group
+        type: MACRO_GROUP
+        assignedLoadGroups:
+          - id: 1
+            name: Test MCT
+            type: LM_GROUP_MCT
+          - id: 2
+            name: Test Itron
+            type: LM_GROUP_ITRON
+
+    MacroLoadGroup Response:
+      value:
+        id: 88
+        name: Test Macro Load Group
+        type: MACRO_GROUP
+        assignedLoadGroups:
+          - id: 1
+            name: Test MCT
+            type: LM_GROUP_MCT
+          - id: 2
+            name: Test Itron
+            type: LM_GROUP_ITRON
+
+
+    MacroLoadGroupId:
+      value:
+        id: 11
+        
+    MacroLoadGroupCopy:
+      value:
+        LOAD_GROUP_COPY:
+          name: Macro Load Group copy
+
+    MacroLoadGroupCopyResponse:
+      value:
+        id: 21456
+        name: Macro Load Group copy
+        type: MACRO_GROUP
+        assignedLoadGroups:
+          - id: 1
+            name: Test MCT
+            type: LM_GROUP_MCT
+          - id: 2
+            name: Test Itron
+            type: LM_GROUP_ITRON
+        

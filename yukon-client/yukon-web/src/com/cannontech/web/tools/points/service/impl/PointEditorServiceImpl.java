@@ -1,39 +1,58 @@
 package com.cannontech.web.tools.points.service.impl;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 
 import org.apache.logging.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.DataAccessException;
-import org.springframework.stereotype.Service;
 
 import com.cannontech.clientutils.YukonLogManager;
 import com.cannontech.clientutils.tags.IAlarmDefs;
+import com.cannontech.common.device.dao.DevicePointDao;
+import com.cannontech.common.device.dao.DevicePointDao.SortBy;
+import com.cannontech.common.device.model.DevicePointDetail;
+import com.cannontech.common.device.model.DevicePointsFilter;
+import com.cannontech.common.dr.setup.LMDto;
 import com.cannontech.common.events.loggers.PointEventLogService;
 import com.cannontech.common.fdr.FdrDirection;
 import com.cannontech.common.fdr.FdrInterfaceOption;
 import com.cannontech.common.fdr.FdrInterfaceType;
 import com.cannontech.common.i18n.MessageSourceAccessor;
+import com.cannontech.common.model.Direction;
+import com.cannontech.common.model.PagingParameters;
+import com.cannontech.common.pao.PaoIdentifier;
+import com.cannontech.common.pao.attribute.model.BuiltInAttribute;
+import com.cannontech.common.pao.definition.dao.PaoDefinitionDao;
+import com.cannontech.common.pao.definition.model.PaoTypePointIdentifier;
 import com.cannontech.common.point.alarm.dao.PointPropertyValueDao;
 import com.cannontech.common.point.alarm.model.PointPropertyValue;
+import com.cannontech.common.search.result.SearchResults;
+import com.cannontech.common.util.CtiUtilities;
 import com.cannontech.core.dao.AlarmCatDao;
 import com.cannontech.core.dao.DBPersistentDao;
+import com.cannontech.core.dao.DeviceDao;
+import com.cannontech.core.dao.NotFoundException;
 import com.cannontech.core.dao.PointDao;
 import com.cannontech.core.dao.StateGroupDao;
 import com.cannontech.database.TransactionType;
 import com.cannontech.database.data.lite.LiteAlarmCategory;
 import com.cannontech.database.data.lite.LitePoint;
+import com.cannontech.database.data.lite.LiteState;
 import com.cannontech.database.data.lite.LiteStateGroup;
 import com.cannontech.database.data.lite.LiteYukonPAObject;
+import com.cannontech.database.data.lite.LiteYukonUser;
 import com.cannontech.database.data.point.PointBase;
 import com.cannontech.database.data.point.PointType;
 import com.cannontech.database.data.point.PointUtil;
 import com.cannontech.database.db.point.PointAlarming;
+import com.cannontech.database.db.point.PointAlarming.AlarmNotificationTypes;
 import com.cannontech.i18n.YukonUserContextMessageSourceResolver;
 import com.cannontech.message.DbChangeManager;
 import com.cannontech.message.dispatch.message.DBChangeMsg;
@@ -42,12 +61,15 @@ import com.cannontech.user.YukonUserContext;
 import com.cannontech.web.editor.point.AlarmTableEntry;
 import com.cannontech.web.editor.point.StaleData;
 import com.cannontech.web.tools.points.model.LitePointModel;
+import com.cannontech.web.tools.points.model.PaoPointModel;
+import com.cannontech.web.tools.points.model.PointBaseModel;
+import com.cannontech.web.tools.points.model.PointCopy;
+import com.cannontech.web.tools.points.model.PointInfoModel;
 import com.cannontech.web.tools.points.model.PointModel;
 import com.cannontech.web.tools.points.service.PointEditorService;
 import com.cannontech.yukon.IDatabaseCache;
 import com.google.common.collect.ImmutableList;
 
-@Service
 public class PointEditorServiceImpl implements PointEditorService {
     
     @Autowired private AlarmCatDao alarmCatDao;
@@ -59,6 +81,9 @@ public class PointEditorServiceImpl implements PointEditorService {
     @Autowired private YukonUserContextMessageSourceResolver messageResolver;
     @Autowired private PointEventLogService eventLog;
     @Autowired private IDatabaseCache cache;
+    @Autowired protected DeviceDao deviceDao;
+    @Autowired private PaoDefinitionDao paoDefinitionDao;
+    @Autowired private DevicePointDao devicePointDao;
 
     protected static final Logger log = YukonLogManager.getLogger(PointEditorServiceImpl.class);
 
@@ -69,7 +94,7 @@ public class PointEditorServiceImpl implements PointEditorService {
         
         StaleData staleData = getStaleData(id);
         
-        List<AlarmTableEntry> alarmTableEntries = getAlarmTableEntries(base);
+        List<AlarmTableEntry> alarmTableEntries = getAlarmTableEntries(base, false);
 
         PointModel<PointBase> model = new PointModel<>(base, staleData, alarmTableEntries);
         
@@ -112,14 +137,14 @@ public class PointEditorServiceImpl implements PointEditorService {
     /**
      * Retrieves the StaleData part of the model for a given point id from the database
      */
-    private StaleData getStaleData(int id) {
+    private StaleData getStaleData(int pointId) {
         
-        StaleData staleData = new StaleData();
+        StaleData staleData = new StaleData(Integer.valueOf(pointId));
         
         try {
-            PointPropertyValue timeProperty = pointPropertyValueDao.getByIdAndPropertyId(id, StaleData.TIME_PROPERTY);
-            PointPropertyValue updateProperty = pointPropertyValueDao.getByIdAndPropertyId(id, StaleData.UPDATE_PROPERTY);
-
+            PointPropertyValue timeProperty = pointPropertyValueDao.getByIdAndPropertyId(pointId, StaleData.TIME_PROPERTY);
+            PointPropertyValue updateProperty = pointPropertyValueDao.getByIdAndPropertyId(pointId, StaleData.UPDATE_PROPERTY);
+            
             staleData.setEnabled(true);
             staleData.setTime((int) timeProperty.getFloatValue());
             staleData.setUpdateStyle((int) updateProperty.getFloatValue());
@@ -136,9 +161,12 @@ public class PointEditorServiceImpl implements PointEditorService {
     }
     
     /**
-     * Retrieves the AlarmTableEntries part of the model from the pointBase
+     * Retrieves the AlarmTableEntries part of the model from the pointBase 
+     * 
+     * If setRawStateInCondition is true then set stateId in condition field otherwise set state text 
+     * if condition value is not match in IAlarmDefs.STATUS_ALARM_STATES and This is applicable for Status/CalcStatus PointType.
      */
-    private List<AlarmTableEntry> getAlarmTableEntries(PointBase pointBase) {
+    private List<AlarmTableEntry> getAlarmTableEntries(PointBase pointBase, boolean setRawStateInCondition ) {
         
         PointType ptType = PointType.getForString(pointBase.getPoint().getPointType());
 
@@ -159,8 +187,13 @@ public class PointEditorServiceImpl implements PointEditorService {
         LiteStateGroup stateGroup = stateGroupDao.getStateGroup(pointBase.getPoint().getStateGroupID());
 
         String[] stateNames = new String[stateGroup.getStatesList().size()];
+        String[] rawStates = new String[stateGroup.getStatesList().size()];
         for (int j = 0; j < stateGroup.getStatesList().size(); j++) {
-            stateNames[j] = stateGroup.getStatesList().get(j).toString();
+            if (setRawStateInCondition) {
+                rawStates[j] = String.valueOf(stateGroup.getStatesList().get(j).getLiteID());
+            } else {
+                stateNames[j] = stateGroup.getStatesList().get(j).toString();
+            }
         }
         // insert all the predefined states into the table
         int i = 0;
@@ -181,8 +214,11 @@ public class PointEditorServiceImpl implements PointEditorService {
                 }
                 AlarmTableEntry entry = new AlarmTableEntry();
                 setupAlarmTableEntry(entry, excludeNotifyStates.toUpperCase().charAt(i), alarmStates.charAt(i));
-
-                entry.setCondition(stateNames[j]);
+                if (setRawStateInCondition) {
+                    entry.setCondition(rawStates[j]);
+                } else {
+                    entry.setCondition(stateNames[j]);
+                }
                 notifEntries.add(entry);
             }
         }
@@ -194,14 +230,13 @@ public class PointEditorServiceImpl implements PointEditorService {
      */
     private void setupAlarmTableEntry(AlarmTableEntry entry, char gen, char category) {
         LiteAlarmCategory liteAlarmCategory = alarmCatDao.getAlarmCategory(category);
-        entry.setGenerate(liteAlarmCategory.getCategoryName());
-        entry.setExcludeNotify(PointAlarming.getExcludeNotifyString(gen));
+        entry.setCategory(liteAlarmCategory.getCategoryName());
+        entry.setNotify(AlarmNotificationTypes.getAnalogControlTypeValue(PointAlarming.getExcludeNotifyString(gen)));
     }
     
     @Override
-    public int save(PointModel model, YukonUserContext userContext) {
+    public int save(PointBase base, List<AlarmTableEntry> alarmTableEntries, LiteYukonUser liteYukonUser) {
         
-        PointBase base = model.getPointBase();
         Integer pointId = base.getPoint().getPointID();
         
         TransactionType type = TransactionType.UPDATE;
@@ -210,7 +245,7 @@ public class PointEditorServiceImpl implements PointEditorService {
         }
         
         /* This one must be done BEFORE the base object */
-        attachAlarms(base, model.getAlarmTableEntries());
+        attachAlarms(base, alarmTableEntries);
         
         
         dBPersistentDao.performDBChange(base, type);
@@ -226,23 +261,21 @@ public class PointEditorServiceImpl implements PointEditorService {
 
         dbChangeManager.processDbChange(dbChange);
 
-        /* This one must be done AFTER for create */
-        saveStaleData(pointId, model.getStaleData());
         LiteYukonPAObject pao = cache.getAllPaosMap().get(base.getPoint().getPaoID());
         eventLog.pointUpdated(pao.getPaoName(), base.getPoint().getPointName(), base.getPoint().getPointTypeEnum(),
-            base.getPoint().getPointOffset(), userContext.getYukonUser());
+            base.getPoint().getPointOffset(), liteYukonUser);
         return pointId;
     }
     
     /**
      * Save the StaleData from the model object to the database
      */
-    private void saveStaleData(int pointId, StaleData staleData) {
+    public void saveStaleData(StaleData staleData) {
         
         if (staleData != null) {
-            PointPropertyValue timeProperty = new PointPropertyValue(pointId, StaleData.TIME_PROPERTY, staleData.getTime());
-            PointPropertyValue updateProperty = new PointPropertyValue(pointId, StaleData.UPDATE_PROPERTY, staleData.getUpdateStyle());
-            
+            PointPropertyValue timeProperty = new PointPropertyValue(staleData.getPointId(), StaleData.TIME_PROPERTY, staleData.getTime());
+            PointPropertyValue updateProperty = new PointPropertyValue(staleData.getPointId(), StaleData.UPDATE_PROPERTY, staleData.getUpdateStyle());
+                         
             pointPropertyValueDao.remove(timeProperty);
             pointPropertyValueDao.remove(updateProperty);
     
@@ -262,8 +295,8 @@ public class PointEditorServiceImpl implements PointEditorService {
         String exclNotify = "";
 
         for (AlarmTableEntry entry : alarmTableEntries) {
-            alarmStates += (char) alarmCatDao.getAlarmCategoryId(entry.getGenerate());
-            exclNotify += PointAlarming.getExcludeNotifyChar(entry.getExcludeNotify());
+            alarmStates += (char) alarmCatDao.getAlarmCategoryId(entry.getCategory());
+            exclNotify += PointAlarming.getExcludeNotifyChar(entry.getNotify().getDbString());
         }
 
         int numberAlarms = alarmTableEntries.size();
@@ -390,7 +423,7 @@ public class PointEditorServiceImpl implements PointEditorService {
     }
 
     @Override
-    public void delete(int id, YukonUserContext userContext) throws AttachedException {
+    public int delete(int id, YukonUserContext userContext) throws AttachedException {
         AttachmentStatus attachmentStatus = getAttachmentStatus(id);
         if (!attachmentStatus.isDeletable()) {
             throw new AttachedException(attachmentStatus);
@@ -410,6 +443,7 @@ public class PointEditorServiceImpl implements PointEditorService {
         LiteYukonPAObject pao = cache.getAllPaosMap().get(point.getPoint().getPaoID());
         eventLog.pointDeleted(pao.getPaoName(), point.getPoint().getPointName(), point.getPoint().getPointTypeEnum(),
             point.getPoint().getPointOffset(), userContext.getYukonUser());
+        return point.getPoint().getPointID();
     }
 
     @Override
@@ -433,19 +467,19 @@ public class PointEditorServiceImpl implements PointEditorService {
         PointUtil.insertIntoDB(newPoint);
 
         // copy the StaleData
-        StaleData stateDataToCopy = getStaleData(pointModel.getPointId());
-        StaleData newStaleData = populateStaleDataObjectToCopy(stateDataToCopy);
-        saveStaleData(newPoint.getPoint().getPointID(), newStaleData);
+        StaleData newStaleData = populateStaleDataObjectToCopy(pointModel.getPointId(), newPoint.getPoint().getPointID());
+        saveStaleData(newStaleData);
 
         return newPoint.getPoint().getPointID();
     }
-    
-    private StaleData populateStaleDataObjectToCopy(StaleData stateDataToCopy) {
-        StaleData staleData = new StaleData();
-        staleData.setEnabled(stateDataToCopy.isEnabled());
-        staleData.setTime(stateDataToCopy.getTime());
-        staleData.setUpdateStyle(stateDataToCopy.getUpdateStyle());
-        return staleData;
+
+    private StaleData populateStaleDataObjectToCopy(int pointIdToCopy, int newPointId) {
+        StaleData stateDataToCopy = getStaleData(pointIdToCopy);
+        StaleData newStaleData = new StaleData(Integer.valueOf(newPointId));
+        newStaleData.setEnabled(stateDataToCopy.isEnabled());
+        newStaleData.setTime(stateDataToCopy.getTime());
+        newStaleData.setUpdateStyle(stateDataToCopy.getUpdateStyle());
+        return newStaleData;
     }
 
     @Override
@@ -460,6 +494,213 @@ public class PointEditorServiceImpl implements PointEditorService {
                                                            base.getPoint().getPaoID());
         
         return copyPointModel;
+    }
+
+    @Override
+    public PointBaseModel<? extends PointBase> create(PointBaseModel pointBaseModel, YukonUserContext userContext) {
+
+        PointBase pointBase = PointModelFactory.createPoint(pointBaseModel);
+        pointBaseModel.buildDBPersistent(pointBase);
+
+        List<AlarmTableEntry> alarmTableEntries = buildOrderedAlarmTable(pointBaseModel.getAlarming().getAlarmTableList(),
+                pointBaseModel.getPointType());
+        int pointId = save(pointBase, alarmTableEntries, userContext.getYukonUser());
+        // When Stale data object is not passed in Request, then with default values Stale data object  will be created
+        StaleData staleData = new StaleData(Integer.valueOf(pointId));
+
+        if (pointBaseModel.getStaleData() != null) {
+            staleData = pointBaseModel.getStaleData().overwriteWith(new StaleData(Integer.valueOf(pointId)));
+        }
+        saveStaleData(staleData);
+
+        buildPointBaseModel(pointBase, pointBaseModel,  getStaleData(pointId));
+        return pointBaseModel;
+    }
+
+    @Override
+    public PointBaseModel<? extends PointBase> update(int pointId, PointBaseModel pointBaseModel, YukonUserContext userContext) {
+
+        PointBase pointBase = pointDao.get(pointId);
+
+        pointBaseModel.buildDBPersistent(pointBase);
+
+        PointType ptType = PointType.getForString(pointBase.getPoint().getPointType());
+
+        List<AlarmTableEntry> alarmTableEntries = updateExistingAlarmTableEntries(pointBase, pointBaseModel, ptType);
+        
+        save(pointBase, alarmTableEntries, userContext.getYukonUser());
+
+        StaleData staleData = getStaleData(pointId);
+        if (pointBaseModel.getStaleData() != null) {
+            staleData = pointBaseModel.getStaleData().overwriteWith(staleData);
+        }
+        saveStaleData(staleData);
+        
+        buildPointBaseModel(pointBase, pointBaseModel, staleData);
+        return pointBaseModel;
+    }
+
+    @Override
+    public PointBaseModel<? extends PointBase> retrieve(int pointId) {
+
+        PointBase pointBase = pointDao.get(pointId);
+        StaleData staleData = getStaleData(pointId);
+
+        PointType ptType = PointType.getForString(pointBase.getPoint().getPointType());
+        PointBaseModel pointBaseModel = PointModelFactory.getModel(ptType); 
+
+        if (pointBaseModel != null) {
+            buildPointBaseModel(pointBase, pointBaseModel, staleData);
+        }
+        return pointBaseModel;
+    }
+
+    @Override
+    public PointBaseModel<? extends PointBase> copy(int pointId, PointCopy pointCopy) {
+        PointBase pointBase = pointDao.get(pointId);
+        pointBase.setPointID(null);
+        pointCopy.buildDBPersistent(pointBase);
+        dBPersistentDao.performDBChange(pointBase, TransactionType.INSERT);
+
+        PointType ptType = pointBase.getPoint().getPointTypeEnum();
+        PointBaseModel pointBaseModel = PointModelFactory.getModel(ptType);
+
+        // copy the StaleData
+        StaleData newStaleData = populateStaleDataObjectToCopy(pointId, pointBase.getPoint().getPointID());
+        saveStaleData(newStaleData);
+
+        buildPointBaseModel(pointBase, pointBaseModel, newStaleData);
+        return pointBaseModel;
+    }
+
+    @Override
+    public PaoPointModel getDevicePointDetail(int paoId, DevicePointsFilter devicePointsFilter, Direction direction,
+            SortBy sortBy, PagingParameters paging) {
+        List<PointInfoModel> listOfPointInfoModel = new ArrayList<>();
+        LiteYukonPAObject pao = cache.getAllPaosMap().get(paoId);
+        if (pao == null) {
+            throw new NotFoundException("Pao Id not found " + paoId);
+        }
+
+        SearchResults<DevicePointDetail> devicePointDetails = devicePointDao.getDevicePointDetail(List.of(paoId),
+                                                              devicePointsFilter.getPointNames(), devicePointsFilter.getTypes(), direction, sortBy, paging);
+
+        for (DevicePointDetail devicePointDetail : devicePointDetails.getResultList()) {
+            Set<BuiltInAttribute> attributes = paoDefinitionDao.findAttributeForPaoTypeAndPoint(PaoTypePointIdentifier.of(pao.getPaoType(),
+                                               devicePointDetail.getPaoPointIdentifier().getPointIdentifier()));
+            listOfPointInfoModel.add(PointInfoModel.of(devicePointDetail, attributes));
+        }
+        PaoIdentifier paoIdentifier = new PaoIdentifier(paoId, pao.getPaoType());
+        return PaoPointModel.of(paoIdentifier, listOfPointInfoModel);
+    }
+
+    /**
+     *  Build Ordered Alarm Table Entries.
+     */
+    private List<AlarmTableEntry> buildOrderedAlarmTable(List<AlarmTableEntry> entries, PointType pointType) {
+        List<AlarmTableEntry> orderedAlarmTableEntries = new ArrayList<>();
+
+        List<String> alarmStates = Arrays.asList(IAlarmDefs.OTHER_ALARM_STATES);
+        if (pointType != null && (pointType == PointType.CalcStatus || pointType == PointType.Status)) {
+            alarmStates = new ArrayList<String>(Arrays.asList(IAlarmDefs.STATUS_ALARM_STATES));
+            // Maintain Order of Alarm States which is not defined in IAlarmDefs.
+            List<String> rawAlarmStates = entries.stream()
+                                                 .filter(entry -> !(Arrays.asList(IAlarmDefs.STATUS_ALARM_STATES).contains(entry.getCondition())))
+                                                 .map(entry -> entry.getCondition())
+                                                 .sorted()
+                                                 .collect(Collectors.toList());
+            alarmStates.addAll(rawAlarmStates);
+        }
+
+        // Iterate over all alarm state entries to maintain order and set default values if category and notify are null.
+        for (String alarmState : alarmStates) {
+            AlarmTableEntry entry = entries.stream()
+                                           .filter(e -> e.getCondition().equals(alarmState))
+                                           .findFirst()
+                                           .orElse(new AlarmTableEntry(alarmState));
+            orderedAlarmTableEntries.add(setDefaultsForAlarmEntry(entry));
+        }
+        return orderedAlarmTableEntries;
+    }
+
+    /**
+     * Set default values for AlarmTableEntry if category or notify are null.
+     */
+    private AlarmTableEntry setDefaultsForAlarmEntry(AlarmTableEntry entry) {
+        if (entry.getCategory() == null) {
+            entry.setCategory(CtiUtilities.STRING_NONE);
+        }
+
+        if (entry.getNotify() == null) {
+            entry.setNotify(AlarmNotificationTypes.NONE);
+        }
+        return entry;
+    }
+
+    private void buildPointBaseModel(PointBase pointBase, PointBaseModel pointBaseModel, StaleData staleData) {
+        pointBaseModel.buildModel(pointBase);
+        pointBaseModel.setStaleData(staleData);
+        pointBaseModel.getAlarming().setAlarmTableList(getAlarmTableEntries(pointBase, true));
+    }
+    
+
+    /**
+     * Update existing alarm table entries with new Entries. In the case of Status/Calc Status PointType, Some Condition
+     * fields (Other than Non-updated, Abnormal, Uncommanded State Change,Command Failure,Stale) are dependent on State
+     * Group in Alarming functionality.
+     * If we will change the state group, condition fields will be changed but values
+     * of (Other than Non-updated, Abnormal, Uncommanded State Change,Command Failure,Stale) unchanged in edit/update
+     * operation.
+     */
+    private List<AlarmTableEntry> updateExistingAlarmTableEntries(PointBase pointBase, PointBaseModel<?> pointBaseModel, PointType ptType) {
+
+        List<AlarmTableEntry> existingEntries = getAlarmTableEntries(pointBase, true);
+        List<AlarmTableEntry> newEntries = pointBaseModel.getAlarming().getAlarmTableList();
+
+        boolean isStateGroupChanged = pointBaseModel.getStateGroupId() != null ? pointBaseModel.getStateGroupId() != pointBase.getPoint().getStateGroupID()
+                : false;
+
+        Map<String, AlarmTableEntry> newEntryMap = newEntries.stream().collect(Collectors.toMap(e -> e.getCondition(), e -> e));
+
+        // Filter Status Alarm States if State Group has changed.
+        if (ptType != null && (ptType == PointType.CalcStatus || ptType == PointType.Status) && isStateGroupChanged) {
+            existingEntries = existingEntries.stream()
+                                             .filter(entry -> (Arrays.asList(IAlarmDefs.STATUS_ALARM_STATES).contains(entry.getCondition())))
+                                             .collect(Collectors.toList());
+        }
+
+        // Update existing AlarmTableEntry based on the new entries.
+        for (AlarmTableEntry entry : existingEntries) {
+            if (newEntryMap.get(entry.getCondition()) != null) {
+                if (newEntryMap.get(entry.getCondition()).getCategory() != null) {
+                    entry.setCategory(newEntryMap.get(entry.getCondition()).getCategory());
+                }
+                if (newEntryMap.get(entry.getCondition()).getNotify() != null) {
+                    entry.setNotify(newEntryMap.get(entry.getCondition()).getNotify());
+                }
+            }
+        }
+        // Add new Status Alarm States and also set Default value if State Group has changed (Which is not defined in IAlarmDefs).
+        if (ptType != null && (ptType == PointType.CalcStatus || ptType == PointType.Status) && isStateGroupChanged) {
+            List<AlarmTableEntry> rawAlarmStates = newEntries.stream()
+                                                             .filter(entry -> !(Arrays.asList(IAlarmDefs.STATUS_ALARM_STATES).contains(entry.getCondition())))
+                                                             .map(entry -> setDefaultsForAlarmEntry(entry))
+                                                             .sorted()
+                                                             .collect(Collectors.toList());
+            existingEntries.addAll(rawAlarmStates);
+        }
+
+        return existingEntries;
+    }
+
+    @Override
+    public List<LMDto> retrieveStates(int pointId) {
+        List<LMDto> lmDtoList = new ArrayList<>();
+        List<LiteState> states = stateGroupDao.getStateList(pointId);
+        for (LiteState state : states) {
+            lmDtoList.add(new LMDto(state.getLiteID(), state.getStateText()));
+        }
+        return lmDtoList;
     }
 
 }

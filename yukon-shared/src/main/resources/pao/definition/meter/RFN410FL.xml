@@ -15,6 +15,7 @@
         <tag name="RFN_DEMAND_RESET"/>
         <tag name="RFN_EVENTS"/>
         <tag name="RFN_POINT_CALCULATION"/>
+        <tag name="SUPPORTS_ATTRIBUTE_ASSIGNMENT"/>
         <tag name="TOU"/>
         <tag name="USES_METER_NUMBER_FOR_MSP"/>
     </tags>
@@ -84,6 +85,7 @@
         <pointInfo name="Sum kWh per Interval" attributes="SUM_KWH_PER_INTERVAL"/>
         <pointInfo name="Total Outage Count" init="true" attributes="BLINK_COUNT"/>
         <pointInfo name="TOU Schedule Change" attributes="TOU_SCHEDULE_CHANGE"/>
+        <pointInfo name="Ultra Capacitor Bad" attributes="ULTRA_CAPACITOR_BAD"/>
         <pointInfo name="Under Voltage" attributes="UNDER_VOLTAGE"/>
         <pointInfo name="Voltage Primary" init="true" attributes="VOLTAGE"/>
     </pointInfos>

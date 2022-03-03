@@ -465,7 +465,22 @@
     <ClCompile Include="cmd_rfn_MeterProgramming.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="cmd_rfn_Wifi.cpp">
+    <ClCompile Include="cmd_rfn_Metrology.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="rfn_uom.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="cmd_rfn_MeterRead.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="cmd_rfn_MeterDisconnect.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="dev_rf_cellular_relay.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="cmd_rfn_CommStatus.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>
@@ -971,9 +986,6 @@
     <ClInclude Include="include\pt_status.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="include\rtdb_test_helpers.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
     <ClInclude Include="include\rte_base.h">
       <Filter>Header Files</Filter>
     </ClInclude>
@@ -1046,7 +1058,22 @@
     <ClInclude Include="include\cmd_rfn_MeterProgramming.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="include\cmd_rfn_Wifi.h">
+    <ClInclude Include="include\cmd_rfn_Metrology.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="include\rfn_uom.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="include\cmd_rfn_MeterRead.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="include\cmd_rfn_MeterDisconnect.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="include\dev_rf_cellular_relay.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="include\cmd_rfn_CommStatus.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>

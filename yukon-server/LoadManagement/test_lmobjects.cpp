@@ -15,7 +15,7 @@
 
 #include "lmfactory.h"
 
-extern CtiTime gInvalidCtiTime;
+extern const CtiTime gInvalidCtiTime;
 
 
 BOOST_AUTO_TEST_SUITE( test_lmobjects )

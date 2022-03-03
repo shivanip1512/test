@@ -1,10 +1,12 @@
 package com.cannontech.yukon.api.loadManagement;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+
 import org.jdom2.Element;
 import org.jdom2.Namespace;
-import org.junit.Assert;
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 import org.springframework.core.io.ClassPathResource;
 import org.springframework.core.io.Resource;
 
@@ -33,7 +35,7 @@ public class CountOverridesTowardsLimitRequestEndpointTest {
     private static final String RESP_ELEMENT_NAME = "countOverridesTowardsLimitResponse";
     private Namespace ns = YukonXml.getYukonNamespace();
     
-    @Before
+    @BeforeEach
     public void setUp() throws Exception {
         
         mockOptOutService = new MockOptOutService();
@@ -73,8 +75,7 @@ public class CountOverridesTowardsLimitRequestEndpointTest {
         // verify the respElement is valid according to schema
         TestUtils.validateAgainstSchema(respElement, respSchemaResource);
 
-        Assert.assertTrue("changeOptOutCountStateForToday called with false, expected true", 
-        		mockOptOutService.getLastValueCalled());
+        assertTrue(mockOptOutService.getLastValueCalled(), "changeOptOutCountStateForToday called with false, expected true");
         
         // create template and parse response data
         SimpleXPathTemplate template = YukonXml.getXPathTemplateForElement(respElement);
@@ -93,8 +94,8 @@ public class CountOverridesTowardsLimitRequestEndpointTest {
         // verify the respElement is valid according to schema
         TestUtils.validateAgainstSchema(respElement, respSchemaResource);
 
-        Assert.assertTrue("changeOptOutCountStateForToday called with false, expected true", mockOptOutService.getLastValueCalled());
-        Assert.assertEquals("unexpected programName", "TEST_PROGRAM", mockOptOutService.getLastProgramNameCalled());
+        assertTrue(mockOptOutService.getLastValueCalled(), "changeOptOutCountStateForToday called with false, expected true");
+        assertEquals("TEST_PROGRAM", mockOptOutService.getLastProgramNameCalled(), "unexpected programName");
         
         // create template and parse response data
         template = YukonXml.getXPathTemplateForElement(respElement);

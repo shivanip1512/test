@@ -23,6 +23,13 @@
     
     <bean class="com.cannontech.dr.itron.service.impl.ItronPeriodicDataCollectionService"/>
     
-    <bean class="com.cannontech.dr.itron.service.impl.ItronRuntimeCalcServiceImpl"/>
-
+    <bean id="itronRuntimeCalcServiceListener" class="com.cannontech.dr.itron.service.ItronRuntimeCalcService"/>
+    <jms:listener-container 
+        connection-factory="connectionFactory" 
+        destination-type="queue"
+        concurrency="1" 
+        container-type="simple"
+        container-class="com.cannontech.services.jms.ContextLoggingMessageListenerContainer">
+        <jms:listener destination="yukon.notif.obj.simulator.ItronRuntimeCalcSimulatonRequest" ref="itronRuntimeCalcServiceListener" method="startSimulation"/>
+    </jms:listener-container>
 </beans>

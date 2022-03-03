@@ -3,6 +3,8 @@ package com.cannontech.dr.assetavailability;
 import java.util.HashMap;
 import java.util.Map;
 
+import org.apache.commons.lang3.builder.ToStringBuilder;
+import org.apache.commons.lang3.builder.ToStringStyle;
 import org.joda.time.Instant;
 
 public class AssetAvailabilityPointDataTimes {
@@ -54,5 +56,11 @@ public class AssetAvailabilityPointDataTimes {
     
     public int getDeviceId() {
         return deviceId;
+    }
+    
+    @Override
+    public String toString() {
+        return ToStringBuilder.reflectionToString(this, ToStringStyle.SHORT_PREFIX_STYLE)
+                + System.getProperty("line.separator");
     }
 }

@@ -6,25 +6,34 @@ import java.io.File;
 import java.io.FileFilter;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
+import java.io.FilenameFilter;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
+import java.io.OutputStreamWriter;
 import java.io.RandomAccessFile;
 import java.io.Reader;
 import java.io.Writer;
+import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.nio.file.attribute.BasicFileAttributes;
 import java.text.DateFormat;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collections;
+import java.util.Comparator;
 import java.util.Date;
 import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import java.util.zip.GZIPInputStream;
 import java.util.zip.GZIPOutputStream;
+import java.util.zip.ZipEntry;
+import java.util.zip.ZipOutputStream;
 
 import org.apache.commons.compress.archivers.tar.TarArchiveEntry;
 import org.apache.commons.compress.archivers.tar.TarArchiveInputStream;
@@ -40,6 +49,7 @@ import org.springframework.util.Assert;
 
 import com.cannontech.clientutils.YukonLogManager;
 import com.cannontech.common.exception.FileCreationException;
+import com.opencsv.CSVWriter;
 
 public final class FileUtil {
     private static Logger log = YukonLogManager.getLogger(FileUtil.class);
@@ -492,7 +502,12 @@ public final class FileUtil {
      * Delete all the content in the passed directory path.
      */
     public static void deleteAllFilesInDirectory(String path) {
-        Arrays.stream(new File(path).listFiles()).forEach(File::delete);
+        Arrays.stream(new File(path).listFiles()).forEach(subfile -> {
+            if (subfile.isDirectory()) {
+                deleteAllFilesInDirectory(subfile.getPath());
+            }
+            subfile.delete();
+        });
     }
 
     /**
@@ -525,5 +540,94 @@ public final class FileUtil {
             log.error("Error while creating tar.gz file.", e);
             throw e;
         }
+    }
+
+    public static void writeToCSV(String directory, String fileName, List<String[]> dataRows) throws IOException {
+        OutputStream out = null;
+        CSVWriter csvWriter = null;
+        try {
+            out = new FileOutputStream(directory + File.separator + fileName + ".csv", true);
+            Writer writer = new OutputStreamWriter(out, StandardCharsets.UTF_8);
+            csvWriter = new CSVWriter(writer);
+            if (dataRows != null) {
+                for (String[] line : dataRows) {
+                    csvWriter.writeNext(line);
+                }
+            }
+        } catch (IOException e) {
+            log.error("Unable to perform IO operation. " + e);
+            throw e;
+        } finally {
+            csvWriter.close();
+            out.close();
+        }
+    }
+
+    public static void zipFolder(String sourceDirPath, String zipFilePath) throws IOException {
+        Path dstPath = Files.createFile(Paths.get(zipFilePath));
+        try (ZipOutputStream zs = new ZipOutputStream(Files.newOutputStream(dstPath))) {
+            Path srcPath= Paths.get(sourceDirPath);
+            Files.walk(srcPath)
+              .filter(path -> !Files.isDirectory(path))
+              .forEach(path -> {
+                  ZipEntry zipEntry = new ZipEntry(srcPath.relativize(path).toString());
+                  try {
+                      zs.putNextEntry(zipEntry);
+                      Files.copy(path, zs);
+                      zs.closeEntry();
+                } catch (IOException ex) {
+                    log.error("Error found while zipping " + sourceDirPath, ex);
+                }
+              });
+        }
+    }
+    
+    /**
+     * Zip directory in the passed directory path.
+     */
+    public static void zipDir(String srcDir, String[] srcFiles, String zippedDir) throws IOException {
+        try (FileOutputStream fos = new FileOutputStream(zippedDir); ZipOutputStream zipOut = new ZipOutputStream(fos)) {
+            if (srcFiles != null && srcFiles.length > 0) {
+                for (String srcFile : srcFiles) {
+                    File fileToZip = new File(srcDir + File.separator + srcFile);
+                    try (FileInputStream fis = new FileInputStream(fileToZip)) {
+                        ZipEntry zipEntry = new ZipEntry(fileToZip.getName());
+                        zipOut.putNextEntry(zipEntry);
+                        byte[] bytes = new byte[1024];
+                        int length;
+                        while ((length = fis.read(bytes)) >= 0) {
+                            zipOut.write(bytes, 0, length);
+                        }
+                    }
+                }
+            }
+        }
+    }
+    
+    /**
+     * Filter all the zip files and ordered them based on last modified date i.e latest file first.
+     */
+    public static List<File> filterAndOrderZipFile(File dir) {
+        File[] allFiles = dir.listFiles(new FilenameFilter() {
+            public boolean accept(File directory, String filename) {
+                if (filename.endsWith(".zip")) {
+                    return true;
+                }
+                return false;
+            }
+        });
+   
+        if (allFiles == null) {
+            return Collections.emptyList();
+        }
+
+        // sorting by date modified
+        Arrays.sort(allFiles, new Comparator<File>() {
+            public int compare(File f1, File f2) {
+                return new Long(f2.lastModified()).compareTo(f1.lastModified());
+            }
+        });
+
+        return Arrays.asList(allFiles);
     }
 }

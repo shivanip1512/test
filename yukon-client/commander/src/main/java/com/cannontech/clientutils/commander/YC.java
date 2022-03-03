@@ -1,11 +1,5 @@
 package com.cannontech.clientutils.commander;
 
-/**
- * Insert the type's description here.
- * Creation date: (2/25/2002 3:24:43 PM)
- * @author: 
- */
-import java.awt.Color;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.io.File;
@@ -32,6 +26,7 @@ import com.cannontech.amr.errors.dao.DeviceErrorTranslatorDao;
 import com.cannontech.amr.errors.model.DeviceErrorDescription;
 import com.cannontech.clientutils.YukonLogManager;
 import com.cannontech.clientutils.commander.model.OutputMessage;
+import com.cannontech.common.YukonColorPalette;
 import com.cannontech.common.device.groups.model.DeviceGroup;
 import com.cannontech.common.device.groups.service.DeviceGroupService;
 import com.cannontech.common.device.groups.service.DeviceGroupTreeFactory;
@@ -75,7 +70,6 @@ import com.cannontech.message.util.Message;
 import com.cannontech.message.util.MessageEvent;
 import com.cannontech.message.util.MessageListener;
 import com.cannontech.spring.YukonSpringHook;
-import com.cannontech.util.ColorUtil;
 import com.cannontech.yukon.IDatabaseCache;
 import com.cannontech.yukon.IServerConnection;
 import com.cannontech.yukon.conns.ConnPool;
@@ -1065,9 +1059,9 @@ public class YC extends Observable implements MessageListener {
     
     public void appendResultText(OutputMessage message) {
         
-        Color color = message.getMessageType().getColor();
+        YukonColorPalette color = message.getMessageType().getColor();
         resultText = getResultText() + "<BR>" +
-                    (color == null ? "" : "<span style='color:" + ColorUtil.getHTMLColor(color) + ";'>") 
+                    (color == null ? "" : "<span style='color:" + color.getHexValue() + ";'>") 
                     + message.getText() + (color == null ? "" : "</span>");
     }
     

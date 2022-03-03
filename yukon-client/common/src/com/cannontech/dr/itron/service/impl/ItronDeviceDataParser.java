@@ -13,7 +13,10 @@ import java.util.zip.ZipFile;
 
 import org.apache.commons.codec.binary.Hex;
 import org.apache.logging.log4j.Logger;
+import org.joda.time.DateTime;
+import org.joda.time.Duration;
 import org.joda.time.Instant;
+import org.joda.time.LocalDate;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import com.cannontech.clientutils.YukonLogManager;
@@ -53,8 +56,10 @@ public class ItronDeviceDataParser {
     private static final Logger log = YukonLogManager.getLogger(ItronDeviceDataParser.class);
     private static final String eventIdKey = "load control event status update - event";
     private static final String statusKey = "status";
+    private static final DateTime y2k = new LocalDate(2000, 1, 1).toDateTimeAtStartOfDay();
+    private static final Duration year = Duration.standardDays(365);
 
-    public Multimap<PaoIdentifier, PointValueHolder> parseAndSend(ZipFile zip) throws EmptyImportFileException {
+    public Multimap<PaoIdentifier, PointValueHolder> parseAndSend(ZipFile zip, boolean updateMaxRecordId) throws EmptyImportFileException {
         if(zip == null) {
             log.error("Unable to parse data, Itron file is null.");
             return null;
@@ -69,7 +74,7 @@ public class ItronDeviceDataParser {
                 ZipEntry file = entries.nextElement();
                 InputStream stream = zip.getInputStream(file);
                 try {
-                    Multimap<PaoIdentifier, PointData> pointValues = parseData(stream);
+                    Multimap<PaoIdentifier, PointData> pointValues = parseData(stream, updateMaxRecordId);
                     log.debug("Parsed {} point values for {} devices.", pointValues.values().size(), pointValues.keySet().size());
                     dataSource.putValues(pointValues.values());
                     allPointValues.putAll(pointValues);
@@ -91,7 +96,8 @@ public class ItronDeviceDataParser {
      * @throws IOException 
      * @throws EmptyImportFileException 
      */
-    private Multimap<PaoIdentifier, PointData> parseData(InputStream stream) throws IOException, EmptyImportFileException {
+    private Multimap<PaoIdentifier, PointData> parseData(InputStream stream, boolean updateMaxRecordId) 
+            throws IOException, EmptyImportFileException {
         
       Multimap<PaoIdentifier, PointData> pointValues = HashMultimap.create();
 
@@ -107,19 +113,25 @@ public class ItronDeviceDataParser {
           }
           while (row != null) { 
               int currentRecordId = Integer.parseInt(row[0]);
-              if (currentRecordId > maxRecordId) {
+              if (!updateMaxRecordId || (currentRecordId > maxRecordId)) {
                   maxRecordId = currentRecordId;
-                  pointValues.putAll(generatePointData(row));
+                  try {
+                      pointValues.putAll(generatePointData(row));
+                  } catch (Exception e) {
+                      log.error("Unexpected error parsing data row.", e);
+                  }
               }
               row = csvReader.readNext();
           }
           csvReader.close();
       }
       
-      setMaxRecordId(maxRecordId);
+      if(updateMaxRecordId) {
+          setMaxRecordId(maxRecordId);
+      }
       return pointValues;
     }
-
+    
     /**
      * Bulk of parsing logic is done here for the parser. 
      * @param rowData - parses single row of a csv entry
@@ -142,6 +154,12 @@ public class ItronDeviceDataParser {
         String source = rowData[5]; //Mac address
         String[] text = rowData[9].split(",");//Tokenized CSV text
         
+        // Ignore data that is very old or very future
+        if (!isReasonableEventTime(eventTime)) {
+            log.warn("Ignoring data with invalid timestamp: {}", eventTime);
+            return pointValues;
+        }
+        
         switch(category) {
             case EVENT_CAT_NIC_EVENT:
                 pointValues = parseNicEvent(source, text, eventTime);
@@ -155,6 +173,15 @@ public class ItronDeviceDataParser {
         }
         
         return pointValues;
+    }
+    
+    /**
+     * Validate that this event timestamp is reasonable for valid data. Criteria are currently identical to 
+     * RfnDataValidator.isTimestampValid.
+     */
+    private boolean isReasonableEventTime(String eventTimeString) {
+        DateTime eventDateTime = new DateTime(eventTimeString);
+        return eventDateTime.isAfter(y2k) && eventDateTime.isBefore(Instant.now().plus(year));
     }
     
     private Multimap<PaoIdentifier, PointData> parseNicEvent(String source, String[] text, String eventTime) {
@@ -175,6 +202,11 @@ public class ItronDeviceDataParser {
             }
         }
         
+        if (decodedData == null) {
+            log.trace("Ignoring EVENT_CAT_NIC_EVENT with no payload.");
+            return pointValues;
+        }
+        
         ItronDataEventType event = ItronDataEventType.getFromHex(eventId); //This could be null if the mapping doesn't exist.
         if (event != null) {
             // Get the device from the Mac Address
@@ -189,7 +221,7 @@ public class ItronDeviceDataParser {
             BuiltInAttribute attribute = null;
             try {
                 attribute = event.getAttribute(decodedData);
-            } catch (IllegalArgumentException e) {
+            } catch (Exception e) {
                 log.warn("No attribute matches {} with data {}. Ignoring.", event, Arrays.toString(decodedData));
                 return pointValues;
             }
@@ -203,14 +235,17 @@ public class ItronDeviceDataParser {
             }
             
             // Update Asset Availability, then add the point data to the list to return.
-            double currentValue = dataSource.getPointValue(litePoint.getPointID()).getValue();
             try {
+                double currentValue = dataSource.getPointValue(litePoint.getPointID()).getValue();
                 Optional<PointData> optionalPointData = event.getPointData(decodedData, currentValue, eventTime , litePoint);
                 
                 optionalPointData.ifPresent(pointData -> {
                     updateAssetAvailability(pointData, pao);
                     updatePointDataWithLitePointSettings(pointData, litePoint);
                     pointValues.put(pao.getPaoIdentifier(), pointData);
+                    if (log.isDebugEnabled()) {
+                        log.debug("Parsed point data for {} - {} ({} {}). Value: {} {}.", pao.getPaoName(), litePoint.getPointName(), litePoint.getPointTypeEnum(), litePoint.getPointOffset(), pointData.getValue(), pointData.getPointDataTimeStamp() );
+                    }
                 });
             } catch (Exception e) {
                 log.error("Error processing point data: " + Arrays.toString(decodedData) + " for point " + litePoint, e);

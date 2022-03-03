@@ -42,13 +42,13 @@ CtiDate parseDateString(std::string date_str)
     return CtiDate::neg_infin;
 }
 
-boost::optional<TimeParts> parseTimeString(std::string time_str)
+std::optional<TimeParts> parseTimeString(std::string time_str)
 {
     std::vector<std::string> timeParts;
     boost::split(timeParts, time_str, is_char{':'});
 
     //  make sure none of the strings are empty
-    if( ! std::count_if(timeParts.begin(), timeParts.end(), boost::bind(&std::string::empty, _1)) )
+    if( ! std::count_if(timeParts.begin(), timeParts.end(), std::mem_fn(&std::string::empty)) )
     {
         try
         {
@@ -79,31 +79,33 @@ boost::optional<TimeParts> parseTimeString(std::string time_str)
         }
     }
 
-    return boost::none;
+    return std::nullopt;
 }
 
-boost::optional<std::chrono::duration<double>> parseDurationString(const std::string duration)
+std::optional<std::chrono::seconds> parseDurationString(const std::string duration_str)
 {
+    using namespace std::chrono;
+
     const std::regex period_regex { "\\d+(\\.\\d+)?[hms]" };
 
-    if( std::regex_match(duration, period_regex) )
+    if( std::regex_match(duration_str, period_regex) )
     {
         size_t end;
 
-        const auto count = std::stod(duration, &end);
+        const auto count = std::stod(duration_str, &end);
 
-        if( end + 1 == duration.size() )
+        if( end + 1 == duration_str.size() )
         {
-            switch( duration.back() )
+            switch( duration_str.back() )
             {
-            case 's':  return std::chrono::duration<double, std::chrono::seconds::period> { count };
-            case 'm':  return std::chrono::duration<double, std::chrono::minutes::period> { count };
-            case 'h':  return std::chrono::duration<double, std::chrono::hours  ::period> { count };
+                case 's':  return duration_cast<seconds>(duration<double, seconds::period> { count });
+                case 'm':  return duration_cast<seconds>(duration<double, minutes::period> { count });
+                case 'h':  return duration_cast<seconds>(duration<double, hours  ::period> { count });
             }
         }
     }
 
-    return boost::none;
+    return std::nullopt;
 }
 
 }

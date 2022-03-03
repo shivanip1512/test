@@ -75,7 +75,7 @@ public enum YukonRoleProperty {
     DECIMAL_PLACES(TABULAR_DISPLAY_CONSOLE, TABULAR_DISPLAY_CONSOLE.getBasePropertyId() - 8, integerType()),
     LC_REDUCTION_COL(TABULAR_DISPLAY_CONSOLE, TABULAR_DISPLAY_CONSOLE.getBasePropertyId() - 11, booleanType()),
     
-    GRAPH_EDIT_GRAPHDEFINITION(TRENDING, TRENDING.getBasePropertyId(), booleanType()),
+    MANAGE_TRENDS(TRENDING, TRENDING.getBasePropertyId(), InputTypeFactory.permissionType(OWNER, CREATE, UPDATE, VIEW)),
     TRENDING_DISCLAIMER(TRENDING, TRENDING.getBasePropertyId() - 2, booleanType()),
     SCAN_NOW_ENABLED(TRENDING, TRENDING.getBasePropertyId() - 3, booleanType()),
     MINIMUM_SCAN_FREQUENCY(TRENDING, TRENDING.getBasePropertyId() - 5, integerType()),
@@ -98,7 +98,6 @@ public enum YukonRoleProperty {
     CAP_BANK_FIXED_TEXT(CBC_ONELINE_CAP_SETTINGS, CBC_ONELINE_CAP_SETTINGS.getBasePropertyId() - 5, stringType()),
     
     CAP_CONTROL_ACCESS(CBC_SETTINGS, CBC_SETTINGS.getBasePropertyId(), booleanType()),
-    HIDE_REPORTS(CBC_SETTINGS, CBC_SETTINGS.getBasePropertyId() - 2, booleanType()),
     HIDE_GRAPHS(CBC_SETTINGS, CBC_SETTINGS.getBasePropertyId() - 3, booleanType()),
     PFACTOR_DECIMAL_PLACES(CBC_SETTINGS, CBC_SETTINGS.getBasePropertyId() - 7, integerType()),
     CBC_ALLOW_OVUV(CBC_SETTINGS, CBC_SETTINGS.getBasePropertyId() - 8, booleanType()),
@@ -193,6 +192,7 @@ public enum YukonRoleProperty {
     ADMIN_DATABASE_MIGRATION(OPERATOR_ADMINISTRATOR, OPERATOR_ADMINISTRATOR.getBasePropertyId() - 17, booleanType()),
     ADMIN_EVENT_LOGS(OPERATOR_ADMINISTRATOR, OPERATOR_ADMINISTRATOR.getBasePropertyId() - 18, booleanType()),
     ADMIN_MANAGE_DASHBOARDS(OPERATOR_ADMINISTRATOR, OPERATOR_ADMINISTRATOR.getBasePropertyId() - 21, booleanType()),
+    ADMIN_MANAGE_ATTRIBUTES(OPERATOR_ADMINISTRATOR, OPERATOR_ADMINISTRATOR.getBasePropertyId() - 22, InputTypeFactory.permissionType(OWNER, NO_ACCESS)),
     
     CURTAILMENT_IS_OPERATOR(CI_CURTAILMENT, CI_CURTAILMENT.getBasePropertyId(), booleanType()),
     
@@ -272,7 +272,7 @@ public enum YukonRoleProperty {
     STATUS_POINT_MONITORING(METERING, METERING.getBasePropertyId() - 17, booleanType()),
     PORTER_RESPONSE_MONITORING(METERING, METERING.getBasePropertyId() - 18, booleanType()),
     METER_EVENTS(METERING, METERING.getBasePropertyId() - 19, booleanType()),
-    ALLOW_DISCONNECT_CONTROL(METERING, METERING.getBasePropertyId() - 20, booleanType()),
+    ALLOW_DISCONNECT_CONTROL(METERING, METERING.getBasePropertyId() - 20, InputTypeFactory.permissionType(OWNER, INTERACT, NO_ACCESS)),
     DEVICE_DATA_MONITORING(METERING, METERING.getBasePropertyId() - 21, booleanType()),
     WATER_LEAK_REPORT(METERING, METERING.getBasePropertyId() - 22, booleanType()),
     USAGE_THRESHOLD_REPORT(METERING, METERING.getBasePropertyId() - 23, booleanType()),
@@ -287,10 +287,7 @@ public enum YukonRoleProperty {
     WORK_ORDER_REPORT(WORK_ORDER, WORK_ORDER.getBasePropertyId() - 2, booleanType()),
     ADDTL_ORDER_NUMBER_LABEL(WORK_ORDER, WORK_ORDER.getBasePropertyId() - 3, stringType()),
     
-    INFRASTRUCTURE_CREATE_AND_UPDATE(DEVICE_MANAGEMENT, DEVICE_MANAGEMENT.getBasePropertyId(), booleanType()),
-    INFRASTRUCTURE_DELETE(DEVICE_MANAGEMENT, DEVICE_MANAGEMENT.getBasePropertyId() - 1, booleanType()),
-    INFRASTRUCTURE_ADMIN(DEVICE_MANAGEMENT, DEVICE_MANAGEMENT.getBasePropertyId() - 2, booleanType()),
-    INFRASTRUCTURE_VIEW(DEVICE_MANAGEMENT, DEVICE_MANAGEMENT.getBasePropertyId() - 3, booleanType()),
+    MANAGE_INFRASTRUCTURE(DEVICE_MANAGEMENT, DEVICE_MANAGEMENT.getBasePropertyId(), InputTypeFactory.permissionType(OWNER, CREATE, UPDATE, INTERACT, VIEW, NO_ACCESS)),
     ENDPOINT_PERMISSION(DEVICE_MANAGEMENT, DEVICE_MANAGEMENT.getBasePropertyId() - 4, InputTypeFactory.permissionType(OWNER, CREATE, UPDATE, VIEW, INTERACT)),
     MANAGE_POINT_DATA(DEVICE_MANAGEMENT, DEVICE_MANAGEMENT.getBasePropertyId() - 5, InputTypeFactory.permissionType(VIEW, UPDATE, OWNER)),
     MANAGE_POINTS(DEVICE_MANAGEMENT, DEVICE_MANAGEMENT.getBasePropertyId() - 6, InputTypeFactory.permissionType(OWNER, CREATE, UPDATE, VIEW, NO_ACCESS)),

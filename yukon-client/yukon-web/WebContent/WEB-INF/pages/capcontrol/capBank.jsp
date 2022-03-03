@@ -172,18 +172,16 @@
                                         items="${opMethods}" itemValue="dbString"/>
                                     </tags:nameValue2>
                                     <tags:nameValue2 nameKey=".bankSize">
-                                    <table> 
-                                    <tr>
-                                    <td>
-                                        <tags:selectWithItems id="bankSize" path="CapBank.bankSize" 
-                                         items="${bankSizes}" itemValue="displayValue"/>
-                                        <tags:input units="kVar" id="customBankSize" path="CapBank.bankSizeCustom" inputClass="dn" size="6"/>
-                                    </td> 
-                                    <td class="vam">
-                                        <i:inline key=".custom"/><tags:checkbox path="CapBank.customBankSize" id="customSizeCheckbox" styleClass="js-custom-bankSize"/>
-                                    </td>
-                                    </tr>
-                                    </table>
+                                        <div class="dib">
+                                            <div class="dib">
+                                                <tags:selectWithItems id="bankSize" path="CapBank.bankSize" items="${bankSizes}" itemValue="displayValue" />
+                                                    <span> <tags:input units="kVar" id="customBankSize" path="CapBank.bankSizeCustom" inputClass="dn" size="6" /> </span>
+                                            </div>
+                                            <div class="dib js-custom-size-checkbox-container">
+                                                <i:inline key=".custom" />
+                                                <tags:checkbox path="CapBank.customBankSize" id="customSizeCheckbox" styleClass="js-custom-bankSize vam" />
+                                            </div>
+                                        </div>
                                     </tags:nameValue2>
                                     <tags:nameValue2 nameKey=".recloseDelay">
                                         <tags:intervalDropdown path="CapBank.recloseDelay"
@@ -346,7 +344,7 @@
                                         <tags:selectWithItems id="commMedium" path="capbankAdditionalInfo.commMedium" 
                                         items="${communicationMediumList}" itemValue="displayName"/>
                                         <tags:input id="customCommMedium" path="capbankAdditionalInfo.commMediumCustom" inputClass="dn" maxlength="20"/>
-                                        <i:inline key=".custom"/><input id="customMediumCheckbox" type="checkbox" class="js-custom-medium" <c:if test="${capbank.capbankAdditionalInfo.customCommMedium}">checked="checked"</c:if> <c:if test="${mode == 'VIEW'}"> disabled="disabled"</c:if>>
+                                        <i:inline key=".custom"/><input id="customMediumCheckbox" type="checkbox" class="js-custom-medium vam" <c:if test="${capbank.capbankAdditionalInfo.customCommMedium}">checked="checked"</c:if> <c:if test="${mode == 'VIEW'}"> disabled="disabled"</c:if>>
                                     </tags:nameValue2>
                                     <tags:nameValue2 nameKey=".cbAddInfo.commStrength">
                                         <tags:input path="capbankAdditionalInfo.commStrengh" />
@@ -430,7 +428,7 @@
                     <c:set var="tableWidth" value="70%"/>
                 </c:if>
                 <tags:sectionContainer2 nameKey="assignedPointsSection">
-                <table class="compact-results-table row-highlighting" style="width:${tableWidth}">
+                <table class="compact-results-table no-stripes" style="width:${tableWidth}">
                     <tr>
                         <th><i:inline key=".assignedPoints.point"/></th>
                         <th><i:inline key=".assignedPoints.adaptiveCount"/></th>

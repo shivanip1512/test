@@ -18,8 +18,10 @@ import org.springframework.stereotype.Controller;
 import org.springframework.ui.ModelMap;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.WebDataBinder;
+import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.InitBinder;
 import org.springframework.web.bind.annotation.ModelAttribute;
+import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.ResponseBody;
 
@@ -67,7 +69,7 @@ import com.cannontech.user.YukonUserContext;
 import com.cannontech.web.capcontrol.IvvcHelper;
 import com.cannontech.web.capcontrol.ivvc.models.VfGraph;
 import com.cannontech.web.capcontrol.ivvc.service.VoltageFlatnessGraphService;
-import com.cannontech.web.common.chart.service.FlotChartService;
+import com.cannontech.web.common.chart.service.HighChartService;
 import com.cannontech.web.common.flashScope.FlashScope;
 import com.cannontech.web.common.flashScope.FlashScopeMessageType;
 import com.cannontech.web.input.PaoIdentifierPropertyEditor;
@@ -86,7 +88,7 @@ public class ZoneDetailController {
     @Autowired private CapControlCommandExecutor executor;
     @Autowired private CcMonitorBankListDao ccMonitorBankListDao;
     @Autowired private FilterCacheFactory filterCacheFactory;
-    @Autowired private FlotChartService flotChartService;
+    @Autowired private HighChartService highChartService;
     @Autowired private IDatabaseCache dbCache;
     @Autowired private PointDao pointDao;
     @Autowired private RolePropertyDao rolePropertyDao;
@@ -117,7 +119,7 @@ public class ZoneDetailController {
         }
     }
 
-    @RequestMapping("detail")
+    @GetMapping("detail")
     public String detail(ModelMap model, HttpServletRequest req, YukonUserContext userContext, int zoneId) throws IOException {
         setupDetails(model, userContext, zoneId);
 
@@ -139,8 +141,14 @@ public class ZoneDetailController {
         model.addAttribute("lastRange", range);
         return "ivvc/zoneDetail.jsp";
     }
+    
+    @GetMapping("selectedZoneDetail")
+    public String selectedZoneDetails(ModelMap model, HttpServletRequest req, YukonUserContext userContext, int zoneId) throws IOException {
+        setupDetails(model, userContext, zoneId);
+        return "ivvc/selectedZoneDetail.jsp";
+    }
 
-    @RequestMapping("voltagePoints")
+    @GetMapping("voltagePoints")
     public String voltagePoints(ModelMap model, LiteYukonUser user, int zoneId) {
         List<VoltageLimitedDeviceInfo> infos = ccMonitorBankListDao.getDeviceInfoByZoneId(zoneId);
         ZoneVoltagePointsHolder zoneVoltagePointsHolder = new ZoneVoltagePointsHolder(zoneId, infos);
@@ -149,7 +157,7 @@ public class ZoneDetailController {
         return "ivvc/voltagePointsEdit.jsp";
     }
     
-    @RequestMapping("updateVoltagePoints")
+    @PostMapping("updateVoltagePoints")
     public String updateVoltagePoints(@ModelAttribute ZoneVoltagePointsHolder zoneVoltagePointsHolder,
                                       BindingResult bindingResult,
                                       ModelMap model, 
@@ -212,7 +220,7 @@ public class ZoneDetailController {
         model.addAttribute("strategy", strategyLimitsHolder.getStrategy());
     }
 
-    @RequestMapping("voltageDeltas")
+    @GetMapping("voltageDeltas")
     public String voltageDeltas(ModelMap model, LiteYukonUser user, int zoneId) {
         
         setupDeltas(model, zoneId);
@@ -225,7 +233,7 @@ public class ZoneDetailController {
         return "ivvc/zoneVoltageDeltas.jsp";
     }
     
-    @RequestMapping("voltageDeltasTable")
+    @GetMapping("voltageDeltasTable")
     public String voltageDeltasTable(ModelMap model, LiteYukonUser user, int zoneId) {
         
         setupDeltas(model, zoneId);
@@ -236,7 +244,7 @@ public class ZoneDetailController {
         return "ivvc/zoneVoltageDeltasTable.jsp";
     }
 
-    @RequestMapping("deltaUpdate")
+    @PostMapping("deltaUpdate")
     public String deltaUpdate(@ModelAttribute ZoneVoltageDeltas zoneVoltageDeltas,
             ModelMap model,
             int zoneId,
@@ -296,7 +304,7 @@ public class ZoneDetailController {
         return "redirect:/capcontrol/ivvc/zone/voltageDeltas";
     }
     
-    @RequestMapping("chart")
+    @GetMapping("chart")
     public @ResponseBody Map<String, Object> chart(YukonUserContext userContext, int zoneId) {
         boolean zoneAttributesExist = 
                 voltageFlatnessGraphService.zoneHasRequiredRegulatorPointMapping(zoneId,
@@ -304,7 +312,7 @@ public class ZoneDetailController {
                                                       userContext.getYukonUser());
         if (zoneAttributesExist) {
             VfGraph graph = voltageFlatnessGraphService.getZoneGraph(userContext, zoneId);
-            Map<String, Object> graphAsJSON = flotChartService.getIVVCGraphData(graph, false);
+            Map<String, Object> graphAsJSON = highChartService.getIVVCGraphData(graph, false);
             return graphAsJSON;
         }
         return Collections.emptyMap();
@@ -363,7 +371,7 @@ public class ZoneDetailController {
         VfGraph graph = null;
         if (zoneAttributesExist) {
             graph = voltageFlatnessGraphService.getZoneGraph(userContext, zoneId);
-            Map<String, Object> graphAsJSON = flotChartService.getIVVCGraphData(graph, graph.getSettings().isShowZoneTransitionTextZoneGraph());
+            Map<String, Object> graphAsJSON = highChartService.getIVVCGraphData(graph, graph.getSettings().isShowZoneTransitionTextZoneGraph());
             model.addAttribute("graphAsJSON", graphAsJSON);
             model.addAttribute("graph", graph);
             model.addAttribute("graphSettings", graph.getSettings());

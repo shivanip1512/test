@@ -1,0 +1,136 @@
+post-operation:
+  post:
+    tags:
+      - Control Area 
+    summary: Create Control Area 
+    description: 'API to create control area.'
+    requestBody:
+      content:
+        application/json:
+          schema:
+            $ref: '../schemas/controlAreasSchema.yaml#/ControlArea'
+            
+          examples:
+            Control Area with Threshold Point Trigger:
+              $ref: '../schemas/controlAreasSchema.yaml#/components/examples/Control Area with Threshold Point Trigger Request' 
+            Control Area with Threshold Trigger:
+              $ref: '../schemas/controlAreasSchema.yaml#/components/examples/Control Area with Threshold Trigger Request' 
+            Control Area with Status Trigger:
+              $ref: '../schemas/controlAreasSchema.yaml#/components/examples/Control Area with Status Trigger Request'
+           
+      required: true
+    responses:
+        '201':
+          description: 'Created'
+          content:
+            application/json:
+              schema:
+                $ref: '../schemas/controlAreasSchema.yaml#/ControlArea Response Schema'
+            
+              examples:
+                Control Area with Threshold Point Trigger:
+                  $ref: '../schemas/controlAreasSchema.yaml#/components/examples/Control Area with Threshold Point Trigger Response' 
+                Control Area with Threshold Trigger:
+                  $ref: '../schemas/controlAreasSchema.yaml#/components/examples/Control Area with Threshold Trigger Response' 
+                Control Area with Status Trigger:
+                  $ref: '../schemas/controlAreasSchema.yaml#/components/examples/Control Area with Status Trigger Response'
+              
+get-update-delete-operation:
+  get:
+    tags:
+      - Control Area
+    summary: Retrieve Control Area 
+    description: 'API to retrieve control area based on passed id.'
+     
+    parameters:
+      - name: id
+        in: path
+        schema:
+          type: integer
+        required: true
+        description: 'Unique identifier for control area'
+
+    responses:
+      '200':
+        description: OK
+        content:
+          application/json:
+            schema:
+              $ref: '../schemas/controlAreasSchema.yaml#/ControlArea Response Schema'
+            
+            examples:
+              Control Area with Threshold Point Trigger:
+                $ref: '../schemas/controlAreasSchema.yaml#/components/examples/Control Area with Threshold Point Trigger Response' 
+              Control Area with Threshold Trigger:
+                $ref: '../schemas/controlAreasSchema.yaml#/components/examples/Control Area with Threshold Trigger Response' 
+              Control Area with Status Trigger:
+                $ref: '../schemas/controlAreasSchema.yaml#/components/examples/Control Area with Status Trigger Response'
+             
+  put:
+    tags:
+      - Control Area 
+    summary: Update Control Area 
+    description: 'API to update control area based on passed id.'
+     
+    parameters:
+      - name: id
+        in: path
+        schema:
+          type: integer
+        required: true
+        description: 'Unique identifier for control area'
+
+    requestBody:
+      content:
+        application/json:
+          schema:
+            $ref: '../schemas/controlAreasSchema.yaml#/ControlArea'
+            
+          examples:
+            Control Area with Threshold Point Trigger:
+              $ref: '../schemas/controlAreasSchema.yaml#/components/examples/Control Area with Threshold Point Trigger Request' 
+            Control Area with Threshold Trigger:
+              $ref: '../schemas/controlAreasSchema.yaml#/components/examples/Control Area with Threshold Trigger Request' 
+            Control Area with Status Trigger:
+              $ref: '../schemas/controlAreasSchema.yaml#/components/examples/Control Area with Status Trigger Request'
+
+      required: true
+    responses:
+      '200':
+        description: OK
+        content:
+          application/json:
+            schema:
+              $ref: '../schemas/controlAreasSchema.yaml#/ControlArea Response Schema'
+            
+            examples:
+              Control Area with Threshold Point Trigger:
+                $ref: '../schemas/controlAreasSchema.yaml#/components/examples/Control Area with Threshold Point Trigger Response' 
+              Control Area with Threshold Trigger:
+                $ref: '../schemas/controlAreasSchema.yaml#/components/examples/Control Area with Threshold Trigger Response' 
+              Control Area with Status Trigger:
+                $ref: '../schemas/controlAreasSchema.yaml#/components/examples/Control Area with Status Trigger Response'
+             
+  delete:
+    tags:
+      - Control Area 
+    summary: Delete Control Area 
+    description: 'API to delete control area based on passed id.'
+    parameters:
+      - name: id
+        in: path
+        schema:
+          type: integer
+        required: true
+        description: 'Unique identifier for control area'
+
+    responses:
+      '200':
+        description: OK
+        content:
+          application/json:
+            schema:
+              $ref: '../schemas/controlAreasSchema.yaml#/id'
+            examples:
+              Control Area Id:
+                $ref: '../schemas/controlAreasSchema.yaml#/components/examples/id'

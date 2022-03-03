@@ -108,4 +108,19 @@ Demand Reset failed. Reason: {exceptionReason}</p>
 
 <entry key="yukon.common.alerts.RFN_DEVICE_CREATION_FAILED">Data collection for device {rfnIdentifier} failed due to: {errMessage}.
 Device may not be created and data for this device will not be archived until this configuration is resolved and a re-sync of RF data is completed.</entry>
+
+<entry key="yukon.common.alerts.RFN_DEVICE_MODEL_CHANGED">Model changed for {deviceName}. Old Model: {oldModel} New Model: {newModel}</entry>
+<entry key="yukon.common.alerts.RFN_DEVICE_MODEL_AND_TYPE_CHANGED">Model and Device Type changed for {deviceName}. Old Model/Type: {oldModel}/{oldType} New Model/Type: {newModel}/{newType}</entry>
+
+
+<entry key="yukon.common.alerts.EATON_CLOUD_CREDENTIAL_INVALID"><![CDATA[
+{secret} specified in Yukon's Brightlayer credentials is not valid.
+</br>
+If Yukon has a valid Brightlayer connection, it can be manually refreshed under Admin -> Config -> Security.
+]]></entry>
+<entry key="yukon.common.alerts.EATON_CLOUD_CREDENTIAL_UPDATE_FAILURE"><![CDATA[
+{secret} specified in Yukon's Brightlayer credentials could not be automatically updated. If no action is taken, communications to the Cellular LCR and other Brightlayer services will be lost on {expireTime}.
+</br>
+If Yukon has a valid Brightlayer connection, it can be manually refreshed under Admin -> Config -> Security.
+]]></entry>
 </properties>

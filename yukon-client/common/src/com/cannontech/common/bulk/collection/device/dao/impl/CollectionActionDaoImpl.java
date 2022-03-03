@@ -37,6 +37,7 @@ import com.cannontech.common.bulk.collection.device.model.CollectionActionFilter
 import com.cannontech.common.bulk.collection.device.model.CollectionActionFilteredResult;
 import com.cannontech.common.bulk.collection.device.model.CollectionActionProcess;
 import com.cannontech.common.bulk.collection.device.model.CollectionActionResult;
+import com.cannontech.common.bulk.collection.device.model.CollectionActionTerminate;
 import com.cannontech.common.bulk.collection.device.service.CollectionActionLogDetailService;
 import com.cannontech.common.device.DeviceRequestType;
 import com.cannontech.common.device.commands.CommandRequestExecutionStatus;
@@ -93,10 +94,18 @@ public class CollectionActionDaoImpl implements CollectionActionDao {
             result.setStatus(rs.getEnum("Status", CommandRequestExecutionStatus.class));
             result.setStartTime(rs.getInstant("StartTime"));
             result.setStopTime(rs.getInstant("StopTime"));
-            result.setLogger(log);
-            log.debug("--------Loaded result:");
-            result.log();
             return result;      
+        }
+    };
+    
+    
+    private final YukonRowMapper<CollectionActionTerminate> terminateMapper = new YukonRowMapper<CollectionActionTerminate>() {
+        @Override
+        public CollectionActionTerminate mapRow(YukonResultSet rs) throws SQLException {
+            int key = rs.getInt("CollectionActionId");
+            CollectionAction action = rs.getEnum("Action", CollectionAction.class);
+            //termination on startup is not supported for none CRE collection actions
+            return buildCreTerminateResult(action, key);      
         }
     };
     
@@ -288,13 +297,13 @@ public class CollectionActionDaoImpl implements CollectionActionDao {
     }
     
     @Override
-    public List<CollectionActionResult> loadIncompeteResultsFromDb() {
+    public List<CollectionActionTerminate> loadIncompeteResultsFromDb() {
         SqlStatementBuilder sql = new SqlStatementBuilder();
         sql.append("SELECT CollectionActionId, Action, StartTime, StopTime, Status");
         sql.append("FROM CollectionAction");
         sql.append("WHERE StopTime is NULL");
         sql.append("AND Action").in_k(CollectionAction.getActionsWithCre());
-        return jdbcTemplate.query(sql, resultMapper);
+        return jdbcTemplate.query(sql, terminateMapper);
     }
     
     @Override
@@ -397,6 +406,55 @@ public class CollectionActionDaoImpl implements CollectionActionDao {
         } else {
             //success bucket
             result.addDevicesToGroup(CollectionActionDetail.getSuccessDetail(action), succeeded, null);
+        }
+        return result;
+    }
+    
+    private CollectionActionTerminate buildCreTerminateResult(CollectionAction action, int key) {
+        CommandRequestExecution exec = commandRequestExecutionDao.getById(getCreId(key));
+        Set<PaoIdentifier> allDevices = new HashSet<>(crerDao.getRequestedDeviceIds(exec.getId()));
+        Map<CommandRequestUnsupportedType, List<PaoIdentifier>> unsupported =
+            action.getCreUnsupportedTypes().stream().collect(Collectors.toMap(type -> type,
+                type -> crerDao.getUnsupportedDeviceIdsByExecutionId(exec.getId(), type)));
+        unsupported.values().forEach(values -> allDevices.addAll(values));
+        CollectionActionTerminate result = new CollectionActionTerminate(key, action, Lists.newArrayList(allDevices), loadInputs(key), exec);
+        
+        List<PaoIdentifier> succeeded = crerDao.getSucessDeviceIdsByExecutionId(exec.getId());
+        List<PaoIdentifier> failed = crerDao.getFailDeviceIdsByExecutionId(exec.getId());
+        
+        if (action == CollectionAction.LOCATE_ROUTE) {
+            // If device failed and succeeded, do not show device as failed.
+            failed.removeAll(succeeded);
+        }
+        
+        // failure bucket
+        result.addDevices(FAILURE, failed);
+        // unsupported buckets
+        unsupported.forEach((k, v) -> result.addDevices(action.getDetail(k), new ArrayList<>(v)));
+        if (action == CollectionAction.DEMAND_RESET) {
+            List<CommandRequestExecution> execs = commandRequestExecutionDao.getCresByContextId(exec.getContextId());
+            Optional<CommandRequestExecution> optional = execs.stream().filter(
+                e -> e.getCommandRequestExecutionType() == DeviceRequestType.DEMAND_RESET_COMMAND_VERIFY).findFirst();
+            if (optional.isPresent()) {
+                CommandRequestExecution verifExec = optional.get();
+                result .setVerificationExecution(verifExec);
+                List<PaoIdentifier> confirmed = crerDao.getSucessDeviceIdsByExecutionId(verifExec.getId());
+                // verified confirmed bucket
+                result.addDevices(CONFIRMED, confirmed);
+                succeeded.removeAll(confirmed);
+
+                List<PaoIdentifier> verifFailed = crerDao.getFailDeviceIdsByExecutionId(verifExec.getId());
+                result.addDevices(FAILURE, verifFailed);
+                succeeded.removeAll(verifFailed);
+                List<PaoIdentifier> canceled = crerDao.getUnsupportedDeviceIdsByExecutionId(verifExec.getId(),
+                        CommandRequestUnsupportedType.CANCELED);
+                result.addDevices(CANCELED, canceled);
+                succeeded.removeAll(canceled);
+            }
+            result.addDevices(UNCONFIRMED, succeeded);
+        } else {
+            // success bucket
+            result.addDevices(CollectionActionDetail.getSuccessDetail(action), succeeded);
         }
         return result;
     }

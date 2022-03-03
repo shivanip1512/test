@@ -51,11 +51,19 @@ typedef RfnResidentialVoltageDevice Rfn420fxDevice;
 typedef RfnResidentialVoltageDevice Rfn420fdDevice;
 typedef RfnResidentialVoltageDevice Rfn420frxDevice;
 typedef RfnResidentialVoltageDevice Rfn420frdDevice;
+//  RFN-500 Focus AX (gen 1)
 typedef RfnResidentialVoltageDevice Rfn520faxDevice;
 typedef RfnResidentialVoltageDevice Rfn520frxDevice;
 typedef RfnResidentialVoltageDevice Rfn520faxdDevice;
 typedef RfnResidentialVoltageDevice Rfn520frxdDevice;
 typedef RfnResidentialVoltageDevice Rfn530faxDevice;
 typedef RfnResidentialVoltageDevice Rfn530frxDevice;
+//  RFN-500 Focus AXe (gen 2)
+typedef RfnResidentialVoltageDevice Rfn520faxeDevice;
+typedef RfnResidentialVoltageDevice Rfn520frxeDevice;
+typedef RfnResidentialVoltageDevice Rfn520faxedDevice;
+typedef RfnResidentialVoltageDevice Rfn520frxedDevice;
+typedef RfnResidentialVoltageDevice Rfn530faxeDevice;
+typedef RfnResidentialVoltageDevice Rfn530frxeDevice;
 
 }

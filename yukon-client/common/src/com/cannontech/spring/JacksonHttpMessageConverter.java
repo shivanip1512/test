@@ -19,9 +19,9 @@ public class JacksonHttpMessageConverter extends MappingJackson2HttpMessageConve
 
     public JacksonHttpMessageConverter() {
         super();
-        objectMapper.configure(DeserializationFeature.ACCEPT_FLOAT_AS_INT, false);
-        objectMapper.configure(DeserializationFeature.FAIL_ON_MISSING_EXTERNAL_TYPE_ID_PROPERTY, false);
-        objectMapper.configure(SerializationFeature.FAIL_ON_EMPTY_BEANS, false);
+        getObjectMapper().configure(DeserializationFeature.ACCEPT_FLOAT_AS_INT, false);
+        getObjectMapper().configure(DeserializationFeature.FAIL_ON_MISSING_EXTERNAL_TYPE_ID_PROPERTY, false);
+        getObjectMapper().configure(SerializationFeature.FAIL_ON_EMPTY_BEANS, false);
     }
 
     @Override

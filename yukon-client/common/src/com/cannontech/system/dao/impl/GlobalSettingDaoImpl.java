@@ -12,7 +12,9 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.EmptyResultDataAccessException;
 
 import com.cannontech.clientutils.YukonLogManager;
+import com.cannontech.common.events.helper.EventLogHelper;
 import com.cannontech.common.exception.NotAuthorizedException;
+import com.cannontech.common.util.BootstrapUtils;
 import com.cannontech.common.util.LeastRecentlyUsedCacheMap;
 import com.cannontech.common.util.SqlStatementBuilder;
 import com.cannontech.database.YukonJdbcTemplate;
@@ -57,6 +59,7 @@ public class GlobalSettingDaoImpl implements GlobalSettingDao {
     private final LeastRecentlyUsedCacheMap<GlobalSettingType, GlobalSetting> cache = new LeastRecentlyUsedCacheMap<>(10000);
 
     @Autowired private YukonJdbcTemplate yukonJdbcTemplate;
+    @Autowired private EventLogHelper eventLogHelper;
 
     @Override
     public String getString(GlobalSettingType type) {
@@ -190,13 +193,19 @@ public class GlobalSettingDaoImpl implements GlobalSettingDao {
                 Integer.valueOf(event.getPrimaryKey()).equals(getSetting(globalSettingType).getId()));
     }
     
+    @Override
+    public boolean isDbChangeForSetting(DatabaseChangeEvent event) {
+        return event.getChangeCategory() == DbChangeCategory.GLOBAL_SETTING;
+    }
+    
     private final YukonRowMapper<GlobalSetting> settingMapper = new YukonRowMapper<GlobalSetting>() {
         @Override
         public GlobalSetting mapRow(YukonResultSet rs) throws SQLException {
+            boolean decryptValueFailed = false;
             GlobalSettingType type = rs.getEnum(("Name"), GlobalSettingType.class);
 
             Object value = rs.getObjectOfInputType("Value", type.getType());
-            if (value != null && type.isSensitiveInformation()) {
+            if (value != null && (type.isSensitiveInformation() || type.isNonViewableSensitiveInformation())) {
                 try {
                     if (GlobalSettingCryptoUtils.isEncrypted((String) value)) {
                         value = GlobalSettingCryptoUtils.decryptValue((String) value);
@@ -204,6 +213,8 @@ public class GlobalSettingDaoImpl implements GlobalSettingDao {
 
                 } catch (CryptoException | IOException | JDOMException | DecoderException e) {
                     value = type.getDefaultValue();
+                    eventLogHelper.decryptionFailedEventLog(BootstrapUtils.getApplicationName(), type.name());
+                    decryptValueFailed = true;
                     log.error("Unable to decrypt value for setting " + type + ". Using the default value");
                 }
             }
@@ -212,6 +223,7 @@ public class GlobalSettingDaoImpl implements GlobalSettingDao {
             setting.setId(rs.getInt("GlobalSettingId"));
             setting.setComments(rs.getString("Comments"));
             setting.setLastChanged(rs.getInstant("LastChangedDate"));
+            setting.setDecryptValueFailed(decryptValueFailed);
 
             return setting;
         }

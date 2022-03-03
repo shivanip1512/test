@@ -57,7 +57,7 @@ std::map<std::string, std::string> ThirdPartyLibraries::getKnownLibraryPaths()
         LIBRARY_ENTRY(JSON),
         LIBRARY_ENTRY(LIBCOAP),
         LIBRARY_ENTRY(LOG4CXX),
-        LIBRARY_ENTRY(MICROSOFT_SQL),
+        LIBRARY_ENTRY(MICROSOFT_GSL),
         LIBRARY_ENTRY(OPENSSL),
         LIBRARY_ENTRY(RMP_CONVERTER),
         LIBRARY_ENTRY(SQLAPI),

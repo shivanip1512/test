@@ -62,7 +62,7 @@ public class StatusPointImportProcessor extends PointImportProcessor {
         if (row.hasValue(POINT_OFFSET.NAME)) {
             int pointOffset = Integer.valueOf(row.getValue(POINT_OFFSET.NAME));
             if (pointOffset > 0) {
-                if (pointDao.deviceHasPoint(paoId, pointOffset, PointType.Status)) {
+                if (pointDao.deviceHasPoint(paoId, pointOffset, getPointType(row))) {
                     String error = messageSourceAccessor.getMessage("yukon.exception.processingException.pointOffsetInUse",
                         pointOffset, deviceName);
                     throw new ProcessingException(error, "pointOffsetInUse");
@@ -132,5 +132,10 @@ public class StatusPointImportProcessor extends PointImportProcessor {
             String error = messageSourceAccessor.getMessage("yukon.exception.processingException.invalidStateOrGroup");
             throw new ProcessingException(error, "invalidStateOrGroup", e);
         }
+    }
+    
+    @Override
+    protected PointType getPointType(ImportRow row) {
+        return PointType.Status;
     }
 }

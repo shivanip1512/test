@@ -41,27 +41,23 @@ struct cbc_heartbeat_fixture_core
             {
                 delete p;
             }
-            for each ( CtiRequestMsg *p in requestMessages )
-            {
-                delete p;
-            }
         }
 
-        virtual void sendMessageToDispatch(CtiMessage* message, Cti::CallSite cs) override
+        void sendMessageToDispatch(CtiMessage* message, Cti::CallSite cs) override
         {
             signalMessages.push_back(message);
         }
-        virtual void manualCapBankControl(CtiRequestMsg* pilRequest, CtiMultiMsg* multiMsg = NULL)
+        void manualCapBankControl(Cti::CapControl::PorterRequest pilRequest, CtiMultiMsg* multiMsg = NULL) override
         {
-            requestMessages.push_back(pilRequest);
+            requestMessages.emplace_back(std::move(pilRequest));
         }
-        virtual void enqueueEventLogEntry(const Cti::CapControl::EventLogEntry &event)
+        void enqueueEventLogEntry(const Cti::CapControl::EventLogEntry &event) override
         {
             eventMessages.push_back(event);
         }
 
         std::vector<CtiMessage*>    signalMessages;
-        std::vector<CtiRequestMsg*> requestMessages;
+        Cti::CapControl::PorterRequests requestMessages;
         Cti::CapControl::EventLogEntries eventMessages;
     }
     capController;
@@ -210,7 +206,7 @@ BOOST_FIXTURE_TEST_CASE( test_ccCapbanks_analog_send_heartbeat, cbc_heartbeat_fi
 
     BOOST_REQUIRE_EQUAL( 1, capController.requestMessages.size() );
 
-    const auto requestMsg = capController.requestMessages.front();
+    const auto requestMsg = capController.requestMessages.front().get();
 
     BOOST_REQUIRE( requestMsg );
 
@@ -259,7 +255,7 @@ BOOST_FIXTURE_TEST_CASE( test_ccCapbanks_analog_stop_heartbeat_scada_override_mo
     BOOST_CHECK_EQUAL( "CBC Heartbeat Clear", signalMsg->getText() );
     BOOST_CHECK_EQUAL( "Capbank Name: Test Capbank", signalMsg->getAdditionalInfo() );
 
-    const auto requestMsg = capController.requestMessages.front();
+    const auto requestMsg = capController.requestMessages.front().get();
 
     BOOST_REQUIRE( requestMsg );
 
@@ -296,7 +292,7 @@ BOOST_FIXTURE_TEST_CASE( test_ccCapbanks_pulsed_send_heartbeat_zero_value, cbc_h
         BOOST_CHECK_EQUAL( "CBC Heartbeat", signalMsg->getText() );
         BOOST_CHECK_EQUAL( "Capbank Name: Test Capbank", signalMsg->getAdditionalInfo() );
 
-        const auto requestMsg = capController.requestMessages.front();
+        const auto requestMsg = capController.requestMessages.front().get();
 
         BOOST_REQUIRE( requestMsg );
 
@@ -313,7 +309,7 @@ BOOST_FIXTURE_TEST_CASE( test_ccCapbanks_pulsed_send_heartbeat_zero_value, cbc_h
         BOOST_CHECK_EQUAL( "CBC Heartbeat Pulse", signalMsg->getText() );
         BOOST_CHECK_EQUAL( "Capbank Name: Test Capbank", signalMsg->getAdditionalInfo() );
 
-        const auto requestMsg = capController.requestMessages.back();
+        const auto requestMsg = capController.requestMessages.back().get();
 
         BOOST_REQUIRE( requestMsg );
 
@@ -348,7 +344,7 @@ BOOST_FIXTURE_TEST_CASE( test_ccCapbanks_pulsed_send_heartbeat_differing_value, 
         BOOST_CHECK_EQUAL( "CBC Heartbeat", signalMsg->getText() );
         BOOST_CHECK_EQUAL( "Capbank Name: Test Capbank", signalMsg->getAdditionalInfo() );
 
-        const auto requestMsg = capController.requestMessages.front();
+        const auto requestMsg = capController.requestMessages.front().get();
 
         BOOST_REQUIRE( requestMsg );
 
@@ -365,7 +361,7 @@ BOOST_FIXTURE_TEST_CASE( test_ccCapbanks_pulsed_send_heartbeat_differing_value, 
         BOOST_CHECK_EQUAL( "CBC Heartbeat Pulse", signalMsg->getText() );
         BOOST_CHECK_EQUAL( "Capbank Name: Test Capbank", signalMsg->getAdditionalInfo() );
 
-        const auto requestMsg = capController.requestMessages.back();
+        const auto requestMsg = capController.requestMessages.back().get();
 
         BOOST_REQUIRE( requestMsg );
 
@@ -399,7 +395,7 @@ BOOST_FIXTURE_TEST_CASE( test_ccCapbanks_pulsed_send_heartbeat_correct_value, cb
         BOOST_CHECK_EQUAL( "CBC Heartbeat Pulse", signalMsg->getText() );
         BOOST_CHECK_EQUAL( "Capbank Name: Test Capbank", signalMsg->getAdditionalInfo() );
 
-        const auto requestMsg = capController.requestMessages.front();
+        const auto requestMsg = capController.requestMessages.front().get();
 
         BOOST_REQUIRE( requestMsg );
 
@@ -449,7 +445,7 @@ BOOST_FIXTURE_TEST_CASE( test_ccCapbanks_pulsed_stop_heartbeat_scada_override_mo
     BOOST_CHECK_EQUAL( "CBC Heartbeat Clear", signalMsg->getText() );
     BOOST_CHECK_EQUAL( "Capbank Name: Test Capbank", signalMsg->getAdditionalInfo() );
 
-    const auto requestMsg = capController.requestMessages.front();
+    const auto requestMsg = capController.requestMessages.front().get();
 
     BOOST_REQUIRE( requestMsg );
 
@@ -965,7 +961,7 @@ BOOST_FIXTURE_TEST_CASE(test_ccLogicalCapbanks_analog_send_heartbeat, cbc_logica
 
     BOOST_REQUIRE_EQUAL(1, capController.requestMessages.size());
 
-    const auto requestMsg = capController.requestMessages.front();
+    const auto requestMsg = capController.requestMessages.front().get();
 
     BOOST_REQUIRE(requestMsg);
 
@@ -1014,7 +1010,7 @@ BOOST_FIXTURE_TEST_CASE(test_ccLogicalCapbanks_analog_stop_heartbeat_scada_overr
     BOOST_CHECK_EQUAL("CBC Heartbeat Clear", signalMsg->getText());
     BOOST_CHECK_EQUAL("Capbank Name: Test Capbank", signalMsg->getAdditionalInfo());
 
-    const auto requestMsg = capController.requestMessages.front();
+    const auto requestMsg = capController.requestMessages.front().get();
 
     BOOST_REQUIRE(requestMsg);
 
@@ -1051,7 +1047,7 @@ BOOST_FIXTURE_TEST_CASE(test_ccLogicalCapbanks_pulsed_send_heartbeat_zero_value,
         BOOST_CHECK_EQUAL("CBC Heartbeat", signalMsg->getText());
         BOOST_CHECK_EQUAL("Capbank Name: Test Capbank", signalMsg->getAdditionalInfo());
 
-        const auto requestMsg = capController.requestMessages.front();
+        const auto requestMsg = capController.requestMessages.front().get();
 
         BOOST_REQUIRE(requestMsg);
 
@@ -1068,7 +1064,7 @@ BOOST_FIXTURE_TEST_CASE(test_ccLogicalCapbanks_pulsed_send_heartbeat_zero_value,
         BOOST_CHECK_EQUAL("CBC Heartbeat Pulse", signalMsg->getText());
         BOOST_CHECK_EQUAL("Capbank Name: Test Capbank", signalMsg->getAdditionalInfo());
 
-        const auto requestMsg = capController.requestMessages.back();
+        const auto requestMsg = capController.requestMessages.back().get();
 
         BOOST_REQUIRE(requestMsg);
 
@@ -1103,7 +1099,7 @@ BOOST_FIXTURE_TEST_CASE(test_ccLogicalCapbanks_pulsed_send_heartbeat_differing_v
         BOOST_CHECK_EQUAL("CBC Heartbeat", signalMsg->getText());
         BOOST_CHECK_EQUAL("Capbank Name: Test Capbank", signalMsg->getAdditionalInfo());
 
-        const auto requestMsg = capController.requestMessages.front();
+        const auto requestMsg = capController.requestMessages.front().get();
 
         BOOST_REQUIRE(requestMsg);
 
@@ -1120,7 +1116,7 @@ BOOST_FIXTURE_TEST_CASE(test_ccLogicalCapbanks_pulsed_send_heartbeat_differing_v
         BOOST_CHECK_EQUAL("CBC Heartbeat Pulse", signalMsg->getText());
         BOOST_CHECK_EQUAL("Capbank Name: Test Capbank", signalMsg->getAdditionalInfo());
 
-        const auto requestMsg = capController.requestMessages.back();
+        const auto requestMsg = capController.requestMessages.back().get();
 
         BOOST_REQUIRE(requestMsg);
 
@@ -1154,7 +1150,7 @@ BOOST_FIXTURE_TEST_CASE(test_ccLogicalCapbanks_pulsed_send_heartbeat_correct_val
         BOOST_CHECK_EQUAL("CBC Heartbeat Pulse", signalMsg->getText());
         BOOST_CHECK_EQUAL("Capbank Name: Test Capbank", signalMsg->getAdditionalInfo());
 
-        const auto requestMsg = capController.requestMessages.front();
+        const auto requestMsg = capController.requestMessages.front().get();
 
         BOOST_REQUIRE(requestMsg);
 
@@ -1204,7 +1200,7 @@ BOOST_FIXTURE_TEST_CASE(test_ccLogicalCapbanks_pulsed_stop_heartbeat_scada_overr
     BOOST_CHECK_EQUAL("CBC Heartbeat Clear", signalMsg->getText());
     BOOST_CHECK_EQUAL("Capbank Name: Test Capbank", signalMsg->getAdditionalInfo());
 
-    const auto requestMsg = capController.requestMessages.front();
+    const auto requestMsg = capController.requestMessages.front().get();
 
     BOOST_REQUIRE(requestMsg);
 

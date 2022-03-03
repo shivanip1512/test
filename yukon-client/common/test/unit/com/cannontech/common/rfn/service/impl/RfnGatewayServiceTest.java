@@ -1,5 +1,9 @@
 package com.cannontech.common.rfn.service.impl;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -10,9 +14,9 @@ import java.util.Set;
 
 import org.easymock.Capture;
 import org.easymock.EasyMock;
-import org.junit.Assert;
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 import org.springframework.test.util.ReflectionTestUtils;
 
 import com.cannontech.amr.rfn.dao.RfnDeviceDao;
@@ -25,6 +29,7 @@ import com.cannontech.common.pao.PaoType;
 import com.cannontech.common.pao.YukonDevice;
 import com.cannontech.common.pao.YukonPao;
 import com.cannontech.common.pao.dao.PaoLocationDao;
+import com.cannontech.common.pao.model.LocationData;
 import com.cannontech.common.pao.model.PaoLocation;
 import com.cannontech.common.pao.model.PaoLocationDetails;
 import com.cannontech.common.rfn.message.RfnIdentifier;
@@ -40,6 +45,7 @@ import com.cannontech.common.rfn.model.RfnDevice;
 import com.cannontech.common.rfn.model.RfnGateway;
 import com.cannontech.common.rfn.model.RfnGatewayData;
 import com.cannontech.common.rfn.model.RfnGwy800;
+import com.cannontech.common.rfn.model.RfnGwy801;
 import com.cannontech.common.rfn.model.RfnVirtualGateway;
 import com.cannontech.common.rfn.service.RfnDeviceCreationService;
 import com.cannontech.common.rfn.service.RfnGatewayDataCache;
@@ -62,7 +68,7 @@ public class RfnGatewayServiceTest {
     private final String ipAddress = "123.123.123.123";
     private final String gatewayName = "Test Gateway";
     private final PaoIdentifier gatewayPaoId = new PaoIdentifier(100, PaoType.RFN_GATEWAY);
-    private static final RfnIdentifier gatewayRfnId = new RfnIdentifier("10000", "CPS", "RFGateway");
+    private static final RfnIdentifier gatewayRfnId = new RfnIdentifier("10000", "EATON", "RFGateway");
     
     //Gateway 2.0 data
     private GatewaySettings settings2;
@@ -73,7 +79,7 @@ public class RfnGatewayServiceTest {
     private final String ipAddress2 = "123.123.123.124";
     private final static String gateway2Name = "Test Gateway 2";
     private final PaoIdentifier gateway2PaoId = new PaoIdentifier(101, PaoType.GWY800);
-    private static final RfnIdentifier gateway2RfnId = new RfnIdentifier("10001", "CPS", "RFGateway2");
+    private static final RfnIdentifier gateway2RfnId = new RfnIdentifier("10001", "EATON", "GWY800");
     
     //WIFI Super Meter Virtual Gateway
     private GatewaySettings settings3;
@@ -85,9 +91,20 @@ public class RfnGatewayServiceTest {
     private final Integer port3 = 32035;
     private final static String gateway3Name = "Test Gateway 3";
     private final PaoIdentifier gateway3PaoId = new PaoIdentifier(102, PaoType.VIRTUAL_GATEWAY);
-    private static final RfnIdentifier gateway3RfnId = new RfnIdentifier("10002", "CPS", "VGW");
+    private static final RfnIdentifier gateway3RfnId = new RfnIdentifier("10002", "EATON", "VGW");
     
-    @Before
+    private GatewaySettings settings4;
+    private Authentication admin4;
+    private Authentication superAdmin4;
+    private Double latitude4 = 5.0;
+    private Double longitude4 = 6.0;
+    private final String ipAddress4 = "123.123.123.126";
+    private final Integer port4 = 32035;
+    private final static String gateway4Name = "Test Gateway 4";
+    private final PaoIdentifier gateway4PaoId = new PaoIdentifier(104, PaoType.GWY801);
+    private static final RfnIdentifier gateway4RfnId = new RfnIdentifier("10003", "EATON", "GW-801");
+    
+    @BeforeEach
     public void init() {
         
         //Set up gateway
@@ -138,10 +155,27 @@ public class RfnGatewayServiceTest {
         LiteYukonPAObject gw3Pao = new LiteYukonPAObject(gateway3PaoId.getPaoId());
         gw3Pao.setPaoName(gateway3Name);
         
+        //Set up GW-801
+        admin4 = new Authentication();
+        admin4.setUsername("testAdmin4");
+        admin4.setPassword("testAdminPass4");
+        superAdmin4 = new Authentication();
+        superAdmin4.setUsername("testSuperAdmin4");
+        superAdmin4.setPassword("testSuperAdminPass4");
+        settings4 = new GatewaySettings();
+        settings4.setName(gateway4Name);
+        settings4.setAdmin(admin4);
+        settings4.setSuperAdmin(superAdmin4);
+        settings4.setLatitude(latitude4);
+        settings4.setLongitude(longitude4);
+        LiteYukonPAObject gw4Pao = new LiteYukonPAObject(gateway4PaoId.getPaoId());
+        gw4Pao.setPaoName(gateway4Name);
+        
         paos = new HashMap<>();
         paos.put(gatewayPaoId.getPaoId(), gwPao);
         paos.put(gateway2PaoId.getPaoId(), gw2Pao);
         paos.put(gateway3PaoId.getPaoId(), gw3Pao);
+        paos.put(gateway4PaoId.getPaoId(), gw4Pao);
     }
     
     private static RfnGatewayData createEmptyRfnGatewayData(RfnIdentifier rfnIdentifier) {
@@ -166,6 +200,7 @@ public class RfnGatewayServiceTest {
         rfnDevices.add(createRfnDevice(gatewayName, gatewayPaoId, gatewayRfnId)); //Gateway
         rfnDevices.add(createRfnDevice(gateway2Name, gateway2PaoId, gateway2RfnId)); //Gateway 2.0
         rfnDevices.add(createRfnDevice(gateway3Name, gateway3PaoId, gateway3RfnId)); //WIFI Super Meter Virtual Gateway
+        rfnDevices.add(createRfnDevice(gateway4Name, gateway4PaoId, gateway4RfnId)); //Gateway 2.0 (801)
         
         // Expect a call to retrieve all gateway devices from rfnDeviceDao.
         RfnDeviceDao rfnDeviceDao = EasyMock.createStrictMock(RfnDeviceDao.class);
@@ -175,6 +210,7 @@ public class RfnGatewayServiceTest {
         
         // Expect a call to retrieve PAO name for each gateway.
         IDatabaseCache cache = EasyMock.createStrictMock(IDatabaseCache.class);
+        EasyMock.expect(cache.getAllPaosMap()).andReturn(paos);
         EasyMock.expect(cache.getAllPaosMap()).andReturn(paos);
         EasyMock.expect(cache.getAllPaosMap()).andReturn(paos);
         EasyMock.expect(cache.getAllPaosMap()).andReturn(paos);
@@ -188,24 +224,28 @@ public class RfnGatewayServiceTest {
                 .andReturn(createEmptyRfnGatewayData(gateway2RfnId));
         EasyMock.expect(gatewayDataCache.getIfPresent(gateway3PaoId))
                 .andReturn(createEmptyRfnGatewayData(gateway3RfnId));
+        EasyMock.expect(gatewayDataCache.getIfPresent(gateway4PaoId))
+        .andReturn(createEmptyRfnGatewayData(gateway4RfnId));
         EasyMock.replay(gatewayDataCache);
         
         PaoLocationDao paoLocationDao = new EmptyPaoLocationDao();
         
         // Do the service call
-        service = new RfnGatewayServiceImpl(null, null, null, null, null, paoLocationDao, null, rfnDeviceDao, gatewayDataCache);
+        service = new RfnGatewayServiceImpl(null, null, null, null, paoLocationDao, null, rfnDeviceDao, gatewayDataCache);
         Set<RfnGateway> allGateways = service.getAllGateways();
         
         // Test that we got the expected number of gateways from the service
-        Assert.assertEquals("Expecting 3 gateways", 3, allGateways.size());
+        assertEquals(4, allGateways.size(), "Expecting 4 gateways");
         
         // Test that we got the expected values
         RfnGateway rfnGateway = new RfnGateway(gatewayName, gatewayPaoId, gatewayRfnId, createEmptyRfnGatewayData(gatewayRfnId));
         RfnGwy800 rfnGateway2 = new RfnGwy800(gateway2Name, gateway2PaoId, gateway2RfnId, createEmptyRfnGatewayData(gateway2RfnId));
         RfnVirtualGateway rfnGateway3 = new RfnVirtualGateway(gateway3Name, gateway3PaoId, gateway3RfnId, createEmptyRfnGatewayData(gateway3RfnId));
-        Assert.assertTrue("Gateway not retrieved from getAllGateways()", allGateways.contains(rfnGateway));
-        Assert.assertTrue("Gateway 2.0 not retrieved from getAllGateways()", allGateways.contains(rfnGateway2));
-        Assert.assertTrue("WIFI Super Meter Virtual Gateway not retrieved from getAllGateways()", allGateways.contains(rfnGateway3));
+        RfnGwy801 rfnGateway4 = new RfnGwy801(gateway4Name, gateway4PaoId, gateway4RfnId, createEmptyRfnGatewayData(gateway4RfnId));
+        assertTrue(allGateways.contains(rfnGateway), "Gateway not retrieved from getAllGateways()");
+        assertTrue(allGateways.contains(rfnGateway2), "Gateway 2.0 not retrieved from getAllGateways()");
+        assertTrue(allGateways.contains(rfnGateway3), "WIFI Super Meter Virtual Gateway not retrieved from getAllGateways()");
+        assertTrue(allGateways.contains(rfnGateway4), "Gateway 2.0 (801) not retrieved from getAllGateways()");
     }
     
     @Test
@@ -237,13 +277,13 @@ public class RfnGatewayServiceTest {
         EasyMock.replay(gatewayDataCache);
         
         // Do the service call
-        service = new RfnGatewayServiceImpl(null, null, null, null, null, paoLocationDao, null, rfnDeviceDao, gatewayDataCache);
+        service = new RfnGatewayServiceImpl(null,null, null, null, paoLocationDao, null, rfnDeviceDao, gatewayDataCache);
         RfnGateway rfnGateway = service.getGatewayByPaoIdWithData(gatewayPaoId.getPaoId());
         
         // Test that we got the expected values
-        Assert.assertEquals("PaoIdentifier does not match", gatewayPaoId, rfnGateway.getPaoIdentifier());
-        Assert.assertEquals("RfnIdentifier does not match", gatewayRfnId, rfnGateway.getRfnIdentifier());
-        Assert.assertEquals("PaoLocation does not match", paoLocation, rfnGateway.getLocation());
+        assertEquals(gatewayPaoId, rfnGateway.getPaoIdentifier(), "PaoIdentifier does not match");
+        assertEquals(gatewayRfnId, rfnGateway.getRfnIdentifier(), "RfnIdentifier does not match");
+        assertEquals(paoLocation, rfnGateway.getLocation(), "PaoLocation does not match");
     }
     
     @Test
@@ -275,14 +315,14 @@ public class RfnGatewayServiceTest {
         EasyMock.replay(gatewayDataCache);
         
         // Do the service call
-        service = new RfnGatewayServiceImpl(null, null, null, null, null, paoLocationDao, null, rfnDeviceDao, gatewayDataCache);
+        service = new RfnGatewayServiceImpl(null,null, null, null, paoLocationDao, null, rfnDeviceDao, gatewayDataCache);
         RfnGateway rfnGateway = service.getGatewayByPaoIdWithData(gateway2PaoId.getPaoId());
         
         // Test that we got the expected values
-        Assert.assertEquals("PaoIdentifier does not match", gateway2PaoId, rfnGateway.getPaoIdentifier());
-        Assert.assertEquals("RfnIdentifier does not match", gateway2RfnId, rfnGateway.getRfnIdentifier());
-        Assert.assertEquals("PaoLocation does not match", paoLocation, rfnGateway.getLocation());
-        Assert.assertTrue("Gateway 2.0 returned as incorrect type.", rfnGateway instanceof RfnGwy800);
+        assertEquals(gateway2PaoId, rfnGateway.getPaoIdentifier(), "PaoIdentifier does not match");
+        assertEquals(gateway2RfnId, rfnGateway.getRfnIdentifier(), "RfnIdentifier does not match");
+        assertEquals(paoLocation, rfnGateway.getLocation(), "PaoLocation does not match");
+        assertTrue(rfnGateway instanceof RfnGwy800, "Gateway 2.0 returned as incorrect type.");
     }
     
     @Test
@@ -314,17 +354,17 @@ public class RfnGatewayServiceTest {
         EasyMock.replay(gatewayDataCache);
         
         // Do the service call
-        service = new RfnGatewayServiceImpl(null, null, null, null, null, paoLocationDao, null, rfnDeviceDao, gatewayDataCache);
+        service = new RfnGatewayServiceImpl(null,null, null, null, paoLocationDao, null, rfnDeviceDao, gatewayDataCache);
         RfnGateway rfnGateway = service.getGatewayByPaoIdWithData(gateway3PaoId.getPaoId());
         
         // Test that we got the expected values
-        Assert.assertEquals("PaoIdentifier does not match", gateway3PaoId, rfnGateway.getPaoIdentifier());
-        Assert.assertEquals("RfnIdentifier does not match", gateway3RfnId, rfnGateway.getRfnIdentifier());
-        Assert.assertEquals("PaoLocation does not match", paoLocation, rfnGateway.getLocation());
-        Assert.assertTrue("WIFI Super Meter Virtual Gateway returned as incorrect type.", rfnGateway instanceof RfnVirtualGateway);
+        assertEquals(gateway3PaoId, rfnGateway.getPaoIdentifier(), "PaoIdentifier does not match");
+        assertEquals(gateway3RfnId, rfnGateway.getRfnIdentifier(), "RfnIdentifier does not match");
+        assertEquals(paoLocation, rfnGateway.getLocation(), "PaoLocation does not match");
+        assertTrue(rfnGateway instanceof RfnVirtualGateway, "WIFI Super Meter Virtual Gateway returned as incorrect type.");
     }
     
-    @Test(expected=NotFoundException.class)
+    @Test
     public void test_getGatewayByPaoId_NotFoundException() throws NmCommunicationException {
         
         // Expect a call to retrieve an RfnDevice from rfnDeviceDao.
@@ -334,11 +374,13 @@ public class RfnGatewayServiceTest {
         EasyMock.replay(rfnDeviceDao);
         
         // Do the service call. NotFoundException should be thrown.
-        service = new RfnGatewayServiceImpl(null, null, null, null, null, null, null, rfnDeviceDao, null);
-        service.getGatewayByPaoIdWithData(gatewayPaoId.getPaoId());
+        service = new RfnGatewayServiceImpl(null,null, null, null, null, null, rfnDeviceDao, null);
+        Assertions.assertThrows(NotFoundException.class, () -> {
+            service.getGatewayByPaoIdWithData(gatewayPaoId.getPaoId());
+        });
     }
     
-    @Test(expected=NmCommunicationException.class)
+    @Test
     public void test_getGatewayByPaoId_communicationError() throws NmCommunicationException {
         
         // Expect a call to retrieve an RfnDevice from rfnDeviceDao (return value not used in this test).
@@ -361,15 +403,17 @@ public class RfnGatewayServiceTest {
         
         // Do the service call. NmCommunicationException should be thrown
         PaoLocationDao paoLocationDao = new EmptyPaoLocationDao();
-        service = new RfnGatewayServiceImpl(null, null, null, null, null, paoLocationDao, null, rfnDeviceDao, gatewayDataCache);
-        service.getGatewayByPaoIdWithData(gatewayPaoId.getPaoId());
+        service = new RfnGatewayServiceImpl(null,null, null, null, paoLocationDao, null, rfnDeviceDao, gatewayDataCache);
+        Assertions.assertThrows(NmCommunicationException.class, () -> {
+            service.getGatewayByPaoIdWithData(gatewayPaoId.getPaoId());
+        });
     }
     
-    @Test(expected=NmCommunicationException.class)
+    @Test
     public void test_createGateway_communicationError() throws NmCommunicationException, GatewayUpdateException {
         
         // Dependencies can be null, because they're not called in this test scenario
-        service = new RfnGatewayServiceImpl(null, null, null, null, null, null, null, null, null);
+        service = new RfnGatewayServiceImpl(null,null, null, null, null, null, null, null);
         
         // Set up the template to call exceptionThrown() on the callback.
         // This simulates a communication/network error.
@@ -378,14 +422,16 @@ public class RfnGatewayServiceTest {
         ReflectionTestUtils.setField(service, "updateRequestTemplate", fakeTemplate);
         
         // Do the service call
-        service.createGateway(settings, null);
+        Assertions.assertThrows(NmCommunicationException.class, () -> {
+            service.createGateway(settings, null);
+        });
     }
     
-    @Test(expected=NmCommunicationException.class)
+    @Test
     public void test_createGateway_timeoutError() throws NmCommunicationException, GatewayUpdateException {
         
         // Dependencies can be null, because they're not called in this test scenario
-        service = new RfnGatewayServiceImpl(null, null, null, null, null, null, null, null, null);
+        service = new RfnGatewayServiceImpl(null,null, null, null, null, null, null, null);
         
         // Set up the template to call handleTimeout() on the callback.
         // This simulates a timeout, which gets wrapped in a communication exception.
@@ -394,14 +440,16 @@ public class RfnGatewayServiceTest {
         ReflectionTestUtils.setField(service, "updateRequestTemplate", fakeTemplate);
         
         // Do the service call
-        service.createGateway(settings, null);
+        Assertions.assertThrows(NmCommunicationException.class, () -> {
+            service.createGateway(settings, null);
+        });
     }
     
-    @Test(expected=GatewayUpdateException.class)
+    @Test
     public void test_createGateway_failedResponse() throws NmCommunicationException, GatewayUpdateException {
         
         // Dependencies can be null, because they're not called in this test scenario
-        service = new RfnGatewayServiceImpl(null, null, null, null, null, null, null, null, null);
+        service = new RfnGatewayServiceImpl(null,null, null, null, null, null, null, null);
         
         // Set up the template to reply with a "failed" result.
         // This causes a GatewayUpdateException to be thrown.
@@ -411,7 +459,9 @@ public class RfnGatewayServiceTest {
         ReflectionTestUtils.setField(service, "updateRequestTemplate", fakeTemplate);
         
         // Do the service call
-        service.createGateway(settings, null);
+        Assertions.assertThrows(GatewayUpdateException.class, () -> {
+            service.createGateway(settings, null);
+        });
     }
     
     @Test
@@ -439,7 +489,7 @@ public class RfnGatewayServiceTest {
         // ConnectionFactory and configurationSource can be null - they are only used by the RequestReplyTemplate,
         // which is replaced by the FakeUpdateRequestReplyTemplate in this test
         EndpointEventLogService eventLog = EasyMock.createNiceMock(EndpointEventLogService.class);
-        service = new RfnGatewayServiceImpl(null, null, null, eventLog, null, paoLocationDao, rfnDeviceCreationService, null, gatewayDataCache);
+        service = new RfnGatewayServiceImpl(null,null, eventLog, null, paoLocationDao, rfnDeviceCreationService, null, gatewayDataCache);
         
         // Set up the template to reply with a "success" result.
         FakeUpdateRequestReplyTemplate fakeTemplate = new FakeUpdateRequestReplyTemplate();
@@ -449,10 +499,9 @@ public class RfnGatewayServiceTest {
         // Do the service call
         service.createGateway(settings, null);
         
-        Assert.assertEquals("Incorrect paoId saved.", gatewayPaoId, paoLocationArg.getValue().getPaoIdentifier());
-        Assert.assertEquals("Incorrect latitude saved.", latitude, new Double(paoLocationArg.getValue().getLatitude()));
-        Assert.assertEquals("Incorrect longitude saved.", longitude, new Double(
-            paoLocationArg.getValue().getLongitude()));
+        assertEquals(gatewayPaoId, paoLocationArg.getValue().getPaoIdentifier(), "Incorrect paoId saved.");
+        assertEquals(latitude, new Double(paoLocationArg.getValue().getLatitude()), "Incorrect latitude saved.");
+        assertEquals(longitude, new Double(paoLocationArg.getValue().getLongitude()), "Incorrect longitude saved.");
     }
     
     @Test
@@ -480,7 +529,7 @@ public class RfnGatewayServiceTest {
         // ConnectionFactory and configurationSource can be null - they are only used by the RequestReplyTemplate,
         // which is replaced by the FakeUpdateRequestReplyTemplate in this test
         EndpointEventLogService eventLog = EasyMock.createNiceMock(EndpointEventLogService.class);
-        service = new RfnGatewayServiceImpl(null, null, null, eventLog, null, paoLocationDao, rfnDeviceCreationService, null, gatewayDataCache);
+        service = new RfnGatewayServiceImpl(null,null, eventLog, null, paoLocationDao, rfnDeviceCreationService, null, gatewayDataCache);
         
         // Set up the template to reply with a "success" result.
         FakeUpdateRequestReplyTemplate fakeTemplate = new FakeUpdateRequestReplyTemplate();
@@ -491,10 +540,9 @@ public class RfnGatewayServiceTest {
         // Do the service call
         service.createGateway(settings2, null);
       
-        Assert.assertEquals("Incorrect paoId saved.", gateway2PaoId, paoLocationArg.getValue().getPaoIdentifier());
-        Assert.assertEquals("Incorrect latitude saved.", latitude2, new Double(paoLocationArg.getValue().getLatitude()));
-        Assert.assertEquals("Incorrect longitude saved.", longitude2, new Double(
-            paoLocationArg.getValue().getLongitude()));
+        assertEquals(gateway2PaoId, paoLocationArg.getValue().getPaoIdentifier(), "Incorrect paoId saved.");
+        assertEquals(latitude2, new Double(paoLocationArg.getValue().getLatitude()), "Incorrect latitude saved.");
+        assertEquals(longitude2, new Double(paoLocationArg.getValue().getLongitude()), "Incorrect longitude saved.");
     }
     
     @Test
@@ -522,7 +570,7 @@ public class RfnGatewayServiceTest {
         // ConnectionFactory and configurationSource can be null - they are only used by the RequestReplyTemplate,
         // which is replaced by the FakeUpdateRequestReplyTemplate in this test
         EndpointEventLogService eventLog = EasyMock.createNiceMock(EndpointEventLogService.class);
-        service = new RfnGatewayServiceImpl(null, null, null, eventLog, null, paoLocationDao, rfnDeviceCreationService, null, gatewayDataCache);
+        service = new RfnGatewayServiceImpl(null,null, eventLog, null, paoLocationDao, rfnDeviceCreationService, null, gatewayDataCache);
         
         // Set up the template to reply with a "success" result.
         FakeUpdateRequestReplyTemplate fakeTemplate = new FakeUpdateRequestReplyTemplate();
@@ -533,10 +581,9 @@ public class RfnGatewayServiceTest {
         // Do the service call
         service.createGateway(settings3, null);
       
-        Assert.assertEquals("Incorrect paoId saved.", gateway3PaoId, paoLocationArg.getValue().getPaoIdentifier());
-        Assert.assertEquals("Incorrect latitude saved.", latitude3, new Double(paoLocationArg.getValue().getLatitude()));
-        Assert.assertEquals("Incorrect longitude saved.", longitude3, new Double(
-            paoLocationArg.getValue().getLongitude()));
+        assertEquals(gateway3PaoId, paoLocationArg.getValue().getPaoIdentifier(), "Incorrect paoId saved.");
+        assertEquals(latitude3, new Double(paoLocationArg.getValue().getLatitude()), "Incorrect latitude saved.");
+        assertEquals(longitude3, new Double(paoLocationArg.getValue().getLongitude()), "Incorrect longitude saved.");
     }
     
     @Test
@@ -584,9 +631,9 @@ public class RfnGatewayServiceTest {
         
         // Do the service call
         EndpointEventLogService eventLog = EasyMock.createNiceMock(EndpointEventLogService.class);
-        service = new RfnGatewayServiceImpl(null, null, deviceDao, eventLog, null, paoLocationDao, null, rfnDeviceDao, gatewayDataCache);
+        service = new RfnGatewayServiceImpl(null,deviceDao, eventLog, null, paoLocationDao, null, rfnDeviceDao, gatewayDataCache);
         GatewayUpdateResult result = service.updateGateway(rfnGateway, null);
-        Assert.assertEquals("Failed to update gateway", GatewayUpdateResult.SUCCESSFUL, result);
+        assertEquals(GatewayUpdateResult.SUCCESSFUL, result, "Failed to update gateway");
     }
     
     @Test
@@ -634,9 +681,9 @@ public class RfnGatewayServiceTest {
         
         // Do the service call 
         EndpointEventLogService eventLog = EasyMock.createNiceMock(EndpointEventLogService.class);
-        service = new RfnGatewayServiceImpl(null, null, deviceDao, eventLog, null, paoLocationDao, null, rfnDeviceDao, gatewayDataCache);
+        service = new RfnGatewayServiceImpl(null,deviceDao, eventLog, null, paoLocationDao, null, rfnDeviceDao, gatewayDataCache);
         GatewayUpdateResult result = service.updateGateway(rfnGateway, null);
-        Assert.assertEquals("Failed to update gateway", GatewayUpdateResult.SUCCESSFUL, result);
+        assertEquals(GatewayUpdateResult.SUCCESSFUL, result, "Failed to update gateway");
     }
     
     @Test
@@ -684,9 +731,9 @@ public class RfnGatewayServiceTest {
         
         // Do the service call 
         EndpointEventLogService eventLog = EasyMock.createNiceMock(EndpointEventLogService.class);
-        service = new RfnGatewayServiceImpl(null, null, deviceDao, eventLog, null, paoLocationDao, null, rfnDeviceDao, gatewayDataCache);
+        service = new RfnGatewayServiceImpl(null,deviceDao, eventLog, null, paoLocationDao, null, rfnDeviceDao, gatewayDataCache);
         GatewayUpdateResult result = service.updateGateway(rfnGateway, null);
-        Assert.assertEquals("Failed to update gateway", GatewayUpdateResult.SUCCESSFUL, result);
+        assertEquals(GatewayUpdateResult.SUCCESSFUL, result, "Failed to update gateway");
     }
     
     //TODO Gateway 2.0 support?
@@ -737,7 +784,7 @@ public class RfnGatewayServiceTest {
         
         // Inject all the mocks into the service
         EndpointEventLogService eventLog = EasyMock.createNiceMock(EndpointEventLogService.class);
-        service = new RfnGatewayServiceImpl(null, null, deviceDao, eventLog, null, paoLocationDao, null, rfnDeviceDao, gatewayDataCache);
+        service = new RfnGatewayServiceImpl(null,deviceDao, eventLog, null, paoLocationDao, null, rfnDeviceDao, gatewayDataCache);
         
         // Set up the template to reply with a "success" result.
         FakeUpdateRequestReplyTemplate fakeTemplate = new FakeUpdateRequestReplyTemplate();
@@ -756,7 +803,7 @@ public class RfnGatewayServiceTest {
         
         //Do the service call
         GatewayUpdateResult result = service.updateGateway(rfnGateway, null);
-        Assert.assertEquals("Failed to update gateway", GatewayUpdateResult.SUCCESSFUL, result);
+        assertEquals(GatewayUpdateResult.SUCCESSFUL, result, "Failed to update gateway");
     }
     
     @Test
@@ -806,7 +853,7 @@ public class RfnGatewayServiceTest {
         
         // Inject all the mocks into the service
         EndpointEventLogService eventLog = EasyMock.createNiceMock(EndpointEventLogService.class);
-        service = new RfnGatewayServiceImpl(null, null, deviceDao, eventLog, null, paoLocationDao, null, rfnDeviceDao, gatewayDataCache);
+        service = new RfnGatewayServiceImpl(null,deviceDao, eventLog, null, paoLocationDao, null, rfnDeviceDao, gatewayDataCache);
         
         // Set up the template to reply with a "success" result.
         FakeUpdateRequestReplyTemplate fakeTemplate = new FakeUpdateRequestReplyTemplate();
@@ -825,7 +872,7 @@ public class RfnGatewayServiceTest {
         
         //Do the service call
         GatewayUpdateResult result = service.updateGateway(rfnGateway, null);
-        Assert.assertEquals("Failed to update gateway", GatewayUpdateResult.SUCCESSFUL, result);
+        assertEquals(GatewayUpdateResult.SUCCESSFUL, result, "Failed to update gateway");
     }
     
     @Test
@@ -875,7 +922,7 @@ public class RfnGatewayServiceTest {
         
         // Inject all the mocks into the service
         EndpointEventLogService eventLog = EasyMock.createNiceMock(EndpointEventLogService.class);
-        service = new RfnGatewayServiceImpl(null, null, deviceDao, eventLog, null, paoLocationDao, null, rfnDeviceDao, gatewayDataCache);
+        service = new RfnGatewayServiceImpl(null,deviceDao, eventLog, null, paoLocationDao, null, rfnDeviceDao, gatewayDataCache);
         
         // Set up the template to reply with a "success" result.
         FakeUpdateRequestReplyTemplate fakeTemplate = new FakeUpdateRequestReplyTemplate();
@@ -895,9 +942,78 @@ public class RfnGatewayServiceTest {
         
         //Do the service call
         GatewayUpdateResult result = service.updateGateway(rfnGateway, null);
-        Assert.assertEquals("Failed to update gateway", GatewayUpdateResult.SUCCESSFUL, result);
+        assertEquals(GatewayUpdateResult.SUCCESSFUL, result, "Failed to update gateway");
     }
     
+    @Test
+    public void test_updateGateway_successResponseWithGateway4() throws NmCommunicationException {
+        
+        // Expect a call to retrieve an RfnDevice from rfnDeviceDao (to get RfnIdentifier).
+        RfnDevice gwDevice = createRfnDevice(gateway4Name, gateway4PaoId, gateway4RfnId);
+        RfnDeviceDao rfnDeviceDao = EasyMock.createStrictMock(RfnDeviceDao.class);
+        EasyMock.expect(rfnDeviceDao.getDeviceForId(gateway4PaoId.getPaoId()))
+                .andReturn(gwDevice);
+        EasyMock.replay(rfnDeviceDao);
+        
+        // Expect a call to retrieve PAO name.
+        IDatabaseCache cache = EasyMock.createStrictMock(IDatabaseCache.class);
+        EasyMock.expect(cache.getAllPaosMap()).andReturn(paos);
+        EasyMock.replay(cache);
+        
+        // Expect a call to retrieve gateway data from the cache.
+        RfnGatewayDataCache gatewayDataCache = EasyMock.createStrictMock(RfnGatewayDataCache.class);
+        EasyMock.expect(gatewayDataCache.get(gateway4PaoId)).andReturn(createEmptyRfnGatewayData(gateway4RfnId));
+        
+        // Expect forced refresh of cached data.
+        gatewayDataCache.remove(gateway4PaoId);
+        EasyMock.expectLastCall();
+        
+        // Should be returning the updated data, but the return value is not used, so we are just creating an empty one.
+        EasyMock.expect(gatewayDataCache.get(gateway4PaoId))
+                .andReturn(createEmptyRfnGatewayData(gateway4RfnId));
+        EasyMock.replay(gatewayDataCache);
+        
+        // Expect call to retrieve existing location.
+        PaoLocationDao paoLocationDao = EasyMock.createStrictMock(PaoLocationDao.class);
+        EasyMock.expect(paoLocationDao.getLocation(gwDevice.getPaoIdentifier().getPaoId()))
+                .andReturn(null);
+        
+        // Expect new location to be saved.
+        PaoLocation location = new PaoLocation(null, latitude4, longitude4);
+        paoLocationDao.save(location);
+        EasyMock.expectLastCall().once();
+        EasyMock.replay(paoLocationDao);
+        
+        // Expect device name to be changed.
+        DeviceDao deviceDao = EasyMock.createStrictMock(DeviceDao.class);
+        deviceDao.changeName(EasyMock.isA(YukonDevice.class), EasyMock.eq("New Name"));
+        EasyMock.expectLastCall();
+        EasyMock.replay(deviceDao);
+        
+        // Inject all the mocks into the service
+        EndpointEventLogService eventLog = EasyMock.createNiceMock(EndpointEventLogService.class);
+        service = new RfnGatewayServiceImpl(null,deviceDao, eventLog, null, paoLocationDao, null, rfnDeviceDao, gatewayDataCache);
+        
+        // Set up the template to reply with a "success" result.
+        FakeUpdateRequestReplyTemplate fakeTemplate = new FakeUpdateRequestReplyTemplate();
+        fakeTemplate.setMode(Mode.REPLY);
+        ReflectionTestUtils.setField(service, "updateRequestTemplate", fakeTemplate);
+        
+        // Build the RfnGateway object
+        GatewayDataResponse gatewayDataResponse = new GatewayDataResponse();
+        gatewayDataResponse.setRfnIdentifier(gateway4RfnId);
+        gatewayDataResponse.setIpAddress(ipAddress4);
+        gatewayDataResponse.setPort(port4.toString());
+        gatewayDataResponse.setAdmin(admin4);
+        gatewayDataResponse.setSuperAdmin(superAdmin4);
+        RfnGatewayData rfnGatewayData = new RfnGatewayData(gatewayDataResponse, gatewayName);
+        RfnGateway rfnGateway = new RfnGateway("New Name", gateway4PaoId, gateway4RfnId, rfnGatewayData);
+        rfnGateway.setLocation(location);
+        
+        //Do the service call
+        GatewayUpdateResult result = service.updateGateway(rfnGateway, null);
+        assertEquals(GatewayUpdateResult.SUCCESSFUL, result, "Failed to update gateway");
+    }
     @Test
     public void test_updateGateway_failedResponse() throws NmCommunicationException {
         
@@ -936,7 +1052,7 @@ public class RfnGatewayServiceTest {
         EasyMock.replay(deviceDao);
         
         // Inject all the mocks into the service
-        service = new RfnGatewayServiceImpl(null, null, deviceDao, null, null, paoLocationDao, null, rfnDeviceDao, gatewayDataCache);
+        service = new RfnGatewayServiceImpl(null,deviceDao, null, null, paoLocationDao, null, rfnDeviceDao, gatewayDataCache);
         
         // Set up the template to reply with a "failed" result
         FakeUpdateRequestReplyTemplate fakeTemplate = new FakeUpdateRequestReplyTemplate();
@@ -957,10 +1073,10 @@ public class RfnGatewayServiceTest {
         
         // Do the service call
         GatewayUpdateResult result = service.updateGateway(rfnGateway, null);
-        Assert.assertEquals("Unexpected gateway update", GatewayUpdateResult.FAILED, result);
+        assertEquals(GatewayUpdateResult.FAILED, result, "Unexpected gateway update");
     }
     
-    @Test(expected=NmCommunicationException.class)
+    @Test
     public void test_updateGateway_NetworkManagerCommunicationException() throws NmCommunicationException {
         
         // Expect a call to retrieve an RfnDevice from rfnDeviceDao (to get RfnIdentifier).
@@ -999,7 +1115,7 @@ public class RfnGatewayServiceTest {
         EasyMock.replay(deviceDao);
         
         // Inject all the mocks into the service
-        service = new RfnGatewayServiceImpl(null, null, deviceDao, null, null, paoLocationDao, null, rfnDeviceDao, gatewayDataCache);
+        service = new RfnGatewayServiceImpl(null,deviceDao, null, null, paoLocationDao, null, rfnDeviceDao, gatewayDataCache);
         
         // Set up the template to call handleException() on the callback.
         // This simulates a network error.
@@ -1020,7 +1136,9 @@ public class RfnGatewayServiceTest {
         
         // Do the service call.
         // NmCommunicationException should be thrown.
-        service.updateGateway(rfnGateway, null);
+        Assertions.assertThrows(NmCommunicationException.class, () -> {
+            service.updateGateway(rfnGateway, null);
+        });
     }
     
     @Test
@@ -1046,7 +1164,7 @@ public class RfnGatewayServiceTest {
         EasyMock.replay(gatewayDataCache);
         
         // Inject mocks into the service
-        service = new RfnGatewayServiceImpl(null, null, deviceDao, null, null, null, null, rfnDeviceDao, gatewayDataCache);
+        service = new RfnGatewayServiceImpl(null,deviceDao, null, null, null, null, rfnDeviceDao, gatewayDataCache);
         
         // Set up template to reply with a "success" response
         FakeUpdateRequestReplyTemplate fakeTemplate = new FakeUpdateRequestReplyTemplate();
@@ -1055,7 +1173,7 @@ public class RfnGatewayServiceTest {
         
         // Do the service call
         boolean gatewayWasDeleted = service.deleteGateway(gatewayPaoId);
-        Assert.assertTrue("Failed to delete gateway", gatewayWasDeleted);
+        assertTrue(gatewayWasDeleted, "Failed to delete gateway");
     }
     
     @Test
@@ -1078,7 +1196,7 @@ public class RfnGatewayServiceTest {
         
         // Inject mocks into the service
         
-        service = new RfnGatewayServiceImpl(null, null, deviceDao, null, null, null, null, rfnDeviceDao, gatewayDataCache);
+        service = new RfnGatewayServiceImpl(null,deviceDao, null, null, null, null, rfnDeviceDao, gatewayDataCache);
         
         // Set up template to reply with a "failed" response
         FakeUpdateRequestReplyTemplate fakeTemplate = new FakeUpdateRequestReplyTemplate();
@@ -1088,10 +1206,10 @@ public class RfnGatewayServiceTest {
         
         // Do the service call
         boolean gatewayWasDeleted = service.deleteGateway(gatewayPaoId);
-        Assert.assertFalse("Gateway unexpectedly deleted", gatewayWasDeleted);
+        assertFalse(gatewayWasDeleted, "Gateway unexpectedly deleted");
     }
     
-    @Test(expected=NmCommunicationException.class)
+    @Test
     public void test_deleteGateway_NetworkManagerCommunicationException() throws NmCommunicationException {
         
         // Expect a call to retrieve an RfnDevice from rfnDeviceDao (to get RfnIdentifier).
@@ -1110,7 +1228,7 @@ public class RfnGatewayServiceTest {
         EasyMock.replay(gatewayDataCache);
         
         // Inject mocks into the service
-        service = new RfnGatewayServiceImpl(null, null, deviceDao, null, null, null, null, rfnDeviceDao, gatewayDataCache);
+        service = new RfnGatewayServiceImpl(null, deviceDao, null, null, null, null, rfnDeviceDao, gatewayDataCache);
         
         // Set up template to throw an exception.
         // This simulates a communication error.
@@ -1120,7 +1238,9 @@ public class RfnGatewayServiceTest {
         
         // Do the service call.
         // NmCommunicationException should be thrown.
-        service.deleteGateway(gatewayPaoId);
+        Assertions.assertThrows(NmCommunicationException.class, () -> {
+            service.deleteGateway(gatewayPaoId);
+        });
     }
     
     /**
@@ -1207,6 +1327,11 @@ public class RfnGatewayServiceTest {
 
         @Override
         public List<SimpleDevice> getDevicesWithoutLocationByGateway(List<Integer> gatewayIds) {
+            throw new UnsupportedOperationException();
+        }
+
+        @Override
+        public List<LocationData> getLocationDetailForPaoType(Iterable<PaoType> paoTypes, int startIndex, int endIndex) {
             throw new UnsupportedOperationException();
         }
     }

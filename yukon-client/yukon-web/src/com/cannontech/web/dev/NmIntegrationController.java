@@ -14,7 +14,7 @@ import java.util.concurrent.ExecutionException;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 
-import javax.jms.ConnectionFactory;
+import javax.annotation.PostConstruct;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
@@ -26,13 +26,14 @@ import org.joda.time.Instant;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.MessageSourceResolvable;
 import org.springframework.http.HttpStatus;
-import org.springframework.jms.core.JmsTemplate;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.ModelMap;
 import org.springframework.web.bind.ServletRequestUtils;
 import org.springframework.web.bind.WebDataBinder;
+import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.InitBinder;
 import org.springframework.web.bind.annotation.ModelAttribute;
+import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
@@ -58,39 +59,50 @@ import com.cannontech.common.config.MasterConfigBoolean;
 import com.cannontech.common.pao.PaoType;
 import com.cannontech.common.rfn.message.RfnIdentifier;
 import com.cannontech.common.rfn.message.datastreaming.device.DeviceDataStreamingConfigError;
+import com.cannontech.common.rfn.message.device.RfnDeviceDeleteConfirmationReplyType;
+import com.cannontech.common.rfn.message.device.RfnDeviceDeleteInitialReplyType;
 import com.cannontech.common.rfn.message.gateway.ConnectionStatus;
 import com.cannontech.common.rfn.message.gateway.GatewayConfigResult;
 import com.cannontech.common.rfn.message.gateway.GatewayFirmwareUpdateRequestResult;
 import com.cannontech.common.rfn.message.gateway.GatewayUpdateResult;
 import com.cannontech.common.rfn.message.gateway.RfnGatewayUpgradeRequestAckType;
 import com.cannontech.common.rfn.message.gateway.RfnUpdateServerAvailableVersionResult;
+import com.cannontech.common.rfn.message.location.LocationResponse;
+import com.cannontech.common.rfn.message.location.Origin;
 import com.cannontech.common.rfn.message.metadatamulti.RfnMetadataMultiQueryResultType;
 import com.cannontech.common.rfn.message.metadatamulti.RfnMetadataMultiResponseType;
-import com.cannontech.common.rfn.message.network.NeighborFlagType;
-import com.cannontech.common.rfn.message.network.RfnNeighborDataReplyType;
-import com.cannontech.common.rfn.message.network.RfnParentReplyType;
-import com.cannontech.common.rfn.message.network.RfnPrimaryRouteDataReplyType;
-import com.cannontech.common.rfn.message.network.RouteFlagType;
+import com.cannontech.common.rfn.message.neighbor.LinkPower;
+import com.cannontech.common.rfn.message.neighbor.LinkRate;
+import com.cannontech.common.rfn.message.neighbor.NeighborFlag;
+import com.cannontech.common.rfn.message.route.RouteFlag;
 import com.cannontech.common.rfn.message.tree.NetworkTreeUpdateTimeResponse;
+import com.cannontech.common.rfn.model.RfnGateway;
 import com.cannontech.common.rfn.model.RfnManufacturerModel;
 import com.cannontech.common.rfn.service.RfnDeviceCreationService;
 import com.cannontech.common.rfn.service.RfnGatewayDataCache;
+import com.cannontech.common.rfn.service.RfnGatewayService;
 import com.cannontech.common.rfn.simulation.SimulatedCertificateReplySettings;
 import com.cannontech.common.rfn.simulation.SimulatedDataStreamingSettings;
 import com.cannontech.common.rfn.simulation.SimulatedFirmwareReplySettings;
 import com.cannontech.common.rfn.simulation.SimulatedFirmwareVersionReplySettings;
 import com.cannontech.common.rfn.simulation.SimulatedGatewayDataSettings;
 import com.cannontech.common.rfn.simulation.SimulatedNmMappingSettings;
+import com.cannontech.common.rfn.simulation.SimulatedRfnDeviceDeletionSettings;
 import com.cannontech.common.rfn.simulation.SimulatedUpdateReplySettings;
+import com.cannontech.common.rfn.simulation.service.RfnDeviceDeletionSimulatorService;
 import com.cannontech.common.rfn.simulation.service.RfnGatewaySimulatorService;
+import com.cannontech.common.util.jms.YukonJmsTemplate;
+import com.cannontech.common.util.jms.YukonJmsTemplateFactory;
 import com.cannontech.common.util.jms.api.JmsApiDirectory;
 import com.cannontech.core.service.DateFormattingService.DateFormatEnum;
 import com.cannontech.development.model.DeviceArchiveRequestParameters;
 import com.cannontech.development.model.RfnTestEvent;
 import com.cannontech.development.model.RfnTestMeterInfoStatusReport;
 import com.cannontech.development.model.RfnTestMeterReading;
+import com.cannontech.development.model.RfnTestOutageRestoreEvent;
 import com.cannontech.development.service.RfnEventTestingService;
 import com.cannontech.development.service.impl.DRReport;
+import com.cannontech.dr.rfn.model.FieldSimulatorSettings;
 import com.cannontech.dr.rfn.model.RfnDataSimulatorStatus;
 import com.cannontech.dr.rfn.model.RfnMeterReadAndControlDisconnectSimulatorSettings;
 import com.cannontech.dr.rfn.model.RfnMeterReadAndControlReadSimulatorSettings;
@@ -103,13 +115,17 @@ import com.cannontech.simulators.dao.YukonSimulatorSettingsKey;
 import com.cannontech.simulators.message.request.DataStreamingSimulatorStatusRequest;
 import com.cannontech.simulators.message.request.DemandResetStatusArchiveSimulatorRequest;
 import com.cannontech.simulators.message.request.DeviceArchiveSimulatorRequest;
+import com.cannontech.simulators.message.request.FieldSimulatorStatusRequest;
 import com.cannontech.simulators.message.request.GatewaySimulatorStatusRequest;
 import com.cannontech.simulators.message.request.MeterInfoStatusArchiveSimulatorRequest;
 import com.cannontech.simulators.message.request.ModifyDataStreamingSimulatorRequest;
+import com.cannontech.simulators.message.request.ModifyFieldSimulatorRequest;
 import com.cannontech.simulators.message.request.ModifyGatewaySimulatorRequest;
+import com.cannontech.simulators.message.request.ModifyRfnDeviceDeletionSimulatorRequest;
 import com.cannontech.simulators.message.request.ModifyRfnMeterReadAndControlSimulatorRequest;
 import com.cannontech.simulators.message.request.NmNetworkSimulatorRequest;
 import com.cannontech.simulators.message.request.NmNetworkSimulatorRequest.Action;
+import com.cannontech.simulators.message.request.RfnDeviceDeletionSimulatorStatusRequest;
 import com.cannontech.simulators.message.request.RfnLcrAllDeviceSimulatorStartRequest;
 import com.cannontech.simulators.message.request.RfnLcrAllDeviceSimulatorStopRequest;
 import com.cannontech.simulators.message.request.RfnLcrSimulatorByRangeStartRequest;
@@ -121,8 +137,10 @@ import com.cannontech.simulators.message.request.RfnMeterDataSimulatorStopReques
 import com.cannontech.simulators.message.request.RfnMeterReadAndControlSimulatorStatusRequest;
 import com.cannontech.simulators.message.request.SimulatorRequest;
 import com.cannontech.simulators.message.response.DataStreamingSimulatorStatusResponse;
+import com.cannontech.simulators.message.response.FieldSimulatorStatusResponse;
 import com.cannontech.simulators.message.response.GatewaySimulatorStatusResponse;
 import com.cannontech.simulators.message.response.NmNetworkSimulatorResponse;
+import com.cannontech.simulators.message.response.RfnDeviceDeletionSimulatorStatusResponse;
 import com.cannontech.simulators.message.response.RfnLcrSimulatorStatusResponse;
 import com.cannontech.simulators.message.response.RfnMeterDataSimulatorStatusResponse;
 import com.cannontech.simulators.message.response.RfnMeterReadAndControlSimulatorStatusResponse;
@@ -135,6 +153,7 @@ import com.cannontech.web.input.DatePropertyEditorFactory;
 import com.cannontech.web.input.DatePropertyEditorFactory.BlankMode;
 import com.cannontech.web.input.EnumPropertyEditor;
 import com.cannontech.web.security.annotation.CheckCparm;
+import com.google.common.collect.ImmutableList;
 import com.google.common.collect.ImmutableSet;
 import com.google.common.collect.Lists;
 
@@ -144,6 +163,8 @@ import com.google.common.collect.Lists;
 public class NmIntegrationController {
 
     @Autowired private DatePropertyEditorFactory datePropertyEditorFactory;
+    @Autowired private RfnDeviceDeletionSimulatorService rfnDeviceDeletionSimulatorService;
+    @Autowired private RfnGatewayService rfnGatewayService;
     @Autowired private RfnEventTestingService rfnEventTestingService;
     @Autowired private RfnPerformanceVerificationService performanceVerificationService;
     @Autowired private RfnGatewayDataCache gatewayCache;
@@ -151,11 +172,18 @@ public class NmIntegrationController {
     @Autowired private SimulatorsCommunicationService simulatorsCommunicationService;
     @Autowired private NmSyncService nmSyncService;
     @Autowired private YukonSimulatorSettingsDao yukonSimulatorSettingsDao;
-    protected JmsTemplate jmsTemplate;
-    
-    private static final Logger log = YukonLogManager.getLogger(NmIntegrationController.class);
+    @Autowired private YukonJmsTemplateFactory jmsTemplateFactory;
 
-    @RequestMapping("viewBase")
+    private YukonJmsTemplate jmsTemplate;
+    private static final Logger log = YukonLogManager.getLogger(NmIntegrationController.class);
+    private static final String SIMULATORS_COMM_ERROR = "Error communicating with Yukon Simulators Service.";
+
+    @PostConstruct
+    public void init() {
+        jmsTemplate = jmsTemplateFactory.createTemplate(JmsApiDirectory.NETWORK_TREE_UPDATE_RESPONSE);
+    }
+
+    @GetMapping("viewBase")
     public String viewBase(ModelMap model) {
         return "rfn/viewBase.jsp";
     }
@@ -188,7 +216,7 @@ public class NmIntegrationController {
             model.addAttribute("dataSettings", response.getDataSettings());
             model.addAttribute("updateSettings", response.getUpdateSettings());
         } catch (ExecutionException e) {
-            log.error("Error communicating with Yukon Simulators Service.", e);
+            log.error(SIMULATORS_COMM_ERROR, e);
             flash.setError(new YukonMessageSourceResolvable(SimulatorsCommunicationService.COMMUNICATION_ERROR_KEY));
             return "redirect:viewBase";
         }
@@ -230,7 +258,7 @@ public class NmIntegrationController {
             flash.setConfirm(new YukonMessageSourceResolvable(
                 "yukon.web.modules.dev.rfnTest.gatewaySimulator.gatewayDataResponse", serial));
         } catch (ExecutionException e) {
-            log.error("Error communicating with Yukon Simulators Service.", e);
+            log.error(SIMULATORS_COMM_ERROR, e);
             flash.setError(new YukonMessageSourceResolvable(SimulatorsCommunicationService.COMMUNICATION_ERROR_KEY));
             return "redirect:gatewaySimulator";
         }
@@ -339,6 +367,20 @@ public class NmIntegrationController {
         return "redirect:viewRfnMeterSimulator";
     }
     
+    @PostMapping("configureFieldSimulator")
+    public String configureFieldSimulator(ModelMap model, @ModelAttribute FieldSimulatorSettings fieldSimulatorSettings, FlashScope flash) {
+        
+        log.info("Device group: {}, failure percentage: {}", 
+                fieldSimulatorSettings.getDeviceGroup(), 
+                fieldSimulatorSettings.getDeviceConfigFailureRate());
+        
+        var request = new ModifyFieldSimulatorRequest(fieldSimulatorSettings);
+        
+        sendFieldSimulatorSettingsRequest(request, flash);
+
+        return "redirect:viewRfnMeterSimulator";
+    }
+    
     @RequestMapping("disableGatewayUpdateReply")
     public String disableGatewayUpdateReply(FlashScope flash) {
         
@@ -432,7 +474,7 @@ public class NmIntegrationController {
                 flash.setError(new YukonMessageSourceResolvable(failureKey));
             }
         } catch (ExecutionException e) {
-            log.error("Error communicating with Yukon Simulators Service.", e);
+            log.error(SIMULATORS_COMM_ERROR, e);
             flash.setError(new YukonMessageSourceResolvable(SimulatorsCommunicationService.COMMUNICATION_ERROR_KEY));
         }
     }
@@ -443,10 +485,10 @@ public class NmIntegrationController {
      * @param isStartRequest Is this a request to start a simulator (true) or stop a simulator(false).
      */
     private void sendRfnMeterReadAndControlStartStopRequest(ModifyRfnMeterReadAndControlSimulatorRequest request, FlashScope flash, boolean isStartRequest) {
-        String successKey = isStartRequest ? "yukon.web.modules.dev.rfnTest.rfnMeterReadAndControlMeterSimulator.simStartSuccess" :
-                                             "yukon.web.modules.dev.rfnTest.rfnMeterReadAndControlMeterSimulator.simStopSuccess";
-        String failureKey = isStartRequest ? "yukon.web.modules.dev.rfnTest.rfnMeterReadAndControlMeterSimulator.simStartFailed" :
-                                             "yukon.web.modules.dev.rfnTest.rfnMeterReadAndControlMeterSimulator.simStopFailed";
+        String successKey = isStartRequest ? "yukon.web.modules.dev.rfnTest.rfnMeterSimulator.readAndControl.simStartSuccess" :
+                                             "yukon.web.modules.dev.rfnTest.rfnMeterSimulator.readAndControl.simStopSuccess";
+        String failureKey = isStartRequest ? "yukon.web.modules.dev.rfnTest.rfnMeterSimulator.readAndControl.simStartFailed" :
+                                             "yukon.web.modules.dev.rfnTest.rfnMeterSimulator.readAndControl.simStopFailed";
         try {
             SimulatorResponseBase response = simulatorsCommunicationService.sendRequest(request, SimulatorResponseBase.class);
             if (response.isSuccessful()) {
@@ -455,11 +497,45 @@ public class NmIntegrationController {
                 flash.setError(new YukonMessageSourceResolvable(failureKey));
             }
         } catch (ExecutionException e) {
-            log.error("Error communicating with Yukon Simulators Service.", e);
+            log.error(SIMULATORS_COMM_ERROR, e);
             flash.setError(new YukonMessageSourceResolvable(SimulatorsCommunicationService.COMMUNICATION_ERROR_KEY));
         }
     }
     
+    private void sendRfnDeviceDeletionStartStopRequest(ModifyRfnDeviceDeletionSimulatorRequest request, FlashScope flash, boolean isStartRequest) {
+        String successKey = isStartRequest ? "yukon.web.modules.dev.rfnTest.rfnDeviceDeletionSimulator.simStartSuccess" :
+                                             "yukon.web.modules.dev.rfnTest.rfnDeviceDeletionSimulator.simStopSuccess";
+        String failureKey = isStartRequest ? "yukon.web.modules.dev.rfnTest.rfnDeviceDeletionSimulator.simStartFailed" :
+                                             "yukon.web.modules.dev.rfnTest.rfnDeviceDeletionSimulator.simStopFailed";
+        try {
+            SimulatorResponseBase response = simulatorsCommunicationService.sendRequest(request, SimulatorResponseBase.class);
+            if (response.isSuccessful()) {
+                flash.setConfirm(new YukonMessageSourceResolvable(successKey));
+            } else {
+                flash.setError(new YukonMessageSourceResolvable(failureKey));
+            }
+        } catch (ExecutionException e) {
+            log.error(SIMULATORS_COMM_ERROR, e);
+            flash.setError(new YukonMessageSourceResolvable(SimulatorsCommunicationService.COMMUNICATION_ERROR_KEY));
+        }
+    }
+
+    private void sendFieldSimulatorSettingsRequest(ModifyFieldSimulatorRequest request, FlashScope flash) {
+        String successKey = "yukon.web.modules.dev.rfnTest.rfnMeterSimulator.deviceConfig.configurationSuccess";
+        String failureKey = "yukon.web.modules.dev.rfnTest.rfnMeterSimulator.deviceConfig.configurationFailed";
+        try {
+            var response = simulatorsCommunicationService.sendRequest(request, SimulatorResponseBase.class);
+            if (response.isSuccessful()) {
+                flash.setConfirm(new YukonMessageSourceResolvable(successKey));
+            } else {
+                flash.setError(new YukonMessageSourceResolvable(failureKey));
+            }
+        } catch (ExecutionException e) {
+            log.error(SIMULATORS_COMM_ERROR, e);
+            flash.setError(new YukonMessageSourceResolvable(SimulatorsCommunicationService.COMMUNICATION_ERROR_KEY));
+        }
+    }
+
     @ModelAttribute("meterReading")
     RfnTestMeterReading rfnTestMeterReadingFactory() {
         return new RfnTestMeterReading();
@@ -503,13 +579,18 @@ public class NmIntegrationController {
     }
 
     @RequestMapping("viewLocationArchiveRequest")
-    public String viewLocationArchiveRequest() {
+    public String viewLocationArchiveRequest(ModelMap model) {
+        List<RfnIdentifier> gatewayRfnIds = rfnGatewayService.getAllGateways()
+                .stream()
+                .map(RfnGateway::getRfnIdentifier)
+                .collect(Collectors.toList());
+        model.addAttribute("gateways", gatewayRfnIds);
         return "rfn/viewLocationArchive.jsp";
     }
 
     @RequestMapping("viewEventArchiveRequest")
     public String viewEventArchiveRequest(ModelMap model) {
-        return setupEventAlarmAttributes(model, new RfnTestEvent());
+        return setupEventAlarmAttributes(model, new RfnTestEvent(), new RfnTestOutageRestoreEvent());
     }
 
     @RequestMapping("viewLcrReadArchiveRequest")
@@ -569,13 +650,32 @@ public class NmIntegrationController {
     @RequestMapping("existing-rfnMetersimulator-status")
     @ResponseBody
     public Map<String, Object> existingrfnMeterSimulatorStatus(YukonUserContext userContext) {
-        MeterSimStatusResponseOrError status = getRfnMeterSimulatorStatusResponse();
+        var status = getRfnMeterSimulatorStatusResponse();
         if (status.response == null) {
             return status.errorJson;
         }
         return buildSimulatorStatusJson(status.response.getStatus());
     }
 
+    @RequestMapping("viewRfnDeviceDeleteSimulator")
+    public String viewRfnDeviceDeleteSimulator(ModelMap model, FlashScope flash) {
+        model.addAttribute("rfnDeviceDeleteInitialReplies", RfnDeviceDeleteInitialReplyType.values());
+        model.addAttribute("rfnDeviceDeleteConfirmationReplies", RfnDeviceDeleteConfirmationReplyType.values());
+        
+        var rfnDeviceDeleteResponse = getRfnDeviceDeletionStatusResponse().response;
+        
+        if (rfnDeviceDeleteResponse == null) {
+            flash.setError(new YukonMessageSourceResolvable(SimulatorsCommunicationService.COMMUNICATION_ERROR_KEY));
+            return "redirect:viewBase";
+        }
+        
+        model.addAttribute("deletionSettings", rfnDeviceDeleteResponse.getDeletionSettings());
+
+        model.addAttribute("deviceDeletionReplyActive", rfnDeviceDeleteResponse.isDeviceDeletionReplyActive());
+
+        return "rfn/rfnDeviceDeleteSimulator.jsp";
+    }
+    
     @RequestMapping("viewRfnMeterSimulator")
     public String viewRfnMeterSimulator(ModelMap model, FlashScope flash) {
         ImmutableSet<PaoType> paoTypes = PaoType.getRfMeterTypes();
@@ -587,8 +687,9 @@ public class NmIntegrationController {
         model.addAttribute("rfnMeterDisconnectConfirmationReplies", RfnMeterDisconnectConfirmationReplyType.values());
         model.addAttribute("rfnMeterDisconnectQueryResponses", RfnMeterDisconnectState.values());
         
-        RfnMeterDataSimulatorStatusResponse rfnMeterResponse = getRfnMeterSimulatorStatusResponse().response;
-        RfnMeterReadAndControlSimulatorStatusResponse rfnMeterReadAndControlResponse = getRfnMeterReadAndControlStatusResponse().response;
+        var rfnMeterResponse = getRfnMeterSimulatorStatusResponse().response;
+        var rfnMeterReadAndControlResponse = getRfnMeterReadAndControlStatusResponse().response;
+        var rfnMeterFieldSimulatorResponse = getRfnMeterFieldSimulatorStatusResponse().response;
         
         if (rfnMeterResponse == null) {
             flash.setError(new YukonMessageSourceResolvable(SimulatorsCommunicationService.COMMUNICATION_ERROR_KEY));
@@ -597,6 +698,11 @@ public class NmIntegrationController {
         if (rfnMeterReadAndControlResponse == null) {
             flash.setError(new YukonMessageSourceResolvable(SimulatorsCommunicationService.COMMUNICATION_ERROR_KEY));
             return "redirect:viewBase";
+        }
+        if (rfnMeterFieldSimulatorResponse != null) {
+            model.addAttribute("fieldSimulatorSettings", rfnMeterFieldSimulatorResponse.getSettings());
+        } else {
+            model.addAttribute("fieldSimulatorError", "Field Simulator must be running to use the RFN Meter Device Config Simulator.");
         }
         
         model.addAttribute("currentSettings", rfnMeterResponse.getSettings());
@@ -612,17 +718,45 @@ public class NmIntegrationController {
         return "rfn/rfnMeterSimulator.jsp";
     }
 
-    private RfnMeterReadAndControlSimStatusResponseOrError getRfnMeterReadAndControlStatusResponse() {
+    private ResponseOrError<RfnMeterReadAndControlSimulatorStatusResponse> getRfnMeterReadAndControlStatusResponse() {
         try {
             RfnMeterReadAndControlSimulatorStatusResponse response = simulatorsCommunicationService.sendRequest(
                 new RfnMeterReadAndControlSimulatorStatusRequest(), RfnMeterReadAndControlSimulatorStatusResponse.class);
-            return new RfnMeterReadAndControlSimStatusResponseOrError(response);
+            return ResponseOrError.of(response);
         } catch (Exception e) {
             log.error(e);
             Map<String, Object> json = new HashMap<>();
             json.put("hasError", true);
             json.put("errorMessage", "Unable to send message to Simulator Service: " + e.getMessage() + ".");
-            return new RfnMeterReadAndControlSimStatusResponseOrError(json);
+            return ResponseOrError.of(json);
+        }
+    }
+    
+    private ResponseOrError<FieldSimulatorStatusResponse> getRfnMeterFieldSimulatorStatusResponse() {
+        try {
+             var response = simulatorsCommunicationService.sendRequest(
+                new FieldSimulatorStatusRequest(), FieldSimulatorStatusResponse.class);
+            return ResponseOrError.of(response);
+        } catch (Exception e) {
+            log.error(e);
+            Map<String, Object> json = new HashMap<>();
+            json.put("hasError", true);
+            json.put("errorMessage", "Unable to send message to Simulator Service: " + e.getMessage() + ".");
+            return ResponseOrError.of(json);
+        }
+    }
+    
+    private ResponseOrError<RfnDeviceDeletionSimulatorStatusResponse> getRfnDeviceDeletionStatusResponse() {
+        try {
+            RfnDeviceDeletionSimulatorStatusResponse response = simulatorsCommunicationService.sendRequest(
+                new RfnDeviceDeletionSimulatorStatusRequest(), RfnDeviceDeletionSimulatorStatusResponse.class);
+            return ResponseOrError.of(response);
+        } catch (Exception e) {
+            log.error(e);
+            Map<String, Object> json = new HashMap<>();
+            json.put("hasError", true);
+            json.put("errorMessage", "Unable to send message to Simulator Service: " + e.getMessage() + ".");
+            return ResponseOrError.of(json);
         }
     }
     
@@ -652,6 +786,27 @@ public class NmIntegrationController {
         return "redirect:viewRfnMeterSimulator";
     }
     
+    @RequestMapping("enableDeviceDeletionReply")
+    public String enableDeviceDeletionReply(SimulatedRfnDeviceDeletionSettings settings, FlashScope flash) {
+        
+        ModifyRfnDeviceDeletionSimulatorRequest request = new ModifyRfnDeviceDeletionSimulatorRequest();
+        request.setDeletionSettings(settings);
+        
+        sendRfnDeviceDeletionStartStopRequest(request, flash, true);
+        
+        return "redirect:viewRfnDeviceDeleteSimulator";
+    }
+
+    @RequestMapping("disableDeviceDeletionReply")
+    public String disableDeviceDeletionReply(FlashScope flash) {
+        ModifyRfnDeviceDeletionSimulatorRequest request = new ModifyRfnDeviceDeletionSimulatorRequest();
+        request.setStopDeletionReply(true);
+        
+        sendRfnDeviceDeletionStartStopRequest(request, flash, false);
+        
+        return "redirect:viewRfnDeviceDeleteSimulator";
+    }
+    
     @RequestMapping("viewLcrDataSimulator")
     public String viewLcrDataSimulator(ModelMap model, FlashScope flash) {
         RfnLcrSimulatorStatusResponse response = getRfnLcrSimulatorStatusResponse().response;
@@ -666,31 +821,31 @@ public class NmIntegrationController {
         return "rfn/dataSimulator.jsp";
     }
 
-    private LcrSimStatusResponseOrError getRfnLcrSimulatorStatusResponse() {
+    private ResponseOrError<RfnLcrSimulatorStatusResponse> getRfnLcrSimulatorStatusResponse() {
         try {
             RfnLcrSimulatorStatusResponse response = simulatorsCommunicationService.sendRequest(
                 new RfnLcrSimulatorStatusRequest(), RfnLcrSimulatorStatusResponse.class);
-            return new LcrSimStatusResponseOrError(response);
+            return ResponseOrError.of(response);
         } catch (Exception e) {
             log.error(e);
             Map<String, Object> json = new HashMap<>();
             json.put("hasError", true);
             json.put("errorMessage", "Unable to send message to Simulator Service: " + e.getMessage());
-            return new LcrSimStatusResponseOrError(json);
+            return ResponseOrError.of(json);
         }
     }
 
-    private MeterSimStatusResponseOrError getRfnMeterSimulatorStatusResponse() {
+    private ResponseOrError<RfnMeterDataSimulatorStatusResponse> getRfnMeterSimulatorStatusResponse() {
         try {
             RfnMeterDataSimulatorStatusResponse response = simulatorsCommunicationService.sendRequest(
                 new RfnMeterDataSimulatorStatusRequest(), RfnMeterDataSimulatorStatusResponse.class);
-            return new MeterSimStatusResponseOrError(response);
+            return ResponseOrError.of(response);
         } catch (Exception e) {
             log.error(e);
             Map<String, Object> json = new HashMap<>();
             json.put("hasError", true);
             json.put("errorMessage", "Unable to send message to Simulator Service: " + e.getMessage() + ".");
-            return new MeterSimStatusResponseOrError(json);
+            return ResponseOrError.of(json);
         }
     }
 
@@ -747,7 +902,7 @@ public class NmIntegrationController {
     @RequestMapping("datasimulator-status")
     @ResponseBody
     public Map<String, Object> dataSimulatorStatus() {
-        LcrSimStatusResponseOrError status = getRfnLcrSimulatorStatusResponse();
+        var status = getRfnLcrSimulatorStatusResponse();
         if (status.response == null) {
             return status.errorJson;
         }
@@ -757,7 +912,7 @@ public class NmIntegrationController {
     @RequestMapping("existing-datasimulator-status")
     @ResponseBody
     public Map<String, Object> existingDataSimulatorStatus() {
-        LcrSimStatusResponseOrError status = getRfnLcrSimulatorStatusResponse();
+        var status = getRfnLcrSimulatorStatusResponse();
         if (status.response == null) {
             return status.errorJson;
         }
@@ -788,7 +943,7 @@ public class NmIntegrationController {
     }
 
 
-    private String setupEventAlarmAttributes(ModelMap model, RfnTestEvent event) {
+    private String setupEventAlarmAttributes(ModelMap model, RfnTestEvent event, RfnTestOutageRestoreEvent restoreOutageEvent) {
         var rfnConditionTypes = Lists.newArrayList(RfnConditionType.values());
         var meterStatusCodes = IntStream.range(0, 5)
                                         .mapToObj(i -> new MeterStatusCode((short)i))
@@ -803,6 +958,8 @@ public class NmIntegrationController {
         model.addAttribute("meterStatusDetails", meterStatusDetails);
         model.addAttribute("dataTypes", dataTypes);
         model.addAttribute("event", event);
+        model.addAttribute("restoreOutageEvent", restoreOutageEvent);
+        model.addAttribute("outageRestoreEventTypes", ImmutableList.of(RfnConditionType.OUTAGE, RfnConditionType.RESTORE));
         return "rfn/viewEventArchive.jsp";
     }
 
@@ -837,25 +994,50 @@ public class NmIntegrationController {
     
     @RequestMapping("sendLocationArchiveRequest")
     public String sendLocationArchiveRequest(int serialFrom, int serialTo, String manufacturer, String model, String latitude, String longitude) { 
-        rfnEventTestingService.sendLocationResponse(serialFrom, serialTo, manufacturer, model, Double.parseDouble(latitude), Double.parseDouble(longitude));
+        LocationResponse locationResponse = new LocationResponse();
+        locationResponse.setLatitude(Double.parseDouble(latitude));
+        locationResponse.setLongitude(Double.parseDouble(longitude));
+        locationResponse.setOrigin(Origin.RF_NODE);
+        rfnEventTestingService.sendLocationResponse(serialFrom, serialTo, manufacturer, model, locationResponse);
+        return "redirect:viewLocationArchiveRequest";
+    }
+    
+    @RequestMapping("sendGatewayLocationArchiveRequest")
+    public String sendGatewayLocationArchiveRequest(String serialNumber, String manufacturer, String model, String latitude, String longitude) {
+        LocationResponse locationResponse = new LocationResponse();
+        RfnIdentifier rfnIdentifier = new RfnIdentifier(serialNumber, manufacturer, model);
+        locationResponse.setRfnIdentifier(rfnIdentifier);
+        locationResponse.setLatitude(Double.parseDouble(latitude));
+        locationResponse.setLongitude(Double.parseDouble(longitude));
+        locationResponse.setLocationId(99L + Long.valueOf(rfnIdentifier.getSensorSerialNumber()));
+        locationResponse.setOrigin(Origin.RF_GATEWAY);
+        locationResponse.setLastChangedDate(new Instant().getMillis());
+        
+         rfnEventTestingService.sendGatewayLocationResponse(locationResponse);
         return "redirect:viewLocationArchiveRequest";
     }
 
     @RequestMapping("sendEvent")
     public String sendEvent(@ModelAttribute RfnTestEvent event, ModelMap model, FlashScope flashScope) {
         int numEventsSent = rfnEventTestingService.sendEventsAndAlarms(event);
-        
-        if (numEventsSent > 0) {
-            MessageSourceResolvable createMessage = 
-                    new YukonMessageSourceResolvable("yukon.web.modules.dev.rfnTest.numEventsSent", numEventsSent);
-            flashScope.setConfirm(createMessage);
-        } else {
-            MessageSourceResolvable createMessage = 
-                    new YukonMessageSourceResolvable("yukon.web.modules.dev.rfnTest.numEventsSent", numEventsSent);
-            flashScope.setError(createMessage);
-        }
-        
-        return setupEventAlarmAttributes(model, event);
+        addNumEventsSend(flashScope, numEventsSent);
+        return setupEventAlarmAttributes(model, event, new RfnTestOutageRestoreEvent());
+    }
+
+    @RequestMapping("sendOutageRestore")
+    public String sendOutageRestore(@ModelAttribute RfnTestOutageRestoreEvent event, ModelMap model, FlashScope flashScope) {
+        int numEventsSent = rfnEventTestingService.sendOutageAndRestoreEvents(event);
+        addNumEventsSend(flashScope, numEventsSent);
+        return setupEventAlarmAttributes(model, new RfnTestEvent(), event);
+    }
+    
+    /**
+     * Adds message to flash scope  with number of events sent
+     */
+    private void addNumEventsSend(FlashScope flashScope, int numEventsSent) {
+        MessageSourceResolvable createMessage = new YukonMessageSourceResolvable("yukon.web.modules.dev.rfnTest.numEventsSent",
+                numEventsSent);
+        flashScope.setError(createMessage);
     }
 
     @RequestMapping("calc-stress-test")
@@ -885,7 +1067,7 @@ public class NmIntegrationController {
             model.addAttribute("simulatorRunning", response.isRunning());
             model.addAttribute("settings", response.getSettings());
         } catch (ExecutionException e) {
-            log.error("Error communicating with Yukon Simulators Service.", e);
+            log.error(SIMULATORS_COMM_ERROR, e);
             flash.setError(new YukonMessageSourceResolvable(SimulatorsCommunicationService.COMMUNICATION_ERROR_KEY));
             return "redirect:viewBase";
         }
@@ -922,7 +1104,7 @@ public class NmIntegrationController {
                 }
             }
         } catch (ExecutionException e) {
-            log.error("Error communicating with Yukon Simulators Service.", e);
+            log.error(SIMULATORS_COMM_ERROR, e);
             flash.setError(new YukonMessageSourceResolvable(SimulatorsCommunicationService.COMMUNICATION_ERROR_KEY));
         }
         
@@ -939,7 +1121,7 @@ public class NmIntegrationController {
                 flash.setConfirm(new YukonMessageSourceResolvable("yukon.web.modules.dev.rfnTest.dataStreamingSimulator.simulatorStop"));
             }
         } catch (ExecutionException e) {
-            log.error("Error communicating with Yukon Simulators Service.", e);
+            log.error(SIMULATORS_COMM_ERROR, e);
             flash.setError(new YukonMessageSourceResolvable(SimulatorsCommunicationService.COMMUNICATION_ERROR_KEY));
         }
         return "redirect:viewDataStreamingSimulator";
@@ -947,13 +1129,12 @@ public class NmIntegrationController {
     
     @RequestMapping("viewMappingSimulator")
     public String viewMappingSimulator(ModelMap model, FlashScope flash, HttpServletRequest request) {
-        model.addAttribute("routeFlags", RouteFlagType.values());
-        model.addAttribute("neighborFlags", NeighborFlagType.values());
-        model.addAttribute("parentReplys", RfnParentReplyType.values());
-        model.addAttribute("neighborReplys", RfnNeighborDataReplyType.values());
-        model.addAttribute("routeReplys", RfnPrimaryRouteDataReplyType.values());
+        model.addAttribute("routeFlags", RouteFlag.values());
+        model.addAttribute("neighborFlags", NeighborFlag.values());
         model.addAttribute("metadataResponseTypes", RfnMetadataMultiResponseType.values());
         model.addAttribute("metadataQueryResponseTypes", RfnMetadataMultiQueryResultType.values());
+        model.addAttribute("currentLinkRate", LinkRate.values());
+        model.addAttribute("currentLinkPower", LinkPower.values());
         
         NmNetworkSimulatorRequest simRequest = new NmNetworkSimulatorRequest(Action.GET_SETTINGS);
         SimulatorResponseBase response = sendRequest(simRequest, null, flash); 
@@ -977,7 +1158,7 @@ public class NmIntegrationController {
             currentSettings.getNeighborData().setNeighborDataTimestamp(dateTime);
             currentSettings.getNeighborData().setNextCommTime(dateTime);
             currentSettings.getNeighborData().setNeighborFlags(new HashSet<>());
-            for (NeighborFlagType flag : NeighborFlagType.values()) {
+            for (NeighborFlag flag : NeighborFlag.values()) {
                 boolean flagSet= ServletRequestUtils.getBooleanParameter(request, "neighborFlag_" + flag, false);
                 if (flagSet) {
                     currentSettings.getNeighborData().getNeighborFlags().add(flag);
@@ -988,7 +1169,7 @@ public class NmIntegrationController {
             currentSettings.getRouteData().setRouteDataTimestamp(dateTime);
             currentSettings.getRouteData().setRouteTimeout(dateTime);
             currentSettings.getRouteData().setRouteFlags(new HashSet<>());
-            for (RouteFlagType flag : RouteFlagType.values()) {
+            for (RouteFlag flag : RouteFlag.values()) {
                 boolean flagSet= ServletRequestUtils.getBooleanParameter(request, "routeFlag_" + flag, false);
                 if (flagSet) {
                     currentSettings.getRouteData().getRouteFlags().add(flag);
@@ -1016,7 +1197,6 @@ public class NmIntegrationController {
 
     private void updateSettings(FlashScope flash, SimulatedNmMappingSettings currentSettings) {
         yukonSimulatorSettingsDao.setValue(YukonSimulatorSettingsKey.RFN_NETWORK_SIM_TREE_PERCENT_NULL, currentSettings.getEmptyNullPercent());
-        yukonSimulatorSettingsDao.setValue(YukonSimulatorSettingsKey.RFN_NETWORK_SIM_TREE_MIN_HOP, currentSettings.getMinHop());
         yukonSimulatorSettingsDao.setValue(YukonSimulatorSettingsKey.RFN_NETWORK_SIM_TREE_MAX_HOP, currentSettings.getMaxHop());
         yukonSimulatorSettingsDao.setValue(YukonSimulatorSettingsKey.RFN_NETWORK_SIM_TREE_NODES_ONE_HOP, currentSettings.getNodesOneHop());
         yukonSimulatorSettingsDao.setValue(YukonSimulatorSettingsKey.RFN_NETWORK_SIM_NUM_DEVICES_PER_GW, currentSettings.getNumberOfDevicesPerGateway());
@@ -1048,7 +1228,7 @@ public class NmIntegrationController {
         response.setNoForceRefreshBeforeTimeMillis(time);
         response.setTreeGenerationEndTimeMillis(time);
         response.setTreeGenerationStartTimeMillis(time);
-        jmsTemplate.convertAndSend(JmsApiDirectory.NETWORK_TREE_UPDATE_RESPONSE.getQueue().getName(), response);
+        jmsTemplate.convertAndSend(response);
         return "redirect:viewMappingSimulator";
     }
     
@@ -1060,7 +1240,7 @@ public class NmIntegrationController {
                 flash.setConfirm(confirmation);
             }
         } catch (ExecutionException e) {
-            log.error("Error communicating with Yukon Simulators Service.", e);
+            log.error(SIMULATORS_COMM_ERROR, e);
             flash.setError(new YukonMessageSourceResolvable(SimulatorsCommunicationService.COMMUNICATION_ERROR_KEY));
         }
         return response;
@@ -1075,48 +1255,26 @@ public class NmIntegrationController {
         binder.registerCustomEditor(Instant.class, instantEditor);
     }
 
-    private static class LcrSimStatusResponseOrError {
-        public final RfnLcrSimulatorStatusResponse response;
+    private static class ResponseOrError<T extends SimulatorResponseBase> {
+        public final T response;
         public final Map<String, Object> errorJson;
 
-        public LcrSimStatusResponseOrError(RfnLcrSimulatorStatusResponse response) {
+        private ResponseOrError(T response) {
             this.response = response;
             errorJson = null;
         }
 
-        public LcrSimStatusResponseOrError(Map<String, Object> errorJson) {
+        private ResponseOrError(Map<String, Object> errorJson) {
             response = null;
             this.errorJson = errorJson;
         }
-    }
-
-    private static class MeterSimStatusResponseOrError {
-        public final RfnMeterDataSimulatorStatusResponse response;
-        public final Map<String, Object> errorJson;
-
-        public MeterSimStatusResponseOrError(RfnMeterDataSimulatorStatusResponse response) {
-            this.response = response;
-            errorJson = null;
+        
+        public static <T extends SimulatorResponseBase> ResponseOrError<T> of(T response) {
+            return new ResponseOrError<>(response);
         }
-
-        public MeterSimStatusResponseOrError(Map<String, Object> errorJson) {
-            response = null;
-            this.errorJson = errorJson;
-        }
-    }
-    
-    private static class RfnMeterReadAndControlSimStatusResponseOrError {
-        public final RfnMeterReadAndControlSimulatorStatusResponse response;
-        public final Map<String, Object> errorJson;
-
-        public RfnMeterReadAndControlSimStatusResponseOrError(RfnMeterReadAndControlSimulatorStatusResponse response) {
-            this.response = response;
-            errorJson = null;
-        }
-
-        public RfnMeterReadAndControlSimStatusResponseOrError(Map<String, Object> errorJson) {
-            response = null;
-            this.errorJson = errorJson;
+        
+        public static <T extends SimulatorResponseBase> ResponseOrError<T> of(Map<String, Object> errorJson) {
+            return new ResponseOrError<>(errorJson);
         }
     }
     
@@ -1193,6 +1351,7 @@ public class NmIntegrationController {
         model.addAttribute("deviceArchiveParameters", new DeviceArchiveRequestParameters());
         model.addAttribute("meterModels", rfnEventTestingService.getGroupedRfnTypes());
         model.addAttribute("rfnLcrModels", RfnManufacturerModel.getRfnLcrModels());
+        model.addAttribute("rfn1200", RfnManufacturerModel.getRfn1200Models());
         model.addAttribute("rfDaModels", List.of("CBC-8000", "RECL-F4D", "VR-CL7"));
         return "rfn/deviceArchive.jsp";
     }
@@ -1227,11 +1386,5 @@ public class NmIntegrationController {
                 "Unable to send message to Simulator Service: " + e.getMessage()));
         }
     }
-    
-    @Autowired
-    public void setConnectionFactory(ConnectionFactory connectionFactory) {
-        jmsTemplate = new JmsTemplate(connectionFactory);
-        jmsTemplate.setExplicitQosEnabled(true);
-        jmsTemplate.setDeliveryPersistent(false);
-    }
+
 }

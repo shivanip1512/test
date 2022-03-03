@@ -34,6 +34,7 @@
 </form:form>
 
     <cti:toJson id="rf-meter-types" object="${rfMeterTypes}"/>
+    <cti:toJson id="virtual-meter-type" object="${virtualMeterType}"/>
     <cti:toJson id="mct-meter-types" object="${mctMeterTypes}"/>
 <style>
 #contentPopup {

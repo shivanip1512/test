@@ -34,7 +34,12 @@ public class SimpleXmlWriter extends SimpleXmlBase {
      * @return current workingElement : Element
      */
     public Element createNewElementWithContent(String element, char[] content) {
-        return createNewElement(element).addContent(new String(content));
+        Element newElement = createNewElement(element);
+        if (newElement != null) {
+            return newElement.addContent(new String(content));
+        } else {
+            return null;
+        }
     }
 
     /**
@@ -45,7 +50,12 @@ public class SimpleXmlWriter extends SimpleXmlBase {
      * @return current workingElement : Element
      */
     public Element createNewElementWithContent(String element, String content) {
-        return createNewElement(element).addContent(content);
+        Element newElement = createNewElement(element);
+        if (newElement != null) {
+            return newElement.addContent(content);
+        } else {
+            return null;
+        }
     }
 
     /**

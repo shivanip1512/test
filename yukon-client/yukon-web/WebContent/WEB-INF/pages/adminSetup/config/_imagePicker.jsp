@@ -7,11 +7,11 @@
 <%@ taglib prefix="fmt" uri="http://java.sun.com/jsp/jstl/fmt" %>
 
 <style>
-.well {margin-bottom: 0;}
+    .card { padding-bottom:20px; }
 </style>
 
 <cti:msgScope paths="yukon.common.imagePicker">
-<span id="image-upload-error" class="user-message error dn"/>
+<span id="image-upload-error" class="user-message error dn"></span>
 <div class="separated-sections image-picker" data-category="${category}" data-original-image-id="${selected}">
     <div class="section clearfix">
         <cti:url var="imagesUrl" value="/common/images"/>
@@ -26,8 +26,8 @@
     </div>
     <c:forEach var="pickerImage" items="${pickerImages}">
         <div class="section has-show-on-hover">
-            <div class="image well<c:if test="${not empty selected and pickerImage.image.imageID == selected}"> selected</c:if>" data-image-id="${pickerImage.image.imageID}">
-                <div class="column-14-10 clearfix">
+            <div class="image card bg-light<c:if test="${not empty selected and pickerImage.image.imageID == selected}"> selected</c:if>" data-image-id="${pickerImage.image.imageID}">
+                <div class="column-14-10 clearfix card-body">
                     <div class="column one">
                         <c:if test="${not empty selected and pickerImage.image.imageID == selected}">
                             <div><strong><em><i:inline key=".currentlySelected"/></em></strong></div>
@@ -49,7 +49,7 @@
                 </div>
                 <c:if test="${pickerImage.deletable and pickerImage.image.imageID != selected}">
                     <div class="page-action-area">
-                        <cti:button icon="icon-cross" nameKey="delete" classes="show-on-hover delete-image"/>
+                        <cti:button icon="icon-delete" nameKey="delete" classes="show-on-hover delete-image"/>
                         <div class="dn dib fr js-delete-confirm">
                             <span class="fl js-confirm-message"><i:inline key=".delete"/></span>
                             <cti:button nameKey="cancel" classes="cancel"/>
@@ -60,8 +60,8 @@
             </div>
         </div>
         <div id="template-row" class="section has-show-on-hover dn">
-            <div class="image well">
-                <div class="column-14-10 clearfix">
+            <div class="image card bg-light">
+                <div class="column-14-10 clearfix card-body">
                     <div class="column one">
                         <tags:nameValueContainer2 naturalWidth="false">
                             <tags:nameValue2 nameKey=".name" valueClass="js-name-value"></tags:nameValue2>
@@ -76,7 +76,7 @@
                     </div>
                 </div>
                 <div class="page-action-area">
-                    <cti:button icon="icon-cross" nameKey="delete" classes="show-on-hover delete-image"/>
+                    <cti:button icon="icon-delete" nameKey="delete" classes="show-on-hover delete-image"/>
                     <div class="dn dib fr js-delete-confirm">
                         <span class="fl js-confirm-message"><i:inline key=".delete"/></span>
                         <cti:button nameKey="cancel" classes="cancel"/>

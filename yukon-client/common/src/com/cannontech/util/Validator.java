@@ -3,6 +3,8 @@ package com.cannontech.util;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+import org.apache.commons.lang3.StringUtils;
+
 /**
  * Attempts to validate different types of data.
  */
@@ -248,6 +250,13 @@ public class Validator
 	    return isMacAddress(macAddress, false);
 	}
 	
+	public static boolean isValidGuid(String guid) {
+	    Pattern guidPattern = Pattern.compile("^[0-9a-f]{8}-[0-9a-f]{4}-[0-5][0-9a-f]{3}-[089ab][0-9a-f]{3}-[0-9a-f]{12}$");
+            if (StringUtils.isBlank(guid)) {
+                return false;
+            }
+            return guidPattern.matcher(guid.toLowerCase()).find();
+	}
 	/**
 	 * Validate a MAC Address string - either 48 or 64 bytes
 	 * (e.g. xx:xx:xx:xx:xx:xx or xx:xx:xx:xx:xx:xx:xx:xx)

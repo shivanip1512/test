@@ -55,7 +55,7 @@ yukon.widget.trends = (function () {
                         rangeSelectorButtons : rangeSelectorButtons,
                         selected: 1,
                         inputStyle: {
-                            color: '#9e9d9d'
+                            color: yg.colors.GRAY
                         }
                     },
                     chartWidth : widgetContainer.closest('.widgetWrapper').width() - 20,
@@ -71,12 +71,9 @@ yukon.widget.trends = (function () {
                             this[name + 'DateBox'].on('click', function () {} );
                         }
                     });
-                    var highChartOptions = {
-                            lang:{
-                                rangeSelectorZoom: '',
-                                rangeSelectorFrom: ''
-                            }
-                    };
+                    var highChartOptions = yg.highcharts_options;
+                    highChartOptions.lang.rangeSelectorZoom = "";
+                    highChartOptions.lang.rangeSelectorFrom = "";
                     yukon.trends.buildChart(chartContainer, trend, chartOptions, highChartOptions);
                     chartContainer.find(".highcharts-input-group").attr('cursor','default');
                 }

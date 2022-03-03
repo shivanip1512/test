@@ -8,6 +8,7 @@
         <tag name="COMMANDER_REQUESTS"/>
         <tag name="OUTAGE"/>
         <tag name="RFN_EVENTS"/>
+        <tag name="RFN1200_DETAIL_DISPLAYABLE"/>
     </tags>
     <pointInfos>
         <pointInfo name="Bad Upgrade Security Param" init="true"/>
@@ -21,5 +22,6 @@
         <pointInfo name="Outages" init="true" attributes="OUTAGE_LOG"/>
         <pointInfo name="Outstation DNP3 SerComm Locked" init="true" attributes="OUTSTATION_DNP3_SERCOMM_LOCKED"/>
         <pointInfo name="Time Sync Failed" init="true" attributes="TIME_SYNC_FAILED"/>
+        <pointInfo name="Ultra Capacitor Bad" attributes="ULTRA_CAPACITOR_BAD"/>
     </pointInfos>
 </pao>

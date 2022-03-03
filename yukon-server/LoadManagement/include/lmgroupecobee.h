@@ -27,17 +27,25 @@ public:
 
     bool doesStopRequireCommandAt( const CtiTime & currentTime ) const override;
 
-    bool sendCycleControl( long dutyCycle,
+    bool sendCycleControl( long programId,
+                           long dutyCycle,
                            long controlDurationSeconds,
-                           bool rampInOption,
-                           bool rampOutOption,
-                           bool mandatory ) override;
+                           bool mandatory,
+                           bool rampInOutOption ) override;
 
-    bool sendSetpointControl( long controlDurationSeconds,
+    bool sendSetpointControl( long programId,
+                              long controlDurationSeconds,
                               bool temperatureOption,
                               bool mandatory,
                               long temperatureOffset ) override;
 
+    bool sendEcobeePlusControl( long programId,
+                                long controlDurationSeconds,
+                                bool temperatureOption,
+                                long randomTimeSeconds ) override;                     
+
+
+    std::size_t getFixedSize() const override   { return sizeof( *this ); }
 
     //Unused
     CtiRequestMsg* createTimeRefreshRequestMsg(LONG refreshRate, LONG shedTime, int priority) const override;

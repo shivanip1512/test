@@ -55,8 +55,7 @@ public class EcobeeCycleGearPanel extends GenericGearPanel {
     private JPanel changeMethodPanel;
     private JTextField changeTriggerOffsetTextField;
     private JTextField kwReductionTextField;
-    private JCheckBox checkBoxRampIn;
-    private JCheckBox checkBoxRampOut;
+    private JCheckBox checkBoxRampInOut;
     private JCheckBox checkBoxMandatory;
 
     public EcobeeCycleGearPanel() {
@@ -77,14 +76,14 @@ public class EcobeeCycleGearPanel extends GenericGearPanel {
         fireInputUpdate();
     }
     
-    private JCheckBox getCheckBoxRampIn() {
-        if (checkBoxRampIn == null) {
-            checkBoxRampIn = new JCheckBox();
-            checkBoxRampIn.setText("Ramp In");
-            checkBoxRampIn.setPreferredSize(new Dimension(165, 23));
-            checkBoxRampIn.setSelected(true);
+    private JCheckBox getCheckBoxRampInOut() {
+        if (checkBoxRampInOut == null) {
+            checkBoxRampInOut = new JCheckBox();
+            checkBoxRampInOut.setText("Ramp In/Out");
+            checkBoxRampInOut.setPreferredSize(new Dimension(165, 23));
+            checkBoxRampInOut.setSelected(true);
         }
-        return checkBoxRampIn;
+        return checkBoxRampInOut;
     }
     
     private JCheckBox getCheckBoxMandatory() {
@@ -95,16 +94,6 @@ public class EcobeeCycleGearPanel extends GenericGearPanel {
             checkBoxMandatory.setSelected(false);
         }
         return checkBoxMandatory;
-    }
-    
-    private JCheckBox getCheckBoxRampOut() {
-        if (checkBoxRampOut == null) {
-            checkBoxRampOut = new JCheckBox();
-            checkBoxRampOut.setText("Ramp Out");
-            checkBoxRampOut.setPreferredSize(new Dimension(165, 23));
-            checkBoxRampOut.setSelected(true);
-        }
-        return checkBoxRampOut;
     }
 
     private JComboBox<String> getJComboBoxHowToStop() {
@@ -579,9 +568,8 @@ public class EcobeeCycleGearPanel extends GenericGearPanel {
             gear.setChangeTriggerOffset(Double.valueOf(getJTextFieldChangeTriggerOffset().getText()));
         }
         gear.setControlCyclePercent(toInteger(getJCSpinFieldControlCyclePercent().getValue()));
-        gear.setFrontRampEnabled(getCheckBoxRampIn().isSelected());
+        gear.setFrontRampEnabled(getCheckBoxRampInOut().isSelected());
         gear.setMethodOptionType(getCheckBoxMandatory().isSelected());
-        gear.setBackRampEnabled(getCheckBoxRampOut().isSelected());
         
         return gear;
     }
@@ -607,9 +595,9 @@ public class EcobeeCycleGearPanel extends GenericGearPanel {
         getJComboBoxHowToStop().addActionListener(this);
         getJTextFieldChangeTriggerOffset().addCaretListener(this);
         getJTextFieldKWReduction().addCaretListener(this);
-        getCheckBoxRampIn().addActionListener(this);
+        getCheckBoxRampInOut().addActionListener(this);
         getCheckBoxMandatory().addActionListener(this);
-        getCheckBoxRampOut().addActionListener(this);
+        
     }
 
     private void initialize() {
@@ -689,9 +677,8 @@ public class EcobeeCycleGearPanel extends GenericGearPanel {
             constraintJPanelChangeMethod.gridx = 1;
 
             setLayout(new GridBagLayout());
-            this.add(getCheckBoxRampIn(), constraintJCheckBoxRampIn);
+            this.add(getCheckBoxRampInOut(), constraintJCheckBoxRampIn);
             this.add(getCheckBoxMandatory(), constraintJCheckBoxMandatory);
-            this.add(getCheckBoxRampOut(), constraintJCheckBoxRampOut);
             this.add(getJLabelControlCyclePercent(), constraintJLabelControlCyclePercent);
             this.add(getJCSpinFieldControlCyclePercent(), constraintJCSpinFieldControlCyclePercent);
             this.add(getJPanelChangeMethod(), constraintJPanelChangeMethod);
@@ -790,10 +777,10 @@ public class EcobeeCycleGearPanel extends GenericGearPanel {
         final DecimalFormat format = new DecimalFormat("#####.####");
         getJTextFieldChangeTriggerOffset().setText(format.format(gear.getChangeTriggerOffset()));
         getJCSpinFieldControlCyclePercent().setValue(gear.getControlCyclePercent());
-        getCheckBoxRampIn().setSelected(gear.isFrontRampEnabled());
+        getCheckBoxRampInOut().setSelected(gear.isFrontRampEnabled());
         getCheckBoxMandatory().setText(LMProgramDirectGear.OPTION_MANDATORY);
         getCheckBoxMandatory().setSelected(gear.isMandatorySelected(gear.getMethodOptionType()));
-        getCheckBoxRampOut().setSelected(gear.isBackRampEnabled());
+       
     }
 
     @Override

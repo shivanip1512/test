@@ -42,6 +42,8 @@ DECLARE_COLLECTABLE( CtiLMEnergyExchangeOfferRevision );
     void restoreDynamicData();
     void dumpDynamicData();
 
+    std::size_t getMemoryConsumption() const;
+
     CtiLMEnergyExchangeOfferRevision& operator=(const CtiLMEnergyExchangeOfferRevision& right);
 
     int operator==(const CtiLMEnergyExchangeOfferRevision& right) const;

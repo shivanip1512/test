@@ -38,15 +38,15 @@ yukon.alerts = (function () {
             
             if (_countInitialized && _oldCount < count) {
                 if($('[data-alert-flash]').attr('data-alert-flash') === 'true') {
-                    button.addClass('animated shake')
-                    .one(yg.events.animationend, function () { $(this).removeClass('animated shake'); });
+                    button.addClass('animate__animated animate__shakeX')
+                    .one(yg.events.animationend, function () { $(this).removeClass('animate__animated animate__shakeX'); });
                 }
                 if ($('[data-alert-sound]').attr('data-alert-sound') === 'true') {
                     $('#alert-audio')[0].play();
                 }
             }
         } else {
-            button.removeClass('red shake animated');
+            button.removeClass('red animate__shakeX animate__animated');
             button.hide();
         }
         _oldCount = count;

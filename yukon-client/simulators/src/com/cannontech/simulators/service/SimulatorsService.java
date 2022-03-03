@@ -8,11 +8,10 @@ import java.util.Set;
 
 import javax.annotation.PostConstruct;
 import javax.annotation.PreDestroy;
-import javax.jms.ConnectionFactory;
 
 import org.apache.logging.log4j.Logger;
+import org.joda.time.Duration;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.jms.core.JmsTemplate;
 
 import com.cannontech.clientutils.YukonLogManager;
 import com.cannontech.common.config.ConfigurationSource;
@@ -20,9 +19,10 @@ import com.cannontech.common.config.MasterConfigBoolean;
 import com.cannontech.common.rfn.simulation.service.DataStreamingSimulatorService;
 import com.cannontech.common.rfn.simulation.service.NmNetworkSimulatorService;
 import com.cannontech.common.rfn.simulation.service.RfnGatewaySimulatorService;
-import com.cannontech.common.smartNotification.simulation.service.SmartNotificationSimulatorService;
 import com.cannontech.common.util.ApplicationId;
 import com.cannontech.common.util.CtiUtilities;
+import com.cannontech.common.util.jms.YukonJmsTemplateFactory;
+import com.cannontech.common.util.jms.api.JmsApiDirectory;
 import com.cannontech.dr.rfn.service.RfnLcrDataSimulatorService;
 import com.cannontech.dr.rfn.service.RfnMeterDataSimulatorService;
 import com.cannontech.dr.rfn.service.RfnMeterReadAndControlSimulatorService;
@@ -46,7 +46,6 @@ public class SimulatorsService {
     private static class LogHolder {
         static final Logger log = YukonLogManager.getLogger(SimulatorsService.class);
     }
-    private static final int incomingMessageWaitMillis = 1000;
 
     @Autowired private ConfigurationSource configSource;
     @Autowired private YukonSimulatorSettingsDao yukonSimulatorSettingsDao;
@@ -57,13 +56,13 @@ public class SimulatorsService {
     @Autowired private NmNetworkSimulatorService nmNetworkSimulatorService;
     @Autowired private RfnMeterDataSimulatorService rfnMeterDataSimulatorService;
     @Autowired private IvvcSimulatorService ivvcSimulatorService;
-    @Autowired private SmartNotificationSimulatorService smartNotificationSimulatorService;
     @Autowired private RfnMeterReadAndControlSimulatorService rfnMeterReadAndControlSimulatorService;
-    @Autowired private ConnectionFactory connectionFactory;
     @Autowired private Set<SimulatorMessageHandler> messageHandlers;
+    @Autowired private YukonJmsTemplateFactory jmsTemplateFactory;
+
     private SimulatorMessageListener messageListener;
-    private JmsTemplate jmsTemplate;
     private ImmutableMap<SimulatorType, AutoStartableSimulator> simulatorTypeToSimulator;
+    public static final Duration incomingMessageWait = Duration.standardSeconds(1);
 
     /**
      * Gets this simulators service as a Spring bean and starts it.
@@ -93,6 +92,7 @@ public class SimulatorsService {
     }
 
     private synchronized void start() {
+        var jmsTemplate = jmsTemplateFactory.createTemplate(JmsApiDirectory.SIMULATORS, incomingMessageWait);
         messageListener = new SimulatorMessageListener(jmsTemplate, messageHandlers);
         messageListener.start();
         autoStartSimulators();
@@ -114,8 +114,6 @@ public class SimulatorsService {
 
     @PostConstruct
     public void init() {
-        jmsTemplate = new JmsTemplate(connectionFactory);
-        jmsTemplate.setReceiveTimeout(incomingMessageWaitMillis); // TODO: does this need to be set?
         simulatorTypeToSimulator = new ImmutableMap.Builder<SimulatorType, AutoStartableSimulator>()
             .put(SimulatorType.GATEWAY, rfnGatewaySimulatorService)
             .put(SimulatorType.DATA_STREAMING, dataStreamingSimulatorService)

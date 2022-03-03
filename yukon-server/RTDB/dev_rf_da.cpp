@@ -4,10 +4,9 @@
 
 #include "cmd_rf_da_dnpAddress.h"
 
-namespace Cti {
-namespace Devices {
+namespace Cti::Devices {
 
-YukonError_t RfDaDevice::executeGetConfig(CtiRequestMsg *pReq, CtiCommandParser &parse, ReturnMsgList &returnMsgs, RfnIndividualCommandList &rfnRequests)
+YukonError_t RfDaDevice::executeGetConfig(CtiRequestMsg* pReq, CtiCommandParser& parse, ReturnMsgList& returnMsgs, RequestMsgList& requestMsgs, RfnIndividualCommandList& rfnRequests)
 {
     if( parse.isKeyValid("dnp address") )
     {
@@ -16,7 +15,7 @@ YukonError_t RfDaDevice::executeGetConfig(CtiRequestMsg *pReq, CtiCommandParser 
         return ClientErrors::None;
     }
 
-    return Inherited::executeGetConfig(pReq, parse, returnMsgs, rfnRequests);
+    return Inherited::executeGetConfig(pReq, parse, returnMsgs, requestMsgs, rfnRequests);
 }
 
 
@@ -26,5 +25,4 @@ void RfDaDevice::handleCommandResult(const Commands::RfDaReadDnpSlaveAddressComm
 }
 
 
-}
 }

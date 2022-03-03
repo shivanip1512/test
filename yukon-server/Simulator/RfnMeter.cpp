@@ -14,7 +14,9 @@
 #include "std_helper.h"
 #include "random_generator.h"
 
-//#include <boost/serialization/map.hpp>
+#include "NodeInfo.h"
+
+#include <boost/range/algorithm_ext/insert.hpp>
 
 #include <map>
 #include <random>
@@ -22,6 +24,9 @@
 #include <thread>
 #include <tuple>
 #include <time.h>
+
+using ASIDs = Cti::Messaging::Rfn::ApplicationServiceIdentifiers;
+namespace Coap = Cti::Protocols::Coap;
 
 namespace Cti::Simulator {
 
@@ -37,38 +42,7 @@ struct MeterProgrammingRequest
 
 std::map<RfnIdentifier, MeterProgrammingRequest> meterProgrammingRequests;
 
-std::map<RfnIdentifier, std::string> configurationIds;
-
-const std::vector<std::string> remoteGuids {
-    //low-mid-high-and-version (final nibble)
-    //1b21dd213814000 - 100-ns counts between Gregorian epoch and Unix epoch
-    //719,528 days between Gregorian epoch and Unix epoch
-    // 1 ms = 10,000 100ns increments
-    // 1 s = 10,000,000 100 ns increments
-    //  d952eb22-0a3e-11ea = 1ea0a3ed952eb22 - epoch = 37EC6CC5D1AB22 = 1574107563 856 1570 = 2019-11-18 20:06:03
-    "d952eb22-0a3e-11ea-8d71-362b9e155667",  //  1574107563 856 1570 = 2019-11-18 20:06:03
-    "d952ee74-0a4e-11ea-8d71-362b9e155667",  //  1574114435 803 8306 = 2019-11-18 22:00:35
-    "d952efdc-0a5e-11ea-8d71-362b9e155667",  //  1574121307 751 5042 = 2019-11-18 23:55:07
-    "d952f112-0a6e-11ea-8d71-362b9e155667",  //  1574128179 699 1778 = 2019-11-19 01:49:39
-    "d952f23e-0a7e-11ea-8d71-362b9e155667",  //  1574135051 646 8514 = 2019-11-19 03:44:11
-    "d952f36a-0a8e-11ea-8d71-362b9e155667",  //  1574141923 594 5250 = 2019-11-19 05:38:43
-    "d952f68a-0a9e-11ea-8d71-362b9e155667",  //  1574148795 542 1986 = 2019-11-19 07:33:15
-    "d952f7d4-0aae-11ea-8d71-362b9e155667",  //  1574155667 489 8722 = 2019-11-19 09:27:47
-    "d952f90a-0abe-11ea-8d71-362b9e155667",  //  1574162539 437 5458 = 2019-11-19 11:22:19
-    "d952fa40-0ace-11ea-8d71-362b9e155667",  //  1574169411 385 2194 = 2019-11-19 13:16:51
-};
-
-const std::vector<std::string> yukonGuids{
-    "EE8358B0-92B7-4603-A148-A06E5489D4C7",
-    "70A9331E-BA48-4F7A-ADDD-525CAD8FD578",
-    "0474477D-1D69-459D-A8E8-65F71EC46923",
-    "B9D7E497-5907-42E3-980B-D3F8A47F8D11",
-    "770E5A24-A3AF-4985-B15F-F40718A4F183",
-};
-
-constexpr char Source_Yukon { 'R' };
-
-const std::vector<char> sources { Source_Yukon, 'P', 'N', 'U', 'X' };
+std::map<RfnIdentifier, NodeInfo> nodeInfo;
 
 }
 
@@ -203,71 +177,129 @@ RFN_530S4RR(PaoType.RFN530S4ERXR, "LGYR", "S4-RR"),
 
 using Bytes = std::vector<unsigned char>;
 
-void doChannelManagerRequest(const E2eRequestSender e2eRequestSender, const E2eReplySender e2eReplySender, const e2edt_request_packet& request, const Messaging::Rfn::E2eDataRequestMsg& requestMsg);
-auto processChannelManagerPost(const e2edt_request_packet& post_request, const RfnIdentifier& rfnId) -> std::optional<e2edt_request_packet>;
+Bytes asBytes(const char* hex_string);
 
-void RfnMeter::processRequest(const E2eRequestSender e2eRequestSender, const E2eReplySender e2eReplySender, const e2edt_request_packet& request, const Messaging::Rfn::E2eDataRequestMsg& requestMsg)
+NodeInfo getNodeInfo(const RfnIdentifier& rfnId)
 {
-    using ASIDs = Messaging::Rfn::ApplicationServiceIdentifiers;
+    return mapFindOrCompute(nodeInfo, rfnId, NodeInfo::of);
+}
+
+
+using PayloadOrStatus = std::variant<Bytes, Coap::ResponseCode>;
+using ReplySender = std::function<void(PayloadOrStatus&&)>;
+using DelayedReplySender = std::function<void(Bytes&&)>;
+
+void processGetRequest(const ReplySender sendReply, const DelayedReplySender sendDelayedReply, const Bytes& request, const RfnIdentifier rfnIdentifier, const ASIDs applicationServiceId);
+void processPostRequest(const E2eRequestSender e2eRequestSender, const ReplySender e2eReplySender, const Bytes& request, const unsigned token, const RfnIdentifier rfnIdentifier, const ASIDs applicationServiceId);
+
+void RfnMeter::processRequest(const E2eRequestSender e2eRequestSender, const E2eReplySender e2eReplySender, const e2edt_request_packet& request, const RfnIdentifier rfnIdentifier, const ASIDs applicationServiceId)
+{
+    const auto sendReply = [&request, e2eReplySender](PayloadOrStatus&& payloadOrStatus) {
+        e2edt_reply_packet reply;
+
+        reply.id = request.id;
+
+        if( auto rc = std::get_if<Coap::ResponseCode>(&payloadOrStatus) )
+        {
+            if( reply.status = *rc;
+                reply.status != Coap::ResponseCode::EmptyMessage )
+            {
+                reply.token = request.token;
+            }
+        }
+        else
+        {
+            reply.status = Protocols::Coap::ResponseCode::Content;
+            reply.token = request.token;
+            reply.payload = std::move(std::get<Bytes>(payloadOrStatus));
+        }
+
+        e2eReplySender(reply);
+    };
+
+    const auto sendDelayedReply = [token=request.token, e2eRequestSender](Bytes&& payload) {
+        e2edt_request_packet delayedReply;
+
+        delayedReply.id = idGenerator();
+        delayedReply.method = Protocols::Coap::RequestMethod::Post;
+        delayedReply.token = token;
+        delayedReply.confirmable = false;
+        delayedReply.payload = std::move(payload);
+
+        //  Delay the actual data reply by 4 seconds (arbitrary)
+        std::thread([e2eRequestSender](e2edt_request_packet&& delayedReply) {
+            Sleep(4000);
+
+            e2eRequestSender(delayedReply);
+        }, std::move(delayedReply)).detach();
+    };
 
     switch( request.method )
     {
         default:
         {
-            CTILOG_INFO(dout, "Received unknown method (" << static_cast<int>(request.method) << ") for rfnIdentifier " << requestMsg.rfnIdentifier);
+            CTILOG_INFO(dout, "Received unknown method (" << static_cast<int>(request.method) << ") for rfnIdentifier " << rfnIdentifier);
             return;
         }
         case Protocols::Coap::RequestMethod::Get:
         {
-            switch( const auto asid = requestMsg.applicationServiceId; 
-                    asid )
-            {
-                default:
-                {
-                    CTILOG_WARN(dout, "Received unhandled ASID (" << static_cast<int>(asid) << ") for rfnIdentifier " << requestMsg.rfnIdentifier);
-                    return;
-                }
-                case ASIDs::ChannelManager:
-                {
-                    doChannelManagerRequest(e2eRequestSender, e2eReplySender, request, requestMsg);
-                    return;
-                }
-            }
+            processGetRequest(sendReply, sendDelayedReply, request.payload, rfnIdentifier, applicationServiceId);
+            return;
         }
         case Protocols::Coap::RequestMethod::Post:
         {
-            //  The only POST we process at present is the Set Meter Configuration request, which results in a GET request back to Yukon.
-            switch( const auto asid = requestMsg.applicationServiceId; 
-                    asid )
-            {
-                default:
-                {
-                    CTILOG_WARN(dout, "Received unhandled ASID (" << static_cast<int>(asid) << ") for rfnIdentifier " << requestMsg.rfnIdentifier);
-                    return;
-                }
-                case ASIDs::ChannelManager:
-                {
-                    if( auto newRequest = processChannelManagerPost(request, requestMsg.rfnIdentifier);
-                        newRequest.has_value() )
-                    {
-                        e2eRequestSender(requestMsg, *newRequest);
-                    }
-                    return;
-                }
-            }
+            processPostRequest(e2eRequestSender, sendReply, request.payload, request.token, rfnIdentifier, applicationServiceId);
+        }
+    }
+}
+
+void doChannelManagerRequest(const ReplySender sendReply, const DelayedReplySender sendDelayedReply, const Bytes& request, const RfnIdentifier rfnIdentifier);
+void doBulkMessageRequest(const ReplySender sendReply, const Bytes& request, const RfnIdentifier rfnIdentifier);
+void doEventManagerRequest(const ReplySender sendReply, const Bytes& request, const RfnIdentifier rfnIdentifier);
+void doHubMeterRequest(const ReplySender sendReply, const Bytes& request, const RfnIdentifier rfnIdentifier);
+
+void processGetRequest(const ReplySender sendReply, const DelayedReplySender sendDelayedReply, const Bytes& request, const RfnIdentifier rfnIdentifier, const ASIDs applicationServiceId)
+{
+    switch( applicationServiceId )
+    {
+        default:
+        {
+            CTILOG_WARN(dout, "Received unhandled ASID (" << static_cast<int>(applicationServiceId) << ") for rfnIdentifier " << rfnIdentifier);
+            sendReply(Coap::ResponseCode::BadRequest);
+            return;
+        }
+        case ASIDs::BulkMessageHandler:
+        {
+            doBulkMessageRequest(sendReply, request, rfnIdentifier);
+            return;
+        }
+        case ASIDs::EventManager:
+        {
+            doEventManagerRequest(sendReply, request, rfnIdentifier);
+            return;
+        }
+        case ASIDs::ChannelManager:
+        {
+            doChannelManagerRequest(sendReply, sendDelayedReply, request, rfnIdentifier);
+            return;
+        }
+        case ASIDs::HubMeterCommandSet:
+        {
+            doHubMeterRequest(sendReply, request, rfnIdentifier);
+            return;
         }
     }
 }
 
 Bytes GetMeterProgrammingConfiguration(const RfnIdentifier & rfnId);
 
-void RfnMeter::processReply(const E2eRequestSender e2eRequestSender, const e2edt_reply_packet& reply, const Messaging::Rfn::E2eDataRequestMsg& requestMsg)
+void RfnMeter::processReply(const E2eRequestSender e2eRequestSender, const e2edt_reply_packet& reply, const RfnIdentifier rfnIdentifier, const ASIDs applicationServiceIdentifier)
 {
-    auto itr = meterProgrammingRequests.find(requestMsg.rfnIdentifier);
+    const auto itr = meterProgrammingRequests.find(rfnIdentifier);
 
     if( itr == meterProgrammingRequests.end() )
     {
-        CTILOG_WARN(dout, "No active meter programming request for " << requestMsg.rfnIdentifier);
+        CTILOG_WARN(dout, "No active meter programming request for " << rfnIdentifier);
         return;
     }
 
@@ -293,167 +325,974 @@ void RfnMeter::processReply(const E2eRequestSender e2eRequestSender, const e2edt
 
     if( reply.block && reply.block->more )
     {
-        e2edt_request_packet request;
+        e2edt_request_packet newRequest;
 
-        request.id = idGenerator();
-        request.confirmable = true;
-        request.method = Protocols::Coap::RequestMethod::Get;
-        request.block = reply.block;
-        request.block->num++;
+        newRequest.id = idGenerator();
+        newRequest.confirmable = true;
+        newRequest.method = Protocols::Coap::RequestMethod::Get;
+        newRequest.block = reply.block;
+        newRequest.block->num++;
 
-        request.path = programmingRequest.path;
-        request.token = idGenerator();
+        newRequest.path = programmingRequest.path;
+        newRequest.token = idGenerator();
 
-        programmingRequest.currentToken = request.token;
+        programmingRequest.currentToken = newRequest.token;
 
-        e2eRequestSender(requestMsg, request);
+        e2eRequestSender(newRequest);
 
         return;
     }
 
     //  request is complete, store off configurationId and issue response
 
-    configurationIds[requestMsg.rfnIdentifier] = 
-        programmingRequest.path.substr(
-            static_cast<std::string::size_type>(
-                programmingRequest.path.find_last_of('/') + 1U));
+    const auto guid = programmingRequest.path.substr(
+        static_cast<std::string::size_type>(
+            programmingRequest.path.find_last_of('/') + 1U));
 
-    e2edt_request_packet request;
+    getNodeInfo(rfnIdentifier).setConfigurationId(GuidPrefix::Yukon, guid);
 
-    request.id = idGenerator();
-    request.confirmable = false;
-    request.method = Protocols::Coap::RequestMethod::Post;
+    e2edt_request_packet newRequest;
 
-    request.token = programmingRequest.initialToken;
+    newRequest.id = idGenerator();
+    newRequest.confirmable = false;
+    newRequest.method = Protocols::Coap::RequestMethod::Post;
+
+    newRequest.token = programmingRequest.initialToken;
 
     meterProgrammingRequests.erase(itr);
 
-    request.payload = GetMeterProgrammingConfiguration(requestMsg.rfnIdentifier);
+    newRequest.payload = GetMeterProgrammingConfiguration(rfnIdentifier);
 
-    e2eRequestSender(requestMsg, request);
+    e2eRequestSender(newRequest);
 }
 
-Bytes DataStreamingRead (const Bytes& request, const RfnIdentifier & rfnId);
-Bytes DataStreamingWrite(const Bytes& request, const RfnIdentifier & rfnId);
+Bytes DataStreamingRead (const Bytes& request, const RfnIdentifier& rfnId);
+Bytes DataStreamingWrite(const Bytes& request, const RfnIdentifier& rfnId);
+auto GetMeterRead       (const Bytes& payload, const RfnIdentifier& rfnId) -> std::optional<Bytes>;
+void doMeterDisconnect(const ReplySender sendReply, const DelayedReplySender sendDelayedReply, const Bytes& payload, const RfnIdentifier& rfnId);
 
-void doChannelManagerRequest(const E2eRequestSender e2eRequestSender, const E2eReplySender e2eReplySender, const e2edt_request_packet& request, const Messaging::Rfn::E2eDataRequestMsg& requestMsg)
+void doChannelManagerRequest(const ReplySender sendReply, const DelayedReplySender sendDelayedReply, const Bytes& request, const RfnIdentifier rfnIdentifier)
 {
-    if( request.payload.empty() )
+    if( request.empty() )
     {
+        sendReply(Coap::ResponseCode::BadRequest);
         return;
     }
 
-    e2edt_reply_packet reply {};
-
-    switch( request.payload[0] )
+    switch( request[0] )
     {
         default:
         {
+            sendReply(Coap::ResponseCode::BadRequest);
+            return;
+        }
+        case 0x01:
+        {
+            if( const auto reply = GetMeterRead(request, rfnIdentifier) )
+            {
+                sendReply(*reply);
+            }
+            else
+            {
+                sendReply(Coap::ResponseCode::BadRequest);
+            }
+            return;
+        }
+        case 0x55:
+        {
+            /*
+            55 02 00
+
+            56 00 00 00 00
+            */
+            sendReply(asBytes(
+                "56 00 00 00 00"));
+            return;
+        }
+        case 0x57:
+        {
+            if( request.size() >= 2 )
+            {
+                switch( request[1] )
+                {
+                    //  Write
+                    case 0x00:
+                        /*
+                        57 00 00
+
+                        58 00 00 00
+                        */
+                        sendReply(asBytes(
+                            "58 00 00 00"));
+                        return;
+
+                    //  Read
+                    case 0x01:
+                        /*
+                        57 01
+
+                        58 01 00 00
+                        */
+                        sendReply(asBytes(
+                            "58 01 00 00"));
+                        return;
+                }
+            }
+            return;
+        }
+        case 0x60:
+        {
+            /*
+            60 01 00 
+                OR
+            60 04 0a 01 03 02 00 64 02 0a 01 68 01 68 00 f0
+            01 e0 00 00 03 0a 01 68 01 68 01 68 01 68 00 00
+            04 0a 02 d0 02 d0 00 00 00 00 00 00 05 0a 05 a0
+            00 00 00 00 00 00 00 00 06 03 88 06 00 07 03 88
+            02 00 08 03 08 00 00 09 03 00 00 00 0a 01 00
+
+            61 00 00 00 01 00 
+            */
+            sendReply(asBytes(
+                "61 00 00 00 01 00"));
+            return;
+        }
+        case 0x62:
+        {
+            /*
+            62 0f 
+
+            63 00 
+            */
+            sendReply(asBytes(
+                "63 00"));
+            return;
+        }
+        case 0x68:
+        {
+            /*
+            68 00 01 01 00 02 04 05 
+            
+            69 00 00 00
+
+                OR
+
+            68 06 00
+
+            69 06 00 00
+
+                OR
+
+            68 02 00
+
+            69 02 00 00
+            */
+            switch( request[1] )
+            {
+                case 0x00:
+                    sendReply(asBytes(
+                        "69 00 00 00"));
+                    break;
+                case 0x02:
+                    sendReply(asBytes(
+                        "69 02 00 00"));
+                    break;
+                case 0x06:
+                    sendReply(asBytes(
+                        "69 06 00 00"));
+                    break;
+            }
+            return;
+        }
+        case 0x70:
+        {
+            /*
+            70 00 1d 00 05 01 04 02 06 03 0b 04 0f 05 10 06
+            11 07 08 08 09 09 07 0a 00 0b 00 0c 00 0d 00 0e
+            00 0f 00 10 00 11 00 12 00 13 00 14 00 15 00 16
+            00 17 00 18 00 19 00 fd 06 fe 04 ff 00 
+    
+            71 00 00 
+            */
+            sendReply(asBytes(
+                "71 00 00"));
+            return;
+        }
+        case 0x78:
+        {
+            /*
+            78 00 01 01 00 43 21 00 01 00 03 00 04 00 05 00
+            07 00 09 00 29 00 31 00 33 00 70 00 72 00 73 00
+            f0 03 e9 03 eb 03 ec 03 ef 03 f1 07 d1 07 d3 07
+            d4 07 d7 07 d9 0b b9 0b bb 0b bc 0b bf 0b c1 0f
+            a1 0f a3 0f a4 0f a7 0f a9
+
+            79 00 00 01 02 00 ad 2b 00 01 00 00 00 03 00 00 
+            00 04 00 00 00 29 00 00 00 05 00 00 00 07 00 00 
+            01 00 00 08 00 09 00 00 01 00 00 08 00 f0 00 00 
+            01 00 00 08 00 31 00 00 00 33 00 00 01 00 00 08 
+            00 73 00 07 03 e9 00 00 03 eb 00 00 03 ec 00 00 
+            03 ef 00 00 04 e8 00 08 03 f1 00 00 04 e8 00 08 
+            07 d1 00 00 07 d3 00 00 07 d4 00 00 07 d7 00 00 
+            08 d0 00 08 07 d9 00 00 08 d0 00 08 0b b9 00 00 
+            0b bb 00 00 0b bc 00 00 0b bf 00 00 0c b8 00 08 
+            0b c1 00 00 0c b8 00 08 0f a1 00 00 0f a3 00 00 
+            0f a4 00 00 0f a7 00 00 10 a0 00 08 0f a9 00 00 
+            10 a0 00 08 
+            */
+            sendReply(asBytes(
+                "79 00 00 01 02"
+                    " 00 cd"  //  payload size
+                    " 33"     //  channel count
+                        " 00 01 00 00"
+                        " 00 02 00 00"
+                        " 00 03 00 00"
+                        " 00 04 00 00"
+                        " 00 29 00 00"
+                        " 00 2a 00 00"
+                        " 00 05 00 00"
+                        " 00 07 00 00"
+                        " 01 00 00 08"
+                        " 00 09 00 00"
+                        " 01 00 00 08"
+                        " 00 f0 00 00"
+                        " 01 00 00 08"
+                        " 00 31 00 00"
+                        " 00 33 00 00"
+                        " 01 00 00 08"
+                        " 00 73 00 07"
+                        " 00 81 00 00"
+                        " 00 82 00 00"
+                        " 03 e9 00 00"
+                        " 03 ea 00 00"
+                        " 03 eb 00 00"
+                        " 03 ec 00 00"
+                        " 03 ef 00 00"
+                        " 04 e8 00 08"
+                        " 03 f1 00 00"
+                        " 04 e8 00 08"
+                        " 07 d1 00 00"
+                        " 07 d2 00 00"
+                        " 07 d3 00 00"
+                        " 07 d4 00 00"
+                        " 07 d7 00 00"
+                        " 08 d0 00 08"
+                        " 07 d9 00 00"
+                        " 08 d0 00 08"
+                        " 0b b9 00 00"
+                        " 0b ba 00 00"
+                        " 0b bb 00 00"
+                        " 0b bc 00 00"
+                        " 0b bf 00 00"
+                        " 0c b8 00 08"
+                        " 0b c1 00 00"
+                        " 0c b8 00 08"
+                        " 0f a1 00 00"
+                        " 0f a2 00 00"
+                        " 0f a3 00 00"
+                        " 0f a4 00 00"
+                        " 0f a7 00 00"
+                        " 10 a0 00 08"
+                        " 0f a9 00 00"
+                        " 10 a0 00 08"));
+            return;
+        }
+        case 0x7a:
+        {
+            /*
+            7a 00 01 01 15 00 00 0e 10 00 00 54 60 06 00 01
+            00 03 00 04 00 29 00 31 00 73 
+    
+            7b 00 00 01 02 19 06 00 01 00 00 00 03 00 00 00
+            04 00 00 00 29 00 00 00 31 00 00 00 73 00 07 
+            */
+            if( rfnIdentifier.model == "C2SX-SD" )
+            {
+                sendReply(asBytes(
+                    "7b 00 00 01 02"
+                        " 21"
+                        " 08"
+                            " 00 01 00 00"
+                            " 00 02 00 00"
+                            " 00 03 00 00"
+                            " 00 05 00 00"
+                            " 00 29 00 00"
+                            " 00 2a 00 00"
+                            " 00 31 00 00"
+                            " 00 73 00 07"));
+            }
+            else
+            {
+                sendReply(asBytes(
+                    "7b 00 00 01 02"
+                        " 21"
+                        " 08"
+                            " 00 01 00 00"
+                            " 00 02 00 00"
+                            " 00 03 00 00"
+                            " 00 04 00 00"
+                            " 00 29 00 00"
+                            " 00 2a 00 00"
+                            " 00 31 00 00"
+                            " 00 73 00 07"));
+            }
+            return;
+        }
+        case 0x80:
+        {
+            doMeterDisconnect(sendReply, sendDelayedReply, request, rfnIdentifier);
+            return;
+        }
+        case 0x82:
+        {
+            /*
+            82 00 01 01 01 00
+
+            83 00 00 01 01 01 01 01
+            */
+            sendReply(asBytes(
+                "83 00 00 01 01 01 01 00"));
             return;
         }
         case 0x84:
         {
-            reply.payload = DataStreamingRead(request.payload, requestMsg.rfnIdentifier);
-            reply.token = request.token;
-            reply.status = Protocols::Coap::ResponseCode::Content;
-            break;
+            sendReply(DataStreamingRead(request, rfnIdentifier));
+            return;
         }
         case 0x86:
         {
-            reply.payload = DataStreamingWrite(request.payload, requestMsg.rfnIdentifier);
-            reply.token = request.token;
-            reply.status = Protocols::Coap::ResponseCode::Content;
-            break;
+            sendReply(DataStreamingWrite(request, rfnIdentifier));
+            return;
         }
         case 0x91:
         {
-            reply.status = Protocols::Coap::ResponseCode::EmptyMessage;
-
-            //  Delay the actual data reply by 4 seconds (arbitrary)
-            std::thread([e2eRequestSender, requestMsg, token=request.token]() {
-                Sleep(4000);
-                
-                e2edt_request_packet reply;
-
-                reply.id = idGenerator();
-                reply.method = Protocols::Coap::RequestMethod::Post;
-                reply.token = token;
-                reply.confirmable = false;
-                reply.payload = GetMeterProgrammingConfiguration(requestMsg.rfnIdentifier);
-
-                e2eRequestSender(requestMsg, reply);
-            }).detach();
-
-            break;
+            //  Send an empty ack for the ID
+            sendReply(Protocols::Coap::ResponseCode::EmptyMessage);
+            //  then send a separate data response for the token
+            sendDelayedReply(GetMeterProgrammingConfiguration(rfnIdentifier));
+            return;
         }
     }
-
-    reply.id = request.id;
-
-    e2eReplySender(requestMsg, reply);
 }
 
-auto ParseSetMeterProgram(const Bytes& request, const RfnIdentifier & rfnId) -> std::optional<std::tuple<std::string, unsigned>>;
-
-auto processChannelManagerPost(const e2edt_request_packet& post_request, const RfnIdentifier& rfnId) -> std::optional<e2edt_request_packet>
+auto GetMeterRead(const Bytes& payload, const RfnIdentifier& rfnId) -> std::optional<Bytes>
 {
-    if( ! post_request.payload.empty() )
+    return asBytes(
+        "03"    //  Response type 3" contains one or more modifiers
+        " 00"   //  Response status (OK)
+        " 02"   //  Number of channels in response
+
+        " 17"   //  Channel number
+        " 81"       //  Unit of measure (Watth)
+        " 80 90"    //  Modifier 1, Quadrant 1, Quadrant 4, has extension bit set
+        " 00 00"    //  Modifier 2, no extension bit
+        " 00 00 00 2a" //  Data
+        " 00"       //  Status (OK)
+
+        " 18"   //  Channel number
+        " 82"       //  Unit of measure (Varh)
+        " 80 00"    //  Modifier 1, has extension bit set
+        " 00 00"    //  Modifier 2, no extension bit
+        " 00 00 00 15" //  Data
+        " 00"       //  Status (OK)
+    );
+}
+
+void doMeterDisconnect(const ReplySender sendReply, const DelayedReplySender sendDelayedReply, const Bytes& payload, const RfnIdentifier& rfnId)
+{
+    if( payload.size() >= 2 )
     {
-        switch( post_request.payload[0] )
+        switch( payload[1] )
         {
-            case 0x90:
-            {
-                if( const auto pathSize = ParseSetMeterProgram(post_request.payload, rfnId) )
-                {
-                    const auto [path, size] = *pathSize;
+            case 0x01:
+                sendReply(Coap::ResponseCode::EmptyMessage);
+                sendDelayedReply(Bytes{ 0x81, payload[1], 0x00, payload[1] });  //  Echo the action
+                return;
 
-                    auto itr = meterProgrammingRequests.find(rfnId);
+            case 0x02:
+            case 0x03:
+                sendReply(Bytes { 0x81, payload[1], 0x00, payload[1] });  //  Echo the action
+                return;
 
-                    if( itr != meterProgrammingRequests.end() )
-                    {
-                        if( itr->second.path == path )
-                        {
-                            CTILOG_INFO(dout, "Received duplicate path request, ignoring" << FormattedList::of(
-                                "Device", rfnId,
-                                "Path", path));
-
-                            return std::nullopt;
-                        }
-
-                        CTILOG_INFO(dout, "Replacing existing meter programming request" << FormattedList::of(
-                            "Device", rfnId,
-                            "Existing path", itr->second.path,
-                            "New path", path));
-
-                        itr->second.path = path;
-                        itr->second.initialToken = post_request.token;
-                    }
-
-                    e2edt_request_packet request;
-
-                    request.id = idGenerator();
-                    request.confirmable = true;
-                    request.method = Protocols::Coap::RequestMethod::Get;
-                    request.path = path;
-                    request.token = idGenerator();
-
-                    itr->second.currentToken = request.token;
-
-                    return request;
-                }
-            }
+            case 0x04:
+                sendReply(Bytes { 0x81, payload[1], 0x00, 0x03 });  //  Resume
+                return;
         }
     }
 
+    sendReply(Coap::ResponseCode::BadRequest);
+}
+
+
+Bytes processAggregateRequests(const Bytes& request, const RfnIdentifier rfnIdentifier);
+
+void doBulkMessageRequest(const ReplySender sendReply, const Bytes& request, const RfnIdentifier rfnIdentifier)
+{
+    if( request.empty() )
+    {
+        sendReply(Coap::ResponseCode::BadRequest);
+        return;
+    }
+
+    switch( request[0] )
+    {
+        default:
+        {
+            sendReply(Coap::ResponseCode::BadRequest);
+            return;
+        }
+        case 0x01:
+        {
+            sendReply(processAggregateRequests(request, rfnIdentifier));
+            return;
+        }
+    }
+}
+
+Bytes processAggregateRequests(const Bytes& payload, const RfnIdentifier rfnIdentifier)
+{
+    constexpr auto HeaderLength = 1 + 1 + 2;  //  command + count + length
+    constexpr auto RequestHeaderLength = 1 + 2 + 2;  //  ASID + contextId + length
+
+    auto itr = payload.begin();
+    const auto request_end = payload.end();
+
+    if( itr + HeaderLength >= request_end )
+    {
+        CTILOG_WARN(dout, "No header while processing aggregate message for " << rfnIdentifier);
+        return {};
+    }
+
+    itr++;  //  ignore the command byte, we already know it is 0x01
+    const auto count = *itr++;
+    const uint16_t length = *itr++ << 8
+                          | *itr++;
+
+    if( length + HeaderLength > payload.size() )
+    {
+        CTILOG_WARN(dout, "Not enough bytes while processing aggregate message for " << rfnIdentifier << FormattedList::of(
+            "Total bytes", payload.size(),
+            "Expected bytes", length + HeaderLength));
+
+        return {};
+    }
+
+    Bytes result;
+    
+    result.resize(HeaderLength);
+
+    auto replies = 0;
+
+    for( auto index = 1; itr + RequestHeaderLength < request_end; ++index )
+    {
+        const auto contextId_first  = *itr++;
+        const auto contextId_second = *itr++;
+
+        const auto applicationServiceId = ASIDs{ *itr++ };
+        
+        const auto payloadLength = *itr++ << 8
+                                 | *itr++;
+
+        if( itr + payloadLength > request_end )
+        {
+            CTILOG_WARN(dout, "Ran out of bytes while processing aggregate message for " << rfnIdentifier << FormattedList::of(
+                "Position", itr - payload.begin(),
+                "Total bytes", payload.size(),
+                "Payload bytes", length,
+                "Expected bytes", payloadLength,
+                "Remaining bytes", request_end - itr,
+                "Request count", count,
+                "Request index", index));
+
+            return {};
+        }
+
+        Bytes payload { itr, itr + payloadLength };
+        
+        itr += payloadLength;
+
+        if( applicationServiceId == ASIDs::BulkMessageHandler )
+        {
+            CTILOG_WARN(dout, "Discarding nested BulkMessageHandler request for " << rfnIdentifier);
+            continue;
+        }
+
+        PayloadOrStatus response;
+
+        processGetRequest(
+            [&response, rfnIdentifier](PayloadOrStatus&& r) {
+                response = std::move(r);
+            }, 
+            [rfnIdentifier](Bytes&& delayed) {
+                CTILOG_WARN(dout, "Discarding delayed response generated for " << rfnIdentifier)
+            },
+            payload, 
+            rfnIdentifier, 
+            applicationServiceId);
+
+        if( const auto reply = std::get_if<Bytes>(&response) )
+        {
+            CTILOG_DEBUG(dout, "Writing aggregate reply for " << rfnIdentifier << FormattedList::of(
+                "Request count", count,
+                "Request index", index,
+                "Context ID", (contextId_first << 8) | contextId_second,
+                "ASID", as_underlying(applicationServiceId),
+                "Reply size", reply->size()));
+
+            result.push_back(contextId_first);
+            result.push_back(contextId_second);
+            result.push_back(as_underlying(applicationServiceId));
+            result.push_back(reply->size() >> 8);
+            result.push_back(reply->size());
+            boost::insert(result, result.end(), *reply);
+            ++replies;
+        }
+        else 
+        {
+            CTILOG_WARN(dout, std::get<Coap::ResponseCode>(response) << " returned while processing component request for " << rfnIdentifier << FormattedList::of(
+                "Request count", count,
+                "Request index", index,
+                "Context ID", (contextId_first << 8) | contextId_second,
+                "ASID", as_underlying(applicationServiceId)));
+        }
+    }
+
+    const auto payloadSize = result.size() - HeaderLength;
+
+    result[0] = 0x01;
+    result[1] = replies;
+    result[2] = payloadSize >> 8;
+    result[3] = payloadSize;
+
+    return result;
+}
+
+auto GetConfigNotification(const Bytes& payload, const RfnIdentifier& rfnId) -> std::optional<Bytes>;
+
+void doEventManagerRequest(const ReplySender sendReply, const Bytes& request, const RfnIdentifier rfnIdentifier)
+{
+    if( request.empty() )
+    {
+        sendReply(Coap::ResponseCode::BadRequest);
+        return;
+    }
+
+    switch( request[0] )
+    {
+        default:
+        {
+            sendReply(Coap::ResponseCode::BadRequest);
+            return;
+        }
+        case 0x24:
+        {
+            /*
+            24 01
+
+            29 01
+            */
+            sendReply(asBytes(
+                "29 01"));
+            return;
+        }
+        case 0x25:
+        {
+            /*
+            25 04 07 e6 00 01 f4 00 10 80 00 01 c0 
+                OR
+            25 04 07 e7 00 01 e8 48 10 80 00 01 c0
+
+            29 01
+            */
+            sendReply(asBytes(
+                "29 01"));
+            return;
+        }
+        case 0x26:
+        {
+            /*
+            26 0f
+
+            29 01
+            */
+            sendReply(asBytes(
+                "29 01"));
+            return;
+        }
+        case 0x27:
+        {
+            /*
+            27 3c 
+
+            29 01
+            */
+            sendReply(asBytes(
+                "29 01"));
+            return;
+        }
+        case 0x28:
+        {
+            /*
+            28 02
+
+            29 01
+            */
+            sendReply(asBytes(
+                "29 01"));
+            return;
+        }
+        case 0x88:
+        {
+            /*
+            88 00 01 01 07 01 00 23 00 19 0f 03 
+            
+            89 00 00 01 01 07 01 00 23 00 19 0f 03
+            */
+            sendReply(asBytes(
+                "89 00 00 01 01 07 01 00 23 00 19 0f 03"));
+            return;
+        }
+    }
+}
+
+void doHubMeterRequest(const ReplySender sendReply, const Bytes& request, const RfnIdentifier rfnIdentifier)
+{
+    if( request.empty() )
+    {
+        sendReply(Coap::ResponseCode::BadRequest);
+        return;
+    }
+
+    switch( request[0] )
+    {
+        default:
+        {
+            sendReply(Coap::ResponseCode::BadRequest);
+            return;
+        }
+        case 0x1d:
+        {
+        if( auto reply = GetConfigNotification(request, rfnIdentifier) )
+        {
+            sendReply(*reply);
+            }
+            else
+            {
+                sendReply(Coap::ResponseCode::BadRequest);
+            }
+            return;
+        }
+    }
+}
+
+Bytes asBytes(const char* hex_string)
+{
+    Bytes result;
+
+    for( auto pos = hex_string; *pos; )
+    {
+        if( std::isalnum(*pos) )
+        {
+            char* end;
+            result.push_back(strtoul(pos, &end, 16));
+            pos = end;
+        }
+        else
+        {
+            pos++;
+        }
+    }
+
+    return result;
+}
+
+auto GetConfigNotification(const Bytes& payload, const RfnIdentifier& rfnId) -> std::optional<Bytes>
+{
+    if( rfnId.manufacturer == "ITRN" && rfnId.model == "C2SX" )
+    {
+        return asBytes(
+            "1e"
+            " 00 0f" //  15 TLVs
+                " 00 0b 00 12"  //  OV/UV configuration
+                    " 04 07 e6 01 0f 3c 02 01 06 00 01 f4 00 10 80 00"
+                    " 01 c0"
+                " 00 0b 00 12"  //  OV/UV configuration
+                    " 04 07 e7 01 0f 3c 02 01 06 00 01 e8 48 10 80 00"
+                    " 01 c0"
+                " 00 0c 00 07"  //  Temperature configuration
+                    " 01 00 23 00 19 0f 03"
+                " 00 01 00 01"  //  TOU enable/disable
+                    " 01"
+                " 00 02 00 38"  //  TOU schedule
+                    //  Day table    
+                    " 02 00 64"
+                    //  Schedule 1 switch times
+                    " 01 68"
+                    " 01 68"
+                    " 00 f0"
+                    " 01 e0"
+                    " 00 00"
+                    //  Schedule 2 switch times
+                    " 01 68"
+                    " 01 68"
+                    " 01 68"
+                    " 01 68"
+                    " 00 00"
+                    //  Schedule 3 switch times
+                    " 02 d0"
+                    " 02 d0"
+                    " 00 00"
+                    " 00 00"
+                    " 00 00"
+                    //  Schedule 4 switch times
+                    " 05 a0"
+                    " 00 00"
+                    " 00 00"
+                    " 00 00"
+                    " 00 00"
+                    //  Schedule 1 rates
+                    " 88 06 00"  //  Little endian - 0x000688 = 000 000 000 000 011 010 001 000 - reversed = A B C D A A A A
+                    //  Schedule 2 rates
+                    " 88 02 00"  //  Little endian - 0x000288 = 000 000 000 000 001 010 001 000 - reversed = A B C B A A A A
+                    //  Schedule 3 rates
+                    " 08 00 00"
+                    //  Schedule 4 rates
+                    " 00 00 00"
+                    //  default rate
+                    " 00"
+                " 00 03 00 0c"  //  TOU holiday
+                    " 5e 72 fc 50"  //  Holiday 1
+                    " 5e 74 4d d0"  //  Holiday 2
+                    " 5e 75 9f 50"  //  Holiday 3
+                " 00 04 00 01"  //  Demand Freeze Day
+                    " 20"
+                " 00 08 00 02"  //  Voltage profile
+                    " 04 05"
+                " 00 09 00 3b"  //  C2SX Display
+                    " 1d"
+                        " 00 05"
+                        " 01 04"
+                        " 02 06"
+                        " 03 0b"
+                        " 04 0f"
+                        " 05 10"
+                        " 06 11"
+                        " 07 08"
+                        " 08 09"
+                        " 09 07"
+                        " 0a 00"
+                        " 0b 00"
+                        " 0c 00"
+                        " 0d 00"
+                        " 0e 00"
+                        " 0f 00"
+                        " 10 00"
+                        " 11 00"
+                        " 12 00"
+                        " 13 00"
+                        " 14 00"
+                        " 15 00"
+                        " 16 00"
+                        " 17 00"
+                        " 18 00"
+                        " 19 00"
+                        " fd 06"
+                        " fe 04"
+                        " ff 01"
+                " 00 06 00 d5"  //  Channel selection
+                    " 35"
+                        " 00 01 00 00   00 02 00 00   00 03 00 00   00 04 00 00   00 29 00 00   00 2a 00 00   00 05 00 00   00 07 00 00"
+                        " 01 00 00 08   00 09 00 00   01 00 00 08   00 f0 00 00   01 00 00 08   00 31 00 00   00 33 00 00   01 00 00 08"
+                        " 00 73 00 07   00 81 00 07   01 00 00 08   00 82 00 07   01 00 00 08   03 e9 00 00   03 ea 00 00   03 eb 00 00"
+                        " 03 ec 00 00   03 ef 00 00   04 e8 00 08   03 f1 00 00   04 e8 00 08   07 d1 00 00   07 d2 00 00   07 d3 00 00"
+                        " 07 d4 00 00   07 d7 00 00   08 d0 00 08   07 d9 00 00   08 d0 00 08   0b b9 00 00   0b ba 00 00   0b bb 00 00"
+                        " 0b bc 00 00   0b bf 00 00   0c b8 00 08   0b c1 00 00   0c b8 00 08   0f a1 00 00   0f a2 00 00   0f a3 00 00"
+                        " 0f a4 00 00   0f a7 00 00   10 a0 00 08   0f a9 00 00   10 a0 00 08"
+                " 00 0e 00 01"  //  Demand interval configuration
+                    " 0f"
+                " 00 07 00 01"  //  Disconnect
+                    " 00"
+                " 00 05 00 29"  //  Interval recording
+                    " 00 00 0e 10"
+                    " 00 00 54 60"
+                    " 08"
+                        " 00 01 00 00   00 02 00 00   00 03 00 00   00 04 00 00   00 29 00 00   00 2a 00 00   00 31 00 00   00 73 00 07"
+                " 00 0d 00 1a"  //  Data Streaming configuration
+                    " 04 01 00 01 01 05 00 00 02 00 05 00 00 05 00 05"
+                    " 00 00 73 00 05 00 00 00 00 3a"
+                " 00 0f 00 01"  //  Voltage profile status
+                    " 01");
+    }
+    if( rfnId.manufacturer == "ITRN" && rfnId.model == "C2SX-SD" )
+    {
+        return asBytes(
+            "1e 00 0f"
+                " 00 0b 00 12"  //  OV/UV configuration
+                    " 04 07 e6 01 0f 3c 02 01 06 00 01 f4 00 10 80 00"
+                    " 01 c0"
+                " 00 0b 00 12"  //  OV/UV configuration
+                    " 04 07 e7 01 0f 3c 02 01 06 00 01 e8 48 10 80 00"
+                    " 01 c0"
+                " 00 0c 00 07"  //  Temperature configuration
+                    " 01 00 23 00 19 0f 03"
+                " 00 01 00 01"  //  TOU enable/disable
+                    " 01"
+                " 00 02 00 38"  //  TOU schedule
+                    " 02 00 64"
+                        //  Schedule 1 switch times
+                        " 01 68"
+                        " 01 68"
+                        " 00 f0"
+                        " 01 e0"
+                        " 00 00"
+                        //  Schedule 2 switch times
+                        " 01 68"
+                        " 01 68"
+                        " 01 68"
+                        " 01 68"
+                        " 00 00"
+                        //  Schedule 3 switch times
+                        " 02 d0"
+                        " 02 d0"
+                        " 00 00"
+                        " 00 00"
+                        " 00 00"
+                        //  Schedule 4 switch times            
+                        " 05 a0"
+                        " 00 00"
+                        " 00 00"
+                        " 00 00"
+                        " 00 00"
+                        //  Schedule 1 rates
+                        " 88 06 00"
+                        //  Schedule 2 rates
+                        " 88 02 00"
+                        //  Schedule 3 rates
+                        " 08 00 00"
+                        //  Schedule 4 rates
+                        " 00 00 00"
+                        //  Default TOU rate
+                        " 00"
+                " 00 03 00 0c"  //  TOU holiday
+                    " 00 00 00 00 00 00 00 00 00 00 00 00"
+                " 00 04 00 01"  //  Demand Freeze Day
+                    " 20"
+                " 00 08 00 02"  //  Voltage profile
+                    " 04 05"
+                " 00 09 00 3b"  //  C2SX Display
+                    " 1d 00 05 01 04 02 06 03 0b 04 0f 05 10 06 11 07"
+                    " 08 08 09 09 07 0a 00 0b 00 0c 00 0d 00 0e 00 0f"
+                    " 00 10 00 11 00 12 00 13 00 14 00 15 00 16 00 17"
+                    " 00 18 00 19 00 fd 05 fe 08 ff 01"
+                " 00 06 00 d5"  //  Channel selection
+                    " 35"
+                        " 00 01 00 00   00 02 00 00   00 03 00 00   00 04 00 00   00 29 00 00   00 2a 00 00   00 05 00 00   00 07 00 00"
+                        " 01 00 00 08   00 09 00 00   01 00 00 08   00 f0 00 00   01 00 00 08   00 31 00 00   00 33 00 00   01 00 00 08"
+                        " 00 73 00 07   00 81 00 07   01 00 00 08   00 82 00 07   01 00 00 08   03 e9 00 00   03 ea 00 00   03 eb 00 00"
+                        " 03 ec 00 00   03 ef 00 00   04 e8 00 08   03 f1 00 00   04 e8 00 08   07 d1 00 00   07 d2 00 00   07 d3 00 00"
+                        " 07 d4 00 00   07 d7 00 00   08 d0 00 08   07 d9 00 00   08 d0 00 08   0b b9 00 00   0b ba 00 00   0b bb 00 00"
+                        " 0b bc 00 00   0b bf 00 00   0c b8 00 08   0b c1 00 00   0c b8 00 08   0f a1 00 00   0f a2 00 00   0f a3 00 00"
+                        " 0f a4 00 00   0f a7 00 00   10 a0 00 08   0f a9 00 00   10 a0 00 08"
+                " 00 0e 00 01"  //  Demand interval configuration
+                    " 0f"
+                " 00 07 00 02"  //  Disconnect
+                    " 01 00"
+                " 00 05 00 29"  //  Interval recording
+                    " 00 00 0e 10"
+                    " 00 00 54 60"
+                    " 08"
+                        " 00 01 00 00"
+                        " 00 02 00 00"
+                        " 00 03 00 00"
+                        " 00 29 00 00"
+                        " 00 2a 00 00"
+                        " 00 05 00 00"
+                        " 00 31 00 00"
+                        " 00 73 00 07"
+                " 00 0d 00 1a"  //  Data Streaming configuration
+                    " 04 00 00 01 00 1e 00 00 02 00 1e 00 00 05 00 1e"
+                    " 00 00 73 00 1e 00 00 00 00 03"
+                " 00 0f 00 01"  //  Voltage profile status
+                    " 01");
+    }
     return std::nullopt;
 }
 
-auto ParseSetMeterProgram(const Bytes& request, const RfnIdentifier & rfnId) -> std::optional<std::tuple<std::string, unsigned>>
+auto ParseSetMeterProgram(const Bytes& payload, const RfnIdentifier & rfnId) -> std::optional<std::tuple<std::string, unsigned>>;
+
+void processPostRequest(const E2eRequestSender e2eRequestSender, const ReplySender sendReply, const Bytes& request, const unsigned token, const RfnIdentifier rfnIdentifier, const ASIDs applicationServiceId)
+{
+    //  The only POST we process at present is the Set Meter Configuration request, which results in a GET request back to Yukon.
+    if( applicationServiceId != ASIDs::ChannelManager )
+    {
+        CTILOG_WARN(dout, "Received unhandled ASID (" << static_cast<int>(applicationServiceId) << ") for rfnIdentifier " << rfnIdentifier);
+        sendReply(Coap::ResponseCode::BadRequest);
+        return;
+    }
+
+    if( request.empty() )
+    {
+        sendReply(Coap::ResponseCode::BadRequest);
+        return;
+    }
+
+    switch( request[0] )
+    {
+        default:
+        {
+            sendReply(Coap::ResponseCode::BadRequest);
+            return;
+        }
+        case 0x90:
+        {
+            if( const auto pathSize = ParseSetMeterProgram(request, rfnIdentifier) )
+            {
+                const auto [path, size] = *pathSize;
+
+                CTILOG_INFO(dout, "Received Meter Programming Set Configuration request" << FormattedList::of(
+                    "Device", rfnIdentifier,
+                    "Path", path,
+                    "Size", size));
+
+                e2edt_request_packet newRequest;
+
+                newRequest.id = idGenerator();
+                newRequest.confirmable = true;
+                newRequest.method = Protocols::Coap::RequestMethod::Get;
+                newRequest.path = path;
+                newRequest.token = idGenerator();
+
+                if( auto existingRequest = mapFindRef(meterProgrammingRequests, rfnIdentifier) )
+                {
+                    CTILOG_INFO(dout, "Replacing existing meter programming request" << FormattedList::of(
+                        "Device", rfnIdentifier,
+                        "Existing path", existingRequest->path,
+                        "New path", path));
+
+                    existingRequest->initialToken = token;
+                    existingRequest->currentToken = newRequest.token;
+                    existingRequest->path = path;
+                }
+                else
+                {
+                    meterProgrammingRequests.emplace(rfnIdentifier, MeterProgrammingRequest { token, newRequest.token, path });
+                }
+
+                e2eRequestSender(newRequest);
+                e2eRequestSender(newRequest);
+
+                return;
+            }
+        }
+    }
+}
+
+auto ParseSetMeterProgram(const Bytes& payload, const RfnIdentifier & rfnId) -> std::optional<std::tuple<std::string, unsigned>>
 {
     auto pos = 1;
-    const auto end = request.size();
+    const auto end = payload.size();
 
-    if( request[pos++] != 2 )
+    if( payload[pos++] != 2 )
     {
         return std::nullopt;  //  error, must have two TLVs
     }
@@ -467,12 +1306,12 @@ auto ParseSetMeterProgram(const Bytes& request, const RfnIdentifier & rfnId) -> 
         {
             return std::nullopt;  //  error, TLV header too small
         }
-        auto type = request[pos];
-        auto len = ntohs(*reinterpret_cast<const unsigned short *>(request.data() + pos + 1));
+        auto type = payload[pos];
+        auto len = ntohs(*reinterpret_cast<const unsigned short *>(payload.data() + pos + 1));
 
         pos += 3;
 
-        if( pos + len >= end )
+        if( pos + len > end )
         {
             return std::nullopt;  //  error, buffer too small
         }
@@ -484,10 +1323,10 @@ auto ParseSetMeterProgram(const Bytes& request, const RfnIdentifier & rfnId) -> 
             {
                 return std::nullopt;  //  error, size must be 4 bytes
             }
-            size = ntohl(*reinterpret_cast<const u_long*>(request.data() + pos));
+            size = ntohl(*reinterpret_cast<const u_long*>(payload.data() + pos));
             break;
         case 0x02:
-            uri = std::string(request.data() + pos, request.data() + pos + len);
+            uri = std::string(payload.data() + pos, payload.data() + pos + len);
             break;
         }
         pos += len;
@@ -564,22 +1403,10 @@ metric_response mangleResponse(metric_response contents, double mangleFactor)
 
 extern std::mt19937_64 gen;
 extern std::uniform_real_distribution<double> dist;
-std::uniform_int_distribution<unsigned> selector;
-
-std::string GenerateConfigurationId(const RfnIdentifier & rfnId)
-{
-    const auto index = selector(gen);
-
-    auto source = sources[index % sources.size()];
-
-    return source + (source == Source_Yukon
-                         ? yukonGuids [index % yukonGuids.size()]
-                         : remoteGuids[index % remoteGuids.size()]);
-}
 
 Bytes GetMeterProgrammingConfiguration(const RfnIdentifier & rfnId)
 {
-    auto configurationId = mapFindOrCompute(configurationIds, rfnId, GenerateConfigurationId);
+    const auto configurationId = getNodeInfo(rfnId).getConfigurationId();
 
     //  Success response
     //  TODO - add support for failure responses
@@ -649,10 +1476,8 @@ Bytes makeDataStreamingResponse(const unsigned char responseCode, const metric_r
     return response;
 }
 
-Bytes DataStreamingRead(const Bytes& request, const RfnIdentifier & rfnId)
+Bytes DataStreamingRead(const Bytes& payload, const RfnIdentifier & rfnId)
 {
-    streaming_metrics::metrics modelMetrics;
-
     const auto streamingEnabled = gConfigParms.isTrue("SIMULATOR_RFN_DATA_STREAMING_READ_STREAMING_ENABLED", true);
     const auto channelsEnabled  = gConfigParms.isTrue("SIMULATOR_RFN_DATA_STREAMING_READ_CHANNELS_ENABLED", true);
     const auto interval         = gConfigParms.getValueAsULong("SIMULATOR_RFN_DATA_STREAMING_READ_INTERVAL", 5);
@@ -674,7 +1499,7 @@ Bytes DataStreamingRead(const Bytes& request, const RfnIdentifier & rfnId)
     return makeDataStreamingResponse(0x85, response);
 }
 
-Bytes DataStreamingWrite(const Bytes& request, const RfnIdentifier & rfnId)
+Bytes DataStreamingWrite(const Bytes& payload, const RfnIdentifier & rfnId)
 {
     //  Request format:
     //  0x86,  //  command code
@@ -687,18 +1512,18 @@ Bytes DataStreamingWrite(const Bytes& request, const RfnIdentifier & rfnId)
     std::map<unsigned, metric_response::channel> requestedChannels;
     metric_response response { true };
 
-    if( request.size() >= 3 )
+    if( payload.size() >= 3 )
     {
-        const auto metricCount = request[1];
-        response.enabled       = request[2];
+        const auto metricCount = payload[1];
+        response.enabled       = payload[2];
     
-        if( request.size() >= metricCount * 4 + 3 )
+        if( payload.size() >= metricCount * 4 + 3 )
         {
-            for( size_t i = 3; i < request.size(); i += 4 )
+            for( size_t i = 3; i < payload.size(); i += 4 )
             {
-                const unsigned metricId = request[i] << 8 | request[i+1];
-                const bool enabled = request[i+2];
-                const auto interval = request[i+3];
+                const unsigned metricId = payload[i] << 8 | payload[i+1];
+                const bool enabled = payload[i+2];
+                const auto interval = payload[i+3];
 
                 if( enabled )
                 {
@@ -713,8 +1538,6 @@ Bytes DataStreamingWrite(const Bytes& request, const RfnIdentifier & rfnId)
             }
         }
     }
-
-    streaming_metrics::metrics modelMetrics;
 
     const unsigned default_interval = 
             requestedChannels.empty()

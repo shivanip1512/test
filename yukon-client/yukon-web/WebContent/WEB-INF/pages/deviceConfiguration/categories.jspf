@@ -28,6 +28,15 @@
         </c:choose>
     </c:if>
     
+    <!-- If Firmware Version is not in Master.config or the value is less that 9.4 display warning -->
+    <c:if test="${catType == rfnMetrologyConfigurationType && displayRfnMetrologyWarning}">
+        <tags:alertBox type="warning" key=".${catType}.warning"/>
+    </c:if>
+    
+    <c:if test="${(catType == touConfigurationType || catType == demandFreezeConfigurationType || catType == rfnDemandConfigurationType) && rfnMetrologyConfigurationSupported}">
+        <tags:alertBox type="warning" key=".${catType}.warning"/>
+    </c:if>
+    
     <tags:nameValueContainer2>
         <tags:nameValue2 nameKey=".name" nameColumnWidth="15%">
             <div id="categoryName_${catType}">${fn:escapeXml(selection.categoryName)}</div>

@@ -5,14 +5,12 @@ import java.util.Map;
 import java.util.Set;
 
 import javax.annotation.PostConstruct;
-import javax.jms.ConnectionFactory;
 
 import org.apache.commons.lang3.Validate;
 import org.apache.logging.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.context.MessageSourceResolvable;
-import org.springframework.jms.core.JmsTemplate;
 import org.springframework.web.client.RestClientException;
 import org.springframework.web.client.RestOperations;
 
@@ -23,6 +21,9 @@ import com.cannontech.common.model.YukonCancelTextMessage;
 import com.cannontech.common.model.YukonTextMessage;
 import com.cannontech.common.pao.PaoIdentifier;
 import com.cannontech.common.pao.attribute.model.BuiltInAttribute;
+import com.cannontech.common.util.jms.YukonJmsTemplate;
+import com.cannontech.common.util.jms.YukonJmsTemplateFactory;
+import com.cannontech.common.util.jms.api.JmsApiDirectory;
 import com.cannontech.common.util.xml.SimpleXPathTemplate;
 import com.cannontech.database.db.point.stategroup.Commissioned;
 import com.cannontech.database.incrementer.NextValueHelper;
@@ -59,13 +60,12 @@ public class DigiWebServiceImpl implements ZigbeeWebService, ZigbeeStateUpdaterS
     @Autowired private DigiXMLBuilder digiXMLBuilder;
     @Autowired private DigiResponseHandler digiResponseHandler;
     @Autowired private ConfigurationSource configurationSource;
+    @Autowired private YukonJmsTemplateFactory jmsTemplateFactory;
     @Autowired private ZigbeeServiceHelper zigbeeServiceHelper;
-
-    // @Autowired by setter
-    private JmsTemplate jmsTemplate;
 
     private static String digiBaseUrl;
     private static String digiEndPointReadUrl;
+    private YukonJmsTemplate jmsTemplate;
 
     /**
      * All public methods in this class must check that Digi is enabled (the cparm
@@ -77,6 +77,7 @@ public class DigiWebServiceImpl implements ZigbeeWebService, ZigbeeStateUpdaterS
 
     @PostConstruct
     public void initialize() {
+        jmsTemplate = jmsTemplateFactory.createTemplate(JmsApiDirectory.ZIGBEE_SMART_UPDATE);
         digiEnabled = configurationSource.getBoolean(MasterConfigBoolean.DIGI_ENABLED);
         if (digiEnabled) {
             digiBaseUrl = configurationSource.getString("DIGI_WEBSERVICE_URL", "http://my.idigi.com/");
@@ -248,7 +249,7 @@ public class DigiWebServiceImpl implements ZigbeeWebService, ZigbeeStateUpdaterS
     @Override
     public void activateSmartPolling(ZigbeeDevice device) {
         verifyDigiEnabled();
-        jmsTemplate.convertAndSend("yukon.notif.obj.dr.smartUpdateRequest", new SmartUpdateRequestMessage(device.getPaoIdentifier()));
+        jmsTemplate.convertAndSend(new SmartUpdateRequestMessage(device.getPaoIdentifier()));
     }
 
     @Override
@@ -576,9 +577,4 @@ public class DigiWebServiceImpl implements ZigbeeWebService, ZigbeeStateUpdaterS
         return;
     }
 
-    @Autowired
-    public void setConnectionFactory(ConnectionFactory connectionFactory) {
-        jmsTemplate = new JmsTemplate(connectionFactory);
-        jmsTemplate.setPubSubDomain(false);
-    }
 }

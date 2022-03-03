@@ -1,12 +1,12 @@
 #include "precompiled.h"
 
 #include "IncrementingKeepAlivePolicy.h"
+#include "Requests.h"
 
 extern unsigned long _IVVC_REGULATOR_AUTO_MODE_MSG_DELAY;
 
 
-namespace Cti           {
-namespace CapControl    {
+namespace Cti::CapControl {
     
 IncrementingKeepAlivePolicy::IncrementingKeepAlivePolicy( AutoBlock autoBlock )
     :   _autoBlockBehavior( autoBlock )
@@ -46,7 +46,8 @@ Policy::Actions IncrementingKeepAlivePolicy::SendKeepAlive( const long keepAlive
             if ( sendAutoBlock )
             {
                 actions.emplace_back( makeStandardDigitalControl( getPointByAttribute( Attribute::AutoBlockEnable ),
-                                                                  "Auto Block Enable" ) );
+                                                                  "Auto Block Enable",
+                                                                  RequestType::Heartbeat ) );
             }
             else
             {
@@ -69,7 +70,8 @@ Policy::Actions IncrementingKeepAlivePolicy::StopKeepAlive()
     Actions actions;
 
     actions.emplace_back( makeStandardDigitalControl( getPointByAttribute( Attribute::Terminate ),
-                                                      KeepAliveText ) );
+                                                      KeepAliveText,
+                                                      RequestType::Heartbeat ) );
 
     return actions;
 }
@@ -81,7 +83,7 @@ Policy::Actions IncrementingKeepAlivePolicy::EnableRemoteControl( const long kee
     LitePoint point = getPointByAttribute( Attribute::KeepAlive );
 
     actions.emplace_back( makeSignalTemplate( point.getPointId(), readKeepAliveValue(), EnableRemoteControlText ),
-                          nullptr );
+                          PorterRequest::none() );
 
     return actions;
 }
@@ -93,7 +95,7 @@ Policy::Actions IncrementingKeepAlivePolicy::DisableRemoteControl()
     LitePoint point = getPointByAttribute( Attribute::KeepAlive );
 
     actions.emplace_back( makeSignalTemplate( point.getPointId(), 0, DisableRemoteControlText ),
-                          nullptr );
+                          PorterRequest::none() );
 
     return actions;
 }
@@ -136,5 +138,3 @@ catch ( UninitializedPointValue & )
 }
 
 }
-}
-

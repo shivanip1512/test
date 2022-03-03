@@ -13,6 +13,7 @@
         <tag name="RFN_DEMAND_RESET"/>
         <tag name="RFN_EVENTS"/>
         <tag name="RFN_POINT_CALCULATION"/>
+        <tag name="SUPPORTS_ATTRIBUTE_ASSIGNMENT"/>
         <tag name="THREE_PHASE_CURRENT"/>
         <tag name="THREE_PHASE_VOLTAGE"/>
         <tag name="USES_METER_NUMBER_FOR_MSP"/>
@@ -33,6 +34,9 @@
         <pointInfo name="Current Phase A" attributes="CURRENT_PHASE_A"/>
         <pointInfo name="Current Phase B" attributes="CURRENT_PHASE_B"/>
         <pointInfo name="Current Phase C" attributes="CURRENT_PHASE_C"/>
+        <pointInfo name="Delivered kW Load Profile" attributes="LOAD_PROFILE,DELIVERED_KW_LOAD_PROFILE"/>
+        <pointInfo name="Delivered kWh" init="true" attributes="DELIVERED_KWH"/>
+        <pointInfo name="Delivered kWh per Interval" init="true" attributes="DELIVERED_KWH_PER_INTERVAL"/>
         <pointInfo name="Demand Overload" attributes="DEMAND_OVERLOAD"/>
         <pointInfo name="Device Temperature" init="true" attributes="TEMPERATURE_DEVICE"/>
         <pointInfo name="Failed Upgrade Signature Verification" attributes="FAILED_UPGRADE_SIGNATURE_VERIF"/>
@@ -73,6 +77,7 @@
         <pointInfo name="Sum Peak kW (Rate D kW)" attributes="SUM_PEAK_DEMAND_RATE_D"/>
         <pointInfo name="Total Outage Count" init="true" attributes="BLINK_COUNT"/>
         <pointInfo name="TOU Schedule Change" attributes="TOU_SCHEDULE_CHANGE"/>
+        <pointInfo name="Ultra Capacitor Bad" attributes="ULTRA_CAPACITOR_BAD"/>
         <pointInfo name="Under Voltage" attributes="UNDER_VOLTAGE"/>
         <pointInfo name="Unprogrammed" attributes="UNPROGRAMMED"/>
         <pointInfo name="Voltage Phase A" attributes="VOLTAGE_PHASE_A"/>

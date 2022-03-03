@@ -6,25 +6,37 @@ import com.cannontech.common.i18n.DisplayableEnum;
  * The types of infrastructure warnings that the system can calculate.
  */
 public enum InfrastructureWarningType implements DisplayableEnum {
-    GATEWAY_CONNECTION_STATUS,
-    GATEWAY_COLOR,
-    GATEWAY_FAILSAFE,
-    GATEWAY_CONNECTED_NODES,
-    GATEWAY_DATA_STREAMING_LOAD,
-    GATEWAY_READY_NODES,
-    RELAY_OUTAGE,
-    CCU_COMM_STATUS,
-    REPEATER_COMM_STATUS,
-    GATEWAY_SECURITY_ALARM,
-    GATEWAY_POWER_FAILURE,
-    GATEWAY_RADIO_FAILURE,
-    GATEWAY_TIME_SYNC_FAILED,
-    GATEWAY_DOOR_OPEN,
-    GATEWAY_NODE_COUNT_EXCEEDED,
+    GATEWAY_CONNECTION_STATUS("Gateway connection status"),
+    GATEWAY_COLOR("Gateway color"),
+    GATEWAY_FAILSAFE("Gateway failsafe"),
+    GATEWAY_CONNECTED_NODES("Gateway connected nodes"),
+    GATEWAY_DATA_STREAMING_LOAD("Gateway data streaming load"),
+    GATEWAY_READY_NODES("Gateway ready nodes"),
+    RELAY_OUTAGE("Relay outage"),
+    CELLULAR_RELAY_CONNECTION_STATUS("Cellular Relay Connection Status"),
+    CELLULAR_RELAY_DESCENDANT_COUNT("Cellular Relay Descendant Count"),
+    CCU_COMM_STATUS("CCU comm status"),
+    REPEATER_COMM_STATUS("Repeater comm status"),
+    GATEWAY_SECURITY_ALARM("Gateway security alarm"),
+    GATEWAY_POWER_FAILURE("Gateway power failure"),
+    GATEWAY_RADIO_FAILURE("Gateway radio failure"),
+    GATEWAY_TIME_SYNC_FAILED("Gateway time sync failed"),
+    GATEWAY_DOOR_OPEN("Gateway door open"),
+    GATEWAY_NODE_COUNT_EXCEEDED("Gateway node count exceeded"),
+    GATEWAY_UPS_BATTERY_VOLTAGE_LOW("Gateway UPS battery voltage low"),
+    GATEWAY_CERT_EXPIRATION("Gateway certificate expiration"),
+    GATEWAY_HIGH_DISK_USAGE("Gateway high risk usage"),
+    GATEWAY_RTC_BATTERY_FAILURE("Gateway RTC battery failure"),
+    GATEWAY_AC_POWER_FAILURE("Gateway AC power failure"),
     ;
     
     private static final String keyBase = "yukon.web.widgets.infrastructureWarnings.warningType.";
+    private String warningTypeDescription;
     
+    InfrastructureWarningType(String warningTypeDescription) {
+        this.warningTypeDescription = warningTypeDescription;
+    }
+
     @Override
     public String getFormatKey() {
         return keyBase + name();
@@ -32,6 +44,6 @@ public enum InfrastructureWarningType implements DisplayableEnum {
     
     @Override
     public String toString() {
-        return name().toLowerCase().replaceAll("_", " ");
+        return warningTypeDescription;
     }
 }

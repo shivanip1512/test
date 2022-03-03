@@ -153,6 +153,15 @@ public class PointDaoImpl implements PointDao {
 
         return result;
     }
+    
+    @Override
+    public PaoPointIdentifier findPaoPointIdentifier(int pointId) {
+        try {
+            return getPaoPointIdentifier(pointId);
+        } catch (Exception e) {
+            return null;
+        }
+    }
 
     @Override
     public List<LitePoint> getLitePoints(Iterable<Integer> pointIds) {
@@ -273,17 +282,19 @@ public class PointDaoImpl implements PointDao {
 
     @Override
     public int getNextOffsetByPaoObjectIdAndPointType(int paobjectId, PointType type) {
-
-        if (type.isCalcPoint()) {
-            return 0;
-        }
-
         SqlStatementBuilder sql = new SqlStatementBuilder();
         sql.append("SELECT MAX(PointOffset)");
         sql.append("FROM Point");
         sql.append("WHERE PAObjectId").eq(paobjectId);
         sql.append("AND PointType").eq_k(type);
-        return jdbcTemplate.queryForInt(sql) + 1;
+
+        int maxOffset = jdbcTemplate.queryForInt(sql);
+
+        if (type.isCalcPoint() && maxOffset < 100) {
+            return 100;
+        } else {
+            return maxOffset + 1;
+        }
     }
 
     @Override

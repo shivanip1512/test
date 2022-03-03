@@ -5,7 +5,6 @@
 #include "std_helper.h"
 #include "cmd_rfn_helper.h"
 
-#include <boost/assign/list_of.hpp>
 #include <boost/optional.hpp>
 
 namespace Cti::Devices::Commands {
@@ -39,7 +38,7 @@ const MetricInfo metricInfos[] = {
         {  11,  TouRates,  "Watt hour delivered (Frozen)"          },
         {  12,  TouRates,  "Watt hour received (Frozen)"           },
         {  13,  TouRates,  "Watts, peak"                           },
-
+        {  17,  TouRates,  "VA hour Q1 + Q2 + Q4"                  },
         {  21,  TouRates,  "Var hour delivered"                    },
         {  22,  TouRates,  "Var hour received"                     },
         {  23,  TouRates,  "Var hour total/sum"                    },
@@ -55,7 +54,7 @@ const MetricInfo metricInfos[] = {
         {  33,  TouRates,  "Var received, current demand"          },
         {  34,  TouRates,  "Var delivered, peak demand"            },
         {  35,  TouRates,  "Var received, peak demand"             },
-        {  36,  TouRates,  "Var delivered, peak demand coincident" },
+        {  36,  TouRates,  "Var delivered, peak demand (Frozen)"   },
         {  37,  TouRates,  "Var received, peak demand coincident"  },
         {  38,  TouRates,  "Var Q1"                                },
         {  39,  TouRates,  "Var Q2"                                },
@@ -75,6 +74,9 @@ const MetricInfo metricInfos[] = {
         {  52,  TouRates,  "VA received, peak demand"              },
         {  53,  TouRates,  "VA delivered, peak demand (Frozen)"    },
         {  54,  TouRates,  "VA received, peak demand (Frozen)"     },
+        {  55,  TouRates,  "VA Q1 + Q2 + Q4, peak"                 },
+        {  56,  TouRates,  "VA Q1 + Q2 + Q4, peak (Frozen)"        },
+        {  57,  None,      "kVA (Quadrants 1 2 4)"                 },
 
         {  61,  TouRates,  "Q hour delivered"                      },
         {  62,  TouRates,  "Q hour received"                       },
@@ -92,7 +94,7 @@ const MetricInfo metricInfos[] = {
         {  80,  TouRates,  "Power Factor"                          },
         {  81,  TouRates,  "Average Power Factor (Quadrants 1 2 4)"},
         {  82,  TouRates,  "Average Power Factor (Quadrants 2 3 4)"},
-        {  83,  TouRates,  "Average Power Factor"                  },
+        {  83,  TouRates,  "Average Power Factor (Quadrants 1 2 3 4)"},
 
         { 100,  TouRates,  "Voltage Phase A"                       },
         { 101,  TouRates,  "Voltage Phase B"                       },
@@ -144,34 +146,34 @@ const MetricInfo metricInfos[] = {
         { 181,  TouRates,  "Peak kVAr (Quadrants 2 3)"             },
 
         { 184,  TouRates,  "Sum Peak kVAr"                         },
+        { 185,  None,      "Sum Peak kVAr Frozen"                  },
+
+        { 194,  None,      "Sum Watts" },
+
+        { 199,  None,      "Sum kVAr"                              },
 
         { 200,  TouRates,  "Watts"                                 },
         { 201,  TouRates,  "Var"                                   },
         { 202,  TouRates,  "VA"                                    },
 
+        { 206,  TouRates,  "Peak kVA (Quadrants 1 2)"              },
         { 210,  TouRates,  "Sum Peak kVA"                          },
+        { 211,  None,      "Sum Peak kVA Frozen"                   },
+
+        { 222,  TouRates,  "VA hour Q2 + Q3 + Q4"                  },
+
+        { 230,  None,      "Minimum Power Factor"                  },
+        { 231,  None,      "Minimum Power Factor Frozen"           },
+
+        { 233,  None,      "Average Power Factor"                  },
+        { 234,  None,      "Average Power Factor Frozen"           },
 
         { 240,  TouRates,  "Peak Demand Daily"                     },
+        { 241,  None,      "Sum kVA"                               },
 
         { 256,  TouRates,  "Time in Seconds"                       },
         { 257,  None,      "Temperature in Centigrade"             },
-
-        { 330,  None,      "Sum Watts" },
-        { 331,  None,      "Net Watts" },
-
-        { 340,  None,      "kVAr (Quadrants 1 3)" },
-        { 341,  None,      "kVAr (Quadrants 2 4)" },
-        { 342,  None,      "kVAr (Quadrants 1 4)" },
-        { 343,  None,      "kVAr (Quadrants 2 3)" },
-        { 344,  None,      "Sum Vars" },
-        { 345,  None,      "Net Vars" },
-
-        { 350,  None,      "kVA (Quadrants 1 2)" },
-        { 351,  None,      "kVA (Quadrants 3 4)" },
-        { 352,  None,      "kVA (Quadrants 1 3)" },
-        { 353,  None,      "kVA (Quadrants 2 4)" },
-        { 354,  None,      "Sum VA" },
-        { 355,  None,      "Net VA" }};
+    };
 
 struct MetricItem
 {
@@ -226,57 +228,65 @@ std::string getMetricDescription( unsigned metricId )
             : item->info->description;
 }
 
-const std::map<unsigned, std::string> responseStatusResolver = boost::assign::map_list_of
-        ( 0, "Success" )
-        ( 1, "Failure" );
+const std::map<unsigned, std::string> responseStatusResolver {
+    { 0, "Success" },
+    { 1, "Failure" }
+};
 
-const std::map<unsigned, std::string> metricQualifierResolver_FundHarmonic = boost::assign::map_list_of
-        ( 0, ""/*"not specified"*/ )
-        ( 1, "Fundamental" )
-        ( 2, "Harmonic" );
+const std::map<unsigned, std::string> metricQualifierResolver_FundHarmonic {
+    { 0, ""/*"not specified"*/ },
+    { 1, "Fundamental" },
+    { 2, "Harmonic" }
+};
 
-const std::map<unsigned, std::string> metricQualifierResolver_PrimarySecondary = boost::assign::map_list_of
-        ( 0, ""/*"not specified"*/ )
-        ( 1, "Primary" )
-        ( 2, "Secondary" );
+const std::map<unsigned, std::string> metricQualifierResolver_PrimarySecondary {
+    { 0, ""/*"not specified"*/ },
+    { 1, "Primary" },
+    { 2, "Secondary" }
+};
 
-const std::map<unsigned, std::string> metricQualifierResolver_Segmentation = boost::assign::map_list_of
-        ( 0, ""/*"not specified"*/ )
-        ( 1, "A to B" )
-        ( 2, "B to C" )
-        ( 3, "C to A" )
-        ( 4, "Neutral to Ground" )
-        ( 5, "A to Neutral" )
-        ( 6, "B to Neutral" )
-        ( 7, "C to Neutral" );
+const std::map<unsigned, std::string> metricQualifierResolver_Segmentation {
+    { 0, ""/*"not specified"*/ },
+    { 1, "A to B" },
+    { 2, "B to C" },
+    { 3, "C to A" },
+    { 4, "Neutral to Ground" },
+    { 5, "A to Neutral" },
+    { 6, "B to Neutral" },
+    { 7, "C to Neutral" }
+};
 
-const std::map<unsigned, std::string> metricQualifierResolver_ContinuousCumulative = boost::assign::map_list_of
-        ( 0, ""/*"not specified"*/ )
-        ( 1, "Continuous Cumulative" );
+const std::map<unsigned, std::string> metricQualifierResolver_ContinuousCumulative {
+    { 0, ""/*"not specified"*/ },
+    { 1, "Continuous Cumulative" }
+};
 
-const std::map<unsigned, std::string> metricQualifierResolver_Cumulative = boost::assign::map_list_of
-        ( 0, ""/*"not specified"*/ )
-        ( 1, "Cumulative" );
+const std::map<unsigned, std::string> metricQualifierResolver_Cumulative {
+    { 0, ""/*"not specified"*/ },
+    { 1, "Cumulative" }
+};
 
-const std::map<unsigned, std::string> metricQualifierResolver_CoincidentValue = boost::assign::map_list_of
-        ( 0, ""/*"not specified"*/ )
-        ( 1, "Coincident Value 1" )
-        ( 2, "Coincident Value 2" )
-        ( 3, "Coincident Value 3" )
-        ( 4, "Coincident Value 4" )
-        ( 5, "Coincident Value 5" )
-        ( 6, "Coincident Value 6" )
-        ( 7, "Coincident Value 7" );
+const std::map<unsigned, std::string> metricQualifierResolver_CoincidentValue {
+    { 0, ""/*"not specified"*/ },
+    { 1, "Coincident Value 1" },
+    { 2, "Coincident Value 2" },
+    { 3, "Coincident Value 3" },
+    { 4, "Coincident Value 4" },
+    { 5, "Coincident Value 5" },
+    { 6, "Coincident Value 6" },
+    { 7, "Coincident Value 7" }
+};
 
-const std::map<unsigned, std::string> metricQualifierResolver_ScalingFactor = boost::assign::map_list_of
-        ( 3, "10e9 (giga)" )    //  3 - 011
-        ( 2, "10e6 (mega)" )    //  2 - 010
-        ( 1, "10e3 (kilo)" )    //  1 - 001
-        ( 0, "1" )              //  0 - 000
-        ( 7, "10e-3 (milli)" )  // -1 - 111
-        ( 6, "10e-6 (micro)" )  // -2 - 110
-        ( 5, "10e-1 (deci)" )   // -3 - 101
-        ( 4, "OVERFLOW" );      // -4 - 100
+const std::map<unsigned, std::string> metricQualifierResolver_ScalingFactor {
+    { 3, "10e9 (giga)" },    //  3 - 011
+    { 2, "10e6 (mega)" },    //  2 - 010
+    { 1, "10e3 (kilo)" },    //  1 - 001
+    { 0, "1" },              //  0 - 000
+    { 7, "10e-3 (milli)" },  // -1 - 111
+    { 6, "10e-6 (micro)" },  // -2 - 110
+    { 5, "10e-1 (deci)" },   // -3 - 101
+    { 4, "OVERFLOW" }        // -4 - 100
+};
 
 std::ostream& operator<<( std::ostream& out, const std::set<unsigned char> &values )
 {
@@ -447,16 +457,25 @@ bool isValidRecordingMetric( const unsigned metricId )
     return metricId && ((metricId % 1000) != 256);
 }
 
+std::string RfnChannelConfigurationCommand::decodeActiveChannelDescriptors( const Bytes &response )
+{
+    return decodeChannelDescriptors( response, 1 );     // tlv type 2 - metric count field size is 1 byte
+}
 
-std::string RfnChannelConfigurationCommand::decodeChannelDescriptors( const Bytes &response )
+std::string RfnChannelConfigurationCommand::decodeAllChannelDescriptors( const Bytes &response )
+{
+    return decodeChannelDescriptors( response, 2 );     // tlv type 3 - metric count field size is 2 bytes
+}
+
+std::string RfnChannelConfigurationCommand::decodeChannelDescriptors( const Bytes &response, const unsigned count_fieldLength )
 {
     validate( Condition( response.size() >= 1, ClientErrors::InvalidData )
             << "Number of bytes for channel descriptors received 0, expected >= 1" );
 
-    unsigned offset = 0;
+    unsigned offset = count_fieldLength;
 
-    const unsigned totalChannelDescriptors = response[offset++];
-    const unsigned expectedSize = 1 + (totalChannelDescriptors * 4);
+    const unsigned totalChannelDescriptors = getValueFromBytes_bEndian( response, 0, offset );
+    const unsigned expectedSize = offset + (totalChannelDescriptors * 4);
 
     validate( Condition( expectedSize == response.size(), ClientErrors::InvalidData )
             << "Number of bytes for channel descriptors received " << response.size() << ", expected " << expectedSize );
@@ -523,9 +542,11 @@ std::string RfnChannelConfigurationCommand::decodeChannelDescriptors( const Byte
 // Class RfnChannelSelectionCommand
 //----------------------------------------------------------------------------
 
-const RfnChannelSelectionCommand::LongTlvList RfnChannelSelectionCommand::longTlvs = boost::assign::list_of
-        (TlvType_ChannelSelection_Configuration)
-        (TlvType_ChannelSelection_ActiveChannels);
+const RfnChannelSelectionCommand::LongTlvList RfnChannelSelectionCommand::longTlvs {
+    TlvType_ChannelSelection_Configuration,
+    TlvType_ChannelSelection_ActiveChannels,
+    TlvType_ChannelSelection_AvailableChannels
+};
 
 unsigned char RfnChannelSelectionCommand::getCommandCode() const
 {
@@ -563,13 +584,18 @@ std::string RfnChannelSelectionCommand::decodeTlvs( const TlvList& tlvs, const u
     {
         case TlvType_ChannelSelection_Configuration :
         {
-            return "Channel Selection Configuration:\n" 
+            return "Channel Selection Configuration:\n"
                 + decodeMetricsIds( tlv.value );
         }
         case TlvType_ChannelSelection_ActiveChannels :
         {
-            return "Channel Registration Full Description:\n" 
-                + decodeChannelDescriptors( tlv.value );
+            return "Channel Registration Full Description:\n"
+                + decodeActiveChannelDescriptors( tlv.value );
+        }
+        case TlvType_ChannelSelection_AvailableChannels:
+        {
+            return "All Available Channels:\n"
+                + decodeAllChannelDescriptors( tlv.value );
         }
         default:
         {
@@ -602,8 +628,7 @@ RfnSetChannelSelectionCommand::RfnSetChannelSelectionCommand( const MetricIds& m
 
 RfnChannelConfigurationCommand::TlvList RfnSetChannelSelectionCommand::getTlvsToSend() const
 {
-    return boost::assign::list_of
-            (TypeLengthValue::makeLongTlv( TlvType_ChannelSelection_Configuration, _setChannelSelectionTlvPayload ));
+    return { TypeLengthValue::makeLongTlv( TlvType_ChannelSelection_Configuration, _setChannelSelectionTlvPayload ) };
 }
 
 unsigned char RfnSetChannelSelectionCommand::getOperation() const
@@ -642,6 +667,20 @@ unsigned char RfnGetChannelSelectionFullDescriptionCommand::getOperation() const
 unsigned char RfnGetChannelSelectionFullDescriptionCommand::getExpectedTlvType() const
 {
     return TlvType_ChannelSelection_ActiveChannels;
+}
+
+//----------------------------------------------------------------------------
+// Class RfnGetChannelSelectionAllAvailableCommand
+//----------------------------------------------------------------------------
+
+unsigned char RfnGetChannelSelectionAllAvailableCommand::getOperation() const
+{
+    return Operation_GetChannelSelectionAvailableChannels;
+}
+
+unsigned char RfnGetChannelSelectionAllAvailableCommand::getExpectedTlvType() const
+{
+    return TlvType_ChannelSelection_AvailableChannels;
 }
 
 //----------------------------------------------------------------------------
@@ -709,8 +748,7 @@ SetConfigurationCommand::SetConfigurationCommand( const MetricIds& metrics,
 
 RfnChannelConfigurationCommand::TlvList SetConfigurationCommand::getTlvsToSend() const
 {
-    return boost::assign::list_of
-            (TypeLengthValue( TlvType_ChannelIntervalRecording_Configuration, _setIntervalRecordingTlvPayload ));
+    return { TypeLengthValue( TlvType_ChannelIntervalRecording_Configuration, _setIntervalRecordingTlvPayload ) };
 }
 
 unsigned char SetConfigurationCommand::getOperation() const
@@ -723,7 +761,7 @@ std::string SetConfigurationCommand::decodeTlv( const TypeLengthValue& tlv )
     validate( Condition( tlv.type == TlvType_ChannelIntervalRecording_ActiveChannels, ClientErrors::InvalidData )
              << "Unexpected TLV of type (" << tlv.type << "), expected (" << (unsigned)TlvType_ChannelIntervalRecording_ActiveChannels << ")" );
 
-    return "Channel Interval Recording Full Description:\n" + decodeChannelDescriptors( tlv.value );
+    return "Channel Interval Recording Full Description:\n" + decodeActiveChannelDescriptors( tlv.value );
 }
 
 unsigned SetConfigurationCommand::getIntervalRecordingSeconds() const
@@ -818,7 +856,7 @@ std::string GetActiveConfigurationCommand::decodeActiveConfiguration( const Byte
 
     return "Interval Recording: " + std::to_string(_intervalRecordingSecondsReceived) + " seconds\n" +
            "Interval Reporting: " + std::to_string(_intervalReportingSecondsReceived) + " seconds\n" +
-           decodeChannelDescriptors( Bytes(response.begin() + 8, response.end()) );
+           decodeActiveChannelDescriptors( Bytes(response.begin() + 8, response.end()) );
 }
 
 unsigned GetActiveConfigurationCommand::getIntervalRecordingSeconds() const

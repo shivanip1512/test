@@ -1,0 +1,101 @@
+post-operation:
+  post:
+    tags:
+     - Control Scenario
+    summary: 'Create Control Scenario'
+    description: 'API to create control scenario.'
+    requestBody:
+      content:
+        application/json:
+          schema:
+            $ref: '../schemas/controlScenarioSchema.yaml#/ControlScenario'
+          examples:
+            Control Scenario:
+              $ref: '../schemas/controlScenarioSchema.yaml#/components/examples/ControlScenario Request'
+      required: true
+    responses:
+      '201':
+        description: Created
+        content:
+          application/json:
+            schema:
+              $ref: '../schemas/controlScenarioSchema.yaml#/ControlScenario Response Schema'
+            examples:
+              Control Scenario:
+                $ref: '../schemas/controlScenarioSchema.yaml#/components/examples/ControlScenario Response'
+get-update-delete-operation:
+  get:
+    tags:
+     - Control Scenario
+    summary: 'Retrieve Control Scenario'
+    description: 'API to retrieve control scenario based on passed control scenario id.'
+    parameters:
+      - name: id
+        description: 'Unique identifier of the control ccenario.'
+        in: path
+        schema:
+          type: integer
+        required: true
+    responses:
+      '200':
+        description: OK
+        content:
+          application/json:
+            schema:
+              $ref: '../schemas/controlScenarioSchema.yaml#/ControlScenario Response Schema'
+            examples:
+              Control Scenario:
+                $ref: '../schemas/controlScenarioSchema.yaml#/components/examples/ControlScenario Response'
+  put:
+    tags:
+     - Control Scenario
+    summary: 'Update Control Scenario'
+    description: 'API to update control scenario based on passed control scenario id.'
+    parameters:
+      - name: id
+        description: 'Unique identifier of the control scenario.'
+        in: path
+        schema:
+          type: integer
+        required: true
+    requestBody:
+      content:
+        application/json:
+          schema:
+            $ref: '../schemas/controlScenarioSchema.yaml#/ControlScenario'
+          examples:
+            Control Scenario:
+              $ref: '../schemas/controlScenarioSchema.yaml#/components/examples/ControlScenario Request'
+      required: true
+    responses:
+      '200':
+        description: OK
+        content:
+          application/json:
+            schema:
+              $ref: '../schemas/controlScenarioSchema.yaml#/ControlScenario Response Schema'
+            examples:
+              Control Scenario:
+                $ref: '../schemas/controlScenarioSchema.yaml#/components/examples/ControlScenario Response'
+  delete:
+    tags:
+     - Control Scenario
+    summary: 'Delete Control Scenario'
+    description: 'API to delete control scenario based on passed control scenario id.'
+    parameters:
+      - name: id
+        description: 'Unique identifier of the control scenario.'
+        in: path
+        schema:
+          type: integer
+        required: true
+    responses:
+      '200':
+        description: OK
+        content:
+          application/json:
+            schema:
+              $ref: '../schemas/controlScenarioSchema.yaml#/id'
+            examples:
+              ProgramConstraintId:
+                $ref: '../schemas/controlScenarioSchema.yaml#/components/examples/ControlScenarioId'

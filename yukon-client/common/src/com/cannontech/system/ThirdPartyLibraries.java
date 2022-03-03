@@ -23,12 +23,13 @@ public class ThirdPartyLibraries {
     public List<ThirdPartyLibrary> cssLibraries;
     
     public List<ThirdPartyProject> getAllProjects() {
-        return Stream.of(cppLibraries, javaLibraries, networkManagerLibraries, jsLibraries, iconLibraries, cssLibraries)
+        return Stream.of(cppLibraries, javaLibraries, networkManagerLibraries, jsLibraries, cssLibraries)
                      .map(List::stream)
                      .flatMap(Function.identity())
                      .distinct()
                      .sorted()
                      .filter(ThirdPartyProject::isAttributionRequired)
+                     .filter(ThirdPartyProject::isNotJunitProject)
                      .collect(Collectors.toList());
     }
 }

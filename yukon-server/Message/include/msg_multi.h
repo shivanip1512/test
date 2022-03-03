@@ -38,6 +38,8 @@ public:
 
    void setConnectionHandle(const Cti::ConnectionHandle handle) override;
 
-   virtual std::string toString() const override;
+   std::size_t getFixedSize() const override    { return sizeof( *this ); }
+   std::size_t getVariableSize() const override;
 
+   std::string toString() const override;
 };

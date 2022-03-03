@@ -16,11 +16,13 @@ yukon.mapping = (function () {
     _initialized = false,
     _updateNetworkTreeInterval,
     
-    //Line Color depends on ETX Band 1 - #006622(GREEN), 2 - #669900(LIGHT GREEN), 3 - #CCA300(YELLOW), 4 - #FF6600(ORANGE), 5 and up - #FF0000(RED)
-    _neighborColors = ['#006622', '#669900', '#CCA300', '#FF6600', '#FF0000'],  
-    //dark blue
-    _routeColor = "#0000CC",
-    _highlightRouteColor = "#FFFF00",
+    _neighborColors = [yg.colors.GREEN, yg.colors.GREEN_LIGHT, yg.colors.YELLOW, yg.colors.ORANGE, yg.colors.RED],  
+
+    _routeColor = yg.colors.BLUE_DARK,
+
+    _focusRouteColor = yg.colors.NAVY,
+
+    _highlightRouteColor = yg.colors.YELLOW,
     
     /** @type {string} - The default projection code of our map tiles. */
     _destProjection = 'EPSG:3857',
@@ -53,6 +55,11 @@ yukon.mapping = (function () {
     _allRoutesDashedLineFeatures = [],
     _devicePrimaryRouteLayer,
     _devicePrimaryRouteDashedLayer,
+    _descendantIcons = [],
+    _descendantLines = [],
+    _descendantLineFeatures = [],
+    _descendantDashedLineFeatures = [],
+    _missingDescendants = false,
     
     _setRouteLastUpdatedDateTime = function (dateTimeInstant) {
         if (dateTimeInstant == null) {
@@ -69,67 +76,73 @@ yukon.mapping = (function () {
     _styles = { 
         'METER_ELECTRIC': new ol.style.Style({ 
             image: new ol.style.Icon({ 
-                src: yukon.url('/WebConfig/yukon/Icons/marker-meter-elec-grey.png'), 
+                src: yukon.url('/WebConfig/yukon/Icons/marker-meter-elec-grey.svg'), 
                 scale: _deviceScale, 
                 anchor: _anchor }), 
             zIndex: _iconZIndex }),
         'METER_PLC_ELECTRIC': new ol.style.Style({ 
             image: new ol.style.Icon({ 
-                src: yukon.url('/WebConfig/yukon/Icons/marker-meter-plc-elec-grey.png'), 
+                src: yukon.url('/WebConfig/yukon/Icons/marker-meter-plc-elec-grey.svg'), 
                 scale: _deviceScale, 
                 anchor: _anchor }), 
             zIndex: _iconZIndex }),
         'METER_WIFI_ELECTRIC': new ol.style.Style({ 
             image: new ol.style.Icon({ 
-                src: yukon.url('/WebConfig/yukon/Icons/marker-meter-wifi-grey.png'), 
+                src: yukon.url('/WebConfig/yukon/Icons/marker-meter-wifi-grey.svg'), 
                 scale: _relayScale, 
                 anchor: _anchor }), 
             zIndex: _relayZIndex }),
         'METER_WATER': new ol.style.Style({ 
             image: new ol.style.Icon({ 
-                src: yukon.url('/WebConfig/yukon/Icons/marker-meter-water-grey.png'), 
+                src: yukon.url('/WebConfig/yukon/Icons/marker-meter-water-grey.svg'), 
                 scale: _deviceScale, 
                 anchor: _anchor }), 
             zIndex: _iconZIndex }),
         'METER_GAS': new ol.style.Style({ 
             image: new ol.style.Icon({ 
-                src: yukon.url('/WebConfig/yukon/Icons/marker-meter-gas-grey.png'), 
+                src: yukon.url('/WebConfig/yukon/Icons/marker-meter-gas-grey.svg'), 
                 scale: _deviceScale, 
                 anchor: _anchor }), 
             zIndex: _iconZIndex }),
         'TRANSMITTER': new ol.style.Style({ 
             image: new ol.style.Icon({ 
-                src: yukon.url('/WebConfig/yukon/Icons/marker-transmitter-grey.png'), 
+                src: yukon.url('/WebConfig/yukon/Icons/marker-transmitter-grey.svg'), 
                 scale: _gatewayScale, 
                 anchor: _anchor }), 
             zIndex: _gatewayZIndex }),
         'RELAY': new ol.style.Style({ 
             image: new ol.style.Icon({ 
-                src: yukon.url('/WebConfig/yukon/Icons/marker-relay-grey.png'), 
+                src: yukon.url('/WebConfig/yukon/Icons/marker-relay-grey.svg'), 
                 scale: _relayScale, 
                 anchor: _anchor }), 
             zIndex: _relayZIndex }),
+        'RELAY_CELLULAR': new ol.style.Style({
+            image: new ol.style.Icon({
+                src: yukon.url('/WebConfig/yukon/Icons/marker-relay-cell-grey.svg'),
+                scale: _relayScale,
+                anchor: _anchor }),
+            zIndex: _relayZIndex }),
         'LCR' : new ol.style.Style({ 
             image: new ol.style.Icon({ 
-                src: yukon.url('/WebConfig/yukon/Icons/marker-lcr-grey.png'), 
+                src: yukon.url('/WebConfig/yukon/Icons/marker-lcr-grey.svg'), 
                 scale: _deviceScale, 
                 anchor: _anchor }), 
             zIndex: _iconZIndex }),
         'PLC_LCR' : new ol.style.Style({ 
             image: new ol.style.Icon({ 
-                src: yukon.url('/WebConfig/yukon/Icons/marker-plc-lcr-grey.png'), 
+                src: yukon.url('/WebConfig/yukon/Icons/marker-plc-lcr-grey.svg'), 
                 scale: _deviceScale, 
                 anchor: _anchor }), 
             zIndex: _iconZIndex }),
         'THERMOSTAT' : new ol.style.Style({ 
             image: new ol.style.Icon({ 
-                src: yukon.url('/WebConfig/yukon/Icons/marker-thermostat-grey.png'), 
+                src: yukon.url('/WebConfig/yukon/Icons/marker-thermostat-grey.svg'), 
                 scale: _deviceScale, 
                 anchor: _anchor }), 
             zIndex: _iconZIndex }),
         'GENERIC_GREY': new ol.style.Style({ 
             image: new ol.style.Icon({ 
-                src: yukon.url('/WebConfig/yukon/Icons/marker-generic.png'), 
+                src: yukon.url('/WebConfig/yukon/Icons/marker-generic.svg'), 
                 scale: _deviceScale, 
                 anchor: _anchor }), 
             zIndex: _iconZIndex }),
@@ -142,19 +155,25 @@ yukon.mapping = (function () {
           new ol.layer.Tile({ name: 'mqosm',
               source: new ol.source.XYZ({ name: 'mqosm',
                   url: yg.map_devices_street_url,
-                  attributions: _attributionText
+                  attributions: _attributionText,
+                  tileSize: 512,
+                  transition: 0
               })
           }),
           new ol.layer.Tile({ name: 'mqsat', visible: false,
               source: new ol.source.XYZ({ name: 'mqsat', 
                 url: yg.map_devices_satellite_url,
-                attributions: _attributionText
+                attributions: _attributionText,
+                tileSize: 512,
+                transition: 0
               })
           }),
           new ol.layer.Tile({ name: 'hybrid', visible: false,
               source: new ol.source.XYZ({ name: 'hybrid', 
                 url: yg.map_devices_hybrid_url,
-                attributions: _attributionText
+                attributions: _attributionText,
+                tileSize: 512,
+                transition: 0
               })
           })
     ],
@@ -233,6 +252,10 @@ yukon.mapping = (function () {
             return _routeColor;
         },
         
+        getFocusRouteColor: function() {
+            return _focusRouteColor;
+        },
+        
         getLargerScale: function() {
             return _largerScale;
         },
@@ -265,9 +288,20 @@ yukon.mapping = (function () {
         },
         
         makeDeviceIconLarger: function(icon) {
-            var largerStyle = icon.getStyle().clone();
-            largerStyle.getImage().setScale(_largerScale);
-            icon.setStyle(largerStyle);
+            var style = icon.getStyle();
+            if (style instanceof Array) {
+                var newStyles = [];
+                icon.getStyle().forEach(function (style) {
+                    var largerStyle = style.clone();
+                    largerStyle.getImage().setScale(_largerScale);
+                    newStyles.push(largerStyle);
+                });
+                icon.setStyle(newStyles);
+            } else {
+                var largerStyle = icon.getStyle().clone();
+                largerStyle.getImage().setScale(_largerScale);
+                icon.setStyle(largerStyle);
+            }
         },
         
         setScaleForDevice: function(feature) {
@@ -286,52 +320,8 @@ yukon.mapping = (function () {
             feature.setStyle(currentStyle);
         },
         
-        displayCommonPopupProperties: function(pao) {
-            $('.js-device-display').toggleClass('dn', pao.device.name === null);
-            if (pao.deviceDetailUrl != null) {
-                var deviceLink = '<a href="' + yukon.url(pao.deviceDetailUrl) + '" target=_blank>' + yukon.escapeXml(pao.device.name) + '</a>',
-                    actionsDiv = $('#actionsDiv').clone().removeClass('dn');
-                actionsDiv.find('.js-device-neighbors, .js-device-route, .js-device-map').attr('data-device-id', pao.device.paoIdentifier.paoId);
-                actionsDiv.find('.js-view-all-notes').attr('data-pao-id', pao.device.paoIdentifier.paoId);
-                yukon.tools.paonotespopup.hideShowNotesIcons(pao.device.paoIdentifier.paoId);
-                var gatewayTypes = $('#gatewayTypes').val();
-                if (gatewayTypes.indexOf(pao.device.paoIdentifier.paoType) > -1) {
-                    actionsDiv.find('.js-device-route').addClass('dn');
-                }
-                $('.js-device').html(deviceLink + actionsDiv[0].outerHTML);
-            } else {
-                $('.js-device').text(pao.device.name);
-            }
-            $('.js-meter-number-display').toggleClass('dn', pao.meterNumber === null);
-            $('.js-meter-number').text(pao.meterNumber);
-            $('.js-type-display').toggleClass('dn', pao.device.paoIdentifier.paoType === null);
-            $('.js-type').text(pao.device.paoIdentifier.paoType);
-            $('.js-status-display').toggleClass('dn', pao.statusDisplay === null);
-            $('.js-status').text(pao.statusDisplay);
-            mod.updateDeviceStatusClass(pao.statusDisplay);
-            $('.js-primary-gateway-display').toggleClass('dn', pao.primaryGateway === null);
-            if (pao.primaryGatewayUrl != null) {
-                $('.js-primary-gateway').html('<a href="' + yukon.url(pao.primaryGatewayUrl) + '" target=_blank>' + yukon.escapeXml(pao.primaryGateway) + '</a>');
-            } else {
-                $('.js-primary-gateway').text(pao.primaryGateway);
-            }
-            //display NM error if applicable
-            $('.js-nm-error-text').text(pao.errorMsg);
-            $('.js-nm-error').toggleClass('dn', pao.errorMsg === null);
-        },
-        
         displayNeighborPopupProperties: function(neighbor) {
-            var neighborData = neighbor.data;
-            $('.js-node-sn-display').toggleClass('dn', (neighborData.serialNumber === null || neighbor.gatewayType));
-            $('.js-node-sn').text(neighborData.serialNumber);
-            $('.js-serial-number-display').toggleClass('dn', (neighborData.rfnIdentifier.sensorSerialNumber === null || neighbor.gatewayType));
-            $('.js-serial-number').text(neighborData.rfnIdentifier.sensorSerialNumber);
-            $('.js-gateway-serial-number-display').toggleClass('dn', (neighborData.rfnIdentifier.sensorSerialNumber === null || !neighbor.gatewayType));
-            $('.js-gateway-serial-number').text(neighborData.rfnIdentifier.sensorSerialNumber);
-            $('.js-ip-address-display').toggleClass('dn', neighbor.ipAddress === null);
-            $('.js-ip-address').text(neighbor.ipAddress);
-            $('.js-address-display').toggleClass('dn', neighborData.neighborAddress === null);
-            $('.js-address').text(neighborData.neighborAddress);
+            var neighborData = neighbor.neighborData;
             $('.js-flags-display').toggleClass('dn', neighbor.commaDelimitedNeighborFlags === null);
             $('.js-flags').text(neighbor.commaDelimitedNeighborFlags);
             $('.js-link-cost-display').toggleClass('dn', neighborData.neighborLinkCost === null);
@@ -340,62 +330,13 @@ yukon.mapping = (function () {
             $('.js-num-samples').text(neighborData.numSamples);
             $('.js-etx-band-display').toggleClass('dn', neighborData.etxBand === null);
             $('.js-etx-band').text(neighborData.etxBand);
-            $('.js-distance-display').toggleClass('dn', neighbor.distanceDisplay === null);
-            $('.js-distance').text(neighbor.distanceDisplay);
-            $('#parent-info').hide();
-            $('#device-info').hide();
-            $('#route-info').hide();
-            $('#neighbor-info').show();
-            $('#marker-info').show();
-        },
-        
-        displayPrimaryRoutePopupProperties: function(routeInfo) {
-            $('.js-node-sn-display').toggleClass('dn', (routeInfo.route.serialNumber === null || routeInfo.gatewayType));
-            $('.js-node-sn').text(routeInfo.route.serialNumber);
-            $('.js-serial-number-display').toggleClass('dn', (routeInfo.route.rfnIdentifier.sensorSerialNumber === null || routeInfo.gatewayType));
-            $('.js-serial-number').text(routeInfo.route.rfnIdentifier.sensorSerialNumber);
-            $('.js-gateway-serial-number-display').toggleClass('dn', (routeInfo.route.rfnIdentifier.sensorSerialNumber === null || !routeInfo.gatewayType));
-            $('.js-gateway-serial-number').text(routeInfo.route.rfnIdentifier.sensorSerialNumber);
-            $('.js-ip-address-display').toggleClass('dn', routeInfo.ipAddress === null);
-            $('.js-ip-address').text(routeInfo.ipAddress);
-            $('.js-address-display').toggleClass('dn', routeInfo.macAddress === null);
-            $('.js-address').text(routeInfo.macAddress);
-            $('.js-total-cost-display').toggleClass('dn', routeInfo.route.totalCost === null);
-            $('.js-total-cost').text(routeInfo.route.totalCost);
-            $('.js-hop-count-display').toggleClass('dn', routeInfo.route.hopCount === null);
-            $('.js-descendant-count-display').toggleClass('dn', routeInfo.descendantCount === null);
-            $('.js-hop-count').text(routeInfo.route.hopCount);
-            $('.js-descendant-count').text(routeInfo.descendantCount);
-            $('.js-route-flag-display').toggleClass('dn', routeInfo.commaDelimitedRouteFlags === null);
-            $('.js-route-flag').text(routeInfo.commaDelimitedRouteFlags);
-            $('.js-distance-display').toggleClass('dn', routeInfo.distanceInMiles === 0);
-            $('.js-distance').text(routeInfo.distanceDisplay);
-            $('#parent-info').hide();
-            $('#neighbor-info').hide();
-            $('#device-info').hide();
-            $('#route-info').show();
-            $('#marker-info').show();
+            $('.js-distance-display').toggleClass('dn', neighbor.distance === null);
+            $('.js-distance').text(neighbor.distance);
         },
         
         displayParentNodePopupProperties: function(parent) {
-            var parentData = parent.data;
-            $('.js-node-sn-display').toggleClass('dn', (parentData.nodeSN === null || parent.gatewayType));
-            $('.js-node-sn').text(parentData.nodeSN);
-            $('.js-serial-number-display').toggleClass('dn', (parentData.rfnIdentifier.sensorSerialNumber === null || parent.gatewayType));
-            $('.js-serial-number').text(parentData.rfnIdentifier.sensorSerialNumber);
-            $('.js-gateway-serial-number-display').toggleClass('dn', (parentData.rfnIdentifier.sensorSerialNumber === null || !parent.gatewayType));
-            $('.js-gateway-serial-number').text(parentData.rfnIdentifier.sensorSerialNumber);
-            $('.js-ip-address-display').toggleClass('dn', parent.ipAddress === null);
-            $('.js-ip-address').text(parent.ipAddress);
-            $('.js-mac-address-display').toggleClass('dn', parentData.nodeMacAddress === null);
-            $('.js-mac-address').text(parentData.nodeMacAddress);
-            $('.js-distance-display').toggleClass('dn', parent.distanceDisplay === null);
-            $('.js-distance').text(parent.distanceDisplay);
-            $('#neighbor-info').hide();
-            $('#device-info').hide();
-            $('#route-info').hide();
-            $('#parent-info').show();
-            $('#marker-info').show();
+            $('.js-distance-display').toggleClass('dn', parent.distance === null);
+            $('.js-distance').text(parent.distance);
         },
         
         getNeighborLineColor: function(etxBand) {
@@ -472,7 +413,6 @@ yukon.mapping = (function () {
                 properties = feature.getProperties(),
                 parent = properties.parent,
                 neighbor = properties.neighbor,
-                routeInfo = properties.routeInfo,
                 nearby = properties.nearby,
                 primaryRoutesExists = $('.js-all-routes').exists(),
                 allRoutesChecked = false,
@@ -480,40 +420,32 @@ yukon.mapping = (function () {
                 if (primaryRoutesExists) {
                     allRoutesChecked = $('.js-all-routes').find(':checkbox').prop('checked');
                 }
-            if (parent != null) {
-                mod.displayCommonPopupProperties(parent);
-                mod.displayParentNodePopupProperties(parent);
-                overlay.setPosition(coord);
-            } else if (routeInfo != null) {
-                mod.displayCommonPopupProperties(routeInfo);
-                mod.displayPrimaryRoutePopupProperties(routeInfo);
-                overlay.setPosition(coord);
-            } else if (neighbor != null) {
-                mod.displayCommonPopupProperties(neighbor);
-                mod.displayNeighborPopupProperties(neighbor);
-                overlay.setPosition(coord);
-            } else {
-                $('#parent-info').hide();
-                $('#neighbor-info').hide();
-                $('#route-info').hide();
-                var url = yukon.url('/tools/map/device/' + paoId + '/info');
-                $('#device-info').load(url, function() {
-                    if (nearby != null) {
-                        $('.js-distance').text(nearby.distance.distance.toFixed(4) + " ");
-                        $('.js-distance-display').show();
-                    }
-                    $('#device-info').show();
-                    $('#marker-info').show();
-                    overlay.setPosition(coord);
-                    var deviceStatus = $('.js-status').text();
-                    mod.updateDeviceStatusClass(deviceStatus);
-                });
-                //close any lingering delete dialogs to simplify handling
-                var deleteDialog = $('#confirm-delete');
-                if (deleteDialog.hasClass('ui-dialog-content')) {
-                    deleteDialog.dialog('destroy');
+
+            var includePrimaryRoute = neighbor != null || parent != null ? 'false' : 'true',
+                url = yukon.url('/tools/map/device/' + paoId + '/info?includePrimaryRoute=' + includePrimaryRoute);
+            $('#device-info').load(url, function() {
+                if (nearby != null) {
+                    $('.js-distance').text(nearby.distance.distance.toFixed(4) + " ");
+                    $('.js-distance-display').show();
                 }
+                if (neighbor != null) {
+                    mod.displayNeighborPopupProperties(neighbor);
+                }
+                if (parent != null) {
+                    mod.displayParentNodePopupProperties(parent);
+                }
+                $('#device-info').show();
+                $('#marker-info').show();
+                overlay.setPosition(coord);
+                var deviceStatus = $('.js-status').text();
+                mod.updateDeviceStatusClass(deviceStatus);
+            });
+            //close any lingering delete dialogs to simplify handling
+            var deleteDialog = $('#confirm-delete');
+            if (deleteDialog.hasClass('ui-dialog-content')) {
+                deleteDialog.dialog('destroy');
             }
+
             //highlight specific device primary route if viewing all routes
             if (allRoutesChecked) {
                 yukon.mapping.addPrimaryRouteToMap(paoId);
@@ -544,17 +476,28 @@ yukon.mapping = (function () {
             if (checked) {
                 button.removeClass('on');
                 map.removeLayer(_elevationLayer);
+                _map.getLayers().forEach(function (layer) {
+                    if (layer.get('name') === 'mqsat' || layer.get('name') === 'hybrid') {
+                        layer.setOpacity(1);
+                    }
+                });
             } else {
-                _elevationLayer = new ol.layer.VectorTile({
-                    declutter: true,
-                    opacity: 0.6,
-                    source: new ol.source.VectorTile({
-                        format: new ol.format.MVT(),
-                        url: yg.map_devices_elevation_url
-                    }),
-                })
+                _elevationLayer = new ol.layer.Tile({ name: 'ele',
+                    source: new ol.source.XYZ({ name: 'ele',
+                        url: yg.map_devices_elevation_url,
+                        attributions: _attributionText,
+                        tileSize: 512,
+                        transition: 0
+                    })
+                });
+                _elevationLayer.setZIndex(500);
                 button.addClass('on');
                 map.addLayer(_elevationLayer);
+                _map.getLayers().forEach(function (layer) {
+                    if (layer.get('name') === 'mqsat' || layer.get('name') === 'hybrid') {
+                        layer.setOpacity(0.4);
+                    }
+                });
             }
         },
         
@@ -685,13 +628,13 @@ yukon.mapping = (function () {
         },
         
         getPaoIdFromData: function(node) {
-          if (node.data != null) {
+          if (node != null && node.data != null) {
               return Object.keys(node.data)[0];
           }  
         },
         
         getFeatureFromData: function(node) {
-            if (node.data != null) {
+            if (node != null && node.data != null) {
                 var nodeData = Object.keys(node.data).map(function (key) {
                     return node.data[key];
                 });
@@ -699,6 +642,228 @@ yukon.mapping = (function () {
                     return nodeData[0].features[0];
                 }
             }
+        },
+        
+        getFeatureFromRouteOrNeighborData: function(routeData) {
+            if (routeData != null) {
+                var features = Object.keys(routeData).map(function (key) {
+                    var device = routeData[key];
+                    if (device != null && device.features != null) {
+                        return device.features[0];
+                    }
+                });
+                if (features != null) {
+                    return features[0];
+                }
+            }
+        },
+        
+        createNeighborDevice: function(device, iconArray, lineArray, devicePoints, alwaysAddIcon) {
+            var feature = yukon.mapping.getFeatureFromRouteOrNeighborData(device),
+                source = yukon.mapping.getIconLayerSource();
+            if (feature != null) {
+                var pao = feature.properties.paoIdentifier,
+                    style = _styles[feature.properties.icon] || _styles['GENERIC_GREY'],
+                    properties = Object.keys(device).map(function (key) {
+                        var neighborInfo = device[key];
+                        if (neighborInfo != null && neighborInfo.properties != null) {
+                            return neighborInfo.properties;
+                        }
+                    });
+                if (properties != null) {
+                    var neighbor = properties[0].neighborData;
+                    neighbor.distance = properties[0].distance;
+                    neighbor.commaDelimitedNeighborFlags = properties[0].commaDelimitedNeighborFlags;
+                }
+                
+                var icon = new ol.Feature({ neighbor: neighbor, pao: pao });
+                icon.setId(feature.id);
+                
+                //check if neighbor already exists on map
+                var neighborFound = yukon.mapping.findFocusDevice(pao.paoId, false);
+                if (neighborFound) {
+                    icon = neighborFound;
+                    icon.set("neighbor", neighbor);
+                } else {
+                    icon.setStyle(style);
+                    var coord = ol.proj.transform(feature.geometry.coordinates, _srcProjection, _destProjection);
+                    icon.setGeometry(new ol.geom.Point(coord));
+                    if (!alwaysAddIcon) {
+                        iconArray.push(icon);
+                    }
+                    source.addFeature(icon);
+                }
+                
+                if (alwaysAddIcon) {
+                    iconArray.push(icon);
+                }
+                
+                //draw line
+                var points = [];
+                points.push(icon.getGeometry().getCoordinates());
+                points.push(devicePoints);
+
+                var lineColor = yukon.mapping.getNeighborLineColor(neighbor.neighborData.etxBand),
+                    lineThickness = yukon.mapping.getNeighborLineThickness(neighbor.neighborData.numSamples);
+                
+                var layerLines = new ol.layer.Vector({
+                    source: new ol.source.Vector({
+                        features: [new ol.Feature({
+                            geometry: new ol.geom.LineString(points),
+                            name: 'Line'
+                        })]
+                    }),
+
+                    style: new ol.style.Style({
+                        stroke: new ol.style.Stroke({ color: lineColor, width: lineThickness })
+                    })
+                });
+                
+                lineArray.push(layerLines);
+                _map.addLayer(layerLines);
+            }
+        },
+        
+        displayDescendants: function(deviceId, updateZoom) {
+            $('.js-no-descendants-message').addClass('dn');
+            $('.js-descendants-missing-locations-message').addClass('dn');
+            _missingDescendants = false;
+            var mapContainer = $('#map-container');
+            yukon.ui.block(mapContainer);
+            $.getJSON(yukon.url('/stars/comprehensiveMap/networkTree') + '?' + $.param({ deviceId: deviceId }))
+            .done(function (json) {
+                if (json.tree.length > 0) {
+                    var gatewayNode = json.tree[0],
+                        paoId = yukon.mapping.getPaoIdFromData(gatewayNode);
+                    //first check if device is gateway.
+                    //paoId is a String since it is retrieved from a Map and deviceId is an Integer so using == here instead of ===
+                    if (paoId == deviceId) {
+                        yukon.mapping.findDescendants(gatewayNode, deviceId);
+                        yukon.mapping.showDescendantLines();
+                    } else {
+                        yukon.mapping.drawAllDescendants(deviceId, gatewayNode);
+                    }
+                } else {
+                    $('.js-no-descendants-message').removeClass('dn');
+                }
+                if (json.errorMsg) {
+                    yukon.ui.alertError(json.errorMsg);
+                }
+                yukon.ui.unblock(mapContainer);
+                $('#marker-info').hide();
+                if (updateZoom) {
+                    yukon.mapping.updateZoom(_map);
+                }
+            });
+        },
+        
+        drawAllDescendants: function(deviceId, node) {
+            for (var i in node.children) {
+                var childNode = node.children[i],
+                    feature = yukon.mapping.getFeatureFromData(childNode);
+                if (feature != null) {
+                    var paoId = yukon.mapping.getPaoIdFromData(childNode);
+                    //paoId is a String since it is retrieved from a Map and deviceId is an Integer so using == here instead of ===
+                    if (paoId == deviceId) {
+                        yukon.mapping.findDescendants(childNode, deviceId);
+                        yukon.mapping.showDescendantLines();
+                        break;
+                    }
+                }
+                yukon.mapping.drawAllDescendants(deviceId, childNode);
+            }
+        },
+        
+        findDescendants: function(node, parentId) {
+            var parentFeature = yukon.mapping.getFeatureFromData(node),
+                currentParentId = yukon.mapping.getPaoIdFromData(node),
+                dashedLine = parentFeature == null,
+                source = yukon.mapping.getIconLayerSource(),
+                parentId = parentFeature ? currentParentId : parentId;
+            for (var i in node.children) {
+                var childNode = node.children[i],
+                    feature = yukon.mapping.getFeatureFromData(childNode);
+                if (feature != null) {
+                    var icon = yukon.mapping.addFeatureToMapAndArray(feature, _descendantIcons),
+                        points = [],
+                        parent = source.getFeatureById(parentId);
+                    if (parent != null) {
+                        points.push(icon.getGeometry().getCoordinates());
+                        points.push(parent.getGeometry().getCoordinates());
+                        var lineFeature = new ol.Feature({
+                            geometry: new ol.geom.LineString(points),
+                            name: 'Line'
+                        });
+                        if (dashedLine) {
+                            _descendantDashedLineFeatures.push(lineFeature);
+                            _missingDescendants = true;
+                        } else {
+                            _descendantLineFeatures.push(lineFeature);
+                        }
+                    }
+                } else {
+                    _missingDescendants = true;
+                }
+                yukon.mapping.findDescendants(childNode, parentId);
+            }
+        },
+        
+        showDescendantLines: function() {
+            if (_descendantLineFeatures.length == 0 && _descendantDashedLineFeatures.length == 0 ){
+                $('.js-no-descendants-message').removeClass('dn');
+            }
+            if (_missingDescendants) {
+                $('.js-descendants-missing-locations-message').removeClass('dn');
+            }
+            
+            if (_descendantLineFeatures.length > 0) {
+                //draw lines
+                var layerLines = new ol.layer.Vector({
+                    source: new ol.source.Vector({
+                        features: _descendantLineFeatures
+                    }),
+                    style: new ol.style.Style({
+                        stroke: new ol.style.Stroke({ color: _focusRouteColor, width: 2.5 })
+                    })
+                });
+                
+                layerLines.setZIndex(_lineZIndex);
+                _descendantLines.push(layerLines);
+                _map.addLayer(layerLines);
+                _descendantLineFeatures = [];
+            }
+            
+            if (_descendantDashedLineFeatures.length > 0) {
+                //draw dashed lines
+                var dashedLines = new ol.layer.Vector({
+                    source: new ol.source.Vector({
+                        features: _descendantDashedLineFeatures
+                    }),
+                    style: new ol.style.Style({
+                        stroke: new ol.style.Stroke({ color: _focusRouteColor, width: 2.5, lineDash: [10,10] })
+                    })
+                });
+                
+                dashedLines.setZIndex(_lineZIndex);
+                _descendantLines.push(dashedLines);
+                _map.addLayer(dashedLines);
+                _descendantDashedLineFeatures = [];
+            }
+        },
+        
+        removeDescendantLayers: function() {
+            var iconLayer = yukon.mapping.getIconLayer(),
+                source = iconLayer.getSource();
+            _descendantIcons.forEach(function (icon) {
+                if (source.getFeatureById(icon.getId()) != null) {
+                    source.removeFeature(icon);
+                }
+            });
+            _descendantLines.forEach(function (line) {
+                _map.removeLayer(line);
+            });
+            _descendantIcons = [];
+            _descendantLines = [];
         },
                 
         showHideAllRoutes: function(gatewayIds) {

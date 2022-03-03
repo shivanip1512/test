@@ -3,7 +3,6 @@
 #include "mgr_device.h"
 #include "mgr_route.h"
 #include "mgr_point.h"
-#include "mgr_config.h"
 #include "mgr_dyn_paoinfo.h"
 //  for test_DevicePointHelper
 #include "desolvers.h"
@@ -11,14 +10,24 @@
 #include "pt_accum.h"
 #include "pt_status.h"
 #include "dev_single.h"
+#include "dev_ccu.h"
+#include "dev_dlcbase.h"
+#include "dev_mct410.h"
+#include "dev_mct420.h"
+#include "dev_mct470.h"
 #include "dev_rfnMeter.h"
 #include "dev_rfnCommercial.h"
 #include "dev_rfn_LgyrFocus_al.h"
+#include "dev_rf_BatteryNode.h"
+#include "rte_ccu.h"
 
 #include "test_reader.h"
 #include "std_helper.h"
 
 #include "boost_test_helpers.h"
+#include "deviceconfig_test_helpers.h"
+
+#include <boost/algorithm/cxx11/all_of.hpp>
 #include <boost/range/algorithm/count.hpp>
 #include <boost/test/unit_test.hpp>
 #include <boost/variant.hpp>
@@ -30,49 +39,6 @@ namespace {
 
 using std::to_string;
     
-struct test_DeviceConfig : public Config::DeviceConfig
-{
-    test_DeviceConfig() : DeviceConfig( 271828 ) {}
-
-    using DeviceConfig::insertValue;
-    using DeviceConfig::findValue;
-    using DeviceConfig::addCategory;
-};
-
-struct test_ConfigManager : ConfigManager
-{
-    const Config::DeviceConfigSPtr config;
-
-    test_ConfigManager( Config::DeviceConfigSPtr config_ )
-        : config( config_ )
-    {
-    }
-
-    virtual Config::DeviceConfigSPtr fetchConfig( const long deviceID, const DeviceTypes deviceType )
-    {
-        return config;
-    }
-};
-
-class Override_ConfigManager
-{
-    std::unique_ptr<ConfigManager> _oldConfigManager;
-
-public:
-
-    Override_ConfigManager(Config::DeviceConfigSPtr config)
-    {
-        _oldConfigManager = std::move(gConfigManager);
-
-        gConfigManager.reset(new test_ConfigManager(config));
-    }
-
-    ~Override_ConfigManager()
-    {
-        gConfigManager = std::move(_oldConfigManager);
-    }
-};
-
 struct test_DynamicPaoInfoManager : DynamicPaoInfoManager
 {
     void loadInfo(const long id) override
@@ -432,30 +398,112 @@ struct DevicePointHelper
     }
 };
 
-struct test_Rfn410flDevice : Cti::Devices::Rfn410flDevice
+struct test_CtiDeviceCCU : CtiDeviceCCU
 {
-    test_Rfn410flDevice(std::string& name)
+    test_CtiDeviceCCU()
     {
-        _name = name;
-        setDeviceType(TYPE_RFN410FL);
+        _paObjectID = 12345;
+    }
+
+    void setInhibited()
+    {
+        _disableFlag = true;
     }
 };
 
-struct test_Rfn430sl1Device : Cti::Devices::Rfn430sl1Device
+struct test_CtiRouteCCU : CtiRouteCCU
 {
-    test_Rfn430sl1Device(std::string& name)
+    boost::shared_ptr<test_CtiDeviceCCU> ccu;
+
+    test_CtiRouteCCU() : ccu(boost::make_shared<test_CtiDeviceCCU>())
     {
-        _name = name;
-        setDeviceType(TYPE_RFN430SL1);
+        _tblPAO.setID(1234, test_tag);
+        setDevicePointer(ccu);
     }
 };
 
-struct test_Rfn510flDevice : Cti::Devices::Rfn510flDevice
+template <typename BaseDevice, DeviceTypes type>
+struct test_PlcDevice : BaseDevice
 {
-    test_Rfn510flDevice(std::string& name)
+    test_PlcDevice(const std::string name)
     {
         _name = name;
-        setDeviceType(TYPE_RFN510FL);
+        setDeviceType(type);
+    }
+    CtiRouteSPtr getRoute(long id) const override
+    {
+        return boost::make_shared<test_CtiRouteCCU>();
+    }
+};
+
+struct test_Mct410flDevice : test_PlcDevice<Cti::Devices::Mct410Device, TYPEMCT410FL>
+{
+    using test_PlcDevice::test_PlcDevice;
+};
+struct test_Mct420flDevice : test_PlcDevice<Cti::Devices::Mct420Device, TYPEMCT420FL>
+{
+    using test_PlcDevice::test_PlcDevice;
+};
+struct test_Mct420clDevice : test_PlcDevice<Cti::Devices::Mct420Device, TYPEMCT420CL>
+{
+    using test_PlcDevice::test_PlcDevice;
+};
+struct test_Mct420cdDevice : test_PlcDevice<Cti::Devices::Mct420Device, TYPEMCT420CD>
+{
+    using test_PlcDevice::test_PlcDevice;
+};
+struct test_Mct430s4Device : test_PlcDevice<Cti::Devices::Mct470Device, TYPEMCT430S4>
+{
+    using test_PlcDevice::test_PlcDevice;
+};
+struct test_Mct470Device : test_PlcDevice<Cti::Devices::Mct470Device, TYPEMCT470>
+{
+    using test_PlcDevice::test_PlcDevice;
+};
+
+template <typename BaseDevice, DeviceTypes type>
+struct test_RfnDevice : BaseDevice
+{
+    test_RfnDevice(int deviceId, const RfnIdentifier rfnId)
+    {
+        _name = rfnId.manufacturer + " " + rfnId.model + " " + rfnId.serialNumber + " (" + std::to_string(deviceId) + ")";
+        setDeviceType(type);
+        _rfnId = rfnId;
+    }
+};
+    
+struct test_Rfn410flDevice : test_RfnDevice<Cti::Devices::Rfn410flDevice, TYPE_RFN410FL>
+{
+    using test_RfnDevice::test_RfnDevice;
+};
+struct test_Rfn430sl1Device : test_RfnDevice<Cti::Devices::Rfn430sl1Device, TYPE_RFN430SL1>
+{
+    using test_RfnDevice::test_RfnDevice;
+};
+struct test_Rfn510flDevice : test_RfnDevice<Cti::Devices::Rfn510flDevice, TYPE_RFN510FL>
+{
+    using test_RfnDevice::test_RfnDevice;
+};
+
+struct test_RfBatteryNodeDevice : Cti::Devices::RfBatteryNodeDevice
+{
+    test_RfBatteryNodeDevice(std::string name)
+    {
+        _name = name;
+        setDeviceType(TYPE_RFG301);
+    }
+
+    boost::optional<Messaging::Rfn::RfnGetChannelConfigReplyMessage> channelConfigReplyMsg;
+    YukonError_t channelConfigResultCode;
+
+    boost::optional<Messaging::Rfn::RfnGetChannelConfigReplyMessage> readConfigurationFromNM(const RfnIdentifier& rfnId) const override
+    {
+        return channelConfigReplyMsg;
+    }
+
+    YukonError_t sendConfigurationToNM(const Messaging::Rfn::RfnSetChannelConfigRequestMessage request) const override
+    {
+        return channelConfigResultCode;
     }
 };
 
@@ -467,10 +515,12 @@ struct test_DeviceManager : CtiDeviceManager
 
     test_DeviceManager()
     {
-        devSingle->setID(42, test_tag);
-
         //  set the IDs for all the devices
-        for( auto& device : devices )
+        for( auto& device : rfnDevices )
+        {
+            device.second->setID(device.first, test_tag);
+        }
+        for( auto& device : otherDevices )
         {
             device.second->setID(device.first, test_tag);
         }
@@ -478,12 +528,12 @@ struct test_DeviceManager : CtiDeviceManager
 
     ptr_type getDeviceByID(long id) override
     {
-        if( id == 42 )
+        if( auto device = mapFind(otherDevices, id) )
         {
-            return devSingle;
+            return *device;
         }
 
-        return mapFindOrDefault(devices, id, Cti::Devices::RfnDeviceSPtr());
+        return mapFindOrDefault(rfnDevices, id, Cti::Devices::RfnDeviceSPtr());
     }
 
     ptr_type RemoteGetEqualbyName(const std::string &RemoteName) override
@@ -492,34 +542,64 @@ struct test_DeviceManager : CtiDeviceManager
         {
             return devSingle;
         }
-        //  TODO - return RFN test devices by name, rather than hardcoding?
+        //  TODO - return other devices by name, rather than hardcoding?
         return ptr_type();
     }
 
-    std::map<int, Cti::Devices::RfnDeviceSPtr> devices {
-        { 123, boost::make_shared<test_Rfn410flDevice>("JIMMY JOHNS GARGANTUAN (123)"s) },
-        {  49, boost::make_shared<test_Rfn410flDevice>("JIMMY JOHNS VITO (49)"s) },
-        { 499, boost::make_shared<test_Rfn430sl1Device>("JIMMY JOHNS TURKEY TOM (499)"s) },
-        { 500, boost::make_shared<test_Rfn510flDevice>("JIMMY JOHNS ITALIAN NIGHT CLUB (500)"s) } };
+    static constexpr int MCT410FL_ID = 502;
+    static constexpr int MCT420FL_ID = 503;
+    static constexpr int MCT420CL_ID = 504;
+    static constexpr int MCT420CD_ID = 505;
+    static constexpr int MCT430S4_ID = 506;
+    static constexpr int MCT470_ID = 507;
+    static constexpr int MCT420FD_ID = 508;
+    static constexpr int MCT410FD_ID = 509;
+    static constexpr int MCT410CL_ID = 510;
+    static constexpr int MCT410CD_ID = 511;
+
+    std::map<int, Cti::Devices::RfnDeviceSPtr> rfnDevices {
+        { 123, boost::make_shared<test_Rfn410flDevice> (123, RfnIdentifier { "JIMMY", "JOHNS", "GARGANTUAN"         }) },
+        {  49, boost::make_shared<test_Rfn410flDevice> ( 49, RfnIdentifier { "JIMMY", "JOHNS", "VITO"               }) },
+        { 499, boost::make_shared<test_Rfn430sl1Device>(499, RfnIdentifier { "JIMMY", "JOHNS", "TURKEY TOM"         }) },
+        { 500, boost::make_shared<test_Rfn510flDevice> (500, RfnIdentifier { "JIMMY", "JOHNS", "ITALIAN NIGHT CLUB" }) },
+        { 501, boost::make_shared<test_RfBatteryNodeDevice>("JIMMY JOHNS ULTIMATE PORKER (501)"s) } };
+
+    std::map<int, ptr_type> otherDevices {
+        {  42, devSingle },
+        { MCT410CL_ID, boost::make_shared<test_Mct410flDevice>("MCT-410cL"s) },
+        { MCT410CD_ID, boost::make_shared<test_Mct410flDevice>("MCT-410cD"s) },
+        { MCT410FL_ID, boost::make_shared<test_Mct410flDevice>("MCT-410fL"s) },
+        { MCT410FD_ID, boost::make_shared<test_Mct410flDevice>("MCT-410fD"s) },
+        { MCT420FL_ID, boost::make_shared<test_Mct420flDevice>("MCT-420fL"s) },
+        { MCT420FD_ID, boost::make_shared<test_Mct420flDevice>("MCT-420fD"s) },
+        { MCT420CL_ID, boost::make_shared<test_Mct420clDevice>("MCT-420cL"s) },
+        { MCT420CD_ID, boost::make_shared<test_Mct420cdDevice>("MCT-420cD"s) },
+        { MCT430S4_ID, boost::make_shared<test_Mct430s4Device>("MCT-430S4"s) },
+        { MCT470_ID,   boost::make_shared<test_Mct470Device>  ("MCT-470"s) },
+    };
 
     Cti::Devices::RfnDeviceSPtr getDeviceByRfnIdentifier(const Cti::RfnIdentifier& rfnId) override
     {
         //  TODO - lookup map instead of hardcoding?
         if( rfnId == Cti::RfnIdentifier{ "JIMMY", "JOHNS", "GARGANTUAN" } )
         {
-            return devices[123];
+            return rfnDevices[123];
         }
         if( rfnId == Cti::RfnIdentifier{ "JIMMY", "JOHNS", "VITO" } )
         {
-            return devices[49];
+            return rfnDevices[49];
         }
         if( rfnId == Cti::RfnIdentifier{ "JIMMY", "JOHNS", "TURKEY TOM" } )
         {
-            return devices[499];
+            return rfnDevices[499];
         }
         if( rfnId == Cti::RfnIdentifier{ "JIMMY", "JOHNS", "ITALIAN NIGHT CLUB" } )
         {
-            return devices[500];
+            return rfnDevices[500];
+        }
+        if( rfnId == Cti::RfnIdentifier{ "JIMMY", "JOHNS", "ULTIMATE PORKER" } )
+        {
+            return rfnDevices[501];
         }
 
         return nullptr;
@@ -543,11 +623,11 @@ struct test_RouteManager : CtiRouteManager
     {
     }
 
-    virtual ptr_type getRouteByName(std::string RouteName)
+    ptr_type getRouteByName(std::string RouteName) override
     {
         return (RouteName == "sixty-six")
             ? rte
-            : ptr_type();
+            : nullptr;
     }
 };
 
@@ -576,7 +656,6 @@ struct test_PointManager : CtiPointManager
     }
 };
 
-
 /**
 Runs through a list of return messages, comparing them to the oracle expected messages, as well 
 as verifying the return status.
@@ -595,13 +674,49 @@ void msgsEqual(
     auto resultStrings = returnMsgs | boost::adaptors::transformed( [](const std::unique_ptr<CtiReturnMsg> &msg){ return msg->ResultString(); } );
     auto resultStatuses = returnMsgs | boost::adaptors::transformed( []( const std::unique_ptr<CtiReturnMsg> &msg ){ return msg->Status(); } );
 
+    const std::vector<int> oracleStatuses( oracleMsgs.size(), status );
+
     BOOST_CHECK_EQUAL_RANGES( resultStrings, oracleMsgs );
-    BOOST_CHECK_EQUAL( resultStatuses.size(), boost::range::count( resultStatuses, status ) );
+    BOOST_CHECK_EQUAL_RANGES( resultStatuses, oracleStatuses );
 };
 
 auto extractExpectMore(const CtiDeviceSingle::ReturnMsgList & returnMsgs) 
 {
     return boost::copy_range<std::vector<bool>>(returnMsgs | boost::adaptors::transformed([](const std::unique_ptr<CtiReturnMsg> &msg) { return msg->ExpectMore(); }));
+}
+
+bool isSentOnRouteMsg(const CtiMessage* msg)
+{
+    if( auto ret = dynamic_cast<const CtiReturnMsg*>(msg) )
+    {
+        return ret->ResultString() == "Emetcon DLC command sent on route ";
+    }
+
+    return false;
+}
+bool isSentOnRouteMsg_unq(const std::unique_ptr<CtiMessage>& msg)
+{
+    if( auto ret = dynamic_cast<const CtiReturnMsg*>(msg.get()) )
+    {
+        return ret->ExpectMore() && ret->ResultString() == "Emetcon DLC command sent on route ";
+    }
+
+    return false;
+}
+
+INMESS makeInmessReply(const OUTMESS& outmess)
+{
+    INMESS im;
+
+    OutEchoToIN(outmess, im);
+
+    im.Buffer.DSt.Length = outmess.Buffer.BSt.Length;
+
+    auto out_itr = stdext::make_checked_array_iterator(im.Buffer.DSt.Message, DSTRUCT::MessageLength_Max);
+
+    std::fill_n(out_itr, im.Buffer.DSt.Length, 0);
+
+    return im;
 }
 
 struct PaoInfoValidator

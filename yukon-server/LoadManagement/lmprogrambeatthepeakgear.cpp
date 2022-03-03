@@ -4,6 +4,8 @@
 #include "logger.h"
 #include "BeatThePeakAlertLevel.h"
 
+extern const CtiTime gEndOfCtiTime;
+
 using std::endl;
 using namespace Cti::LoadManagement;
 using Cti::LoadManagement::BeatThePeakControlInterface;
@@ -49,7 +51,7 @@ bool CtiLMProgramBeatThePeakGear::attemptControl(CtiLMGroupPtr currentLMGroup, l
         bool controlSent = controllableGroup->sendBeatThePeakControl( getAlertLevel(), controlTimeout );
         if( getMethodRate() == 0 )
         {
-            currentLMGroup->setNextControlTime( CtiTime(CtiTime::pos_infin) );
+            currentLMGroup->setNextControlTime( gEndOfCtiTime );
         }
         else{
             currentLMGroup->setNextControlTime( CtiTime().seconds() + getMethodRate() );

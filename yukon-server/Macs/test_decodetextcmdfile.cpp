@@ -1,4 +1,4 @@
-#include <boost/test/auto_unit_test.hpp>
+#include <boost/test/unit_test.hpp>
 
 #include "decodetextcmdfile.h"
 
@@ -206,6 +206,57 @@ BOOST_AUTO_TEST_CASE(test_validateAndDecodeLine_3)
     BOOST_CHECK_EQUAL_COLLECTIONS(
        expectedProgramming.begin(), expectedProgramming.end(),
        resultProgramming.begin(),   resultProgramming.end());
+}
+
+BOOST_AUTO_TEST_CASE(test_validateAndDecodeLine_4)
+{
+    struct TestCases
+    {
+        std::string input,
+                    expectedOutput;
+    };
+
+    std::vector<TestCases>    tests
+    {
+        {   
+            "4,100000001,spid 315,load 1 p100",
+            "set MessagePriority 5 ; PutConfig xcom assign serial 100000001 s 315 p 100 load 1"
+        },{   
+            "4,100000002,spid 315,load 1 s1",
+            "set MessagePriority 5 ; PutConfig xcom assign serial 100000002 s 315 r 1 load 1"
+        },{   
+            "4,100000003,spid 315,load 1 s2 p100",
+            "set MessagePriority 5 ; PutConfig xcom assign serial 100000003 s 315 p 100 r 2 load 1"
+        },{   
+            "4,100000003,spid 315,load 3 p100 s2",
+            "set MessagePriority 5 ; PutConfig xcom assign serial 100000003 s 315 p 100 r 2 load 3"
+        },{   
+            "4,100000003,spid 315,load 1 s200 p1",
+            "set MessagePriority 5 ; PutConfig xcom assign serial 100000003 s 315 p 1 r 200 load 1"
+        },{   
+            "4,100000003,spid 315,load 3 p1 s200",
+            "set MessagePriority 5 ; PutConfig xcom assign serial 100000003 s 315 p 1 r 200 load 3"
+        },{   
+            "4,100000003,spid 315,load 1 s22 p11",
+            "set MessagePriority 5 ; PutConfig xcom assign serial 100000003 s 315 p 11 r 22 load 1"
+        },{   
+            "4,100000003,spid 315,load 3 p11 s22",
+            "set MessagePriority 5 ; PutConfig xcom assign serial 100000003 s 315 p 11 r 22 load 3"
+        }
+    };
+
+    for ( auto & test : tests )
+    {
+        BOOST_TEST_CONTEXT( "Input case: " << test.input )
+        {
+            auto decodedCommand = std::make_unique<std::string>();
+
+            const bool result = validateAndDecodeLine( test.input, TEXT_CMD_FILE_SPECIFY_EXPRESSCOM, decodedCommand.get(), "<unused>" );
+
+            BOOST_CHECK_EQUAL( test.expectedOutput, *decodedCommand );
+            BOOST_CHECK_EQUAL( result, true );
+        }
+    }
 }
 
 BOOST_AUTO_TEST_CASE(test_validateAndDecodeLine_6)

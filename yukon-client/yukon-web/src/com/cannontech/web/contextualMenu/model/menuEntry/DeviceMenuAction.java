@@ -20,6 +20,7 @@ import com.google.common.collect.ImmutableSet.Builder;
 public abstract class DeviceMenuAction implements DeviceAction {
 
     protected String baseUrl;
+    protected boolean appendParamName = true;
     protected String inputParamName;
     protected String outputParamName;
 
@@ -40,9 +41,14 @@ public abstract class DeviceMenuAction implements DeviceAction {
         this.requiredRole = requiredRole;
     }
 
-    public DeviceMenuAction(String baseUrl, YukonRole requiredRole,
-                                YukonRoleProperty... requiredRoleProperties) {
-        this.baseUrl = getBaseUrlWithAppendedAmpersand(baseUrl);
+    public DeviceMenuAction(String baseUrl, Boolean appendParamName, YukonRole requiredRole,
+            YukonRoleProperty... requiredRoleProperties) {
+        if (appendParamName) {
+            this.baseUrl = getBaseUrlWithAppendedAmpersand(baseUrl);
+        } else {
+            this.baseUrl = baseUrl;
+        }
+        this.appendParamName = appendParamName;
         this.requiredRole = requiredRole;
         
         Builder<YukonRoleProperty> builder = ImmutableSet.builder();
@@ -52,15 +58,14 @@ public abstract class DeviceMenuAction implements DeviceAction {
         this.requiredRoleProperties = builder.build();
     }
 
-    public DeviceMenuAction(String baseUrl, String inputParamName, String outputParamName,
-                         YukonRole requiredRole,
-                         YukonRoleProperty... requiredRoleProperties) {
-        this(baseUrl, requiredRole, requiredRoleProperties);
+    public DeviceMenuAction(String baseUrl, Boolean appendParamName, String inputParamName, String outputParamName,
+            YukonRole requiredRole, YukonRoleProperty... requiredRoleProperties) {
+        this(baseUrl, appendParamName, requiredRole, requiredRoleProperties);
         this.inputParamName = inputParamName;
         this.outputParamName = outputParamName;
     }
-    
-    private String getBaseUrlWithAppendedAmpersand(String baseUrl) {  
+
+    private String getBaseUrlWithAppendedAmpersand(String baseUrl) {
         return baseUrl.contains("?") ? (baseUrl + "&") : (baseUrl + "?");
     }
 

@@ -1,0 +1,68 @@
+attributeAssignments:
+  title: attributeAssignments
+  required:
+    - attributeId
+    - paoType
+    - pointType
+    - offset
+  type: object
+  properties:
+    attributeId:
+      type: integer
+      description: 'Unique identifier for the attribute.'
+    paoType:
+      type: string
+      description: 'Pao Type.'
+    pointType:
+      type: string
+      description: 'Point type.'
+      enum:
+        - Status
+        - Analog
+        - PulseAccumulator
+        - DemandAccumulator
+        - CalcAnalog
+        - StatusOutput
+        - AnalogOutput
+        - System
+        - CalcStatus
+    offset:
+      type: integer
+      description: 'The offset value is used to uniquely identify the type of data input.'
+
+id:
+  required:
+    - id
+  type: object
+  properties:
+    id:
+      type: integer
+      description: 'Unique identifier for the attribute assignment.'
+      
+
+components:
+  examples:
+    Attribute Assignment:   
+      value:
+        attributeId: 62
+        paoType: VIRTUAL_SYSTEM
+        pointType: CalcAnalog
+        offset: 1000
+    
+    List Attribute Assignment:
+      value:
+        - attributeId: 2
+          attributeAssignmentId: 3
+          paoType: MCT410CL
+          offset: 22
+          pointType: Status
+          customAttribute:
+            customAttributeId: 2
+            name: test
+  
+    id:
+      value:
+        id: 63
+    
+  
+             

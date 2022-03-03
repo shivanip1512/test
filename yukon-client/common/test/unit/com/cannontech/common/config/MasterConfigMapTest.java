@@ -1,16 +1,15 @@
 package com.cannontech.common.config;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.fail;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.fail;
 
 import java.io.File;
 import java.net.URISyntaxException;
 
 import org.joda.time.Period;
-import org.junit.Assert;
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
 public class MasterConfigMapTest {
 
@@ -18,7 +17,7 @@ public class MasterConfigMapTest {
     private String aDeprecatedSetting = "DISPATCH_PORT";
 
     private void asertConfigHelper(String key, String expectedValue) {
-        assertEquals(key, expectedValue, masterConfigMap.getRequiredString(key));
+        assertEquals(expectedValue, masterConfigMap.getRequiredString(key), key);
     }
 
     /*
@@ -108,46 +107,46 @@ public class MasterConfigMapTest {
     public void testDeprecatedSetting() {
         try {
             masterConfigMap.getBoolean(aDeprecatedSetting, true);
-            Assert.fail("getBoolean(String key, boolean defaultValue) shouldn't return for a deprecated CPARM");
+            fail("getBoolean(String key, boolean defaultValue) shouldn't return for a deprecated CPARM");
         } catch (IllegalArgumentException e) {/* good */}
 
         try {
             masterConfigMap.getString(aDeprecatedSetting);
-            Assert.fail("getString(String key) shouldn't return for a deprecated CPARM");
+            fail("getString(String key) shouldn't return for a deprecated CPARM");
         } catch (IllegalArgumentException e) {/* good */}
 
         try {
             masterConfigMap.getInteger(aDeprecatedSetting, 0);
-            Assert.fail("getInteger(String key, int defaultValue) shouldn't return for a deprecated CPARM");
+            fail("getInteger(String key, int defaultValue) shouldn't return for a deprecated CPARM");
         } catch (IllegalArgumentException e) {/* good */}
 
         try {
             masterConfigMap.getLong(aDeprecatedSetting, 0);
-            Assert.fail("getLong(String key, int defaultValue) shouldn't return for a deprecated CPARM");
+            fail("getLong(String key, int defaultValue) shouldn't return for a deprecated CPARM");
         } catch (IllegalArgumentException e) {/* good */}
 
         try {
             masterConfigMap.getString(aDeprecatedSetting, "");
-            Assert.fail("getString(String key, String defaultValue) shouldn't return for a deprecated CPARM");
+            fail("getString(String key, String defaultValue) shouldn't return for a deprecated CPARM");
         } catch (IllegalArgumentException e) {/* good */}
 
         try {
             masterConfigMap.getRequiredString(aDeprecatedSetting);
-            Assert.fail("getRequiredString(String key) shouldn't return for a deprecated CPARM");
+            fail("getRequiredString(String key) shouldn't return for a deprecated CPARM");
         } catch (IllegalArgumentException e) {/* good */}
 
         try {
             masterConfigMap.getRequiredInteger(aDeprecatedSetting);
-            Assert.fail("getRequiredInteger(String key) shouldn't return for a deprecated CPARM");
+            fail("getRequiredInteger(String key) shouldn't return for a deprecated CPARM");
         } catch (IllegalArgumentException e) {/* good */}
 
         try {
             masterConfigMap.getPeriod(aDeprecatedSetting, null);
-            Assert.fail("getPeriod(String key, ReadablePeriod defaultValue) shouldn't return for a deprecated CPARM");
+            fail("getPeriod(String key, ReadablePeriod defaultValue) shouldn't return for a deprecated CPARM");
         } catch (IllegalArgumentException e) {/* good */}
     }
 
-    @Before
+    @BeforeEach
     public void setUp() throws Exception {
         File masterCfgResource;
         try {
@@ -155,7 +154,7 @@ public class MasterConfigMapTest {
         } catch(URISyntaxException e) {
             masterCfgResource = new File(getClass().getResource("master.cfg").getPath());
         }
-        assertNotNull("Could not find master.cfg in path", masterCfgResource);
+        assertNotNull(masterCfgResource, "Could not find master.cfg in path");
         masterConfigMap = new MasterConfigMap(masterCfgResource);
     }
 

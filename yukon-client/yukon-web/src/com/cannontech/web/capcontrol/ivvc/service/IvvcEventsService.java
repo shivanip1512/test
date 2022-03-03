@@ -8,6 +8,7 @@ import org.joda.time.Instant;
 
 import com.cannontech.common.util.TimeRange;
 import com.cannontech.user.YukonUserContext;
+import com.cannontech.web.i18n.IconSvg;
 
 public interface IvvcEventsService {
     
@@ -18,6 +19,7 @@ public interface IvvcEventsService {
         private String deviceName;
         private String user;
         private String icon;
+        private String iconSvg;
 
         public Instant getTimestamp() {
             return timestamp;
@@ -76,8 +78,13 @@ public interface IvvcEventsService {
             event.put("deviceName", deviceName);
             event.put("user", user);
             event.put("icon", icon);
+            event.put("iconSvg", getIconSvg());
             return event;
         }
+
+		public String getIconSvg() {
+			return IconSvg.getIconForClass(icon).getSvg();
+		}
     }
     
     List<IvvcEvent> getCapBankEvents(List<Integer> zoneIds, TimeRange range);

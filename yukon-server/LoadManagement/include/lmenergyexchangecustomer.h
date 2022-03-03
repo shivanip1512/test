@@ -24,6 +24,8 @@ DECLARE_COLLECTABLE( CtiLMEnergyExchangeCustomer );
 
     CtiLMEnergyExchangeCustomer& operator=(const CtiLMEnergyExchangeCustomer& right);
 
+    std::size_t getMemoryConsumption() const override;
+
     /*int operator==(const CtiLMEnergyExchangeCustomer& right) const;
     int operator!=(const CtiLMEnergyExchangeCustomer& right) const;*/
 

@@ -18,7 +18,7 @@ import com.cannontech.amr.archivedValueExporter.model.FieldType;
 import com.cannontech.amr.archivedValueExporter.model.MissingAttribute;
 import com.cannontech.amr.archivedValueExporter.model.PadSide;
 import com.cannontech.amr.archivedValueExporter.model.YukonRoundingMode;
-import com.cannontech.common.pao.attribute.model.BuiltInAttribute;
+import com.cannontech.common.pao.attribute.service.AttributeService;
 import com.cannontech.common.util.SqlStatementBuilder;
 import com.cannontech.core.dao.NotFoundException;
 import com.cannontech.database.SqlUtils;
@@ -35,6 +35,7 @@ public class ArchiveValuesExportFieldDaoImpl implements ArchiveValuesExportField
 
     @Autowired YukonJdbcTemplate yukonJdbcTemplate;
     @Autowired NextValueHelper nextValueHelper;
+    @Autowired AttributeService attributeService;
     
     @Override
     @Transactional
@@ -65,9 +66,9 @@ public class ArchiveValuesExportFieldDaoImpl implements ArchiveValuesExportField
             }
             
             String pattern = null;
-            if (exportField.isTimestamp() || exportField.isValue() || exportField.getField().isPlainTextType()) {
+            if (exportField.isTimestamp() || exportField.isValue() || exportField.getField().isPlainTextType() || exportField.getField().isAttributeName()) {
                 //Don't use 'SqlUtils.convertStringToDbValue' since we need to store a null in the db for an empty string.
-                pattern = exportField.getPattern().equals("") ? null : exportField.getPattern();
+                pattern = StringUtils.isEmpty(exportField.getPattern()) ? null : exportField.getPattern();
             }
             
             int maxLength = exportField.getMaxLength();
@@ -138,7 +139,7 @@ public class ArchiveValuesExportFieldDaoImpl implements ArchiveValuesExportField
                     final ExportAttribute attribute = new ExportAttribute();
                     attribute.setFormatId(rs.getInt("FormatID"));
                     attribute.setAttributeId(rs.getInt("AttributeID"));
-                    attribute.setAttribute(rs.getEnum("AttributeName", BuiltInAttribute.class));
+                    attribute.setAttribute(attributeService.parseAttribute(rs.getString("AttributeName")));
                     attribute.setDataSelection(rs.getEnum("DataSelection", DataSelection.class));
                     attribute.setDaysPrevious(rs.getInt("DaysPrevious"));
                     field.setAttribute(attribute);
@@ -151,7 +152,7 @@ public class ArchiveValuesExportFieldDaoImpl implements ArchiveValuesExportField
                     exportField.setPadSide(rs.getEnum("PadSide", PadSide.class));
                 }
                 exportField.setPadChar(SqlUtils.convertDbValueToString(rs.getString("PadChar")));
-                if (exportField.getPadChar().isEmpty() && exportField.getPadSide() != null 
+                if (StringUtils.isEmpty(exportField.getPadChar()) && exportField.getPadSide() != null 
                     && (exportField.getPadSide() == PadSide.LEFT || exportField.getPadSide() == PadSide.RIGHT)) {
                     exportField.setPadChar(" ");
                 }

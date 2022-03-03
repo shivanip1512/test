@@ -8,6 +8,7 @@ namespace Cti {
 
 DeviceConfigDescription::CategoriesPerDeviceType  DeviceConfigDescription::_deviceCategories;
 DeviceConfigDescription::CategoriesByName         DeviceConfigDescription::_categories;
+std::set<std::string> DeviceConfigDescription::_unknownDeviceTypes;
 
 typedef DeviceConfigDescription::ContainerHandle  ContainerHandle;
 typedef DeviceConfigDescription::OptionalCategoryDescription OptionalCategoryDescription;
@@ -16,6 +17,16 @@ void DeviceConfigDescription::AddCategoriesForDeviceType( const DeviceTypes     
                                                      const CategoryNames & categoryNames )
 {
     _deviceCategories[ deviceType ].insert( categoryNames.begin(), categoryNames.end() );
+}
+
+void DeviceConfigDescription::AddUnknownDeviceType(std::string deviceType)
+{
+    _unknownDeviceTypes.emplace( std::move(deviceType) );
+}
+
+const std::set<std::string> DeviceConfigDescription::GetUnknownDeviceTypes()
+{
+    return _unknownDeviceTypes;
 }
 
 DeviceConfigDescription::CategoryNames & DeviceConfigDescription::GetCategoryNamesForDeviceType( const DeviceTypes deviceType )

@@ -1,12 +1,13 @@
 package com.cannontech.message.porter.message;
 
+import java.io.Serializable;
 import java.util.Collection;
 import java.util.EnumSet;
 
 import org.apache.commons.lang3.builder.ToStringBuilder;
 import org.apache.commons.lang3.builder.ToStringStyle;
 
-public class DynamicPaoInfoRequest {
+public class DynamicPaoInfoRequest implements Serializable {
     
     private int deviceID;
     private EnumSet<DynamicPaoInfoDurationKeyEnum> durationKeys = EnumSet.noneOf(DynamicPaoInfoDurationKeyEnum.class);

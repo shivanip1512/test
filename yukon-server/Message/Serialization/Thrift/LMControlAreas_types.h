@@ -50,6 +50,8 @@ class LMGroupNest;
 
 class LMGroupItron;
 
+class LMGroupEatonCloud;
+
 class LMGroupMeterDisconnect;
 
 class LMGroupEmetcon;
@@ -1153,6 +1155,42 @@ class LMGroupItron : public virtual ::apache::thrift::TBase {
 void swap(LMGroupItron &a, LMGroupItron &b);
 
 std::ostream& operator<<(std::ostream& out, const LMGroupItron& obj);
+
+
+class LMGroupEatonCloud : public virtual ::apache::thrift::TBase {
+ public:
+
+  LMGroupEatonCloud(const LMGroupEatonCloud&);
+  LMGroupEatonCloud& operator=(const LMGroupEatonCloud&);
+  LMGroupEatonCloud() {
+  }
+
+  virtual ~LMGroupEatonCloud() noexcept;
+  LMGroupBase _baseMessage;
+
+  void __set__baseMessage(const LMGroupBase& val);
+
+  bool operator == (const LMGroupEatonCloud & rhs) const
+  {
+    if (!(_baseMessage == rhs._baseMessage))
+      return false;
+    return true;
+  }
+  bool operator != (const LMGroupEatonCloud &rhs) const {
+    return !(*this == rhs);
+  }
+
+  bool operator < (const LMGroupEatonCloud & ) const;
+
+  uint32_t read(::apache::thrift::protocol::TProtocol* iprot);
+  uint32_t write(::apache::thrift::protocol::TProtocol* oprot) const;
+
+  virtual void printTo(std::ostream& out) const;
+};
+
+void swap(LMGroupEatonCloud &a, LMGroupEatonCloud &b);
+
+std::ostream& operator<<(std::ostream& out, const LMGroupEatonCloud& obj);
 
 
 class LMGroupMeterDisconnect : public virtual ::apache::thrift::TBase {

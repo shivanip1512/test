@@ -77,7 +77,6 @@
     </div>
 
     <cti:includeScript link="/resources/js/pages/yukon.collection.actions.js" />
-    <cti:includeScript link="HIGH_STOCK"/>
     <cti:includeScript link="/resources/js/common/yukon.ui.progressbar.js"/>
     <cti:includeScript link="/resources/js/pages/yukon.collection.actions.progress.report.js"/>
     <cti:includeScript link="/resources/js/pages/yukon.bulk.device.configs.js"/>

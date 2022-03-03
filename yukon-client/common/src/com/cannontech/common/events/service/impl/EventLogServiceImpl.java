@@ -13,7 +13,6 @@ import javax.annotation.PostConstruct;
 
 import org.apache.commons.lang3.ClassUtils;
 import org.apache.commons.lang3.StringUtils;
-import org.apache.commons.lang3.Validate;
 import org.apache.logging.log4j.Logger;
 import org.joda.time.Instant;
 import org.joda.time.LocalDate;
@@ -29,16 +28,15 @@ import com.cannontech.common.bulk.mapper.ObjectMappingException;
 import com.cannontech.common.bulk.mapper.PassThroughMapper;
 import com.cannontech.common.config.ConfigurationSource;
 import com.cannontech.common.device.DeviceRequestType;
+import com.cannontech.common.device.port.BaudRate;
 import com.cannontech.common.events.Arg;
 import com.cannontech.common.events.YukonEventLog;
 import com.cannontech.common.events.dao.EventLogDao;
 import com.cannontech.common.events.loggers.ArgEnum;
 import com.cannontech.common.events.model.ArgumentColumn;
 import com.cannontech.common.events.model.EventCategory;
-import com.cannontech.common.events.model.EventLog;
 import com.cannontech.common.events.model.EventParameter;
 import com.cannontech.common.events.model.EventSource;
-import com.cannontech.common.events.model.MappedEventLog;
 import com.cannontech.common.events.service.EventLogService;
 import com.cannontech.common.events.service.mappers.LiteYukonUserToNameMapper;
 import com.cannontech.common.exception.BadAuthenticationException;
@@ -51,12 +49,12 @@ import com.cannontech.common.util.ObjectMapper;
 import com.cannontech.core.dao.impl.LoginStatusEnum;
 import com.cannontech.core.roleproperties.YukonRole;
 import com.cannontech.core.roleproperties.YukonRoleProperty;
+import com.cannontech.database.data.device.Rfn1200;
 import com.cannontech.database.data.lite.LiteYukonUser;
 import com.cannontech.database.data.point.PointType;
 import com.cannontech.stars.energyCompany.EnergyCompanySettingType;
 import com.cannontech.system.DREncryption;
 import com.cannontech.system.GlobalSettingType;
-import com.google.common.base.Function;
 import com.google.common.collect.ArrayListMultimap;
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.ImmutableList.Builder;
@@ -139,6 +137,9 @@ public class EventLogServiceImpl implements EventLogService {
         builder.add(ArgumentMapper.create(Boolean.class, Types.VARCHAR));
         builder.add(ArgumentMapper.create(Date.class, Types.TIMESTAMP));
         builder.add(ArgumentMapper.create(LiteYukonUser.class, Types.VARCHAR, new LiteYukonUserToNameMapper()));
+        builder.add(ArgumentMapper.create(BaudRate.class, Types.VARCHAR, (baudRate) -> {
+            return baudRate.getBaudRateValue().toString();
+        }));
         builder.add(ArgumentMapper.createForEnum(PaoType.class));
         builder.add(ArgumentMapper.createForEnum(PointType.class));
         builder.add(ArgumentMapper.createForEnum(DeviceRequestType.class));
@@ -155,13 +156,13 @@ public class EventLogServiceImpl implements EventLogService {
         builder.add(ArgumentMapper.create(ReadableInstant.class, Types.TIMESTAMP, new ObjectMapper<ReadableInstant, Date>() {
             @Override
             public Date map(ReadableInstant from) throws ObjectMappingException {
-                return new Instant(from).toDate();
+                return from != null ? new Instant(from).toDate() : null;
             }
         }));
         builder.add(ArgumentMapper.create(LocalDate.class, Types.TIMESTAMP, new ObjectMapper<LocalDate, Date>() {
             @Override
             public Date map(LocalDate date) throws ObjectMappingException {
-                return date.toDate();
+                return date != null ? date.toDate() : null;
             }
         }));
         builder.add(ArgumentMapper.create(PaoIdentifier.class, Types.VARCHAR, new ObjectMapper<PaoIdentifier, String>() {
@@ -188,6 +189,12 @@ public class EventLogServiceImpl implements EventLogService {
             public String map(PaoLocation from) throws ObjectMappingException {
                 return String.format("latitude=%s, longitude=%s, origin=%s", from.getLatitude(), from.getLongitude(),
                     from.getOrigin());
+            }
+        }));
+        builder.add(ArgumentMapper.create(Rfn1200.class, Types.VARCHAR, new ObjectMapper<Rfn1200, String>() {
+            @Override
+            public String map(Rfn1200 from) throws ObjectMappingException {
+                return from.toString();
             }
         }));
         argumentMappers = builder.build();
@@ -359,43 +366,6 @@ public class EventLogServiceImpl implements EventLogService {
     @Override
     public MethodLogDetail getDetailForMethod(Method method) {
         return methodLogDetailLookup.get(method);
-    }
-    
-    @Override
-    public List<MappedEventLog> findAllByCategories(Iterable<EventCategory> eventCategory, ReadableInstant startDate, ReadableInstant stopDate) {
-        List<EventLog> eventLogs = eventLogDao.findAllByCategories(eventCategory, startDate, stopDate);
-        
-        List<MappedEventLog> result = mapEventLogParameters(eventLogs);
-        return result;
-    }
-    
-    private List<MappedEventLog> mapEventLogParameters(List<EventLog> eventLogs) {
-        return Lists.transform(eventLogs, new Function<EventLog, MappedEventLog> () {
-            @Override
-            public MappedEventLog apply(EventLog from) {
-                return mapEventLogParameters(from);
-            }
-            
-        });
-    }
-    
-    private MappedEventLog mapEventLogParameters(EventLog eventLog) {
-        MappedEventLog mappedEventLog = new MappedEventLog();
-        mappedEventLog.setEventLog(eventLog);
-        
-        MethodLogDetail methodLogDetail = getDetailForEventType(eventLog.getEventType());
-        
-        Object[] values = eventLog.getArguments();
-        List<ArgumentColumn> columns = eventLogDao.getArgumentColumns();
-        Validate.isTrue(values.length == columns.size());
-        
-        for (int i = 0; i < values.length; i++) {
-            Object value = values[i];
-            ArgumentColumn column = columns.get(i);
-            EventParameter eventParameter = methodLogDetail.getColumnToParameterMapping().get(column);
-            mappedEventLog.getParameterMap().put(eventParameter, value);
-        }
-        return mappedEventLog;
     }
     
     @Autowired

@@ -22,14 +22,16 @@ public class MultispeakCustomerInfoServiceImpl implements MultispeakCustomerInfo
         if (contactInfo == null || contactInfo.getPhoneList() == null) return phoneNumbers;
         for (PhoneNumber p : contactInfo.getPhoneList().getPhoneNumber()) {
             String fullPhone = "";
-            if (p.getPhone() != null) {
-                fullPhone += p.getPhone();
-            }
-            if (p.getPhoneType() != null) {
-                fullPhone += " " + p.getPhoneType();
-            }
-            if (!StringUtils.isBlank(fullPhone)) {
-                phoneNumbers.add(fullPhone);
+            if (p != null) {
+                if (p.getPhone() != null) {
+                    fullPhone += p.getPhone();
+                }
+                if (p.getPhoneType() != null) {
+                    fullPhone += " " + p.getPhoneType();
+                }
+                if (!StringUtils.isBlank(fullPhone)) {
+                    phoneNumbers.add(fullPhone);
+                }
             }
         }
         return phoneNumbers;

@@ -48,4 +48,14 @@ public class SmartNotificationWatchdogDecider extends SmartNotificationDecider {
     public List<SmartNotificationEvent> validate(List<SmartNotificationEvent> events) {
         return events;
     }
+    
+    @Override
+    protected List<SmartNotificationEvent> getUnprocessedGroupedEvents(String cacheKey) {
+       return eventDao.getUnprocessedGroupedEvents(eventType);
+    }
+
+    @Override
+    protected String getCacheKey(SmartNotificationSubscription subscription) {
+        return eventType.toString();
+    }
 }

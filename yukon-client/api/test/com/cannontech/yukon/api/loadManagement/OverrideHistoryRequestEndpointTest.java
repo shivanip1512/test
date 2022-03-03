@@ -1,14 +1,16 @@
 package com.cannontech.yukon.api.loadManagement;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNull;
+
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Date;
 import java.util.List;
 
 import org.jdom2.Element;
-import org.junit.Assert;
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 import org.springframework.core.io.ClassPathResource;
 import org.springframework.core.io.Resource;
 import org.springframework.test.util.ReflectionTestUtils;
@@ -81,7 +83,7 @@ public class OverrideHistoryRequestEndpointTest {
     private static OverrideHistoryNodeMapper_v1_1 byProgramName_overrideHistNodeMapper_v1_1 = new OverrideHistoryNodeMapper_v1_1();
     
 
-    @Before
+    @BeforeEach
     public void setUp() throws Exception {
         
         mockOptOutService = new MockOptOutService();
@@ -216,10 +218,10 @@ public class OverrideHistoryRequestEndpointTest {
         TestUtils.validateAgainstSchema(respElement, respSchemaResource);
 
         //verify mockService was called with correct params
-        Assert.assertEquals("Incorrect accountNumber.", EMTPY_RETURN, mockOptOutService.getAccountNumber());
-        Assert.assertNull(mockOptOutService.getProgramName());
-        Assert.assertEquals("Incorrect startDateTime.", START_DATE_VALID, Iso8601DateUtil.formatIso8601Date(mockOptOutService.getStartTime()));
-        Assert.assertEquals("Incorrect stopDateTime.", STOP_DATE_VALID, Iso8601DateUtil.formatIso8601Date(mockOptOutService.getStopTime()));
+        assertEquals(EMTPY_RETURN, mockOptOutService.getAccountNumber(), "Incorrect accountNumber.");
+        assertNull(mockOptOutService.getProgramName());
+        assertEquals(START_DATE_VALID, Iso8601DateUtil.formatIso8601Date(mockOptOutService.getStartTime()), "Incorrect startDateTime.");
+        assertEquals(STOP_DATE_VALID, Iso8601DateUtil.formatIso8601Date(mockOptOutService.getStopTime()), "Incorrect stopDateTime.");
 
         // create template and parse response data
         outputTemplate = YukonXml.getXPathTemplateForElement(respElement);
@@ -231,7 +233,7 @@ public class OverrideHistoryRequestEndpointTest {
         List<OverrideHistory> actual = 
             outputTemplate.evaluate(byAccountHistoryElementStr, byAccountNumber_overrideHistNodeMapper);
 
-        Assert.assertEquals("Result list not as expected", expected, actual);        
+        assertEquals( expected, actual, "Result list not as expected");
         
         // test with valid account, no program, valid user 
         //==========================================================================================
@@ -243,10 +245,10 @@ public class OverrideHistoryRequestEndpointTest {
         TestUtils.validateAgainstSchema(respElement, respSchemaResource);
 
         //verify mockService was called with correct params
-        Assert.assertEquals("Incorrect accountNumber.", ACCOUNT1, mockOptOutService.getAccountNumber());
-        Assert.assertNull(mockOptOutService.getProgramName());
-        Assert.assertEquals("Incorrect startDateTime.", START_DATE_VALID, Iso8601DateUtil.formatIso8601Date(mockOptOutService.getStartTime()));
-        Assert.assertEquals("Incorrect stopDateTime.", STOP_DATE_VALID, Iso8601DateUtil.formatIso8601Date(mockOptOutService.getStopTime()));
+        assertEquals(ACCOUNT1, mockOptOutService.getAccountNumber(), "Incorrect accountNumber.");
+        assertNull(mockOptOutService.getProgramName());
+        assertEquals(START_DATE_VALID, Iso8601DateUtil.formatIso8601Date(mockOptOutService.getStartTime()), "Incorrect startDateTime.");
+        assertEquals(STOP_DATE_VALID, Iso8601DateUtil.formatIso8601Date(mockOptOutService.getStopTime()), "Incorrect stopDateTime.");
 
         // create template and parse response data
         outputTemplate = YukonXml.getXPathTemplateForElement(respElement);
@@ -259,7 +261,7 @@ public class OverrideHistoryRequestEndpointTest {
         
         actual = outputTemplate.evaluate(byAccountHistoryElementStr, byAccountNumber_overrideHistNodeMapper);
 
-        Assert.assertEquals("Result list not as expected", expected, actual);
+        assertEquals(expected, actual, "Result list not as expected");
         
         
         // test with valid account, program, user 
@@ -272,10 +274,10 @@ public class OverrideHistoryRequestEndpointTest {
         TestUtils.validateAgainstSchema(respElement, respSchemaResource);
 
         //verify mockService was called with correct params
-        Assert.assertEquals("Incorrect accountNumber.", ACCOUNT1, mockOptOutService.getAccountNumber());
-        Assert.assertEquals("Incorrect programName", PROGRAM1, mockOptOutService.getProgramName());
-        Assert.assertEquals("Incorrect startDateTime.", START_DATE_VALID, Iso8601DateUtil.formatIso8601Date(mockOptOutService.getStartTime()));
-        Assert.assertEquals("Incorrect stopDateTime.", STOP_DATE_VALID, Iso8601DateUtil.formatIso8601Date(mockOptOutService.getStopTime()));
+        assertEquals(ACCOUNT1, mockOptOutService.getAccountNumber(), "Incorrect accountNumber.");
+        assertEquals(PROGRAM1, mockOptOutService.getProgramName(), "Incorrect programName");
+        assertEquals(START_DATE_VALID, Iso8601DateUtil.formatIso8601Date(mockOptOutService.getStartTime()), "Incorrect startDateTime.");
+        assertEquals(STOP_DATE_VALID, Iso8601DateUtil.formatIso8601Date(mockOptOutService.getStopTime()), "Incorrect stopDateTime.");
 
         // create template and parse response data
         outputTemplate = YukonXml.getXPathTemplateForElement(respElement);
@@ -287,7 +289,7 @@ public class OverrideHistoryRequestEndpointTest {
         
         actual = outputTemplate.evaluate(byAccountHistoryElementStr, byAccountNumber_overrideHistNodeMapper);
 
-        Assert.assertEquals("Result list not as expected", expected, actual);
+        assertEquals(expected, actual, "Result list not as expected");
 
         // test with invalid account, valid user 
         //==========================================================================================
@@ -299,10 +301,10 @@ public class OverrideHistoryRequestEndpointTest {
         TestUtils.validateAgainstSchema(respElement, respSchemaResource);
         
         //verify mockService was called with correct params
-        Assert.assertEquals("Incorrect accountNumber.", INVALID_ACCOUNT, mockOptOutService.getAccountNumber());
-        Assert.assertNull("Incorrect programName", mockOptOutService.getProgramName());
-        Assert.assertEquals("Incorrect startDateTime.", START_DATE_VALID, Iso8601DateUtil.formatIso8601Date(mockOptOutService.getStartTime()));
-        Assert.assertEquals("Incorrect stopDateTime.", STOP_DATE_VALID, Iso8601DateUtil.formatIso8601Date(mockOptOutService.getStopTime()));
+        assertEquals(INVALID_ACCOUNT, mockOptOutService.getAccountNumber(), "Incorrect accountNumber.");
+        assertNull(mockOptOutService.getProgramName(), "Incorrect programName");
+        assertEquals(START_DATE_VALID, Iso8601DateUtil.formatIso8601Date(mockOptOutService.getStartTime()), "Incorrect startDateTime.");
+        assertEquals(STOP_DATE_VALID, Iso8601DateUtil.formatIso8601Date(mockOptOutService.getStopTime()), "Incorrect stopDateTime.");
         
         // create template and parse response data
         outputTemplate = YukonXml.getXPathTemplateForElement(respElement);
@@ -319,10 +321,10 @@ public class OverrideHistoryRequestEndpointTest {
         TestUtils.validateAgainstSchema(respElement, respSchemaResource);
         
         //verify mockService was called with correct params
-        Assert.assertEquals("Incorrect accountNumber.", ACCOUNT1, mockOptOutService.getAccountNumber());
-        Assert.assertEquals("Incorrect programName", INVALID_PROGRAM, mockOptOutService.getProgramName());
-        Assert.assertEquals("Incorrect startDateTime.", START_DATE_VALID, Iso8601DateUtil.formatIso8601Date(mockOptOutService.getStartTime()));
-        Assert.assertEquals("Incorrect stopDateTime.", STOP_DATE_VALID, Iso8601DateUtil.formatIso8601Date(mockOptOutService.getStopTime()));
+        assertEquals(ACCOUNT1, mockOptOutService.getAccountNumber(), "Incorrect accountNumber.");
+        assertEquals(INVALID_PROGRAM, mockOptOutService.getProgramName(), "Incorrect programName");
+        assertEquals(START_DATE_VALID, Iso8601DateUtil.formatIso8601Date(mockOptOutService.getStartTime()), "Incorrect startDateTime.");
+        assertEquals(STOP_DATE_VALID, Iso8601DateUtil.formatIso8601Date(mockOptOutService.getStopTime()), "Incorrect stopDateTime.");
         
         // create template and parse response data
         outputTemplate = YukonXml.getXPathTemplateForElement(respElement);
@@ -372,7 +374,7 @@ public class OverrideHistoryRequestEndpointTest {
         // Check result xml values
         List<OverrideHistory> expected = new ArrayList<OverrideHistory>();
         
-        Assert.assertEquals("Result list not as expected", expected, actual);
+        assertEquals(expected, actual, "Result list not as expected");
         
         // test with valid program, user; to return empty list (v1.1)
         //==========================================================================================
@@ -392,7 +394,7 @@ public class OverrideHistoryRequestEndpointTest {
         // Check result xml values
         expected = new ArrayList<OverrideHistory>();
         
-        Assert.assertEquals("Result list not as expected", expected, actual);
+        assertEquals(expected, actual, "Result list not as expected");
         
         // test with valid program, user (v1.0)
         //==========================================================================================
@@ -415,7 +417,7 @@ public class OverrideHistoryRequestEndpointTest {
         expected.add(history1);
         expected.add(history3);
         
-        Assert.assertEquals("Result list not as expected", expected, actual);
+        assertEquals(expected, actual, "Result list not as expected");
         
         // test with valid program, user (v1.1)
         //==========================================================================================
@@ -438,7 +440,7 @@ public class OverrideHistoryRequestEndpointTest {
         expected.add(history1v1_1Result);
         expected.add(history3v1_1Result);
         
-        Assert.assertEquals("Result list not as expected", expected, actual);
+        assertEquals(expected, actual, "Result list not as expected");
 
         // test with invalid program, valid user (v1.0)
         //==========================================================================================

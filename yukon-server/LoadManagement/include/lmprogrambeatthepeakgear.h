@@ -18,6 +18,8 @@ public:
     virtual bool stopControl(CtiLMGroupPtr currentLMGroup);
     virtual unsigned long estimateOffTime(long controlSeconds);
 
+    std::size_t getFixedSize() const override    { return sizeof( *this ); }
+
     Cti::BeatThePeak::AlertLevel getAlertLevel() const;
 
 private:

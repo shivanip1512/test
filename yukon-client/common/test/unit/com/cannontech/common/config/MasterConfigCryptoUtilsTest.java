@@ -1,10 +1,13 @@
 package com.cannontech.common.config;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+
 import java.util.HashSet;
 import java.util.Set;
 
-import org.junit.Assert;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 import com.cannontech.encryption.CryptoException;
 import com.cannontech.encryption.MasterConfigCryptoUtils;
@@ -19,22 +22,19 @@ public class MasterConfigCryptoUtilsTest {
         sensitiveData.add(MasterConfigString.DB_SQLSERVER_HOST);
         sensitiveData.add(MasterConfigString.DB_JAVA_URL);
         sensitiveData.add(MasterConfigString.MAP_DEVICES_KEY);
-        sensitiveData.add(MasterConfigString.SUPPORT_BUNDLE_FTP_UPLOAD_USER);
-        sensitiveData.add(MasterConfigString.SUPPORT_BUNDLE_FTP_UPLOAD_PASSWORD);
-        sensitiveData.add(MasterConfigString.SUPPORT_BUNDLE_FTP_UPLOAD_HOST);
     }
 
     @Test
     public void test_isSensitiveData() {
         // Check that all sensitive data (from test list) is marked as encrypted
         for (MasterConfigString configKey : sensitiveData) {
-            Assert.assertTrue("Sensitive data is not marked as encrypted.", MasterConfigString.isEncryptedKey(configKey));
+            assertTrue(MasterConfigString.isEncryptedKey(configKey), "Sensitive data is not marked as encrypted.");
         }
 
         // Check that all data marked as encrypted is sensitive data (from test list)
         for (MasterConfigString configKey : MasterConfigString.values()) {
             if (MasterConfigString.isEncryptedKey(configKey)) {
-                Assert.assertTrue("Found encrypted data that is not sensitive.", sensitiveData.contains(configKey));
+                assertTrue(sensitiveData.contains(configKey), "Found encrypted data that is not sensitive.");
             }
         }
     }
@@ -43,7 +43,7 @@ public class MasterConfigCryptoUtilsTest {
     public void test_licenseKeysEncrypted() {
         // Check that all license keys are marked as encrypted
         for (var licenseKey : MasterConfigLicenseKey.values()) {
-            Assert.assertTrue("License key is not marked as encrypted.", MasterConfigMap.isEncryptedKey(licenseKey.name()));
+            assertTrue(MasterConfigMap.isEncryptedKey(licenseKey.name()), "License key is not marked as encrypted.");
         }
     }
 
@@ -51,19 +51,19 @@ public class MasterConfigCryptoUtilsTest {
     public void test_encryptionDecryptionValue() throws CryptoException {
         String valueEncrypted = MasterConfigCryptoUtils.encryptValue("abc123");
         String valuePlainText = MasterConfigCryptoUtils.decryptValue(valueEncrypted);
-        Assert.assertEquals("Encrypted/decrypted value does not match original.", "abc123", valuePlainText);
+        assertEquals("abc123", valuePlainText, "Encrypted/decrypted value does not match original.");
     }
 
 
     @Test
     public void test_isEncrypted() throws CryptoException {
         String valueEncrypted = MasterConfigCryptoUtils.encryptValue("abc123");
-        Assert.assertTrue("Encrypted value parsing failed.", MasterConfigCryptoUtils.isEncrypted(valueEncrypted));
-        Assert.assertTrue("Encrypted value parsing failed.", MasterConfigCryptoUtils.isEncrypted("(AUTO_ENCRYPTED)blablabla"));
-        Assert.assertTrue("Encrypted value parsing failed.", MasterConfigCryptoUtils.isEncrypted("(AUTO_ENCRYPTED) bla bla bla"));
-        Assert.assertTrue("Encrypted value parsing failed.", MasterConfigCryptoUtils.isEncrypted("   (AUTO_ENCRYPTED) blablabla"));
-        Assert.assertTrue("Encrypted value parsing failed.", MasterConfigCryptoUtils.isEncrypted("   (AUTO  _ENCRY  PTED) blablabla"));
+        assertTrue(MasterConfigCryptoUtils.isEncrypted(valueEncrypted), "Encrypted value parsing failed.");
+        assertTrue(MasterConfigCryptoUtils.isEncrypted("(AUTO_ENCRYPTED)blablabla"), "Encrypted value parsing failed.");
+        assertTrue(MasterConfigCryptoUtils.isEncrypted("(AUTO_ENCRYPTED) bla bla bla"), "Encrypted value parsing failed.");
+        assertTrue(MasterConfigCryptoUtils.isEncrypted("   (AUTO_ENCRYPTED) blablabla"), "Encrypted value parsing failed.");
+        assertTrue(MasterConfigCryptoUtils.isEncrypted("   (AUTO  _ENCRY  PTED) blablabla"),"Encrypted value parsing failed.");
         
-        Assert.assertFalse("Unencrypted value parsing failed.", MasterConfigCryptoUtils.isEncrypted("abc123"));
+        assertFalse(MasterConfigCryptoUtils.isEncrypted("abc123"), "Unencrypted value parsing failed.");
     }
 }

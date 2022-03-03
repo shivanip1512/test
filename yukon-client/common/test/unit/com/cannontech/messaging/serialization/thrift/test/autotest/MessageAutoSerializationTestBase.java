@@ -1,6 +1,6 @@
 package com.cannontech.messaging.serialization.thrift.test.autotest;
 
-import org.junit.Assert;
+import static org.junit.jupiter.api.Assertions.fail;
 
 import com.cannontech.messaging.serialization.SerializationResult;
 import com.cannontech.messaging.serialization.thrift.test.MessageSerializationTestBase;
@@ -90,7 +90,7 @@ public abstract class MessageAutoSerializationTestBase extends MessageSerializat
             // serialization. Therefore we don't fail the test
             if (!result.getErrors().get(0)
                 .endsWith("UnsupportedOperationException (Message serialization not supported)")) {
-                Assert.fail(ValidationHelper.formatErrorString(result));
+                fail(ValidationHelper.formatErrorString(result));
             }
         }
     }

@@ -1,0 +1,34 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<pao xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" paoType="CRLY856" creatable="false" displayGroup="RFMESH" displayName="CRLY-856" xsi:noNamespaceSchemaLocation="../pao.xsd">
+    <!-- Creatable=false means it cannot be created in DBEditor, nor listed as a type in device configurations...to-date  -->
+    <pointFiles>
+        <pointFile>RFN_RELAY.xml</pointFile>
+    </pointFiles>
+    <tags>
+        <tag name="DB_EDITOR_INCOMPATIBLE"/>
+        <tag name="DEVICE_ICON_TYPE" option="relay_cellular"/>
+        <tag name="OUTAGE"/>
+        <tag name="RELAY_DETAIL_DISPLAYABLE"/>
+        <tag name="RFN_EVENTS"/>
+    </tags>
+    <pointInfos>
+        <pointInfo name="Bad Upgrade Security Param" attributes="BAD_UPGRADE_SECURITY_PARAM"/>
+        <pointInfo name="Blink Count" init="true" attributes="RFN_BLINK_COUNT"/>
+        <pointInfo name="Blink Restore Count" init="true" attributes="RFN_BLINK_RESTORE_COUNT"/>
+        <pointInfo name="Comm Status" attributes="COMM_STATUS"/>
+        <pointInfo name="Failed Upgrade Signature Verification" attributes="FAILED_UPGRADE_SIGNATURE_VERIF"/>
+        <pointInfo name="Outage Count" init="true" attributes="RFN_OUTAGE_COUNT"/>
+        <pointInfo name="Outages" init="true" attributes="OUTAGE_LOG"/>
+        <pointInfo name="Outage Restore Count" init="true" attributes="RFN_OUTAGE_RESTORE_COUNT"/>
+        <pointInfo name="Outage Status" init="true" attributes="OUTAGE_STATUS"/>
+        <pointInfo name="RSRP" attributes="REFERENCE_SIGNAL_RECEIVED_POWER"/>
+        <pointInfo name="RSRQ" attributes="REFERENCE_SIGNAL_RECEIVED_QUALITY"/>
+        <pointInfo name="RSSI" attributes="RADIO_SIGNAL_STRENGTH_INDICATOR"/>
+        <pointInfo name="SINR" attributes="SIGNAL_TO_INTERFERENCE_PLUS_NOISE_RATIO"/>
+        <pointInfo name="Ultra Capacitor Bad" attributes="ULTRA_CAPACITOR_BAD"/>
+        <pointInfo name="Cellular Connection Failed" attributes="CELLULAR_CONNECTION_FAILED"/>
+        <pointInfo name="Cellular Modem Disabled" attributes="CELLULAR_MODEM_DISABLED"/>
+        <pointInfo name="Cellular Sim Card Inserted Removed" attributes="CELLULAR_SIM_CARD_INSERTED_REMOVED"/>
+        <pointInfo name="Cellular APN Changed" attributes="CELLULAR_APN_CHANGED"/>
+    </pointInfos>
+</pao>

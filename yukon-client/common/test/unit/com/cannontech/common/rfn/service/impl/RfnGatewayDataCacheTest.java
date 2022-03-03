@@ -1,18 +1,17 @@
 package com.cannontech.common.rfn.service.impl;
 
-import static org.easymock.EasyMock.anyObject;
-import static org.easymock.EasyMock.createNiceMock;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
 
 import java.io.Serializable;
 import java.util.HashSet;
 import java.util.Set;
 
-import org.junit.Assert;
-import org.junit.Test;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.Test;
 import org.springframework.test.util.ReflectionTestUtils;
 
 import com.cannontech.amr.rfn.dao.RfnDeviceDao;
-import com.cannontech.amr.rfn.impl.NmSyncServiceImpl;
 import com.cannontech.common.mock.FakeRequestReplyTemplate;
 import com.cannontech.common.mock.FakeRfnDeviceDao;
 import com.cannontech.common.pao.PaoIdentifier;
@@ -31,7 +30,6 @@ import com.cannontech.common.rfn.message.gateway.Radio;
 import com.cannontech.common.rfn.message.gateway.RadioType;
 import com.cannontech.common.rfn.message.gateway.SequenceBlock;
 import com.cannontech.common.rfn.model.NmCommunicationException;
-import com.cannontech.common.rfn.model.RfnDevice;
 import com.cannontech.common.rfn.model.RfnGatewayData;
 import com.cannontech.common.rfn.service.RfnGatewayDataCache;
 
@@ -39,7 +37,7 @@ public class RfnGatewayDataCacheTest {
     
     @Test
     public void test_get_withCachedValue() throws NmCommunicationException {
-        RfnGatewayDataCache cache = new RfnGatewayDataCacheImpl(null, null, null, null);
+        RfnGatewayDataCache cache = new RfnGatewayDataCacheImpl(null, null, null);
         
         //create data
         PaoIdentifier paoIdentifier = new PaoIdentifier(1, PaoType.RFN_GATEWAY);
@@ -52,68 +50,68 @@ public class RfnGatewayDataCacheTest {
         RfnGatewayData cachedData = cache.get(paoIdentifier);
         
         //test equality
-        Assert.assertEquals("Cached data does not match original data.", cachedData, originalData);
+        assertEquals(cachedData, originalData, "Cached data does not match original data.");
     }
     
     @Test
     public void test_get_withUncachedValue() throws NmCommunicationException {
         //setup
         RfnDeviceDao fakeRfnDeviceDao = new FakeRfnDeviceDao();
-        RfnGatewayDataCacheImpl cache = new RfnGatewayDataCacheImpl(null, null, fakeRfnDeviceDao, null);
+        RfnGatewayDataCacheImpl cache = new RfnGatewayDataCacheImpl(null, fakeRfnDeviceDao, null);
         FakeGatewayRequestReplyTemplate fakeTemplate = new FakeGatewayRequestReplyTemplate();
         ReflectionTestUtils.setField(cache, "requestTemplate", fakeTemplate);
 
-        NmSyncServiceImpl nmSyncService = createNiceMock(NmSyncServiceImpl.class);
-        nmSyncService.syncGatewayName(anyObject(RfnDevice.class),anyObject(String.class));
-        ReflectionTestUtils.setField(cache, "nmSyncService", nmSyncService);
-        
         //retrieve uncached data
         fakeTemplate.setMode(FakeRequestReplyTemplate.Mode.REPLY);
         PaoIdentifier paoIdentifier = new PaoIdentifier(1, PaoType.RFN_GATEWAY);
         RfnGatewayData data = cache.get(paoIdentifier);
-        Assert.assertNotNull("Retrieved null data.", data);
+        assertNotNull(data, "Retrieved null data.");
         
         //test that data was cached correctly after first request
         RfnGatewayData sameData = cache.get(paoIdentifier);
-        Assert.assertEquals("Cached data doesn't match.", data, sameData);
+        assertEquals(data, sameData, "Cached data doesn't match.");
         //sendCount should not have incremented, because the data was cached
         int sendCount = fakeTemplate.getSendCount();
-        Assert.assertEquals("Cache is reloading value unnecessarily.", 1, sendCount);
+        assertEquals(1, sendCount, "Cache is reloading value unnecessarily.");
     }
     
-    @Test(expected=NmCommunicationException.class)
+    @Test
     public void test_get_jmsExceptionWithUncachedValue() throws NmCommunicationException {
         //setup
         RfnDeviceDao fakeRfnDeviceDao = new FakeRfnDeviceDao();
-        RfnGatewayDataCacheImpl cache = new RfnGatewayDataCacheImpl(null, null, fakeRfnDeviceDao, null);
+        RfnGatewayDataCacheImpl cache = new RfnGatewayDataCacheImpl(null, fakeRfnDeviceDao, null);
         FakeGatewayRequestReplyTemplate fakeTemplate = new FakeGatewayRequestReplyTemplate();
         ReflectionTestUtils.setField(cache, "requestTemplate", fakeTemplate);
         
         //attempt to get uncached value, causing jms exception
         fakeTemplate.setMode(FakeRequestReplyTemplate.Mode.EXCEPTION);
         PaoIdentifier paoIdentifier = new PaoIdentifier(1, PaoType.RFN_GATEWAY);
-        cache.get(paoIdentifier); //NetworkManagerCommunicationException thrown here
+        Assertions.assertThrows(NmCommunicationException.class, () -> {
+            cache.get(paoIdentifier);//NetworkManagerCommunicationException thrown here
+        });
     }
     
-    @Test(expected=NmCommunicationException.class)
+    @Test
     public void test_get_timeoutWithUncachedValue() throws NmCommunicationException {
         //setup
         RfnDeviceDao fakeRfnDeviceDao = new FakeRfnDeviceDao();
-        RfnGatewayDataCacheImpl cache = new RfnGatewayDataCacheImpl(null, null, fakeRfnDeviceDao, null);
+        RfnGatewayDataCacheImpl cache = new RfnGatewayDataCacheImpl(null, fakeRfnDeviceDao, null);
         FakeGatewayRequestReplyTemplate fakeTemplate = new FakeGatewayRequestReplyTemplate();
         ReflectionTestUtils.setField(cache, "requestTemplate", fakeTemplate);
         
         //attempt to get uncached value, causing jms timeout
         fakeTemplate.setMode(FakeRequestReplyTemplate.Mode.TIMEOUT);
         PaoIdentifier paoIdentifier = new PaoIdentifier(1, PaoType.RFN_GATEWAY);
-        cache.get(paoIdentifier); //NetworkManagerCommunicationException thrown here
+        Assertions.assertThrows(NmCommunicationException.class, () -> {
+            cache.get(paoIdentifier);//NetworkManagerCommunicationException thrown here
+        });
     }
     
-    @Test(expected=NmCommunicationException.class)
+    @Test
     public void test_remove() throws NmCommunicationException {
         //setup
         RfnDeviceDao fakeRfnDeviceDao = new FakeRfnDeviceDao();
-        RfnGatewayDataCacheImpl cache = new RfnGatewayDataCacheImpl(null, null, fakeRfnDeviceDao, null);
+        RfnGatewayDataCacheImpl cache = new RfnGatewayDataCacheImpl(null, fakeRfnDeviceDao, null);
         FakeGatewayRequestReplyTemplate fakeTemplate = new FakeGatewayRequestReplyTemplate();
         ReflectionTestUtils.setField(cache, "requestTemplate", fakeTemplate);
         //create data
@@ -124,7 +122,7 @@ public class RfnGatewayDataCacheTest {
         //retrieve data from cache
         RfnGatewayData cachedData = cache.get(paoIdentifier);
         //check that data was retrieved from cache
-        Assert.assertNotNull("Retrieved null data.", cachedData);
+        assertNotNull(cachedData, "Retrieved null data.");
         
         //remove data from cache
         cache.remove(paoIdentifier);
@@ -133,12 +131,14 @@ public class RfnGatewayDataCacheTest {
         fakeTemplate.setMode(FakeRequestReplyTemplate.Mode.EXCEPTION);
         // attempt to retrieve the remove data from the cache, should throw exception when it
         // attempts to request the data because it is missing
-        cache.get(paoIdentifier);
+        Assertions.assertThrows(NmCommunicationException.class, () -> {
+            cache.get(paoIdentifier);
+        });
     }
     
     @Test
     public void test_get_afterMultipleUpdates() {
-        RfnGatewayDataCache cache = new RfnGatewayDataCacheImpl(null, null, null, null);
+        RfnGatewayDataCache cache = new RfnGatewayDataCacheImpl(null, null, null);
         
         //create data
         PaoIdentifier paoIdentifier = new PaoIdentifier(1, PaoType.RFN_GATEWAY);
@@ -157,7 +157,7 @@ public class RfnGatewayDataCacheTest {
         RfnGatewayData cachedData = cache.getIfPresent(paoIdentifier);
         
         //test equality
-        Assert.assertEquals("Cached data does not match latest data update.", cachedData, secondData);
+        assertEquals(cachedData, secondData, "Cached data does not match latest data update.");
     }
     
     private RfnGatewayData buildTestData(String gatewayName) {
@@ -235,7 +235,7 @@ public class RfnGatewayDataCacheTest {
         @Override
         protected <Q extends Serializable> GatewayDataResponse buildResponse(Q request) {
             GatewayDataResponse response = new GatewayDataResponse();
-            response.setRfnIdentifier(new RfnIdentifier("10000", "CPS", "RFN_GATEWAY"));
+            response.setRfnIdentifier(new RfnIdentifier("10000", "EATON", "RFGateway"));
             return response;
         }
     }

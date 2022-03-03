@@ -28,6 +28,7 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.ResponseBody;
 
+import com.cannontech.common.YukonColorPalette;
 import com.cannontech.common.bulk.collection.inventory.InventoryCollection;
 import com.cannontech.common.i18n.MessageSourceAccessor;
 import com.cannontech.common.inventory.InventoryIdentifier;
@@ -281,7 +282,7 @@ public class ControlAuditController {
             controlledPercent = audit.getControlled().size() / completed * 100;
         }
         controlled.put("y", Double.parseDouble(df.format(controlledPercent)));
-        controlled.put("color", "#009933");
+        controlled.put("color", YukonColorPalette.GREEN.getHexValue());
         data.add(controlled);
         
         Map<String, Object> uncontrolled = new HashMap<>();
@@ -291,7 +292,7 @@ public class ControlAuditController {
             uncontrolledPercent = audit.getUncontrolled().size() / completed * 100;
         }
         uncontrolled.put("y", Double.parseDouble(df.format(uncontrolledPercent)));
-        uncontrolled.put("color", "#fb8521");
+        uncontrolled.put("color", YukonColorPalette.ORANGE.getHexValue());
         data.add(uncontrolled);
         
         Map<String, Object> unknown = new HashMap<>();
@@ -301,7 +302,7 @@ public class ControlAuditController {
             unknownPercent = audit.getUnknown().size() / completed * 100;
         }
         unknown.put("y", Double.parseDouble(df.format(unknownPercent)));
-        unknown.put("color", "#4d90fe");
+        unknown.put("color", YukonColorPalette.BLUE.getHexValue());
         data.add(unknown);
         
         Map<String, Object> unsupported = new HashMap<>();
@@ -311,7 +312,7 @@ public class ControlAuditController {
             unsupportedPercent = audit.getUnsupported().size() / completed * 100;
         }
         unsupported.put("y", Double.parseDouble(df.format(unsupportedPercent)));
-        unsupported.put("color", "#888888");
+        unsupported.put("color", YukonColorPalette.GRAY.getHexValue());
         data.add(unsupported);
         
         status.put("data", data);

@@ -23,7 +23,7 @@ yukon.widget.dataCollection = (function () {
                 displayPercentage: data.available.percentage < 1 && data.available.percentage != 0 ? '&lt;1%' : yukon.percent(data.available.percentage, 100, 1),
                 y: (data.available.percentage < 1 && data.available.percentage != 0 ? 1 : data.available.percentage),
                 x: data.available.deviceCount,
-                color: '#009933'
+                color: yg.colors.GREEN
             },
             {
                 name: $('.js-EXPECTED').val(),
@@ -31,7 +31,7 @@ yukon.widget.dataCollection = (function () {
                 displayPercentage: data.expected.percentage < 1 && data.expected.percentage != 0 ? '&lt;1%' : yukon.percent(data.expected.percentage, 100, 1),
                 y: (data.expected.percentage < 1 && data.expected.percentage != 0 ? 1 : data.expected.percentage),
                 x: data.expected.deviceCount,
-                color: '#4d90fe'
+                color: yg.colors.BLUE
                 
             },
             {
@@ -40,7 +40,7 @@ yukon.widget.dataCollection = (function () {
                 displayPercentage: data.outdated.percentage < 1 && data.outdated.percentage != 0 ? '&lt;1%' : yukon.percent(data.outdated.percentage, 100, 1),
                 y: (data.outdated.percentage < 1 && data.outdated.percentage != 0 ? 1 : data.outdated.percentage),
                 x: data.outdated.deviceCount,
-                color: '#ec971f'
+                color: yg.colors.ORANGE
             },
             {
                 name: $('.js-UNAVAILABLE').val(),
@@ -48,7 +48,7 @@ yukon.widget.dataCollection = (function () {
                 displayPercentage: data.unavailable.percentage < 1 && data.unavailable.percentage != 0 ? '&lt;1%' : yukon.percent(data.unavailable.percentage, 100, 1),
                 y: (data.unavailable.percentage < 1 && data.unavailable.percentage != 0 ? 1 : data.unavailable.percentage),
                 x: data.unavailable.deviceCount,
-                color: '#888'
+                color: yg.colors.GRAY
             }
         ]
     },
@@ -56,63 +56,40 @@ yukon.widget.dataCollection = (function () {
     /** Build the pie chart for the first time. */
     _buildChart = function (chart, data) {
         debug.log('building chart');
-        //use widget wrapper for width if within widget and summary if on detail page
-        var container = chart.closest('.widgetWrapper'),
-            summaryPage = chart.closest('.js-pie-chart-summary'),
-            onWidget = container.length,
-            containerWidth = onWidget ? container.width() : summaryPage.width(),
-            chartWidth = containerWidth - 20;
-        chart.highcharts({
-            chart: {
-                renderTo: 'chart',
-                plotBackgroundColor: null,
-                plotBorderWidth: null,
-                plotShadow: false,
-                height: 200,
-                width: chartWidth
-            },
-            credits: {
-                enabled: false
-            },
-            legend: {
-                symbolPadding: -60,
-                symbolWidth: 0.001,
-                symbolHeight: 0.001,
-                symbolRadius: 0,
-                align: 'right',
-                borderWidth: 0,
-                useHTML: true,
+        
+        var legendOptionsJSON = {
                 labelFormatter: function (point) {
-                    var legendValueText = '<span class="js-legend-value dn">' + this.filter + '</span>';
-                    var spanText = '<span class="badge" style="margin:2px;width:60px;color:white;background-color:' + this.color + '">' + this.x + '</span> ';
+                    var legendValueText = '<span class="js-legend-value dn">' + this.filter + '</span>',
+                        spanText = '<span class="badge" style="margin:2px;padding:4px;width:60px;color:white;background-color:' + this.color + '">' + this.x + '</span> ';
                     return legendValueText + spanText + this.name + ': ' + this.displayPercentage;
                 },
-                layout: 'vertical',
-                verticalAlign: 'middle'
             },
-            title: { text: null },
-            tooltip: {
-                pointFormat: '<b>{point.displayPercentage}, {point.x} devices</b>'
+            plotPieJSON = {
+                className: chart.closest('.widgetWrapper').exists() ? 'js-data-pie' : ''
             },
+            chartDimensionJSON = {
+                width: 460,
+                height: 200
+            };
+
+        chart.highcharts({
+            credits: yg.highcharts_options.disable_credits,
+            chart: $.extend({}, yg.highcharts_options.chart_options, chartDimensionJSON),
+            legend: $.extend({}, yg.highcharts_options.pie_chart_options.legend, legendOptionsJSON),
+            title: yg.highcharts_options.pie_chart_options.title,
+            tooltip: yg.highcharts_options.pie_chart_options.tooltip,
             plotOptions: {
-                pie: {
-                    allowPointSelect: true,
-                    cursor: 'pointer',
-                    dataLabels: { enabled: false },
-                    showInLegend: true,
-                    borderWidth: 0.25,
-                    className: onWidget ? 'js-data-pie' : ''
-                }
+                pie: $.extend({}, yg.highcharts_options.pie_chart_options.plotOptions.pie, plotPieJSON)
             },
             series: [{
-                type: 'pie',
+                type: yg.highcharts_options.pie_chart_options.series_type_pie,
                 data: _getData(data)
             }]
         });
         
         chart.removeClass('js-initialize');
     },
-    
+
     /** Update the existing pie chart. */
     _updateChart = function (chart, data) {
         chart.find('.highcharts-legend-item').remove();
@@ -173,7 +150,7 @@ yukon.widget.dataCollection = (function () {
             clearTimeout(_updateTimeout);
         }
         _updateTimeout = setTimeout(_update, yg._updateInterval);
-        
+            
     },
     
     mod = {
@@ -220,6 +197,12 @@ yukon.widget.dataCollection = (function () {
             });
 
             _initialized = true;
+        },
+        setSelectedDeviceGroup : function(uniqueId) {
+            var changedGroupName = $('#changedGroupName_' + uniqueId).val();
+            $('#changeDeviceGroupLink_' + uniqueId).html(changedGroupName);
+            $('#groupName_' + uniqueId).val(changedGroupName);
+            _update(true);
         },
         
         buildChart : function (chart, data) {

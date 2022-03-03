@@ -38,6 +38,7 @@
 #include "c_port_interface.h"
 #include "mgr_port.h"
 #include "mgr_device.h"
+#include "mgr_meter_programming.h"
 #include "mgr_route.h"
 #include "mgr_config.h"
 #include "mgr_point.h"
@@ -88,6 +89,8 @@
 #include <boost/range/adaptor/filtered.hpp>
 #include <boost/range/adaptor/transformed.hpp>
 
+#include <atomic>
+
 using namespace std;
 using Cti::Database::DatabaseConnection;
 using Cti::Database::DatabaseReader;
@@ -123,6 +126,9 @@ void commFail(const CtiDeviceSPtr &Device);
 bool addCommResult(long deviceID, bool wasFailure, bool retryGtZero);
 
 DLLIMPORT extern BOOL PorterQuit;
+
+// Keep a running count of all the running threads stored in the PortManager
+std::atomic_int PortManagerThreadCount = 0;
 
 extern INT RunningInConsole;              // From portmain.cpp
 
@@ -991,16 +997,44 @@ INT PorterMainFunction (INT argc, CHAR **argv)
 
     writeDynamicPaoInfo();
 
+    // When this function ends, the PortManager smartmap will be destroyed.  This is OK if its contained
+    //  threads have all stopped, but if some are still running we will get a crash dump.  We will wait
+    //  here for up to 2 minutes maximum for the threads to all stop - reflected in the PortManagerThreadCount
+    //  variable.  If we timeout before the threads all stop, so be it... crash dump...
+
+    std::chrono::seconds MaxCloseTimeout{ 120 };
+
+    for ( ; PortManagerThreadCount && MaxCloseTimeout.count(); --MaxCloseTimeout )
+    {
+        CTILOG_INFO( dout, "Waiting for " << PortManagerThreadCount << " PortManager " << ( PortManagerThreadCount == 1 ? "thread" : "threads" ) << " to shut down." );
+
+        Sleep( 1000 );
+    }
+
     return 0;
 }
 
+using amq_cm = Cti::Messaging::ActiveMQConnectionManager;
+
+auto PorterDynamicPaoInfoService  (const amq_cm::MessageDescriptor&) -> std::unique_ptr<amq_cm::SerializedMessage>;
+auto MeterProgramValidationService(const amq_cm::MessageDescriptor&) -> std::unique_ptr<amq_cm::SerializedMessage>;
 
 void registerServices()
 {
-    using Cti::Messaging::ActiveMQConnectionManager;
-    using MessageDescriptor = ActiveMQConnectionManager::MessageDescriptor;
-    using SerializedMessage = ActiveMQConnectionManager::SerializedMessage;
     using Cti::Messaging::ActiveMQ::Queues::InboundQueue;
+
+    amq_cm::registerReplyHandler(
+        InboundQueue::PorterDynamicPaoInfoRequest,
+        PorterDynamicPaoInfoService);
+
+    amq_cm::registerReplyHandler(
+        InboundQueue::MeterProgramValidationRequest,
+        MeterProgramValidationService);
+}
+
+
+auto PorterDynamicPaoInfoService(const amq_cm::MessageDescriptor& md) -> std::unique_ptr<amq_cm::SerializedMessage>
+{
     using Cti::Messaging::Porter::DynamicPaoInfoDurationKeys;
     using Cti::Messaging::Porter::DynamicPaoInfoPercentageKeys;
     using Cti::Messaging::Porter::DynamicPaoInfoTimestampKeys;
@@ -1008,89 +1042,115 @@ void registerServices()
     using Cti::Messaging::Porter::DynamicPaoInfoResponseMsg;
     using Cti::Messaging::Serialization::MessageSerializer;
 
-    ActiveMQConnectionManager::registerReplyHandler(
-        InboundQueue::PorterDynamicPaoInfoRequest,
-        [](const MessageDescriptor &md) -> std::unique_ptr<SerializedMessage>
+    auto req = MessageSerializer<DynamicPaoInfoRequestMsg>::deserialize(md.msg);
+
+    if( ! req )
+    {
+        return nullptr;
+    }
+
+    DynamicPaoInfoResponseMsg rsp;
+
+    rsp.deviceId = req->deviceId;
+
+    static const std::map<DynamicPaoInfoDurationKeys, CtiTableDynamicPaoInfo::PaoInfoKeys> durationKeyLookup{
+        { DynamicPaoInfoDurationKeys::RfnVoltageProfileInterval, CtiTableDynamicPaoInfo::Key_RFN_LoadProfileInterval },
+        { DynamicPaoInfoDurationKeys::MctIedLoadProfileInterval, CtiTableDynamicPaoInfo::Key_MCT_IEDLoadProfileInterval }};
+
+    for( const auto key : req->durationKeys )
+    {
+        if( const auto mappedKey = Cti::mapFind(durationKeyLookup, key) )
         {
-            if( auto req = MessageSerializer<DynamicPaoInfoRequestMsg>::deserialize(md.msg) )
+            long longValue;
+
+            if( Cti::DynamicPaoInfoManager::getInfo(req->deviceId, *mappedKey, longValue) )
             {
-                DynamicPaoInfoResponseMsg rsp;
-
-                rsp.deviceId = req->deviceId;
-
-                static const std::map<DynamicPaoInfoDurationKeys, CtiTableDynamicPaoInfo::PaoInfoKeys> durationKeyLookup{
-                    { DynamicPaoInfoDurationKeys::RfnVoltageProfileInterval, CtiTableDynamicPaoInfo::Key_RFN_LoadProfileInterval },
-                    { DynamicPaoInfoDurationKeys::MctIedLoadProfileInterval, CtiTableDynamicPaoInfo::Key_MCT_IEDLoadProfileInterval }};
-
-                for( const auto key : req->durationKeys )
+                //  switch per key, since some may be stored as minutes, some as seconds, etc
+                switch( *mappedKey )
                 {
-                    if( const auto mappedKey = Cti::mapFind(durationKeyLookup, key) )
-                    {
-                        long longValue;
-
-                        if( Cti::DynamicPaoInfoManager::getInfo(req->deviceId, *mappedKey, longValue) )
-                        {
-                            //  switch per key, since some may be stored as minutes, some as seconds, etc
-                            switch( *mappedKey )
-                            {
-                            case CtiTableDynamicPaoInfo::Key_MCT_IEDLoadProfileInterval:
-                                rsp.durationValues.emplace(key, std::chrono::seconds(longValue));
-                                break;
-                            case CtiTableDynamicPaoInfo::Key_RFN_LoadProfileInterval:
-                                rsp.durationValues.emplace(key, std::chrono::minutes(longValue));
-                                break;
-                            }
-                        }
-                    }
-                }
-
-                static const std::map<DynamicPaoInfoTimestampKeys, CtiTableDynamicPaoInfo::PaoInfoKeys> timestampKeyLookup{
-                    { DynamicPaoInfoTimestampKeys::RfnVoltageProfileEnabledUntil, CtiTableDynamicPaoInfo::Key_RFN_VoltageProfileEnabledUntil } };
-
-                for( const auto key : req->timestampKeys )
-                {
-                    if( const auto mappedKey = Cti::mapFind(timestampKeyLookup, key) )
-                    {
-                        CtiTime timeValue;
-
-                        if( Cti::DynamicPaoInfoManager::getInfo(req->deviceId, *mappedKey, timeValue) )
-                        {
-                            //  presumably all timestamp values are stored as CtiTimes
-                            rsp.timestampValues.emplace(key,
-                                    std::chrono::system_clock::time_point(
-                                            std::chrono::seconds(timeValue.seconds())));
-                        }
-                    }
-                }
-
-                static const std::map<DynamicPaoInfoPercentageKeys, CtiTableDynamicPaoInfo::PaoInfoKeys> percentageKeyLookup {
-                    { DynamicPaoInfoPercentageKeys::MeterProgrammingProgress, CtiTableDynamicPaoInfo::Key_RFN_MeterProgrammingProgress } };
-
-                for( const auto key : req->percentageKeys )
-                {
-                    if( const auto mappedKey = Cti::mapFind(percentageKeyLookup, key) )
-                    {
-                        double percentage;
-
-                        if( Cti::DynamicPaoInfoManager::getInfo(req->deviceId, *mappedKey, percentage) )
-                        {
-                            rsp.percentageValues.emplace(key, percentage);
-                        }
-                    }
-                }
-
-                auto serializedRsp = MessageSerializer<DynamicPaoInfoResponseMsg>::serialize(rsp);
-
-                if( !serializedRsp.empty() )
-                {
-                    return std::make_unique<SerializedMessage>(std::move(serializedRsp));
+                case CtiTableDynamicPaoInfo::Key_MCT_IEDLoadProfileInterval:
+                    rsp.durationValues.emplace(key, std::chrono::seconds(longValue));
+                    break;
+                case CtiTableDynamicPaoInfo::Key_RFN_LoadProfileInterval:
+                    rsp.durationValues.emplace(key, std::chrono::minutes(longValue));
+                    break;
                 }
             }
+        }
+    }
 
-            return nullptr;
-        });
+    static const std::map<DynamicPaoInfoTimestampKeys, CtiTableDynamicPaoInfo::PaoInfoKeys> timestampKeyLookup{
+        { DynamicPaoInfoTimestampKeys::RfnVoltageProfileEnabledUntil, CtiTableDynamicPaoInfo::Key_RFN_VoltageProfileEnabledUntil } };
+
+    for( const auto key : req->timestampKeys )
+    {
+        if( const auto mappedKey = Cti::mapFind(timestampKeyLookup, key) )
+        {
+            CtiTime timeValue;
+
+            if( Cti::DynamicPaoInfoManager::getInfo(req->deviceId, *mappedKey, timeValue) )
+            {
+                //  presumably all timestamp values are stored as CtiTimes
+                rsp.timestampValues.emplace(key,
+                        std::chrono::system_clock::time_point(
+                                std::chrono::seconds(timeValue.seconds())));
+            }
+        }
+    }
+
+    static const std::map<DynamicPaoInfoPercentageKeys, CtiTableDynamicPaoInfo::PaoInfoKeys> percentageKeyLookup {
+        { DynamicPaoInfoPercentageKeys::MeterProgrammingProgress, CtiTableDynamicPaoInfo::Key_RFN_MeterProgrammingProgress } };
+
+    for( const auto key : req->percentageKeys )
+    {
+        if( const auto mappedKey = Cti::mapFind(percentageKeyLookup, key) )
+        {
+            double percentage;
+
+            if( Cti::DynamicPaoInfoManager::getInfo(req->deviceId, *mappedKey, percentage) )
+            {
+                rsp.percentageValues.emplace(key, percentage);
+            }
+        }
+    }
+
+    auto serializedRsp = MessageSerializer<DynamicPaoInfoResponseMsg>::serialize(rsp);
+
+    if( serializedRsp.empty() )
+    {
+        return nullptr;
+    }
+
+    return std::make_unique<amq_cm::SerializedMessage>(std::move(serializedRsp));
 }
 
+auto MeterProgramValidationService(const amq_cm::MessageDescriptor& md) -> std::unique_ptr<amq_cm::SerializedMessage>
+{
+    using Cti::Messaging::Porter::MeterProgramValidationRequestMsg;
+    using Cti::Messaging::Porter::MeterProgramValidationResponseMsg;
+    using Cti::Messaging::Serialization::MessageSerializer;
+
+    auto req = MessageSerializer<MeterProgramValidationRequestMsg>::deserialize(md.msg);
+
+    if( ! req )
+    {
+        return nullptr;
+    }
+
+    MeterProgramValidationResponseMsg rsp;
+
+    rsp.meterProgramGuid = req->meterProgramGuid;
+    rsp.status = Cti::MeterProgramming::gMeterProgrammingManager->isProgramValid(req->meterProgramGuid);
+
+    auto serializedRsp = MessageSerializer<MeterProgramValidationResponseMsg>::serialize(rsp);
+
+    if( serializedRsp.empty() )
+    {
+        return nullptr;
+    }
+
+    return std::make_unique<amq_cm::SerializedMessage>(std::move(serializedRsp));
+}
 
 /*
  *  called in an atexit() routine to clean up the schtick.

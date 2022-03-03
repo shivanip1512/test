@@ -12,26 +12,19 @@ import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.transaction.annotation.Transactional;
 
-import com.cannontech.common.api.token.ApiRequestContext;
 import com.cannontech.common.device.model.SimpleDevice;
-import com.cannontech.common.dr.gear.setup.OperationalState;
 import com.cannontech.common.dr.gear.setup.fields.ProgramGearFields;
 import com.cannontech.common.dr.gear.setup.fields.ProgramGearFieldsBuilder;
 import com.cannontech.common.dr.gear.setup.model.ProgramGear;
 import com.cannontech.common.dr.program.setup.model.LoadProgram;
 import com.cannontech.common.dr.program.setup.model.LoadProgramCopy;
-import com.cannontech.common.dr.program.setup.model.Notification;
-import com.cannontech.common.dr.program.setup.model.NotificationGroup;
 import com.cannontech.common.dr.program.setup.model.ProgramConstraint;
-import com.cannontech.common.dr.program.setup.model.ProgramControlWindow;
-import com.cannontech.common.dr.program.setup.model.ProgramControlWindowFields;
 import com.cannontech.common.dr.program.setup.model.ProgramDirectMemberControl;
 import com.cannontech.common.dr.program.setup.model.ProgramGroup;
 import com.cannontech.common.dr.setup.LMServiceHelper;
 import com.cannontech.common.dr.setup.ProgramDetails;
 import com.cannontech.common.events.loggers.DemandResponseEventLogService;
-import com.cannontech.common.exception.LMObjectDeletionFailureException;
-import com.cannontech.common.exception.LoadProgramProcessingException;
+import com.cannontech.common.exception.DeletionFailureException;
 import com.cannontech.common.pao.PaoType;
 import com.cannontech.common.pao.service.impl.PaoCreationHelper;
 import com.cannontech.common.util.CtiUtilities;
@@ -48,18 +41,13 @@ import com.cannontech.database.data.device.lm.LMProgramDirectBase;
 import com.cannontech.database.data.lite.LiteFactory;
 import com.cannontech.database.data.lite.LiteGear;
 import com.cannontech.database.data.lite.LiteLMConstraint;
-import com.cannontech.database.data.lite.LiteLMPAOExclusion;
 import com.cannontech.database.data.lite.LiteNotificationGroup;
 import com.cannontech.database.data.lite.LiteYukonPAObject;
 import com.cannontech.database.data.lite.LiteYukonUser;
 import com.cannontech.database.data.pao.YukonPAObject;
 import com.cannontech.database.data.point.PointBase;
 import com.cannontech.database.db.device.lm.LMControlAreaProgram;
-import com.cannontech.database.db.device.lm.LMDirectNotificationGroupList;
-import com.cannontech.database.db.device.lm.LMProgramControlWindow;
-import com.cannontech.database.db.device.lm.LMProgramDirect;
 import com.cannontech.database.db.device.lm.LMProgramDirectGear;
-import com.cannontech.database.db.device.lm.LMProgramDirectGroup;
 import com.cannontech.database.db.pao.PAOExclusion;
 import com.cannontech.dr.loadprogram.service.LoadProgramSetupService;
 import com.cannontech.message.DbChangeManager;
@@ -85,85 +73,86 @@ public class LoadProgramSetupServiceImpl implements LoadProgramSetupService {
 
     @Override
     @Transactional
-    public int create(LoadProgram loadProgram) {
-        LMProgramBase lmProgram = getDBPersistent(loadProgram.getProgramId(), loadProgram.getType());
-        buildLMProgramBaseDBPersistent(lmProgram, loadProgram);
+    public LoadProgram create(LoadProgram loadProgram, LiteYukonUser liteYukonUser) {
+        LMProgramBase lmProgramBase = getDBPersistent(loadProgram.getProgramId(), loadProgram.getType());
+        
+        loadProgram.buildDBPersistent(lmProgramBase);
+        buildGearDBPersistent(loadProgram, lmProgramBase);
 
-        dbPersistentDao.performDBChange(lmProgram, TransactionType.INSERT);
+        dbPersistentDao.performDBChange(lmProgramBase, TransactionType.INSERT);
 
-        SimpleDevice device = SimpleDevice.of(lmProgram.getPAObjectID(), lmProgram.getPaoType());
+        SimpleDevice device = SimpleDevice.of(lmProgramBase.getPAObjectID(), lmProgramBase.getPaoType());
         paoCreationHelper.addDefaultPointsToPao(device);
 
         dbChangeManager.processPaoDbChange(device, DbChangeType.UPDATE);
 
         // Logging events during load program creation
-        processEventLogsForProgramCreate(loadProgram);
-
-        return lmProgram.getPAObjectID();
+        processEventLogsForProgramCreate(loadProgram, liteYukonUser);
+        updateLoadProgramModel(loadProgram, lmProgramBase, liteYukonUser);
+        return loadProgram;
     }
 
     @Override
     @Transactional
-    public int update(int programId, LoadProgram loadProgram) {
+    public LoadProgram update(int programId, LoadProgram loadProgram, LiteYukonUser liteYukonUser) {
         // Validate programId
         getProgramFromCache(programId);
         List<LMProgramDirectGear> oldGears = null;
-
         LMProgramBase lmProgramBase = getDBPersistent(programId, loadProgram.getType());
-
         if (lmProgramBase instanceof LMProgramDirectBase) {
             LMProgramDirectBase lmProgramDirectBase = (LMProgramDirectBase) lmProgramBase;
             oldGears = lmProgramDirectBase.getLmProgramDirectGearVector().stream()
-                                                                         .collect(Collectors.toList());
+                    .collect(Collectors.toList());
         }
 
         loadProgram.setProgramId(programId);
-        buildLMProgramBaseDBPersistent(lmProgramBase, loadProgram);
-
-        buildLMMemberControlDBPersistent(lmProgramBase, loadProgram);
+        loadProgram.buildDBPersistent(lmProgramBase);
+        buildGearDBPersistent(loadProgram, lmProgramBase);
+        buildLMMemberControlDBPersistent(lmProgramBase, loadProgram, liteYukonUser);
 
         dbPersistentDao.performDBChange(lmProgramBase, TransactionType.UPDATE);
 
         // Logging events during load program update
-        processEventLogsForProgramUpdate(loadProgram, oldGears);
+        processEventLogsForProgramUpdate(loadProgram, oldGears, liteYukonUser);
 
-        return lmProgramBase.getPAObjectID();
+        updateLoadProgramModel(loadProgram, lmProgramBase, liteYukonUser);
+        return loadProgram;
     }
 
     @Override
-    public LoadProgram retrieve(int programId) {
+    public LoadProgram retrieve(int programId, LiteYukonUser liteYukonUser) {
         LiteYukonPAObject lmProgram = getProgramFromCache(programId);
         LMProgramBase lmProgramBase = (LMProgramBase) dbPersistentDao.retrieveDBPersistent(lmProgram);
-        return buildLoadProgramModel(lmProgramBase);
+        LoadProgram loadProgram = new LoadProgram();
+        updateLoadProgramModel(loadProgram, lmProgramBase, liteYukonUser);
+        return loadProgram;
     }
 
     @Override
     @Transactional
-    public int delete(int programId, String programName) {
+    public int delete(int programId, LiteYukonUser liteYukonUser) {
         LiteYukonPAObject loadProgram = dbCache.getAllLMPrograms().stream()
-                                                                  .filter( program -> program.getLiteID() == programId 
-                                                                                     && program.getPaoName().equalsIgnoreCase(programName))
-                                                                  .findFirst()
-                                                                  .orElseThrow(() -> new NotFoundException("Id and Name combination not found"));;
+                                                                  .filter( program -> program.getLiteID() == programId)
+                                                                  .findFirst().orElseThrow(() -> new NotFoundException("Id not found"));;
         Integer paoId = Integer.valueOf(ServletUtils.getPathVariable("id"));
         if (programDao.getByProgramIds(Collections.singletonList(paoId)).size() > 0) {
             String message = "You cannot delete the load management program '" + loadProgram.getPaoName()
                 + "' because it is currently in use as a STARS assigned program, Unassign it from all appliance categories and try again.";
-            throw new LMObjectDeletionFailureException(message);
+            throw new DeletionFailureException(message);
         }
         YukonPAObject lmProgram = (YukonPAObject) LiteFactory.createDBPersistent(loadProgram);
         List<LiteGear> gears = getGearsForProgram(lmProgram.getPAObjectID());
         dbPersistentDao.performDBChange(lmProgram, TransactionType.DELETE);
 
         // Logging events during load program deletion
-        processEventLogsForProgramDelete(lmProgram, gears);
+        processEventLogsForProgramDelete(lmProgram, gears, liteYukonUser);
 
         return lmProgram.getPAObjectID();
     }
 
     @Override
     @Transactional
-    public int copy(int programId, LoadProgramCopy loadProgramCopy) {
+    public LoadProgram copy(int programId, LoadProgramCopy loadProgramCopy, LiteYukonUser liteYukonUser) {
 
         LiteYukonPAObject lmProgram = getProgramFromCache(programId);
  
@@ -202,9 +191,13 @@ public class LoadProgramSetupServiceImpl implements LoadProgramSetupService {
         dbChangeManager.processPaoDbChange(device, DbChangeType.UPDATE);
 
         // Logging events during load program copy
-        processEventLogsForProgramCopy(directBase);
-
-        return program.getPAObjectID();
+        processEventLogsForProgramCopy(directBase, liteYukonUser);
+        
+        LoadProgram loadProgram = new LoadProgram();
+        updateLoadProgramModel(loadProgram, program, liteYukonUser);
+        
+        return loadProgram;
+        
     }
 
     /**
@@ -220,203 +213,31 @@ public class LoadProgramSetupServiceImpl implements LoadProgramSetupService {
     }
 
     /**
-     * Build DB Persistent object for LMProgramBase
+     * Build DB Persistent for gear
      */
-
-    private LMProgramBase buildLMProgramBaseDBPersistent(LMProgramBase lmProgram, LoadProgram loadProgram) {
-
-        lmProgram.setName(loadProgram.getName());
-        lmProgram.getProgram().setControlType(loadProgram.getOperationalState().name());
-
-        ProgramConstraint constraint = loadProgram.getConstraint();
-        if (constraint.getConstraintId() != null) {
-            lmProgram.getProgram().setConstraintID(constraint.getConstraintId());
-        }
-
-        buildProgramControlWindowDBPersistent(lmProgram, loadProgram);
-        buildGroupsDBPersistent(lmProgram, loadProgram);
-
-        if (lmProgram instanceof LMProgramDirectBase) {
-            LMProgramDirectBase prog = (LMProgramDirectBase) lmProgram;
-            if (loadProgram.getTriggerOffset() != null) {
-                prog.getDirectProgram().setTriggerOffset(loadProgram.getTriggerOffset());
+    private void buildGearDBPersistent(LoadProgram loadProgram, LMProgramBase lmProgramBase) {
+        if (lmProgramBase instanceof LMProgramDirectBase) {
+            LMProgramDirectBase lmProgramDirectBase = (LMProgramDirectBase) lmProgramBase;
+            if (CollectionUtils.isNotEmpty(lmProgramDirectBase.getLmProgramDirectGearVector())) {
+                lmProgramDirectBase.getLmProgramDirectGearVector().clear();
+                LMProgramDirectGear.deleteAllDirectGearsForProgram(loadProgram.getProgramId());
             }
-            if (loadProgram.getRestoreOffset() != null) {
-                prog.getDirectProgram().setRestoreOffset(loadProgram.getRestoreOffset());
-            }
-
-            buildNotificationDBPersistent(lmProgram, loadProgram);
-            buildGearsDBPersistent(lmProgram, loadProgram);
-        }
-        return lmProgram;
-
-    }
-
-    /**
-     *  Build  Gears DBPersistent object
-     */
-
-    private void buildGearsDBPersistent(LMProgramBase lmProgram, LoadProgram loadProgram) {
-        LMProgramDirectBase prog = (LMProgramDirectBase) lmProgram;
-
-        if (CollectionUtils.isNotEmpty(prog.getLmProgramDirectGearVector())) {
-            prog.getLmProgramDirectGearVector().clear();
-            LMProgramDirectGear.deleteAllDirectGearsForProgram(loadProgram.getProgramId());
-        }
-
-        if (loadProgram.getGears() != null) {
-
-            List<ProgramGear> oldGears = loadProgram.getGears().stream().filter(gear -> gear.getGearId() != null).collect(Collectors.toList());
-            List<ProgramGear> newGears = loadProgram.getGears().stream().filter(gear -> gear.getGearId() == null).collect(Collectors.toList());
-
-            List<ProgramGear> gears = ListUtils.union(oldGears, newGears);
-            gears.forEach(gear -> {
-                LMProgramDirectGear directGear = gear.buildDBPersistent();
-                directGear.setDeviceID(loadProgram.getProgramId());
-                prog.getLmProgramDirectGearVector().add(directGear);
-            });
-
-        }
-    }
-
-    /**
-     *  Build Notification DB Persistent object
-     */
-
-    private void buildNotificationDBPersistent(LMProgramBase lmProgram, LoadProgram loadProgram) {
-        LMProgramDirectBase prog = (LMProgramDirectBase) lmProgram;
-
-        if (CollectionUtils.isNotEmpty(prog.getLmProgramDirectNotifyGroupVector())) {
-            prog.getLmProgramDirectNotifyGroupVector().clear();
-        }
-
-        if (loadProgram.getNotification() != null) {
-
-            if (loadProgram.getNotification().getAssignedNotificationGroups() != null) {
-                loadProgram.getNotification().getAssignedNotificationGroups().forEach(notificationGroup -> {
-
-                    LMDirectNotificationGroupList group = new LMDirectNotificationGroupList();
-                    group.setDeviceID(loadProgram.getProgramId());
-                    group.setNotificationGrpID(notificationGroup.getNotificationGrpID());
-                    prog.getLmProgramDirectNotifyGroupVector().addElement(group);
-
-                });
-            }
-
-            if (loadProgram.getNotification().getProgramStartInMinutes() != null) {
-                Integer programStart = loadProgram.getNotification().getProgramStartInMinutes();
-                prog.getDirectProgram().setNotifyActiveOffset(programStart * 60);
-            } else {
-                prog.getDirectProgram().setNotifyActiveOffset(-1);
-            }
-
-            if (loadProgram.getNotification().getProgramStopInMinutes() != null) {
-                Integer programStop = loadProgram.getNotification().getProgramStopInMinutes();
-                prog.getDirectProgram().setNotifyInactiveOffset(programStop * 60);
-            } else {
-                prog.getDirectProgram().setNotifyInactiveOffset(-1);
-            }
-
-            Boolean notifyOnAdjust = loadProgram.getNotification().getNotifyOnAdjust();
-            if (notifyOnAdjust != null && notifyOnAdjust) {
-                prog.getDirectProgram().setNotifyAdjust(LMProgramDirect.NOTIFY_ADJUST_ENABLED);
-            } else {
-                prog.getDirectProgram().setNotifyAdjust(LMProgramDirect.NOTIFY_ADJUST_DISABLED);
-            }
-
-            Boolean enableOnSchedule = loadProgram.getNotification().getEnableOnSchedule();
-            if (enableOnSchedule != null && enableOnSchedule) {
-                prog.getDirectProgram().setEnableSchedule(LMProgramDirect.NOTIFY_SCHEDULE_ENABLED);
-            } else {
-                prog.getDirectProgram().setEnableSchedule(LMProgramDirect.NOTIFY_SCHEDULE_DISABLED);
-            }
-        }
-
-    }
-
-    /**
-     *  Build Groups DB Persistent object
-     */
-
-    private void buildGroupsDBPersistent(LMProgramBase lmProgram, LoadProgram loadProgram) {
-        
-        if (CollectionUtils.isNotEmpty(lmProgram.getLmProgramStorageVector())) {
-            lmProgram.getLmProgramStorageVector().clear();
-        }
-
-        if (loadProgram.getAssignedGroups() != null) {
-
-            int groupsListSize = loadProgram.getAssignedGroups().size();
-
-            loadProgram.getAssignedGroups().forEach(grp -> {
-                LMProgramDirectGroup group = new LMProgramDirectGroup();
-
-                group.setDeviceID(loadProgram.getProgramId());
-                if (groupsListSize == 1) {
-                    group.setGroupOrder(1);
-                } else {
-                    group.setGroupOrder(grp.getGroupOrder());
-                }
-                group.setLmGroupDeviceID(grp.getGroupId());
-                lmProgram.getLmProgramStorageVector().addElement(group);
+            List<ProgramGear> newGears = getNewGears(loadProgram.getGears());
+            newGears.forEach(gear -> {
+                LMProgramDirectGear directGear = gear.getControlMethod().createNewGear();
+                gear.buildDBPersistent(directGear);
+                lmProgramDirectBase.getLmProgramDirectGearVector().add(directGear);
             });
         }
     }
 
     /**
-     *  Build Control Window DB Persistent object
+     * Build DB Persistent for member Control 
      */
+    private void buildLMMemberControlDBPersistent(LMProgramBase lmProgram, LoadProgram loadProgram, LiteYukonUser liteYukonUser) {
 
-    private void buildProgramControlWindowDBPersistent(LMProgramBase lmProgram, LoadProgram loadProgram) {
-
-        if (CollectionUtils.isNotEmpty(lmProgram.getLmProgramControlWindowVector())) {
-            lmProgram.getLmProgramControlWindowVector().clear();
-        }
-
-        if (loadProgram.getControlWindow() != null) {
-
-            ProgramControlWindowFields controlWindowOne = loadProgram.getControlWindow().getControlWindowOne();
-            ProgramControlWindowFields controlWindowTwo = loadProgram.getControlWindow().getControlWindowTwo();
-            lmProgram.setPAObjectID(loadProgram.getProgramId());
-            if (controlWindowOne != null) {
-                buildLmProgramControlWindow(lmProgram, loadProgram.getProgramId(), controlWindowOne, 1);
-            }
-            if (controlWindowTwo != null) {
-                buildLmProgramControlWindow(lmProgram, loadProgram.getProgramId(), controlWindowTwo, 2);
-            }
-        }
-        
-    }
-
-    private void buildLmProgramControlWindow(LMProgramBase lmProgram, Integer programId, ProgramControlWindowFields controlWindowFields,
-            Integer windowNumber) {
-
-        if (controlWindowFields != null && controlWindowFields.getAvailableStartTimeInMinutes() != null && controlWindowFields.getAvailableStopTimeInMinutes() != null) {
-            LMProgramControlWindow window = new LMProgramControlWindow();
-            int startTimeInSeconds = controlWindowFields.getAvailableStartTimeInMinutes() * 60;
-            int stopTimeInSeconds = controlWindowFields.getAvailableStopTimeInMinutes() * 60;
-            if (stopTimeInSeconds < startTimeInSeconds) {
-                // make sure server knows that this is the next day
-                stopTimeInSeconds = stopTimeInSeconds + 86400;
-            }
-            window.setAvailableStartTime(startTimeInSeconds);
-            window.setAvailableStopTime(stopTimeInSeconds);
-            window.setDeviceID(programId);
-            window.setWindowNumber(windowNumber);
-            lmProgram.getLmProgramControlWindowVector().add(window);
-        }
-
-    }
-
-    /**
-     * Returns MemberControl DB Persistent object
-     */
-    
-    private void buildLMMemberControlDBPersistent(LMProgramBase lmProgram, LoadProgram loadProgram) {
-
-        LiteYukonUser user = ApiRequestContext.getContext().getLiteYukonUser();
-        if (rolePropertyDao.checkProperty(YukonRoleProperty.ALLOW_MEMBER_PROGRAMS, user)
-            || user.getUserID() == UserUtils.USER_ADMIN_ID) {
+        if (rolePropertyDao.checkProperty(YukonRoleProperty.ALLOW_MEMBER_PROGRAMS, liteYukonUser)
+            || liteYukonUser.getUserID() == UserUtils.USER_ADMIN_ID) {
             LMProgramDirectBase program = (LMProgramDirectBase) lmProgram;
 
             if (CollectionUtils.isNotEmpty(program.getPAOExclusionVector())) {
@@ -438,194 +259,83 @@ public class LoadProgramSetupServiceImpl implements LoadProgramSetupService {
                 });
             }
         }
-
     }
+
     /**
-     *  Build Load Program Model object
+     * Return latest list of gears which needs to be added.
      */
- 
-    public LoadProgram buildLoadProgramModel(LMProgramBase program) {
+    private List<ProgramGear> getNewGears(List<ProgramGear> gears) {
 
-        LoadProgram loadProgram = new LoadProgram();
-        loadProgram.setProgramId(program.getPAObjectID());
-        loadProgram.setType(program.getPaoType());
-        loadProgram.setName(program.getPAOName());
-        loadProgram.setOperationalState(OperationalState.valueOf(program.getProgram().getControlType()));
+        if (gears != null) {
+            List<ProgramGear> oldGears = gears.stream().filter(gear -> gear.getGearId() != null).collect(Collectors.toList());
+            List<ProgramGear> newGears = gears.stream().filter(gear -> gear.getGearId() == null).collect(Collectors.toList());
 
-        LiteLMConstraint liteLMConstraint = getProgramConstraint(program.getProgram().getConstraintID());
-        ProgramConstraint programConstraint = new ProgramConstraint();
-        programConstraint.setConstraintId(liteLMConstraint.getConstraintID());
-        programConstraint.setConstraintName(liteLMConstraint.getConstraintName());
-        loadProgram.setConstraint(programConstraint);
+            return ListUtils.union(oldGears, newGears);
+        }
+        return null;
+    }
 
-        buildGroupsModel(program, loadProgram);
-        buildProgramControlWindowModel(program, loadProgram);
-
-        if (program instanceof LMProgramDirectBase) {
-            LMProgramDirectBase lmProgramDirectBase = (LMProgramDirectBase) program;
-
-            loadProgram.setTriggerOffset(lmProgramDirectBase.getDirectProgram().getTriggerOffset());
-            loadProgram.setRestoreOffset(lmProgramDirectBase.getDirectProgram().getRestoreOffset());
-
-            buildNotificationModel(lmProgramDirectBase, loadProgram);
-            buildGearsModel(lmProgramDirectBase, loadProgram);
-            LiteYukonUser user = ApiRequestContext.getContext().getLiteYukonUser();
-            if (rolePropertyDao.checkProperty(YukonRoleProperty.ALLOW_MEMBER_PROGRAMS, user)
-                    || user.getUserID() == UserUtils.USER_ADMIN_ID) {
-                buildLMMemberControlModel(lmProgramDirectBase, loadProgram);
+    /**
+     * Update required fields of Load Program Model. 
+     */
+    private void updateLoadProgramModel(LoadProgram loadProgram, LMProgramBase lmProgramBase, LiteYukonUser liteYukonUser) {
+        loadProgram.buildModel(lmProgramBase);
+        setConstraintName(loadProgram);
+        if (lmProgramBase instanceof LMProgramDirectBase) {
+            if (loadProgram.getNotification() != null
+                    && (CollectionUtils.isNotEmpty(loadProgram.getNotification().getAssignedNotificationGroups())
+                            || loadProgram.getNotification().getProgramStartInMinutes() != null
+                            || loadProgram.getNotification().getProgramStopInMinutes() != null
+                            || loadProgram.getNotification().getNotifyOnAdjust()
+                            || loadProgram.getNotification().getEnableOnSchedule())) {
+                setNotificationGroupNames(loadProgram);
+            }
+            LMProgramDirectBase lmProgramDirectBase = (LMProgramDirectBase) lmProgramBase;
+            if (rolePropertyDao.checkProperty(YukonRoleProperty.ALLOW_MEMBER_PROGRAMS, liteYukonUser)
+                    || liteYukonUser.getUserID() == UserUtils.USER_ADMIN_ID) {
+                updateMemberControlModel(lmProgramDirectBase, loadProgram);
             }
         }
-        return loadProgram;
-
+        updateLoadGroupModel(loadProgram);
     }
 
     /**
-     *  Build Load Groups Model object
+     * Set Constraint name for load program.
      */
- 
-    private void buildGroupsModel(LMProgramBase program, LoadProgram loadProgram) {
-
-        List<ProgramGroup> loadGroups = new ArrayList<>();
-
-        program.getLmProgramStorageVector().forEach(group -> {
-
-            LMProgramDirectGroup directGroup = (LMProgramDirectGroup) group;
-
-            List<LiteYukonPAObject> paObjects = dbCache.getAllLMGroups();
-            Optional <LiteYukonPAObject> paObject = paObjects.stream()
-                                                  .filter(p -> p.getLiteID() == directGroup.getLmGroupDeviceID())
-                                                  .findFirst();
-            if (paObject.isPresent()) {
-                ProgramGroup loadGroup = new ProgramGroup();
-                loadGroup.setGroupId(directGroup.getLmGroupDeviceID());
-                loadGroup.setGroupOrder(directGroup.getGroupOrder());
-                loadGroup.setGroupName(paObject.get().getPaoName());
-                loadGroup.setType(paObject.get().getPaoType());
-                loadGroups.add(loadGroup);
-            }
-
-        });
-
-        if (CollectionUtils.isNotEmpty(loadGroups)) {
-            loadProgram.setAssignedGroups(loadGroups);
-        }
+    private void setConstraintName(LoadProgram loadProgram) {
+        LiteLMConstraint liteLMConstraint = getProgramConstraint(loadProgram.getConstraint().getConstraintId());
+        loadProgram.getConstraint().setConstraintName(liteLMConstraint.getConstraintName());
     }
 
     /**
-     *  Build Control Window Model object
+     * Set Notification Group Names for Load Program.
      */
- 
-    private void buildProgramControlWindowModel(LMProgramBase program, LoadProgram loadProgram) {
-        ProgramControlWindow programControlWindow = new ProgramControlWindow();
-        program.getLmProgramControlWindowVector().forEach(window -> {
-            ProgramControlWindowFields fields = buildProgramControlWindowFields(window);
-            if (window.getWindowNumber().intValue() == 1) {
-                programControlWindow.setControlWindowOne(fields);
-            }
-
-            if (window.getWindowNumber().intValue() == 2) {
-                programControlWindow.setControlWindowTwo(fields);
-            }
-            loadProgram.setControlWindow(programControlWindow);
-        });
-    }
-
-    /**
-     *  Build Gear Model object
-     */
- 
-    private void buildGearsModel(LMProgramDirectBase lmProgramDirectBase, LoadProgram loadProgram) {
-
-        List<ProgramGear> gears = new ArrayList<>();
-        lmProgramDirectBase.getLmProgramDirectGearVector().forEach(gear -> {
-
-            ProgramGear programGear = new ProgramGear();
-            programGear.buildModel(gear);
-            gears.add(programGear);
-        });
-
-        if (CollectionUtils.isNotEmpty(gears)) {
-            loadProgram.setGears(gears);
-        }
-    }
-
-    /**
-     *  Build Notification Model object
-     */
- 
-    private void buildNotificationModel(LMProgramDirectBase lmProgramDirectBase, LoadProgram loadProgram) {
-        Notification notification = new Notification();
-        List<NotificationGroup> notificationGroupList = new ArrayList<>();
-        lmProgramDirectBase.getLmProgramDirectNotifyGroupVector().forEach(notificationGroup -> {
-            NotificationGroup group = new NotificationGroup();
-
+    private void setNotificationGroupNames(LoadProgram loadProgram) {
+        loadProgram.getNotification().getAssignedNotificationGroups().forEach(notificationGroup -> {
             List<LiteNotificationGroup> notificationGroups = dbCache.getAllContactNotificationGroups();
             LiteNotificationGroup liteNotificationGroup = notificationGroups.stream()
-                                                                            .filter(notifGroup -> notifGroup.getNotificationGroupID() == notificationGroup.getNotificationGroupID())
+                                                                            .filter(notifGroup -> notifGroup.getNotificationGroupID() == notificationGroup.getNotificationGrpID())
                                                                             .findFirst()
                                                                             .get();
-            group.setNotificationGrpID(notificationGroup.getNotificationGroupID());
-            group.setNotificationGrpName(liteNotificationGroup.getNotificationGroupName());
-            notificationGroupList.add(group);
 
+            notificationGroup.setNotificationGrpName(liteNotificationGroup.getNotificationGroupName());
         });
-
-        if (CollectionUtils.isNotEmpty(notificationGroupList)) {
-            notification.setAssignedNotificationGroups(notificationGroupList);
-        }
-
-        Integer numStart = lmProgramDirectBase.getDirectProgram().getNotifyActiveOffset();
-        Integer numStop = lmProgramDirectBase.getDirectProgram().getNotifyInactiveOffset();
-
-        if (numStart.intValue() != -1) {
-            notification.setProgramStartInMinutes(lmProgramDirectBase.getDirectProgram().getNotifyActiveOffset() / 60);
-        }
-        if (numStop.intValue() != -1) {
-            notification.setProgramStopInMinutes(lmProgramDirectBase.getDirectProgram().getNotifyInactiveOffset() / 60);
-        }
-        boolean isNotifyAdjust = lmProgramDirectBase.getDirectProgram().getNotifyAdjust() == LMProgramDirect.NOTIFY_ADJUST_ENABLED.intValue();
-        if (isNotifyAdjust) {
-            notification.setNotifyOnAdjust(true);
-        } else {
-            notification.setNotifyOnAdjust(false);
-        }
-        boolean isNotifyWhenScheduled = lmProgramDirectBase.getDirectProgram().shouldNotifyWhenScheduled() == LMProgramDirect.NOTIFY_SCHEDULE_ENABLED.intValue();
-        if (isNotifyWhenScheduled) {
-            notification.setEnableOnSchedule(true);
-        } else {
-            notification.setEnableOnSchedule(false);
-        }
-
-        if (CollectionUtils.isNotEmpty(notificationGroupList) || numStart.intValue() != -1 || numStop.intValue() != -1
-            || isNotifyAdjust || isNotifyWhenScheduled) {
-            loadProgram.setNotification(notification);
-        }
     }
 
-    private ProgramControlWindowFields buildProgramControlWindowFields(LMProgramControlWindow window) {
-        int localStartTime = window.getAvailableStartTime() / 60;
-        int stopTime = window.getAvailableStopTime();
-        if (stopTime > 86400) {
-            stopTime = stopTime - 86400;
-        }
-        int localStopTime = stopTime / 60;
-        ProgramControlWindowFields controlWindow = new ProgramControlWindowFields(localStartTime, localStopTime);
-        return controlWindow;
-    }
-    
-
-    private void buildLMMemberControlModel(LMProgramDirectBase programDirectBase, LoadProgram loadProgram) {
-        List <ProgramDirectMemberControl> memberControls = new ArrayList<>();
+    /**
+     * Update Member Control fields of Load Program.
+     */
+    private void updateMemberControlModel(LMProgramDirectBase programDirectBase, LoadProgram loadProgram) {
+        List<ProgramDirectMemberControl> memberControls = new ArrayList<>();
         programDirectBase.getPAOExclusionVector().forEach(paoExclusion -> {
             ProgramDirectMemberControl memberControl = new ProgramDirectMemberControl();
             memberControl.setSubordinateProgId(paoExclusion.getExcludedPaoID());
 
-            LiteYukonPAObject excludedPao =
-                    dbCache.getAllLMPrograms().stream()
-                                              .filter(program -> program.getLiteID() == paoExclusion.getExcludedPaoID())
-                                              .findFirst()
-                                              .get();
-            
+            LiteYukonPAObject excludedPao = dbCache.getAllLMPrograms().stream()
+                                                                      .filter(program -> program.getLiteID() == paoExclusion.getExcludedPaoID())
+                                                                      .findFirst()
+                                                                      .get();
+
             memberControl.setSubordinateProgName(excludedPao.getPaoName());
             memberControls.add(memberControl);
         });
@@ -633,34 +343,23 @@ public class LoadProgramSetupServiceImpl implements LoadProgramSetupService {
         if (CollectionUtils.isNotEmpty(memberControls)) {
             loadProgram.setMemberControl(memberControls);
         }
-
     }
 
-    @Override
-    public List<ProgramGroup> getAllAvailableProgramLoadGroups(PaoType programType) {
-        
-        if(!programType.isLmProgram()) {
-            throw new LoadProgramProcessingException("ProgramType not supported");
-        }
+    /**
+     * Update Load group fields of Load Program.
+     */
+    private void updateLoadGroupModel(LoadProgram loadProgram) {
+        loadProgram.getAssignedGroups().forEach(group -> {
 
-        return getAllProgramLoadGroups(programType);
-    }
-
-    @Override
-    public List<ProgramGroup> getAvailableProgramLoadGroups(int programId) {
-        LiteYukonPAObject lmProgram = getProgramFromCache(programId);
-
-        LMProgramDirectBase dirProg = (LMProgramDirectBase) getDBPersistent(lmProgram.getLiteID(), lmProgram.getPaoType());
-
-        List<ProgramGroup> programGroups = getAllProgramLoadGroups(lmProgram.getPaoType());
-
-        List<ProgramGroup> availableProgramLoadGroups = programGroups.stream()
-                                                .filter(group -> dirProg.getLmProgramStorageVector().stream()
-                                                                                                    .allMatch(dirGroup -> dirGroup.getDeviceID().intValue() != group.getGroupId().intValue()))
-                                                .collect(Collectors.toList());
-        
-       return availableProgramLoadGroups;
-           
+           List<LiteYukonPAObject> paObjects = dbCache.getAllLMGroups();
+            Optional <LiteYukonPAObject> paObject = paObjects.stream()
+                                                  .filter(p -> p.getLiteID() == group.getGroupId())
+                                                  .findFirst();
+            if (paObject.isPresent()) {
+                group.setGroupName(paObject.get().getPaoName());
+                group.setType(paObject.get().getPaoType());
+            }
+        });
     }
 
     @Override
@@ -683,16 +382,11 @@ public class LoadProgramSetupServiceImpl implements LoadProgramSetupService {
                 boolean isNestProgram = programType == PaoType.LM_NEST_PROGRAM;
                 boolean isItronProgram = programType == PaoType.LM_ITRON_PROGRAM;
                 boolean isMeterDisconnectProgram = programType == PaoType.LM_METER_DISCONNECT_PROGRAM;
+                boolean isEatonCloudProgram = programType == PaoType.LM_EATON_CLOUD_PROGRAM;
 
                 if (isSepProgram && isGroupSepCompatible(loadGroupType)) {
                     programGroups.add(buildProgramLoadGroup(group));
-                } else if ((!isSepProgram && !isGroupSepCompatible(loadGroupType))
-                    && (!isEcobeeProgram && !isGroupEcobeeCompatible(loadGroupType))
-                    && (!isHoneywellProgram && !isGroupHoneywellCompatible(loadGroupType))
-                    && (!isItronProgram && !isGroupItronCompatible(loadGroupType))
-                    && (!isNestProgram && !isGroupNestCompatible(loadGroupType))) {
-                    programGroups.add(buildProgramLoadGroup(group));
-                } else if (isEcobeeProgram && isGroupEcobeeCompatible(loadGroupType)) {
+                }  else if (isEcobeeProgram && isGroupEcobeeCompatible(loadGroupType)) {
                     programGroups.add(buildProgramLoadGroup(group));
                 } else if (isHoneywellProgram && isGroupHoneywellCompatible(loadGroupType)) {
                     programGroups.add(buildProgramLoadGroup(group));
@@ -701,6 +395,16 @@ public class LoadProgramSetupServiceImpl implements LoadProgramSetupService {
                 } else if (isItronProgram && isGroupItronCompatible(loadGroupType)) {
                     programGroups.add(buildProgramLoadGroup(group));
                 } else if (isMeterDisconnectProgram && isGroupMeterDisconnectCompatible(loadGroupType)) {
+                    programGroups.add(buildProgramLoadGroup(group));
+                } else if (isEatonCloudProgram && isGroupEatonCloudCompatible(loadGroupType)) {
+                    programGroups.add(buildProgramLoadGroup(group));
+                } else if ((!isSepProgram && !isGroupSepCompatible(loadGroupType))
+                        && (!isEcobeeProgram && !isGroupEcobeeCompatible(loadGroupType))
+                        && (!isHoneywellProgram && !isGroupHoneywellCompatible(loadGroupType))
+                        && (!isNestProgram && !isGroupNestCompatible(loadGroupType))
+                        && (!isItronProgram && !isGroupItronCompatible(loadGroupType))
+                        && (!isMeterDisconnectProgram && !isGroupMeterDisconnectCompatible(loadGroupType))
+                        && (!isEatonCloudProgram && !isGroupEatonCloudCompatible(loadGroupType))) {
                     programGroups.add(buildProgramLoadGroup(group));
                 }
             }
@@ -740,104 +444,8 @@ public class LoadProgramSetupServiceImpl implements LoadProgramSetupService {
         return groupType == PaoType.LM_GROUP_METER_DISCONNECT;
     }
 
-    @Override
-    public List<NotificationGroup> getAllAvailableProgramNotificationGroups() {
-        List<NotificationGroup> notificationGroups = getAllProgramNotificationGroups();
-        return notificationGroups;
-    }
-
-    @Override
-    public List<NotificationGroup> getAvailableProgramNotificationGroups(int programId) {
-
-        LiteYukonPAObject lmProgram = getProgramFromCache(programId);
-
-        LMProgramDirectBase dirProg = (LMProgramDirectBase) getDBPersistent(lmProgram.getLiteID(), lmProgram.getPaoType());
-        List<NotificationGroup> notificationGroups = getAllProgramNotificationGroups();
-
-        List<NotificationGroup> availableNotificationGroups =
-            notificationGroups.stream()
-                              .filter(group -> dirProg.getLmProgramDirectNotifyGroupVector().stream()
-                                                                                            .allMatch(dirGroup -> dirGroup.getNotificationGroupID().intValue() != group.getNotificationGrpID().intValue()))
-                              .collect(Collectors.toList());
-        return availableNotificationGroups;
-    }
-
-    private List<NotificationGroup> getAllProgramNotificationGroups() {
-        List<LiteNotificationGroup> allNotificationGroups = dbCache.getAllContactNotificationGroups();
-        List<NotificationGroup> notificationGroups = allNotificationGroups.stream()
-                                                                          .map(group ->  new NotificationGroup(group.getNotificationGroupID(), group.getNotificationGroupName()))
-                                                                          .collect(Collectors.toList());
-        return notificationGroups;
-    }
-
-    @Override
-    public List<ProgramDirectMemberControl> getAllAvailableDirectMemberControls() {
-
-        List<LiteYukonPAObject> programs = dbCache.getAllLMPrograms();
-        List<LiteLMPAOExclusion> currentlyExcluded = dbCache.getAllLMPAOExclusions();
-
-        List<LiteYukonPAObject> lmSubordinates =
-                programs.stream()
-                         .filter(program -> (program.getPaoType().isDirectProgram()
-                                 && !(isMasterProgram(program.getLiteID(), currentlyExcluded))))
-                         .collect(Collectors.toList());
-
-        return buildProgramDirectMemberControl(lmSubordinates);
-
-    }
-
-    @Override
-    public List<ProgramDirectMemberControl> getAvailableDirectMemberControls(int programId) {
-
-        List<LiteYukonPAObject> programs = dbCache.getAllLMPrograms();
-
-        LiteYukonPAObject lmProgram = getProgramFromCache(programId);
-
-        LMProgramDirectBase dirProg = (LMProgramDirectBase) getDBPersistent(lmProgram.getLiteID(), lmProgram.getPaoType());
-
-        List<LiteLMPAOExclusion> currentlyExcluded = dbCache.getAllLMPAOExclusions();
-
-        // init storage that will contain exclusion (member control) information
-        // make sure this program itself isn't showing up as an available subordinate
-        List<LiteYukonPAObject> lmSubordinates = programs.stream()
-                                                         .filter(program -> (program.getPaoType().isDirectProgram()
-                                                                 && !(isMasterProgram(program.getLiteID(), currentlyExcluded)) && (program.getLiteID() != programId)))
-                                                         .collect(Collectors.toList());
-
-        List<LiteYukonPAObject> availableLmSubordinates =
-                lmSubordinates.stream()
-                              .filter(group -> dirProg.getPAOExclusionVector().stream()
-                                                                              .allMatch(dirGroup -> dirGroup.getExcludedPaoID().intValue() != group.getLiteID()))
-                              .collect(Collectors.toList());
-
-        return buildProgramDirectMemberControl(availableLmSubordinates);
-
-    }
-
-    private List<ProgramDirectMemberControl> buildProgramDirectMemberControl(List<LiteYukonPAObject> availableLmSubordinates) {
-        List<ProgramDirectMemberControl> directMemberControls = new ArrayList<>();
-        availableLmSubordinates.forEach(lmSubordinate -> {
-            ProgramDirectMemberControl directMemberControl = new ProgramDirectMemberControl();
-            directMemberControl.setSubordinateProgId(lmSubordinate.getLiteID());
-            directMemberControl.setSubordinateProgName(lmSubordinate.getPaoName());
-            directMemberControls.add(directMemberControl);
-        });
-        return directMemberControls;
-    }
- 
-    /**
-     * makes sure it is a direct program and it is not already a master
-     */
-    private boolean isMasterProgram(int programId, List<LiteLMPAOExclusion> liteLMPAOExclusions) {
-        Boolean isMasterProgram = false;
-        if (liteLMPAOExclusions != null) {
-
-            isMasterProgram =
-                    liteLMPAOExclusions.stream()
-                                       .anyMatch(paoExclusion -> programId == paoExclusion.getMasterPaoID());
-
-        }
-        return isMasterProgram;
+    private boolean isGroupEatonCloudCompatible(PaoType groupType) {
+        return groupType == PaoType.LM_GROUP_EATON_CLOUD;
     }
 
     @Override
@@ -888,14 +496,14 @@ public class LoadProgramSetupServiceImpl implements LoadProgramSetupService {
     /*
      * Process event log for program creation and gear creation
      */
-    private void processEventLogsForProgramCreate(LoadProgram loadProgram) {
+    private void processEventLogsForProgramCreate(LoadProgram loadProgram, LiteYukonUser liteYukonUser) {
 
         LiteLMConstraint litelmConstraint = getProgramConstraint(loadProgram.getConstraint().getConstraintId());
         String gearNames = getGearNamesString(loadProgram);
         String loadGroupNames = getLoadGroupNamesString(loadProgram);
 
         // event log for gear creation
-        logEventsForGearCreation(loadProgram);
+        logEventsForGearCreation(loadProgram, liteYukonUser);
 
         // event log for program creation
         demandResponseEventLogService.loadProgramCreated(loadProgram.getName(),
@@ -903,13 +511,14 @@ public class LoadProgramSetupServiceImpl implements LoadProgramSetupService {
                                                          litelmConstraint.getConstraintName(),
                                                          gearNames,
                                                          loadGroupNames,
-                                                         ApiRequestContext.getContext().getLiteYukonUser());
+                                                         liteYukonUser);
     }
 
     /*
      * Process event log for updating load program
      */
-    private void processEventLogsForProgramUpdate(LoadProgram loadProgram, List<LMProgramDirectGear> oldGears) {
+    private void processEventLogsForProgramUpdate(LoadProgram loadProgram, List<LMProgramDirectGear> oldGears,
+            LiteYukonUser liteYukonUser) {
 
         LiteLMConstraint litelmConstraint = getProgramConstraint(loadProgram.getConstraint().getConstraintId());
         String gearNames = getGearNamesString(loadProgram);
@@ -921,11 +530,11 @@ public class LoadProgramSetupServiceImpl implements LoadProgramSetupService {
                                                       lmProgramDirectGear.getControlMethod().name(),
                                                       loadProgram.getName(),
                                                       lmProgramDirectGear.getGearNumber(),
-                                                      ApiRequestContext.getContext().getLiteYukonUser());
+                                                      liteYukonUser);
         }
 
         // event log for gear creation
-        logEventsForGearCreation(loadProgram);
+        logEventsForGearCreation(loadProgram, liteYukonUser);
 
         // event log for program update
         demandResponseEventLogService.loadProgramUpdated(loadProgram.getName(),
@@ -933,13 +542,13 @@ public class LoadProgramSetupServiceImpl implements LoadProgramSetupService {
                                                          litelmConstraint.getConstraintName(),
                                                          gearNames,
                                                          loadGroupNames,
-                                                         ApiRequestContext.getContext().getLiteYukonUser());
+                                                         liteYukonUser);
     }
 
     /*
      * Process event log for program deletion and gear deletion
      */
-    private void processEventLogsForProgramDelete(YukonPAObject lmProgram, List<LiteGear> gears) {
+    private void processEventLogsForProgramDelete(YukonPAObject lmProgram, List<LiteGear> gears, LiteYukonUser liteYukonUser) {
 
         // event log for gear deletion
         for (LiteGear liteGear : gears) {
@@ -947,13 +556,13 @@ public class LoadProgramSetupServiceImpl implements LoadProgramSetupService {
                                                       liteGear.getGearType(),
                                                       lmProgram.getPAOName(),
                                                       liteGear.getGearNumber(),
-                                                      ApiRequestContext.getContext().getLiteYukonUser());
+                                                      liteYukonUser);
         }
 
         // event log for program deletion
         demandResponseEventLogService.loadProgramDeleted(lmProgram.getPAOName(),
                                                          lmProgram.getPaoType(),
-                                                         ApiRequestContext.getContext().getLiteYukonUser());
+                                                         liteYukonUser);
 
        
     }
@@ -961,7 +570,7 @@ public class LoadProgramSetupServiceImpl implements LoadProgramSetupService {
     /**
      * Process event log for load program copy
      */
-    private void processEventLogsForProgramCopy(LMProgramDirectBase directBase) {
+    private void processEventLogsForProgramCopy(LMProgramDirectBase directBase, LiteYukonUser liteYukonUser) {
 
         List<LMProgramDirectGear> gears = directBase.getLmProgramDirectGearVector().stream()
                                                                                    .collect(Collectors.toList());
@@ -979,7 +588,7 @@ public class LoadProgramSetupServiceImpl implements LoadProgramSetupService {
                                                       lmProgramDirectGear.getControlMethod().name(),
                                                       directBase.getPAOName(),
                                                       lmProgramDirectGear.getGearNumber(),
-                                                      ApiRequestContext.getContext().getLiteYukonUser());
+                                                      liteYukonUser);
         }
 
         // event log for copying load program
@@ -988,7 +597,7 @@ public class LoadProgramSetupServiceImpl implements LoadProgramSetupService {
                                                          litelmConstraint.getConstraintName(),
                                                          reducedGearNames,
                                                          null, // In case of load program copy, load groups didn't copied
-                                                         ApiRequestContext.getContext().getLiteYukonUser());
+                                                         liteYukonUser);
     }
 
     /**
@@ -1026,13 +635,15 @@ public class LoadProgramSetupServiceImpl implements LoadProgramSetupService {
     /**
      *  Log events for gear creation from Program Gear Object
      */
-    private void logEventsForGearCreation(LoadProgram loadProgram) {
+    private void logEventsForGearCreation(LoadProgram loadProgram, LiteYukonUser liteYukonUser) {
         for (ProgramGear programGear : loadProgram.getGears()) {
             demandResponseEventLogService.gearCreated(programGear.getGearName(),
                                                       programGear.getControlMethod().name(),
                                                       loadProgram.getName(),
                                                       programGear.getGearNumber(),
-                                                      ApiRequestContext.getContext().getLiteYukonUser());
+                                                      liteYukonUser);
         }
     }
+
+
 }

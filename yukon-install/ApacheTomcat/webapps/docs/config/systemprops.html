@@ -1,37 +1,7 @@
 <!DOCTYPE html SYSTEM "about:legacy-compat">
-<html lang="en"><head><META http-equiv="Content-Type" content="text/html; charset=UTF-8"><link href="../images/docs-stylesheet.css" rel="stylesheet" type="text/css"><title>Apache Tomcat 9 Configuration Reference (9.0.31) - System Properties</title><script type="application/javascript" data-comments-identifier="tomcat-9.0-doc/config/systemprops">
-    "use strict"; // Enable strict mode
-
-    (function() {
-      var thisScript = document.currentScript;
-      if (!thisScript) { // Workaround for IE <= 11
-        var scripts = document.getElementsByTagName("script");
-        thisScript = scripts[scripts.length - 1];
-      }
-      document.addEventListener("DOMContentLoaded", (function() {
-        var commentsDiv = document.getElementById("comments_thread");
-        var commentsShortname = "tomcat";
-        var commentsIdentifier = "https://tomcat.apache.org/" +
-          thisScript.getAttribute("data-comments-identifier") + ".html";
-
-        (function(w, d) {
-          if (w.location.hostname.toLowerCase() == "tomcat.apache.org") {
-            var s = d.createElement("script");
-            s.type = "application/javascript";
-            s.async = true;
-            s.src = "https://comments.apache.org/show_comments.lua?site=" +
-              encodeURIComponent(commentsShortname) +
-              "&page=" + encodeURIComponent(commentsIdentifier);
-            d.head.appendChild(s);
-          } else {
-            commentsDiv.appendChild(d.createTextNode("Comments are disabled for this page at the moment."));
-          }
-        })(window, document);
-      }), false);
-    })();
-  </script></head><body><div id="wrapper"><header><div id="header"><div><div><div class="logo noPrint"><a href="https://tomcat.apache.org/"><img alt="Tomcat Home" src="../images/tomcat.png"></a></div><div style="height: 1px;"></div><div class="asfLogo noPrint"><a href="https://www.apache.org/" target="_blank"><img src="../images/asf-logo.svg" alt="The Apache Software Foundation" style="width: 266px; height: 83px;"></a></div><h1>Apache Tomcat 9 Configuration Reference</h1><div class="versionInfo">
-          Version 9.0.31,
-          <time datetime="2020-02-05">Feb 5 2020</time></div><div style="height: 1px;"></div><div style="clear: left;"></div></div></div></div></header><div id="middle"><div><div id="mainLeft" class="noprint"><div><nav><div><h2>Links</h2><ul><li><a href="../index.html">Docs Home</a></li><li><a href="index.html">Config Ref. Home</a></li><li><a href="https://wiki.apache.org/tomcat/FAQ">FAQ</a></li><li><a href="#comments_section">User Comments</a></li></ul></div><div><h2>Top Level Elements</h2><ul><li><a href="server.html">Server</a></li><li><a href="service.html">Service</a></li></ul></div><div><h2>Executors</h2><ul><li><a href="executor.html">Executor</a></li></ul></div><div><h2>Connectors</h2><ul><li><a href="http.html">HTTP/1.1</a></li><li><a href="http2.html">HTTP/2</a></li><li><a href="ajp.html">AJP</a></li></ul></div><div><h2>Containers</h2><ul><li><a href="context.html">Context</a></li><li><a href="engine.html">Engine</a></li><li><a href="host.html">Host</a></li><li><a href="cluster.html">Cluster</a></li></ul></div><div><h2>Nested Components</h2><ul><li><a href="cookie-processor.html">CookieProcessor</a></li><li><a href="credentialhandler.html">CredentialHandler</a></li><li><a href="globalresources.html">Global Resources</a></li><li><a href="jar-scanner.html">JarScanner</a></li><li><a href="jar-scan-filter.html">JarScanFilter</a></li><li><a href="listeners.html">Listeners</a></li><li><a href="loader.html">Loader</a></li><li><a href="manager.html">Manager</a></li><li><a href="realm.html">Realm</a></li><li><a href="resources.html">Resources</a></li><li><a href="sessionidgenerator.html">SessionIdGenerator</a></li><li><a href="valve.html">Valve</a></li></ul></div><div><h2>Cluster Elements</h2><ul><li><a href="cluster.html">Cluster</a></li><li><a href="cluster-manager.html">Manager</a></li><li><a href="cluster-channel.html">Channel</a></li><li><a href="cluster-membership.html">Channel/Membership</a></li><li><a href="cluster-sender.html">Channel/Sender</a></li><li><a href="cluster-receiver.html">Channel/Receiver</a></li><li><a href="cluster-interceptor.html">Channel/Interceptor</a></li><li><a href="cluster-valve.html">Valve</a></li><li><a href="cluster-deployer.html">Deployer</a></li><li><a href="cluster-listener.html">ClusterListener</a></li></ul></div><div><h2>web.xml</h2><ul><li><a href="filter.html">Filter</a></li></ul></div><div><h2>Other</h2><ul><li><a href="systemprops.html">System properties</a></li><li><a href="jaspic.html">JASPIC</a></li></ul></div></nav></div></div><div id="mainRight"><div id="content"><h2>System Properties</h2><h3 id="Table_of_Contents">Table of Contents</h3><div class="text">
+<html lang="en"><head><META http-equiv="Content-Type" content="text/html; charset=UTF-8"><link href="../images/docs-stylesheet.css" rel="stylesheet" type="text/css"><title>Apache Tomcat 9 Configuration Reference (9.0.56) - System Properties</title></head><body><div id="wrapper"><header><div id="header"><div><div><div class="logo noPrint"><a href="https://tomcat.apache.org/"><img alt="Tomcat Home" src="../images/tomcat.png"></a></div><div style="height: 1px;"></div><div class="asfLogo noPrint"><a href="https://www.apache.org/" target="_blank"><img src="../images/asf-logo.svg" alt="The Apache Software Foundation" style="width: 266px; height: 83px;"></a></div><h1>Apache Tomcat 9 Configuration Reference</h1><div class="versionInfo">
+            Version 9.0.56,
+            <time datetime="2021-12-02">Dec 2 2021</time></div><div style="height: 1px;"></div><div style="clear: left;"></div></div></div></div></header><div id="middle"><div><div id="mainLeft" class="noprint"><div><nav><div><h2>Links</h2><ul><li><a href="../index.html">Docs Home</a></li><li><a href="index.html">Config Ref. Home</a></li><li><a href="https://wiki.apache.org/tomcat/FAQ">FAQ</a></li><li><a href="#comments_section">User Comments</a></li></ul></div><div><h2>Top Level Elements</h2><ul><li><a href="server.html">Server</a></li><li><a href="service.html">Service</a></li></ul></div><div><h2>Executors</h2><ul><li><a href="executor.html">Executor</a></li></ul></div><div><h2>Connectors</h2><ul><li><a href="http.html">HTTP/1.1</a></li><li><a href="http2.html">HTTP/2</a></li><li><a href="ajp.html">AJP</a></li></ul></div><div><h2>Containers</h2><ul><li><a href="context.html">Context</a></li><li><a href="engine.html">Engine</a></li><li><a href="host.html">Host</a></li><li><a href="cluster.html">Cluster</a></li></ul></div><div><h2>Nested Components</h2><ul><li><a href="cookie-processor.html">CookieProcessor</a></li><li><a href="credentialhandler.html">CredentialHandler</a></li><li><a href="globalresources.html">Global Resources</a></li><li><a href="jar-scanner.html">JarScanner</a></li><li><a href="jar-scan-filter.html">JarScanFilter</a></li><li><a href="listeners.html">Listeners</a></li><li><a href="loader.html">Loader</a></li><li><a href="manager.html">Manager</a></li><li><a href="realm.html">Realm</a></li><li><a href="resources.html">Resources</a></li><li><a href="sessionidgenerator.html">SessionIdGenerator</a></li><li><a href="valve.html">Valve</a></li></ul></div><div><h2>Cluster Elements</h2><ul><li><a href="cluster.html">Cluster</a></li><li><a href="cluster-manager.html">Manager</a></li><li><a href="cluster-channel.html">Channel</a></li><li><a href="cluster-membership.html">Channel/Membership</a></li><li><a href="cluster-sender.html">Channel/Sender</a></li><li><a href="cluster-receiver.html">Channel/Receiver</a></li><li><a href="cluster-interceptor.html">Channel/Interceptor</a></li><li><a href="cluster-valve.html">Valve</a></li><li><a href="cluster-deployer.html">Deployer</a></li><li><a href="cluster-listener.html">ClusterListener</a></li></ul></div><div><h2>web.xml</h2><ul><li><a href="filter.html">Filter</a></li></ul></div><div><h2>Other</h2><ul><li><a href="systemprops.html">System properties</a></li><li><a href="jaspic.html">JASPIC</a></li></ul></div></nav></div></div><div id="mainRight"><div id="content"><h2>System Properties</h2><h3 id="Table_of_Contents">Table of Contents</h3><div class="text">
 <ul><li><a href="#Introduction">Introduction</a></li><li><a href="#Property_replacements">Property replacements</a></li><li><a href="#Clustering">Clustering</a></li><li><a href="#Expression_Language">Expression Language</a></li><li><a href="#Jasper">Jasper</a></li><li><a href="#Security">Security</a></li><li><a href="#Specifications">Specifications</a></li><li><a href="#Sessions">Sessions</a></li><li><a href="#Logging">Logging</a></li><li><a href="#JAR_Scanning">JAR Scanning</a></li><li><a href="#Websockets">Websockets</a></li><li><a href="#Other">Other</a></li></ul>
 </div><h3 id="Introduction">Introduction</h3><div class="text">
   <p>The following sections list the system properties that may be set to modify
@@ -42,19 +12,24 @@
         </th><th style="width: 85%;">
           Description
         </th></tr><tr><td><code class="propertyName">org.apache.tomcat.util.digester. PROPERTY_SOURCE</code></td><td>
-      <p>Set this to a fully qualified name of a class that implements
+      <p>Set this to a comma separated list of fully qualified name of classes
+         that implement
          <code>org.apache.tomcat.util.IntrospectionUtils.PropertySource</code>.
          Required to have a public constructor with no arguments.</p>
       <p>Use this to add a property source, that will be invoked when
-         <code>${parameter}</code> denoted parameters are found in the XML files
-         that Tomcat parses.</p>
+         <code>${parameter:-default-value}</code> denoted parameters (with
+         optional default values) are found in the XML files that Tomcat
+         parses.</p>
       <p>Property replacement from the specified property source on the JVM
          system properties can also be done using the
          <code>REPLACE_SYSTEM_PROPERTIES</code> system property.</p>
-      <p><code>org.apache.tomcat.util.digester.Digester$EnvironmentPropertySource</code>
+      <p><code>org.apache.tomcat.util.digester.EnvironmentPropertySource</code>
          can be used to replace parameters from the process' environment
          variables, e.g. injected ConfigMaps or Secret objects in container
          based systems like OpenShift or Kubernetes.</p>
+      <p><code>org.apache.tomcat.util.digester.SystemPropertySource</code>
+         does replacement with system properties. It is always enabled,
+         but can also be spefied as part of the property value.</p>
     </td></tr><tr><td><code class="propertyName">org.apache.tomcat.util.digester. REPLACE_SYSTEM_PROPERTIES</code></td><td>
       <p>Set this boolean system property to <code>true</code> to cause
          property replacement from the digester property source on the JVM
@@ -67,6 +42,8 @@
         </th><th style="width: 85%;">
           Description
         </th></tr><tr><td><code class="propertyName">org.apache.catalina. tribes.dns_lookups</code></td><td>
+      <p>This system property is deprecated and will be removed without
+      replacement in Apache Tomcat 10 onwards.</p>
       <p>If <code>true</code>, the clustering module will attempt to use DNS to
       resolve any host names provided in the cluster configuration.</p>
       <p>If not specified, the default value of <code>false</code> will be used.</p>
@@ -222,9 +199,12 @@
       path delimiter.</p>
       <p>If not specified, the default value of <code>false</code> will be used.</p>
     </td></tr><tr><td><code class="propertyName">org.apache.tomcat.util.buf. UDecoder.ALLOW_ENCODED_SLASH</code></td><td>
-      <p>If this is <code>true</code> '%2F' and '%5C' will be permitted as path
-      delimiters.</p>
-      <p>If not specified, the default value of <code>false</code> will be used.</p>
+      <p>Use of this system property is deprecated. It will be removed from
+      Tomcat 10 onwards.</p>
+      <p>If this system property is set to <code>true</code>, the default for
+      the <code>encodedSolidusHandling</code> attribute of all Connectors will
+      be changed from <code>reject</code> to <code>decode</code>. If decoded, it
+      will be treated a path delimiter.</p>
     </td></tr></table>
 
 </div><h3 id="Specifications">Specifications</h3><div class="text">
@@ -243,9 +223,6 @@
       <li><code>org.apache.catalina.session.<br>StandardSession.ACTIVITY_CHECK</code></li>
       <li><code>org.apache.catalina.session.<br>StandardSession.LAST_ACCESS_AT_START</code></li>
       <li><code>org.apache.tomcat.util.http.<br>ServerCookie.STRICT_NAMING</code></li>
-      <li>The <code>URIEncoding</code> attribute of any
-          <a href="http.html">HTTP connector</a> or
-          <a href="ajp.html">AJP connector</a> element.</li>
       <li>The <code>resourceOnlyServlets</code> attribute of any
           <a href="context.html">Context</a> element.</li>
       <li>The <code>tldValidation</code> attribute of any
@@ -368,11 +345,6 @@
            <li><code>4</code> - drop the current log record</li>
          </ul>
       <p>The default value is <code>1</code> (drop the newest record in the queue).</p>
-    </td></tr><tr><td><code class="propertyName">org.apache.juli. AsyncLoggerPollInterval</code></td><td>
-      <p>The poll interval in milliseconds for the asynchronous logger thread.
-         If the log queue is empty, the async thread will issue a poll(poll interval)
-         in order to not wake up too often.</p>
-      <p>The default value is <code>1000</code> milliseconds.</p>
     </td></tr><tr><td><code class="propertyName">org.apache.juli.logging. UserDataHelper.CONFIG</code></td><td>
       <p>The type of logging to use for errors generated by invalid input data.
          The options are: <code>DEBUG_ALL</code>, <code>INFO_THEN_DEBUG</code>,
@@ -441,6 +413,9 @@
       <p>If <code>true</code>, allow unknown extensions to be declared by
       the user.</p>
       <p>The default value is <code>false</code>.</p>
+    </td></tr><tr><td><code class="propertyName">org.apache.tomcat. websocket.DEFAULT_BUFFER_SIZE</code></td><td>
+      <p>The default size for buffers used in the Websockets container.</p>
+      <p>The default value is <code>8192</code> which corresponds to 8KB.</p>
     </td></tr><tr><td><code class="propertyName">org.apache.tomcat. websocket.DEFAULT_ORIGIN_HEADER_VALUE</code></td><td>
       <p>Default value of the origin header that will be sent by the client
          during the upgrade handshake.</p>
@@ -532,18 +507,6 @@
       <p>If not specified, the default value of <code>3</code> will be used.</p>
     </td></tr></table>
 
-</div><div class="noprint"><h3 id="comments_section">
-                  Comments
-                </h3><div class="text"><p class="notice"><strong>Notice:</strong> This comments section collects your suggestions
-                    on improving documentation for Apache Tomcat.<br><br>
-                    If you have trouble and need help, read
-                    <a href="https://tomcat.apache.org/findhelp.html">Find Help</a> page
-                    and ask your question on the tomcat-users
-                    <a href="https://tomcat.apache.org/lists.html">mailing list</a>.
-                    Do not ask such questions here. This is not a Q&amp;A section.<br><br>
-                    The Apache Comments System is explained <a href="../comments.html">here</a>.
-                    Comments may be removed by our moderators if they are either
-                    implemented or considered invalid/off-topic.
-                  </p><div id="comments_thread"></div></div></div></div></div></div></div><footer><div id="footer">
-    Copyright &copy; 1999-2020, The Apache Software Foundation
-  </div></footer></div></body></html>
+</div></div></div></div></div><footer><div id="footer">
+    Copyright &copy; 1999-2021, The Apache Software Foundation
+    </div></footer></div></body></html>

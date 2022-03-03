@@ -72,7 +72,7 @@
                                         <cm:dropdownOption icon="icon-control-play-blue" key=".actions.sendShed" disabled="true" title="${loadGroupUnknown}"/>
                                     </c:if>
                                     <cm:dropdownOption icon="icon-control-stop-blue" key=".actions.sendRestore" disabled="true" title="${loadGroupUnknown}"/>
-                                    <cm:dropdownOption icon="icon-delete" key=".actions.disable" disabled="true" title="${loadGroupUnknown}"/>
+                                    <cm:dropdownOption icon="icon-disable" key=".actions.disable" disabled="true" title="${loadGroupUnknown}"/>
                                 </tags:dynamicChooseOption>
                                 
                                 <cti:msgScope paths=",modules.dr.loadGroup">
@@ -103,7 +103,7 @@
                                             		<cti:param name="isEnabled" value="false"/>
                                         		</cti:url>
                                         		<li><tags:simpleDialogLink titleKey=".sendDisableConfirm.title" 
-                                                	dialogId="drDialog" actionUrl="${sendDisableUrl}" icon="icon-delete"
+                                                	dialogId="drDialog" actionUrl="${sendDisableUrl}" icon="icon-disable"
                                                 	labelKey=".actions.disable"/></li>
                                            	</c:when>
                                            	<c:otherwise>
@@ -141,7 +141,7 @@
                                 <cm:dropdownOption icon="icon-control-play-blue" key=".actions.sendShed" disabled="true" title="${noLoadGroupControl}"/>
                             </c:if>
                             <cm:dropdownOption icon="icon-control-stop-blue" key=".actions.sendRestore" disabled="true" title="${noLoadGroupControl}"/>
-                            <cm:dropdownOption icon="icon-delete" key=".actions.disable" disabled="true" title="${noLoadGroupControl}"/>
+                            <cm:dropdownOption icon="icon-disable" key=".actions.disable" disabled="true" title="${noLoadGroupControl}"/>
                         </cti:checkPaoAuthorization>
                     </div>
                 </c:if>
@@ -203,8 +203,7 @@
         
     </div>
 
-    <cti:includeScript link="JQUERY_FLOTCHARTS_PIE"/>
-    <!--[if lte IE 8]><cti:includeScript link="JQUERY_EXCANVAS"/><![endif]-->
+    <cti:includeScript link="/resources/js/common/yukon.assetAvailability.pieChart.js"/>
     <cti:includeScript link="/resources/js/common/yukon.ui.progressbar.js"/>
     <cti:includeScript link="/resources/js/pages/yukon.dr.asset.details.js"/>
     

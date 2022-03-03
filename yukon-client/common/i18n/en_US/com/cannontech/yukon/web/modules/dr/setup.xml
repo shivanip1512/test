@@ -6,13 +6,8 @@
 <entry key="yukon.web.modules.dr.setup.createObject.title">Create Demand Response Object</entry>
 
 <!-- Common keys -->
-<entry key="yukon.web.modules.dr.setup.save.error">{0} could not be saved.</entry>
-<entry key="yukon.web.modules.dr.setup.save.success">{0} saved successfully.</entry>
-<entry key="yukon.web.modules.dr.setup.copy.error">{0} could not be copied.</entry>
+<entry key="yukon.web.modules.dr.setup.copy.error">{0} could not be copied. Error: {1}</entry>
 <entry key="yukon.web.modules.dr.setup.copy.success">{0} copied successfully.</entry>
-<entry key="yukon.web.modules.dr.setup.delete.error">{0} could not be deleted.</entry>
-<entry key="yukon.web.modules.dr.setup.delete.error.exception.message">{0}</entry>
-<entry key="yukon.web.modules.dr.setup.delete.success">{0} deleted successfully.</entry>
 <entry key="yukon.web.modules.dr.setup.select">Select</entry>
 <entry key="yukon.web.modules.dr.setup.selectPrograms.label">Select Program(s)</entry>
 <entry key="yukon.web.modules.dr.setup.programs">Programs</entry>
@@ -157,6 +152,7 @@ Are you sure you want do this?</entry>
 <entry key="yukon.web.modules.dr.setup.loadProgram.copy">Copy Load Program</entry>
 <entry key="yukon.web.modules.dr.setup.loadProgram.copyMemberControl">Copy Member Control</entry>
 <entry key="yukon.web.modules.dr.setup.loadProgram.retrieve.error">Load Program could not be retrieved.</entry>
+<entry key="yukon.web.modules.dr.setup.loadProgram.delete.warning">Deleting this program will remove it from any control area or scenario it is currently assigned to. The program’s control history will be deleted.</entry>
 <entry key="yukon.web.modules.dr.setup.gear.error">Please check gear field errors in {0}.</entry>
 
 <!-- MCT Load Group -->
@@ -264,6 +260,7 @@ Are you sure you want do this?</entry>
 <!-- Load Program Validation -->
 <entry key="yukon.web.modules.dr.setup.loadProgram.error.constraintId.doesNotExist">Constraint does not exist.</entry>
 <entry key="yukon.web.modules.dr.setup.loadProgram.error.notificationGrpID.doesNotExist">Notification Group Id does not exist.</entry>
+<entry key="yukon.web.modules.dr.setup.loadProgram.error.notificationGrp.notAssigned">Notification Group not assigned.</entry>
 <entry key="yukon.web.modules.dr.setup.loadProgram.error.subordinateProgId.doesNotExist">Subordinate Program Id does not exist.</entry>
 <entry key="yukon.web.modules.dr.setup.loadProgram.error.groupId.doesNotExist">Load Group Id does not exist.</entry>
 <entry key="yukon.web.modules.dr.setup.loadProgram.error.noGroup">At least 1 load group must be present in this current program.</entry>
@@ -403,6 +400,7 @@ Are you sure you want do this?</entry>
 <entry key="yukon.web.modules.dr.setup.gear.Close">CLOSE (RawState: 1)</entry>
 <entry key="yukon.web.modules.dr.setup.gear.allOfThem">All Of Them</entry>
 <entry key="yukon.web.modules.dr.setup.gear.setpointOffset">Setpoint Offset</entry>
+<entry key="yukon.web.modules.dr.setup.gear.heatingEvent">Heating Event</entry>
 
 <!-- Program Constraint -->
 <entry key="yukon.web.modules.dr.setup.constraint.error.used">{0} because it is in use by a Program.</entry>
@@ -463,7 +461,7 @@ Are you sure you want do this?</entry>
 <entry key="yukon.web.modules.dr.setup.gear.kWReduction">KW Reduction</entry>
 <entry key="yukon.web.modules.dr.setup.gear.rampIn">Ramp In</entry>
 <entry key="yukon.web.modules.dr.setup.gear.rampOut">Ramp Out</entry>
-<entry key="yukon.web.modules.dr.setup.gear.trueCycle">True Cycle or adaptive algorithm </entry>
+<entry key="yukon.web.modules.dr.setup.gear.trueCycle">True Cycle or adaptive algorithm</entry>
 <entry key="yukon.web.modules.dr.setup.gear.groupSelectionMethod">Group Selection Method</entry>
 <entry key="yukon.web.modules.dr.setup.gear.rampInPercent">Ramp In Percent</entry>
 <entry key="yukon.web.modules.dr.setup.gear.rampInIntervalInSeconds">Ramp In Interval</entry>
@@ -474,7 +472,6 @@ Are you sure you want do this?</entry>
 <entry key="yukon.web.modules.dr.setup.gear.fixedShedTime">Fixed Shed Time</entry>
 <entry key="yukon.web.modules.dr.setup.gear.maxShedTime">Max Shed Time</entry>
 <entry key="yukon.web.modules.dr.setup.gear.numberOfGroups">Groups Per Send</entry>
-<entry key="yukon.web.modules.dr.setup.gear.NONE">(none)</entry>
 <entry key="yukon.web.modules.dr.setup.gear.range">({0} to {1})</entry>
 
 <entry key="yukon.web.modules.dr.setup.gear.mode">Mode</entry>
@@ -573,12 +570,11 @@ Are you sure you want do this?</entry>
 <entry key="yukon.web.modules.dr.setup.controlArea.trigger.projectionType">Projection Type</entry>
 <entry key="yukon.web.modules.dr.setup.controlArea.trigger.samples">Samples</entry>
 <entry key="yukon.web.modules.dr.setup.controlArea.trigger.ahead">Ahead</entry>
-<entry key="yukon.web.modules.dr.setup.controlArea.trigger.NONE">(none)</entry>
+<entry key="yukon.web.modules.dr.setup.controlArea.trigger.NONE">None</entry>
 <entry key="yukon.web.modules.dr.setup.controlArea.trigger.LSF">LSF</entry>
 <entry key="yukon.web.modules.dr.setup.controlArea.trigger.identification.required">Trigger Identification is required.</entry>
 <entry key="yukon.web.modules.dr.setup.controlArea.trigger.peakTracking.required">Peak Tracking is required.</entry>
 <entry key="yukon.web.modules.dr.setup.controlArea.trigger.thresholdPointSettings.required">Threshold Point Settings is required.</entry>
-<entry key="yukon.web.modules.dr.setup.controlArea.trigger.none">None</entry>
 <entry key="yukon.web.modules.dr.setup.controlArea.trigger.error">Please check trigger field errors in {0}.</entry>
 
 <!-- Ripple Load group -->

@@ -6,7 +6,6 @@ import java.util.Set;
 import java.util.stream.Collectors;
 
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.util.StringUtils;
 import org.springframework.validation.Errors;
 
 import com.cannontech.common.dr.setup.LMCopy;
@@ -14,9 +13,8 @@ import com.cannontech.common.dr.setup.LoadGroupCopy;
 import com.cannontech.common.pao.PaoType;
 import com.cannontech.common.pao.PaoUtils;
 import com.cannontech.common.validator.YukonValidationUtils;
-import com.cannontech.core.dao.NotFoundException;
+import com.cannontech.common.validator.YukonValidationUtilsCommon;
 import com.cannontech.core.dao.PaoDao;
-import com.cannontech.core.dao.PointDao;
 import com.cannontech.database.data.lite.LiteYukonPAObject;
 import com.cannontech.stars.util.ServletUtils;
 import com.cannontech.yukon.IDatabaseCache;
@@ -28,10 +26,8 @@ public class LMValidatorHelper {
     private final static String key = "yukon.web.modules.dr.setup.error.";
     @Autowired private PaoDao paoDao;
     @Autowired private IDatabaseCache serverDatabaseCache;
-    @Autowired private PointDao pointdao;
-
     public void checkIfFieldRequired(String field, Errors errors, Object fieldValue, String fieldName) {
-        if (fieldValue == null || !StringUtils.hasText(fieldValue.toString())) {
+        if (YukonValidationUtilsCommon.checkIfFieldRequired(fieldValue)) {
             errors.rejectValue(field, key + "required", new Object[] { fieldName }, "");
         }
     }
@@ -90,14 +86,6 @@ public class LMValidatorHelper {
             if (liteRoute == null) {
                 errors.rejectValue("routeId", key + "routeId.doesNotExist");
             }
-        }
-    }
-
-    public void validatePointId(Errors errors, String field, Integer pointId) {
-        try {
-            pointdao.getLitePoint(pointId);
-        } catch (NotFoundException ex) {
-            errors.rejectValue(field, key + "pointId.doesNotExist", new Object[] { field }, "");
         }
     }
 

@@ -1,55 +1,56 @@
 package com.cannontech.amr.monitors.impl;
 
+import java.util.Collection;
+import java.util.Collections;
+import java.util.Set;
+import java.util.concurrent.ConcurrentHashMap;
+
 import org.apache.commons.lang3.StringUtils;
 import org.apache.logging.log4j.Logger;
 import org.joda.time.Duration;
 import org.joda.time.Instant;
 
 import com.cannontech.core.dynamic.RichPointData;
-import com.google.common.collect.ArrayListMultimap;
-import com.google.common.collect.Multimap;
 
 public class PointDataTrackingLogger {
 
-    private static final Duration trackingLogFrequency = Duration.standardSeconds(30);
+    private static final Duration trackingLogFrequency = Duration.standardMinutes(1);
     private Instant nextTrackingLog = Instant.now().plus(trackingLogFrequency);
-    private Multimap<Boolean, String> trackingIds = ArrayListMultimap.create();
+    private Set<String> acceptedIds = Collections.newSetFromMap(new ConcurrentHashMap<String, Boolean>());
+    private Set<String> rejectedIds = Collections.newSetFromMap(new ConcurrentHashMap<String, Boolean>());
     private Logger log;
+    private String name;
     
-    public PointDataTrackingLogger(Logger log) {
+    public PointDataTrackingLogger(String name, Logger log) {
+        this.name = name;
         this.log = log;
     }
     
     public void acceptId(RichPointData data) {
-        processTrackingId(data, true);
+        processTrackingId(acceptedIds, data);
+        logTrackingIds();
     }
     public void rejectId(RichPointData data) {
-        processTrackingId(data, false);
+        processTrackingId(rejectedIds, data);
+        logTrackingIds();
     }
     
-    private void processTrackingId(RichPointData data, boolean accepted) {
+    private static void processTrackingId(Collection<String> ids, RichPointData data) {
         String trackingId = data.getPointValue().getTrackingId();
         if (StringUtils.isNotEmpty(trackingId)) {
-            trackingIds.put(accepted, trackingId);
-        }
-        
-        if (Instant.now().isAfter(nextTrackingLog)) {
-            nextTrackingLog = Instant.now().plus(trackingLogFrequency);
-
-            logTrackingIds(trackingIds);
-            
-            trackingIds.clear();
+            ids.add(trackingId);
         }
     }
 
-    private void logTrackingIds(Multimap<Boolean, String> trackingIds) {
-        if (log.isInfoEnabled()) {
-            if (trackingIds.containsKey(true)) {
-                log.info("Tracking IDs accepted: " + String.join(" ", trackingIds.get(true)));
+    private void logTrackingIds() {
+        if (Instant.now().isAfter(nextTrackingLog)) {
+            nextTrackingLog = Instant.now().plus(trackingLogFrequency);
+            if (log.isInfoEnabled()) {
+                log.info("{} accepted tracking IDs: {}", name, String.join(" ", acceptedIds));
+                log.info("{} rejected tracking IDs: {}", name, String.join(" ", rejectedIds));
             }
-            if (trackingIds.containsKey(false)) {
-                log.info("Tracking IDs rejected: " + String.join(" ", trackingIds.get(false)));
-            }
+            acceptedIds.clear();
+            rejectedIds.clear();
         }
     }
 }

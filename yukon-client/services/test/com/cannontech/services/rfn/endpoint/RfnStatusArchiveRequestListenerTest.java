@@ -1,9 +1,9 @@
 package com.cannontech.services.rfn.endpoint;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertTrue;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import java.util.Arrays;
 import java.util.Collection;
@@ -16,13 +16,10 @@ import java.util.stream.Stream;
 import org.easymock.Capture;
 import org.easymock.CaptureType;
 import org.easymock.EasyMock;
-import org.junit.Before;
-import org.junit.Test;
-import org.junit.runner.RunWith;
-import org.junit.runners.Parameterized;
-import org.junit.runners.Parameterized.Parameter;
-import org.junit.runners.Parameterized.Parameters;
-import org.springframework.jms.core.JmsTemplate;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.aggregator.ArgumentsAccessor;
+import org.junit.jupiter.params.provider.MethodSource;
 import org.springframework.test.util.ReflectionTestUtils;
 
 import com.cannontech.amr.rfn.message.status.RfnStatusArchiveRequest;
@@ -35,12 +32,12 @@ import com.cannontech.common.pao.attribute.model.BuiltInAttribute;
 import com.cannontech.common.pao.attribute.service.AttributeService;
 import com.cannontech.common.rfn.message.RfnIdentifier;
 import com.cannontech.common.rfn.service.RfnDeviceLookupService;
+import com.cannontech.common.util.jms.YukonJmsTemplate;
 import com.cannontech.core.dynamic.AsyncDynamicDataSource;
 import com.cannontech.database.data.lite.LitePoint;
 import com.cannontech.database.data.point.PointType;
 import com.cannontech.message.dispatch.message.PointData;
 
-@RunWith(Parameterized.class)
 public class RfnStatusArchiveRequestListenerTest {
     private RfnStatusArchiveRequestListener statusListener;
     private Capture<PointData> pointdataCapture = new Capture<>(CaptureType.ALL);
@@ -50,12 +47,9 @@ public class RfnStatusArchiveRequestListenerTest {
     
     private static final Map<RfnMeterDisconnectMeterMode, Map<RfnMeterDisconnectStateType, Optional<Integer>>> expectedModeStates = getExpectedModeStates();
     
-    @Parameter(0)
     public RfnMeterDisconnectMeterMode mode;
-    @Parameter(1)
     public RfnMeterDisconnectStateType type;
     
-    @Parameters(name="mode: {0} {1}")
     public static Collection<Object[]> input() {
         Comparator<Enum<?>> sortByName = (a, b) -> a.name().compareTo(b.name());
         //  Get all combinations of DisconnectMeterMode and DisconnectStateType values
@@ -67,12 +61,12 @@ public class RfnStatusArchiveRequestListenerTest {
                      .collect(Collectors.toList());
     }
     
-    @Before
+    @BeforeEach
     public void init() {
         statusListener = new RfnStatusArchiveRequestListener();
         
-        var jmsTemplate = EasyMock.createNiceMock(JmsTemplate.class);
-        ReflectionTestUtils.setField(statusListener, "jmsTemplate", jmsTemplate, JmsTemplate.class);
+        var jmsTemplate = EasyMock.createNiceMock(YukonJmsTemplate.class);
+        ReflectionTestUtils.setField(statusListener, "jmsTemplate", jmsTemplate, YukonJmsTemplate.class);
 
         var rfnDeviceLookupService = EasyMock.createNiceMock(RfnDeviceLookupService.class);
         ReflectionTestUtils.setField(statusListener, "rfnDeviceLookupService", rfnDeviceLookupService, RfnDeviceLookupService.class);
@@ -89,16 +83,19 @@ public class RfnStatusArchiveRequestListenerTest {
         ReflectionTestUtils.setField(statusListener, "asyncDynamicDataSource", asyncDynamicDataSource, AsyncDynamicDataSource.class);
     }
     
-    @Test
-    public void testRfnMeterDisconnectState() {
+    @ParameterizedTest
+    @MethodSource("input")
+    public void testRfnMeterDisconnectState(ArgumentsAccessor argumentsAccessor) {
+        mode = (RfnMeterDisconnectMeterMode) argumentsAccessor.get(0);
+        type = (RfnMeterDisconnectStateType) argumentsAccessor.get(1);
         
         var expectedStates = expectedModeStates.get(mode);
         
-        assertNotNull("No expected states for " + mode, expectedStates);
+        assertNotNull(expectedStates, "No expected states for " + mode);
         
         var expectedState = expectedStates.get(type);
         
-        assertNotNull("Missing state for " + mode + " " + type, expectedState);
+        assertNotNull(expectedState, "Missing state for " + mode + " " + type);
         
         // Build the RfnStatusArchiveRequest message with MeterDisconnectStatus inside
         var disconnectStatus = new MeterDisconnectStatus();
@@ -121,12 +118,12 @@ public class RfnStatusArchiveRequestListenerTest {
         
         // Verify the pointdata value
         expectedState.ifPresentOrElse(value -> {
-            assertFalse("Point value expected, but no pointdata generated", pointdataCapture.getValues().isEmpty());
-            assertEquals("Excess pointdata generated", 1, pointdataCapture.getValues().size());
+            assertFalse(pointdataCapture.getValues().isEmpty(), "Point value expected, but no pointdata generated");
+            assertEquals(1, pointdataCapture.getValues().size(), "Excess pointdata generated");
             
             var pointData = pointdataCapture.getValue();
 
-            assertEquals(value, pointData.getValue(), 0.0);
+            assertEquals(pointData.getValue(), 0.0, value);
         }, () -> 
             assertTrue(pointdataCapture.getValues().isEmpty()));
     }
@@ -165,9 +162,9 @@ public class RfnStatusArchiveRequestListenerTest {
               ModeStateValue.of(RfnMeterDisconnectMeterMode.CYCLING_CONFIGURATION, RfnMeterDisconnectStateType.TERMINATED, null),
               ModeStateValue.of(RfnMeterDisconnectMeterMode.CYCLING_CONFIGURATION, RfnMeterDisconnectStateType.UNKNOWN, null),
               
-              ModeStateValue.of(RfnMeterDisconnectMeterMode.CYCLING_DEACTIVATE, RfnMeterDisconnectStateType.ARMED, 1),
+              ModeStateValue.of(RfnMeterDisconnectMeterMode.CYCLING_DEACTIVATE, RfnMeterDisconnectStateType.ARMED, 3),
               ModeStateValue.of(RfnMeterDisconnectMeterMode.CYCLING_DEACTIVATE, RfnMeterDisconnectStateType.RESUMED, 1),
-              ModeStateValue.of(RfnMeterDisconnectMeterMode.CYCLING_DEACTIVATE, RfnMeterDisconnectStateType.TERMINATED, 1),
+              ModeStateValue.of(RfnMeterDisconnectMeterMode.CYCLING_DEACTIVATE, RfnMeterDisconnectStateType.TERMINATED, 2),
               ModeStateValue.of(RfnMeterDisconnectMeterMode.CYCLING_DEACTIVATE, RfnMeterDisconnectStateType.UNKNOWN, 1),
               
               ModeStateValue.of(RfnMeterDisconnectMeterMode.DEMAND_THRESHOLD_ACTIVATE, RfnMeterDisconnectStateType.ARMED, 4),
@@ -180,9 +177,9 @@ public class RfnStatusArchiveRequestListenerTest {
               ModeStateValue.of(RfnMeterDisconnectMeterMode.DEMAND_THRESHOLD_CONFIGURATION, RfnMeterDisconnectStateType.TERMINATED, null),
               ModeStateValue.of(RfnMeterDisconnectMeterMode.DEMAND_THRESHOLD_CONFIGURATION, RfnMeterDisconnectStateType.UNKNOWN, null),
               
-              ModeStateValue.of(RfnMeterDisconnectMeterMode.DEMAND_THRESHOLD_DEACTIVATE, RfnMeterDisconnectStateType.ARMED, 1),
+              ModeStateValue.of(RfnMeterDisconnectMeterMode.DEMAND_THRESHOLD_DEACTIVATE, RfnMeterDisconnectStateType.ARMED, 3),
               ModeStateValue.of(RfnMeterDisconnectMeterMode.DEMAND_THRESHOLD_DEACTIVATE, RfnMeterDisconnectStateType.RESUMED, 1),
-              ModeStateValue.of(RfnMeterDisconnectMeterMode.DEMAND_THRESHOLD_DEACTIVATE, RfnMeterDisconnectStateType.TERMINATED, 1),
+              ModeStateValue.of(RfnMeterDisconnectMeterMode.DEMAND_THRESHOLD_DEACTIVATE, RfnMeterDisconnectStateType.TERMINATED, 2),
               ModeStateValue.of(RfnMeterDisconnectMeterMode.DEMAND_THRESHOLD_DEACTIVATE, RfnMeterDisconnectStateType.UNKNOWN, 1),
               
               ModeStateValue.of(RfnMeterDisconnectMeterMode.ON_DEMAND_CONFIGURATION, RfnMeterDisconnectStateType.ARMED, 3),

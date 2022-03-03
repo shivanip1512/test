@@ -8,14 +8,18 @@ public class RecentEventParticipationSummary {
     private final Instant startTime;
     private final int numConfirmed;
     private final int numUnknowns;
+    private final int numFailed;
+    private final int numConfirmedAfterRetry;
     private final RecentEventParticipationEventStats eventStats;
 
-    public RecentEventParticipationSummary(String programName, Instant startTime, int numConfirmed, int numUnknowns) {
+    public RecentEventParticipationSummary(String programName, Instant startTime, int numConfirmed, int numUnknowns, int numFailed, int numConfirmedAfterRetry) {
         this.programName = programName;
         this.startTime = startTime;
         this.numConfirmed = numConfirmed;
         this.numUnknowns = numUnknowns;
-        this.eventStats = new RecentEventParticipationEventStats(numConfirmed, numUnknowns);
+        this.numFailed = numFailed;
+        this.numConfirmedAfterRetry = numConfirmedAfterRetry;
+        this.eventStats = new RecentEventParticipationEventStats(numConfirmed, numUnknowns, numFailed, numConfirmedAfterRetry);
     }
 
     public RecentEventParticipationEventStats getEventStats() {
@@ -36,6 +40,14 @@ public class RecentEventParticipationSummary {
 
     public Instant getStartTime() {
         return startTime;
+    }
+
+    public int getNumFailed() {
+        return numFailed;
+    }
+
+    public int getNumConfirmedAfterRetry() {
+        return numConfirmedAfterRetry;
     }
 
 }

@@ -93,6 +93,7 @@ private:
     enum DeviceState {
         RequestPending,
         ToGenerate,
+        WaitingToSend,
         WaitingForData,
         ToDecode,
         RequestComplete
@@ -131,12 +132,14 @@ private:
     void startPendingRequest(device_record *dr);
 
     bool generateOutbounds(const Cti::Timing::MillisecondTimer &timer, const unsigned long until);
+    bool sendOutbounds(const Cti::Timing::MillisecondTimer &timer, const unsigned long until);
     void generateKeepalives( CtiPortSPtr &port );
     static bool isDnpKeepaliveNeeded( const device_record &dr, const CtiTime &TimeNow );
     static void generateDnpKeepalive( CtiPortSPtr &port, const device_record &dr );
     void readPortQueue( CtiPortSPtr &port, om_list &local_queue );
     virtual bool isPortRateLimited() const;
     void tryGenerate(device_record *dr);
+    void trySendOutbounds(device_record *dr);
 
     bool expireTimeouts(const Cti::Timing::MillisecondTimer &timer, const unsigned long until);
 
@@ -167,6 +170,7 @@ private:
     /* While processing commands, devices are passed around these queues based on their state. */
     device_list _request_pending;
     device_list _to_generate;
+    device_list _waiting_to_send;
     device_list _waiting_for_data;
     device_list _to_decode;
     device_list _request_complete;
@@ -216,6 +220,15 @@ protected:
     static bool isGpuffDevice(const CtiDeviceSingle &ds);
     static bool isRdsDevice (const CtiDeviceSingle &ds);
 
+    ULONG getPostCommWait(device_record &dr) const;
+    bool availableToSend(device_record &dr) const;
+    virtual bool isPostCommWaitComplete(const device_record& dr, ULONG postCommWait) const = 0;
+
+    virtual void setDeviceActive  (const device_record& dr) = 0;
+    virtual bool isDeviceActive   (const device_record& dr) = 0;
+    void setDeviceInactive(device_record *dr);
+    virtual void clearActiveDevice(const device_record& dr) = 0;
+
 public:
 
     UnsolicitedHandler(CtiPortSPtr &port, CtiDeviceManager &deviceManager);
@@ -231,6 +244,7 @@ public:
     void queueWaitingForData(device_record *dr);
     void queueToDecode(device_record *dr);
     void queueRequestComplete(device_record *dr);
+    void queueWaitingToSend(device_record *dr);
     void setDeviceState(device_list &map, device_record *dr, DeviceState state);
 };
 

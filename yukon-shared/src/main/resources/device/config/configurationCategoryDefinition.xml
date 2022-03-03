@@ -379,8 +379,11 @@
     </category>
 
     <category type="regulatorCategory">
+        <integer field="minTapPosition" default="-16" minValue="-100" maxValue="0"/>
+        <integer field="maxTapPosition" default="16" minValue="0" maxValue="100"/>
         <float field="voltageChangePerTap" default="0.75" minValue="0" />
         <enum field="voltageControlMode" type="VoltageControlMode" />
+        <enum field="installOrientation" type="RegulatorInstallOrientation" default="FORWARD" />
     </category>
 
     <category type="regulatorHeartbeat">
@@ -401,4 +404,9 @@
             <string field="pointName" maxLength="60" />
         </indexed>
     </category>
+
+    <category type="rfnMetrologyConfiguration">
+        <boolean field="metrologyLibraryEnabled" default="false"/>
+    </category>
+
 </deviceConfigurationCategories>

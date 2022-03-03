@@ -25,8 +25,9 @@
 using namespace std;
 using namespace Cti::Config;
 
-namespace Cti {
-namespace Devices {
+using Cti::Logging::Vector::operator<<;
+
+namespace Cti::Devices {
 
 DnpDevice::DnpDevice()
 {
@@ -38,12 +39,15 @@ LONG DnpDevice::getAddress() const
     return _dnp_address.getSlaveAddress();
 }
 
-
 LONG DnpDevice::getMasterAddress() const
 {
     return _dnp_address.getMasterAddress();
 }
 
+int DnpDevice::getPostDelay() const
+{
+    return _dnp_address.getPostDelay();
+}
 
 void DnpDevice::resetDNPScansPending( void )
 {
@@ -218,7 +222,7 @@ try
                     //  NOTE - the control duration is completely arbitrary here.  Fix sometime if necessary
                     //           (i.e. customer doing sheds/restores that need to be accurately LMHist'd)
                     //  ugh - does this need to be sent from Porter as well?  do we send it if the control fails?
-                    CtiLMControlHistoryMsg *hist = CTIDBG_new CtiLMControlHistoryMsg(getID(), pStatus->getPointID(), 0, CtiTime(), 86400, 100);
+                    auto hist = std::make_unique<CtiLMControlHistoryMsg>( getID(), pStatus->getPointID(), 0, CtiTime(), 86400, 100 );
 
                     //  if the control is latched
                     if( controlParameters->getControlType() == ControlType_Latch ||
@@ -286,7 +290,13 @@ try
 
                     hist->setMessagePriority(MAXPRIORITY - 1);
                     hist->setUser(pReq->getUser());
-                    vgList.push_back(hist);
+
+                    // send the control history message to dispatch unless this control is a select - the control history message
+                    //  may trigger an alt scan rate scan, breaking the sequence numbering for the follow-up operate command (YUK-20220)
+                    if ( ! parse.isKeyValid("sbo_selectonly") )
+                    {
+                        vgList.push_back( hist.release() );
+                    }
                 }
                 else
                 {
@@ -746,27 +756,30 @@ void DnpDevice::initUnsolicited()
 
 YukonError_t DnpDevice::sendCommResult(INMESS &InMessage)
 {
-    char *buf;
-    string result_string;
+    const auto begin = InMessage.Buffer.InMessage;
+    const auto end = begin + sizeof(InMessage.Buffer.InMessage);
+    auto itr = begin;
 
-    buf = reinterpret_cast<char *>(InMessage.Buffer.InMessage);
+    const auto strings = _dnp.getInboundStrings();
 
-    //  this needs to be smarter and send the device name and point data elements seperately...
-    for( const auto &str : _dnp.getInboundStrings() )
+    for( const auto& str : strings )
     {
-        result_string += getName();
-        result_string += " / ";
-        result_string += str;
-        result_string += "\n";
+        if( (end - itr) < (str.size() + 2) )
+        {
+            CTILOG_WARN(dout, "Ran out of room for device return on " << getName() << "\n" << strings);
+            break;
+        }
+
+        //  Record string size
+        *itr++ = str.size();
+        *itr++ = str.size() >> 8;
+
+        //  Record the string, no null terminator
+        itr = std::copy(str.cbegin(), str.cbegin() + str.size(), itr);
     }
 
-    InMessage.InLength = result_string.size() + 1;
-
-    //  make sure we don't overrun the buffer, even though we just checked above
-    strncpy(buf, result_string.c_str(), sizeof(InMessage.Buffer.InMessage) - 1);
-    //  and mark the end with a null, again, just to be sure
-    InMessage.Buffer.InMessage[sizeof(InMessage.Buffer.InMessage) - 1] = 0;
-
+    InMessage.InLength = itr - begin;
+    
     return ClientErrors::None;
 }
 
@@ -1008,18 +1021,37 @@ YukonError_t DnpDevice::ResultDecode(const INMESS &InMessage, const CtiTime Time
     {
         string result_string;
 
-        unsigned long length = InMessage.InLength;
+        auto itr = InMessage.Buffer.InMessage;
+        auto end = itr + std::min<unsigned long>(InMessage.InLength, sizeof(InMessage.Buffer.InMessage));
 
-        //  safety first
-        if( InMessage.InLength > sizeof(InMessage.Buffer.InMessage) )
+        while( itr < end )
         {
-            CTILOG_WARN(dout, "InMessage.InLength > sizeof(InMessage.Buffer.InMessage) for device \""<< getName() <<"\" ("<< InMessage.InLength <<" > "<< sizeof(InMessage.Buffer.InMessage) <<"), length will be limited to "<< sizeof(InMessage.Buffer.InMessage));
+            if( itr + 2 > end )
+            {
+                CTILOG_WARN(dout, "No length header on result string for device " << getName() << ":" << FormattedList::of(
+                    "Position", itr - InMessage.Buffer.InMessage,
+                    "End",      end - InMessage.Buffer.InMessage,
+                    "Bytes remaining", end - itr));
+                break;
+            }
 
-            length = sizeof(InMessage.Buffer.InMessage);
+            size_t length = *itr++;
+            length |= *itr++ << 8;
+
+            if( itr + length > end )
+            {
+                CTILOG_WARN(dout, "Length too long on result string for device " << getName() << ":" << FormattedList::of(
+                    "Position", itr - InMessage.Buffer.InMessage,
+                    "End",      end - InMessage.Buffer.InMessage,
+                    "Bytes remaining", end - itr,
+                    "Length",          length));
+                break;
+            }
+
+            result_string += getName() + " / " + std::string(itr, itr + length) + "\n";
+
+            itr += length;
         }
-
-        result_string.assign(InMessage.Buffer.InMessage,
-                             InMessage.Buffer.InMessage + length);
 
         if( strstr(InMessage.Return.CommandStr, "scan integrity") )
         {
@@ -1167,5 +1199,4 @@ void DnpDevice::DecodeDatabaseReader(Cti::RowReader &rdr)
    }
 }
 
-}
 }

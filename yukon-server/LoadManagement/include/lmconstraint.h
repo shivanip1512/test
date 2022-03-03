@@ -22,12 +22,13 @@ public:
     bool checkManualProgramConstraints(CtiTime proposed_start, CtiTime proposed_stop);
     bool checkAutomaticProgramConstraints(CtiTime proposed_start, CtiTime proposed_stop);
     bool checkGroupConstraints(ULONG proposed_gear, CtiTime proposed_start, CtiTime proposed_stop);
-    bool checkManualGearChangeConstraints(ULONG proposed_gear, ULONG proposed_stop_seconds);
+    bool checkManualGearChangeConstraints(ULONG proposed_gear, CtiTime proposed_stop);
 
     bool checkSeason(CtiTime proposed_start, CtiTime proposed_stop);
     bool checkWeekDays(CtiTime proposed_start, CtiTime proposed_stop);
     bool checkControlWindows(CtiTime proposed_start, CtiTime proposed_stop);
     bool checkControlAreaControlWindows(CtiLMControlArea &controlArea, CtiTime proposed_start, CtiTime proposed_stop, const CtiDate &theDate);
+    bool checkProgramControlWindows(CtiTime proposed_start, CtiTime proposed_stop);
     bool checkMasterActive();
     bool checkNotifyActiveOffset(CtiTime proposed_start);
 

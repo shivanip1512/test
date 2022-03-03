@@ -16,6 +16,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.ModelMap;
+import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
@@ -23,10 +24,10 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import com.cannontech.clientutils.YukonLogManager;
 import com.cannontech.common.events.loggers.GatewayEventLogService;
 import com.cannontech.common.i18n.MessageSourceAccessor;
-import com.cannontech.common.pao.PaoType;
 import com.cannontech.common.rfn.dao.impl.GatewayDataException;
 import com.cannontech.common.rfn.message.gateway.Authentication;
 import com.cannontech.common.rfn.model.GatewayFirmwareVersion;
+import com.cannontech.common.rfn.model.GatewaySettings;
 import com.cannontech.common.rfn.model.GatewayUpdateModel;
 import com.cannontech.common.rfn.model.NmCommunicationException;
 import com.cannontech.common.rfn.model.RfnGateway;
@@ -34,19 +35,19 @@ import com.cannontech.common.rfn.service.RfnGatewayFirmwareUpgradeService;
 import com.cannontech.common.rfn.service.RfnGatewayService;
 import com.cannontech.common.util.JsonUtils;
 import com.cannontech.common.util.LazyList;
-import com.cannontech.core.roleproperties.YukonRole;
+import com.cannontech.common.validator.YukonValidationUtils;
+import com.cannontech.core.roleproperties.HierarchyPermissionLevel;
 import com.cannontech.core.roleproperties.YukonRoleProperty;
 import com.cannontech.i18n.YukonUserContextMessageSourceResolver;
 import com.cannontech.system.GlobalSettingType;
 import com.cannontech.system.dao.GlobalSettingDao;
 import com.cannontech.user.YukonUserContext;
 import com.cannontech.web.PageEditMode;
-import com.cannontech.web.security.annotation.CheckRole;
-import com.cannontech.web.security.annotation.CheckRoleProperty;
+import com.cannontech.web.security.annotation.CheckPermissionLevel;
 import com.google.common.collect.ImmutableMap;
 
 @Controller
-@CheckRole(YukonRole.DEVICE_MANAGEMENT)
+@CheckPermissionLevel(property = YukonRoleProperty.MANAGE_INFRASTRUCTURE, level = HierarchyPermissionLevel.CREATE)
 public class GatewayUpdateServerController {
 
     private static final Logger log = YukonLogManager.getLogger(GatewayUpdateServerController.class);
@@ -78,7 +79,7 @@ public class GatewayUpdateServerController {
         }
     }
 
-    @CheckRoleProperty(YukonRoleProperty.INFRASTRUCTURE_CREATE_AND_UPDATE)
+    @CheckPermissionLevel(property = YukonRoleProperty.MANAGE_INFRASTRUCTURE, level = HierarchyPermissionLevel.CREATE)
     @RequestMapping("/gateways/update-servers")
     public String editUpdateServers(ModelMap model, YukonUserContext userContext) {
 
@@ -116,13 +117,14 @@ public class GatewayUpdateServerController {
         return "gateways/update-servers.jsp";
     }
 
-    @CheckRoleProperty(YukonRoleProperty.INFRASTRUCTURE_CREATE_AND_UPDATE)
+    @CheckPermissionLevel(property = YukonRoleProperty.MANAGE_INFRASTRUCTURE, level = HierarchyPermissionLevel.CREATE)
     @RequestMapping(value="/gateways/update-servers", method=RequestMethod.POST)
     public String saveUpdateServers(
         ModelMap model,
         HttpServletResponse resp,
         @ModelAttribute("allSettings") GatewayUpdateModelList allSettings,
-        YukonUserContext userContext ) {
+        YukonUserContext userContext,
+        BindingResult result) {
 
         MessageSourceAccessor accessor = messageResolver.getMessageSourceAccessor(userContext);
 
@@ -131,9 +133,36 @@ public class GatewayUpdateServerController {
         defaultAuth.setUsername(globalSettingDao.getString(GlobalSettingType.RFN_FIRMWARE_UPDATE_SERVER_USER));
         defaultAuth.setPassword(globalSettingDao.getString(GlobalSettingType.RFN_FIRMWARE_UPDATE_SERVER_PASSWORD));
 
-        try {
-            List<GatewayUpdateModel> updateServerInfos = allSettings.getList();
+        List<GatewayUpdateModel> updateServerInfos = allSettings.getList();
+        
+        GatewaySettings settings = new GatewaySettings();
 
+        int z = 0;
+        for (GatewayUpdateModel updateServerInfo : updateServerInfos) {
+            settings.setUpdateServerUrl("stuff");
+            settings.setUpdateServerLogin(updateServerInfo.getUpdateServerLogin());
+
+            if (settings.isUseDefaultUpdateServer()) {
+                // Default settings will be used, no need to validate other fields
+            } else {
+                YukonValidationUtils.rejectIfEmptyOrWhitespace(result, "list[" + z + "].updateServerUrl",
+                        baseKey + "updateserver.url.required");
+                YukonValidationUtils.rejectIfEmptyOrWhitespace(result, "list[" + z + "].updateServerLogin.username",
+                        baseKey + "updateserver.username.required");
+                YukonValidationUtils.rejectIfEmptyOrWhitespace(result, "list[" + z + "].updateServerLogin.password",
+                        baseKey + "updateserver.password.required");
+            }
+            z++;
+        }
+        
+        
+        if (result.hasErrors()) {
+            resp.setStatus(HttpStatus.BAD_REQUEST.value());
+            model.addAttribute("mode", PageEditMode.CREATE);
+            return "gateways/update-servers.jsp";
+        }
+        
+        try {
             List<RfnGateway> gateways = new ArrayList<>();
 
             for (GatewayUpdateModel updateServerInfo : updateServerInfos) {
@@ -168,7 +197,7 @@ public class GatewayUpdateServerController {
         return JsonUtils.writeResponse(resp, json);
     }
 
-    @CheckRoleProperty(YukonRoleProperty.INFRASTRUCTURE_CREATE_AND_UPDATE)
+    @CheckPermissionLevel(property = YukonRoleProperty.MANAGE_INFRASTRUCTURE, level = HierarchyPermissionLevel.CREATE)
     @RequestMapping(value = "/gateways/firmware-upgrade", method=RequestMethod.GET)
     public String firmwareUpgrade(ModelMap model, YukonUserContext userContext) {
         try {
@@ -213,15 +242,19 @@ public class GatewayUpdateServerController {
         }
         String versionString = gateway.getData().getReleaseVersion();
         log.debug("Release version: " + versionString);
-        GatewayFirmwareVersion minimumSupportedFirmwareVersion = null;
+        if (versionString == null) {
+            return false;
+        }
+        
         try {
             GatewayFirmwareVersion version = GatewayFirmwareVersion.parse(versionString);
-            Map<PaoType, GatewayFirmwareVersion> minimumUpgradeVersions = Map.of(
-                    PaoType.VIRTUAL_GATEWAY, new GatewayFirmwareVersion(9, 2, 0),
-                    PaoType.GWY800, new GatewayFirmwareVersion(6, 1, 0),
-                    PaoType.RFN_GATEWAY, new GatewayFirmwareVersion(6, 1, 1));
 
-            minimumSupportedFirmwareVersion = minimumUpgradeVersions.get(gateway.getPaoIdentifier().getPaoType());
+            GatewayFirmwareVersion minimumSupportedFirmwareVersion = 
+                    GatewayFirmwareVersion.getMinimumUpgradeVersion(gateway.getPaoIdentifier().getPaoType());
+            if (minimumSupportedFirmwareVersion == null) {
+                log.error("Unsupported gateway PaoType: " + gateway.getPaoIdentifier().getPaoType());
+                return false;
+            }
             log.debug("Minimum supported firmware version for upgrade: " + minimumSupportedFirmwareVersion);
             int compare = version.compareTo(minimumSupportedFirmwareVersion);
             boolean isUpgradeable = compare >= 0;
@@ -233,7 +266,7 @@ public class GatewayUpdateServerController {
         }
     }
     
-    @CheckRoleProperty(YukonRoleProperty.INFRASTRUCTURE_CREATE_AND_UPDATE)
+    @CheckPermissionLevel(property = YukonRoleProperty.MANAGE_INFRASTRUCTURE, level = HierarchyPermissionLevel.CREATE)
     @RequestMapping(value = "/gateways/firmware-upgrade", method=RequestMethod.POST)
     public String sendFirmwareUpgrade(
         HttpServletResponse resp,

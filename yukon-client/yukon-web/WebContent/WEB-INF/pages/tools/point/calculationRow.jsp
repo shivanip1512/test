@@ -4,7 +4,9 @@
 
 <cti:msgScope paths="yukon.web.components.image">
  
- <tr data-point-picker-id="calcPoint${nextIndex}Picker" class="js-add-calc-row">
+ <cti:uniqueIdentifier var="uniqueId"/>
+ 
+ <tr data-point-picker-id="calcPoint${uniqueId}Picker" class="js-add-calc-row">
         <form:hidden path="pointModel.pointBase.calcComponents[${nextIndex}].componentOrder" value="${nextIndex + 1}" class="js-component-order"/>
         <form:hidden path="pointModel.pointBase.calcComponents[${nextIndex}].pointID" value="${pointModel.id}"/>
         <td>
@@ -13,18 +15,18 @@
         <td>
             <span class="js-constant dn"><tags:input path="pointModel.pointBase.calcComponents[${nextIndex}].constant" inputClass="js-constant-value"/></span>
             <span class="js-point-picker">
-                <form:hidden id="calc-component-point-${nextIndex}-input"
-                    path="pointModel.pointBase.calcComponents[${nextIndex}].componentPointID" />
+                <form:hidden id="calc-component-point-${uniqueId}-input"
+                    path="pointModel.pointBase.calcComponents[${nextIndex}].componentPointID" cssClass="js-calc-point-comp"/>
                 <tags:pickerDialog
-                    id="calcPoint${nextIndex}Picker"
+                    id="calcPoint${uniqueId}Picker"
                     type="notSystemPointPicker"
                     linkType="selectionLabel"
                     selectionProperty="paoPoint"
                     buttonStyleClass="M0"
-                    destinationFieldId="calc-component-point-${nextIndex}-input"
+                    destinationFieldId="calc-component-point-${uniqueId}-input"
                     viewOnlyMode="${false}"
-                    includeRemoveButton="${true}"
-                    removeValue="0" />
+                    removeValue="0"
+                    includeRemoveButton="${true}"/>
             </span>
         </td>
         <td>
@@ -43,7 +45,7 @@
                 <cti:button icon="icon-cross" renderMode="buttonImage" classes="js-remove-calc"/>
                 <cti:button icon="icon-bullet-go-up" renderMode="buttonImage" classes="js-up"/>
                 <cti:button icon="icon-bullet-go-down" renderMode="buttonImage" classes="js-down" disabled="true"/>
-            </div>      
+            </div>
             </cti:displayForPageEditModes> 
         </td>
     </tr>

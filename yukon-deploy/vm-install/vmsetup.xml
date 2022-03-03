@@ -6,6 +6,8 @@
 
     <property environment="env"/>
 
+    <property file="yukon-client/build/build.properties"/>
+    <property file="yukon-build/build_version.properties"/>
     <property name="vmware-cmd"  value="vmware-cmd.pl"/>
     <property name="vmware-dir"  value="C:\Program Files (x86)\VMware\VMware vSphere CLI\bin\"/>
     
@@ -15,12 +17,36 @@
     <property name="resource_pool" value="${env.VM_RESOURCE_POOL}" if:set="env.VM_RESOURCE_POOL"/>
     <property name="host_username" value="${env.VM_HOST_USERNAME}" />
     <property name="host_password" value="${env.VM_HOST_PASSWORD}" />
+    <property name="vm_host_prefix" value="${env.VM_HOST_NAME_PREFIX}" />
+    <property name="git_branch_name" value="${env.GIT_BRANCH_NAME}" />
     <property name="guest_username" value="${env.VM_GUEST_USERNAME}" if:set="env.VM_GUEST_USERNAME"/>
     <property name="guest_username" value="Administrator"/> <!-- This is set if not done above -->
+    <if>
+        <equals arg1="${git_branch_name}" arg2="master"/>
+        <then>
+            <property name="guest_userid" value="${vm_host_prefix}${version.major}-${version.minor}+${guest_username}" if:set="env.VM_HOST_NAME_PREFIX"/>
+            <property name="guest_address" value="${vm_host_prefix}${version.major}-${version.minor}.${vmdomain}" if:set="env.VM_HOST_NAME_PREFIX"/>
+        </then>
+        <else>
+            <if>
+                <equals arg1="${vm_host_prefix}" arg2="PSPL-SW-RESTVM"/>
+                    <then>
+                        <property name="guest_userid" value="${vm_host_prefix}+${guest_username}" if:set="env.VM_HOST_NAME_PREFIX"/>
+                        <property name="guest_address" value="${vm_host_prefix}.${vmdomain}" if:set="env.VM_HOST_NAME_PREFIX"/>
+                    </then>
+                    <else>
+                        <propertyregex property="branch_version" input="${git_branch_name}" regexp="([a-zA-Z/]+)" replace="" global="true" if:set="env.GIT_BRANCH_NAME"/>
+                        <propertyregex property="modified_branch_version" input="${branch_version}" regexp="([.])" replace="-" global="true" if:set="env.GIT_BRANCH_NAME"/>
+                        <property name="guest_userid" value="${vm_host_prefix}${modified_branch_version}+${guest_username}" if:set="env.VM_HOST_NAME_PREFIX"/>
+                        <property name="guest_address" value="${vm_host_prefix}${modified_branch_version}.${vmdomain}" if:set="env.VM_HOST_NAME_PREFIX"/>
+                    </else>
+            </if>
+        </else>
+    </if>
     <property name="guest_userid" value="${env.VM_GUEST_USERID}" if:set="env.VM_GUEST_USERID"/>
     <property name="guest_password" value="${env.VM_GUEST_PASSWORD}" if:set="env.VM_GUEST_PASSWORD"/>
     <property name="guest_password" value="cti123" if:set="env.VM_GUEST_PASSWORD"/>
-    <property name="guest_address" value="${env.VM_GUEST_ADDRESS}" /> 
+    <property name="guest_address" value="${env.VM_GUEST_ADDRESS}"/> 
     <property name="config_file_path" value="${env.VM_CONFIG_FILE_PATH}" />
     
     <property name="hudson.home" value="${HUDSON_HOME}"/>
@@ -42,7 +68,6 @@
     <property name="domain_login_pwd" value="Cti123"/>
     <property name="vm_template" value="${env.VM_TEMPLATE}"/>
     <property name="guest_name" value="${env.VM_GUEST_NAME}"/>
-    
 
     <target name="targets">
         <echo message="The following targets are available"/>
@@ -351,7 +376,7 @@
 	        <scp todir="${guest_userid}:${guest_password}@${guest_address}:/cygdrive/c/" trust="true">
 	            <fileset dir="${basedir}/yukon-deploy/vm-install/copy-to-vm">
 	                <include name="**"/>
-	            	<exclude name="master.cfg"/>
+	                <exclude name="master.cfg"/>
 	            </fileset>
 	        </scp>
 		
@@ -364,7 +389,7 @@
 	    
 	    <antcall target="copy_installer_to_vm"/>
 	</target>
-	
+
 	<target name="copy_master_cfg" depends="setup_master_cfg">
         <echo message="SCP todir ${guest_userid}:${guest_password}@${guest_address}:/cygdrive/c/" />
             <scp todir="${guest_userid}:${guest_password}@${guest_address}:/cygdrive/c/" trust="true">
@@ -738,21 +763,21 @@
     </target>
     
     <target name="remote_upgrade_powershell" depends="find_guestid">
-        <property name="db.type" value="${env.DATABASE_TYPE}"/>
-        
       
         <sshexec host="${guest_address}"
                             trust="true"
                             username="${guest_userid}"
                             password="${guest_password}"
-                            command="powershell c:/YukonUpgrade.ps1 -databaseType ${db.type}"/>
+                            command="powershell c:/YukonUpgrade.ps1"/>
     </target>
+
     <target name="remote_upgrade_restApi_powershell" depends="find_guestid">
+        <property name="db.type" value="${env.DATABASE_TYPE}"/>
         <sshexec host="${guest_address}"
                             trust="true"
                             username="${guest_userid}"
                             password="${guest_password}"
-                            command="powershell c:/YukonSetupRestApi.ps1"/>
+                            command="powershell c:/YukonSetupRestApi.ps1 -databaseType ${db.type}"/>
     </target>
     <target name="remote_upgrade_db_restore_powershell" depends="find_guestid">
         <property name="db.type" value="${env.DATABASE_TYPE}"/>
@@ -931,8 +956,8 @@
         </if>
     </target>
 
-	<target name="copy_installer_to_vm">
-		<!--- Using parallel to add a timeout to this task which keeps hanging -->
+    <target name="copy_installer_to_vm">
+        <!--- Using parallel to add a timeout to this task which keeps hanging -->
         <parallel threadCount="1" timeout="300000">
             <sequential>
                 <echo message="Calling delete_old_installers to delete old yukon zips." />
@@ -953,8 +978,8 @@
                 </scp>
             </sequential>
         </parallel>
-	</target>
-	
+    </target>
+
     <!-- run installer in vm -->
     <target name="install_in_vm" depends="find_guestid">
         <!-- run unzip ant task in vm -->

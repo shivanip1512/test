@@ -14,6 +14,7 @@ import com.cannontech.tools.bulk.service.impl.MissListConverterServiceImpl;
 public class MissListConverter {
 
 	public static void main(String[] args) {
+                CtiUtilities.setClientAppName(ApplicationId.MISSED_LIST_CONVERTER);
 
 		ClientSession session = ClientSession.getInstance();
 		if (!session.establishSession()) {
@@ -22,8 +23,6 @@ public class MissListConverter {
 
 		if (session == null)
 			System.exit(-1);
-
-		CtiUtilities.setClientAppName(ApplicationId.MISSED_LIST_CONVERTER);
 
 		if (args.length >= 2 && args.length <= 4) {
 			MissListConverterService missListConverterService = new MissListConverterServiceImpl();

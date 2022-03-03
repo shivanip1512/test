@@ -30,6 +30,7 @@ import com.cannontech.dr.itron.service.ItronDataReadService;
 import com.cannontech.i18n.YukonMessageSourceResolvable;
 import com.google.common.collect.Iterables;
 import com.google.common.collect.Multimap;
+import com.google.common.collect.Sets;
 
 public class DeviceAttributeReadItronServiceImpl implements DeviceAttributeReadStrategy {
     private static final Logger log = YukonLogManager.getLogger(DeviceAttributeReadItronServiceImpl.class);
@@ -65,6 +66,7 @@ public class DeviceAttributeReadItronServiceImpl implements DeviceAttributeReadS
             List<Integer> deviceIds =
                 StreamUtils.stream(devices).map(device -> device.getPao().getPaoId()).collect(
                     Collectors.toList());
+            commandRequestExecutionResultDao.saveExecutionRequest(execution.getId(), Sets.newHashSet(deviceIds));
             // All devices succeeded.
             Multimap<PaoIdentifier, PointValueHolder> devicesToPointValues =
                 itronDataReadService.collectDataForRead(deviceIds);

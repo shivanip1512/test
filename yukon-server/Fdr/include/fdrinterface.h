@@ -34,9 +34,10 @@ class IM_EX_FDRBASE CtiFDRInterface
         CtiCommandMsg* createAnalogOutputMessage(long pointId, std::string translationName, double value);
         CtiCommandMsg* createScanDeviceMessage(long paoId, std::string translationName);
 
-        bool                sendPointRegistration();
+        void                sendPointRegistration();
         virtual std::unique_ptr<CtiPointRegistrationMsg> buildRegistrationPointList();
-
+        virtual bool hasRegistrationPoints();
+        virtual std::optional<std::set<long>> loadOutboundPoints();
 
         std::string              getCparmValueAsString(std::string key);
 
@@ -162,7 +163,7 @@ class IM_EX_FDRBASE CtiFDRInterface
 
         mutable Lock iDispatchLock;
 
-        boost::scoped_ptr<CtiFDRManager>       iOutBoundPoints;
+        std::set<long>                         iOutBoundPoints;
         boost::scoped_ptr<CtiClientConnection> iDispatchConn;
         boost::optional<int>                   iDispatchRegisterId;
         bool                                   iDispatchConnected;

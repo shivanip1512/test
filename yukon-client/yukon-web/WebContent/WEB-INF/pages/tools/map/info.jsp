@@ -18,12 +18,19 @@
                 <cti:icon icon="icon-notes-pin" classes="js-view-all-notes cp" title="${viewAllNotesTitle}" data-pao-id="${pao.paoIdentifier.paoId}"/>
             </c:if>
             <cm:dropdown icon="icon-cog" triggerClasses="js-cog-menu fr">
-                <cm:dropdownOption key=".mapDevice" classes="js-device-map" data-device-id="${pao.paoIdentifier.paoId}" showIcon="false"></cm:dropdownOption>
+                <c:if test="${showMapDevice}">
+                    <cm:dropdownOption key=".mapDevice" classes="js-device-map" data-device-id="${pao.paoIdentifier.paoId}" showIcon="false"></cm:dropdownOption>
+                </c:if>
                 <c:if test="${pao.paoIdentifier.paoType.isRfn()}">
+                    <cm:dropdownOption key=".viewDescendants" classes="js-device-descendants" data-device-id="${pao.paoIdentifier.paoId}" showIcon="false"></cm:dropdownOption>
                     <cm:dropdownOption key=".viewNeighbors" classes="js-device-neighbors" data-device-id="${pao.paoIdentifier.paoId}" showIcon="false"></cm:dropdownOption>
                     <c:if test="${!pao.paoIdentifier.paoType.isRfGateway()}">
                         <cm:dropdownOption key=".viewPrimaryRoute" classes="js-device-route" data-device-id="${pao.paoIdentifier.paoId}" showIcon="false"></cm:dropdownOption>
                     </c:if>
+                </c:if>
+                <li class="divider"></li>
+                <c:if test="${!hasNotes}">
+                   <cm:dropdownOption key="yukon.web.common.paoNotesSearch.createNote" id="js-popup-note-create" classes="js-view-all-notes" data-pao-id="${pao.paoIdentifier.paoId}" showIcon="false"></cm:dropdownOption>
                 </c:if>
                 <cti:checkRolesAndProperties value="ENDPOINT_PERMISSION" level="UPDATE">
                     <cm:dropdownOption id="remove-pin" data-device-id="${pao.paoIdentifier.paoId}" key=".deleteCoordinates.delete" data-popup="#confirm-delete" showIcon="false"/>
@@ -41,8 +48,17 @@
     <c:if test="${!empty sensorSN}">
         <tags:nameValue2 nameKey=".serialNumber">${fn:escapeXml(sensorSN)}</tags:nameValue2>
     </c:if>
-    <c:if test="${!empty primaryGateway}">
-        <tags:nameValue2 nameKey=".primaryGateway"><cti:paoDetailUrl yukonPao="${primaryGateway}" newTab="true">${fn:escapeXml(primaryGatewayName)}</cti:paoDetailUrl></tags:nameValue2>
+    <c:if test="${pao.paoIdentifier.paoType.isRfn()}">
+        <tags:nameValue2 nameKey=".primaryGateway">
+            <c:choose>
+                <c:when test="${!empty primaryGateway}">
+                    <cti:paoDetailUrl yukonPao="${primaryGateway}" newTab="true">${fn:escapeXml(primaryGatewayName)}</cti:paoDetailUrl>
+                </c:when>
+                <c:otherwise>
+                    <i:inline key="yukon.common.unknown"/>
+                </c:otherwise>
+            </c:choose>
+        </tags:nameValue2>
     </c:if>
     <c:if test="${!empty gatewayIPAddress}">
         <tags:nameValue2 nameKey=".ipAddress">${fn:escapeXml(gatewayIPAddress)}</tags:nameValue2>
@@ -63,10 +79,13 @@
         <c:if test="${!empty securityType}">
             <tags:nameValue2 nameKey=".securityType">${fn:escapeXml(securityType)}</tags:nameValue2>
         </c:if>
-        <c:if test="${!empty virtualGatewayIpv6Address}">
+        <%-- <c:if test="${!empty virtualGatewayIpv6Address}">
             <tags:nameValue2 nameKey=".virtualGatewayIpv6Address">${fn:escapeXml(virtualGatewayIpv6Address)}</tags:nameValue2>
-        </c:if>
+        </c:if> --%>
     </cti:msgScope>
+    <c:if test="${!empty commStatus}">
+        <tags:nameValue2 nameKey=".commStatus">${fn:escapeXml(commStatus)}</tags:nameValue2>
+    </c:if>
     <c:if test="${!empty deviceStatus}">
         <tags:nameValue2 nameKey=".status" valueClass="js-status">${fn:escapeXml(deviceStatus)}</tags:nameValue2>
     </c:if>
@@ -86,7 +105,13 @@
             </tags:nameValue2>
         </c:if>
     </c:if>
-    <tags:nameValue2 nameKey=".distance" nameClass="dn js-distance-display" valueClass="dn js-distance-display"><span class="js-distance"></span><i:inline key=".distance.miles"/></tags:nameValue2>
+    <!-- Neighbor Data -->
+    <tags:nameValue2 nameKey=".etxBand" nameClass="dn js-etx-band-display" valueClass="dn js-etx-band js-etx-band-display"></tags:nameValue2>
+    <tags:nameValue2 nameKey=".linkCost" nameClass="dn js-link-cost-display" valueClass="dn js-link-cost js-link-cost-display"></tags:nameValue2>
+    <tags:nameValue2 nameKey=".numSamples" nameClass="dn js-num-samples-display" valueClass="dn js-num-samples js-num-samples-display"></tags:nameValue2>
+    <tags:nameValue2 nameKey=".flags" nameClass="dn js-flags-display" valueClass="dn js-flags js-flags-display"></tags:nameValue2>
+    
+    <tags:nameValue2 nameKey=".distance" nameClass="dn js-distance-display" valueClass="dn js-distance-display"><span class="js-distance"></span>&nbsp;<i:inline key=".distance.miles"/></tags:nameValue2>
 </tags:nameValueContainer2>
 
 <c:if test="${not empty errorMsg}">

@@ -7,16 +7,27 @@ import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.validator.routines.EmailValidator;
 import org.apache.commons.validator.routines.UrlValidator;
 import org.joda.time.DateTimeZone;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.validation.Errors;
 
 import com.cannontech.common.exception.BadConfigurationException;
+import com.cannontech.common.i18n.MessageSourceAccessor;
 import com.cannontech.common.util.CtiUtilities;
 import com.cannontech.common.util.Range;
 import com.cannontech.common.validator.YukonValidationUtils;
+import com.cannontech.i18n.YukonUserContextMessageSourceResolver;
+import com.cannontech.user.YukonUserContext;
+import com.cannontech.util.Validator;
 
 public class GlobalSettingTypeValidators {
     private static String baseKey = "yukon.web.modules.adminSetup.config.error.";
-    
+    private static YukonUserContextMessageSourceResolver messageResolver;
+
+    @Autowired
+    public GlobalSettingTypeValidators(YukonUserContextMessageSourceResolver messageResolver){
+        GlobalSettingTypeValidators.messageResolver = messageResolver;
+    }
+
     public static TypeValidator<String> urlValidator = new TypeValidator<>() {
         private final String[] schemes = { "http", "https" };
 
@@ -71,13 +82,17 @@ public class GlobalSettingTypeValidators {
     /**
      * Validate individual Integer port 
      */
+  
     public static TypeValidator<Integer> portValidator = new TypeValidator<>() {
         @Override
         public void validate(Integer port, Errors errors, GlobalSettingType globalSettingType) {
             if (port != null) {
                 String field = "values[" + globalSettingType + "]";
-                Range<Integer> range = Range.inclusive(0, 65535);
-                YukonValidationUtils.checkRange(errors, field, port, range, true);
+                String key = globalSettingType.getFormatKey();
+                MessageSourceAccessor messageSourceAccessor = messageResolver.getMessageSourceAccessor(YukonUserContext.system);
+                String fieldName = messageSourceAccessor.getMessage(key);
+                Range<Integer> range = Range.inclusive(1, 65535);
+                YukonValidationUtils.checkRange(errors, field, fieldName, port, range, true);
             }
         }
     };
@@ -108,7 +123,7 @@ public class GlobalSettingTypeValidators {
         Pattern urlWithPortMatcher = Pattern.compile("\\s*(.*?):(\\d+)\\s*");
         @Override
         public void validate(String urlWithPort, Errors errors, GlobalSettingType globalSettingType) {
-            YukonValidationUtils.checkIsBlankOrExceedsMaxLength(errors, "values[" + globalSettingType + "]", urlWithPort, true, 1000);
+            YukonValidationUtils.checkIsBlankOrExceedsMaxLengthOrBlacklistedChars(errors, "values[" + globalSettingType + "]", urlWithPort, true, 1000);
 
             if (!StringUtils.isBlank(urlWithPort)
                     && !urlWithPortMatcher.matcher(urlWithPort).matches()) {
@@ -140,7 +155,19 @@ public class GlobalSettingTypeValidators {
             if (globalSettingType.getValidationValue() != null) {
                 String field = "values[" + globalSettingType + "]";
                 Range<Integer> range = (Range<Integer>)globalSettingType.getValidationValue();
-                YukonValidationUtils.checkRange(errors, field, value, range, true);
+                String key = globalSettingType.getFormatKey();
+                MessageSourceAccessor messageSourceAccessor = messageResolver.getMessageSourceAccessor(YukonUserContext.system);
+                String fieldName = messageSourceAccessor.getMessage(key);
+                YukonValidationUtils.checkRange(errors, field, fieldName, value, range, true);
+            }
+        }
+    };
+    
+    public static TypeValidator<String> guidValidator = new TypeValidator<>( ) {
+        @Override
+        public void validate(String value, Errors errors, GlobalSettingType globalSettingType) {
+            if (!StringUtils.isBlank(value) && !Validator.isValidGuid(value)) {
+                errors.rejectValue("values[" + globalSettingType + "]", baseKey + "invalidGuid", null, "");
             }
         }
     };

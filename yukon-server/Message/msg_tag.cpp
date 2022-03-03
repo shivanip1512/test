@@ -189,6 +189,11 @@ CtiTagMsg& CtiTagMsg::setClientMsgId(int id)
     return *this;
 }
 
-
-
+std::size_t CtiTagMsg::getVariableSize() const
+{
+    return  Inherited::getVariableSize()
+      +   dynamic_sizeof( _descriptionStr )
+      +   dynamic_sizeof( _referenceStr )
+      +   dynamic_sizeof( _taggedForStr );
+}
 

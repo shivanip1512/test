@@ -56,6 +56,11 @@ public class MeterPaoTypeHandler implements PaoTypeHandler {
             path = "/meter/gas/home?deviceId=" + paoId;
             pageName = "meterDetail.gas";
         }
+        if (paoIdentifier.getPaoType().isVirtual()) {
+            path = "/meter/virtual/home?deviceId=" + paoId;
+            pageName = "meterDetail.virtual";
+        }
+
         builder.pageName(pageName);
         builder.path(path);
         DisplayablePao displayablePao = paoLoadingService.getDisplayablePao(paoIdentifier);
@@ -64,13 +69,18 @@ public class MeterPaoTypeHandler implements PaoTypeHandler {
         builder.pageArgs(deviceName);
         
         String meterNumber = rs.getString("meterNumber");
-        if (paoIdentifier.getPaoType().isRfn()) {
-            addressOrSerialNumber = rs.getString("serialNumber");
-        } else if (paoIdentifier.getPaoType().isPlc()) {
-            addressOrSerialNumber = rs.getString("address");
+        String paoName = rs.getString("paoName");
+        
+        if (paoIdentifier.getPaoType().isVirtual()) {
+            builder.summaryArgs(paoName, meterNumber);
+        } else {
+            if (paoIdentifier.getPaoType().isRfn()) {
+                addressOrSerialNumber = rs.getString("serialNumber");
+            } else if (paoIdentifier.getPaoType().isPlc()) {
+                addressOrSerialNumber = rs.getString("address");
+            }
+            builder.summaryArgs(paoName, meterNumber, addressOrSerialNumber);
         }
-
-        builder.summaryArgs(meterNumber, addressOrSerialNumber);
     }
     
     @Override

@@ -32,6 +32,8 @@ struct regulator_device_config_base
         :   fixtureConfig( new Cti::Test::test_DeviceConfig ),
             overrideConfigManager( fixtureConfig )
     {
+        fixtureConfig->insertValue( "installOrientation",       "FORWARD" );
+
         fixtureConfig->insertValue( "voltageChangePerTap",      "0.75" );
 
         fixtureConfig->insertValue( "regulatorHeartbeatMode",   "COUNTDOWN" );
@@ -58,6 +60,27 @@ struct regulator_device_config_set_point : regulator_device_config_base
     }
 };
 
+struct regulator_device_config_set_point_reversed_install : regulator_device_config_base
+{
+    regulator_device_config_set_point_reversed_install()
+        :   regulator_device_config_base()
+    {
+        fixtureConfig->insertValue( "installOrientation",  "REVERSE" );
+        fixtureConfig->insertValue( "voltageControlMode",  "SET_POINT" );
+    }
+};
+
+struct regulator_device_config_direct_tap_with_limits : regulator_device_config_base
+{
+    regulator_device_config_direct_tap_with_limits()
+        :   regulator_device_config_base()
+    {
+        fixtureConfig->insertValue( "voltageControlMode",  "DIRECT_TAP" );
+
+        fixtureConfig->insertValue( "minTapPosition",  "-10" );
+        fixtureConfig->insertValue( "maxTapPosition",   "12" );
+    }
+};
 
 struct gang_operated_voltage_regulator_fixture_core
 {
@@ -72,17 +95,17 @@ struct gang_operated_voltage_regulator_fixture_core
         {
             signalMessages.emplace_back( message );
         }
-        virtual void manualCapBankControl(CtiRequestMsg* pilRequest, CtiMultiMsg* multiMsg = NULL)
+        void manualCapBankControl(Cti::CapControl::PorterRequest pilRequest, CtiMultiMsg* multiMsg = NULL) override
         {
-            requestMessages.emplace_back( pilRequest );
+            requestMessages.emplace_back( std::move( pilRequest ) );
         }
-        virtual void enqueueEventLogEntry(const Cti::CapControl::EventLogEntry &event)
+        void enqueueEventLogEntry(const Cti::CapControl::EventLogEntry &event) override
         {
             eventMessages.push_back(event);
         }
 
         std::vector< std::unique_ptr<CtiMessage> >      signalMessages;
-        std::vector< std::unique_ptr<CtiRequestMsg> >   requestMessages;
+        Cti::CapControl::PorterRequests                 requestMessages;
         Cti::CapControl::EventLogEntries                eventMessages;
     }
     capController;
@@ -141,7 +164,11 @@ struct gang_operated_voltage_regulator_fixture_core
                 { Attribute::ReverseFlowIndicator,
                     { 7400,  StatusPointType, "Reverse Flow Indicator", 1024, 19, "", "", 1.0, 0 } },
                 { Attribute::ControlMode,
-                    { 7450,  AnalogPointType, "Regulator Control Mode", 1026, 21, "", "", 1.0, 0 } }
+                    { 7450,  AnalogPointType, "Regulator Control Mode", 1026, 21, "", "", 1.0, 0 } },
+                { Attribute::PowerFlowIndeterminate,
+                    { 7500,  StatusPointType, "Power Flow Indeterminate", 1030, 23, "", "", 1.0, 0 } },
+                { Attribute::ControlPowerFlowReverse,
+                    { 7550,  StatusPointType, "Control Power Flow Reverse", 1031, 24, "", "", 1.0, 0 } }
             };
         }
     }
@@ -175,8 +202,19 @@ struct gang_operated_voltage_regulator_fixture_setpoint
 {
 };
 
+struct gang_operated_voltage_regulator_fixture_setpoint_reversed_install
+    :   gang_operated_voltage_regulator_fixture_core,
+        regulator_device_config_set_point_reversed_install
+{
+};
+
 }
 
+struct gang_operated_voltage_regulator_fixture_direct_tap_with_limits
+    :   gang_operated_voltage_regulator_fixture_core,
+        regulator_device_config_direct_tap_with_limits
+{
+};
 
 BOOST_FIXTURE_TEST_SUITE( test_GangOperatedVoltageRegulator_DirectTap, gang_operated_voltage_regulator_fixture_direct_tap )
 
@@ -1223,13 +1261,13 @@ BOOST_AUTO_TEST_CASE(test_Mode_Documentation_setPoint)
         {  0.0, { ControlPolicy::LockedForward        ,  fwd_sp,  fwd_sp } },
         {  1.0, { ControlPolicy::LockedReverse        ,  rev_sp,  rev_sp } },
         {  2.0, { ControlPolicy::ReverseIdle          ,  fwd_sp,  fwd_sp } },
-        {  3.0, { ControlPolicy::Bidirectional        ,  fwd_sp,  fwd_sp } },
+        {  3.0, { ControlPolicy::Bidirectional        ,  fwd_sp,  rev_sp } },
         {  4.0, { ControlPolicy::NeutralIdle          ,  fwd_sp,  fwd_sp } },
         {  5.0, { ControlPolicy::Cogeneration         ,  fwd_sp,  rev_sp } },
         {  6.0, { ControlPolicy::ReactiveBidirectional,  fwd_sp,  fwd_sp } },
-        {  7.0, { ControlPolicy::BiasBidirectional    ,  fwd_sp,  fwd_sp } },
+        {  7.0, { ControlPolicy::BiasBidirectional    ,  fwd_sp,  rev_sp } },
         {  8.0, { ControlPolicy::BiasCogeneration     ,  fwd_sp,  fwd_sp } },
-        {  9.0, { ControlPolicy::ReverseCogeneration  ,  fwd_sp,  fwd_sp } },
+        {  9.0, { ControlPolicy::ReverseCogeneration  ,  fwd_sp,  rev_sp } },
         { 10.0, { ControlPolicy::LockedForward        ,  fwd_sp,  fwd_sp } }
     };
 
@@ -1298,4 +1336,267 @@ BOOST_AUTO_TEST_CASE(test_Mode_Documentation_bandwidth)
     BOOST_CHECK_LT(reverseChangeDistance, forwardChangeDistance);
 }
 
+// Below here are tests for the new functionality in 9.1.0, namely the 3 new control modes, 7, 8, 9
+
+BOOST_AUTO_TEST_CASE( test_Determine_Power_Flow_Situation_input_output_codes )
+{
+    using PFS = VoltageRegulator::PowerFlowSituations;
+
+    regulator->loadAttributes( &attributes );
+
+    struct the_test_cases
+    {
+        std::vector<double> inputs;
+        PFS                 expected_output;
+    }
+    t[]
+    {   //  mode    revflow     controlpfr   indeterminate      output
+        { { 0.0,    0.0,        0.0,         0.0 },              PFS::OK },
+        { { 0.0,    0.0,        0.0,         1.0 },              PFS::IndeterminateFlow },
+        { { 0.0,    0.0,        1.0,         0.0 },              PFS::ReverseControlPowerFlow },
+        { { 0.0,    0.0,        1.0,         1.0 },              PFS::IndeterminateFlow },
+        { { 0.0,    1.0,        0.0,         0.0 },              PFS::ReverseFlow },
+        { { 0.0,    1.0,        0.0,         1.0 },              PFS::IndeterminateFlow },
+        { { 0.0,    1.0,        1.0,         0.0 },              PFS::ReverseFlow },
+        { { 0.0,    1.0,        1.0,         1.0 },              PFS::IndeterminateFlow },
+
+        { { 1.0,    0.0,        0.0,         0.0 },              PFS::ReverseInstallation },
+        { { 1.0,    0.0,        0.0,         1.0 },              PFS::ReverseInstallation },
+        { { 1.0,    0.0,        1.0,         0.0 },              PFS::ReverseInstallation },
+        { { 1.0,    0.0,        1.0,         1.0 },              PFS::ReverseInstallation },
+        { { 1.0,    1.0,        0.0,         0.0 },              PFS::ReverseInstallation },
+        { { 1.0,    1.0,        0.0,         1.0 },              PFS::ReverseInstallation },
+        { { 1.0,    1.0,        1.0,         0.0 },              PFS::ReverseInstallation },
+        { { 1.0,    1.0,        1.0,         1.0 },              PFS::ReverseInstallation },
+
+        { { 2.0,    0.0,        0.0,         0.0 },              PFS::ReverseControlPowerFlow },
+        { { 2.0,    0.0,        0.0,         1.0 },              PFS::IndeterminateFlow },
+        { { 2.0,    0.0,        1.0,         0.0 },              PFS::OK },
+        { { 2.0,    0.0,        1.0,         1.0 },              PFS::IndeterminateFlow },
+        { { 2.0,    1.0,        0.0,         0.0 },              PFS::ReverseFlow },
+        { { 2.0,    1.0,        0.0,         1.0 },              PFS::IndeterminateFlow },
+        { { 2.0,    1.0,        1.0,         0.0 },              PFS::ReverseFlow },
+        { { 2.0,    1.0,        1.0,         1.0 },              PFS::IndeterminateFlow },
+
+        { { 3.0,    0.0,        0.0,         0.0 },              PFS::OK },
+        { { 3.0,    0.0,        0.0,         1.0 },              PFS::IndeterminateFlow },
+        { { 3.0,    0.0,        1.0,         0.0 },              PFS::ReverseControlPowerFlow },
+        { { 3.0,    0.0,        1.0,         1.0 },              PFS::IndeterminateFlow },
+        { { 3.0,    1.0,        0.0,         0.0 },              PFS::ReverseFlow },
+        { { 3.0,    1.0,        0.0,         1.0 },              PFS::IndeterminateFlow },
+        { { 3.0,    1.0,        1.0,         0.0 },              PFS::ReverseFlow },
+        { { 3.0,    1.0,        1.0,         1.0 },              PFS::IndeterminateFlow },
+
+        { { 4.0,    0.0,        0.0,         0.0 },              PFS::ReverseControlPowerFlow },
+        { { 4.0,    0.0,        0.0,         1.0 },              PFS::IndeterminateFlow },
+        { { 4.0,    0.0,        1.0,         0.0 },              PFS::OK },
+        { { 4.0,    0.0,        1.0,         1.0 },              PFS::IndeterminateFlow },
+        { { 4.0,    1.0,        0.0,         0.0 },              PFS::ReverseFlow },
+        { { 4.0,    1.0,        0.0,         1.0 },              PFS::IndeterminateFlow },
+        { { 4.0,    1.0,        1.0,         0.0 },              PFS::ReverseFlow },
+        { { 4.0,    1.0,        1.0,         1.0 },              PFS::IndeterminateFlow },
+
+        { { 5.0,    0.0,        0.0,         0.0 },              PFS::OK },
+        { { 5.0,    0.0,        0.0,         1.0 },              PFS::IndeterminateFlow },
+        { { 5.0,    0.0,        1.0,         0.0 },              PFS::ReverseControlPowerFlow },
+        { { 5.0,    0.0,        1.0,         1.0 },              PFS::IndeterminateFlow },
+        { { 5.0,    1.0,        0.0,         0.0 },              PFS::OK },
+        { { 5.0,    1.0,        0.0,         1.0 },              PFS::IndeterminateFlow },
+        { { 5.0,    1.0,        1.0,         0.0 },              PFS::ReverseControlPowerFlow },
+        { { 5.0,    1.0,        1.0,         1.0 },              PFS::IndeterminateFlow },
+
+        { { 6.0,    0.0,        0.0,         0.0 },              PFS::UnsupportedMode },
+        { { 6.0,    0.0,        0.0,         1.0 },              PFS::UnsupportedMode },
+        { { 6.0,    0.0,        1.0,         0.0 },              PFS::UnsupportedMode },
+        { { 6.0,    0.0,        1.0,         1.0 },              PFS::UnsupportedMode },
+        { { 6.0,    1.0,        0.0,         0.0 },              PFS::UnsupportedMode },
+        { { 6.0,    1.0,        0.0,         1.0 },              PFS::UnsupportedMode },
+        { { 6.0,    1.0,        1.0,         0.0 },              PFS::UnsupportedMode },
+        { { 6.0,    1.0,        1.0,         1.0 },              PFS::UnsupportedMode },
+
+        { { 7.0,    0.0,        0.0,         0.0 },              PFS::OK },
+        { { 7.0,    0.0,        0.0,         1.0 },              PFS::IndeterminateFlow },
+        { { 7.0,    0.0,        1.0,         0.0 },              PFS::ReverseControlPowerFlow },
+        { { 7.0,    0.0,        1.0,         1.0 },              PFS::IndeterminateFlow },
+        { { 7.0,    1.0,        0.0,         0.0 },              PFS::ReverseFlow },
+        { { 7.0,    1.0,        0.0,         1.0 },              PFS::IndeterminateFlow },
+        { { 7.0,    1.0,        1.0,         0.0 },              PFS::ReverseFlow },
+        { { 7.0,    1.0,        1.0,         1.0 },              PFS::IndeterminateFlow },
+
+        { { 8.0,    0.0,        0.0,         0.0 },              PFS::OK },
+        { { 8.0,    0.0,        0.0,         1.0 },              PFS::IndeterminateFlow },
+        { { 8.0,    0.0,        1.0,         0.0 },              PFS::ReverseControlPowerFlow },
+        { { 8.0,    0.0,        1.0,         1.0 },              PFS::IndeterminateFlow },
+        { { 8.0,    1.0,        0.0,         0.0 },              PFS::OK },
+        { { 8.0,    1.0,        0.0,         1.0 },              PFS::IndeterminateFlow },
+        { { 8.0,    1.0,        1.0,         0.0 },              PFS::ReverseControlPowerFlow },
+        { { 8.0,    1.0,        1.0,         1.0 },              PFS::IndeterminateFlow },
+
+        { { 9.0,    0.0,        0.0,         0.0 },              PFS::ReverseInstallation },
+        { { 9.0,    0.0,        0.0,         1.0 },              PFS::ReverseInstallation },
+        { { 9.0,    0.0,        1.0,         0.0 },              PFS::ReverseInstallation },
+        { { 9.0,    0.0,        1.0,         1.0 },              PFS::ReverseInstallation },
+        { { 9.0,    1.0,        0.0,         0.0 },              PFS::ReverseInstallation },
+        { { 9.0,    1.0,        0.0,         1.0 },              PFS::ReverseInstallation },
+        { { 9.0,    1.0,        1.0,         0.0 },              PFS::ReverseInstallation },
+        { { 9.0,    1.0,        1.0,         1.0 },              PFS::ReverseInstallation }
+    };
+
+    for ( auto & z : t )
+    {
+        regulator->handlePointData( { 7450, z.inputs[0], NormalQuality, AnalogPointType } );    // control mode
+        regulator->handlePointData( { 7400, z.inputs[1], NormalQuality, AnalogPointType } );    // reverse power flow
+        regulator->handlePointData( { 7550, z.inputs[2], NormalQuality, AnalogPointType } );    // control power flow reverse
+        regulator->handlePointData( { 7500, z.inputs[3], NormalQuality, AnalogPointType } );    // power flow indeterminate
+
+        BOOST_CHECK( z.expected_output == regulator->determinePowerFlowSituation() );
+    }
+}
+
 BOOST_AUTO_TEST_SUITE_END()
+
+BOOST_FIXTURE_TEST_SUITE( test_GangOperatedVoltageRegulator_SetPoint_Reversed_Installation, gang_operated_voltage_regulator_fixture_setpoint_reversed_install )
+
+BOOST_AUTO_TEST_CASE( test_Determine_Power_Flow_Situation_input_output_codes_reversed_install )
+{
+    using PFS = VoltageRegulator::PowerFlowSituations;
+
+    regulator->loadAttributes( &attributes );
+
+    struct the_test_cases
+    {
+        std::vector<double> inputs;
+        PFS                 expected_output;
+    }
+    t[]
+    {   //  mode    revflow     controlpfr   indeterminate      output
+        { { 0.0,    0.0,        0.0,         0.0 },              PFS::ReverseInstallation },
+        { { 0.0,    0.0,        0.0,         1.0 },              PFS::ReverseInstallation },
+        { { 0.0,    0.0,        1.0,         0.0 },              PFS::ReverseInstallation },
+        { { 0.0,    0.0,        1.0,         1.0 },              PFS::ReverseInstallation },
+        { { 0.0,    1.0,        0.0,         0.0 },              PFS::ReverseInstallation },
+        { { 0.0,    1.0,        0.0,         1.0 },              PFS::ReverseInstallation },
+        { { 0.0,    1.0,        1.0,         0.0 },              PFS::ReverseInstallation },
+        { { 0.0,    1.0,        1.0,         1.0 },              PFS::ReverseInstallation },
+
+        { { 1.0,    0.0,        0.0,         0.0 },              PFS::ReverseFlow },
+        { { 1.0,    0.0,        0.0,         1.0 },              PFS::IndeterminateFlow },
+        { { 1.0,    0.0,        1.0,         0.0 },              PFS::ReverseFlow },
+        { { 1.0,    0.0,        1.0,         1.0 },              PFS::IndeterminateFlow },
+        { { 1.0,    1.0,        0.0,         0.0 },              PFS::ReverseControlPowerFlow },
+        { { 1.0,    1.0,        0.0,         1.0 },              PFS::IndeterminateFlow },
+        { { 1.0,    1.0,        1.0,         0.0 },              PFS::OK },
+        { { 1.0,    1.0,        1.0,         1.0 },              PFS::IndeterminateFlow },
+
+        { { 2.0,    0.0,        0.0,         0.0 },              PFS::ReverseInstallation },
+        { { 2.0,    0.0,        0.0,         1.0 },              PFS::ReverseInstallation },
+        { { 2.0,    0.0,        1.0,         0.0 },              PFS::ReverseInstallation },
+        { { 2.0,    0.0,        1.0,         1.0 },              PFS::ReverseInstallation },
+        { { 2.0,    1.0,        0.0,         0.0 },              PFS::ReverseInstallation },
+        { { 2.0,    1.0,        0.0,         1.0 },              PFS::ReverseInstallation },
+        { { 2.0,    1.0,        1.0,         0.0 },              PFS::ReverseInstallation },
+        { { 2.0,    1.0,        1.0,         1.0 },              PFS::ReverseInstallation },
+
+        { { 3.0,    0.0,        0.0,         0.0 },              PFS::ReverseFlow },
+        { { 3.0,    0.0,        0.0,         1.0 },              PFS::IndeterminateFlow },
+        { { 3.0,    0.0,        1.0,         0.0 },              PFS::ReverseFlow },
+        { { 3.0,    0.0,        1.0,         1.0 },              PFS::IndeterminateFlow },
+        { { 3.0,    1.0,        0.0,         0.0 },              PFS::ReverseControlPowerFlow },
+        { { 3.0,    1.0,        0.0,         1.0 },              PFS::IndeterminateFlow },
+        { { 3.0,    1.0,        1.0,         0.0 },              PFS::OK },
+        { { 3.0,    1.0,        1.0,         1.0 },              PFS::IndeterminateFlow },
+
+        { { 4.0,    0.0,        0.0,         0.0 },              PFS::ReverseInstallation },
+        { { 4.0,    0.0,        0.0,         1.0 },              PFS::ReverseInstallation },
+        { { 4.0,    0.0,        1.0,         0.0 },              PFS::ReverseInstallation },
+        { { 4.0,    0.0,        1.0,         1.0 },              PFS::ReverseInstallation },
+        { { 4.0,    1.0,        0.0,         0.0 },              PFS::ReverseInstallation },
+        { { 4.0,    1.0,        0.0,         1.0 },              PFS::ReverseInstallation },
+        { { 4.0,    1.0,        1.0,         0.0 },              PFS::ReverseInstallation },
+        { { 4.0,    1.0,        1.0,         1.0 },              PFS::ReverseInstallation },
+
+        { { 5.0,    0.0,        0.0,         0.0 },              PFS::ReverseInstallation },
+        { { 5.0,    0.0,        0.0,         1.0 },              PFS::ReverseInstallation },
+        { { 5.0,    0.0,        1.0,         0.0 },              PFS::ReverseInstallation },
+        { { 5.0,    0.0,        1.0,         1.0 },              PFS::ReverseInstallation },
+        { { 5.0,    1.0,        0.0,         0.0 },              PFS::ReverseInstallation },
+        { { 5.0,    1.0,        0.0,         1.0 },              PFS::ReverseInstallation },
+        { { 5.0,    1.0,        1.0,         0.0 },              PFS::ReverseInstallation },
+        { { 5.0,    1.0,        1.0,         1.0 },              PFS::ReverseInstallation },
+
+        { { 6.0,    0.0,        0.0,         0.0 },              PFS::UnsupportedMode },
+        { { 6.0,    0.0,        0.0,         1.0 },              PFS::UnsupportedMode },
+        { { 6.0,    0.0,        1.0,         0.0 },              PFS::UnsupportedMode },
+        { { 6.0,    0.0,        1.0,         1.0 },              PFS::UnsupportedMode },
+        { { 6.0,    1.0,        0.0,         0.0 },              PFS::UnsupportedMode },
+        { { 6.0,    1.0,        0.0,         1.0 },              PFS::UnsupportedMode },
+        { { 6.0,    1.0,        1.0,         0.0 },              PFS::UnsupportedMode },
+        { { 6.0,    1.0,        1.0,         1.0 },              PFS::UnsupportedMode },
+
+        { { 7.0,    0.0,        0.0,         0.0 },              PFS::ReverseFlow },
+        { { 7.0,    0.0,        0.0,         1.0 },              PFS::IndeterminateFlow },
+        { { 7.0,    0.0,        1.0,         0.0 },              PFS::ReverseFlow },
+        { { 7.0,    0.0,        1.0,         1.0 },              PFS::IndeterminateFlow },
+        { { 7.0,    1.0,        0.0,         0.0 },              PFS::ReverseControlPowerFlow },
+        { { 7.0,    1.0,        0.0,         1.0 },              PFS::IndeterminateFlow },
+        { { 7.0,    1.0,        1.0,         0.0 },              PFS::OK },
+        { { 7.0,    1.0,        1.0,         1.0 },              PFS::IndeterminateFlow },
+
+        { { 8.0,    0.0,        0.0,         0.0 },              PFS::ReverseInstallation },
+        { { 8.0,    0.0,        0.0,         1.0 },              PFS::ReverseInstallation },
+        { { 8.0,    0.0,        1.0,         0.0 },              PFS::ReverseInstallation },
+        { { 8.0,    0.0,        1.0,         1.0 },              PFS::ReverseInstallation },
+        { { 8.0,    1.0,        0.0,         0.0 },              PFS::ReverseInstallation },
+        { { 8.0,    1.0,        0.0,         1.0 },              PFS::ReverseInstallation },
+        { { 8.0,    1.0,        1.0,         0.0 },              PFS::ReverseInstallation },
+        { { 8.0,    1.0,        1.0,         1.0 },              PFS::ReverseInstallation },
+
+        { { 9.0,    0.0,        0.0,         0.0 },              PFS::OK },
+        { { 9.0,    0.0,        0.0,         1.0 },              PFS::IndeterminateFlow },
+        { { 9.0,    0.0,        1.0,         0.0 },              PFS::ReverseControlPowerFlow },
+        { { 9.0,    0.0,        1.0,         1.0 },              PFS::IndeterminateFlow },
+        { { 9.0,    1.0,        0.0,         0.0 },              PFS::ReverseControlPowerFlow },
+        { { 9.0,    1.0,        0.0,         1.0 },              PFS::IndeterminateFlow },
+        { { 9.0,    1.0,        1.0,         0.0 },              PFS::OK },
+        { { 9.0,    1.0,        1.0,         1.0 },              PFS::IndeterminateFlow }
+    };
+
+    for ( auto & z : t )
+    {
+        regulator->handlePointData( { 7450, z.inputs[0], NormalQuality, AnalogPointType } );    // control mode
+        regulator->handlePointData( { 7400, z.inputs[1], NormalQuality, AnalogPointType } );    // reverse power flow
+        regulator->handlePointData( { 7550, z.inputs[2], NormalQuality, AnalogPointType } );    // control power flow reverse
+        regulator->handlePointData( { 7500, z.inputs[3], NormalQuality, AnalogPointType } );    // power flow indeterminate
+
+        BOOST_CHECK( z.expected_output == regulator->determinePowerFlowSituation() );
+    }
+}
+
+BOOST_AUTO_TEST_SUITE_END()
+
+
+BOOST_FIXTURE_TEST_SUITE( test_GangOperatedVoltageRegulator_DirectTap_DefaultTapLimits, gang_operated_voltage_regulator_fixture_direct_tap )
+
+BOOST_AUTO_TEST_CASE( test_verify_default_tap_position_limits )
+{
+    regulator->loadAttributes( &attributes );
+
+    BOOST_CHECK_EQUAL(  -16,  regulator->getMinTapPosition()  );
+    BOOST_CHECK_EQUAL(   16,  regulator->getMaxTapPosition()  );
+}
+
+BOOST_AUTO_TEST_SUITE_END()
+
+
+BOOST_FIXTURE_TEST_SUITE( test_GangOperatedVoltageRegulator_DirectTap_CustomTapLimits, gang_operated_voltage_regulator_fixture_direct_tap_with_limits )
+
+BOOST_AUTO_TEST_CASE( test_verify_custom_tap_position_limits )
+{
+    regulator->loadAttributes( &attributes );
+
+    BOOST_CHECK_EQUAL(  -10,  regulator->getMinTapPosition()  );
+    BOOST_CHECK_EQUAL(   12,  regulator->getMaxTapPosition()  );
+}
+
+BOOST_AUTO_TEST_SUITE_END()
+

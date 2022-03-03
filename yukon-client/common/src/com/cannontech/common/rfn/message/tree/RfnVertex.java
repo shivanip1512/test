@@ -21,6 +21,7 @@ import com.cannontech.common.rfn.message.RfnIdentifier;
  *         N5    N6
  * </pre>
  * 
+ * @author lizhu2
  */
 public class RfnVertex implements Serializable  {
     
@@ -85,7 +86,7 @@ public class RfnVertex implements Serializable  {
         
         // You can query PRIMARY_FORWARD_TREE for a gateway.
         // NM will respond with only the root/gateway RfnVertex of the network tree.  
-        request.setRfnIdentifiers(new RfnIdentifier("Gateway2", "CPS", "RFGateway2"));
+        request.setRfnIdentifiers(new RfnIdentifier("Gateway2", "EATON", "GWY800"));
         
         // You can also query PRIMARY_FORWARD_TREE for a device.
         // NM will respond with only the device RfnVertex.
@@ -97,7 +98,7 @@ public class RfnVertex implements Serializable  {
     public static void buildTheSampleTree() { // As Marina requested
         
         RfnVertex gateway2Vertex = new RfnVertex();
-        gateway2Vertex.setRfnIdentifier(new RfnIdentifier("Gateway2", "CPS", "RFGateway2"));
+        gateway2Vertex.setRfnIdentifier(new RfnIdentifier("Gateway2", "EATON", "GWY800"));
         
         RfnVertex n1Vertex = new RfnVertex();
         n1Vertex.setRfnIdentifier(new RfnIdentifier("N1", "ITRN", "C2SX"));

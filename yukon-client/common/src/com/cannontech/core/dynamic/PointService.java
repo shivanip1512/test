@@ -4,6 +4,7 @@ import java.util.Set;
 
 import org.joda.time.Instant;
 
+import com.cannontech.core.dao.DuplicateException;
 import com.cannontech.database.data.lite.LitePoint;
 import com.cannontech.database.data.lite.LiteState;
 import com.cannontech.database.data.lite.LiteYukonUser;
@@ -36,8 +37,9 @@ public interface PointService {
 
     /**
      * Sends point data to dispatch.
+     * @throws DuplicateException 
      */
-    void addPointData(int pointId, double value, YukonUserContext context);
+    void addPointData(int pointId, double value, Instant timestamp, YukonUserContext context) throws DuplicateException;
 
     /**
      * Finds and deletes point data by pointId, value and timestamp.

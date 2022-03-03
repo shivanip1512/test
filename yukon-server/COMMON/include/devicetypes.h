@@ -70,12 +70,20 @@ enum DeviceTypes {
     TYPE_RFN420FRX,
     TYPE_RFN420FRD,
     TYPE_RFN510FL,
+    //  RFN 500 Focus AX (gen 1)
     TYPE_RFN520FAX,
     TYPE_RFN520FRX,
     TYPE_RFN520FAXD,
     TYPE_RFN520FRXD,
     TYPE_RFN530FAX,
     TYPE_RFN530FRX,
+    //  RFN 500 Focus AXe (gen 2)
+    TYPE_RFN520FAXE,
+    TYPE_RFN520FRXE,
+    TYPE_RFN520FAXED,
+    TYPE_RFN520FRXED,
+    TYPE_RFN530FAXE,
+    TYPE_RFN530FRXE,
     //  RFN Centron
     TYPE_RFN410CL,
     TYPE_RFN420CL,
@@ -111,6 +119,11 @@ enum DeviceTypes {
     // RF gas meters
     TYPE_RFG201,
     TYPE_RFG301,
+    TYPE_RFG301A,
+    TYPE_RFG301R,
+
+    // RF Cellular IPLink Relay
+    TYPE_CRLY856,
 
     // Substation device identifiers
     TYPE_CCU700,
@@ -182,7 +195,8 @@ enum DeviceTypes {
     TYPE_LMGROUP_ITRON,
     TYPE_LMGROUP_METER_DISCONNECT,
     TYPE_LMGROUP_MCT,
-    
+    TYPE_LMGROUP_EATON_CLOUD,
+
     TYPE_LMGROUP_GOLAY,
     TYPE_LMGROUP_SADIGITAL,
     TYPE_LMGROUP_SA105,

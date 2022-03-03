@@ -13,6 +13,7 @@
 <entry key="yukon.common.dateFormatting.TIMEZONE_EXTENDED">zzzz</entry>
 <entry key="yukon.common.dateFormatting.DATE">MM/dd/yyyy</entry>
 <entry key="yukon.common.dateFormatting.FULL">MM/dd/yyyy HH:mm:ss zz</entry>
+<entry key="yukon.common.dateFormatting.FULLHM">MM/dd/yyyy HH:mm zz</entry>
 <entry key="yukon.common.dateFormatting.BOTH">MM/dd/yyyy HH:mm:ss</entry>
 <entry key="yukon.common.dateFormatting.DATEHM">MM/dd/yyyy HH:mm</entry>
 <entry key="yukon.common.dateFormatting.DATEHM_12">MM/dd/yyyy hh:mm a</entry>
@@ -28,6 +29,9 @@
 <entry key="yukon.common.dateFormatting.MONTH_DAY_HM">MMM dd HH:mm a</entry>
 <entry key="yukon.common.dateFormatting.FILE_TIMESTAMP">YYYYMMddHHmm</entry>
 <entry key="yukon.common.dateFormatting.DATE_YYYYMMdd">YYYYMMdd</entry>
+<entry key="yukon.common.dateFormatting.FILE_DATA_BOTH">yyyy-MM-dd HH:mm:ss.SSS</entry>
+<entry key="yukon.common.dateFormatting.FILE_DATA_DATE">yyyy-MM-dd</entry>
+<entry key="yukon.common.dateFormatting.FILE_DATA_TIME">HH:mm:ss.SSS</entry>
 
 <!-- 
      Please see http://keith-wood.name/datetimeEntryRef.html for the following formats
@@ -75,6 +79,7 @@
 <entry key="yukon.common.error.date.startBeforeStop">The start date must occur before the stop date.</entry>
 <entry key="yukon.common.error.date.invalid">The date entered is invalid.</entry>
 <entry key="yukon.common.error.date.oneInvalid">One of the dates entered is not a valid date.</entry>
+<entry key="yukon.common.error.date.exceedsRange">Date range cannot exceed 6 months.</entry>
 
 <!-- http://trentrichardson.com/examples/timepicker/ -->
 <entry key="yukon.common.js.timePicker.timeOnlyTitle">Choose Time</entry>

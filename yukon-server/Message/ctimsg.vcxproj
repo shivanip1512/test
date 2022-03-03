@@ -145,6 +145,7 @@
       <WarningLevel>Level1</WarningLevel>
       <DebugInformationFormat>ProgramDatabase</DebugInformationFormat>
       <MultiProcessorCompilation>true</MultiProcessorCompilation>
+      <DisableSpecificWarnings>4103</DisableSpecificWarnings>
     </ClCompile>
     <ResourceCompile>
       <PreprocessorDefinitions>_DEBUG;BOOST_ALL_DYN_LINK;BOOST_ENABLE_ASSERT_HANDLER;NOMINMAX;WIN32;_CONSOLE;_DEBUG;_DLL_MESSAGE;_REENTRANT;_WINDOWS;_X86_=1;__DLL__;D_FILE_NAME=ctimsg;%(PreprocessorDefinitions)</PreprocessorDefinitions>
@@ -153,7 +154,7 @@
     </ResourceCompile>
     <Link>
       <GenerateDebugInformation>true</GenerateDebugInformation>
-      <AdditionalDependencies>$(THRIFT)\$(CONFIGURATION)\lib\libthrift.lib;$(ACTIVEMQ)\$(CONFIGURATION)\lib\activemq-cppd.lib;$(BOOST)\lib\boost_system-vc141-mt-gd-x32-1_67.lib;$(BOOST)\lib\boost_filesystem-vc141-mt-gd-x32-1_67.lib;$(BOOST)\lib\boost_regex-vc141-mt-gd-x32-1_67.lib;$(BOOST)\lib\boost_thread-vc141-mt-gd-x32-1_67.lib;$(BOOST)\lib\boost_date_time-vc141-mt-gd-x32-1_67.lib;$(BOOST)\lib\boost_chrono-vc141-mt-gd-x32-1_67.lib;..\lib-debug\ctibase.lib;..\lib-debug\ctithriftmsg.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>$(THRIFT)\$(CONFIGURATION)\lib\libthrift.lib;$(ACTIVEMQ)\$(CONFIGURATION)\lib\activemq-cppd.lib;$(BOOST)\lib\boost_system-$(BOOST_VERSION).lib;$(BOOST)\lib\boost_filesystem-$(BOOST_VERSION).lib;$(BOOST)\lib\boost_regex-$(BOOST_VERSION).lib;$(BOOST)\lib\boost_thread-$(BOOST_VERSION).lib;$(BOOST)\lib\boost_date_time-$(BOOST_VERSION).lib;$(BOOST)\lib\boost_chrono-$(BOOST_VERSION).lib;..\lib-debug\ctibase.lib;..\lib-debug\ctithriftmsg.lib;%(AdditionalDependencies)</AdditionalDependencies>
       <AdditionalLibraryDirectories>.;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
       <ProgramDatabaseFile>$(SolutionDir)pdb-debug\$(TargetName).pdb</ProgramDatabaseFile>
       <ImportLibrary>$(SolutionDir)lib-debug\$(TargetName).lib</ImportLibrary>
@@ -193,6 +194,7 @@
       <WarningLevel>Level1</WarningLevel>
       <DebugInformationFormat>ProgramDatabase</DebugInformationFormat>
       <MultiProcessorCompilation>true</MultiProcessorCompilation>
+      <DisableSpecificWarnings>4103</DisableSpecificWarnings>
     </ClCompile>
     <ResourceCompile>
       <PreprocessorDefinitions>NDEBUG;BOOST_ALL_DYN_LINK;BOOST_ENABLE_ASSERT_HANDLER;NOMINMAX;WIN32;_CONSOLE;_DLL_MESSAGE;_REENTRANT;_WINDOWS;_X86_=1;__DLL__;D_FILE_NAME=ctimsg;%(PreprocessorDefinitions)</PreprocessorDefinitions>
@@ -201,7 +203,7 @@
     </ResourceCompile>
     <Link>
       <GenerateDebugInformation>true</GenerateDebugInformation>
-      <AdditionalDependencies>$(THRIFT)\$(CONFIGURATION)\lib\libthrift.lib;$(ACTIVEMQ)\$(CONFIGURATION)\lib\activemq-cpp.lib;$(BOOST)\lib\boost_system-vc141-mt-x32-1_67.lib;$(BOOST)\lib\boost_filesystem-vc141-mt-x32-1_67.lib;$(BOOST)\lib\boost_regex-vc141-mt-x32-1_67.lib;$(BOOST)\lib\boost_thread-vc141-mt-x32-1_67.lib;$(BOOST)\lib\boost_date_time-vc141-mt-x32-1_67.lib;$(BOOST)\lib\boost_chrono-vc141-mt-x32-1_67.lib;..\lib\ctibase.lib;..\lib\ctithriftmsg.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>$(THRIFT)\$(CONFIGURATION)\lib\libthrift.lib;$(ACTIVEMQ)\$(CONFIGURATION)\lib\activemq-cpp.lib;$(BOOST)\lib\boost_system-$(BOOST_VERSION).lib;$(BOOST)\lib\boost_filesystem-$(BOOST_VERSION).lib;$(BOOST)\lib\boost_regex-$(BOOST_VERSION).lib;$(BOOST)\lib\boost_thread-$(BOOST_VERSION).lib;$(BOOST)\lib\boost_date_time-$(BOOST_VERSION).lib;$(BOOST)\lib\boost_chrono-$(BOOST_VERSION).lib;..\lib\ctibase.lib;..\lib\ctithriftmsg.lib;%(AdditionalDependencies)</AdditionalDependencies>
       <AdditionalLibraryDirectories>.;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
       <OptimizeReferences>true</OptimizeReferences>
       <EnableCOMDATFolding>true</EnableCOMDATFolding>
@@ -253,7 +255,7 @@
     </ResourceCompile>
     <Link>
       <GenerateDebugInformation>true</GenerateDebugInformation>
-      <AdditionalDependencies>$(THRIFT)\$(CONFIGURATION)\lib\libthrift.lib;$(ACTIVEMQ)\$(CONFIGURATION)\lib\activemq-cppd.lib;$(BOOST)\lib\boost_system-vc141-mt-gd-x32-1_67.lib;$(BOOST)\lib\boost_filesystem-vc141-mt-gd-x32-1_67.lib;$(BOOST)\lib\boost_regex-vc141-mt-gd-x32-1_67.lib;$(BOOST)\lib\boost_thread-vc141-mt-gd-x32-1_67.lib;$(BOOST)\lib\boost_date_time-vc141-mt-gd-x32-1_67.lib;$(BOOST)\lib\boost_chrono-vc141-mt-gd-x32-1_67.lib;..\lib-debug\ctibase.lib;..\lib-debug\ctithriftmsg.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>$(THRIFT)\$(CONFIGURATION)\lib\libthrift.lib;$(ACTIVEMQ)\$(CONFIGURATION)\lib\activemq-cppd.lib;$(BOOST)\lib\boost_system-$(BOOST_VERSION).lib;$(BOOST)\lib\boost_filesystem-$(BOOST_VERSION).lib;$(BOOST)\lib\boost_regex-$(BOOST_VERSION).lib;$(BOOST)\lib\boost_thread-$(BOOST_VERSION).lib;$(BOOST)\lib\boost_date_time-$(BOOST_VERSION).lib;$(BOOST)\lib\boost_chrono-$(BOOST_VERSION).lib;..\lib-debug\ctibase.lib;..\lib-debug\ctithriftmsg.lib;%(AdditionalDependencies)</AdditionalDependencies>
       <AdditionalLibraryDirectories>.;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
       <ProgramDatabaseFile>
       </ProgramDatabaseFile>
@@ -314,7 +316,7 @@ if exist $(OutDir)$(TargetName).pdb xcopy /d/y/f $(OutDir)$(TargetName).pdb $(So
     </ResourceCompile>
     <Link>
       <GenerateDebugInformation>true</GenerateDebugInformation>
-      <AdditionalDependencies>$(THRIFT)\$(CONFIGURATION)\lib\libthrift.lib;$(ACTIVEMQ)\$(CONFIGURATION)\lib\activemq-cpp.lib;$(BOOST)\lib\boost_system-vc141-mt-x32-1_67.lib;$(BOOST)\lib\boost_filesystem-vc141-mt-x32-1_67.lib;$(BOOST)\lib\boost_regex-vc141-mt-x32-1_67.lib;$(BOOST)\lib\boost_thread-vc141-mt-x32-1_67.lib;$(BOOST)\lib\boost_date_time-vc141-mt-x32-1_67.lib;$(BOOST)\lib\boost_chrono-vc141-mt-x32-1_67.lib;..\lib\ctibase.lib;..\lib\ctithriftmsg.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>$(THRIFT)\$(CONFIGURATION)\lib\libthrift.lib;$(ACTIVEMQ)\$(CONFIGURATION)\lib\activemq-cpp.lib;$(BOOST)\lib\boost_system-$(BOOST_VERSION).lib;$(BOOST)\lib\boost_filesystem-$(BOOST_VERSION).lib;$(BOOST)\lib\boost_regex-$(BOOST_VERSION).lib;$(BOOST)\lib\boost_thread-$(BOOST_VERSION).lib;$(BOOST)\lib\boost_date_time-$(BOOST_VERSION).lib;$(BOOST)\lib\boost_chrono-$(BOOST_VERSION).lib;..\lib\ctibase.lib;..\lib\ctithriftmsg.lib;%(AdditionalDependencies)</AdditionalDependencies>
       <AdditionalLibraryDirectories>.;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
       <OptimizeReferences>true</OptimizeReferences>
       <EnableCOMDATFolding>true</EnableCOMDATFolding>
@@ -358,6 +360,7 @@ if exist $(OutDir)$(TargetName).pdb xcopy /d/y/f $(OutDir)$(TargetName).pdb $(So
     <ClCompile Include="amq_connection.cpp">
     </ClCompile>
     <ClCompile Include="amq_queues.cpp" />
+    <ClCompile Include="amq_topics.cpp" />
     <ClCompile Include="amq_util.cpp">
     </ClCompile>
     <ClCompile Include="CapControlOperationMessage.cpp">
@@ -384,6 +387,7 @@ if exist $(OutDir)$(TargetName).pdb xcopy /d/y/f $(OutDir)$(TargetName).pdb $(So
     <ClCompile Include="id_ctimsg.cpp" />
     <ClCompile Include="IVVCAnalysisMessage.cpp">
     </ClCompile>
+    <ClCompile Include="LMEatonCloudMessages.cpp" />
     <ClCompile Include="LMEcobeeMessages.cpp">
     </ClCompile>
     <ClCompile Include="LMHoneywellMessages.cpp" />
@@ -460,6 +464,7 @@ if exist $(OutDir)$(TargetName).pdb xcopy /d/y/f $(OutDir)$(TargetName).pdb $(So
     <ClInclude Include="include\amq_connection.h" />
     <ClInclude Include="include\amq_constants.h" />
     <ClInclude Include="include\amq_queues.h" />
+    <ClInclude Include="include\amq_topics.h" />
     <ClInclude Include="include\amq_util.h" />
     <ClInclude Include="include\CapControlOperationMessage.h" />
     <ClInclude Include="include\connection.h" />
@@ -474,6 +479,7 @@ if exist $(OutDir)$(TargetName).pdb xcopy /d/y/f $(OutDir)$(TargetName).pdb $(So
     <ClInclude Include="include\id_ctimsg.h" />
     <ClInclude Include="include\id_rfn_e2e.h" />
     <ClInclude Include="include\IVVCAnalysisMessage.h" />
+    <ClInclude Include="include\LMEatonCloudMessages.h" />
     <ClInclude Include="include\LMEcobeeMessages.h" />
     <ClInclude Include="include\LMHoneywellMessages.h" />
     <ClInclude Include="include\LMItronMessages.h" />
@@ -512,6 +518,8 @@ if exist $(OutDir)$(TargetName).pdb xcopy /d/y/f $(OutDir)$(TargetName).pdb $(So
     <ClInclude Include="include\PointDataRequestFactory.h" />
     <ClInclude Include="include\PorterResponseMessage.h" />
     <ClInclude Include="include\RfnDataStreamingUpdate.h" />
+    <ClInclude Include="include\RfnMeterDisconnectMsg.h" />
+    <ClInclude Include="include\RfnMeterReadMsg.h" />
     <ClInclude Include="include\RfnWaterNodeMessaging.h" />
     <ClInclude Include="include\rfn_asid.h" />
     <ClInclude Include="include\rfn_e2e_messenger.h" />

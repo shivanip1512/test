@@ -2,7 +2,7 @@
 <%@ taglib prefix="i" tagdir="/WEB-INF/tags/i18n" %>
 
 <style>
-#legend {
+#neighborsLegend {
     text-align:center;
     border:1px solid #ccc;
     padding:2px;
@@ -10,12 +10,13 @@
     font-size:11px;
     box-shadow: 0px 0px 2px #888;
 }
-#legend hr {
+#neighborsLegend hr {
     width:30px;
     display:inline-block;
     margin-bottom:3px;
+    margin-top: 5px;
 }
-#legend span {
+#neighborsLegend span {
     padding-left:5px;
     padding-right:10px;
 }
@@ -23,7 +24,7 @@
 
 <cti:msgScope paths="yukon.web.modules.operator.mapNetwork">
        
-    <div id="legend" class="dn js-legend-neighbors">
+    <div id="neighborsLegend" class="dn js-legend-neighbors">
         <span><b><i:inline key=".neighborsLineColor"/></b></span><br/>
         <hr class="js-etx-1"/><span><i:inline key=".etxBand1"/></span>
         <hr class="js-etx-2"/><span><i:inline key=".etxBand2"/></span>

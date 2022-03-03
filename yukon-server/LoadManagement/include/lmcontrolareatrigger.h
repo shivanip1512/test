@@ -87,6 +87,8 @@ public:
 
     CtiLMControlAreaTrigger* replicate() const;
 
+    std::size_t getMemoryConsumption() const;
+
     void dumpDynamicData();
     void dumpDynamicData(Cti::Database::DatabaseConnection& conn, CtiTime& currentDateTime);
     void calculateProjectedValue();

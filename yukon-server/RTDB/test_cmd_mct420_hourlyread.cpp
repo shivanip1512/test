@@ -2,9 +2,15 @@
 
 #include "cmd_mct420_hourlyread.h"
 
+#include "boost_test_helpers.h"
+
 using Cti::Devices::Commands::Mct420HourlyReadCommand;
 using Cti::Devices::Commands::DlcCommand;
 using std::string;
+
+struct tzOverride {
+    const decltype(Cti::Test::set_to_central_timezone()) scopedOverride = Cti::Test::set_to_central_timezone();
+};
 
 struct expected_pointdata
 {
@@ -48,7 +54,7 @@ static std::ostream &operator<<(std::ostream &os, const DlcCommand::point_data &
     return os;
 }
 
-BOOST_AUTO_TEST_SUITE( test_cmd_mct420_hourlyread )
+BOOST_FIXTURE_TEST_SUITE( test_cmd_mct420_hourlyread, tzOverride )
 
 BOOST_AUTO_TEST_CASE(test_command_single_day_read_dst_active)
 {

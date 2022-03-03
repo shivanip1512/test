@@ -5,22 +5,21 @@ import static org.easymock.EasyMock.anyObject;
 import static org.easymock.EasyMock.createNiceMock;
 import static org.easymock.EasyMock.expectLastCall;
 import static org.easymock.EasyMock.replay;
-import static org.junit.Assert.fail;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.junit.jupiter.api.Assertions.fail;
 
 import java.io.InputStream;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collection;
-import java.util.EnumMap;
 import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
+import java.util.stream.Collectors;
 
-import javax.management.AttributeNotFoundException;
-
-import org.junit.After;
-import org.junit.Assert;
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.support.ClassPathXmlApplicationContext;
@@ -42,13 +41,13 @@ import com.cannontech.common.pao.definition.loader.DefinitionLoaderServiceImpl;
 import com.cannontech.common.pao.definition.loader.PaoConfigurationException;
 import com.cannontech.common.pao.service.impl.PointCreationServiceImpl;
 import com.cannontech.common.rfn.dataStreaming.DataStreamingAttributeHelper.DataStreamingPaoAttributes;
+import com.cannontech.common.stream.StreamUtils;
 import com.cannontech.core.dao.PointDao;
 import com.cannontech.core.dao.StateGroupDao;
 import com.cannontech.database.data.lite.LiteState;
 import com.cannontech.database.data.lite.LiteStateGroup;
 import com.google.common.collect.ImmutableListMultimap;
 import com.google.common.collect.ImmutableListMultimap.Builder;
-import com.google.common.collect.Maps;
 import com.google.common.collect.Multimap;
 
 public class DataStreamingAttributeHelperTest {
@@ -59,7 +58,7 @@ public class DataStreamingAttributeHelperTest {
     private static RfnDeviceAttributeDaoImpl rfnDeviceAttributeDao;
     private ApplicationContext ctx;
 
-    @Before
+    @BeforeEach
     public void setUp() throws Exception {
         ctx = new ClassPathXmlApplicationContext();
         Resource paoXsd = ctx.getResource("classpath:pao/definition/pao.xsd");
@@ -118,7 +117,7 @@ public class DataStreamingAttributeHelperTest {
         rfnDeviceAttributeDao.initialize();
     }
 
-    @After
+    @AfterEach
     public void tearDown() {
         unitOfMeasureToPointMapper = null;
         paoAttributeAttrDefinitionMap = null;
@@ -130,23 +129,21 @@ public class DataStreamingAttributeHelperTest {
 
     @Test
     public void testInOrder() throws Exception {
-        testConsistentPaoTypes();
+        testUniquePaoTypes();
         testRFNAndDeviceTypeXMLs();
         testRfnPointMappingXML();
         testRfnDeviceAttributes();
     }
 
-    public void testConsistentPaoTypes() {
-        EnumMap<PaoType, Set<BuiltInAttribute>> typeToSupportedAttributes = Maps.newEnumMap(PaoType.class);
-        for (DataStreamingPaoAttributes dspa : DataStreamingPaoAttributes.values()) {
-            Collection<BuiltInAttribute> existingAttributes = typeToSupportedAttributes.get(dspa.getPaoType());
-            if (existingAttributes != null) {
-                Assert.assertEquals("Pao type " + dspa.getPaoType() + " not consistent when adding " + dspa,
-                    existingAttributes, dspa.getSupportedAttributes());
-            } else {
-                typeToSupportedAttributes.put(dspa.getPaoType(), dspa.getSupportedAttributes());
-            }
-        }
+    public void testUniquePaoTypes() {
+        var collisions =
+                Arrays.stream(DataStreamingPaoAttributes.values())
+                      .collect(Collectors.groupingBy(DataStreamingPaoAttributes::getPaoType))
+                      .entrySet().stream()
+                      .filter(e -> e.getValue().size() != 1)
+                      .collect(StreamUtils.entriesToMap());
+        
+        assertTrue(collisions.isEmpty(), "Found paoType collisions: " + collisions);
     }
 
     /**
@@ -156,10 +153,9 @@ public class DataStreamingAttributeHelperTest {
         for (DataStreamingPaoAttributes dspa : DataStreamingPaoAttributes.values()) {
             Set<BuiltInAttribute> builtInAttributesSet = dspa.getSupportedAttributes();
             Collection<Attribute> attrsList = paoTypeAttributesMultiMap.get(dspa.getPaoType());
-            builtInAttributesSet.forEach(entry -> {
-                BuiltInAttribute builtInAttribute = (BuiltInAttribute) entry;
-                Assert.assertTrue("Point Mismatch for " + dspa.getPaoType() + " for Point " + builtInAttribute.getDescription(), 
-                    attrsList.contains(builtInAttribute));
+            builtInAttributesSet.forEach(builtInAttribute -> {
+                assertTrue(attrsList.contains(builtInAttribute),
+                        "Point Mismatch for " + dspa.getPaoType() + " for Point " + builtInAttribute.getDescription());
             });
         }
     }
@@ -173,16 +169,16 @@ public class DataStreamingAttributeHelperTest {
             Set<BuiltInAttribute> builtInAttributesSet = dspa.getSupportedAttributes();
             Map<Attribute, AttributeDefinition> attrDefMap = paoAttributeAttrDefinitionMap.get(dspa.getPaoType());
             Collection<PointMapper> pointMapperCol = rfnPointMap.get(dspa.getPaoType());
-            Set<String> rfnPoints = new HashSet<String>();
+            Set<String> rfnPoints = new HashSet<>();
             pointMapperCol.forEach(pointMapper -> {
                 rfnPoints.add(pointMapper.getName());
             });
-            builtInAttributesSet.forEach(entry -> {
-                BuiltInAttribute builtInAttribute = (BuiltInAttribute) entry;
+            builtInAttributesSet.forEach(builtInAttribute -> {
                 AttributeDefinition attributeDefinition = attrDefMap.get(builtInAttribute);
 
-                Assert.assertTrue("Missing point in rfnPointMapping.xml " + builtInAttribute.getDescription() + " for PaoType" + dspa.getPaoType(),
-                        rfnPoints.contains(attributeDefinition.getPointTemplate().getName()));
+                assertTrue(rfnPoints.contains(attributeDefinition.getPointTemplate().getName()),
+                        "Missing point in rfnPointMapping.xml " + builtInAttribute.getDescription() + " for PaoType"
+                                + dspa.getPaoType());
             });
         }
     }

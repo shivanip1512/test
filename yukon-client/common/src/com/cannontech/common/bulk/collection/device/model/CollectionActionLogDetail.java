@@ -21,6 +21,11 @@ public class CollectionActionLogDetail {
     private SimplePointValue value;
     private String configName;
     
+    public CollectionActionLogDetail(YukonPao pao, CollectionActionDetail detail, String deviceErrorText) {
+        this(pao, detail);
+        this.deviceErrorText = deviceErrorText;
+    }
+
     public CollectionActionLogDetail(YukonPao pao, CollectionActionDetail detail) {
         this.device = new SimpleDevice(pao);
         this.detail = detail;

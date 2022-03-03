@@ -27,23 +27,24 @@ Clear-Host
 
 # Just Add/Remove any service here if any change comes The first service in the list is stopped first and started last.
 # These values must be the Service Name, not the Display Name.
-[System.Collections.ArrayList]$YukonServices = 
-"YukonWatchdogService",
+[System.Collections.ArrayList]$YukonServiceGroups =
+@(@("YukonWatchdogService",
 "YukonWebApplicationService",
 "YukonSimulatorsService",
-"Yukon Field Simulator Service",
-"Yukon Load Management Service",
+"Yukon Field Simulator Service"),
+@("NMServer"),
+@("Yukon Load Management Service",
 "Yukon Cap Control Service",
 "Yukon Calc-Logic Service",
 "Yukon Real-Time Scan Service",
 "Yukon Foreign Data Service",
-"Yukon MAC Scheduler Service",
-"YukonNotificationServer",
-"Yukon Port Control Service",
-"Yukon Dispatch Service", 
-"YukonServiceMgr",
-"YukonCloudService",
-"YukonMessageBroker"
+"Yukon MAC Scheduler Service"),
+@("YukonNotificationServer"),
+@("Yukon Port Control Service"),
+@("Yukon Dispatch Service"),
+@("YukonServiceMgr"),
+@("YukonCloudService",
+"YukonMessageBroker"))
 
 [System.Collections.ArrayList]$ServicesToRestart = @()
 
@@ -53,26 +54,39 @@ $global:STOPPENDING = "StopPending"
 $global:SERVICES_STOPPED = $True
 
 # Adding only those services to ServicesToRestart list if they are set start automatically or currently running #
-foreach($YukonService in $YukonServices)
+foreach($ServiceGroup in $YukonServiceGroups)
 {
-    $ServiceStartMode = (Get-WmiObject Win32_Service -filter "Name='$YukonService'").StartMode
+    [System.Collections.ArrayList]$ActiveServicesFromThisGroup = @()
+    
+    foreach($YukonService in $ServiceGroup)
+    {
+	    $ServiceStartMode = (Get-WmiObject Win32_Service -filter "Name='$YukonService'").StartMode
 
-    If($ServiceStartMode -eq "Auto")
-    {
-        [void]$ServicesToRestart.Add($YukonService)
-    }
-    elseIf(Get-Service $YukonService -ErrorAction SilentlyContinue)
-    {
-        $Service = Get-Service $YukonService    
-        
-        If($Service.Status -eq $RUNNING)
+        If($ServiceStartMode -eq "Auto")
         {
-            [void]$ServicesToRestart.Add($YukonService)
+            [void]$ActiveServicesFromThisGroup.Add($YukonService)
+        }
+        elseIf(Get-Service $YukonService -ErrorAction SilentlyContinue)
+        {
+            $Service = Get-Service $YukonService    
+        
+            If($Service.Status -eq $RUNNING)
+            {
+               [void]$ActiveServicesFromThisGroup.Add($YukonService)
+            }
         }
     }
+    
+    [void]$ServicesToRestart.Add($ActiveServicesFromThisGroup)
 }
 
-Write-Host "Services configured for automatic start or currently running: `r`n`r`n$($ServicesToRestart -join "`r`n")`r`n"
+Write-Host "Services configured for automatic start or currently running: `r`n" 
+foreach($Services in $ServicesToRestart) {
+    foreach($Service in $Services) {
+        Write-Host $Service
+    }
+}
+Write-Host "-------------------------------------------" 
 
 <#
     CheckServiceStatus function check running and stopped status of services.
@@ -85,15 +99,18 @@ Write-Host "Services configured for automatic start or currently running: `r`n`r
 Function CheckServiceStatus($ServiceStatus) {
     If($ServiceStatus -eq $STOPPED)
     {
-        foreach($Service in $ServicesToRestart)
+        foreach($ServiceGroup in $ServicesToRestart)
         {
-            $Service = Get-Service $Service
-            If($Service.Status -ne $STOPPED)
+            foreach($Service in $ServiceGroup)
             {
-                $SERVICES_STOOPED = $False
-                Write-Host "Service" $Service "has not yet stopped, waiting..."
-                return $SERVICES_STOOPED
-            }
+                $Service = Get-Service $Service
+                If($Service.Status -ne $STOPPED)
+                {
+                   $SERVICES_STOOPED = $False
+                   Write-Host "Service" $Service "has not yet stopped, waiting..."
+                   return $SERVICES_STOOPED
+                }
+            }   
         }    
         $SERVICES_STOOPED = $True
         Write-Host "All Services have been stopped successfully."
@@ -102,13 +119,16 @@ Function CheckServiceStatus($ServiceStatus) {
     ElseIf($ServiceStatus -eq $RUNNING)
     {
     $AllRunning = $True
-        foreach($Service in $ServicesToRestart)
+        foreach($ServiceGroup in $ServicesToRestart)
         {
-            $Svc = Get-Service $Service
-            If($Svc.Status -ne $RUNNING)
+            foreach($Service in $ServiceGroup)
             {
-               Write-Host "Service - $Service is not running."
-               $AllRunning = $False
+               $Svc = Get-Service $Service
+               If($Svc.Status -ne $RUNNING)
+               {
+                 Write-Host "Service - $Service is not running."
+                 $AllRunning = $False
+               }
             }
         }
        return $AllRunning
@@ -123,26 +143,42 @@ Function StopServices {
     Write-Host "-------------------------------------------" 
     Write-Host "Stopping Services"
     Write-Host "-------------------------------------------" 
-
-    foreach($ServiceToStop in $ServicesToRestart)
+    foreach($ServiceGroupToStop in $ServicesToRestart)
     {
-        $Service = Get-Service $ServiceToStop
-        $timeoutSeconds = 15
-        $timespan = New-Object -TypeName System.Timespan -ArgumentList 0,0,$timeoutSeconds
-        $CurrentServiceStatus = $Service.Status
-        If($CurrentServiceStatus -ne $STOPPED)
+        foreach($ServiceToStop in $ServiceGroupToStop)
         {
-            Write-Host "Stop Service $ServiceToStop"
-            $Service.Stop()
-            try {
-                $Service.WaitForStatus([ServiceProcess.ServiceControllerStatus]::Stopped, $timespan)
+            $Service = Get-Service $ServiceToStop
+            $CurrentServiceStatus = $Service.Status
+            If($CurrentServiceStatus -ne $STOPPED)
+            {
+               Write-Host "Stop Service $ServiceToStop"
+               $Service.Stop()
+            }       
+        }
+        Start-Sleep -s 15
+        foreach($ServiceToStop in $ServiceGroupToStop)
+        {
+            $Service = Get-Service $ServiceToStop
+            $timeoutSeconds = 0
+            $timespan = New-Object -TypeName System.Timespan -ArgumentList 0,0,$timeoutSeconds
+            $CurrentServiceStatus = $Service.Status
+            If($CurrentServiceStatus -ne $STOPPED)
+            {
+                try {
+                    $Service.WaitForStatus([ServiceProcess.ServiceControllerStatus]::Stopped,$timespan)
+                     Write-Host "$ServiceToStop stopped."
+                }
+                catch [ServiceProcess.TimeoutException] {
+                     Write-Host "Timeout stopping service $($Service.Name)"
+                }
+            }
+            else
+            {
                 Write-Host "$ServiceToStop stopped."
             }
-            catch [ServiceProcess.TimeoutException] {
-                Write-Host "Timeout stopping service $($Service.Name)"
-            }
         }
-    }
+        Write-Host "-------------------------------------------" 
+     }
 }
 
 <#
@@ -157,22 +193,25 @@ $ServicesToRestart.Reverse()
     Write-Host "Starting Services" 
     Write-Host "-------------------------------------------" 
 
-    foreach($ServiceToStart in $ServicesToRestart)
+    foreach($ServiceGroupToStart in $ServicesToRestart)
     {
-        $Service = Get-Service $ServiceToStart
-        $CurrentServiceStatus = $Service.Status
-        If($CurrentServiceStatus -ne $RUNNING)
+        foreach($ServiceToStart in $ServiceGroupToStart)
         {
-            # The Yukon web service causes problems for other services on slow vms
-            # This delay can help prevent this.
-            If($ServiceToStart -eq 'YukonWebApplicationService')
-            {
-                Start-Sleep -s 10
-            }
-            Write-Host "Start Service $ServiceToStart" 
-            Start-Service $ServiceToStart
-            Write-Host "Service $ServiceToStart started !!" 
-            Start-Sleep -s 3
+           $Service = Get-Service $ServiceToStart
+           $CurrentServiceStatus = $Service.Status
+           If($CurrentServiceStatus -ne $RUNNING)
+           {
+              # The Yukon web service causes problems for other services on slow vms
+              # This delay can help prevent this.
+              If($ServiceToStart -eq 'YukonWebApplicationService')
+              {
+                 Start-Sleep -s 10
+              }
+              Write-Host "Start Service $ServiceToStart" 
+              Start-Service $ServiceToStart
+              Write-Host "Service $ServiceToStart started !!" 
+              Start-Sleep -s 3
+           }
         }
     }
 }
@@ -185,24 +224,27 @@ Function KillServices {
     Write-Host "Killing Services" 
     Write-Host "-------------------------------------------" 
 
-    foreach($ServiceToKill in $ServicesToRestart)
+    foreach($ServiceGroupToKill in $ServicesToRestart)
     {
-        $Service = Get-Service $ServiceToKill
-        $CurrentServiceStatus = $Service.Status
-        If($CurrentServiceStatus -ne $STOPPED)
+        foreach($ServiceToKill in $ServiceGroupToKill)
         {
-            Write-Host "Kill Service $ServiceToKill" 
-            $ServicePID = (get-wmiobject win32_service | Where-Object { $_.name -eq $ServiceToKill}).processID
-            Stop-Process $ServicePID -Force
+          $Service = Get-Service $ServiceToKill
+          $CurrentServiceStatus = $Service.Status
+          If($CurrentServiceStatus -ne $STOPPED)
+          {
+               Write-Host "Kill Service $ServiceToKill" 
+               $ServicePID = (get-wmiobject win32_service | Where-Object { $_.name -eq $ServiceToKill}).processID
+               Stop-Process $ServicePID -Force
+          }
         }
     }
 }
 
 
-# Setting max waiting time to 5 minutes for services to stop #
+# Setting max waiting time to 7 minutes for services to stop #
 $startTime = Get-Date
 "Start time = " + $startTime
-$maxWaitingTime = $startTime.AddMinutes(5)
+$maxWaitingTime = $startTime.AddMinutes(7)
 "Max waiting time = " + $maxWaitingTime
 
 # For all operations but start, we do a stop (restart, stop)
@@ -211,7 +253,7 @@ If($Operation -ne 'start')
 # Call StopService function to stop services #
     StopServices
 
-    # Continuously checking if any service is still not stopped up to 5 minutes #
+    # Continuously checking if any service is still not stopped up to 7 minutes #
     Write-Host "-------------------------------------------" 
     Write-Host "Checking Services Status - $STOPPED"
     Write-Host "-------------------------------------------" 
@@ -229,7 +271,7 @@ If($Operation -ne 'start')
 
     If(-Not($SERVICES_STOPPED))
     {
-        # Waited for 5 minutes, kill Services if they are still not stopped #
+        # Waited for 7 minutes, kill Services if they are still not stopped #
         KillServices
         Start-Sleep -s 15
         $SERVICES_STOPPED = CheckServiceStatus($STOPPED)
@@ -246,19 +288,34 @@ If($Operation -ne 'stop')
 {
     # Calling StartServices function to start services
     StartServices
-
-    # Wait for 1 minute and again check if any service is not running 
-    Write-Host "Waiting 1 minute to check Running status of all services.."
-    Start-Sleep -s 60
+    
+    Write-Host "Waiting 5 minutes to check Running status of all services.."
 
     Write-Host "-------------------------------------------" 
+
     Write-Host "Checking Services Status $RUNNING"
     Write-Host "-------------------------------------------" 
-
+    Write-Host "Checking Services Statuses for 5 minutes"
+    # In the time span of 5 minute we check running status of each service in one minute.
+    $timeout = new-timespan -Minutes 5
+    $sw = [diagnostics.stopwatch]::StartNew()
+    while ($sw.elapsed -lt $timeout)
+    {
+         start-sleep -seconds 60
+         $AllRunning = CheckServiceStatus($RUNNING)
+         if($AllRunning)
+         {
+             Write-Host "All services running, checking again after 1 minute"
+         }
+    }
     $AllRunning = CheckServiceStatus($RUNNING)
     if($AllRunning)
     {
-        Write-Host "All Services are running."
+       Write-Host "All Services are running."
+    }
+    else
+    {
+       throw 'ERROR'
     }
 }
 Write-Host ""

@@ -57,9 +57,8 @@ public class PaoLocationServiceImpl implements PaoLocationService {
         for (PaoType type : PaoType.getGasMeterTypes()) {
             icons.put(type, Icon.METER_GAS);
         }
-        for (PaoType type : PaoType.getRfRelayTypes()) {
-            icons.put(type,  Icon.RELAY);
-        }
+        icons.put(PaoType.RFN_RELAY, Icon.RELAY);
+        icons.put(PaoType.CRLY856, Icon.RELAY_CELLULAR);
         for (PaoType type : PaoType.getRfLcrTypes()) {
             icons.put(type,  Icon.LCR);
         }
@@ -69,10 +68,9 @@ public class PaoLocationServiceImpl implements PaoLocationService {
         for (PaoType type : PaoType.getThermostatTypes()) {
             icons.put(type, Icon.THERMOSTAT);
         }
-        icons.put(PaoType.RFN_GATEWAY, Icon.TRANSMITTER);
-        icons.put(PaoType.GWY800, Icon.TRANSMITTER);
-        icons.put(PaoType.VIRTUAL_GATEWAY, Icon.TRANSMITTER);
-        
+        for (PaoType type : PaoType.getRfGatewayTypes()) {
+            icons.put(type, Icon.TRANSMITTER);
+        }
     }
     
     @Autowired

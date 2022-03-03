@@ -23,6 +23,9 @@ const IM_EX_MSG OutboundQueue
     OutboundQueue::EcobeeRestore
     {"yukon.notif.stream.dr.EcobeeRestoreMessage"};
 const IM_EX_MSG OutboundQueue
+    OutboundQueue::EcobeePlusControl
+    {"yukon.notif.stream.dr.EcobeePlusControlMessage"};
+const IM_EX_MSG OutboundQueue
     OutboundQueue::HoneywellCyclingControl
     {"yukon.notif.stream.dr.HoneywellCyclingControlMessage"};
 const IM_EX_MSG OutboundQueue
@@ -49,6 +52,12 @@ const IM_EX_MSG OutboundQueue
 const IM_EX_MSG OutboundQueue
     OutboundQueue::MeterDisconnectRestore
     {"yukon.notif.stream.dr.MeterDisconnectRestoreMessage"};
+const IM_EX_MSG OutboundQueue
+    OutboundQueue::EatonCloudScheduledCyclingRequest
+    {"yukon.notif.stream.dr.EatonCloudScheduledCyclingRequest"};
+const IM_EX_MSG OutboundQueue
+    OutboundQueue::EatonCloudStopRequest
+    {"yukon.notif.stream.dr.EatonCloudStopRequest"};
 const IM_EX_MSG OutboundQueue
     OutboundQueue::HistoryRowAssociationResponse
     {"yukon.notif.stream.dr.HistoryRowAssociationResponse"};
@@ -90,6 +99,9 @@ const IM_EX_MSG OutboundQueue
     {"com.eaton.eas.yukon.MeterProgramStatusArchiveRequest"};
 
 const IM_EX_MSG InboundQueue
+    InboundQueue::MeterProgramValidationRequest
+    { "com.eaton.eas.yukon.porter.meterProgramValidationRequest" };
+const IM_EX_MSG InboundQueue
     InboundQueue::NetworkManagerResponse
     {"com.eaton.eas.yukon.networkmanager.response"};
 const IM_EX_MSG InboundQueue
@@ -108,6 +120,18 @@ const IM_EX_MSG InboundQueue
     InboundQueue::PorterDynamicPaoInfoRequest
     {"com.eaton.eas.yukon.porter.dynamicPaoInfoRequest"};
 
+const IM_EX_MSG InboundQueue
+    InboundQueue::FieldSimulatorStatusRequest
+    { "com.eaton.eas.yukon.fieldSimulator.statusRequest" };
+const IM_EX_MSG InboundQueue
+    InboundQueue::FieldSimulatorModifyConfiguration
+    { "com.eaton.eas.yukon.fieldSimulator.modifyConfiguration" };
+
+const IM_EX_MSG InboundQueue
+    InboundQueue::RfnMeterDisconnectRequest
+    { "com.eaton.eas.yukon.RfnMeterDisconnectRequest" };
+const IM_EX_MSG InboundQueue
+    InboundQueue::RfnMeterReadRequest
+    { "com.eaton.eas.yukon.RfnMeterReadRequest" };
+
 }
-
-

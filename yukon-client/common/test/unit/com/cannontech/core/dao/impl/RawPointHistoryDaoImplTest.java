@@ -1,15 +1,15 @@
 package com.cannontech.core.dao.impl;
 
-import static org.junit.Assert.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 
-import java.text.DateFormat;
 import java.text.ParseException;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
 import com.cannontech.common.chart.model.ChartInterval;
 import com.cannontech.core.dao.RawPointHistoryDao;
@@ -18,7 +18,7 @@ import com.cannontech.core.dynamic.PointValueHolder;
 public class RawPointHistoryDaoImplTest {
     RawPointHistoryDao dao;
 
-    @Before
+    @BeforeEach
     public void setUp() throws Exception {
         System.setProperty("java.locale.providers", "COMPAT,SPI");
         // we need to create a special version that stubs out the actual DB method
@@ -50,8 +50,8 @@ public class RawPointHistoryDaoImplTest {
     
     @Test
     public void testGetBinnedPointData1() throws ParseException {
-        DateFormat dateTimeInstance = DateFormat.getDateTimeInstance(DateFormat.SHORT, DateFormat.SHORT);
-        List<PointValueHolder> binnedPointData = dao.getIntervalPointData(0, dateTimeInstance.parse("5/4/05 4:36 pm"), dateTimeInstance.parse("5/6/05 4:36 pm"), ChartInterval.HOUR, RawPointHistoryDao.Mode.HIGHEST);
+        SimpleDateFormat df = new SimpleDateFormat("MM/dd/yyyy hh:mm a") ;
+        List<PointValueHolder> binnedPointData = dao.getIntervalPointData(0, df.parse("5/4/05 4:36 pm"), df.parse("5/6/05 4:36 pm"), ChartInterval.HOUR, RawPointHistoryDao.Mode.HIGHEST);
         List<PointValueHolder> expected = new ArrayList<PointValueHolder>();
         expected.add(new PointValue("5/5/05 4:36 pm", 5.7));
         expected.add(new PointValue("5/5/05 6:30 pm", 9.9));
@@ -62,8 +62,8 @@ public class RawPointHistoryDaoImplTest {
 
     @Test
     public void testGetBinnedPointData2() throws ParseException {
-        DateFormat dateTimeInstance = DateFormat.getDateTimeInstance(DateFormat.SHORT, DateFormat.SHORT);
-        List<PointValueHolder> binnedPointData = dao.getIntervalPointData(0, dateTimeInstance.parse("5/4/05 4:36 pm"), dateTimeInstance.parse("5/6/05 4:36 pm"), ChartInterval.HOUR, RawPointHistoryDao.Mode.LAST);
+        SimpleDateFormat df = new SimpleDateFormat("MM/dd/yyyy hh:mm a") ;
+        List<PointValueHolder> binnedPointData = dao.getIntervalPointData(0, df.parse("5/4/05 4:36 pm"), df.parse("5/6/05 4:36 pm"), ChartInterval.HOUR, RawPointHistoryDao.Mode.LAST);
         List<PointValueHolder> expected = new ArrayList<PointValueHolder>();
         expected.add(new PointValue("5/5/05 4:39 pm", 5.5));
         expected.add(new PointValue("5/5/05 6:39 pm", 3.5));
@@ -82,8 +82,8 @@ public class RawPointHistoryDaoImplTest {
             this.dateStr = dateStr;
             this.value = value;
             try {
-                DateFormat dateTimeInstance = DateFormat.getDateTimeInstance(DateFormat.SHORT, DateFormat.SHORT);
-                date = dateTimeInstance.parse(dateStr);
+                SimpleDateFormat df = new SimpleDateFormat("MM/dd/yyyy hh:mm") ;
+                date = df.parse(dateStr);
             } catch (ParseException e) {
                 throw new RuntimeException(e);
             }

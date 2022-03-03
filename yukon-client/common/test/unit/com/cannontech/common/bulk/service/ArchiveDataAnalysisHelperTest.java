@@ -1,11 +1,11 @@
 package com.cannontech.common.bulk.service;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
+
 import java.text.DateFormat;
 import java.util.Calendar;
 import java.util.List;
 import java.util.TimeZone;
-
-import junit.framework.Assert;
 
 import org.joda.time.DateTime;
 import org.joda.time.DateTimeZone;
@@ -13,7 +13,7 @@ import org.joda.time.Instant;
 import org.joda.time.Interval;
 import org.joda.time.Period;
 import org.joda.time.format.DateTimeFormatter;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 import com.cannontech.core.service.SystemDateFormattingService;
 import com.google.common.collect.Lists;
@@ -35,7 +35,7 @@ public class ArchiveDataAnalysisHelperTest {
             new DateTime(2011, 11, 6, 0, 0, 0, 0, central).toInstant(),
             new DateTime(2011, 11, 7, 0, 0, 0, 0, central).toInstant());  // this is actually 25 hours after the previous
         
-        Assert.assertEquals(expected, relevantDateTimes);
+        assertEquals(expected, relevantDateTimes);
         
         DateTime start2 = new DateTime(2011, 3, 11, 0, 0, 0, 0, central); // selected to be right before DST ends
         DateTime end2 = new DateTime(2011, 3, 14, 0, 0, 0, 0, central);
@@ -48,7 +48,7 @@ public class ArchiveDataAnalysisHelperTest {
             new DateTime(2011, 3, 13, 0, 0, 0, 0, central).toInstant(),
             new DateTime(2011, 3, 14, 0, 0, 0, 0, central).toInstant());  // this is actually 23 hours after the previous
         
-        Assert.assertEquals(expected2, relevantDateTimes2);
+        assertEquals(expected2, relevantDateTimes2);
     }
     
     private ArchiveDataAnalysisHelper getHelper() {

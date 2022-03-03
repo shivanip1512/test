@@ -224,8 +224,8 @@
         <table name="DmvTest" identitycolumn="DMVTestID" initsequence="true"/>
       </sequence>
       <sequence name="DeviceGroupComposed">
-        <table name="DeviceGroupComposed" identitycolumn="DeviceGroupComposedId"/>
-        <table name="DeviceGroupComposedGroup" identitycolumn="DeviceGroupComposedGroupId"/>
+        <table name="DeviceGroupComposed" identitycolumn="DeviceGroupComposedId" initsequence="true"/>
+        <table name="DeviceGroupComposedGroup" identitycolumn="DeviceGroupComposedGroupId" initsequence="true"/>
       </sequence>
       <sequence name="CustomerResidence">
         <table name="CustomerResidence" identitycolumn="AccountSiteId"/>
@@ -408,6 +408,12 @@
       <sequence name="SmartNotificationEvent">
         <table name="SmartNotificationEvent" identitycolumn="EventId" initsequence="true"/>
       </sequence>
+      <sequence name="SmartNotifEmailHistory">
+        <table name="SmartNotifEmailHistory" identitycolumn="HistoryId" initsequence="true"/>
+      </sequence>
+       <sequence name="SmartNotifEventHistory">
+        <table name="SmartNotifEventHistory" identitycolumn="EventHistoryId" initsequence="true"/>
+      </sequence>
       <sequence name="CollectionAction">
         <table name="CollectionAction" identitycolumn="CollectionActionId" initsequence="true"/>
       </sequence>
@@ -443,6 +449,22 @@
       </sequence>
       <sequence name="DrDisconnectDeviceStatus">
         <table name="DrDisconnectDeviceStatus" identitycolumn="EntryId" initsequence="true"/>
+      </sequence>
+      <sequence name="CustomAttribute">
+        <table name="CustomAttribute" identitycolumn="AttributeId" initsequence="true"/>
+        <table name="AttributeAssignment" identitycolumn="AttributeAssignmentId" initsequence="true"/>
+      </sequence>
+      <sequence name="ControlEvent">
+        <table name="ControlEvent" identitycolumn="ControlEventId" initsequence="true"/>
+      </sequence>
+      <sequence name="EatonCloudSimulatorNameIncrementor">
+        <table name="EatonCloudSimulatorNameIncrementor" identitycolumn="requestSeqNumber"/>
+      </sequence>
+      <sequence name="EatonCloudEventIdIncrementor">
+        <table name="EatonCloudEventIdIncrementor" identitycolumn="requestSeqNumber"/>
+      </sequence>
+      <sequence name="YukonLoggingIncrementor">
+        <table name="YukonLogging" identitycolumn="LoggerId" initsequence="true"/>
       </sequence>
   </sequencetable>
 </sequencetables>

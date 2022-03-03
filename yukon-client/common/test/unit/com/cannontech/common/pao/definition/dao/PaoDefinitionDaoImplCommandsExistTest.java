@@ -2,8 +2,8 @@ package com.cannontech.common.pao.definition.dao;
 
 import java.util.Set;
 
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
 import com.cannontech.common.pao.PaoType;
 import com.cannontech.common.pao.attribute.model.BuiltInAttribute;
@@ -19,7 +19,7 @@ public class PaoDefinitionDaoImplCommandsExistTest {
     public static Set<PaoType> exclusivePaoTypes;
     private PaoDefinitionDao paoDefinitionDao;
 
-    @Before
+    @BeforeEach
     public void setup() {
         paoDefinitionDao = PaoDefinitionDaoImplTest.getTestPaoDefinitionDao();
 
@@ -72,7 +72,7 @@ public class PaoDefinitionDaoImplCommandsExistTest {
     /**
      * Method populates set of exclusive paoTypes that do not support commands to read attribute data
      */
-    @Before
+    @BeforeEach
     public void setExlusivePaoList() {
         exclusivePaoTypes = Sets.newHashSet(PaoType.MCT440_2131B, PaoType.MCT440_2132B, PaoType.MCT440_2133B);
         exclusivePaoTypes.addAll(PaoType.getRfMeterTypes());

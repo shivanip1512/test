@@ -8,9 +8,7 @@
 #include <boost/optional.hpp>
 
 
-namespace Cti        {
-namespace Devices    {
-namespace Commands   {
+namespace Cti::Devices::Commands {
 
 
 namespace   { // anonymous namespace
@@ -602,8 +600,8 @@ unsigned RfnLoadProfileReadPointsCommand::decodePointsReportHeader( RfnCommandRe
 
     const unsigned uom = lpPointDescriptor[pos++];
 
-    validate( Condition( uom == Uom_Volts, ClientErrors::InvalidData )
-            << "Incorrect UOM returned (" << uom << " != " << Uom_Volts << ")" );
+    validate( Condition( uom == Rfn::UnitOfMeasure::Volts, ClientErrors::InvalidData )
+            << "Incorrect UOM returned (" << uom << " != " << Rfn::UnitOfMeasure::Volts << ")" );
 
     // Uom modifier 1
 
@@ -728,6 +726,4 @@ unsigned RfnLoadProfileReadPointsCommand::decodePointRecord( RfnCommandResult & 
 }
 
 
-}
-}
 }

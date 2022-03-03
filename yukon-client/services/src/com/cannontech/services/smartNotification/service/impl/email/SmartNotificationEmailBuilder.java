@@ -3,11 +3,12 @@ package com.cannontech.services.smartNotification.service.impl.email;
 import java.util.List;
 
 import javax.annotation.PostConstruct;
-import javax.mail.MessagingException;
+import jakarta.mail.MessagingException;
 
 import org.springframework.beans.factory.annotation.Autowired;
 
 import com.cannontech.common.i18n.MessageSourceAccessor;
+import com.cannontech.common.smartNotification.dao.SmartNotificationEventDao;
 import com.cannontech.common.smartNotification.model.SmartNotificationEvent;
 import com.cannontech.common.smartNotification.model.SmartNotificationEventType;
 import com.cannontech.common.smartNotification.model.SmartNotificationMessageParameters;
@@ -27,6 +28,7 @@ public abstract class SmartNotificationEmailBuilder {
     @Autowired private GlobalSettingDao globalSettingDao;
     @Autowired private WebserverUrlResolver webserverUrlResolver;
     @Autowired private YukonUserContextMessageSourceResolver messageSourceResolver;
+    @Autowired private SmartNotificationEventDao smartNotificationEventDao;
     protected MessageSourceAccessor messageSourceAccessor;
     
     @PostConstruct
@@ -63,13 +65,15 @@ public abstract class SmartNotificationEmailBuilder {
         String emailBodyKeyBase = "yukon.web.modules.smartNotifications." + type + "." + quantity;;
         
         Object[] bodyArguments = getBodyArguments(events, verbosity, intervalMinutes);
-        String emailBody = messageSourceAccessor.getMessage(emailBodyKeyBase + "." + verbosity + ".text", bodyArguments);
+        String bodyKey = emailBodyKeyBase + "." + verbosity + ".text";
+        String emailBody = messageSourceAccessor.getMessage(bodyKey, bodyArguments);
         
         Object[] subjectArguments = getSubjectArguments(events, verbosity);
         String emailSubject = messageSourceAccessor.getMessage("yukon.web.modules.smartNotifications." + type + "." +
                                                                quantity + ".subject", subjectArguments);
         
         String sender = globalSettingDao.getString(GlobalSettingType.MAIL_FROM_ADDRESS);
+        smartNotificationEventDao.createHistory(parameters, intervalMinutes);
         return EmailMessage.newMessageBccOnly(emailSubject, emailBody, sender, parameters.getRecipients());
     }
     

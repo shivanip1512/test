@@ -75,8 +75,6 @@ public:
     std::string getResolvedNIFormat1( void );
     int getRawNIFormat2( void );
     std::string getResolvedNIFormat2( void );
-    int getRawDeviceClass( void );
-    std::string getResolvedDeviceClass( void );
     int getRawNameplateType( void );
     std::string getResolvedNameplateType( void );
     int getRawDefaultSetUsed( void );

@@ -1,10 +1,11 @@
 package com.cannontech.common.scheduledFileExport;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNull;
+
 import java.util.List;
 
-import org.junit.Test;
-
-import junit.framework.Assert;
+import org.junit.jupiter.api.Test;
 
 public class ScheduledFileExportTest {
     private static final String emailSingle = "test@test.com";
@@ -17,30 +18,30 @@ public class ScheduledFileExportTest {
     public void scheduledFileExportDataTest() {
         ScheduledFileExportData data = new ScheduledFileExportData();
         data.setNotificationEmailAddresses(emailSingle);
-        Assert.assertEquals(emailSingle, data.getNotificationEmailAddresses());
+        assertEquals(emailSingle, data.getNotificationEmailAddresses());
         List<String> emailSingleAddresses = data.getNotificationEmailAddressesAsList();
-        Assert.assertEquals(1, emailSingleAddresses.size());
-        Assert.assertEquals(emailSingle, emailSingleAddresses.get(0));
+        assertEquals(1, emailSingleAddresses.size());
+        assertEquals(emailSingle, emailSingleAddresses.get(0));
         
         ScheduledFileExportData data2 = new ScheduledFileExportData();
         data2.setNotificationEmailAddresses(emailDouble);
-        Assert.assertEquals(emailDouble, data2.getNotificationEmailAddresses());
+        assertEquals(emailDouble, data2.getNotificationEmailAddresses());
         List<String> emailDoubleAddresses = data2.getNotificationEmailAddressesAsList();
-        Assert.assertEquals(2, emailDoubleAddresses.size());
-        Assert.assertEquals(firstEmail, emailDoubleAddresses.get(0));
-        Assert.assertEquals(secondEmail, emailDoubleAddresses.get(1));
+        assertEquals(2, emailDoubleAddresses.size());
+        assertEquals(firstEmail, emailDoubleAddresses.get(0));
+        assertEquals(secondEmail, emailDoubleAddresses.get(1));
         
         ScheduledFileExportData data3 = new ScheduledFileExportData();
         data3.setNotificationEmailAddresses(emailDoubleWithSpace);
-        Assert.assertEquals(emailDouble, data3.getNotificationEmailAddresses());
+        assertEquals(emailDouble, data3.getNotificationEmailAddresses());
         List<String> emailDoubleWithSpaceAddresses = data3.getNotificationEmailAddressesAsList();
-        Assert.assertEquals(2, emailDoubleWithSpaceAddresses.size());
-        Assert.assertEquals(firstEmail, emailDoubleWithSpaceAddresses.get(0));
-        Assert.assertEquals(secondEmail, emailDoubleWithSpaceAddresses.get(1));
+        assertEquals(2, emailDoubleWithSpaceAddresses.size());
+        assertEquals(firstEmail, emailDoubleWithSpaceAddresses.get(0));
+        assertEquals(secondEmail, emailDoubleWithSpaceAddresses.get(1));
         
         ScheduledFileExportData data4 = new ScheduledFileExportData();
         data4.setNotificationEmailAddresses(" ");
-        Assert.assertNull(data4.getNotificationEmailAddresses());
-        Assert.assertEquals(0, data4.getNotificationEmailAddressesAsList().size());
+        assertNull(data4.getNotificationEmailAddresses());
+        assertEquals(0, data4.getNotificationEmailAddressesAsList().size());
     }
 }

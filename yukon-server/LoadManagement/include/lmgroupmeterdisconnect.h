@@ -23,6 +23,8 @@ public:
     bool sendControl( long controlSeconds ) override;
 
     bool doesStopRequireCommandAt( const CtiTime & currentTime ) const override;
+
+    std::size_t getFixedSize() const override   { return sizeof( *this ); }
 };
 
 typedef boost::shared_ptr<LMGroupMeterDisconnect> LMGroupMeterDisconnectPtr;

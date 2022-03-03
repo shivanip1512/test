@@ -1,0 +1,121 @@
+post-operation:
+  post:
+    tags:
+     - Macro Route
+    summary: 'Create Macro Route'
+    description: 'API to Create Macro Route.'
+    requestBody:
+      content:
+        application/json:
+          schema:
+            $ref: '../schemas/macroRoutesSchema.yaml#/MacroRoute'
+          examples:
+            Macro Route:
+              $ref: '../schemas/macroRoutesSchema.yaml#/components/examples/MacroRouteRequest'
+      required: true
+    responses:
+      '201':
+        description: Created
+        content:
+          application/json:
+            schema:
+              $ref: '../schemas/macroRoutesSchema.yaml#/MacroRouteResponseSchema'
+            examples:
+              Macro Route:
+                $ref: '../schemas/macroRoutesSchema.yaml#/components/examples/MacroRoute'
+
+  get:
+    tags:
+      - Macro Route
+    summary: 'Retrieve all Macro Routes'
+    description: 'API to retrieve all the Macro Routes.'
+
+    responses:
+      '200':
+        description: OK
+        content:
+          application/json:
+            schema:
+              $ref: '../schemas/macroRoutesSchema.yaml#/MacroRouteResponseSchema'
+            examples:
+              Macro Routes List:
+                $ref: '../schemas/macroRoutesSchema.yaml#/components/examples/List MacroRoutes'
+
+get-update-delete-operation:
+  get:
+    tags:
+     - Macro Route
+    summary: 'Retrieve Macro Route'
+    description: 'API to retrieve Macro Route based on passed id.'
+    parameters:
+      - name: id
+        in: path
+        schema:
+          type: integer
+        description: 'Unique identifier for Macro Route.'
+        required: true
+    responses:
+      '200':
+        description: OK
+        content:
+          application/json:
+            schema:
+              $ref: '../schemas/macroRoutesSchema.yaml#/MacroRouteResponseSchema'
+            examples:
+              Macro Route:
+                $ref: '../schemas/macroRoutesSchema.yaml#/components/examples/MacroRoute'
+
+  patch:
+    tags:
+     - Macro Route
+    summary: 'Update Macro Route'
+    description: 'API to update Macro Route based on passed id.'
+    parameters:
+      - name: id
+        in: path
+        schema:
+          type: integer
+        description: 'Unique identifier for Macro Route.'
+        required: true
+    requestBody:
+      content:
+        application/json:
+          schema:
+            $ref: '../schemas/macroRoutesSchema.yaml#/MacroRoute'
+          examples:
+            Macro Route:
+              $ref: '../schemas/macroRoutesSchema.yaml#/components/examples/MacroRouteRequest'
+      required: true
+    responses:
+      '200':
+        description: OK
+        content:
+          application/json:
+            schema:
+              $ref: '../schemas/macroRoutesSchema.yaml#/MacroRouteResponseSchema'
+            examples:
+              Macro Route:
+                $ref: '../schemas/macroRoutesSchema.yaml#/components/examples/MacroRoute'
+
+  delete:
+    tags:
+     - Macro Route
+    summary: 'Delete Macro Route'
+    description: 'API to delete Macro Route based on passed id.'
+    parameters:
+      - name: id
+        in: path
+        schema:
+          type: integer
+        description: 'Unique identifier for Macro Route.'
+        required: true
+    responses:
+      '200':
+        description: OK
+        content:
+          application/json:
+            schema:
+              $ref: '../schemas/macroRoutesSchema.yaml#/macroRouteId'
+            examples:
+              Macro Route:
+                $ref: '../schemas/macroRoutesSchema.yaml#/components/examples/macroRouteId'

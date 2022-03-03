@@ -392,14 +392,6 @@ unsigned char     _device_class[4];
    unsigned char     _dim_mfg_status_used;
    unsigned char     _nbr_pending;
 **************/
-int CtiAnsiTable00::getRawDeviceClass( void )
-{
-    return (int) _device_class[4];
-}
-/*string CtiAnsiTable00::getResolvedDeviceClass( void )
-{
-
-} */
 int CtiAnsiTable00::getRawNameplateType( void )
 {
     return (int) _nameplate_type;

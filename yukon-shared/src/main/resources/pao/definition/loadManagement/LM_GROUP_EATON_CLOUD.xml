@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<pao xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" paoType="LM_GROUP_EATON_CLOUD" displayGroup="Demand Response" displayName="Eaton Cloud Group" xsi:noNamespaceSchemaLocation="../pao.xsd">
+    <pointFiles>
+        <pointFile>LM.xml</pointFile>
+    </pointFiles>
+    <tags>
+        <tag name="LM_GROUP"/>
+    </tags>
+    <pointInfos>
+        <pointInfo name="Control Status" init="true" attributes="LM_GROUP_STATUS"/>
+        <pointInfo name="Daily History" init="true" attributes="LM_DAILY_HISTORY"/>
+        <pointInfo name="Month History" init="true" attributes="LM_MONTH_HISTORY"/>
+        <pointInfo name="Season History" init="true" attributes="LM_SEASON_HISTORY"/>
+        <pointInfo name="Annual History" init="true" attributes="LM_ANNUAL_HISTORY"/>
+        <pointInfo name="Control Countdown" init="true" attributes="LM_CONTROL_COUNTDOWN"/>
+    </pointInfos>
+</pao>

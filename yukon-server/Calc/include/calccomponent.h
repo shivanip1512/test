@@ -74,11 +74,11 @@ public:
     };
 
     const std::string& getFunctionName() {return _functionName;};
-    long getComponentPointId() {return _componentPointId;};
+    long getComponentPointId() const {return _componentPointId;};
     
     BOOL isValid( void )  {  return _valid;};
 
-    BOOL isUpdated( int calcsUpdateType = 0, const CtiTime &calcsLastUpdateTime = CtiTime() );
+    BOOL isUpdated( CalcUpdateType calcsUpdateType = CalcUpdateType::Undefined, const CtiTime &calcsLastUpdateTime = CtiTime() );
 
     CtiCalcComponent  &operator=( const CtiCalcComponent &componentToCopy );
     double            calculate( double input, int &component_quality, CtiTime &component_time, bool &calcValid );

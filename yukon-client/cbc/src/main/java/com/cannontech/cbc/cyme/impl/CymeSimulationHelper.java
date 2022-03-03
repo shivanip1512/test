@@ -4,6 +4,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 
+import org.apache.commons.lang3.StringUtils;
 import org.apache.logging.log4j.Logger;
 import org.joda.time.Instant;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -52,27 +53,29 @@ public class CymeSimulationHelper {
             List<SerializableDictionaryData> cymeObjects = template.evaluate("/ns1:GetSimulationReportResponse/ns1:Values/a:SerializableDictionaryData", cymeSerializableDictionaryDataNodeMapper);
 
             for (SerializableDictionaryData cymeObject : cymeObjects) {
-                String eqCode = cymeObject.getEqCode();
-                
-                PaoType paoType = translateEqCodeToPaoType(eqCode);
-                switch(paoType) {
+                if (cymeObject != null) {
+                    String eqCode = cymeObject.getEqCode();
+
+                    PaoType paoType = translateEqCodeToPaoType(eqCode);
+                    switch (paoType) {
                     case CAPBANK:
-                        processCapBank(cymeObject,paoType,simulationTime);
+                        processCapBank(cymeObject, paoType, simulationTime);
                         break;
                     case CAP_CONTROL_SUBBUS:
                     case CAP_CONTROL_FEEDER:
-                        processBusAndFeeder(cymeObject,paoType,simulationTime);
+                        processBusAndFeeder(cymeObject, paoType, simulationTime);
                         break;
                     case PHASE_OPERATED:
                     case GANG_OPERATED:
-                        processRegulator(cymeObject,paoType,simulationTime);
+                        processRegulator(cymeObject, paoType, simulationTime);
                         break;
                     case LOAD_TAP_CHANGER:
-                        processLoadTapChanger(cymeObject,paoType,simulationTime);
+                        processLoadTapChanger(cymeObject, paoType, simulationTime);
                         break;
                     default:
                         log.warn("CYME CONFIG: EqCode not supported: " + eqCode);
                         break;
+                    }
                 }
             }
         }
@@ -297,44 +300,50 @@ public class CymeSimulationHelper {
         public SerializableDictionaryData map(Node node) throws DOMException {
             SimpleXPathTemplate template = YukonXml.getXPathTemplateForNode(node);
             template.setNamespaces(CymeWebServiceImpl.cymeDcProperties);
-        
-            String eqNo = template.evaluateAsString("EqNo");
-            String fdrNwId = template.evaluateAsString("NetworkId");
-            
             PhaseInformation phaseA = getPhaseInformation(Phase.A, template);
             PhaseInformation phaseB = getPhaseInformation(Phase.B, template);
             PhaseInformation phaseC = getPhaseInformation(Phase.C, template);
-            
-            String eqCode = template.evaluateAsString("EqCode");
-            
-            String ltcTapValueStr = template.evaluateAsString("XfoTap");
-            int ltcTapValue = 0;
-            if (! ltcTapValueStr.isEmpty()) {
-                ltcTapValue = (int)Float.parseFloat(ltcTapValueStr);
+            SerializableDictionaryData dictionaryData = null;
+
+            if (phaseA != null && phaseB != null && phaseC != null) {
+                String eqNo = template.evaluateAsString("EqNo");
+                String fdrNwId = template.evaluateAsString("NetworkId");
+
+                String eqCode = template.evaluateAsString("EqCode");
+
+                String ltcTapValueStr = template.evaluateAsString("XfoTap");
+                int ltcTapValue = 0;
+                if (!ltcTapValueStr.isEmpty()) {
+                    ltcTapValue = (int) Float.parseFloat(ltcTapValueStr);
+                }
+
+                float ltcBandwidth = 0;
+                try {
+                    ltcBandwidth = Float.parseFloat(template.evaluateAsString("XfoBand"));
+                } catch (NumberFormatException nfe) {
+                }
+
+                float ltcSetPoint = 0;
+                try {
+                    ltcSetPoint = Float.parseFloat(template.evaluateAsString("XfoSetPoint"));
+                } catch (NumberFormatException nfe) {
+                }
+
+                float regulatorBandwidth = 0;
+                try {
+                    regulatorBandwidth = Float.parseFloat(template.evaluateAsString("RegBandw"));
+                } catch (NumberFormatException nfe) {
+                }
+
+                dictionaryData = new SerializableDictionaryData(eqNo, fdrNwId, phaseA, phaseB, phaseC, ltcTapValue, eqCode,
+                        ltcBandwidth, ltcSetPoint, regulatorBandwidth);
             }
-            
-            float ltcBandwidth = 0;
-            try {
-                ltcBandwidth = Float.parseFloat(template.evaluateAsString("XfoBand"));
-            } catch (NumberFormatException nfe) {}
-
-            float ltcSetPoint = 0;
-            try {
-                ltcSetPoint = Float.parseFloat(template.evaluateAsString("XfoSetPoint"));
-            } catch (NumberFormatException nfe) {}
-
-            float regulatorBandwidth = 0;
-            try {
-                regulatorBandwidth = Float.parseFloat(template.evaluateAsString("RegBandw"));
-            } catch (NumberFormatException nfe) {}
-            
-            return new SerializableDictionaryData(eqNo, fdrNwId, phaseA, phaseB, phaseC, ltcTapValue, eqCode,
-                ltcBandwidth, ltcSetPoint, regulatorBandwidth);
+            return dictionaryData;
         }
     };
     
     private static PhaseInformation getPhaseInformation(Phase phase, SimpleXPathTemplate template) {
-
+        PhaseInformation phaseInfo = null;
         // We shouldn't have to do this!!! FIx if we can get CYME to promise only legal numbers
         String tempIStr = template.evaluateAsString("I" + phase).split("#")[0];
         String tempVBaseStr = template.evaluateAsString("VBase" + phase).split("#")[0];
@@ -342,22 +351,24 @@ public class CymeSimulationHelper {
         String tempKWStr = template.evaluateAsString("KW" + phase).split("#")[0];
         String tempTapPosStr = template.evaluateAsString("RegTap" + phase).split("#")[0];
         String tempVoltageSetPoint = template.evaluateAsString("RegVset" + phase).split("#")[0];
+        if (StringUtils.isNotBlank(tempIStr) && StringUtils.isNotBlank(tempVBaseStr) && StringUtils.isNotBlank(tempKVarStr)
+                && StringUtils.isNotBlank(tempKWStr)) {
+            float tempI = Float.parseFloat(tempIStr);
+            float tempVBase = Float.parseFloat(tempVBaseStr);
+            float tempKVar = Float.parseFloat(tempKVarStr);
+            float tempKW = Float.parseFloat(tempKWStr);
 
-        float tempI = Float.parseFloat(tempIStr);
-        float tempVBase = Float.parseFloat(tempVBaseStr);
-        float tempKVar = Float.parseFloat(tempKVarStr);
-        float tempKW = Float.parseFloat(tempKWStr);
-
-        float tempTapPos = 0;
-        if (!tempTapPosStr.isEmpty()) {
-            tempTapPos = Float.parseFloat(tempTapPosStr);
+            float tempTapPos = 0;
+            if (StringUtils.isNotBlank(tempTapPosStr)) {
+                tempTapPos = Float.parseFloat(tempTapPosStr);
+            }
+            float tempVSetPoint = 0;
+            try {
+                tempVSetPoint = Float.parseFloat(tempVoltageSetPoint);
+            } catch (NumberFormatException e) {
+            }
+            phaseInfo = new PhaseInformation(tempI, tempVBase, tempKVar, tempKW, tempTapPos, tempVSetPoint);
         }
-        float tempVSetPoint = 0;
-        try {
-            tempVSetPoint = Float.parseFloat(tempVoltageSetPoint);
-        } catch (NumberFormatException e) {}
-        PhaseInformation phaseInfo =
-            new PhaseInformation(tempI, tempVBase, tempKVar, tempKW, tempTapPos, tempVSetPoint);
         return phaseInfo;
     }
 

@@ -1,10 +1,10 @@
 #include "precompiled.h"
 
 #include "KeepAlivePolicy.h"
+#include "Requests.h"
 
 
-namespace Cti           {
-namespace CapControl    {
+namespace Cti::CapControl {
 
 const std::string KeepAlivePolicy::KeepAliveText            = "Keep Alive";
 const std::string KeepAlivePolicy::EnableRemoteControlText  = "Enable Remote Control";
@@ -26,10 +26,8 @@ Policy::Action KeepAlivePolicy::WriteKeepAliveValue( const long keepAliveValue )
     return
     {
         makeSignalTemplate( point.getPointId(), 0, KeepAliveText ),
-        makeRequestTemplate( point.getPaoId(), putvalueAnalogCommand( point, keepAliveValue ) )
+        makeRequestTemplate( point.getPaoId(), putvalueAnalogCommand( point, keepAliveValue ), RequestType::Heartbeat )
     };
 }
 
 }
-}
-

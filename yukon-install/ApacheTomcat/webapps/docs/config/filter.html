@@ -1,37 +1,7 @@
 <!DOCTYPE html SYSTEM "about:legacy-compat">
-<html lang="en"><head><META http-equiv="Content-Type" content="text/html; charset=UTF-8"><link href="../images/docs-stylesheet.css" rel="stylesheet" type="text/css"><title>Apache Tomcat 9 Configuration Reference (9.0.31) - Container Provided Filters</title><script type="application/javascript" data-comments-identifier="tomcat-9.0-doc/config/filter">
-    "use strict"; // Enable strict mode
-
-    (function() {
-      var thisScript = document.currentScript;
-      if (!thisScript) { // Workaround for IE <= 11
-        var scripts = document.getElementsByTagName("script");
-        thisScript = scripts[scripts.length - 1];
-      }
-      document.addEventListener("DOMContentLoaded", (function() {
-        var commentsDiv = document.getElementById("comments_thread");
-        var commentsShortname = "tomcat";
-        var commentsIdentifier = "https://tomcat.apache.org/" +
-          thisScript.getAttribute("data-comments-identifier") + ".html";
-
-        (function(w, d) {
-          if (w.location.hostname.toLowerCase() == "tomcat.apache.org") {
-            var s = d.createElement("script");
-            s.type = "application/javascript";
-            s.async = true;
-            s.src = "https://comments.apache.org/show_comments.lua?site=" +
-              encodeURIComponent(commentsShortname) +
-              "&page=" + encodeURIComponent(commentsIdentifier);
-            d.head.appendChild(s);
-          } else {
-            commentsDiv.appendChild(d.createTextNode("Comments are disabled for this page at the moment."));
-          }
-        })(window, document);
-      }), false);
-    })();
-  </script></head><body><div id="wrapper"><header><div id="header"><div><div><div class="logo noPrint"><a href="https://tomcat.apache.org/"><img alt="Tomcat Home" src="../images/tomcat.png"></a></div><div style="height: 1px;"></div><div class="asfLogo noPrint"><a href="https://www.apache.org/" target="_blank"><img src="../images/asf-logo.svg" alt="The Apache Software Foundation" style="width: 266px; height: 83px;"></a></div><h1>Apache Tomcat 9 Configuration Reference</h1><div class="versionInfo">
-          Version 9.0.31,
-          <time datetime="2020-02-05">Feb 5 2020</time></div><div style="height: 1px;"></div><div style="clear: left;"></div></div></div></div></header><div id="middle"><div><div id="mainLeft" class="noprint"><div><nav><div><h2>Links</h2><ul><li><a href="../index.html">Docs Home</a></li><li><a href="index.html">Config Ref. Home</a></li><li><a href="https://wiki.apache.org/tomcat/FAQ">FAQ</a></li><li><a href="#comments_section">User Comments</a></li></ul></div><div><h2>Top Level Elements</h2><ul><li><a href="server.html">Server</a></li><li><a href="service.html">Service</a></li></ul></div><div><h2>Executors</h2><ul><li><a href="executor.html">Executor</a></li></ul></div><div><h2>Connectors</h2><ul><li><a href="http.html">HTTP/1.1</a></li><li><a href="http2.html">HTTP/2</a></li><li><a href="ajp.html">AJP</a></li></ul></div><div><h2>Containers</h2><ul><li><a href="context.html">Context</a></li><li><a href="engine.html">Engine</a></li><li><a href="host.html">Host</a></li><li><a href="cluster.html">Cluster</a></li></ul></div><div><h2>Nested Components</h2><ul><li><a href="cookie-processor.html">CookieProcessor</a></li><li><a href="credentialhandler.html">CredentialHandler</a></li><li><a href="globalresources.html">Global Resources</a></li><li><a href="jar-scanner.html">JarScanner</a></li><li><a href="jar-scan-filter.html">JarScanFilter</a></li><li><a href="listeners.html">Listeners</a></li><li><a href="loader.html">Loader</a></li><li><a href="manager.html">Manager</a></li><li><a href="realm.html">Realm</a></li><li><a href="resources.html">Resources</a></li><li><a href="sessionidgenerator.html">SessionIdGenerator</a></li><li><a href="valve.html">Valve</a></li></ul></div><div><h2>Cluster Elements</h2><ul><li><a href="cluster.html">Cluster</a></li><li><a href="cluster-manager.html">Manager</a></li><li><a href="cluster-channel.html">Channel</a></li><li><a href="cluster-membership.html">Channel/Membership</a></li><li><a href="cluster-sender.html">Channel/Sender</a></li><li><a href="cluster-receiver.html">Channel/Receiver</a></li><li><a href="cluster-interceptor.html">Channel/Interceptor</a></li><li><a href="cluster-valve.html">Valve</a></li><li><a href="cluster-deployer.html">Deployer</a></li><li><a href="cluster-listener.html">ClusterListener</a></li></ul></div><div><h2>web.xml</h2><ul><li><a href="filter.html">Filter</a></li></ul></div><div><h2>Other</h2><ul><li><a href="systemprops.html">System properties</a></li><li><a href="jaspic.html">JASPIC</a></li></ul></div></nav></div></div><div id="mainRight"><div id="content"><h2>Container Provided Filters</h2><h3 id="Table_of_Contents">Table of Contents</h3><div class="text">
+<html lang="en"><head><META http-equiv="Content-Type" content="text/html; charset=UTF-8"><link href="../images/docs-stylesheet.css" rel="stylesheet" type="text/css"><title>Apache Tomcat 9 Configuration Reference (9.0.56) - Container Provided Filters</title></head><body><div id="wrapper"><header><div id="header"><div><div><div class="logo noPrint"><a href="https://tomcat.apache.org/"><img alt="Tomcat Home" src="../images/tomcat.png"></a></div><div style="height: 1px;"></div><div class="asfLogo noPrint"><a href="https://www.apache.org/" target="_blank"><img src="../images/asf-logo.svg" alt="The Apache Software Foundation" style="width: 266px; height: 83px;"></a></div><h1>Apache Tomcat 9 Configuration Reference</h1><div class="versionInfo">
+            Version 9.0.56,
+            <time datetime="2021-12-02">Dec 2 2021</time></div><div style="height: 1px;"></div><div style="clear: left;"></div></div></div></div></header><div id="middle"><div><div id="mainLeft" class="noprint"><div><nav><div><h2>Links</h2><ul><li><a href="../index.html">Docs Home</a></li><li><a href="index.html">Config Ref. Home</a></li><li><a href="https://wiki.apache.org/tomcat/FAQ">FAQ</a></li><li><a href="#comments_section">User Comments</a></li></ul></div><div><h2>Top Level Elements</h2><ul><li><a href="server.html">Server</a></li><li><a href="service.html">Service</a></li></ul></div><div><h2>Executors</h2><ul><li><a href="executor.html">Executor</a></li></ul></div><div><h2>Connectors</h2><ul><li><a href="http.html">HTTP/1.1</a></li><li><a href="http2.html">HTTP/2</a></li><li><a href="ajp.html">AJP</a></li></ul></div><div><h2>Containers</h2><ul><li><a href="context.html">Context</a></li><li><a href="engine.html">Engine</a></li><li><a href="host.html">Host</a></li><li><a href="cluster.html">Cluster</a></li></ul></div><div><h2>Nested Components</h2><ul><li><a href="cookie-processor.html">CookieProcessor</a></li><li><a href="credentialhandler.html">CredentialHandler</a></li><li><a href="globalresources.html">Global Resources</a></li><li><a href="jar-scanner.html">JarScanner</a></li><li><a href="jar-scan-filter.html">JarScanFilter</a></li><li><a href="listeners.html">Listeners</a></li><li><a href="loader.html">Loader</a></li><li><a href="manager.html">Manager</a></li><li><a href="realm.html">Realm</a></li><li><a href="resources.html">Resources</a></li><li><a href="sessionidgenerator.html">SessionIdGenerator</a></li><li><a href="valve.html">Valve</a></li></ul></div><div><h2>Cluster Elements</h2><ul><li><a href="cluster.html">Cluster</a></li><li><a href="cluster-manager.html">Manager</a></li><li><a href="cluster-channel.html">Channel</a></li><li><a href="cluster-membership.html">Channel/Membership</a></li><li><a href="cluster-sender.html">Channel/Sender</a></li><li><a href="cluster-receiver.html">Channel/Receiver</a></li><li><a href="cluster-interceptor.html">Channel/Interceptor</a></li><li><a href="cluster-valve.html">Valve</a></li><li><a href="cluster-deployer.html">Deployer</a></li><li><a href="cluster-listener.html">ClusterListener</a></li></ul></div><div><h2>web.xml</h2><ul><li><a href="filter.html">Filter</a></li></ul></div><div><h2>Other</h2><ul><li><a href="systemprops.html">System properties</a></li><li><a href="jaspic.html">JASPIC</a></li></ul></div></nav></div></div><div id="mainRight"><div id="content"><h2>Container Provided Filters</h2><h3 id="Table_of_Contents">Table of Contents</h3><div class="text">
 <ul><li><a href="#Introduction">Introduction</a></li><li><a href="#Add_Default_Character_Set_Filter">Add Default Character Set Filter</a><ol><li><a href="#Add_Default_Character_Set_Filter/Introduction">Introduction</a></li><li><a href="#Add_Default_Character_Set_Filter/Filter_Class_Name">Filter Class Name</a></li><li><a href="#Add_Default_Character_Set_Filter/Initialisation_parameters">Initialisation parameters</a></li></ol></li><li><a href="#CORS_Filter">CORS Filter</a><ol><li><a href="#CORS_Filter/Introduction">Introduction</a></li><li><a href="#CORS_Filter/Filter_Class_Name">Filter Class Name</a></li><li><a href="#CORS_Filter/Initialisation_parameters">Initialisation parameters</a></li><li><a href="#CORS_Filter_and_HttpServletRequest_attributes">CORS Filter and HttpServletRequest attributes</a></li></ol></li><li><a href="#CSRF_Prevention_Filter">CSRF Prevention Filter</a><ol><li><a href="#CSRF_Prevention_Filter/Introduction">Introduction</a></li><li><a href="#CSRF_Prevention_Filter/Filter_Class_Name">Filter Class Name</a></li><li><a href="#CSRF_Prevention_Filter/Initialisation_parameters">Initialisation parameters</a></li></ol></li><li><a href="#CSRF_Prevention_Filter_for_REST_APIs">CSRF Prevention Filter for REST APIs</a><ol><li><a href="#CSRF_Prevention_Filter_for_REST_APIs/Introduction">Introduction</a></li><li><a href="#CSRF_Prevention_Filter_for_REST_APIs/Basic_configuration_sample">Basic configuration sample</a></li><li><a href="#RestCsrfPreventionFilter_and_HttpServletRequest_parameters">RestCsrfPreventionFilter and HttpServletRequest parameters</a></li><li><a href="#CSRF_Prevention_Filter_for_REST_APIs/Filter_Class_Name">Filter Class Name</a></li><li><a href="#CSRF_Prevention_Filter_for_REST_APIs/Initialisation_parameters">Initialisation parameters</a></li></ol></li><li><a href="#Expires_Filter">Expires Filter</a><ol><li><a href="#Expires_Filter/Introduction">Introduction</a></li><li><a href="#Expires_Filter/Basic_configuration_sample">Basic configuration sample</a></li><li><a href="#Alternate_Syntax">Alternate Syntax</a></li><li><a href="#Expiration_headers_generation_eligibility">Expiration headers generation eligibility</a></li><li><a href="#Expiration_configuration_selection">Expiration configuration selection</a></li><li><a href="#Expires_Filter/Filter_Class_Name">Filter Class Name</a></li><li><a href="#Expires_Filter/Initialisation_parameters">Initialisation parameters</a></li><li><a href="#Troubleshooting">Troubleshooting</a></li></ol></li><li><a href="#Failed_Request_Filter">Failed Request Filter</a><ol><li><a href="#Failed_Request_Filter/Introduction">Introduction</a></li><li><a href="#Failed_Request_Filter/Filter_Class_Name">Filter Class Name</a></li><li><a href="#Failed_Request_Filter/Initialisation_parameters">Initialisation parameters</a></li></ol></li><li><a href="#HTTP_Header_Security_Filter">HTTP Header Security Filter</a><ol><li><a href="#HTTP_Header_Security_Filter/Introduction">Introduction</a></li><li><a href="#HTTP_Header_Security_Filter/Filter_Class_Name">Filter Class Name</a></li><li><a href="#HTTP_Header_Security_Filter/Initialisation_parameters">Initialisation parameters</a></li></ol></li><li><a href="#Remote_Address_Filter">Remote Address Filter</a><ol><li><a href="#Remote_Address_Filter/Introduction">Introduction</a></li><li><a href="#Remote_Address_Filter/Filter_Class_Name">Filter Class Name</a></li><li><a href="#Remote_Address_Filter/Initialisation_parameters">Initialisation parameters</a></li><li><a href="#Remote_Address_Filter/Example">Example</a></li></ol></li><li><a href="#Remote_Host_Filter">Remote Host Filter</a><ol><li><a href="#Remote_Host_Filter/Introduction">Introduction</a></li><li><a href="#Remote_Host_Filter/Filter_Class_Name">Filter Class Name</a></li><li><a href="#Remote_Host_Filter/Initialisation_parameters">Initialisation parameters</a></li></ol></li><li><a href="#Remote_CIDR_Filter">Remote CIDR Filter</a><ol><li><a href="#Remote_CIDR_Filter/Introduction">Introduction</a></li><li><a href="#Remote_CIDR_Filter/Filter_Class_Name">Filter Class Name</a></li><li><a href="#Remote_CIDR_Filter/Initialisation_parameters">Initialisation parameters</a></li><li><a href="#Remote_CIDR_Filter/Example">Example</a></li></ol></li><li><a href="#Remote_IP_Filter">Remote IP Filter</a><ol><li><a href="#Remote_IP_Filter/Introduction">Introduction</a></li><li><a href="#Remote_IP_Filter/Filter_Class_Name">Filter Class Name</a></li><li><a href="#Basic_configuration_to_handle_'x-forwarded-for'">Basic configuration to handle 'x-forwarded-for'</a></li><li><a href="#Basic_configuration_to_handle_'x-forwarded-for'_and_'x-forwarded-proto'">Basic configuration to handle 'x-forwarded-for' and 'x-forwarded-proto'</a></li><li><a href="#Advanced_configuration_with_internal_proxies">Advanced configuration with internal proxies</a></li><li><a href="#Advanced_configuration_with_trusted_proxies">Advanced configuration with trusted proxies</a></li><li><a href="#Advanced_configuration_with_internal_and_trusted_proxies">Advanced configuration with internal and trusted proxies</a></li><li><a href="#Advanced_configuration_with_an_untrusted_proxy">Advanced configuration with an untrusted proxy</a></li><li><a href="#Remote_IP_Filter/Initialisation_parameters">Initialisation parameters</a></li></ol></li><li><a href="#Request_Dumper_Filter">Request Dumper Filter</a><ol><li><a href="#Request_Dumper_Filter/Introduction">Introduction</a></li><li><a href="#Request_Dumper_Filter/Filter_Class_Name">Filter Class Name</a></li><li><a href="#Request_Dumper_Filter/Initialisation_parameters">Initialisation parameters</a></li><li><a href="#Request_Dumper_Filter/Sample_Configuration">Sample Configuration</a></li></ol></li><li><a href="#Session_Initializer_Filter">Session Initializer Filter</a><ol><li><a href="#Session_Initializer_Filter/Introduction">Introduction</a></li><li><a href="#Session_Initializer_Filter/Filter_Class_Name">Filter Class Name</a></li><li><a href="#Session_Initializer_Filter/Initialisation_parameters">Initialisation parameters</a></li><li><a href="#Session_Initializer_Filter/Sample_Configuration">Sample Configuration</a></li></ol></li><li><a href="#Set_Character_Encoding_Filter">Set Character Encoding Filter</a><ol><li><a href="#Set_Character_Encoding_Filter/Introduction">Introduction</a></li><li><a href="#Set_Character_Encoding_Filter/Filter_Class_Name">Filter Class Name</a></li><li><a href="#Set_Character_Encoding_Filter/Initialisation_parameters">Initialisation parameters</a></li></ol></li><li><a href="#WebDAV_Fix_Filter">WebDAV Fix Filter</a><ol><li><a href="#WebDAV_Fix_Filter/Introduction">Introduction</a></li><li><a href="#WebDAV_Fix_Filter/Filter_Class_Name">Filter Class Name</a></li><li><a href="#WebDAV_Fix_Filter/Initialisation_parameters">Initialisation parameters</a></li></ol></li></ul>
 </div><h3 id="Introduction">Introduction</h3><div class="text">
 
@@ -135,8 +105,8 @@
         </th></tr><tr><td><code class="attributeName">cors.allowed.origins</code></td><td>
         <p>A list of <a href="https://tools.ietf.org/html/rfc6454">origins</a>
         that are allowed to access the resource. A <code>*</code> can be
-        specified to enable access to resource from any origin. Otherwise, a
-        whitelist of comma separated origins can be provided. Eg: <code>
+        specified to enable access to resource from any origin. Otherwise, an
+        allow list of comma separated origins can be provided. Eg: <code>
         https://www.w3.org, https://www.apache.org</code>.
         <strong>Defaults:</strong> The empty String. (No origin is allowed to
         access the resource).</p>
@@ -482,7 +452,7 @@ HTTP/1.1 200 OK
   <div class="subsection"><h4 id="Expires_Filter/Basic_configuration_sample">Basic configuration sample</h4><div class="text">
     <p>
     Basic configuration to add '<code>Expires</code>' and '<code>Cache-Control: max-age=</code>'
-    headers to images, css and javascript.
+    headers to images, CSS and JavaScript.
     </p>
 
     <div class="codeBox"><pre><code>&lt;filter&gt;
@@ -1485,7 +1455,11 @@ FINE: Request "/docs/config/manager.html" with response status "200"
           Attribute
         </th><th style="width: 85%;">
           Description
-        </th></tr><tr><td><code class="attributeName">remoteIpHeader</code></td><td>
+        </th></tr><tr><td><code class="attributeName">enableLookups</code></td><td>
+        <p>Should a DNS lookup be performed to provide a host name when calling
+        <code>ServletRequest#getRemoteHost()</code>. If not specified, the
+        default of <code>false</code> is used.</p>
+      </td></tr><tr><td><code class="attributeName">remoteIpHeader</code></td><td>
         <p>Name of the HTTP Header read by this valve that holds the list of
         traversed IP addresses starting from the requesting client. If not
         specified, the default of <code>x-forwarded-for</code> is used.</p>
@@ -1734,18 +1708,6 @@ org.apache.catalina.filters.RequestDumperFilter.handlers = \
 
   </div></div>
 
-</div><div class="noprint"><h3 id="comments_section">
-                  Comments
-                </h3><div class="text"><p class="notice"><strong>Notice:</strong> This comments section collects your suggestions
-                    on improving documentation for Apache Tomcat.<br><br>
-                    If you have trouble and need help, read
-                    <a href="https://tomcat.apache.org/findhelp.html">Find Help</a> page
-                    and ask your question on the tomcat-users
-                    <a href="https://tomcat.apache.org/lists.html">mailing list</a>.
-                    Do not ask such questions here. This is not a Q&amp;A section.<br><br>
-                    The Apache Comments System is explained <a href="../comments.html">here</a>.
-                    Comments may be removed by our moderators if they are either
-                    implemented or considered invalid/off-topic.
-                  </p><div id="comments_thread"></div></div></div></div></div></div></div><footer><div id="footer">
-    Copyright &copy; 1999-2020, The Apache Software Foundation
-  </div></footer></div></body></html>
+</div></div></div></div></div><footer><div id="footer">
+    Copyright &copy; 1999-2021, The Apache Software Foundation
+    </div></footer></div></body></html>

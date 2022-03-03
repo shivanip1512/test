@@ -5,12 +5,11 @@ import static com.cannontech.common.util.TimeUtil.getStartOfHour;
 
 import java.util.ArrayList;
 import java.util.Collections;
-import java.util.Date;
 import java.util.List;
 import java.util.Map;
+import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
 import java.util.function.Predicate;
-import java.util.stream.Collectors;
 
 import javax.annotation.PostConstruct;
 
@@ -26,29 +25,25 @@ import com.cannontech.common.pao.PaoIdentifier;
 import com.cannontech.common.pao.PaoType;
 import com.cannontech.common.pao.YukonPao;
 import com.cannontech.common.pao.attribute.model.BuiltInAttribute;
-import com.cannontech.common.point.PointQuality;
 import com.cannontech.common.util.Range;
 import com.cannontech.common.util.ScheduledExecutor;
 import com.cannontech.common.util.TimeUtil;
-import com.cannontech.core.dao.NotFoundException;
 import com.cannontech.core.dao.PaoDao;
-import com.cannontech.core.dao.PointDao;
 import com.cannontech.core.dao.RawPointHistoryDao;
 import com.cannontech.core.dao.RawPointHistoryDao.AdjacentPointValues;
 import com.cannontech.core.dao.RawPointHistoryDao.Order;
 import com.cannontech.core.dynamic.AsyncDynamicDataSource;
 import com.cannontech.core.dynamic.PointValueHolder;
 import com.cannontech.core.dynamic.PointValueQualityHolder;
-import com.cannontech.core.dynamic.exception.DispatchNotConnectedException;
-import com.cannontech.database.data.lite.LitePoint;
-import com.cannontech.database.data.point.PointType;
-import com.cannontech.dr.assetavailability.AssetAvailabilityPointDataTimes;
-import com.cannontech.dr.assetavailability.dao.DynamicLcrCommunicationsDao;
 import com.cannontech.dr.honeywellWifi.azure.event.EquipmentStatus;
 import com.cannontech.dr.service.RuntimeCalcService;
 import com.cannontech.dr.service.impl.DatedRuntimeStatus;
+import com.cannontech.dr.service.impl.RuntimeCalcServiceHelper;
 import com.cannontech.dr.service.impl.RuntimeStatus;
-import com.cannontech.message.dispatch.message.PointData;
+import com.cannontech.message.dispatch.message.DatabaseChangeEvent;
+import com.cannontech.message.dispatch.message.DbChangeCategory;
+import com.cannontech.system.GlobalSettingType;
+import com.cannontech.system.dao.GlobalSettingDao;
 import com.google.common.collect.ListMultimap;
 
 public class HoneywellWifiRuntimeCalcServiceImpl implements HoneywellWifiRuntimeCalcService {
@@ -57,20 +52,51 @@ public class HoneywellWifiRuntimeCalcServiceImpl implements HoneywellWifiRuntime
     @Autowired private AsyncDynamicDataSource asyncDynamicDataSource;
     @Autowired private HoneywellWifiDataListener dataListener;
     @Autowired private PaoDao paoDao;
-    @Autowired private PointDao pointDao;
     @Autowired private RawPointHistoryDao rphDao;
     @Autowired private RuntimeCalcService runtimeCalcService;
+    @Autowired private RuntimeCalcServiceHelper runtimeCalcServiceHelper;
     @Autowired @Qualifier("main") private ScheduledExecutor scheduledExecutor;
-    @Autowired private DynamicLcrCommunicationsDao dynamicLcrCommunicationsDao;
-    private static final int runtimePointOffset = 5;
-    
+    @Autowired private GlobalSettingDao globalSettingDao;
+    private ScheduledFuture<?> scheduledFuture;
+
     @PostConstruct
     public void init() {
-        //Schedule calculateRuntimes() every 6 hours, with the first run 1 minute after the honeywell services init.
-        scheduledExecutor.scheduleAtFixedRate(this::calculateRuntimes, 1, 6*60, TimeUnit.MINUTES);
+        asyncDynamicDataSource.addDatabaseChangeEventListener(DbChangeCategory.GLOBAL_SETTING, this::databaseChangeEvent);
+
+        scheduleCalculateRuntimes();
         log.info("Initialized HoneywellWifiRuntimeCalcService");
     }
-    
+
+    /**
+     * Called when any global setting is updated
+     */
+    private void databaseChangeEvent(DatabaseChangeEvent event) {
+
+        if (globalSettingDao.isDbChangeForSetting(event, GlobalSettingType.RUNTIME_CALCULATION_INTERVAL_HOURS)) {
+            if (scheduledFuture != null) {
+                scheduledFuture.cancel(false);
+            }
+            // RuntimeCalcInterval changed, schedule Calculate Runtimes with the updated interval.
+            scheduleCalculateRuntimes();
+        }
+
+    }
+
+    /**
+     * Schedule Calculate Runtimes.
+     */
+    private void scheduleCalculateRuntimes() {
+        // Schedule calculateRuntimes() every runtimeCalcInterval hours, with the first run 1 minute after the honeywell services init.
+        scheduledFuture = scheduledExecutor.scheduleAtFixedRate(this::calculateRuntimes, 1, getRuntimeCalcInterval() * 60, TimeUnit.MINUTES);
+    }
+
+    /**
+     * Get Runtime Calculation Interval
+     */
+    private Integer getRuntimeCalcInterval() {
+        return globalSettingDao.getInteger(GlobalSettingType.RUNTIME_CALCULATION_INTERVAL_HOURS);
+    }
+
     @Override
     public void calculateRuntimes() {
         try {
@@ -81,7 +107,7 @@ public class HoneywellWifiRuntimeCalcServiceImpl implements HoneywellWifiRuntime
             log.info("Calculating runtimes for Honeywell wifi thermostats.");
             log.debug("Found " + thermostats.size() + " Honeywell wifi thermostats.");
             
-            Map<Integer, DateTime> lastRuntimes = getLastRuntimes(thermostats);
+            Map<Integer, DateTime> lastRuntimes = runtimeCalcServiceHelper.getLastRuntimes(thermostats);
             Instant endOfCalcRange = getEndOfRuntimeCalcRange().toInstant();
             
             for (YukonPao thermostat : thermostats) {
@@ -126,7 +152,7 @@ public class HoneywellWifiRuntimeCalcServiceImpl implements HoneywellWifiRuntime
                                          .map(entry -> entry.getKey())
                                          .max(DateTime::compareTo)
                                          .ifPresent(lastRuntimeDate -> {
-                                             updateAssetAvailability(thermostat.getPaoIdentifier(), lastRuntimeDate.toInstant());
+                                             runtimeCalcServiceHelper.updateAssetAvailability(thermostat.getPaoIdentifier(), lastRuntimeDate.toInstant());
                                          });
     
                 // Throw away any values prior to start of calculation range (if applicable), since that runtime is already
@@ -142,7 +168,7 @@ public class HoneywellWifiRuntimeCalcServiceImpl implements HoneywellWifiRuntime
                 }
                 
                 //Insert runtime values via dispatch
-                insertRuntimes(thermostat, runtimeSeconds, filter);
+                runtimeCalcServiceHelper.insertRuntimes(thermostat, runtimeSeconds, filter);
                 
                 log.info("Finished calculating runtimes for Honeywell wifi thermostats.");
             }
@@ -160,16 +186,6 @@ public class HoneywellWifiRuntimeCalcServiceImpl implements HoneywellWifiRuntime
         return thermostats;
     }
     
-    private Map<Integer, DateTime> getLastRuntimes(List<YukonPao> thermostats) {
-        
-        Map<PaoIdentifier, PointValueQualityHolder> runtimeValues = 
-                rphDao.getSingleAttributeData(thermostats, BuiltInAttribute.RELAY_1_RUN_TIME_DATA_LOG, false, null);
-        
-        return runtimeValues.entrySet()
-                            .stream()
-                            .collect(Collectors.toMap(entry -> entry.getKey().getPaoId(), 
-                                                      entry -> new DateTime(entry.getValue().getPointDataTimeStamp())));
-    }
     
     private DateTime getEndOfRuntimeCalcRange() {
         // Default to start of previous hour
@@ -196,57 +212,7 @@ public class HoneywellWifiRuntimeCalcServiceImpl implements HoneywellWifiRuntime
             return getLeastRecent(endOfCalcRange, lastProcessingTime);
         }
     }
-    
-    private boolean insertRuntimes(YukonPao pao, Map<DateTime, Integer> hourlyRuntimeSeconds, 
-                                  Predicate<Map.Entry<DateTime, Integer>> filter) {
-        
-        log.trace("Inserting runtimes for Honeywell wifi thermostat: " + pao);
-        
-        if (hourlyRuntimeSeconds.size() == 0) {
-            log.info("Skipping runtime insertion for " + pao.getPaoIdentifier() + 
-                     ". Not enough new data is available for calculation.");
-            return false;
-        }
-        
-        LitePoint runtimePoint;
-        try {
-            runtimePoint = pointDao.getLitePointIdByDeviceId_Offset_PointType(pao.getPaoIdentifier().getPaoId(), 
-                                                                              runtimePointOffset, 
-                                                                              PointType.Analog);
-        } catch (NotFoundException e) {
-            log.error("Unable to insert runtime for " + pao.getPaoIdentifier() + " - no runtime point at analog offset " 
-                      + runtimePointOffset + ".");
-            return false;
-        }
-        
-        List<PointData> pointDatas = hourlyRuntimeSeconds.entrySet()
-                                                         .stream()
-                                                         .filter(nullSafeFilter(filter))
-                                                         .map(entry -> {
-                                                             Date runtimeDate = entry.getKey().toDate();
-                                                             int seconds = entry.getValue();
-                                                             Double runtimeMinutes = seconds / 60.0;
-                                                             
-                                                             PointData pointData = new PointData();
-                                                             pointData.setId(runtimePoint.getLiteID());
-                                                             pointData.setType(PointType.Analog.getPointTypeId());
-                                                             pointData.setMillis(0);
-                                                             pointData.setPointQuality(PointQuality.Normal);
-                                                             pointData.setTime(runtimeDate);
-                                                             pointData.setValue(runtimeMinutes);
-                                                             pointData.setTagsPointMustArchive(true);
-                                                             return pointData;
-                                                         })
-                                                         .collect(Collectors.toList());
-        try {
-            asyncDynamicDataSource.putValues(pointDatas);
-        } catch (DispatchNotConnectedException e) {
-            log.error("Unable to insert runtime for " + pao.getPaoIdentifier() + " - no dispatch connection.");
-            return false;
-        }
-        return true;
-    }
-    
+   
     private DatedRuntimeStatus getRuntimeStatusFromPoint(PointValueHolder pointValue) {
         DateTime date = new DateTime(pointValue.getPointDataTimeStamp());
         RuntimeStatus status = RuntimeStatus.STOPPED;
@@ -259,20 +225,5 @@ public class HoneywellWifiRuntimeCalcServiceImpl implements HoneywellWifiRuntime
         
         return new DatedRuntimeStatus(status, date);
     }
-    
-    /**
-     * If the specified predicate is null, replace it with a filter that accepts all input.
-     */
-    private Predicate<Map.Entry<DateTime, Integer>> nullSafeFilter(Predicate<Map.Entry<DateTime, Integer>> filter) {
-        if (filter == null) {
-            filter = input -> true;
-        }
-        return filter;
-    }
-    
-    private void updateAssetAvailability(PaoIdentifier paoIdentifier, Instant lastRuntime) {
-        AssetAvailabilityPointDataTimes newTimes = new AssetAvailabilityPointDataTimes(paoIdentifier.getPaoId());
-        newTimes.setRelayRuntime(1, lastRuntime);
-        dynamicLcrCommunicationsDao.insertData(newTimes);
-    }
+
 }

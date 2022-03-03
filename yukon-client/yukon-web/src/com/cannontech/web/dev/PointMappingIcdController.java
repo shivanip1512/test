@@ -37,16 +37,15 @@ import com.cannontech.amr.rfn.service.pointmapping.icd.RfnPointMappingParser;
 import com.cannontech.amr.rfn.service.pointmapping.icd.SentinelPointDefinition;
 import com.cannontech.amr.rfn.service.pointmapping.icd.Units;
 import com.cannontech.amr.rfn.service.pointmapping.icd.WaterNodePointDefinition;
-import com.cannontech.amr.rfn.service.pointmapping.icd.YukonPointMappingIcdParser;
 import com.cannontech.common.config.MasterConfigBoolean;
 import com.cannontech.common.config.dao.RfnPointMappingDao;
 import com.cannontech.common.pao.PaoType;
 import com.cannontech.common.pao.definition.dao.PaoDefinitionDao;
 import com.cannontech.common.pao.definition.model.PaoTypePointIdentifier;
 import com.cannontech.common.rfn.model.RfnManufacturerModel;
+import com.cannontech.common.util.YamlParserUtils;
 import com.cannontech.core.dao.NotFoundException;
 import com.cannontech.database.data.point.UnitOfMeasure;
-import com.cannontech.i18n.YukonMessageSourceResolvable;
 import com.cannontech.web.common.flashScope.FlashScope;
 import com.cannontech.web.security.annotation.CheckCparm;
 import com.fasterxml.jackson.core.JsonParseException;
@@ -211,9 +210,9 @@ public class PointMappingIcdController {
     @RequestMapping("/rfn/icd/view")
     public String view(ModelMap model) throws JsonParseException, JsonMappingException, JsonProcessingException, IOException {
 
-        PointMappingIcd parsedIcd = YukonPointMappingIcdParser.parse(inputFile.getInputStream());
+        PointMappingIcd parsedIcd = YamlParserUtils.parseToObject(inputFile.getInputStream(), PointMappingIcd.class);
 
-        model.addAttribute("icd", YukonPointMappingIcdParser.parseToJson(inputFile.getInputStream()));
+        model.addAttribute("icd", YamlParserUtils.parseToJson(inputFile.getInputStream()));
 
         model.addAttribute("meterModels", parsedIcd.meterModels); 
 
@@ -252,7 +251,8 @@ public class PointMappingIcdController {
             PointSection.of("ELO",                       parsedIcd.elo,                                    modelPointDescriber),
             PointSection.of("Itron Sentinel",            parsedIcd.itronSentinel,                          sentinelPointDescriber),
             PointSection.of("RFN-500 Landis and Gyr S4", parsedIcd.lgyrS4_rfn500,                          modelPointDescriber),
-            PointSection.of("RFN-500 Focus AX+RX",       parsedIcd.lgyrFocusAxRx_rfn500,                   modelPointDescriber),
+            PointSection.of("RFN-500 Focus AX",          parsedIcd.lgyrFocusAx_rfn500,                     modelPointDescriber),
+            PointSection.of("RFN-500 Focus AXe",         parsedIcd.lgyrFocusAxe_rfn500,                    modelPointDescriber),
             PointSection.of("Next Gen Water Node",       parsedIcd.nextGenWaterNode,                       waterNodePointDescriber));
         
         model.addAttribute("points", points);

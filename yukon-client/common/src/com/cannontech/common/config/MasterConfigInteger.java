@@ -16,6 +16,10 @@ public enum MasterConfigInteger {
     INFRASTRUCTURE_WARNING_MINIMUM_TIME_BETWEEN_RUNS,
     INFRASTRUCTURE_WARNING_RUN_FREQUENCY_MINUTES,
     
-    ITRON_RECORD_IDS_PER_READ
+    ITRON_RECORD_IDS_PER_READ,
+    
+    EATON_CLOUD_NOTIFICATION_COMMAND_FAILURE_PERCENT,
+    
+    RUNTIME_CALC_RANGE_LIMIT_DAYS, // Number of days back to perform runtime calculation from relay data
     ;
 }

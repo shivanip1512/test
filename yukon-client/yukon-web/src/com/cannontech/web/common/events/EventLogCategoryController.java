@@ -128,7 +128,8 @@ public class EventLogCategoryController {
         final MessageSourceAccessor accessor = messageResolver.getMessageSourceAccessor(userContext);
 
         columnNames.add(accessor.getMessage("yukon.common.events.columnHeader.event"));
-        columnNames.add(accessor.getMessage("yukon.common.events.columnHeader.dateAndTime"));
+        columnNames.add(accessor.getMessage("yukon.common.events.columnHeader.date"));
+        columnNames.add(accessor.getMessage("yukon.common.events.columnHeader.time"));
         columnNames.add(accessor.getMessage("yukon.common.events.columnHeader.message"));
         
         // Get data grid

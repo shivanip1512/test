@@ -280,6 +280,12 @@ void CtiLMEnergyExchangeHourlyCustomer::updateLMEnergyExchangeHourlyCustomerTabl
     Cti::Database::executeCommand( updater, CALLSITE, Cti::Database::LogDebug(_LM_DEBUG & LM_DEBUG_DYNAMIC_DB) );
 }
 
+std::size_t CtiLMEnergyExchangeHourlyCustomer::getMemoryConsumption() const
+{
+    // there is no dynamic data in this object so it's just the fixed object size
+    return sizeof( *this );
+}
+
 // Static Members
 
 // Possible

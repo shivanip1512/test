@@ -1,13 +1,14 @@
 package bulk.service;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
+
 import java.util.List;
 
 import org.joda.time.DateTime;
 import org.joda.time.Duration;
 import org.joda.time.Interval;
 import org.joda.time.Period;
-import org.junit.Assert;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 import com.cannontech.common.bulk.model.Analysis;
 import com.cannontech.common.bulk.model.ArchiveData;
@@ -49,9 +50,9 @@ public class AdaResultsHelperTest {
         
         AdaResultsHelper.buildBars(analysis, barWidth, datas);
         List<ReadSequence> timeline = datas.get(0).getTimeline();
-        Assert.assertEquals(1, timeline.size());
-        Assert.assertEquals(400, timeline.get(0).getWidth());
-        Assert.assertEquals(ReadType.DATA_MISSING.name(), timeline.get(0).getColor());
+        assertEquals(1, timeline.size());
+        assertEquals(400, timeline.get(0).getWidth());
+        assertEquals(ReadType.DATA_MISSING.name(), timeline.get(0).getColor());
         
         // archive data: P,M,M,M
         archiveData = Lists.newArrayList();
@@ -65,11 +66,11 @@ public class AdaResultsHelperTest {
         
         AdaResultsHelper.buildBars(analysis, barWidth, datas);
         timeline = datas.get(0).getTimeline();
-        Assert.assertEquals(2, timeline.size());
-        Assert.assertEquals(100, timeline.get(0).getWidth());
-        Assert.assertEquals(300, timeline.get(1).getWidth());
-        Assert.assertEquals(ReadType.DATA_PRESENT.name(), timeline.get(0).getColor());
-        Assert.assertEquals(ReadType.DATA_MISSING.name(), timeline.get(1).getColor());
+        assertEquals(2, timeline.size());
+        assertEquals(100, timeline.get(0).getWidth());
+        assertEquals(300, timeline.get(1).getWidth());
+        assertEquals(ReadType.DATA_PRESENT.name(), timeline.get(0).getColor());
+        assertEquals(ReadType.DATA_MISSING.name(), timeline.get(1).getColor());
         
         // archive data: M,P,M,M
         archiveData = Lists.newArrayList();
@@ -83,13 +84,13 @@ public class AdaResultsHelperTest {
         
         AdaResultsHelper.buildBars(analysis, barWidth, datas);
         timeline = datas.get(0).getTimeline();
-        Assert.assertEquals(3, timeline.size());
-        Assert.assertEquals(100, timeline.get(0).getWidth());
-        Assert.assertEquals(100, timeline.get(1).getWidth());
-        Assert.assertEquals(200, timeline.get(2).getWidth());
-        Assert.assertEquals(ReadType.DATA_MISSING.name(), timeline.get(0).getColor());
-        Assert.assertEquals(ReadType.DATA_PRESENT.name(), timeline.get(1).getColor());
-        Assert.assertEquals(ReadType.DATA_MISSING.name(), timeline.get(2).getColor());
+        assertEquals(3, timeline.size());
+        assertEquals(100, timeline.get(0).getWidth());
+        assertEquals(100, timeline.get(1).getWidth());
+        assertEquals(200, timeline.get(2).getWidth());
+        assertEquals(ReadType.DATA_MISSING.name(), timeline.get(0).getColor());
+        assertEquals(ReadType.DATA_PRESENT.name(), timeline.get(1).getColor());
+        assertEquals(ReadType.DATA_MISSING.name(), timeline.get(2).getColor());
         
         // archive data: M,M,P,M
         archiveData = Lists.newArrayList();
@@ -103,13 +104,13 @@ public class AdaResultsHelperTest {
         
         AdaResultsHelper.buildBars(analysis, barWidth, datas);
         timeline = datas.get(0).getTimeline();
-        Assert.assertEquals(3, timeline.size());
-        Assert.assertEquals(200, timeline.get(0).getWidth());
-        Assert.assertEquals(100, timeline.get(1).getWidth());
-        Assert.assertEquals(100, timeline.get(2).getWidth());
-        Assert.assertEquals(ReadType.DATA_MISSING.name(), timeline.get(0).getColor());
-        Assert.assertEquals(ReadType.DATA_PRESENT.name(), timeline.get(1).getColor());
-        Assert.assertEquals(ReadType.DATA_MISSING.name(), timeline.get(2).getColor());
+        assertEquals(3, timeline.size());
+        assertEquals(200, timeline.get(0).getWidth());
+        assertEquals(100, timeline.get(1).getWidth());
+        assertEquals(100, timeline.get(2).getWidth());
+        assertEquals(ReadType.DATA_MISSING.name(), timeline.get(0).getColor());
+        assertEquals(ReadType.DATA_PRESENT.name(), timeline.get(1).getColor());
+        assertEquals(ReadType.DATA_MISSING.name(), timeline.get(2).getColor());
         
         // archive data: M,M,M,P
         archiveData = Lists.newArrayList();
@@ -123,11 +124,11 @@ public class AdaResultsHelperTest {
         
         AdaResultsHelper.buildBars(analysis, barWidth, datas);
         timeline = datas.get(0).getTimeline();
-        Assert.assertEquals(2, timeline.size());
-        Assert.assertEquals(300, timeline.get(0).getWidth());
-        Assert.assertEquals(100, timeline.get(1).getWidth());
-        Assert.assertEquals(ReadType.DATA_MISSING.name(), timeline.get(0).getColor());
-        Assert.assertEquals(ReadType.DATA_PRESENT.name(), timeline.get(1).getColor());
+        assertEquals(2, timeline.size());
+        assertEquals(300, timeline.get(0).getWidth());
+        assertEquals(100, timeline.get(1).getWidth());
+        assertEquals(ReadType.DATA_MISSING.name(), timeline.get(0).getColor());
+        assertEquals(ReadType.DATA_PRESENT.name(), timeline.get(1).getColor());
         
         // archive data: P,P,M,M
         archiveData = Lists.newArrayList();
@@ -141,11 +142,11 @@ public class AdaResultsHelperTest {
        
         AdaResultsHelper.buildBars(analysis, barWidth, datas);
         timeline = datas.get(0).getTimeline();
-        Assert.assertEquals(2, timeline.size());
-        Assert.assertEquals(200, timeline.get(0).getWidth());
-        Assert.assertEquals(200, timeline.get(1).getWidth());
-        Assert.assertEquals(ReadType.DATA_PRESENT.name(), timeline.get(0).getColor());
-        Assert.assertEquals(ReadType.DATA_MISSING.name(), timeline.get(1).getColor());
+        assertEquals(2, timeline.size());
+        assertEquals(200, timeline.get(0).getWidth());
+        assertEquals(200, timeline.get(1).getWidth());
+        assertEquals(ReadType.DATA_PRESENT.name(), timeline.get(0).getColor());
+        assertEquals(ReadType.DATA_MISSING.name(), timeline.get(1).getColor());
 
         // archive data: M,P,P,M
         archiveData = Lists.newArrayList();
@@ -160,13 +161,13 @@ public class AdaResultsHelperTest {
         
         AdaResultsHelper.buildBars(analysis, barWidth, datas);
         timeline = datas.get(0).getTimeline();
-        Assert.assertEquals(3, timeline.size());
-        Assert.assertEquals(100, timeline.get(0).getWidth());
-        Assert.assertEquals(200, timeline.get(1).getWidth());
-        Assert.assertEquals(100, timeline.get(2).getWidth());
-        Assert.assertEquals(ReadType.DATA_MISSING.name(), timeline.get(0).getColor());
-        Assert.assertEquals(ReadType.DATA_PRESENT.name(), timeline.get(1).getColor());
-        Assert.assertEquals(ReadType.DATA_MISSING.name(), timeline.get(2).getColor());
+        assertEquals(3, timeline.size());
+        assertEquals(100, timeline.get(0).getWidth());
+        assertEquals(200, timeline.get(1).getWidth());
+        assertEquals(100, timeline.get(2).getWidth());
+        assertEquals(ReadType.DATA_MISSING.name(), timeline.get(0).getColor());
+        assertEquals(ReadType.DATA_PRESENT.name(), timeline.get(1).getColor());
+        assertEquals(ReadType.DATA_MISSING.name(), timeline.get(2).getColor());
     }
 
 }

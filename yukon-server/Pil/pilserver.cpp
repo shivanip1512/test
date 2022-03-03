@@ -38,9 +38,13 @@
 #include "PorterResponseMessage.h"
 #include "DeviceCreation.h"
 #include "RfnDataStreamingUpdate.h"
+#include "RfnMeterDisconnectMsg.h"
+#include "RfnMeterReadMsg.h"
 
 #include "mgr_rfn_request.h"
 #include "cmd_rfn_ConfigNotification.h"
+#include "cmd_rfn_MeterDisconnect.h"
+#include "cmd_rfn_MeterRead.h"
 
 #include "debug_timer.h"
 #include "millisecond_timer.h"
@@ -50,15 +54,17 @@
 #include "desolvers.h"
 #include "MessageCounter.h"
 #include "message_factory.h"
+#include "random_generator.h"
 
 #include <boost/regex.hpp>
-#include <boost/bind.hpp>
+#include <boost/algorithm/cxx11/any_of.hpp>
 #include <boost/algorithm/string.hpp>
 #include <boost/range/adaptor/indirected.hpp>
 #include <boost/range/algorithm/count.hpp>
 #include <boost/range/algorithm/for_each.hpp>
 #include <boost/range/algorithm_ext/insert.hpp>
-#include <boost/ptr_container/ptr_deque.hpp>
+
+#include <gsl/gsl_util>
 
 #include <iomanip>
 #include <iostream>
@@ -78,6 +84,7 @@ DLLEXPORT Cti::StreamLocalConnection<OUTMESS, INMESS> PilToPorter; //Pil handles
 DLLEXPORT CtiFIFOQueue< CtiMessage >                  PorterSystemMessageQueue;
 
 using Cti::Timing::Chrono;
+using amq_cm = Cti::Messaging::ActiveMQConnectionManager;
 
 namespace Cti::Pil {
 
@@ -89,6 +96,8 @@ static bool findShedDeviceGroupControl(const long key, CtiDeviceSPtr otherdevice
 static bool findRestoreDeviceGroupControl(const long key, CtiDeviceSPtr otherdevice, void *vptrControlParent);
 
 namespace { // anonymous namespace
+
+RandomGenerator<long> PilUserMessageIdGenerator;
 
 /**
  * checks if a connection is non-viable
@@ -146,6 +155,8 @@ int PilServer::execute()
 
     if(!bServerClosing)
     {
+        using in_q = Messaging::ActiveMQ::Queues::InboundQueue;
+
         _mainThread = boost::thread(&PilServer::mainThread, this);
         _connThread = boost::thread(&PilServer::connectionThread, this);
 
@@ -158,6 +169,17 @@ int PilServer::execute()
         Messaging::Rfn::gE2eMessenger->start();
         _rfnRequestManager.start();
         _rfDataStreamingProcessor.start();
+
+        amq_cm::registerReplyHandler(
+            in_q::RfnMeterDisconnectRequest,
+            [this](const amq_cm::MessageDescriptor& md, amq_cm::ReplyCallback callback) {
+                return handleRfnDisconnectRequest(md, callback);
+            });
+        amq_cm::registerReplyHandler(
+            in_q::RfnMeterReadRequest,
+            [this](const amq_cm::MessageDescriptor& md, amq_cm::ReplyCallback callback) {
+                return handleRfnMeterReadRequest(md, callback);
+            });
 
         _periodicActionThread.start();
     }
@@ -585,7 +607,7 @@ struct InMessageResultProcessor : Devices::DeviceHandler
 
     YukonError_t execute(CtiDeviceBase &dev)
     {
-        return dev.ProcessResult(im, CtiTime::now(), vgList, retList, outList);
+        return dev.ProcessInMessageResult(im, CtiTime::now(), vgList, retList, outList);
     }
 
     YukonError_t execute(Devices::RfnDevice &dev)
@@ -597,9 +619,22 @@ struct InMessageResultProcessor : Devices::DeviceHandler
 };
 
 
+std::unique_ptr<CtiRequestMsg> makeVerifyMsg(const int deviceId, long userMessageId, ConnectionHandle connectionHandle)
+{
+    auto verifyRequest = std::make_unique<CtiRequestMsg>(deviceId, "putconfig install all verify");
+
+    verifyRequest->setUserMessageId(userMessageId);
+    verifyRequest->setConnectionHandle(connectionHandle);
+
+    return std::move(verifyRequest);
+}
+
+
 void PilServer::handleInMessageResult(const INMESS &InMessage)
 {
     LONG id = InMessage.TargetID;
+    const string cmdstr(InMessage.Return.CommandStr);
+    const CtiCommandParser parse(cmdstr);
 
     // Checking the sequence since we will actually want the system device 0 for the Phase Detect cases
     if(id == 0 && !(InMessage.Sequence == Cti::Protocols::EmetconProtocol::PutConfig_PhaseDetectClear ||
@@ -653,7 +688,7 @@ void PilServer::handleInMessageResult(const INMESS &InMessage)
 
         try
         {
-            // Do some device dependant work on this Inbound message!
+            // Do some device dependent work on this Inbound message!
             DeviceRecord->invokeDeviceHandler(imrp);
         }
         catch(...)
@@ -661,23 +696,47 @@ void PilServer::handleInMessageResult(const INMESS &InMessage)
             CTILOG_UNKNOWN_EXCEPTION_ERROR(dout, "Process Result FAILED "<< DeviceRecord->getName());
         }
 
-        for( OUTMESS *OutMessage : imrp.outList )
+        if( auto devSingle = dynamic_cast<CtiDeviceSingle*>(DeviceRecord.get()) )
         {
-            OutMessage->MessageFlags |= MessageFlag_ApplyExclusionLogic;
-            _porterOMQueue.putQueue(OutMessage);
+            if( parse.getCommand() == GetConfigRequest
+                && parse.isKeyValid("install")
+                && ! parse.isKeyValid("verify")
+                && ! InMessage.ErrorCode )  //  This is only checking the last groupMessageId for success, but that's the best we have for PLC
+            {
+                if( ! devSingle->getGroupMessageCount(InMessage.Return.UserID, InMessage.Return.Connection) )
+                {
+                    auto verifyMsg = makeVerifyMsg(
+                        InMessage.TargetID,
+                        InMessage.Return.UserID,
+                        InMessage.Return.Connection);
+
+                    retList.push_back(verifyMsg.release());
+
+                    //  Set expectMore = true on any other return messages
+                    for( auto msg : retList )
+                    {
+                        if( auto returnMsg = dynamic_cast<CtiReturnMsg*>(msg) )
+                        {
+                            if( returnMsg->UserMessageId() == InMessage.Return.UserID )
+                            {
+                                returnMsg->setExpectMore(true);
+                            }
+                        }
+                    }
+                }
+            }
         }
-        imrp.outList.clear();
+
+        submitOutMessages(imrp.outList);
     }
 
-    if( retList.size() > 0 )
+    if( ! retList.empty() )
     {
         if((DebugLevel & DEBUGLEVEL_PIL_RESULTTHREAD) && vgList.size())
         {
             CTILOG_DEBUG(dout, "Device " << (DeviceRecord ? DeviceRecord->getName() : "UNKNOWN") << " has generated a dispatch return message. Data may be duplicated");
         }
 
-        string cmdstr(InMessage.Return.CommandStr);
-        CtiCommandParser parse( cmdstr );
         if(parse.getFlags() & CMD_FLAG_UPDATE)
         {
             for( CtiMessage *pMsg : retList )
@@ -699,11 +758,12 @@ void PilServer::handleInMessageResult(const INMESS &InMessage)
 }
 
 
-struct RfnDeviceResultProcessor : Devices::DeviceHandler
+struct RfnDeviceResultProcessor : Devices::DeviceHandler, Devices::Commands::RfnCommand::ResultHandler
 {
     CtiDeviceBase::CtiMessageList &vgList;
     CtiDeviceBase::CtiMessageList &retList;
     const RfnDeviceResult result;
+    std::map<long, amq_cm::SerializedMessage> serviceReplies;
 
     RfnDeviceResultProcessor(RfnDeviceResult result_, CtiDeviceBase::CtiMessageList &vgList_, CtiDeviceBase::CtiMessageList &retList_) :
         result(std::move(result_)),
@@ -712,11 +772,34 @@ struct RfnDeviceResultProcessor : Devices::DeviceHandler
     {
     }
 
-    YukonError_t execute(CtiDeviceBase &dev)
+    YukonError_t execute(CtiDeviceBase &dev) override
     {
         CTILOG_ERROR(dout, "RfnDeviceResultProcessor called on non-RFN device: "<< dev.getName() <<" / "<< dev.getID());
 
         return ClientErrors::NoMethod;
+    }
+
+    void handleCommandResult(const Devices::Commands::RfnMeterReadCommand& command) override
+    {
+        if( auto resultMsg = command.getResponseMessage() )
+        {
+            //  The command doesn't have this internally, so assign it out at this level
+            resultMsg->data.rfnIdentifier = result.request.parameters.rfnIdentifier;
+
+            serviceReplies.emplace(
+                command.getUserMessageId(),
+                Messaging::Serialization::serialize(*resultMsg));
+        }
+    }
+
+    void handleCommandResult(const Devices::Commands::RfnMeterDisconnectCommand& command) override
+    {
+        if( auto resultMsg = command.getResponseMessage() )
+        {
+            serviceReplies.emplace(
+                command.getUserMessageId(),
+                Messaging::Serialization::serialize(*resultMsg));
+        }
     }
 
     YukonError_t execute(Devices::RfnDevice &dev)
@@ -725,17 +808,19 @@ struct RfnDeviceResultProcessor : Devices::DeviceHandler
 
         for( const auto & commandResult : result.commandResults )
         {
+            const auto& requestParameters = result.request.parameters;
+
             auto retMsg =
                     std::make_unique<CtiReturnMsg>(
-                            result.request.parameters.deviceId,
-                            result.request.parameters.commandString,
+                            requestParameters.deviceId,
+                            requestParameters.commandString,
                             commandResult.description,
                             commandResult.status,
                             0,
                             MacroOffset::none,
                             0,
-                            result.request.parameters.groupMessageId,
-                            result.request.parameters.userMessageId);
+                            requestParameters.groupMessageId,
+                            requestParameters.userMessageId);
 
             anySuccess |= commandResult.status == ClientErrors::None;
 
@@ -774,11 +859,38 @@ struct RfnDeviceResultProcessor : Devices::DeviceHandler
 
             retMsg->setResultString(retMsg->ResultString() + pointDataDescription.str());
 
-            dev.decrementGroupMessageCount(result.request.parameters.userMessageId, result.request.parameters.connectionHandle);
+            dev.decrementGroupMessageCount(requestParameters.userMessageId, requestParameters.connectionHandle);
 
-            if( dev.getGroupMessageCount(result.request.parameters.userMessageId, result.request.parameters.connectionHandle) )
+            if( dev.getGroupMessageCount(requestParameters.userMessageId, requestParameters.connectionHandle) )
             {
                 retMsg->setExpectMore(true);
+            }
+            else if( retMsg->Status() == ClientErrors::None )
+            {
+                //  This is the last return message, and is successful - check to see if it was a get/putconfig install that needs a verify
+                CtiCommandParser parse{ requestParameters.commandString };
+
+                //  The "getconfig install all" is the Config Notification read in FW 9.0, so it will
+                //    succeed or fail as a single request.  We can issue a Verify if the read succeeds.
+                //  If we are not FW 9.0, we suffer from the same shortfall as PLC (see handleInMessageResult near line 704).
+                const bool isGetConfigInstall = parse.getCommand() == GetConfigRequest && parse.isKeyValid("install");
+
+                //  The "putconfig install all" is likely to be an aggregate message, but we can issue a 
+                //    Verify in all successful cases, since any mismatch that was not written will still be a mismatch.
+                const bool isPutConfigInstall = parse.getCommand() == PutConfigRequest && parse.isKeyValid("install") && ! parse.isKeyValid("verify");
+
+                if( isGetConfigInstall || isPutConfigInstall )
+                {
+                    auto verifyMsg =
+                        makeVerifyMsg(
+                            requestParameters.deviceId,
+                            requestParameters.userMessageId,
+                            requestParameters.connectionHandle);
+
+                    retList.push_back(verifyMsg.release());
+
+                    retMsg->setExpectMore(true);
+                }
             }
 
             vgList.push_back(retMsg->replicateMessage());
@@ -789,6 +901,8 @@ struct RfnDeviceResultProcessor : Devices::DeviceHandler
         {
             dev.extractCommandResult(*result.request.command);
         }
+        //  Invoke our command-specific handler, if any
+        result.request.command->invokeResultHandler(*this);
 
         return ClientErrors::None;
     }
@@ -805,6 +919,10 @@ void PilServer::handleRfnDeviceResult(RfnDeviceResult result)
 
     const auto priority         = result.request.parameters.priority;
     const auto connectionHandle = result.request.parameters.connectionHandle;
+
+    auto at_exit = gsl::finally([=, &vgList, &retList] {
+        sendResults(vgList, retList, priority, connectionHandle);
+    });
 
     if( ! DeviceRecord )
     {
@@ -829,27 +947,51 @@ void PilServer::handleRfnDeviceResult(RfnDeviceResult result)
         idnf_msg->setUserMessageId (result.request.parameters.userMessageId);
 
         retList.push_back(idnf_msg.release());
+
+        return;
     }
-    else
+
+    if(DebugLevel & DEBUGLEVEL_PIL_RESULTTHREAD)
     {
-        if(DebugLevel & DEBUGLEVEL_PIL_RESULTTHREAD)
-        {
-            CTILOG_DEBUG(dout, "Pilserver resultThread received an RfnDeviceResult for "<< DeviceRecord->getName() <<" at priority "<< result.request.parameters.priority);
-        }
-
-        try
-        {
-            RfnDeviceResultProcessor rp(std::move(result), vgList, retList);
-
-            DeviceRecord->invokeDeviceHandler(rp);
-        }
-        catch(...)
-        {
-            CTILOG_UNKNOWN_EXCEPTION_ERROR(dout, "Process Result FAILED "<< DeviceRecord->getName());
-        }
+        CTILOG_DEBUG(dout, "Pilserver resultThread received an RfnDeviceResult for "<< DeviceRecord->getName() <<" at priority "<< result.request.parameters.priority);
     }
 
-    sendResults(vgList, retList, priority, connectionHandle);
+    try
+    {
+        RfnDeviceResultProcessor rp(std::move(result), vgList, retList);
+
+        DeviceRecord->invokeDeviceHandler(rp);
+
+        //  Was this an internal request?
+        if( ! connectionHandle )
+        {
+            auto replyCallbacks = _replyCallbacks.synchronize();
+
+            for( const auto& [userMessageId, serializedMessage] : rp.serviceReplies )
+            {
+                const auto itr = replyCallbacks->find(userMessageId);
+
+                if( itr != replyCallbacks->end() )
+                {
+                    (itr->second)(serializedMessage);
+
+                    replyCallbacks->erase(itr);
+                }
+                else
+                {
+                    CTILOG_WARN(dout, "Message generate service response, but no callback was found" << FormattedList::of(
+                        "Device ID", result.request.parameters.deviceId,
+                        "RFN address", result.request.parameters.rfnIdentifier,
+                        "User message ID", result.request.parameters.userMessageId,
+                        "Command", result.request.command->getCommandName()));
+                }
+            }
+        }
+    }
+    catch(...)
+    {
+        CTILOG_UNKNOWN_EXCEPTION_ERROR(dout, "Process Result FAILED "<< DeviceRecord->getName());
+    }
 }
 
 
@@ -967,6 +1109,153 @@ void PilServer::handleRfnUnsolicitedReport(RfnRequestManager::UnsolicitedReport 
     }
 }
 
+void PilServer::handleRfnDisconnectRequest(const amq_cm::MessageDescriptor& md, amq_cm::ReplyCallback callback)
+{
+    using namespace Messaging::Rfn;
+    using Messaging::Serialization::MessageSerializer;
+
+    auto req = MessageSerializer<RfnMeterDisconnectRequestMsg>::deserialize(md.msg);
+
+    if( ! req )
+    {
+        CTILOG_WARN(dout, "Could not deserialize request message");
+
+        return;
+    }
+
+    RfnMeterDisconnectInitialReplyMsg rsp1;
+
+    auto dev = DeviceManager.getDeviceByRfnIdentifier(req->rfnIdentifier);
+    const auto userMessageId = PilUserMessageIdGenerator();
+
+    std::map<RfnMeterDisconnectCmdType, std::string> cmdStrings{
+        { RfnMeterDisconnectCmdType::ARM,
+            "control connect arm" },
+        { RfnMeterDisconnectCmdType::QUERY,
+            "getstatus disconnect" },
+        { RfnMeterDisconnectCmdType::RESUME,
+            "control connect" },
+        { RfnMeterDisconnectCmdType::TERMINATE,
+            "control disconnect" }};
+
+    const auto cmdString = mapFind(cmdStrings, req->action);
+
+    if( ! dev )
+    {
+        CTILOG_WARN(dout, "Could not find device for RFN address" << FormattedList::of(
+            "RFN address", req->rfnIdentifier,
+            "Action", static_cast<int>(req->action)));
+
+        rsp1.replyType = RfnMeterDisconnectInitialReplyType::NO_NODE;
+    }
+    else if( ! cmdString )
+    {
+        CTILOG_WARN(dout, "Could not find command string for action" << FormattedList::of(
+            "RFN address", req->rfnIdentifier,
+            "Action", static_cast<int>(req->action)));
+
+        rsp1.replyType = RfnMeterDisconnectInitialReplyType::FAILURE;
+    }
+    else if( ! _replyCallbacks->try_emplace(userMessageId, callback).second )
+    {
+        CTILOG_WARN(dout, "Could not insert callback" << FormattedList::of(
+            "RFN address", req->rfnIdentifier,
+            "Action", static_cast<int>(req->action)));
+
+        rsp1.replyType = RfnMeterDisconnectInitialReplyType::FAILURE;
+    }
+    else
+    {
+        auto disconnectRequest = std::make_unique<CtiRequestMsg>(dev->getID(), *cmdString);
+
+        disconnectRequest->setUserMessageId(userMessageId);
+        //disconnectRequest->setConnectionHandle(connectionHandle);  //  Leave the connectionHandle null as our indication this is internal
+
+        MainQueue_.putQueue(disconnectRequest.release());
+
+        rsp1.replyType = RfnMeterDisconnectInitialReplyType::OK;
+    }
+
+    auto serializedRsp1 = Messaging::Serialization::serialize(rsp1);
+
+    if( serializedRsp1.empty() )
+    {
+        CTILOG_WARN(dout, "Could not serialize response message" << FormattedList::of(
+            "RFN address", req->rfnIdentifier,
+            "Reply type", static_cast<int>(rsp1.replyType)));
+
+        return;
+    }
+
+    callback(std::move(serializedRsp1));
+}
+
+void PilServer::handleRfnMeterReadRequest(const amq_cm::MessageDescriptor& md, amq_cm::ReplyCallback callback)
+{
+    using namespace Messaging::Rfn;
+    using Messaging::Serialization::MessageSerializer;
+
+    auto req = MessageSerializer<RfnMeterReadRequestMsg>::deserialize(md.msg);
+
+    if( ! req )
+    {
+        CTILOG_WARN(dout, "Could not deserialize request message");
+
+        return;
+    }
+
+    RfnMeterReadReplyMsg rsp1 {};
+
+    auto dev = DeviceManager.getDeviceByRfnIdentifier(req->rfnIdentifier);
+    const auto userMessageId = PilUserMessageIdGenerator();
+
+    if( ! dev )
+    {
+        CTILOG_WARN(dout, "Could not find device for RFN address" << FormattedList::of(
+            "RFN address", req->rfnIdentifier));
+
+        rsp1.replyType = RfnMeterReadingReplyType::NO_NODE;
+    }
+    else if( ! _replyCallbacks->try_emplace(userMessageId, callback).second )
+    {
+        CTILOG_WARN(dout, "Could not insert callback" << FormattedList::of(
+            "RFN address", req->rfnIdentifier));
+
+        rsp1.replyType = RfnMeterReadingReplyType::FAILURE;
+    }
+    else
+    {
+        auto readRequest = std::make_unique<CtiRequestMsg>(dev->getID(), "getvalue meter_read");
+
+        readRequest->setUserMessageId(userMessageId);
+        //readRequest->setConnectionHandle(connectionHandle);  //  Leave the connectionHandle null as our indication this is internal
+
+        MainQueue_.putQueue(readRequest.release());
+    }
+
+    auto serializedRsp1 = Messaging::Serialization::serialize(rsp1);
+
+    if( serializedRsp1.empty() )
+    {
+        CTILOG_WARN(dout, "Could not serialize response message" << FormattedList::of(
+            "RFN address", req->rfnIdentifier,
+            "Reply type", static_cast<int>(rsp1.replyType)));
+
+        return;
+    }
+
+    callback(std::move(serializedRsp1));
+}
+
+void PilServer::submitOutMessages(CtiDeviceBase::OutMessageList& outList)
+{
+    for( OUTMESS* OutMessage : outList )
+    {
+        OutMessage->MessageFlags |= MessageFlag_ApplyExclusionLogic;
+        _porterOMQueue.putQueue(OutMessage);
+    }
+    outList.clear();
+}
 
 void PilServer::sendResults(CtiDeviceBase::CtiMessageList &vgList, CtiDeviceBase::CtiMessageList &retList, const int priority, const ConnectionHandle connectionHandle)
 {
@@ -1137,6 +1426,7 @@ struct RequestExecuter : Devices::DeviceHandler
     {
         Devices::RfnDevice::RfnCommandList commands;
         Devices::RfnDevice::ReturnMsgList returnMsgList;
+        Devices::RfnDevice::RequestMsgList requestMsgList;
 
         if(dev.isInhibited())
         {
@@ -1154,7 +1444,7 @@ struct RequestExecuter : Devices::DeviceHandler
             return ClientErrors::DeviceInhibited;
         }
 
-        const YukonError_t retVal = dev.ExecuteRequest(pReq, parse, returnMsgList, commands);
+        const YukonError_t retVal = dev.ExecuteRequest(pReq, parse, returnMsgList, requestMsgList, commands);
 
         RfnDeviceRequest::Parameters parameters {
             dev.getRfnIdentifier(),
@@ -1165,9 +1455,22 @@ struct RequestExecuter : Devices::DeviceHandler
             pReq->GroupMessageId(),
             pReq->getConnectionHandle() };
 
-        static const auto releaseUniquePtr = [](std::unique_ptr<CtiReturnMsg> &retMsg) { return retMsg.release(); };
+        static const auto releaseUniquePtr = [](auto& msg) { return msg.release(); };
+        static const auto setExpectMore = [](auto& msg) { msg->setExpectMore(true); };
 
-        boost::insert(retList, retList.end(), returnMsgList | boost::adaptors::transformed(releaseUniquePtr));
+        const auto isSameGroupRequest = [pReq = pReq](const std::unique_ptr<CtiRequestMsg>& reqMsg) {
+                return reqMsg
+                    && reqMsg->getConnectionHandle() == pReq->getConnectionHandle()
+                    && reqMsg->UserMessageId() == pReq->UserMessageId();
+            };
+
+        if( boost::algorithm::any_of(requestMsgList, isSameGroupRequest) )
+        {
+            boost::for_each(returnMsgList, setExpectMore);
+        }
+
+        boost::insert(retList, retList.end(), returnMsgList  | boost::adaptors::transformed(releaseUniquePtr));
+        boost::insert(retList, retList.end(), requestMsgList | boost::adaptors::transformed(releaseUniquePtr));
 
         for( auto &command : commands )
         {
@@ -1317,19 +1620,7 @@ YukonError_t PilServer::executeRequest(const CtiRequestMsg *pReq)
 
                 _rfnRequestManager.submitRequests(std::move(executer.rfnRequests));
 
-                for( CtiMessage *msg : executer.retList )
-                {
-                    //  smuggle any request messages back out to the scheduler queue
-                    if( msg && msg->isA() == MSG_PCREQUEST )
-                    {
-                        _schedulerQueue.putQueue(msg);
-                    }
-                    else
-                    {
-                        retList.push_back(msg);
-                    }
-                }
-                executer.retList.clear();
+                retList.splice(retList.end(), executer.retList);
 
                 vgList.splice(vgList.end(), executer.vgList);
 
@@ -1385,6 +1676,13 @@ YukonError_t PilServer::executeRequest(const CtiRequestMsg *pReq)
         CTILOG_UNKNOWN_EXCEPTION_ERROR(dout);
     }
 
+    sendRequests(vgList, retList, outList, pReq->getConnectionHandle());
+
+    return status;
+}
+
+void PilServer::sendRequests(CtiDeviceBase::CtiMessageList& vgList, CtiDeviceBase::CtiMessageList& retList, CtiDeviceBase::OutMessageList& outList, const ConnectionHandle connectionHandle)
+{
     if(DebugLevel & DEBUGLEVEL_PIL_INTERFACE)
     {
         CTILOG_DEBUG(dout, "Submitting "<< retList.size() <<" CtiReturnMsg objects to client");
@@ -1399,7 +1697,7 @@ YukonError_t PilServer::executeRequest(const CtiRequestMsg *pReq)
             //  Note that this sends all responses to the initial request message's connection -
             //    even if any other return messages were generated by another ExecuteRequest invoked
             //    from the original and have their ConnectionHandle set to 0!
-            CtiServer::ptr_type ptr = findConnectionManager(pReq->getConnectionHandle());
+            CtiServer::ptr_type ptr = findConnectionManager(connectionHandle);
 
             if(ptr)
             {
@@ -1422,9 +1720,14 @@ YukonError_t PilServer::executeRequest(const CtiRequestMsg *pReq)
                 delete pcRet;
             }
         }
+        else if( msg->isA() == MSG_PCREQUEST )
+        {
+            //  smuggle any request messages back out to the scheduler queue
+            _schedulerQueue.putQueue(msg);
+        }
         else
         {
-            CTILOG_WARN(dout, "Message was not a CtiReturnMsg:" << msg);
+            CTILOG_WARN(dout, "Message was not a CtiReturnMsg or CtiRequestMsg:" << msg);
 
             delete msg;
         }
@@ -1452,8 +1755,6 @@ YukonError_t PilServer::executeRequest(const CtiRequestMsg *pReq)
         VanGoghConnection.WriteConnQue(pVg, CALLSITE);
     }
     vgList.clear();
-
-    return status;
 }
 
 YukonError_t PilServer::executeMulti(const CtiMultiMsg *pMulti)

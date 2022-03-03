@@ -133,6 +133,9 @@
     <entry key="yukon.common.systemGroupEnum.LOADPROGRAMS">/System/Demand Response/Load Programs</entry>
     <entry key="yukon.common.systemGroupEnum.CISDEVICECLASS">/System/Meters/CIS DeviceClass</entry>
     <entry key="yukon.common.systemGroupEnum.METERPROGRAMMING">/System/Meters/Meter Programming</entry>
+    <entry key="yukon.common.systemGroupEnum.SERVICE">/Service/</entry>
+    <entry key="yukon.common.systemGroupEnum.SERVICE_ACTIVE_RF_ELECTRIC_METERS">/Service/Active RF Electric Meters</entry>
+    <entry key="yukon.common.systemGroupEnum.SERVICE_ACTIVE_RFW_METERS">/Service/Active RFW Meters</entry>
     
     
     
@@ -152,7 +155,7 @@
     <entry key="yukon.common.peakReportPeakType.HOUR.description">Peak Hourly Usage</entry>
     <entry key="yukon.common.peakReportPeakType.INTERVAL">Interval</entry>
     <entry key="yukon.common.peakReportPeakType.INTERVAL.description">Peak Interval</entry>
-    
+    <entry key="yukon.common.setting.decryptValueFailed.description">Unable to decrypt value.</entry>
     <!-- YukonSettingSubCategory -->
     <entry key="yukon.common.setting.subcategory.AUTHENTICATION">Authentication</entry>
     <entry key="yukon.common.setting.subcategory.AUTHENTICATION.description">Authentication, Active Directory, LDAP server settings</entry>
@@ -170,6 +173,8 @@
     <entry key="yukon.common.setting.subcategory.DR.description">Opt outs, importing, switch command settings</entry>
     <entry key="yukon.common.setting.subcategory.AMI">Endpoint</entry>
     <entry key="yukon.common.setting.subcategory.AMI.description">Display templates, importer settings</entry>
+    <entry key="yukon.common.setting.subcategory.YUKON_LOGGERS">Yukon Loggers</entry>
+    <entry key="yukon.common.setting.subcategory.YUKON_LOGGERS.description">User loggers, system loggers</entry>
     <entry key="yukon.common.setting.subcategory.YUKON_SERVICES">Yukon Services</entry>
     <entry key="yukon.common.setting.subcategory.YUKON_SERVICES.description">Yukon services ip address, ports</entry>
     <entry key="yukon.common.setting.subcategory.WEB_SERVER">Web Server</entry>
@@ -186,6 +191,8 @@
     <entry key="yukon.common.setting.subcategory.DASHBOARD_ADMIN.description">Administration page for Dashboards</entry>
     <entry key="yukon.common.setting.subcategory.DASHBOARD_WIDGET">Dashboard Widgets</entry>
     <entry key="yukon.common.setting.subcategory.DASHBOARD_WIDGET.description">System-wide dashboard widget settings</entry>
+    <entry key="yukon.common.setting.subcategory.ATTRIBUTES">Attributes</entry>
+    <entry key="yukon.common.setting.subcategory.ATTRIBUTES.description">Assign custom attributes to devices</entry>
     
     <!-- VisibilityEnum -->
     <entry key="yukon.web.modules.dashboard.visibility.SYSTEM">System</entry>
@@ -404,8 +411,13 @@
     <entry key="yukon.common.setting.ECOBEE_PASSWORD.description">Password to authenticate with the ecobee service.</entry>
     <entry key="yukon.common.setting.ECOBEE_SERVER_URL">ecobee API URL</entry>
     <entry key="yukon.common.setting.ECOBEE_SERVER_URL.description">URL to connect to the ecobee service.</entry>
+    <entry key="yukon.common.setting.ECOBEE_REPORTING_URL">ecobee Reporting URL</entry>
+    <entry key="yukon.common.setting.ECOBEE_REPORTING_URL.description">URL for incoming ecobee data.</entry>
     <entry key="yukon.common.setting.ECOBEE_SEND_NOTIFICATIONS">ecobee email notification</entry>
     <entry key="yukon.common.setting.ECOBEE_SEND_NOTIFICATIONS.description">Enables/Disables notifications being sent by ecobee when a DR request is made through Yukon.</entry>
+    <entry key="yukon.common.setting.ECOBEE_PROGRAM_ID">ecobee Program ID</entry>
+    <entry key="yukon.common.setting.ECOBEE_PROGRAM_ID.description">Program ID required for initiating ecobee API communications.</entry>
+    
     <entry key="yukon.common.setting.HONEYWELL_WIFI_SERVICE_BUS_CONNECTION_STRING">Honeywell Wifi Connection</entry>
     <entry key="yukon.common.setting.HONEYWELL_WIFI_SERVICE_BUS_CONNECTION_STRING.description">Connection string for the Honeywell wifi service bus.</entry>
     <entry key="yukon.common.setting.HONEYWELL_WIFI_SERVICE_BUS_QUEUE">Honeywell Wifi Queue</entry>
@@ -432,8 +444,10 @@
     <entry key="yukon.common.setting.ITRON_HCM_USERNAME.description">Username to authenticate with the Itron HCM service.</entry>
     <entry key="yukon.common.setting.ITRON_HCM_PASSWORD">Itron HCM Password</entry>
     <entry key="yukon.common.setting.ITRON_HCM_PASSWORD.description">Password to authenticate with the Itron HCM service.</entry>
-    <entry key="yukon.common.setting.ITRON_HCM_DATA_COLLECTION_HOURS">Itron HCM Data Collection Interval</entry>
-    <entry key="yukon.common.setting.ITRON_HCM_DATA_COLLECTION_HOURS.description">The interval, in hours, at which to request data from the Itron HCM service if there are Itron devices created in Yukon.</entry>
+    <entry key="yukon.common.setting.ITRON_HCM_DATA_COLLECTION_MINUTES">Itron HCM Data Collection Interval</entry>
+    <entry key="yukon.common.setting.ITRON_HCM_DATA_COLLECTION_MINUTES.description">The interval, in minutes, at which to request data from the Itron HCM service if there are Itron devices created in Yukon.</entry>
+    <entry key="yukon.common.setting.ITRON_HCM_RESPONSE_TIMEOUT_SECONDS">Itron HCM Response Timeout</entry>
+    <entry key="yukon.common.setting.ITRON_HCM_RESPONSE_TIMEOUT_SECONDS.description">The number of seconds Yukon will wait for a response from the Itron HCM service after making a request.</entry>
     <entry key="yukon.common.setting.ITRON_SFTP_URL">Itron SFTP URL Base</entry>
     <entry key="yukon.common.setting.ITRON_SFTP_URL.description">Domain (and port, if non-standard) to connect to the Itron SFTP service.</entry>
     <entry key="yukon.common.setting.ITRON_SFTP_USERNAME">Itron SFTP Username</entry>
@@ -442,6 +456,20 @@
     <entry key="yukon.common.setting.ITRON_SFTP_PASSWORD.description">Password to authenticate with the Itron SFTP service.</entry>
     <entry key="yukon.common.setting.ITRON_SFTP_PRIVATE_KEY_PASSWORD">Itron SFTP Private Key Password</entry>
     <entry key="yukon.common.setting.ITRON_SFTP_PRIVATE_KEY_PASSWORD.description">Optional password to encrypt the generated SFTP Private Key.</entry>
+    <entry key="yukon.common.setting.RUNTIME_CALCULATION_INTERVAL_HOURS">Runtime Calculation Interval</entry>
+    <entry key="yukon.common.setting.RUNTIME_CALCULATION_INTERVAL_HOURS.description">The interval, in hours, at which to calculate run time and shed time for devices that do not directly report it.</entry>
+    <entry key="yukon.common.setting.EATON_CLOUD_DEVICE_CREATION_INTERVAL">Brightlayer Utilities Suite Demand Response Cellular LCR auto creation interval</entry>
+    <entry key="yukon.common.setting.EATON_CLOUD_DEVICE_CREATION_INTERVAL.description">The interval, in hours of how often Yukon will try to auto create Eaton Cloud Cellular LCRs</entry>
+    <entry key="yukon.common.setting.EATON_CLOUD_DEVICE_READ_INTERVAL_MINUTES">Brightlayer Utilities Suite Demand Response Cellular LCR auto read interval</entry>
+    <entry key="yukon.common.setting.EATON_CLOUD_DEVICE_READ_INTERVAL_MINUTES.description">The interval, in minutes of how often Yukon will try to read Eaton Cloud Cellular LCRs</entry>
+    <entry key="yukon.common.setting.EATON_CLOUD_SERVICE_ACCOUNT_ID">Brightlayer Utilities Suite Demand Response System Service Account Id</entry>
+    <entry key="yukon.common.setting.EATON_CLOUD_SERVICE_ACCOUNT_ID.description">Service Account Id used to access Brightlayer Utilities Suite Demand Response functionality</entry>
+    <entry key="yukon.common.setting.EATON_CLOUD_SECRET">Brightlayer Utilities Suite Demand Response System Secret 1</entry>
+    <entry key="yukon.common.setting.EATON_CLOUD_SECRET.description">Secret 1 used to access Brightlayer Utilities Suite Demand Response functionality</entry>
+    <entry key="yukon.common.setting.EATON_CLOUD_SECRET2">Brightlayer Utilities Suite Demand Response System Secret 2</entry>
+    <entry key="yukon.common.setting.EATON_CLOUD_SECRET2.description">Secret 2 used to access Brightlayer Utilities Suite Demand Response functionality</entry>
+    <entry key="yukon.common.setting.EATON_CLOUD_URL">Brightlayer Utilities Suite Demand Response URL</entry>
+    <entry key="yukon.common.setting.EATON_CLOUD_URL.description">API URL for Brightlayer Utilities Suite Demand Response functionality</entry>
     
     <entry key="yukon.common.setting.PRODUCER_WINDOW_SIZE">Producer Window Size</entry>
     <entry key="yukon.common.setting.PRODUCER_WINDOW_SIZE.description">The size, in kilobytes, of messages that a producer can send before it is blocked to await a ProducerAck from the broker that frees enough memory to allow another message to be sent. (Requires restart to take effect.)</entry>
@@ -460,20 +488,22 @@
     
     <entry key="yukon.common.setting.RFN_INCOMING_DATA_TIMESTAMP_LIMIT">RFN Incoming Data Timestamp Limit</entry>
     <entry key="yukon.common.setting.RFN_INCOMING_DATA_TIMESTAMP_LIMIT.description">Incoming RFN data having timestamps older than this number (in months) will not be processed nor archived.</entry>
-    <entry key="yukon.common.setting.STATUS_POINT_MONITOR_NOTIFICATION_LIMIT">Status Point Monitor Notification Limit</entry>
+    <entry key="yukon.common.setting.STATUS_POINT_MONITOR_NOTIFICATION_LIMIT">Outage Notification Monitor Notification Limit</entry>
     <entry key="yukon.common.setting.STATUS_POINT_MONITOR_NOTIFICATION_LIMIT.description">Incoming point data having timestamps older than this number (in days) will not be processed nor published to OMS Vendors. A value of 0 will process all data.</entry>
    
     <entry key="yukon.common.setting.DATA_AVAILABILITY_WINDOW_IN_DAYS">Data Collection: Data Availability Window</entry>
     <entry key="yukon.common.setting.DATA_AVAILABILITY_WINDOW_IN_DAYS.description">Window for minimum number of days required for a device's data to be considered available.</entry>
     
-    <entry key="yukon.common.setting.GATEWAY_CONNECTION_WARNING_MINUTES">Infrastructure Warnings: Gateway connection warning minutes</entry>
-    <entry key="yukon.common.setting.GATEWAY_CONNECTION_WARNING_MINUTES.description">The number of minutes a gateway must be disconnected to generate a warning.</entry>
+    <entry key="yukon.common.setting.DEVICE_CONNECTION_WARNING_MINUTES">Infrastructure Warnings: Device connection warning minutes</entry>
+    <entry key="yukon.common.setting.DEVICE_CONNECTION_WARNING_MINUTES.description">The number of minutes a device must be disconnected to generate a warning.</entry>
     <entry key="yukon.common.setting.GATEWAY_CONNECTED_NODES_WARNING_THRESHOLD">Infrastructure Warnings: Gateway connected nodes warning threshold</entry>
     <entry key="yukon.common.setting.GATEWAY_CONNECTED_NODES_WARNING_THRESHOLD.description">The number of connected nodes a gateway must have to generate a warning.</entry>
     <entry key="yukon.common.setting.GATEWAY_CONNECTED_NODES_CRITICAL_THRESHOLD">Infrastructure Warnings: Gateway connected nodes critical threshold</entry>
     <entry key="yukon.common.setting.GATEWAY_CONNECTED_NODES_CRITICAL_THRESHOLD.description">The number of connected nodes a gateway must have to generate a critical warning.</entry>
     <entry key="yukon.common.setting.GATEWAY_READY_NODES_THRESHOLD">Infrastructure Warnings: Gateway ready nodes threshold</entry>
     <entry key="yukon.common.setting.GATEWAY_READY_NODES_THRESHOLD.description">The maximum number of ready nodes a gateway must have to generate a warning.</entry>
+    <entry key="yukon.common.setting.CELLULAR_RELAY_DESCENDANT_COUNT_WARNING_THRESHOLD">Infrastructure Warnings: Cellular Relay excessive descendant count threshold</entry>
+    <entry key="yukon.common.setting.CELLULAR_RELAY_DESCENDANT_COUNT_WARNING_THRESHOLD.description">The number of descendants a cellular relay must exceed to generate an infrastructure warning.</entry>
     
     <entry key="yukon.common.setting.PORTER_QUEUE_COUNTS_HISTORICAL_MONTHS">Comm Channel Queue Counts: Historical data display</entry>
     <entry key="yukon.common.setting.PORTER_QUEUE_COUNTS_HISTORICAL_MONTHS.description">The number of months to display historical data for the Comm Channel Queue Counts Widget.</entry>
@@ -673,4 +703,68 @@
     <entry key="yukon.common.setting.BUSINESS_HOURS_START_STOP_TIME.description">Start and Stop times of the Business Days.</entry>
     <entry key="yukon.common.setting.EXTERNAL_MAINTENANCE_HOURS_START_STOP_TIME">External Maintenance Hours</entry>
     <entry key="yukon.common.setting.EXTERNAL_MAINTENANCE_HOURS_START_STOP_TIME.description">Start and Stop times of the External Maintenance Days.</entry>
+        
+    <!-- Unit of Measure -->
+    <entry key="yukon.common.unitOfMeasure.INVALID"></entry>
+    <entry key="yukon.common.unitOfMeasure.KW">kW</entry>
+    <entry key="yukon.common.unitOfMeasure.KWH">kWH</entry>
+    <entry key="yukon.common.unitOfMeasure.KVA">kVA</entry>
+    <entry key="yukon.common.unitOfMeasure.KVAR">kVAr</entry>
+    <entry key="yukon.common.unitOfMeasure.KVAH">kVAh</entry>
+    <entry key="yukon.common.unitOfMeasure.KVARH">kVArh</entry>
+    <entry key="yukon.common.unitOfMeasure.KVOLTS">kVolts</entry>
+    <entry key="yukon.common.unitOfMeasure.KQ">kQ</entry>
+    <entry key="yukon.common.unitOfMeasure.AMPS">Amps</entry>
+    <entry key="yukon.common.unitOfMeasure.COUNTS">Counts</entry>
+    <entry key="yukon.common.unitOfMeasure.DEGREES">Degrees</entry>
+    <entry key="yukon.common.unitOfMeasure.DOLLARS">Dollars</entry>
+    <entry key="yukon.common.unitOfMeasure.DOLLAR_CHAR">$</entry>
+    <entry key="yukon.common.unitOfMeasure.FEET">Feet</entry>
+    <entry key="yukon.common.unitOfMeasure.GALLONS">Gallons</entry>
+    <entry key="yukon.common.unitOfMeasure.GAL_PM">Gal/PM</entry>
+    <entry key="yukon.common.unitOfMeasure.GAS_CFT">GAS-CFT</entry>
+    <entry key="yukon.common.unitOfMeasure.HOURS">Hours</entry>
+    <entry key="yukon.common.unitOfMeasure.LEVELS">Level</entry>
+    <entry key="yukon.common.unitOfMeasure.MINUTES">Minutes</entry>
+    <entry key="yukon.common.unitOfMeasure.MW">MW</entry>
+    <entry key="yukon.common.unitOfMeasure.MWH">MWh</entry>
+    <entry key="yukon.common.unitOfMeasure.MVA">MVA</entry>
+    <entry key="yukon.common.unitOfMeasure.MVAR">MVAr</entry>
+    <entry key="yukon.common.unitOfMeasure.MVAH">MVAh</entry>
+    <entry key="yukon.common.unitOfMeasure.MVARH">MVArh</entry>
+    <entry key="yukon.common.unitOfMeasure.OPS">Ops</entry>
+    <entry key="yukon.common.unitOfMeasure.PF">PF</entry>
+    <entry key="yukon.common.unitOfMeasure.PERCENT">Percent</entry> 
+    <entry key="yukon.common.unitOfMeasure.PERCENT_CHAR">%</entry>
+    <entry key="yukon.common.unitOfMeasure.PSI">PSI</entry>
+    <entry key="yukon.common.unitOfMeasure.SECONDS">Seconds</entry>
+    <entry key="yukon.common.unitOfMeasure.TEMP_F">Temp-F</entry>
+    <entry key="yukon.common.unitOfMeasure.TEMP_C">Temp-C</entry>
+    <entry key="yukon.common.unitOfMeasure.VARS">Vars</entry>
+    <entry key="yukon.common.unitOfMeasure.VOLTS">Volts</entry>
+    <entry key="yukon.common.unitOfMeasure.VOLTAMPS">VoltAmps</entry>
+    <entry key="yukon.common.unitOfMeasure.VA">VA</entry>
+    <entry key="yukon.common.unitOfMeasure.CUBIC_FEET">ft^3</entry>
+    <entry key="yukon.common.unitOfMeasure.WATTS">Watts</entry>
+    <entry key="yukon.common.unitOfMeasure.HZ">Hz</entry>
+    <entry key="yukon.common.unitOfMeasure.VOLTS_V2H">Volts</entry>
+    <entry key="yukon.common.unitOfMeasure.AMPS_V2H">Amps</entry>
+    <entry key="yukon.common.unitOfMeasure.TAP">Tap</entry>
+    <entry key="yukon.common.unitOfMeasure.MILES">Miles</entry>
+    <entry key="yukon.common.unitOfMeasure.MS">Ms</entry>
+    <entry key="yukon.common.unitOfMeasure.PPM">PPM</entry>
+    <entry key="yukon.common.unitOfMeasure.MPH">MPH</entry>
+    <entry key="yukon.common.unitOfMeasure.INCHES">Inches</entry>
+    <entry key="yukon.common.unitOfMeasure.KPH">KPH</entry>
+    <entry key="yukon.common.unitOfMeasure.MILIBARS">Milibars</entry>
+    <entry key="yukon.common.unitOfMeasure.KH_H">km/h</entry>
+    <entry key="yukon.common.unitOfMeasure.M_S">m/s</entry>
+    <entry key="yukon.common.unitOfMeasure.KV">kV</entry>
+    <entry key="yukon.common.unitOfMeasure.UNDEF"></entry>
+    <entry key="yukon.common.unitOfMeasure.CUBIC_METERS">m^3</entry>
+    <entry key="yukon.common.unitOfMeasure.MEGABYTES">MB</entry>
+    <entry key="yukon.common.unitOfMeasure.DBM">dBm</entry>
+    <entry key="yukon.common.unitOfMeasure.THERMS">Therms</entry>
+    <entry key="yukon.common.unitOfMeasure.DB">dB</entry>
+    <entry key="yukon.common.unitOfMeasure.CCF">CCF</entry>
 </properties>

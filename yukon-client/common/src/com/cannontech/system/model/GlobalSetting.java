@@ -11,13 +11,15 @@ public class GlobalSetting {
     private Object value;
     private String comments;
     private Instant lastChanged;
-    
+    private Boolean decryptValueFailed;
+
     public GlobalSetting(GlobalSetting other) {
         this.comments = other.getComments();
         this.id = other.getId();
         this.lastChanged = other.getLastChanged();
         this.type = other.getType();
         this.value = other.getValue();
+        this.decryptValueFailed = other.getDecryptValueFailed();
     }
 
     public GlobalSetting(GlobalSettingType type, Object value) {
@@ -76,8 +78,20 @@ public class GlobalSetting {
         return type.isSensitiveInformation();
     }
 
+    public boolean isNonViewableSensitiveInformation() {
+        return type.isNonViewableSensitiveInformation();
+    }
+
+    public Boolean getDecryptValueFailed() {
+        return decryptValueFailed;
+    }
+
+    public void setDecryptValueFailed(Boolean decryptValueFailed) {
+        this.decryptValueFailed = decryptValueFailed;
+    }
+
     @Override
     public String toString() {
-        return "GlobalSetting [type=" + type + ", value=" + value + ", comments=" + comments + "]";
+        return "GlobalSetting [type=" + type + ", value=" + value + ", comments=" + comments + ", decryptValueFailed=" + decryptValueFailed + "]";
     }
 }

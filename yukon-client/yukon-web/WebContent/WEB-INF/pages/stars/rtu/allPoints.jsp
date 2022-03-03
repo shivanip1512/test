@@ -12,11 +12,13 @@
         <i:inline key="yukon.common.filterBy"/>
         <cti:msg2 var="selectDevices" key=".selectDevices"/>
         <tags:selectWithItems items="${devices}" path="deviceIds" itemLabel="name" itemValue="id"  dataPlaceholder="${selectDevices}" inputClass="js-chosen"/>
+        <span class="MR5"></span>
         <cti:msg2 var="selectPoints" key=".selectPoints"/>
         <tags:selectWithItems items="${pointNames}" path="pointNames" dataPlaceholder="${selectPoints}" inputClass="js-chosen"/>
-        <cti:msg2 var="selectTypes" key=".selectTypes"/>
+        <span class="MR5"></span>
+        <cti:msg2 var="selectTypes" key="yukon.common.selectPointTypes"/>
         <tags:selectWithItems items="${pointTypes}" path="types" dataPlaceholder="${selectTypes}" inputClass="js-chosen"/>
-        <cti:button nameKey="filter" classes="action primary js-filter fn vab"/>
+        <cti:button nameKey="filter" classes="action primary js-filter fn vab ML5"/>
     </form:form>
     
     <hr/>

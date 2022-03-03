@@ -12,9 +12,9 @@ public class NodeWiFiComm implements Serializable{
     
     private RfnIdentifier gatewayRfnIdentifier; // null indicates no primary gateway
     
-    private NodeWiFiCommStatus nodeWiFiCommStatus; // null indicates unknown Communication Status
+    private NodeConnectionState nodeWiFiCommStatus; // null indicates unknown Communication Status
     
-    private long wiFiCommStatusTimestamp; // Node Communication Status obtained at
+    private Long wiFiCommStatusTimestamp; // Node Communication Status obtained at
     
     private Integer rssi; // nullable
 
@@ -34,19 +34,19 @@ public class NodeWiFiComm implements Serializable{
         this.gatewayRfnIdentifier = gatewayRfnIdentifier;
     }
 
-    public NodeWiFiCommStatus getNodeWiFiCommStatus() {
+    public NodeConnectionState getNodeWiFiCommStatus() {
         return nodeWiFiCommStatus;
     }
 
-    public void setNodeWiFiCommStatus(NodeWiFiCommStatus nodeWiFiCommStatus) {
+    public void setNodeWiFiCommStatus(NodeConnectionState nodeWiFiCommStatus) {
         this.nodeWiFiCommStatus = nodeWiFiCommStatus;
     }
 
-    public long getWiFiCommStatusTimestamp() {
+    public Long getWiFiCommStatusTimestamp() {
         return wiFiCommStatusTimestamp;
     }
 
-    public void setWiFiCommStatusTimestamp(long wiFiCommStatusTimestamp) {
+    public void setWiFiCommStatusTimestamp(Long wiFiCommStatusTimestamp) {
         this.wiFiCommStatusTimestamp = wiFiCommStatusTimestamp;
     }
 
@@ -65,7 +65,7 @@ public class NodeWiFiComm implements Serializable{
         result = prime * result + ((deviceRfnIdentifier == null) ? 0 : deviceRfnIdentifier.hashCode());
         result = prime * result + ((gatewayRfnIdentifier == null) ? 0 : gatewayRfnIdentifier.hashCode());
         result = prime * result + ((nodeWiFiCommStatus == null) ? 0 : nodeWiFiCommStatus.hashCode());
-        result = prime * result + rssi;
+        result = prime * result + ((rssi == null) ? 0 : rssi.hashCode());
         result = prime * result + (int) (wiFiCommStatusTimestamp ^ (wiFiCommStatusTimestamp >>> 32));
         return result;
     }
@@ -91,7 +91,10 @@ public class NodeWiFiComm implements Serializable{
             return false;
         if (nodeWiFiCommStatus != other.nodeWiFiCommStatus)
             return false;
-        if (rssi != other.rssi)
+        if (rssi == null) {
+            if (other.rssi != null)
+                return false;
+        } else if (!rssi.equals(other.rssi))
             return false;
         if (wiFiCommStatusTimestamp != other.wiFiCommStatusTimestamp)
             return false;

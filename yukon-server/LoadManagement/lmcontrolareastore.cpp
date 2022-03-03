@@ -33,12 +33,15 @@
 #include "septempoffsetgear.h"
 #include "ecobeeCycleGear.h"
 #include "ecobeeSetpointGear.h"
+#include "ecobeePlusGear.h"
 #include "honeywellCycleGear.h"
 #include "honeywellSetpointGear.h"
 #include "NestCriticalCycleGear.h"
 #include "NestStandardCycleGear.h"
 #include "ItronCycleGear.h"
 #include "MeterDisconnectGear.h"
+#include "EatonCloudCycleGear.h"
+#include "EatonCloudNoControlGear.h"
 #include "resolvers.h"
 #include "devicetypes.h"
 #include "dbaccess.h"
@@ -333,17 +336,32 @@ void CtiLMControlAreaStore::reset()
             std::map< long, vector<CtiLMGroupPtr> > all_program_group_map;
 
             {
-                static const string sql =  "SELECT YP.paobjectid as groupid, YP.category, YP.paoclass, YP.paoname, "
-                                             "YP.type, YP.description, YP.disableflag, DV.alarminhibit, "
-                                             "DV.controlinhibit, LG.kwcapacity "
-                                           "FROM yukonpaobject YP, device DV, lmgroup LG "
-                                           "WHERE YP.paobjectid = LG.deviceid AND YP.paobjectid = DV.deviceid AND "
-                                             "YP.paobjectid > 0";
+                static const std::string sql =
+                    "SELECT "
+                        "Y.PAObjectID AS GroupID, "
+                        "Y.Category, "
+                        "Y.PAOClass, "
+                        "Y.PAOName, "
+                        "Y.Type, "
+                        "Y.Description, "
+                        "Y.DisableFlag, "
+                        "D.ALARMINHIBIT, "
+                        "D.CONTROLINHIBIT, "
+                        "G.KWCapacity, "
+                        "C.RelayUsage "
+                    "FROM "
+                        "YukonPAObject Y "
+                            "JOIN DEVICE D "
+                                "ON Y.PAObjectID = D.DEVICEID "
+                            "JOIN LMGroup G "
+                                "ON Y.PAObjectID = G.DeviceID "
+                            "LEFT OUTER JOIN LMGroupEatonCloud C "
+                                "ON Y.PAObjectID = C.YukonGroupId "
+                    "WHERE "
+                        "Y.PAObjectID > 0";
 
                 CtiLMGroupFactory lm_group_factory;
-                Cti::Database::DatabaseReader rdr(connection);
-
-                rdr.setCommandText(sql);
+                Cti::Database::DatabaseReader rdr( connection, sql );
 
                 rdr.execute();
 
@@ -898,7 +916,7 @@ void CtiLMControlAreaStore::reset()
                                                "TSG.valuetb, TSG.valuetc, TSG.valuetd, TSG.valuete, TSG.valuetf, "
                                                "TSG.ramprate, BTPG.AlertLevel, "
                                                "NLSG.PreparationOption, NLSG.PeakOption, NLSG.PostPeakOption, "
-                                               "ICG.CycleOption "
+                                               "CCG.CycleOption "
                                            "FROM lmprogramdirectgear PDG "
                                            "LEFT OUTER JOIN lmthermostatgear TSG "
                                                "ON PDG.gearid = TSG.gearid "
@@ -906,8 +924,8 @@ void CtiLMControlAreaStore::reset()
                                                "ON PDG.gearid = BTPG.gearid "
                                            "LEFT OUTER JOIN LMNestLoadShapingGear NLSG "
                                                "ON PDG.GearID = NLSG.GearId "
-                                           "LEFT OUTER JOIN LMItronCycleGear ICG "
-                                               "ON PDG.GearID = ICG.GearId "
+                                           "LEFT OUTER JOIN LMConfigurableCycleGear CCG "
+                                               "ON PDG.GearID = CCG.GearId "
                                            "ORDER BY PDG.deviceid ASC, PDG.gearnumber ASC";
 
                 DatabaseReader rdr(connection);
@@ -965,6 +983,17 @@ void CtiLMControlAreaStore::reset()
                             CTILOG_ERROR( dout, "ecobee Setpoint Gear missing required temperature settings" );
                         }
                     }
+                    else if ( ciStringEqual(controlmethod, CtiLMProgramDirectGear::EcobeePlusMethod) )
+                    {
+                        if ( ! rdr["settings"].isNull() )
+                        {
+                            newDirectGear = CTIDBG_new EcobeePlusGear(rdr);
+                        }
+                        else
+                        {
+                            CTILOG_ERROR( dout, "ecobee Plus Gear missing required temperature settings" );
+                        }
+                    }
                     else if ( ciStringEqual(controlmethod, CtiLMProgramDirectGear::HoneywellCycleMethod) )
                     {
                         newDirectGear = CTIDBG_new HoneywellCycleGear(rdr);
@@ -998,6 +1027,14 @@ void CtiLMControlAreaStore::reset()
                     else if ( ciStringEqual(controlmethod, CtiLMProgramDirectGear::MeterDisconnectMethod) )
                     {
                         newDirectGear = CTIDBG_new Cti::LoadManagement::MeterDisconnectGear(rdr);
+                    }
+                    else if ( ciStringEqual(controlmethod, CtiLMProgramDirectGear::EatonCloudCycleMethod) )
+                    {
+                        newDirectGear = CTIDBG_new Cti::LoadManagement::EatonCloudCycleGear(rdr);
+                    }
+                    else if ( ciStringEqual(controlmethod, CtiLMProgramDirectGear::EatonCloudNoControlMethod) )
+                    {
+                        newDirectGear = CTIDBG_new Cti::LoadManagement::EatonCloudNoControlGear(rdr);
                     }
                     else if (rdr["settings"].isNull())
                     {

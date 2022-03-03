@@ -9,6 +9,7 @@
 <%@ attribute name="treeParameters" description="This should be a object '{}' with arguments for tree initialization." %>
 <%@ attribute name="triggerElement" description="The elements that trigger the popup.  If there are multiple, 
                                         they must be separated by a comma and any after the first one need to have a # symbol.  Example: triggerElement1, #triggerElement2"%>
+<%@ attribute name="loadDataOnTrigger" type="java.lang.Boolean" description="If true, load data only when triggerElement is clicked."%>                                        
 <%@ attribute name="highlightNodePath" %>
 <%@ attribute name="multiSelect" type="java.lang.Boolean" %>
 <%@ attribute name="includeControlBar" type="java.lang.Boolean" %>
@@ -27,13 +28,14 @@
 
 <c:if test="${!empty pageScope.treeCss}"><cti:includeCss link="${treeCss}"/></c:if>
 
-<div id="window_${id}" class="dn">
+<div id="window_${id}" class="dn" data-url="${dataUrl}">
         <jsTree:inlineTree id="${id}"
              treeCss="${treeCss}"
              treeParameters="${treeParameters}"
              highlightNodePath="${highlightNodePath}"
              dataJson="${dataJson}"
              dataUrl="${dataUrl}"
+             loadDataOnTrigger="${loadDataOnTrigger}"
              maxHeight="${pageScope.maxHeight}"
              includeControlBar="${includeControlBar}"
              styleClass="${styleClass} popupTree"
@@ -80,16 +82,37 @@
             //click a button, get the window
             $(document).on('click', '#${triggerElement}', function () {
                 var maxHeight,
-                    dialog = $('#' + 'window_${id}')
+                    dialog = $('#' + 'window_${id}'),
                     windowHeight = $(window).height(),
-                    dialogMaxHeight = windowHeight * 0.70,
-                    divHeigth = windowHeight * 0.50;
+                    dialogMaxHeight = windowHeight * 0.95,
+                    divHeigth = windowHeight * 0.80;
+
                 
+                if ('${!empty pageScope.loadDataOnTrigger}' === 'true') {
+                    if (!dialog.data('initialized')) {
+                        var tree = dialog.find('.tree-canvas');
+                        tree.dynatree('option', 'initAjax', {
+                            url: dialog.data('url')
+                        });
+                        tree.dynatree('option', 'onPostInit', function(isReloading, isError) {
+                            dialog.dialog({
+                                position: {
+                                    my: 'center',
+                                    at: 'center',
+                                    of: window
+                                }
+                            })
+                        });
+                        tree.dynatree('getTree').reload();
+                        dialog.data('initialized', 'true');
+                    }
+                }
+
                 // prevents double scrollbars on tree container
                 dialog.css('overflow', 'hidden');
 
                 // Set the max-height of the div that displays the tree inside the dialog.
-                dialog.find('div.tree-canvas').css('max-height',divHeigth);
+                dialog.find('div.tree-canvas').css('max-height', divHeigth);
                 
                 // Initialize the dialog's height to resize automatically and also set the maximum height to which it can grow.
                 dialog.dialog({

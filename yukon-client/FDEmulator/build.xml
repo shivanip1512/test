@@ -14,6 +14,7 @@
            target="${yukon.javac.target}" 
            source="${yukon.javac.source}"
            debug="${yukon.javac.debug}">
+      <compilerarg compiler="org.eclipse.jdt.core.JDTCompilerAdapter" line="-11 -nowarn"/>
       <classpath>
         <fileset dir="${yukon.lib}">
           <include name="**/*.jar"/>
@@ -33,7 +34,12 @@
   </target>
 
   <target name="clean">
-    <delete dir="build"/>
+      <move file="build" tofile="build-delete" failonerror="false"/>
+        <parallel>
+           <daemons>
+               <delete dir="build-delete"/>  
+           </daemons>
+       </parallel>
   </target>
 
   <target name="install">
@@ -52,13 +58,13 @@
       <fileset file="${yukon.lib}/sqljdbc42.jar"/>
       <fileset file="${yukon.lib}/guava-13.0.1.jar"/>
       <fileset file="${yukon.lib}/joda-time-2.3.jar"/>
-      <fileset file="${yukon.lib}/log4j-api-2.9.1.jar"/>
-      <fileset file="${yukon.lib}/log4j-core-2.9.1.jar"/>
-      <fileset file="${yukon.lib}/log4j-jcl-2.9.1.jar"/>
+      <fileset file="${yukon.lib}/log4j-api-2.17.1.jar"/>
+      <fileset file="${yukon.lib}/log4j-core-2.17.1.jar"/>
+      <fileset file="${yukon.lib}/log4j-jcl-2.17.1.jar"/>
       <fileset file="${yukon.lib}/commons-lang3-3.3.1.jar"/>
-      <fileset file="${yukon.lib}/spring-jdbc-5.0.2.RELEASE.jar"/>
-      <fileset file="${yukon.lib}/spring-tx-5.0.2.RELEASE.jar"/>
-      <fileset file="${yukon.lib}/spring-core-5.0.2.RELEASE.jar"/>
+      <fileset file="${yukon.lib}/spring-jdbc-5.3.8.jar"/>
+      <fileset file="${yukon.lib}/spring-tx-5.3.8.jar"/>
+      <fileset file="${yukon.lib}/spring-core-5.3.8.jar"/>
       <fileset dir="." includes="src/main/resources/*.cfg"/>
     </copy>
   </target>

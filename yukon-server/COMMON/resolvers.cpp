@@ -252,12 +252,20 @@ static const std::map<std::string, DeviceTypes> device_lookups
 
     { "rfn-420frx",         TYPE_RFN420FRX },
     { "rfn-420frd",         TYPE_RFN420FRD },
+    //  RFN-500 Focus AX (gen 1)
     { "rfn-520fax",         TYPE_RFN520FAX },
     { "rfn-520frx",         TYPE_RFN520FRX },
     { "rfn-520faxd",        TYPE_RFN520FAXD },
     { "rfn-520frxd",        TYPE_RFN520FRXD },
     { "rfn-530fax",         TYPE_RFN530FAX },
     { "rfn-530frx",         TYPE_RFN530FRX },
+    //  RFN-500 Focus AXe (gen 2)
+    { "rfn-520faxe",        TYPE_RFN520FAXE },
+    { "rfn-520frxe",        TYPE_RFN520FRXE },
+    { "rfn-520faxed",       TYPE_RFN520FAXED },
+    { "rfn-520frxed",       TYPE_RFN520FRXED },
+    { "rfn-530faxe",        TYPE_RFN530FAXE },
+    { "rfn-530frxe",        TYPE_RFN530FRXE },
 
     { "rfn-410cl",          TYPE_RFN410CL },
     { "rfn-420cl",          TYPE_RFN420CL },
@@ -293,6 +301,11 @@ static const std::map<std::string, DeviceTypes> device_lookups
     //  --- RF gas meters ---
     { "rfg-201",            TYPE_RFG201 },
     { "rfg-301",            TYPE_RFG301 },
+    { "rfg-301a",           TYPE_RFG301A },
+    { "rfg-301r",           TYPE_RFG301R },
+
+    //  --- RF Cellular IPLink Relays ---
+    { "crly-856",           TYPE_CRLY856 },
 
     //  --- RTU devices ---
     { "rtu-dart",           TYPE_DARTRTU },
@@ -326,6 +339,7 @@ static const std::map<std::string, DeviceTypes> device_lookups
     { "nest program",               TYPE_LMPROGRAM_DIRECT },
     { "itron program",              TYPE_LMPROGRAM_DIRECT },
     { "meter disconnect program",   TYPE_LMPROGRAM_DIRECT },
+    { "eaton cloud program",        TYPE_LMPROGRAM_DIRECT },
     { "digi sep group",             TYPE_LMGROUP_DIGI_SEP },
     { "ecobee group",               TYPE_LMGROUP_ECOBEE },
     { "honeywell group",            TYPE_LMGROUP_HONEYWELL },
@@ -339,6 +353,7 @@ static const std::map<std::string, DeviceTypes> device_lookups
     { "point group",                TYPE_LMGROUP_POINT },
     { "ripple group",               TYPE_LMGROUP_RIPPLE },
     { "versacom group",             TYPE_LMGROUP_VERSACOM },
+    { "eaton cloud group",          TYPE_LMGROUP_EATON_CLOUD },
 
     //  --- System ---
     { "macro group",        TYPE_MACRO },
@@ -417,14 +432,19 @@ bool isKnownUnsupportedDevice(const string& typeStr)
         "digi gateway",
         "rf gateway",
         "gwy-800",
+        "gwy-801",
         "zigbee endpoint",
         "rfn-440-2131td",
         "rfn-440-2132td",
         "rfn-440-2133td",
         "rfw-meter",
+        "virtual meter",
         "lcr-6200 rfn",
         "lcr-6600 rfn",
         "lcr-6700 rfn",
+        "lcr-6200c",
+        "lcr-6600c",
+		"lcr-6200s",
         "lcr-6600s",
         "lcr-6601s",
         "weather location",
@@ -483,6 +503,7 @@ INT resolveLoadManagementType(const string& _typeStr)
         { "nest program",               TYPE_LMPROGRAM_DIRECT },
         { "itron program",              TYPE_LMPROGRAM_DIRECT },
         { "meter disconnect program",   TYPE_LMPROGRAM_DIRECT },
+        { "eaton cloud program",        TYPE_LMPROGRAM_DIRECT },
         { "lm curtail program",         TYPE_LMPROGRAM_CURTAILMENT },
         { "lm control area",            TYPE_LM_CONTROL_AREA },
         { "ci customer",                TYPE_CI_CUSTOMER },
@@ -709,6 +730,7 @@ bool resolveIsDeviceTypeSingle(INT Type)
         TYPE_RFN1200,
         TYPE_RFW201,
         TYPE_RFG201,
+        TYPE_CRLY856,
         TYPE_RFN410FL,
         TYPE_RFN410FX,
         TYPE_RFN410FD,
@@ -733,12 +755,21 @@ bool resolveIsDeviceTypeSingle(INT Type)
         TYPE_RFN430SL3,
         TYPE_RFN430SL4,
         TYPE_RFN510FL,
+        //  RFN-500 Focus AX (gen 1)
         TYPE_RFN520FAX,
         TYPE_RFN520FRX,
         TYPE_RFN520FAXD,
         TYPE_RFN520FRXD,
         TYPE_RFN530FAX,
         TYPE_RFN530FRX,
+        //  RFN-500 Focus AX (gen 1)
+        TYPE_RFN520FAXE,
+        TYPE_RFN520FRXE,
+        TYPE_RFN520FAXED,
+        TYPE_RFN520FRXED,
+        TYPE_RFN530FAXE,
+        TYPE_RFN530FRXE,
+        //  RFN-500 S4
         TYPE_RFN530S4X,
         TYPE_RFN530S4EAX,
         TYPE_RFN530S4EAXR,

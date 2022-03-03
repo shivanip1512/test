@@ -36,7 +36,6 @@ import org.joda.time.Instant;
 import org.joda.time.format.DateTimeFormat;
 import org.joda.time.format.DateTimeFormatter;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.jms.core.JmsTemplate;
 
 import com.cannontech.amr.rfn.message.dataRequest.RfnDeviceDataRequest;
 import com.cannontech.amr.rfn.message.dataRequest.RfnDeviceDataResponse;
@@ -57,8 +56,11 @@ import com.cannontech.common.rfn.service.RfnDeviceCreationService;
 import com.cannontech.common.rfn.service.RfnDeviceMetadataMultiService;
 import com.cannontech.common.rfn.service.RfnGatewayService;
 import com.cannontech.common.rfn.simulation.util.NetworkDebugHelper;
+import com.cannontech.common.util.ExceptionToNullHelper;
 import com.cannontech.common.util.jms.RequestReplyTemplate;
 import com.cannontech.common.util.jms.RequestReplyTemplateImpl;
+import com.cannontech.common.util.jms.YukonJmsTemplate;
+import com.cannontech.common.util.jms.YukonJmsTemplateFactory;
 import com.cannontech.common.util.jms.api.JmsApiDirectory;
 import com.cannontech.common.util.tree.Node;
 import com.cannontech.common.util.tree.Node.TreeDebugStatistics;
@@ -99,7 +101,9 @@ public class NetworkTreeServiceImpl implements NetworkTreeService, MessageListen
     @Autowired private RfnDeviceMetadataMultiService metadataMultiService;
     @Autowired private RfnGatewayService rfnGatewayService;
     @Autowired private ConfigurationSource configSource;
-    protected JmsTemplate jmsTemplate;
+    @Autowired private YukonJmsTemplateFactory jmsTemplateFactory;
+
+    private YukonJmsTemplate networkTreeUpdateRequestJmsTemplate;
     private static final Logger log = YukonLogManager.getLogger(NetworkTreeServiceImpl.class);
     private final DateTimeFormatter df = DateTimeFormat.forPattern("MMM dd YYYY HH:mm:ss");
     private final ScheduledExecutorService scheduledExecutorService = Executors.newSingleThreadScheduledExecutor();
@@ -115,10 +119,11 @@ public class NetworkTreeServiceImpl implements NetworkTreeService, MessageListen
     
     @PostConstruct
     public void init() {
+        networkTreeUpdateRequestJmsTemplate = jmsTemplateFactory.createTemplate(JmsApiDirectory.NETWORK_TREE_UPDATE_REQUEST);
         scheduledExecutorService.schedule(() -> {
             NetworkTreeUpdateTimeRequest request = new NetworkTreeUpdateTimeRequest();
             log.info("Sending NetworkTreeUpdateTimeRequest message to request network tree information.");
-            jmsTemplate.convertAndSend(JmsApiDirectory.NETWORK_TREE_UPDATE_REQUEST.getQueue().getName(), request);
+            networkTreeUpdateRequestJmsTemplate.convertAndSend(request);
         }, MINUTES_TO_WAIT_TO_ASK_FOR_TREE_TIME_UPDATE, TimeUnit.MINUTES);
     }
      
@@ -165,7 +170,7 @@ public class NetworkTreeServiceImpl implements NetworkTreeService, MessageListen
         NetworkTreeUpdateTimeRequest request = new NetworkTreeUpdateTimeRequest();
         request.setForceRefresh(true);
         log.debug("Sending NetworkTreeUpdateTimeRequest message to request reload of network tree information.");
-        jmsTemplate.convertAndSend(JmsApiDirectory.NETWORK_TREE_UPDATE_REQUEST.getQueue().getName(), request);
+        networkTreeUpdateRequestJmsTemplate.convertAndSend(request);
         return true;
     }
   
@@ -200,7 +205,7 @@ public class NetworkTreeServiceImpl implements NetworkTreeService, MessageListen
        
         if (treeUpdateResponse == null) {
             log.debug("Network tree generation time was not found, sending request to NM to get the time");
-            jmsTemplate.convertAndSend(JmsApiDirectory.NETWORK_TREE_UPDATE_REQUEST.getQueue().getName(), new NetworkTreeUpdateTimeRequest());
+            networkTreeUpdateRequestJmsTemplate.convertAndSend(new NetworkTreeUpdateTimeRequest());
         }
         List<Node<Pair<Integer, FeatureCollection>>> trees = new ArrayList<>();
       
@@ -318,7 +323,7 @@ public class NetworkTreeServiceImpl implements NetworkTreeService, MessageListen
             log.debug("Tree node creation: adding NULL {} to tree, rfnIdentifier is empty.", rfnIdentifier);  
             return new Node<Pair<Integer, FeatureCollection>>(null);
         }
-        RfnDevice device = rfnDeviceCreationService.createIfNotFound(rfnIdentifier);
+        RfnDevice device = ExceptionToNullHelper.nullifyExceptions(() -> rfnDeviceCreationService.getOrCreate(rfnIdentifier));
         if (device == null) {
             yukonNodeStatistics.FAILED_TO_CREATE.incrementAndGet();
             // failed to create device
@@ -354,11 +359,9 @@ public class NetworkTreeServiceImpl implements NetworkTreeService, MessageListen
 
     @Autowired
     public void setConnectionFactory(ConnectionFactory connectionFactory) {
-        jmsTemplate = new JmsTemplate(connectionFactory);
-        jmsTemplate.setExplicitQosEnabled(true);
-        jmsTemplate.setDeliveryPersistent(false);
+        YukonJmsTemplate jmsTemplate = jmsTemplateFactory.createTemplate(JmsApiDirectory.DYNAMIC_RFN_DEVICE_DATA_COLLECTION);
         deviceDataRequestTemplate = new RequestReplyTemplateImpl<>(JmsApiDirectory.DYNAMIC_RFN_DEVICE_DATA_COLLECTION.getName(),
-                configSource, connectionFactory, JmsApiDirectory.DYNAMIC_RFN_DEVICE_DATA_COLLECTION.getQueue().getName(), false);
+                configSource, jmsTemplate);
     }
 
     @Override

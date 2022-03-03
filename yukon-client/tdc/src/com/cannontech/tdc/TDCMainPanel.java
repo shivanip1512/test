@@ -43,8 +43,8 @@ import com.cannontech.clientutils.parametersfile.ParametersFile;
 import com.cannontech.clientutils.popup.PopUpMenuShower;
 import com.cannontech.clientutils.tags.AlarmUtils;
 import com.cannontech.clientutils.tags.TagUtils;
+import com.cannontech.common.YukonColorPalette;
 import com.cannontech.common.gui.panel.CompositeJSplitPane;
-import com.cannontech.common.gui.util.Colors;
 import com.cannontech.common.gui.util.SortTableModelWrapper;
 import com.cannontech.common.pao.PaoType;
 import com.cannontech.common.point.PointQuality;
@@ -1894,8 +1894,8 @@ private void initClientDisplays()
 			java.awt.Color bgColor = null;
 			for( int i = 0; i < st2.length; i++ )
 			{
-				bgColor = Colors.getColor( Integer.parseInt(st2[i][1].toString()) );
-				rowColors[i] = Colors.getColor( Integer.parseInt(st2[i][0].toString()) );
+				bgColor = YukonColorPalette.getColor(Integer.parseInt(st2[i][1].toString())).getAwtColor();
+				rowColors[i] = YukonColorPalette.getColor(Integer.parseInt(st2[i][0].toString())).getAwtColor();
 			}
 
 			getCurrentSpecialChild().setRowColors( rowColors, bgColor );
@@ -2702,7 +2702,7 @@ public void jPopupMenu_PopupMenuWillBecomeVisible(javax.swing.event.PopupMenuEve
 					AlarmUtils.getAlarmConditionText( 
 						sigs[i].getCondition(), lPoint.getPointTypeEnum(), lPoint.getPointID() ) +
 					" (" + sigs[i].getDescription() + ")",
-					Colors.getColor(getTableDataModel().getAlarmColor((int)sigs[i].getCategoryID()) ),
+					YukonColorPalette.getColor(getTableDataModel().getAlarmColor((int)sigs[i].getCategoryID())).getAwtColor(),
 					sigs[i] );
 								
 	

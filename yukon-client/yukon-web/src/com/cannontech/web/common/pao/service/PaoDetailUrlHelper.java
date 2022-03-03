@@ -59,6 +59,18 @@ public class PaoDetailUrlHelper {
         
         urlBuilder.put(PaoTag.ASSET_DETAIL_DISPLAYABLE, pao -> "/stars/operator/inventory/view?deviceId=" + pao.getPaoIdentifier().getPaoId());
         pageNameBuilder.put(PaoTag.ASSET_DETAIL_DISPLAYABLE, "hardware.VIEW");
+        
+        urlBuilder.put(PaoTag.PORT_DETAIL_DISPLAYABLE, pao -> "/stars/device/commChannel/" + pao.getPaoIdentifier().getPaoId());
+        pageNameBuilder.put(PaoTag.PORT_DETAIL_DISPLAYABLE, "commChannelDetail");
+        
+        urlBuilder.put(PaoTag.RFN1200_DETAIL_DISPLAYABLE, pao -> "/stars/device/rfn1200/" + pao.getPaoIdentifier().getPaoId());
+        pageNameBuilder.put(PaoTag.RFN1200_DETAIL_DISPLAYABLE, "rfn1200Detail");
+        
+        urlBuilder.put(PaoTag.VIRTUAL_DEVICE_DISPLAYABLE, pao -> "/stars/virtualDevice/" + pao.getPaoIdentifier().getPaoId());
+        pageNameBuilder.put(PaoTag.VIRTUAL_DEVICE_DISPLAYABLE, "virtualDevice.detail");
+
+        urlBuilder.put(PaoTag.VIRTUAL_METER_DISPLAYABLE, pao -> "/meter/virtual/home?deviceId=" + pao.getPaoIdentifier().getPaoId());
+        pageNameBuilder.put(PaoTag.VIRTUAL_METER_DISPLAYABLE, "meterDetail.virtual");
 
         supportDeviceUrlPatterns = urlBuilder.build();
         supportDevicePageNames = pageNameBuilder.build();

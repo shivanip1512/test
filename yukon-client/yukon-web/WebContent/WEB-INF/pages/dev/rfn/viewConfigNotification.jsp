@@ -5,7 +5,7 @@
 <%@ taglib prefix="form" uri="http://www.springframework.org/tags/form"%>
 <%@ taglib prefix="dt" tagdir="/WEB-INF/tags/dateTime"%>
 
-<cti:standardPage module="dev" page="rfnTest">
+<cti:standardPage module="dev" page="rfnTest.rfnConfigNotification">
         <cti:msg2 key="modules.dev.rfnTest.rfnConfigNotification.helpText" var="helpText"/>
     <tags:sectionContainer title="RFN Config Notification Test"  helpText="${helpText}">
         <form:form action="sendConfigNotification" method="post" modelAttribute="meterReading">

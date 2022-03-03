@@ -116,7 +116,7 @@ yukon.ui.dateTimePickers = function () {
         init : function (cfgDtArgs, cfgTpArgs) {
             //default arguments
             var datetimepickerArgs = {
-                    buttonImage: yukon.url('/WebConfig/yukon/Icons/StartCalendar.png'),
+                    buttonImage: yukon.url('/WebConfig/yukon/Icons/calendar.svg'),
                     buttonImageOnly: true,
                     hideIfNoPrevNext:true,
                     showButtonPanel: true,
@@ -251,7 +251,7 @@ yukon.ui.dateTimePickers = function () {
                 $.extend(defaultArgs, datetimepickerArgs);
                 $.extend(defaultArgs, timepickerArgs);
                 var timeArgs = _getPickerArgs(self);
-                timeArgs.buttonImage = yukon.url('/WebConfig/yukon/Icons/pencil.png');
+                timeArgs.buttonImage = yukon.url('/WebConfig/yukon/Icons/pencil.svg');
                 var minValue = self.data('minValue');
                 if (minValue) {
                     timeArgs.minTime = minValue;
@@ -275,6 +275,26 @@ yukon.ui.dateTimePickers = function () {
                 $('.ui_tpicker_minute_label').html(minutesText);
                 $('.ui-datepicker-current').addClass('dn');
             });
+            
+            /*Overridden method from jquery-ui-timepicker-addon.js to get the Today button to work */
+            $.datepicker._gotoToday = function (id) {
+                var inst = this._getInst($(id)[0]);
+                var tp_inst = this._get(inst, 'timepicker');
+                if (!tp_inst) {
+                    var now = new Date();
+                    this._setDate(inst, now);
+                    this._base_gotoToday(id);
+                    return;
+                }
+
+                var tzoffset = $.timepicker.timezoneOffsetNumber(tp_inst.timezone);
+                var now = new Date();
+                now.setMinutes(now.getMinutes() + now.getTimezoneOffset() + parseInt(tzoffset, 10));
+                this._setTime(inst, now);
+                this._setDate(inst, now);
+                tp_inst._onSelectHandler();
+                this._base_gotoToday(id);
+            };
             
             $(document).on("change", ".timeOffsetPicker", function(event) {
                 var displayField = $(this),
@@ -325,7 +345,7 @@ yukon.ui.initDateTimePickers = function (cfgLocalization, cfgTimepickerArgs) {
     try {
         dateTimePicker.init(cfgLocalization, cfgTimepickerArgs);
     } catch (datetimepickerex) {
-        alert('dateTimePickers: exception in yukon.ui.dateTimePickers.init: ' + datetimepickerex);
+        console.log('dateTimePickers: exception in yukon.ui.dateTimePickers.init: ' + datetimepickerex);
     }
     return dateTimePicker;
 };

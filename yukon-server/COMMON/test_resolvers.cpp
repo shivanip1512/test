@@ -203,12 +203,20 @@ BOOST_AUTO_TEST_CASE(test_resolveDeviceType)
 
     BOOST_CHECK_EQUAL(resolveDeviceType("rfn-420frx"),  TYPE_RFN420FRX);
     BOOST_CHECK_EQUAL(resolveDeviceType("rfn-420frd"),  TYPE_RFN420FRD);
+    //  RFN-500 Focus AX (gen 1)
     BOOST_CHECK_EQUAL(resolveDeviceType("rfn-520fax"),  TYPE_RFN520FAX);
     BOOST_CHECK_EQUAL(resolveDeviceType("rfn-520frx"),  TYPE_RFN520FRX);
     BOOST_CHECK_EQUAL(resolveDeviceType("rfn-530fax"),  TYPE_RFN530FAX);
     BOOST_CHECK_EQUAL(resolveDeviceType("rfn-530frx"),  TYPE_RFN530FRX);
     BOOST_CHECK_EQUAL(resolveDeviceType("rfn-520faxd"), TYPE_RFN520FAXD);
     BOOST_CHECK_EQUAL(resolveDeviceType("rfn-520frxd"), TYPE_RFN520FRXD);
+    //  RFN-500 Focus AXe (gen 2)
+    BOOST_CHECK_EQUAL(resolveDeviceType("rfn-520faxe"),  TYPE_RFN520FAXE);
+    BOOST_CHECK_EQUAL(resolveDeviceType("rfn-520frxe"),  TYPE_RFN520FRXE);
+    BOOST_CHECK_EQUAL(resolveDeviceType("rfn-530faxe"),  TYPE_RFN530FAXE);
+    BOOST_CHECK_EQUAL(resolveDeviceType("rfn-530frxe"),  TYPE_RFN530FRXE);
+    BOOST_CHECK_EQUAL(resolveDeviceType("rfn-520faxed"), TYPE_RFN520FAXED);
+    BOOST_CHECK_EQUAL(resolveDeviceType("rfn-520frxed"), TYPE_RFN520FRXED);
 
     BOOST_CHECK_EQUAL(resolveDeviceType("rfn-410cl"),   TYPE_RFN410CL);
     BOOST_CHECK_EQUAL(resolveDeviceType("rfn-420cl"),   TYPE_RFN420CL);
@@ -242,8 +250,13 @@ BOOST_AUTO_TEST_CASE(test_resolveDeviceType)
     BOOST_CHECK_EQUAL(resolveDeviceType("rfw-201"),     TYPE_RFW201);
 
     //  --- RF gas meters ---
-    BOOST_CHECK_EQUAL(resolveDeviceType("rfg-201"), TYPE_RFG201);
-    BOOST_CHECK_EQUAL(resolveDeviceType("rfg-301"), TYPE_RFG301);
+    BOOST_CHECK_EQUAL(resolveDeviceType("rfg-201"),  TYPE_RFG201);
+    BOOST_CHECK_EQUAL(resolveDeviceType("rfg-301"),  TYPE_RFG301);
+    BOOST_CHECK_EQUAL(resolveDeviceType("rfg-301a"), TYPE_RFG301A);
+    BOOST_CHECK_EQUAL(resolveDeviceType("rfg-301r"), TYPE_RFG301R);
+
+    //  --- RF Cellular IPLink Relays ---
+    BOOST_CHECK_EQUAL(resolveDeviceType("crly-856"),    TYPE_CRLY856);
 
     //  --- RTU devices ---
     BOOST_CHECK_EQUAL(resolveDeviceType("rtu-dart"),    TYPE_DARTRTU);
@@ -277,6 +290,7 @@ BOOST_AUTO_TEST_CASE(test_resolveDeviceType)
     BOOST_CHECK_EQUAL(resolveDeviceType("nest program"),            TYPE_LMPROGRAM_DIRECT);
     BOOST_CHECK_EQUAL(resolveDeviceType("itron program"),           TYPE_LMPROGRAM_DIRECT);
     BOOST_CHECK_EQUAL(resolveDeviceType("meter disconnect program"),TYPE_LMPROGRAM_DIRECT);
+    BOOST_CHECK_EQUAL(resolveDeviceType("eaton cloud program"),     TYPE_LMPROGRAM_DIRECT);
     BOOST_CHECK_EQUAL(resolveDeviceType("digi sep group"),          TYPE_LMGROUP_DIGI_SEP);
     BOOST_CHECK_EQUAL(resolveDeviceType("ecobee group"),            TYPE_LMGROUP_ECOBEE);
     BOOST_CHECK_EQUAL(resolveDeviceType("honeywell group"),         TYPE_LMGROUP_HONEYWELL);
@@ -290,6 +304,7 @@ BOOST_AUTO_TEST_CASE(test_resolveDeviceType)
     BOOST_CHECK_EQUAL(resolveDeviceType("point group"),             TYPE_LMGROUP_POINT);
     BOOST_CHECK_EQUAL(resolveDeviceType("ripple group"),            TYPE_LMGROUP_RIPPLE);
     BOOST_CHECK_EQUAL(resolveDeviceType("versacom group"),          TYPE_LMGROUP_VERSACOM);
+    BOOST_CHECK_EQUAL(resolveDeviceType("eaton cloud group"),       TYPE_LMGROUP_EATON_CLOUD);
 
     //  --- System ---
     BOOST_CHECK_EQUAL(resolveDeviceType("macro group"),     TYPE_MACRO);
@@ -343,14 +358,19 @@ BOOST_AUTO_TEST_CASE(test_isKnownUnsupportedDevice)
     BOOST_CHECK(isKnownUnsupportedDevice("digi gateway"));
     BOOST_CHECK(isKnownUnsupportedDevice("rf gateway"));
     BOOST_CHECK(isKnownUnsupportedDevice("gwy-800"));
+    BOOST_CHECK(isKnownUnsupportedDevice("gwy-801"));
     BOOST_CHECK(isKnownUnsupportedDevice("zigbee endpoint"));
     BOOST_CHECK(isKnownUnsupportedDevice("rfn-440-2131td"));
     BOOST_CHECK(isKnownUnsupportedDevice("rfn-440-2132td"));
     BOOST_CHECK(isKnownUnsupportedDevice("rfn-440-2133td"));
     BOOST_CHECK(isKnownUnsupportedDevice("rfw-meter"));
+    BOOST_CHECK(isKnownUnsupportedDevice("virtual meter"));
     BOOST_CHECK(isKnownUnsupportedDevice("lcr-6200 rfn"));
     BOOST_CHECK(isKnownUnsupportedDevice("lcr-6600 rfn"));
     BOOST_CHECK(isKnownUnsupportedDevice("lcr-6700 rfn"));
+    BOOST_CHECK(isKnownUnsupportedDevice("lcr-6200c"));
+    BOOST_CHECK(isKnownUnsupportedDevice("lcr-6600c"));
+    BOOST_CHECK(isKnownUnsupportedDevice("lcr-6200s"));
     BOOST_CHECK(isKnownUnsupportedDevice("lcr-6600s"));
     BOOST_CHECK(isKnownUnsupportedDevice("lcr-6601s"));
     BOOST_CHECK(isKnownUnsupportedDevice("weather location"));

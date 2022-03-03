@@ -1,12 +1,12 @@
 package com.cannontech.core.service.impl;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
+
 import java.util.Locale;
 
-import junit.framework.Assert;
-
-import org.junit.After;
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 import org.springframework.context.support.StaticMessageSource;
 
 import com.cannontech.core.service.PhoneNumberFormattingService;
@@ -15,7 +15,7 @@ import com.cannontech.i18n.YukonUserContextMessageSourceResolverMock;
 public class PhoneNumberFormattingServiceImplTest {
     private PhoneNumberFormattingService formattingService;
     
-    @Before
+    @BeforeEach
     public void setUp() {
         StaticMessageSource messageSource = new StaticMessageSource();
         messageSource.addMessage("yukon.common.phoneNumberFormatting.pattern.7", Locale.US, "???-????");
@@ -30,7 +30,7 @@ public class PhoneNumberFormattingServiceImplTest {
         formattingService = serviceImpl;
     }
     
-    @After
+    @AfterEach
     public void tearDown() {
         formattingService = null;
     }
@@ -41,11 +41,11 @@ public class PhoneNumberFormattingServiceImplTest {
         String expectedPhoneNumber = "";
         
         String formattedNumber = formattingService.formatPhoneNumber(phoneNumber, null);
-        Assert.assertEquals(expectedPhoneNumber, formattedNumber);
+        assertEquals(expectedPhoneNumber, formattedNumber);
         
         phoneNumber = "";
         formattedNumber = formattingService.formatPhoneNumber(phoneNumber, null);
-        Assert.assertEquals(expectedPhoneNumber, formattedNumber);
+        assertEquals(expectedPhoneNumber, formattedNumber);
     }
     
     @Test
@@ -55,11 +55,11 @@ public class PhoneNumberFormattingServiceImplTest {
         
         // unformatted phone number
         String formattedNumber = formattingService.formatPhoneNumber(phoneNumber, null);
-        Assert.assertEquals(expectedPhoneNumber, formattedNumber);
+        assertEquals(expectedPhoneNumber, formattedNumber);
         
         // preformatted phone number
         formattedNumber = formattingService.formatPhoneNumber(expectedPhoneNumber, null);
-        Assert.assertEquals(expectedPhoneNumber, formattedNumber);
+        assertEquals(expectedPhoneNumber, formattedNumber);
     }    
     
     @Test
@@ -69,11 +69,11 @@ public class PhoneNumberFormattingServiceImplTest {
         
         // unformatted phone number
         String formattedNumber = formattingService.formatPhoneNumber(phoneNumber, null);
-        Assert.assertEquals(expectedPhoneNumber, formattedNumber);
+        assertEquals(expectedPhoneNumber, formattedNumber);
         
         // preformatted phone number
         formattedNumber = formattingService.formatPhoneNumber(expectedPhoneNumber, null);
-        Assert.assertEquals(expectedPhoneNumber, formattedNumber);
+        assertEquals(expectedPhoneNumber, formattedNumber);
     }
     
     @Test
@@ -83,11 +83,11 @@ public class PhoneNumberFormattingServiceImplTest {
         
         // unformatted phone number
         String formattedNumber = formattingService.formatPhoneNumber(phoneNumber, null);
-        Assert.assertEquals(expectedPhoneNumber, formattedNumber);
+        assertEquals(expectedPhoneNumber, formattedNumber);
         
         // preformatted phone number
         formattedNumber = formattingService.formatPhoneNumber(expectedPhoneNumber, null);
-        Assert.assertEquals(expectedPhoneNumber, formattedNumber);
+        assertEquals(expectedPhoneNumber, formattedNumber);
     }
     
     @Test
@@ -97,11 +97,11 @@ public class PhoneNumberFormattingServiceImplTest {
         
         // unformatted phone number
         String formattedNumber = formattingService.formatPhoneNumber(phoneNumber, null);
-        Assert.assertEquals(expectedPhoneNumber, formattedNumber);
+        assertEquals(expectedPhoneNumber, formattedNumber);
         
         // preformatted phone number
         formattedNumber = formattingService.formatPhoneNumber(expectedPhoneNumber, null);
-        Assert.assertEquals(expectedPhoneNumber, formattedNumber);
+        assertEquals(expectedPhoneNumber, formattedNumber);
     }
     
     @Test
@@ -111,11 +111,11 @@ public class PhoneNumberFormattingServiceImplTest {
         
         // unformatted phone number
         String formattedNumber = formattingService.formatPhoneNumber(phoneNumber, null);
-        Assert.assertEquals(expectedPhoneNumber, formattedNumber);
+        assertEquals(expectedPhoneNumber, formattedNumber);
         
         // preformatted phone number
         formattedNumber = formattingService.formatPhoneNumber(expectedPhoneNumber, null);
-        Assert.assertEquals(expectedPhoneNumber, formattedNumber);
+        assertEquals(expectedPhoneNumber, formattedNumber);
     }    
     
 }

@@ -1,7 +1,6 @@
 #include "precompiled.h"
 
 #include "dev_rf_BatteryNode.h"
-#include "RfnWaterNodeMessaging.h"
 
 #include "config_data_rfn.h"
 #include "config_helpers.h"
@@ -12,18 +11,37 @@
 #include <future>
 
 
-namespace Cti       {
-namespace Devices   {
+namespace Cti::Devices {
 
-YukonError_t RfBatteryNodeDevice::executePutConfig(CtiRequestMsg *pReq, CtiCommandParser &parse, ReturnMsgList &returnMsgs, RfnIndividualCommandList &rfnRequests)
+namespace {
+
+    std::unique_ptr<CtiRequestMsg> makeVerifyMsg(const CtiRequestMsg& req) 
+    {
+        auto verifyRequest = std::make_unique<CtiRequestMsg>(req.DeviceId(), "putconfig install all verify");
+
+        verifyRequest->setUserMessageId(req.UserMessageId());
+        verifyRequest->setConnectionHandle(req.getConnectionHandle());
+
+        return verifyRequest;
+    }
+}
+
+YukonError_t RfBatteryNodeDevice::executePutConfig(CtiRequestMsg* pReq, CtiCommandParser& parse, ReturnMsgList& returnMsgs, RequestMsgList& requestMsgs, RfnIndividualCommandList& rfnRequests)
 {
     if ( auto configPart = parse.findStringForKey("installvalue") )
     {
         if ( *configPart == "all" || *configPart == "intervals" )
         {
-            executeConfigInstallSingle( pReq, parse, returnMsgs, rfnRequests, *configPart,
-                                        bindConfigMethod( &RfBatteryNodeDevice::executePutConfigIntervals, this ) );
+            const auto ret = 
+                executeConfigInstallSingle( 
+                    pReq, parse, returnMsgs, rfnRequests, *configPart,
+                    bindConfigMethod( &RfBatteryNodeDevice::executePutConfigIntervals, this ) );
             
+            if( ! ret && ! parse.isKeyValid("verify") )
+            {
+                requestMsgs.emplace_back(makeVerifyMsg(*pReq));
+            }
+
             return ClientErrors::None;
         }
     }
@@ -31,14 +49,21 @@ YukonError_t RfBatteryNodeDevice::executePutConfig(CtiRequestMsg *pReq, CtiComma
     return ClientErrors::NoMethod; 
 }
 
-YukonError_t RfBatteryNodeDevice::executeGetConfig(CtiRequestMsg *pReq, CtiCommandParser &parse, ReturnMsgList &returnMsgs, RfnIndividualCommandList &rfnRequests)
+YukonError_t RfBatteryNodeDevice::executeGetConfig(CtiRequestMsg* pReq, CtiCommandParser& parse, ReturnMsgList& returnMsgs, RequestMsgList& requestMsgs, RfnIndividualCommandList& rfnRequests)
 {
     if ( auto configPart = parse.findStringForKey("installvalue") )
     {
         if ( *configPart == "all" || *configPart == "intervals" )
         {
-            executeConfigInstallSingle( pReq, parse, returnMsgs, rfnRequests, *configPart,
-                                        bindConfigMethod( &RfBatteryNodeDevice::executeGetConfigIntervals, this ) );
+            const auto ret =
+                executeConfigInstallSingle( 
+                    pReq, parse, returnMsgs, rfnRequests, *configPart,
+                    bindConfigMethod( &RfBatteryNodeDevice::executeGetConfigIntervals, this ) );
+
+            if( ! ret )
+            {
+                requestMsgs.emplace_back(makeVerifyMsg(*pReq));
+            }
 
             return ClientErrors::None;
         }
@@ -65,7 +90,7 @@ YukonError_t processChannelConfigReply( const Cti::Messaging::Rfn::RfnSetChannel
     return mapFindOrDefault( replyCodeToYukonError, reply.replyCode, ClientErrors::E2eErrorUnmapped ); 
 }
 
-boost::optional<Messaging::Rfn::RfnGetChannelConfigReplyMessage> readConfigurationFromNM( const RfnIdentifier & rfnId )
+boost::optional<Messaging::Rfn::RfnGetChannelConfigReplyMessage> RfBatteryNodeDevice::readConfigurationFromNM( const RfnIdentifier & rfnId ) const
 {
     using namespace Cti::Messaging;
     using namespace Cti::Messaging::Rfn;
@@ -103,10 +128,6 @@ boost::optional<Messaging::Rfn::RfnGetChannelConfigReplyMessage> readConfigurati
 
 YukonError_t RfBatteryNodeDevice::executePutConfigIntervals(CtiRequestMsg *pReq, CtiCommandParser &parse, ReturnMsgList &returnMsgs, RfnIndividualCommandList &rfnRequests)
 {
-    using namespace Cti::Messaging;
-    using namespace Cti::Messaging::Rfn;
-    using Cti::Messaging::ActiveMQ::Queues::OutboundQueue;
-
     Config::DeviceConfigSPtr deviceConfig = getDeviceConfig();
 
     if ( ! deviceConfig )
@@ -183,7 +204,7 @@ YukonError_t RfBatteryNodeDevice::executePutConfigIntervals(CtiRequestMsg *pReq,
         {
             // send the config...
 
-            Rfn::RfnSetChannelConfigRequestMessage  request;
+            Messaging::Rfn::RfnSetChannelConfigRequestMessage  request;
 
             request.rfnIdentifier       = _rfnId;
             request.recordingInterval   = recordingInterval;
@@ -196,48 +217,58 @@ YukonError_t RfBatteryNodeDevice::executePutConfigIntervals(CtiRequestMsg *pReq,
                                 CtiTime::now() + ( ( priority > 7 ) ? 3600 : 86400 ),
                                 priority );
 */
-            ActiveMQConnectionManager::SerializedMessage    serialized
-                = Cti::Messaging::Serialization::MessageSerializer<Rfn::RfnSetChannelConfigRequestMessage>::serialize( request ); 
-
-            std::promise<YukonError_t>  producer;
-            auto consumer = producer.get_future();
-
-            auto msgReceivedCallback =
-                [ & ]( const Rfn::RfnSetChannelConfigReplyMessage & reply )
-                {
-                    producer.set_value( processChannelConfigReply( reply ) );
-                };
-
-            auto timedOutCallback =
-                [ & ](  )
-                {
-                    producer.set_value( ClientErrors::NetworkManagerTimeout );
-                };
-
-            ActiveMQConnectionManager::enqueueMessageWithCallbackFor<Rfn::RfnSetChannelConfigReplyMessage>(
-                    OutboundQueue::SetBatteryNodeChannelConfigRequest,
-                    serialized,
-                    msgReceivedCallback,
-                    std::chrono::seconds{ 5 },
-                    timedOutCallback );
-
-            const auto replyCode = consumer.get();
+            const auto replyCode = sendConfigurationToNM(request);
 
             returnMsgs.emplace_back(
                 std::make_unique<CtiReturnMsg>(
                     pReq->DeviceId(),
                     pReq->CommandString(),
-                    getName() + ": " + CtiError::GetErrorString( replyCode ),
+                    getName() + ": " + CtiError::GetErrorString(replyCode),
                     replyCode,
                     0,
                     MacroOffset::none,
                     0,
                     pReq->GroupMessageId(),
-                    pReq->UserMessageId() ));
+                    pReq->UserMessageId()));
         }
     }
 
     return ClientErrors::None;
+}
+
+
+YukonError_t RfBatteryNodeDevice::sendConfigurationToNM(const Messaging::Rfn::RfnSetChannelConfigRequestMessage request) const
+{
+    using namespace Cti::Messaging;
+    using namespace Cti::Messaging::Rfn;
+    using Cti::Messaging::ActiveMQ::Queues::OutboundQueue;
+
+    ActiveMQConnectionManager::SerializedMessage    serialized
+        = Cti::Messaging::Serialization::MessageSerializer<Rfn::RfnSetChannelConfigRequestMessage>::serialize( request ); 
+
+    std::promise<YukonError_t>  producer;
+    auto consumer = producer.get_future();
+
+    auto msgReceivedCallback =
+        [ & ]( const Rfn::RfnSetChannelConfigReplyMessage & reply )
+        {
+            producer.set_value( processChannelConfigReply( reply ) );
+        };
+
+    auto timedOutCallback =
+        [ & ](  )
+        {
+            producer.set_value( ClientErrors::NetworkManagerTimeout );
+        };
+
+    ActiveMQConnectionManager::enqueueMessageWithCallbackFor<Rfn::RfnSetChannelConfigReplyMessage>(
+            OutboundQueue::SetBatteryNodeChannelConfigRequest,
+            serialized,
+            msgReceivedCallback,
+            std::chrono::seconds{ 5 },
+            timedOutCallback );
+
+    return consumer.get();
 }
 
 YukonError_t RfBatteryNodeDevice::executeGetConfigIntervals(CtiRequestMsg *pReq, CtiCommandParser &parse, ReturnMsgList &returnMsgs, RfnIndividualCommandList &rfnRequests)
@@ -290,5 +321,3 @@ YukonError_t RfBatteryNodeDevice::executeGetConfigIntervals(CtiRequestMsg *pReq,
 }
 
 }
-}
-

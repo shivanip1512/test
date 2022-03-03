@@ -22,7 +22,7 @@ public:
     CapControlPao();
     CapControlPao(Cti::RowReader& rdr);
 
-    ~CapControlPao();
+    virtual ~CapControlPao() = default;
 
     int getPaoId() const;
     void setPaoId(int paoId);
@@ -43,7 +43,7 @@ public:
     void setPaoDescription(const std::string& description);
 
     bool getDisableFlag() const;
-    void setDisableFlag(bool disableFlag, int priority = 7);
+    void setDisableFlag(bool disableFlag, int priority = Cti::CapControl::DisableMsgPriority);
 
     void setDisabledStatePointId( const long newId, bool sendDisablePointMessage = false );
     long getDisabledStatePointId() const;
@@ -61,21 +61,26 @@ public:
 
     void restore( Cti::RowReader& rdr );
 
-    CapControlPao& operator=(const CapControlPao& right);
-
     void handlePointData( const CtiPointDataMsg & message );
 
 protected:
 
+    CapControlPao( const CapControlPao & ) = default;
+    CapControlPao & operator=( const CapControlPao & ) = default;
+
     void insertPointRegistration( std::set<long> & registrationIDs, const long pointID ) const;
 
 private:
+
+    void syncDisabledPoint( const int priority ) const;
 
     bool assignCommonPoint( const long pointID, const long pointOffset, const CtiPointType_t pointType );
 
     virtual bool assignSpecializedPoint( const long pointID, const long pointOffset, const CtiPointType_t pointType );
     virtual void getSpecializedPointRegistrationIds( std::set<long> & registrationIDs ) const;
     virtual void handleSpecializedPointData( const CtiPointDataMsg & message );
+
+    void handleDisableStatePointData( const CtiPointDataMsg & message );
 
     int _paoId;
     std::string _paoCategory;
@@ -86,6 +91,8 @@ private:
     bool _disableFlag;
 
     long    _disabledStatePointId;
+    CtiTime _disabledStateUpdatedTime;
+
     Cti::CapControl::PointIdVector _pointIds;
 
     CtiCCOperationStats     _operationStats;

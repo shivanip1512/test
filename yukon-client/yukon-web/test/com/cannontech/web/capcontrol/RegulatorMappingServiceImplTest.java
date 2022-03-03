@@ -1,5 +1,8 @@
 package com.cannontech.web.capcontrol;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -7,8 +10,7 @@ import java.util.Map;
 import java.util.concurrent.Executor;
 
 import org.easymock.EasyMock;
-import org.junit.Assert;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 import org.springframework.test.util.ReflectionTestUtils;
 
 import com.cannontech.capcontrol.RegulatorPointMapping;
@@ -63,6 +65,8 @@ public class RegulatorMappingServiceImplTest {
                                .put(RegulatorPointMapping.REVERSE_SET_POINT, 114)
                                .put(RegulatorPointMapping.REVERSE_FLOW_INDICATOR, 115)
                                .put(RegulatorPointMapping.CONTROL_MODE, 116)
+                               .put(RegulatorPointMapping.POWER_FLOW_INDETERMINATE, 117)
+                               .put(RegulatorPointMapping.CONTROL_POWER_FLOW_REVERSE, 118)
                                .build())
                 .put(pao2, new ImmutableMap.Builder<RegulatorPointMapping, Integer>()
                                .put(RegulatorPointMapping.AUTO_REMOTE_CONTROL, 201)
@@ -80,6 +84,8 @@ public class RegulatorMappingServiceImplTest {
                                .put(RegulatorPointMapping.REVERSE_SET_POINT, 214)
                                .put(RegulatorPointMapping.REVERSE_FLOW_INDICATOR, 215)
                                .put(RegulatorPointMapping.CONTROL_MODE, 216)
+                               .put(RegulatorPointMapping.POWER_FLOW_INDETERMINATE, 217)
+                               .put(RegulatorPointMapping.CONTROL_POWER_FLOW_REVERSE, 218)
                                .build())
                 .build();
             
@@ -100,6 +106,8 @@ public class RegulatorMappingServiceImplTest {
                                                        .put("GoRegulator-Reverse Set Point", 114)
                                                        .put("GoRegulator-Reverse Flow Indicator", 115)
                                                        .put("GoRegulator-Control Mode", 116)
+                                                       .put("GoRegulator-Power Flow Indeterminate", 117)
+                                                       .put("GoRegulator-Control Power Flow Reverse", 118)
                                                        .put("PoRegulator-Auto Block Enable", 202)
                                                        .put("PoRegulator-Tap Up", 203)
                                                        .put("PoRegulator-Tap Down", 204)
@@ -115,6 +123,8 @@ public class RegulatorMappingServiceImplTest {
                                                        .put("PoRegulator-Reverse Set Point", 214)
                                                        .put("PoRegulator-Reverse Flow Indicator", 215)
                                                        .put("PoRegulator-Control Mode", 216)
+                                                       .put("PoRegulator-Power Flow Indeterminate", 217)
+                                                       .put("PoRegulator-Control Power Flow Reverse", 218)
                                                        .build();
     
     @Test
@@ -166,12 +176,12 @@ public class RegulatorMappingServiceImplTest {
         
         //Get all tasks. Should be ordered by their start time
         List<RegulatorMappingTask> allTasks = service.getAllTasks();
-        Assert.assertEquals("Cache should return 2 tasks in getAllTasks() call.", 2, allTasks.size());
+        assertEquals(2, allTasks.size(), "Cache should return 2 tasks in getAllTasks() call.");
         
         RegulatorMappingTask task2 = allTasks.get(0);
         RegulatorMappingTask task1 = allTasks.get(1);
-        Assert.assertEquals("Tasks should be ordered by start time.", task2.getTaskId(), taskId2);
-        Assert.assertEquals("Tasks should be ordered by start time.", task1.getTaskId(), taskId1);
+        assertEquals(task2.getTaskId(), taskId2, "Tasks should be ordered by start time.");
+        assertEquals(task1.getTaskId(), taskId1, "Tasks should be ordered by start time.");
     }
     
     @Test
@@ -225,16 +235,16 @@ public class RegulatorMappingServiceImplTest {
                 
                 //First check that the pao is one we expected (i.e. has a value in our expected values map)
                 Map<RegulatorPointMapping, Integer> expectedValuesForPao = paoToPointMappingToPointId.get(pao);
-                Assert.assertNotNull("Unexpected pao: " + pao, expectedValuesForPao);
+                assertNotNull(expectedValuesForPao, "Unexpected pao: " + pao);
                 
                 //Check that the regulatorPointMapping is expected for this pao
                 Integer expectedPointId = expectedValuesForPao.get(regulatorMapping);
-                Assert.assertNotNull("Unexpected regulator mapping passed for pao: " + pao + ", "
-                                     + regulatorMapping, expectedPointId);
+                assertNotNull(expectedPointId, "Unexpected regulator mapping passed for pao: " + pao + ", "
+                                     + regulatorMapping);
                 
                 //Check that the mapping being added matches the expected mapping
-                Assert.assertEquals("Incorrect pointId for pao and mapping: " + pao + ", "
-                                    + regulatorMapping, expectedPointId.intValue(), pointId);
+                assertEquals(expectedPointId.intValue(), pointId, "Incorrect pointId for pao and mapping: " + pao + ", "
+                                    + regulatorMapping);
             }
 
             @Override
@@ -268,7 +278,7 @@ public class RegulatorMappingServiceImplTest {
                     //add no points
                 } else {
                     Integer pointId = pointNameToIdMap.get(name);
-                    Assert.assertNotNull("Point name not mapped in test: " + name, pointId);
+                    assertNotNull(pointId, "Point name not mapped in test: " + name);
                     points.add(new LitePoint(pointId));
                 }
                 return points;

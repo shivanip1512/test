@@ -41,5 +41,13 @@
     <ClCompile Include="test_msg_pdata.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="test_message_sizes.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="include\message_test_helpers.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
 </Project>

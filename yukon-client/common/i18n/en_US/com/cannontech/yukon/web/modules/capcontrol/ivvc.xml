@@ -6,7 +6,7 @@
     <entry key="yukon.web.modules.capcontrol.ivvc.zoneDetail.pageDescription">{0}</entry>
 	<entry key="yukon.web.modules.capcontrol.ivvc.zoneDetail.details.title">Zone Info</entry>
 	<entry key="yukon.web.modules.capcontrol.ivvc.zoneDetail.details.table.zone">Zone Type</entry>
-    <entry key="yukon.web.modules.capcontrol.ivvc.zoneDetail.details.table.regulator">Regulator</entry>
+    <entry key="yukon.web.modules.capcontrol.ivvc.zoneDetail.details.table.regulator">Regulator(s)</entry>
     <entry key="yukon.web.modules.capcontrol.ivvc.zoneDetail.details.table.actions">Actions</entry>
     <entry key="yukon.web.modules.capcontrol.ivvc.zoneDetail.details.table.name">Name</entry>
     <entry key="yukon.web.modules.capcontrol.ivvc.zoneDetail.details.table.type">Type</entry>
@@ -81,7 +81,12 @@
     <entry key="yukon.web.modules.capcontrol.ivvc.busView.strategyDetails.table.peak">Peak</entry>
     <entry key="yukon.web.modules.capcontrol.ivvc.busView.strategyDetails.table.offPeak">Off Peak</entry>
     <entry key="yukon.web.modules.capcontrol.ivvc.busView.strategyDetails.table.units">Units</entry>
+    <entry key="yukon.web.modules.capcontrol.ivvc.busView.zoneEvents.title">Zone Events</entry>
+    <entry key="yukon.web.modules.capcontrol.ivvc.busView.zoneHierarchy.title">Zone Hierarchy</entry>
     <entry key="yukon.web.modules.capcontrol.ivvc.busView.zones.title">Zones</entry>
+    <entry key="yukon.web.modules.capcontrol.ivvc.busView.selectedZoneInformation.title">{0} Information</entry>
+    <entry key="yukon.web.modules.capcontrol.ivvc.busView.zoneName">Zone Name</entry>
+    <entry key="yukon.web.modules.capcontrol.ivvc.busView.selectedZoneEvents.title">{0} Events</entry>
     <entry key="yukon.web.modules.capcontrol.ivvc.busView.zoneList.unassignedBanksCount">{0} {0, choice, 1#bank|1&lt;banks} are not assigned to a Zone.</entry>
     <entry key="yukon.web.modules.capcontrol.ivvc.busView.busDetail.title">Substation Values</entry>
     <entry key="yukon.web.modules.capcontrol.ivvc.busView.busDetail.table.kvar">kVAr</entry>
@@ -131,6 +136,7 @@
     <entry key="yukon.web.modules.capcontrol.ivvc.zoneWizard.label.zoneType">Zone Type</entry>
     <entry key="yukon.web.modules.capcontrol.ivvc.zoneWizard.label.zonePhase">Zone Phase</entry>
     <entry key="yukon.web.modules.capcontrol.ivvc.zoneWizard.label.regulator">Regulator</entry>
+    <entry key="yukon.web.modules.capcontrol.ivvc.zoneWizard.label.regulator.ALL">All Regulators</entry>
     <entry key="yukon.web.modules.capcontrol.ivvc.zoneWizard.label.regulator.A">Regulator A</entry>
     <entry key="yukon.web.modules.capcontrol.ivvc.zoneWizard.label.regulator.B">Regulator B</entry>
     <entry key="yukon.web.modules.capcontrol.ivvc.zoneWizard.label.regulator.C">Regulator C</entry>
@@ -161,6 +167,7 @@
     <entry key="yukon.web.modules.capcontrol.ivvc.zoneWizard.error.missingFields">Missing fields are marked in red.</entry>
     <entry key="yukon.web.modules.capcontrol.ivvc.zoneWizard.error.rootZoneExists">Error creating Zone. A root Zone already exists on this Substation bus, please select a Parent Zone.</entry>
     <entry key="yukon.web.modules.capcontrol.ivvc.zoneWizard.error.problemSavingZone">There was an error saving the Zone.</entry>
+    <entry key="yukon.web.modules.capcontrol.ivvc.zoneWizard.confirmDelete">Are you sure you want to delete {0}?</entry>
     <entry key="yukon.web.modules.capcontrol.ivvc.selectZoneType.label.zoneType">Zone Type</entry>
     <entry key="yukon.web.modules.capcontrol.ivvc.selectZoneType.label.parentZone">Parent Zone</entry>
     <entry key="yukon.web.modules.capcontrol.ivvc.selectZoneType.label.zonePhase">Phase</entry>

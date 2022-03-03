@@ -6,11 +6,11 @@
 #include "connection_base.h"
 
 #include <boost/optional.hpp>
-#include <boost/variant.hpp>
 
 #include <chrono>
 #include <queue>
 #include <condition_variable>
+#include <variant>
 
 namespace cms {
 class Connection;
@@ -28,12 +28,15 @@ namespace ActiveMQ {
 
 class ManagedConnection;
 class QueueConsumer;
-class QueueProducer;
+class DestinationProducer;
 class TempQueueConsumer;
 
 namespace Queues {
 class OutboundQueue;
 class InboundQueue;
+}
+namespace Topics {
+class OutboundTopic;
 }
 }
 
@@ -74,6 +77,8 @@ public:
     };
 
     using MessageCallbackWithReply = std::function<std::unique_ptr<SerializedMessage>(const MessageDescriptor &)>;
+    using ReplyCallback = std::function<void(SerializedMessage)>;
+    using MessageCallbackWithReplies = std::function<void(const MessageDescriptor&, ReplyCallback)>;
     using TimeoutCallback = std::function<void()>;
 
     template<class Msg>
@@ -88,7 +93,7 @@ public:
     template<class Msg>
     struct SimpleCallbackFor : CallbackFor<Msg>
     {
-        using Function = type;
+        using Function = CallbackFor<Msg>::type;
         
         SimpleCallbackFor(Function f) : fn { f } {}
 
@@ -116,8 +121,9 @@ public:
 
     static void start();
 
-    static void enqueueMessage(const ActiveMQ::Queues::OutboundQueue &queue, StreamableMessage::auto_type&& message);
-    static void enqueueMessage(const ActiveMQ::Queues::OutboundQueue &queue, const SerializedMessage &message);
+    static void enqueueMessage(const ActiveMQ::Queues::OutboundQueue& queue, StreamableMessage::auto_type&& message);
+    static void enqueueMessage(const ActiveMQ::Queues::OutboundQueue& queue, const SerializedMessage &message);
+    static void enqueueMessage(const ActiveMQ::Topics::OutboundTopic& topic, std::string message);
 
     template<class Msg>
     static void enqueueMessageWithCallbackFor(
@@ -140,6 +146,7 @@ public:
 
     static void registerHandler     (const ActiveMQ::Queues::InboundQueue &queue, MessageCallback::type callback);
     static void registerReplyHandler(const ActiveMQ::Queues::InboundQueue &queue, MessageCallbackWithReply callback);
+    static void registerReplyHandler(const ActiveMQ::Queues::InboundQueue& queue, MessageCallbackWithReplies callback);
     static auto registerSessionCallback(const MessageCallback::type callback) -> SessionCallback;
 
     virtual void close();
@@ -153,14 +160,19 @@ protected:
         TimeoutCallback timeoutCallback;
     };
 
-    using ReturnAddress = boost::variant<TimedCallback, SessionCallback>;
+    using ReturnAddress = std::variant<TimedCallback, SessionCallback>;
 
     using ReturnLabel = std::unique_ptr<ReturnAddress>;
+
+    using OutboundDestination = 
+        std::variant<
+            const ActiveMQ::Queues::OutboundQueue*,
+            const ActiveMQ::Topics::OutboundTopic*>;
 
     //  Message submission objects and methods
     struct Envelope
     {
-        std::string queueName;
+        OutboundDestination destination;
 
         ReturnLabel returnAddress;
 
@@ -169,7 +181,14 @@ protected:
         virtual ~Envelope() = default;
     };
 
+    struct Reply
+    {
+        SerializedMessage message;
+        std::shared_ptr<cms::Destination> dest;
+    };
+
     using EnvelopeQueue        = std::queue<std::unique_ptr<Envelope>>;
+    using ReplyQueue           = std::queue<Reply>;
     using IncomingPerQueue     = std::map<const ActiveMQ::Queues::InboundQueue *, std::queue<std::unique_ptr<MessageDescriptor>>>;
     using CallbacksPerQueue    = std::multimap<const ActiveMQ::Queues::InboundQueue *, MessageCallback::Ptr>;
     using RepliesByDestination = std::multimap<std::string, std::unique_ptr<MessageDescriptor>>;
@@ -177,6 +196,7 @@ protected:
     struct MessagingTasks
     {
         EnvelopeQueue        outgoingMessages;
+        ReplyQueue           outgoingReplies;
         IncomingPerQueue     incomingMessages;
         CallbacksPerQueue    newCallbacks;
         RepliesByDestination tempQueueReplies;
@@ -196,16 +216,24 @@ protected:
     const cms::Destination* makeDestinationForReturnAddress(ReturnAddress returnAddress);
 
     virtual void enqueueOutgoingMessage(
-            const std::string &queueName,
+            const ActiveMQ::Queues::OutboundQueue &queue,
             StreamableMessage::auto_type&& message,
             ReturnLabel returnAddress);
     virtual void enqueueOutgoingMessage(
-            const std::string &queueName,
+            const ActiveMQ::Queues::OutboundQueue &queue,
             const SerializedMessage &message,
             ReturnLabel returnAddress);
+    virtual void enqueueOutgoingMessage(
+            const ActiveMQ::Topics::OutboundTopic& topic,
+            const std::string message,
+            ReturnLabel returnAddress);
+    virtual void enqueueOutgoingReply(
+            std::shared_ptr<cms::Destination> dest,
+            const SerializedMessage& message);
 
     void addNewCallback(const ActiveMQ::Queues::InboundQueue &queue, MessageCallback::Ptr callback);
     void addNewCallback(const ActiveMQ::Queues::InboundQueue &queue, MessageCallbackWithReply callback);
+    void addNewCallback(const ActiveMQ::Queues::InboundQueue& queue, MessageCallbackWithReplies callback);
         
     virtual void emplaceNamedMessage(const ActiveMQ::Queues::InboundQueue* queue, const std::string type, std::vector<unsigned char> payload, cms::Destination* replyTo);
 
@@ -231,8 +259,8 @@ private:
     template<class Container, typename... Arguments>
     void emplaceTask(Container& c, Arguments&&... args);
         
-    using ProducersByQueueName = std::map<std::string, std::unique_ptr<ActiveMQ::QueueProducer>>;
-    ProducersByQueueName _producers;
+    using ProducersByOutboundDestination = std::map<OutboundDestination, std::unique_ptr<ActiveMQ::DestinationProducer>>;
+    ProducersByOutboundDestination _producers;
 
     CallbacksPerQueue  _namedCallbacks;
 
@@ -289,7 +317,8 @@ private:
     auto createSessionConsumer(const SessionCallback callback) -> const cms::Destination*;
 
     void sendOutgoingMessages(EnvelopeQueue messages);
-    ActiveMQ::QueueProducer &getQueueProducer(cms::Session &session, const std::string &queue);
+    void sendOutgoingReplies (ReplyQueue replies);
+    ActiveMQ::DestinationProducer& getDestinationProducer(cms::Session &session, OutboundDestination destination);
 
     void dispatchIncomingMessages(IncomingPerQueue incomingMessages);
     void dispatchTempQueueReplies(RepliesByDestination tempQueueReplies);

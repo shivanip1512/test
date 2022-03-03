@@ -66,6 +66,8 @@ class IM_EX_FDRDNPSLAVE DnpSlave : public CtiFDRSocketServer
         void startup();
 
         std::unique_ptr<CtiPointRegistrationMsg> buildRegistrationPointList() override;
+        bool hasRegistrationPoints() override;
+        std::optional<std::set<long>> loadOutboundPoints() override;
 
     protected:
         CtiFDRClientServerConnectionSPtr createNewConnection(SOCKET newConnection) override;
@@ -126,6 +128,8 @@ class IM_EX_FDRDNPSLAVE DnpSlave : public CtiFDRSocketServer
 
         auto waitForResponse(const long userMessageId, const bool isPassthroughControl) -> Protocols::DNP::ControlStatus;
 
+        void requireValidRange(int low, int high, int x); 
+
         typedef std::map<CtiFDRDestination, DnpId> DnpDestinationMap;
         /** Map of DNP Send and Receive Translations */
         DnpDestinationMap _sendMap, _receiveMap;
@@ -142,7 +146,13 @@ class IM_EX_FDRDNPSLAVE DnpSlave : public CtiFDRSocketServer
         ServerNameMap _serverNameLookup;
         int _staleDataTimeout;
         unsigned _porterTimeout;
-        unsigned _porterPriority;
+        struct {
+            unsigned analogOutput;
+            unsigned dnpTimesync;
+            unsigned operate;
+            unsigned other;
+            unsigned scan;
+        } _porterPriorities;
         RandomGenerator<long> _porterUserMsgIdGenerator;
 
         AttributeService _attributeService;

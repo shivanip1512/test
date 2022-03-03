@@ -1,11 +1,24 @@
 package com.cannontech.common.events.loggers;
 
+/**
+ * 
+ * Some arguments tend to be used frequently, such as username, account number,
+ * or paoId. Arguments that are likely to be used in other event log methods 
+ * should be added to ArgEnum.java. For arguments in this enum, you should use
+ * the \@Arg annotation. You do not, and should not, add every argument type to
+ * ArgEnum! Only the ones that are likely to be reused."
+ *
+ */
 public enum ArgEnum {
     accountNumber,
     action,
+    apn,
     applianceCategoryName,
     applianceType,
+    attributeId,
+    attributeName,
     auto,
+    baudRate,
     cancelledCount,
     cancelTime,
     changeId,
@@ -51,6 +64,7 @@ public enum ArgEnum {
     ipAddress,
     jobId,
     key,
+    level,
     loadGroupIds,
     loadGroupName,
     loadProgramNames,
@@ -112,5 +126,7 @@ public enum ArgEnum {
     warehouseName,
     widgetType,
     workOrderNumber,
+    yukonService,
+    serverIdentifier,
     ;
 }

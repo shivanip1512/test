@@ -122,6 +122,7 @@ public class LMHardwareControlInformationServiceImpl implements LMHardwareContro
             for(LMHardwareControlGroup enroll : currentEnrollmentList) {            
                 startOptOut(inventoryId, enroll.getLmGroupId(), accountId, enroll.getProgramId(), currentUser, event);
             }
+            drJmsMessagingService.publishStartOptOutNotice(inventoryId, event);
         } catch (Exception e) {
             logger.error("Opt out was started/scheduled for InventoryId: " + inventoryId + " AccountId: " + accountId + "done by user: " + currentUser.getUsername() + " but could NOT be recorded in the LMHardwareControlGroup table.", e );
         }
@@ -136,7 +137,6 @@ public class LMHardwareControlInformationServiceImpl implements LMHardwareContro
             controlInformation.setOptOutStart(event.getStartDate());
             lmHardwareControlGroupDao.add(controlInformation);
 
-            drJmsMessagingService.publishStartOptOutNotice(inventoryId, event);
             return true;
         } catch (Exception e) {
             logger.error("Opt out was started/scheduled for InventoryId: " + inventoryId + " ProgramId: " + programId + " LMGroupId: " + loadGroupId + " AccountId: " + accountId + "done by user: " + currentUser.getUsername() + " but could NOT be recorded in the LMHardwareControlGroup table.", e );

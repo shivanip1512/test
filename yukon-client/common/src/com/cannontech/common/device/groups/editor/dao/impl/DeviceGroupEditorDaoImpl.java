@@ -132,10 +132,9 @@ public class DeviceGroupEditorDaoImpl implements DeviceGroupEditorDao, DeviceGro
     @Override
     @Transactional
     public void addDevices(StoredDeviceGroup group, Iterator<? extends YukonPao> paos) {
-        
         Collection<? extends YukonPao> validDevices = getValidDevicesToAdd(paos);
+        validDevices.forEach(device -> deviceGroupService.removeFromCache(group, device));
         if (!validDevices.isEmpty()) {
-            boolean success = true;
             log.debug("Devices to add=" + validDevices.size());
 
             List<List<YukonPao>> devices =
@@ -157,7 +156,6 @@ public class DeviceGroupEditorDaoImpl implements DeviceGroupEditorDao, DeviceGro
                         }
                     });
                 } catch (DataIntegrityViolationException e) {
-                    success = false;
                     log.debug("Attempted to insert a duplicate device in a batch");
                 }
             }
@@ -167,9 +165,9 @@ public class DeviceGroupEditorDaoImpl implements DeviceGroupEditorDao, DeviceGro
     @Override
     @Transactional
     public int addDevice(StoredDeviceGroup group, YukonPao device) {
-
+        deviceGroupService.removeFromCache(group, device);
         int rowsAffected = 0;
-        log.debug("Attempted to insert device=" + device + " group =" + group);
+        log.debug("adding device:{} to group:{} group id:{}", device, group, group.getId());
         if (!getValidDevicesToAdd(Lists.newArrayList(device).iterator()).isEmpty()) {
             SqlStatementBuilder sql = new SqlStatementBuilder();
             sql.append(deviceGroupMemberInsertSql);
@@ -180,7 +178,8 @@ public class DeviceGroupEditorDaoImpl implements DeviceGroupEditorDao, DeviceGro
                 log.debug("Duplicate device=" + device);
                 // ignore - tried to insert duplicate
             }
-            log.debug("rowsAffected=" + rowsAffected);
+            log.debug("add device:{} to group:{} group id:{} finished rowsAffected:{}", device, group, group.getId(),
+                    rowsAffected);
         }
         return rowsAffected;
     }
@@ -374,9 +373,6 @@ public class DeviceGroupEditorDaoImpl implements DeviceGroupEditorDao, DeviceGro
     @Override
     public StoredDeviceGroup getGroupByName(StoredDeviceGroup parent, 
             String groupName) throws NotFoundException, IllegalGroupNameException {
-        
-        DeviceGroupUtil.validateName(groupName);
-        
         return getGroupByName(parent, groupName, false);
     }
     
@@ -384,8 +380,6 @@ public class DeviceGroupEditorDaoImpl implements DeviceGroupEditorDao, DeviceGro
     @Transactional(propagation=Propagation.REQUIRED)
     public StoredDeviceGroup getGroupByName(StoredDeviceGroup parent, 
             String groupName, boolean addGroup) throws NotFoundException, IllegalGroupNameException {
-        
-        DeviceGroupUtil.validateName(groupName);
         
         String rawName = SqlUtils.convertStringToDbValue(groupName);
 
@@ -625,14 +619,15 @@ public class DeviceGroupEditorDaoImpl implements DeviceGroupEditorDao, DeviceGro
     
     @Override
     public int removeDevices(StoredDeviceGroup group, Collection<? extends YukonPao> yukonPaos) {
+        yukonPaos.forEach(device -> deviceGroupService.removeFromCache(group, device));
         Collection<Integer> paoIds = new MappingCollection<YukonPao, Integer>(yukonPaos, new YukonPaoToIdMapper());
         return removeDevicesById(group, paoIds);
     }
-    
-    @Override
-    public int removeDevicesById(StoredDeviceGroup group, Collection<Integer> deviceIds) {
 
+    private int removeDevicesById(StoredDeviceGroup group, Collection<Integer> deviceIds) {
         int rowsAffected = chunkyJdbcTemplate.update(new RemoveDevicesByIdSqlGenerator(group.getId()), deviceIds);
+        log.debug("removed devices:{} from group:{} group id:{} rowsAffected:{}", deviceIds, group, group.getId(),
+                rowsAffected);
         return rowsAffected;
     }
 

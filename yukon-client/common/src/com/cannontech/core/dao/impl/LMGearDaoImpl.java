@@ -21,6 +21,7 @@ import com.cannontech.database.YukonRowMapper;
 import com.cannontech.database.data.device.lm.HeatCool;
 import com.cannontech.database.data.lite.LiteGear;
 import com.cannontech.dr.ThermostatRampRateValues;
+import com.cannontech.dr.eatonCloud.model.EatonCloudCycleType;
 import com.cannontech.dr.itron.model.ItronCycleType;
 import com.cannontech.dr.nest.model.v3.LoadShapingOptions;
 import com.cannontech.dr.nest.model.v3.PeakLoadShape;
@@ -255,12 +256,38 @@ public class LMGearDaoImpl implements LMGearDao {
 
         SqlStatementBuilder sql = new SqlStatementBuilder();
         sql.append("SELECT CycleOption");
-        sql.append("FROM LMItronCycleGear");
+        sql.append("FROM LMConfigurableCycleGear");
         sql.append("WHERE GearId").eq(gearId);
 
         String itronCycle = jdbcTemplate.queryForString(sql);
 
         return ItronCycleType.valueOf(itronCycle);
+    }
+    
+    @Override
+    public EatonCloudCycleType getEatonCloudCycleType(Integer gearId) {
+
+        SqlStatementBuilder sql = new SqlStatementBuilder();
+        sql.append("SELECT CycleOption");
+        sql.append("FROM LMConfigurableCycleGear");
+        sql.append("WHERE GearId").eq(gearId);
+
+        String eatonCycle = jdbcTemplate.queryForString(sql);
+
+        return EatonCloudCycleType.valueOf(eatonCycle);
+    }
+    
+    @Override
+    public HeatCool getHeatingEvent(Integer gearId) {
+
+        SqlStatementBuilder sql = new SqlStatementBuilder();
+        sql.append("SELECT Settings");
+        sql.append("FROM LMThermostatGear");
+        sql.append("WHERE GearId").eq(gearId);
+
+        String heatingEvent = jdbcTemplate.queryForString(sql);
+
+        return HeatCool.of(heatingEvent);
     }
 
     @Override

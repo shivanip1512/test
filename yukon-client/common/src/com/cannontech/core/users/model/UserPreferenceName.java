@@ -35,6 +35,7 @@ public enum UserPreferenceName implements DisplayableEnum {
                PreferenceGraphVisualTypeOption.getDefault().name(), PreferenceType.NONEDITABLE),
     TREND_ZOOM(InputTypeFactory.enumType(PreferenceTrendZoomOption.class),
                PreferenceTrendZoomOption.getDefault().name(), PreferenceType.NONEDITABLE),
+    TREND_AUTO_UPDATE(InputTypeFactory.enumType(YNBoolean.class), YNBoolean.YES.getDbString(), PreferenceType.NONEDITABLE),
     DISPLAY_EVENT_RANGE(InputTypeFactory.enumType(TimeRange.class), TimeRange.DAY_1.name(), PreferenceType.NONEDITABLE),
     COMMANDER_RECENT_TARGETS(InputTypeFactory.stringType(), null, PreferenceType.NONEDITABLE),
     PORTER_QUEUE_COUNTS_ZOOM(InputTypeFactory.enumType(PreferencePorterQueueCountsZoomOption.class),
@@ -45,7 +46,7 @@ public enum UserPreferenceName implements DisplayableEnum {
     COMMANDER_LAST_SERIAL_NUMBER(InputTypeFactory.stringType(), null, PreferenceType.TEMPORARY),
     COMMANDER_LAST_TARGET(InputTypeFactory.stringType(), null, PreferenceType.TEMPORARY),
     COMMANDER_LAST_PAO_ID(InputTypeFactory.integerType(), null, PreferenceType.TEMPORARY),
-    TREND_TEMPERATURE(InputTypeFactory.enumType(YNBoolean.class), YNBoolean.NO.getDatabaseRepresentation().toString(), PreferenceType.NONEDITABLE);
+    TREND_TEMPERATURE(InputTypeFactory.enumType(YNBoolean.class), YNBoolean.NO.getDbString(), PreferenceType.NONEDITABLE);
 
     final private InputType<?> valueType;
     final private String defaultValue;

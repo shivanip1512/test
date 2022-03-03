@@ -1284,6 +1284,26 @@
     <entry key="yukon.web.error.code.334.description">There is no Meter Program assigned to this device in Yukon.</entry>
     <entry key="yukon.web.error.code.334.troubleshooting">No troubleshooting is available for this error.</entry>
 
+    <entry key="yukon.web.error.code.335.porter">Invalid meter program.</entry>
+    <entry key="yukon.web.error.code.335.description">The Meter Program assigned to this device in Yukon is invalid.</entry>
+    <entry key="yukon.web.error.code.335.troubleshooting">Choose a different Meter Program to send to this device.</entry>
+
+    <entry key="yukon.web.error.code.336.porter">Meter program not found.</entry>
+    <entry key="yukon.web.error.code.336.description">The Meter Program assigned to this device in Yukon cannot be found.</entry>
+    <entry key="yukon.web.error.code.336.troubleshooting">Choose a different Meter Program to send to this device.</entry>
+
+    <entry key="yukon.web.error.code.337.porter">Meter program password not valid.</entry>
+    <entry key="yukon.web.error.code.337.description">The password provided for the Meter Program is not valid.</entry>
+    <entry key="yukon.web.error.code.337.troubleshooting">Confirm the password to use with this device.</entry>
+
+    <entry key="yukon.web.error.code.338.porter">Node timed out while waiting for a response from Yukon.</entry>
+    <entry key="yukon.web.error.code.338.description">Node timed out while waiting for a response from Yukon.</entry>
+    <entry key="yukon.web.error.code.338.troubleshooting">The RF node attempted to download the meter program from Yukon, but did not receive all of it, possibly due to network issues. Retry sending the Meter Program to the node.</entry>
+    
+    <entry key="yukon.web.error.code.339.porter">Node received an error response from Yukon.</entry>
+    <entry key="yukon.web.error.code.339.description">Node received an error response from Yukon.</entry>
+    <entry key="yukon.web.error.code.339.troubleshooting">The RF node attempted to download the meter program from Yukon, but received an error response. Retry sending the Meter Program to the node.</entry>
+    
     <entry key="yukon.web.error.code.1024.porter">No node in Network Manager.</entry>
     <entry key="yukon.web.error.code.1024.description">There isn't a node in Network Manager which is
         currently associated with this device in Yukon.</entry>

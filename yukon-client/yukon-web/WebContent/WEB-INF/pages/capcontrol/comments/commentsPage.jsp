@@ -5,6 +5,17 @@
 <%@ taglib prefix="tags" tagdir="/WEB-INF/tags"%>
 
 <cti:msgScope paths="yukon.web.modules.capcontrol.comments">
+    <c:if test="${addPermission}">
+        <div class="dib">
+            <cti:msg2 var="commentText" key=".enterText"/>
+            <textarea rows="2" cols="0" id="newCommentInput" placeholder="${commentText}" class="MR10 fl rn taw250" 
+                             onKeyPress="return yukon.da.comments.addOrCancel(event)"></textarea>
+            <cti:button nameKey="create" icon="icon-plus-green" classes="M0 js-save-comment" busy="true"/>
+        </div>
+        <br>
+        <br>
+    </c:if>
+    
     <cti:url var="commentsURL" value="/capcontrol/comments/"/>
 
     <div id="comment_editor" class="scroll-lg stacked">
@@ -54,7 +65,7 @@
                                     </c:when>
                                     <c:otherwise>
                                         <td>${fn:escapeXml(comment.userName)}</td>
-                                	</c:otherwise>
+                                    </c:otherwise>
                                 </c:choose>
                                 <td><cti:formatDate value="${comment.date}" type="BOTH" /></td>
                                 <td>
@@ -65,7 +76,7 @@
                                 </td>
                                 <c:if test="${modifyPermission}">
                                     <td class="remove-column">
-                                        <cti:button nameKey="remove" renderMode="image" onclick="yukon.da.comments.deleteComment(${comment.id})" classes="center" icon="icon-cross"/>
+                                        <cti:button nameKey="remove" renderMode="image" onclick="yukon.da.comments.deleteComment(${comment.id})" classes="center" icon="icon-delete"/>
                                     </td>
                                 </c:if>
                             </tr>
@@ -75,16 +86,4 @@
             </c:if>
         </form>
     </div>
-    <c:if test="${addPermission}">
-        <div id="newRow" style="display: none;">
-            <span><i:inline key=".enterText"/></span>
-            <span>
-                <input type="text" id="newCommentInput" onKeyPress="return yukon.da.comments.addOrCancel(event)">
-            </span>
-            <span><a href="javascript:yukon.da.comments.addComment()"><i:inline key=".save"/></a> <a href="javascript:yukon.da.comments.hideNewRow()"><i:inline key=".cancel"/></a></span>
-        </div>
-        <div class="compactResultsFooter">
-            <cti:button nameKey="add" icon="icon-add" onclick="javascript:yukon.da.comments.showNewRow()"/>
-        </div>
-    </c:if>
 </cti:msgScope>

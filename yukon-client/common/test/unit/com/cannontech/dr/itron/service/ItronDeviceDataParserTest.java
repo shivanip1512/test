@@ -1,17 +1,18 @@
 package com.cannontech.dr.itron.service;
 
-import static org.junit.Assert.*;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.fail;
 
 import java.util.Arrays;
+import java.util.Date;
 import java.util.Collection;
 import java.util.Map;
 import java.util.stream.Collectors;
 
 import org.easymock.EasyMock;
 import org.joda.time.Instant;
-import org.junit.Assert;
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 import org.springframework.test.util.ReflectionTestUtils;
 
 import com.cannontech.common.pao.PaoCategory;
@@ -37,7 +38,7 @@ public class ItronDeviceDataParserTest {
     
     ItronDeviceDataParser parser;
     
-    @Before
+    @BeforeEach
     public void init() {
         parser = new ItronDeviceDataParser();
     }
@@ -54,64 +55,94 @@ public class ItronDeviceDataParserTest {
     }
     
     @Test
-    public void validateRowParsingForEventStarted() {
-        String[] rowData = rowData("type: 1, log event ID: 14 (0x0e) - Event Started, payload: Event ID (90793) data(000162A900)");
-
-        RecentEventParticipationService recentEventParticipationService = EasyMock.createMock(RecentEventParticipationService.class);
-        recentEventParticipationService.updateDeviceControlEvent(EasyMock.anyInt(), EasyMock.anyInt(), 
-                                                                 EasyMock.anyObject(ItronLoadControlEventStatus.class), EasyMock.anyObject());
-        EasyMock.expectLastCall();
-        EasyMock.replay(recentEventParticipationService);
-        ReflectionTestUtils.setField(parser, "recentEventParticipationService", recentEventParticipationService);
-        
-        Collection<PointData> data = parseRow(BuiltInAttribute.CONTROL_STATUS, rowData);
-        assertOnlyEntryEquals(data, 1);
-    }
-    
-    @Test
     public void validateRowParsingForRelayNumberFinding() {
-        String[] rowData = rowData("type: 1, log event ID: 24 (0x18) - Relay Open, payload: Physical Relay (3)  data(0300000000)");
-        Collection<PointData> data = parseRow(BuiltInAttribute.RELAY_4_SHED_STATUS, rowData);
+        String[] rowData = rowData("type: 1, log event ID: 24 (0x18) - Relay Open, payload: Physical Relay (0) data(0100000000)");
+        Collection<PointData> data = parseRow(BuiltInAttribute.RELAY_1_SHED_STATUS, rowData);
         assertOnlyEntryEquals(data, 1);
+        
+        String[] rowData2 = rowData("type: 1, log event ID: 24 (0x18) - Relay Open, payload: Physical Relay (1) data(0200000000)");
+        Collection<PointData> data2 = parseRow(BuiltInAttribute.RELAY_2_SHED_STATUS, rowData2);
+        assertOnlyEntryEquals(data2, 1);
+        
+        String[] rowData3 = rowData("type: 1, log event ID: 24 (0x18) - Relay Open, payload: Physical Relay (2) data(0400000000)");
+        Collection<PointData> data3 = parseRow(BuiltInAttribute.RELAY_3_SHED_STATUS, rowData3);
+        assertOnlyEntryEquals(data3, 1);
+        
+        String[] rowData4 = rowData("type: 1, log event ID: 24 (0x18) - Relay Open, payload: Physical Relay (3) data(0800000000)");
+        Collection<PointData> data4 = parseRow(BuiltInAttribute.RELAY_4_SHED_STATUS, rowData4);
+        assertOnlyEntryEquals(data4, 1);
     }
     
     @Test
-    public void validateRowParsingForPayloadValuedEvent() {
-        String[] rowData = rowData("type: 0, log event ID: 32925 (0x809D) - Vendor-specific or Unknown, payload:  data(00F0000000)");
+    public void validateRowParsingForPayloadValuedEventWithMultiplier() {
+        String[] rowData = rowData("type: 0, log event ID: 32925 (0x809D) - Vendor-specific or Unknown, payload:  data(0960000000)");
         Collection<PointData> data = parseRow(BuiltInAttribute.AVERAGE_VOLTAGE, rowData);
-        Assert.assertEquals(1, data.size());
+        assertEquals(1, data.size());
         PointData pointData = (PointData) data.toArray()[0];
         double value = pointData.getValue();
-        Assert.assertEquals(240, value, .1);
+        assertEquals(240.0, value, .1);
     }
-    
+
+    @Test
+    public void validateRowParsingForEventStarted() {
+        String[] rowData = rowData("type: 0, log event ID: 14 (0x0e) - Event Started, payload: Event ID (130093) data(0001FC2D00)");
+        Collection<PointData> data = parseRow(BuiltInAttribute.EVENT_STARTED, rowData);
+        assertEquals(1, data.size());
+        PointData pointData = (PointData) data.toArray()[0];
+        double value = pointData.getValue();
+        assertEquals(130093, value, .1);
+    }
+
+    @Test
+    public void validateRowParsingForEventStopped() {
+        String[] rowData = rowData("type: 0, log event ID: 15 (0x0F) - Event Stopped, payload: Event ID (130094) data(0001FC2E00)");
+        Collection<PointData> data = parseRow(BuiltInAttribute.EVENT_STOPPED, rowData);
+        assertEquals(1, data.size());
+        PointData pointData = (PointData) data.toArray()[0];
+        double value = pointData.getValue();
+        assertEquals(130094, value, .1);
+    }
+
+    @Test
+    public void validateRowParsingForEventCancelled() {
+        String[] rowData = rowData("type: 1, log event ID: 16 (0x10) - Event Cancelled, payload: Event ID (645117902) data(2673B7CE00)");
+        Collection<PointData> data = parseRow(BuiltInAttribute.EVENT_CANCELLED, rowData);
+        assertEquals(1, data.size());
+        PointData pointData = (PointData) data.toArray()[0];
+        double value = pointData.getValue();
+        assertEquals(645117902, value, .1);
+    }
+
     @Test
     public void validateRowParsingForIncrementalEvent() {
-        String[] rowData = rowData("type: 0, log event ID: 32768 (0x8000) - Vendor-specific or Unknown, payload:  data(0000000000)");
+        String[] rowData = rowData("type: 1, log event ID: 0 (0x00) - Power Loss, payload:  data(0000000000)");
         Collection<PointData> data = parseRow(BuiltInAttribute.BLINK_COUNT, rowData);
         assertOnlyEntryEquals(data, 1);
     }
     
     @Test
     public void validateRowParsingForTwoPartVoltageMin() {
-        String[] rowData = rowData("type: 0, log event ID: 32924 (0x809C) - Vendor-specific or Unknown, payload:  data(0002000000)");
+        //0x960 = 2400 mV
+        String[] rowData = rowData("type: 0, log event ID: 32924 (0x809C) - Vendor-specific or Unknown, payload:  data(0960000000)");
         Collection<PointData> data = parseRow(BuiltInAttribute.MINIMUM_VOLTAGE, rowData);
-        Assert.assertEquals(0, data.size());
+        assertEquals(0, data.size());
         
-        String[] rowData2 = rowData("type: 0, log event ID: 32926 (0x809E) - Vendor-specific or Unknown, payload:  data(2213E24400)");
+        String[] rowData2 = rowData("type: 0, log event ID: 32926 (0x809E) - Vendor-specific or Unknown, payload:  data(2712638700)");
         data = parseRow(BuiltInAttribute.MINIMUM_VOLTAGE, rowData2);
-        assertOnlyEntryEquals(data, 2);
+        assertOnlyEntryEquals(data, 240);
+        assertOnlyEntryTimestamp(data, new Date(1602201351000L)); // This date is taken from TSSL-6175
     }
 
     @Test
     public void validateRowParsingForTwoPartVoltageMax() {
-        String[] rowData = rowData("type: 0, log event ID: 32923 (0x809B) - Vendor-specific or Unknown, payload:  data(0002000000)");
+        //0x4B5 = 1205 mV
+        String[] rowData = rowData("type: 0, log event ID: 32923 (0x809B) - Vendor-specific or Unknown, payload:  data(04B5000000)");
         Collection<PointData> data = parseRow(BuiltInAttribute.MAXIMUM_VOLTAGE, rowData);
-        Assert.assertEquals(0, data.size());
+        assertEquals(0, data.size());
         
         String[] rowData2 = rowData("type: 0, log event ID: 32927 (0x809F) - Vendor-specific or Unknown, payload:  data(2213E24400)");
         data = parseRow(BuiltInAttribute.MAXIMUM_VOLTAGE, rowData2);
-        assertOnlyEntryEquals(data, 2);
+        assertOnlyEntryEquals(data, 120.5);
     }
     
     @Test
@@ -119,9 +150,20 @@ public class ItronDeviceDataParserTest {
         String[] rowData = rowData("type: 3, log event ID: 622133494, payload: ");
         try {
             Collection<PointData> data = parseRow(BuiltInAttribute.MAXIMUM_VOLTAGE, rowData); //attribute doesn't matter here
-            Assert.assertEquals("Incorrect data size for empty payload.", data.size(), 0);
+            assertEquals( data.size(), 0, "Incorrect data size for empty payload.");
         } catch (Exception e) {
-            Assert.fail("Exception thrown parsing row with empty payload: " + e.getMessage());
+            fail("Exception thrown parsing row with empty payload: " + e.getMessage());
+        }
+    }
+    
+    @Test
+    public void validateRowParsingMissingPayload() {
+        String[] rowData = rowData("duty cycle: 100, cycle period: 15, cycles number: 28, event control: 1, monitor event: 1, event state: 1");
+        try {
+            Collection<PointData> data = parseRow(BuiltInAttribute.MAXIMUM_VOLTAGE, rowData); //attribute doesn't matter here
+            assertEquals(data.size(), 0, "Incorrect data size for missing payload.");
+        } catch (Exception e) {
+            fail("Exception thrown parsing row with empty payload: " + e.getMessage());
         }
     }
     
@@ -213,12 +255,18 @@ public class ItronDeviceDataParserTest {
         return results.get(lpo.getPaoIdentifier());
     }
     
-    private void assertOnlyEntryEquals(Collection<PointData> data, int expectedEntryValue) {
-        Assert.assertEquals(1, data.size());
+    private void assertOnlyEntryEquals(Collection<PointData> data, double expectedEntryValue) {
+        assertEquals(1, data.size());
         PointData pointData = (PointData) data.toArray()[0];
-        Assert.assertEquals(expectedEntryValue, pointData.getValue(), 0.1);
+        assertEquals(expectedEntryValue, pointData.getValue(), 0.1);
     }
-    
+
+    private void assertOnlyEntryTimestamp(Collection<PointData> data, Date expectedTimestamp) {
+        assertEquals(1, data.size());
+        PointData pointData = (PointData) data.toArray()[0];
+        assertEquals(expectedTimestamp, pointData.getPointDataTimeStamp());
+    }
+
     private void setupMocksForLoadControlUnsupported() {
         LiteYukonPAObject pao = new LiteYukonPAObject(1, "pao1", 
                                                       PaoCategory.DEVICE, 

@@ -22,11 +22,15 @@
 #include "IVVCState.h"
 #include "IVVCStrategy.h"
 #include "CapControlPredicates.h"
+#include "Requests.h"
 
 #include <boost/range/adaptor/filtered.hpp>
 
 using Cti::CapControl::VoltageRegulatorManager;
 using Cti::CapControl::createPorterRequestMsg;
+using Cti::CapControl::RequestType;
+using Cti::CapControl::PorterRequest;
+using Cti::CapControl::PorterRequests;
 using Cti::CapControl::EventLogEntry;
 using Cti::CapControl::EventLogEntries;
 using Cti::CapControl::createBankOpenRequest;
@@ -39,7 +43,7 @@ using std::string;
 
 extern unsigned long _CC_DEBUG;
 extern bool _IGNORE_NOT_NORMAL_FLAG;
-extern unsigned long _SEND_TRIES;
+extern long _SEND_TRIES;
 extern bool _LIMIT_ONE_WAY_COMMANDS;
 
 void CtiCCCommandExecutor::setAttributeService(AttributeService* attributeService)
@@ -660,7 +664,7 @@ void CtiCCCommandExecutor::syncCbcAndCapBankStates(long bankId)
 void CtiCCCommandExecutor::enableOvUv(long bankId,
                                       std::vector<CtiSignalMsg*>& signals,
                                       EventLogEntries &events,
-                                      std::vector<CtiRequestMsg*>& requests)
+                                      PorterRequests& requests)
 {
     string commandName = " Enable OvUv";
     CtiCCSubstationBusStore* store = CtiCCSubstationBusStore::getInstance();
@@ -699,10 +703,16 @@ void CtiCCCommandExecutor::enableOvUv(long bankId,
     events.push_back(EventLogEntry(0, capBank->getControlPointId(), spAreaId, areaId, stationId, subId, feederId, capControlEnableOvUv, seqId, 1, text, _command->getUser()));
 
     //Actual Command Work
-    capBank->setOvUvDisabledFlag(false);
     subBus->setBusUpdatedFlag(true);
 
-    CtiRequestMsg* reqMsg = NULL;
+    // If the bank is a 1-way device, we want to set the UI flag as a best guess indicator to the user.
+    //  If it is a 2-way device, we wait for the results of a scan to appropriately set it instead.
+    if ( ! capBank->isControlDeviceTwoWay() )
+    {
+        capBank->setOvUvDisabledFlag( false );
+    }
+
+    PorterRequest reqMsg;
     if (cbc702)
     {
         CtiCCTwoWayPoints & points = capBank->getTwoWayPoints();
@@ -725,14 +735,14 @@ void CtiCCCommandExecutor::enableOvUv(long bankId,
 
         //Send point update message with new value.
         string commandString = "putvalue analog " + CtiNumStr(offset).toString() + " " + CtiNumStr((int)voltageValue).toString();
-        reqMsg = createPorterRequestMsg(controllerId,commandString);
+        reqMsg = createPorterRequestMsg(controllerId,commandString, RequestType::Other);
     }
     else
     {
-        reqMsg = createPorterRequestMsg(controllerId,"putconfig ovuv enable");
+        reqMsg = createPorterRequestMsg(controllerId,"putconfig ovuv enable", RequestType::Other);
     }
     reqMsg->setSOE(5);
-    requests.push_back(reqMsg);
+    requests.emplace_back(std::move(reqMsg));
 }
 
 
@@ -742,7 +752,7 @@ void CtiCCCommandExecutor::enableOvUv(long bankId,
 void CtiCCCommandExecutor::disableOvUv(long bankId,
                                        std::vector<CtiSignalMsg*>& signals,
                                        EventLogEntries &events,
-                                       std::vector<CtiRequestMsg*>& requests)
+                                       PorterRequests& requests)
 {
     string commandName = " Disable OvUv";
     CtiCCSubstationBusStore* store = CtiCCSubstationBusStore::getInstance();
@@ -781,10 +791,16 @@ void CtiCCCommandExecutor::disableOvUv(long bankId,
     events.push_back(EventLogEntry(0, capBank->getControlPointId(), spAreaId, areaId, stationId, subId, feederId, capControlEnableOvUv, seqId, 1, text, _command->getUser()));
 
     //Actual Command
-    capBank->setOvUvDisabledFlag(true);
     subBus->setBusUpdatedFlag(true);
 
-    CtiRequestMsg* reqMsg = NULL;
+    // If the bank is a 1-way device, we want to set the UI flag as a best guess indicator to the user.
+    //  If it is a 2-way device, we wait for the results of a scan to appropriately set it instead.
+    if ( ! capBank->isControlDeviceTwoWay() )
+    {
+        capBank->setOvUvDisabledFlag( true );
+    }
+
+    PorterRequest reqMsg;
     if (cbc702)
     {
         CtiCCTwoWayPoints & points = capBank->getTwoWayPoints();
@@ -807,18 +823,18 @@ void CtiCCCommandExecutor::disableOvUv(long bankId,
 
         //Send point update message with new value.
         string commandString = "putvalue analog " + CtiNumStr(offset).toString() + " " + CtiNumStr((int)voltageValue).toString();
-        reqMsg = createPorterRequestMsg(controllerId,commandString);
+        reqMsg = createPorterRequestMsg(controllerId,commandString, RequestType::Other);
     }
     else
     {
-        reqMsg = createPorterRequestMsg(controllerId,"putconfig ovuv disable");
+        reqMsg = createPorterRequestMsg(controllerId,"putconfig ovuv disable", RequestType::Other);
     }
 
     reqMsg->setSOE(5);
-    requests.push_back(reqMsg);
+    requests.emplace_back(std::move(reqMsg));
 }
 
-void CtiCCCommandExecutor::enableTempControl(long bankId,std::vector<CtiSignalMsg*>& signals, EventLogEntries &events, std::vector<CtiRequestMsg*>& requests)
+void CtiCCCommandExecutor::enableTempControl(long bankId,std::vector<CtiSignalMsg*>& signals, EventLogEntries &events, PorterRequests& requests)
 {
     string commandName = " Enable Temp Control";
 
@@ -858,7 +874,7 @@ void CtiCCCommandExecutor::enableTempControl(long bankId,std::vector<CtiSignalMs
     events.push_back(EventLogEntry(0, capBank->getControlPointId(), spAreaId, areaId, stationId, subId, feederId, capControlEnableOvUv, seqId, 1, text, _command->getUser()));
 
     //Actual Command Work
-    CtiRequestMsg* reqMsg = NULL;
+    PorterRequest reqMsg;
 
     if ( cbc702 )
     {
@@ -886,9 +902,9 @@ void CtiCCCommandExecutor::enableTempControl(long bankId,std::vector<CtiSignalMs
 
         //Send point update message with new value.
         string commandStringOne = "putvalue analog " + CtiNumStr(offsetOne).toString() + " " + CtiNumStr((int)seasonOneValue).toString();
-        reqMsg = createPorterRequestMsg(controllerId,commandStringOne);
+        reqMsg = createPorterRequestMsg(controllerId,commandStringOne, RequestType::Other);
         reqMsg->setSOE(5);
-        requests.push_back(reqMsg);
+        requests.emplace_back(std::move(reqMsg));
 
         int offsetTwo = 42;
         unsigned char seasonTwoValue = points.getPointValueByAttribute( Attribute::TimeTempControlSeasonTwo );
@@ -897,18 +913,18 @@ void CtiCCCommandExecutor::enableTempControl(long bankId,std::vector<CtiSignalMs
         seasonTwoValue |= 0x80;
 
         string commandStringTwo = "putvalue analog " + CtiNumStr(offsetTwo).toString() + " " + CtiNumStr((int)seasonTwoValue).toString();
-        reqMsg = createPorterRequestMsg(controllerId,commandStringTwo);
+        reqMsg = createPorterRequestMsg(controllerId,commandStringTwo, RequestType::Other);
     }
     else
     {
-        reqMsg = createPorterRequestMsg(controllerId,"putconfig temp enable");
+        reqMsg = createPorterRequestMsg(controllerId,"putconfig temp enable", RequestType::Other);
     }
 
     reqMsg->setSOE(5);
-    requests.push_back(reqMsg);
+    requests.emplace_back(std::move(reqMsg));
 }
 
-void CtiCCCommandExecutor::disableTempControl(long bankId,std::vector<CtiSignalMsg*>& signals, EventLogEntries &events, std::vector<CtiRequestMsg*>& requests)
+void CtiCCCommandExecutor::disableTempControl(long bankId,std::vector<CtiSignalMsg*>& signals, EventLogEntries &events, PorterRequests& requests)
 {
     string commandName = " Disable Temp Control";
 
@@ -948,7 +964,7 @@ void CtiCCCommandExecutor::disableTempControl(long bankId,std::vector<CtiSignalM
     events.push_back(EventLogEntry(0, capBank->getControlPointId(), spAreaId, areaId, stationId, subId, feederId, capControlEnableOvUv, seqId, 1, text, _command->getUser()));
 
     //Actual Command Work
-    CtiRequestMsg* reqMsg = NULL;
+    PorterRequest reqMsg;
 
     if ( cbc702 )
     {
@@ -963,9 +979,9 @@ void CtiCCCommandExecutor::disableTempControl(long bankId,std::vector<CtiSignalM
 
         //Send point update message with new value.
         string commandStringOne = "putvalue analog " + CtiNumStr(offsetOne).toString() + " " + CtiNumStr((int)seasonOneValue).toString();
-        reqMsg = createPorterRequestMsg(controllerId,commandStringOne);
+        reqMsg = createPorterRequestMsg(controllerId,commandStringOne, RequestType::Other);
         reqMsg->setSOE(5);
-        requests.push_back(reqMsg);
+        requests.emplace_back(std::move(reqMsg));
 
         int offsetTwo = 42;
         unsigned char seasonTwoValue = points.getPointValueByAttribute( Attribute::TimeTempControlSeasonTwo );
@@ -974,18 +990,18 @@ void CtiCCCommandExecutor::disableTempControl(long bankId,std::vector<CtiSignalM
         seasonTwoValue &= 0x7f;
 
         string commandStringTwo = "putvalue analog " + CtiNumStr(offsetTwo).toString() + " " + CtiNumStr((int)seasonTwoValue).toString();
-        reqMsg = createPorterRequestMsg(controllerId,commandStringTwo);
+        reqMsg = createPorterRequestMsg(controllerId,commandStringTwo, RequestType::Other);
     }
     else
     {
-        reqMsg = createPorterRequestMsg(controllerId,"putconfig temp disable");
+        reqMsg = createPorterRequestMsg(controllerId,"putconfig temp disable", RequestType::Other);
     }
 
     reqMsg->setSOE(5);
-    requests.push_back(reqMsg);
+    requests.emplace_back(std::move(reqMsg));
 }
 
-void CtiCCCommandExecutor::enableVarControl(long bankId,std::vector<CtiSignalMsg*>& signals, EventLogEntries &events, std::vector<CtiRequestMsg*>& requests)
+void CtiCCCommandExecutor::enableVarControl(long bankId,std::vector<CtiSignalMsg*>& signals, EventLogEntries &events, PorterRequests& requests)
 {
     string commandName = " Enable Var Control";
 
@@ -1025,7 +1041,7 @@ void CtiCCCommandExecutor::enableVarControl(long bankId,std::vector<CtiSignalMsg
     events.push_back(EventLogEntry(0, capBank->getControlPointId(), spAreaId, areaId, stationId, subId, feederId, capControlEnableOvUv, seqId, 1, text, _command->getUser()));
 
     //Actual Command Work
-    CtiRequestMsg* reqMsg = NULL;
+    PorterRequest reqMsg;
 
     if ( cbc702 )
     {
@@ -1050,18 +1066,18 @@ void CtiCCCommandExecutor::enableVarControl(long bankId,std::vector<CtiSignalMsg
 
         //Send point update message with new value.
         string commandString = "putvalue analog " + CtiNumStr(offset).toString() + " " + CtiNumStr((int)varValue).toString();
-        reqMsg = createPorterRequestMsg(controllerId,commandString);
+        reqMsg = createPorterRequestMsg(controllerId,commandString, RequestType::Other);
     }
     else
     {
-        reqMsg = createPorterRequestMsg(controllerId,"putconfig var enable");
+        reqMsg = createPorterRequestMsg(controllerId,"putconfig var enable", RequestType::Other);
     }
 
     reqMsg->setSOE(5);
-    requests.push_back(reqMsg);
+    requests.emplace_back(std::move(reqMsg));
 }
 
-void CtiCCCommandExecutor::disableVarControl(long bankId,std::vector<CtiSignalMsg*>& signals, EventLogEntries &events, std::vector<CtiRequestMsg*>& requests)
+void CtiCCCommandExecutor::disableVarControl(long bankId,std::vector<CtiSignalMsg*>& signals, EventLogEntries &events, PorterRequests& requests)
 {
     string commandName = " Disable Var Control";
 
@@ -1101,7 +1117,7 @@ void CtiCCCommandExecutor::disableVarControl(long bankId,std::vector<CtiSignalMs
     events.push_back(EventLogEntry(0, capBank->getControlPointId(), spAreaId, areaId, stationId, subId, feederId, capControlEnableOvUv, seqId, 1, text, _command->getUser()));
 
     //Actual Command Work
-    CtiRequestMsg* reqMsg = NULL;
+    PorterRequest reqMsg;
 
     if ( cbc702 )
     {
@@ -1126,18 +1142,18 @@ void CtiCCCommandExecutor::disableVarControl(long bankId,std::vector<CtiSignalMs
 
         //Send point update message with new value.
         string commandString = "putvalue analog " + CtiNumStr(offset).toString() + " " + CtiNumStr((int)varValue).toString();
-        reqMsg = createPorterRequestMsg(controllerId,commandString);
+        reqMsg = createPorterRequestMsg(controllerId,commandString, RequestType::Other);
     }
     else
     {
-        reqMsg = createPorterRequestMsg(controllerId,"putconfig var disable");
+        reqMsg = createPorterRequestMsg(controllerId,"putconfig var disable", RequestType::Other);
     }
 
     reqMsg->setSOE(5);
-    requests.push_back(reqMsg);
+    requests.emplace_back(std::move(reqMsg));
 }
 
-void CtiCCCommandExecutor::enableTimeControl(long bankId,std::vector<CtiSignalMsg*>& signals, EventLogEntries &events, std::vector<CtiRequestMsg*>& requests)
+void CtiCCCommandExecutor::enableTimeControl(long bankId,std::vector<CtiSignalMsg*>& signals, EventLogEntries &events, PorterRequests& requests)
 {
     string commandName = " Enable Time Control";
     bool implemented = false;
@@ -1178,7 +1194,7 @@ void CtiCCCommandExecutor::enableTimeControl(long bankId,std::vector<CtiSignalMs
     events.push_back(EventLogEntry(0, capBank->getControlPointId(), spAreaId, areaId, stationId, subId, feederId, capControlEnableOvUv, seqId, 1, text, _command->getUser()));
 
     //Actual Command Work
-    CtiRequestMsg* reqMsg = NULL;
+    PorterRequest reqMsg;
 
     if ( cbc702 )
     {
@@ -1206,9 +1222,9 @@ void CtiCCCommandExecutor::enableTimeControl(long bankId,std::vector<CtiSignalMs
 
         //Send point update message with new value.
         string commandStringOne = "putvalue analog " + CtiNumStr(offsetOne).toString() + " " + CtiNumStr((int)seasonOneValue).toString();
-        reqMsg = createPorterRequestMsg(controllerId,commandStringOne);
+        reqMsg = createPorterRequestMsg(controllerId,commandStringOne, RequestType::Other);
         reqMsg->setSOE(5);
-        requests.push_back(reqMsg);
+        requests.emplace_back(std::move(reqMsg));
 
         int offsetTwo = 42;
         unsigned char seasonTwoValue = points.getPointValueByAttribute( Attribute::TimeTempControlSeasonTwo );
@@ -1217,18 +1233,18 @@ void CtiCCCommandExecutor::enableTimeControl(long bankId,std::vector<CtiSignalMs
         seasonTwoValue |= 0x01;
 
         string commandStringTwo = "putvalue analog " + CtiNumStr(offsetTwo).toString() + " " + CtiNumStr((int)seasonTwoValue).toString();
-        reqMsg = createPorterRequestMsg(controllerId,commandStringTwo);
+        reqMsg = createPorterRequestMsg(controllerId,commandStringTwo, RequestType::Other);
     }
     else
     {
-        reqMsg = createPorterRequestMsg(controllerId,"putconfig time enable");
+        reqMsg = createPorterRequestMsg(controllerId,"putconfig time enable", RequestType::Other);
     }
 
     reqMsg->setSOE(5);
-    requests.push_back(reqMsg);
+    requests.emplace_back(std::move(reqMsg));
 }
 
-void CtiCCCommandExecutor::disableTimeControl(long bankId,std::vector<CtiSignalMsg*>& signals, EventLogEntries &events, std::vector<CtiRequestMsg*>& requests)
+void CtiCCCommandExecutor::disableTimeControl(long bankId,std::vector<CtiSignalMsg*>& signals, EventLogEntries &events, PorterRequests& requests)
 {
     string commandName = " Disable Time Control";
     bool implemented = false;
@@ -1269,7 +1285,7 @@ void CtiCCCommandExecutor::disableTimeControl(long bankId,std::vector<CtiSignalM
     events.push_back(EventLogEntry(0, capBank->getControlPointId(), spAreaId, areaId, stationId, subId, feederId, capControlEnableOvUv, seqId, 1, text, _command->getUser()));
 
     //Actual Command Work
-    CtiRequestMsg* reqMsg = NULL;
+    PorterRequest reqMsg;
 
     if ( cbc702 )
     {
@@ -1284,9 +1300,9 @@ void CtiCCCommandExecutor::disableTimeControl(long bankId,std::vector<CtiSignalM
 
         //Send point update message with new value.
         string commandStringOne = "putvalue analog " + CtiNumStr(offsetOne).toString() + " " + CtiNumStr((int)seasonOneValue).toString();
-        reqMsg = createPorterRequestMsg(controllerId,commandStringOne);
+        reqMsg = createPorterRequestMsg(controllerId,commandStringOne, RequestType::Other);
         reqMsg->setSOE(5);
-        requests.push_back(reqMsg);
+        requests.emplace_back(std::move(reqMsg));
 
         int offsetTwo = 42;
         unsigned char seasonTwoValue = points.getPointValueByAttribute( Attribute::TimeTempControlSeasonTwo );
@@ -1295,34 +1311,34 @@ void CtiCCCommandExecutor::disableTimeControl(long bankId,std::vector<CtiSignalM
         seasonTwoValue &= 0xfe;
 
         string commandStringTwo = "putvalue analog " + CtiNumStr(offsetTwo).toString() + " " + CtiNumStr((int)seasonTwoValue).toString();
-        reqMsg = createPorterRequestMsg(controllerId,commandStringTwo);
+        reqMsg = createPorterRequestMsg(controllerId,commandStringTwo, RequestType::Other);
     }
     else
     {
-        reqMsg = createPorterRequestMsg(controllerId,"putconfig time disable");
+        reqMsg = createPorterRequestMsg(controllerId,"putconfig time disable", RequestType::Other);
     }
 
     reqMsg->setSOE(5);
-    requests.push_back(reqMsg);
+    requests.emplace_back(std::move(reqMsg));
 }
 
-void CtiCCCommandExecutor::queueCapBankTimeSyncPilMessages(CtiMultiMsg_vec& pilMessages, CapBankList capBanks)
+void CtiCCCommandExecutor::queueCapBankTimeSyncPilMessages(Cti::CapControl::PorterRequests& pilMessages, CapBankList capBanks)
 {
     static const std::string timeSyncCommand     = "putconfig timesync";
     static const std::string xcomTimeSyncCommand = "putconfig xcom timesync";
 
-    for each( CtiCCCapBankPtr capBank in capBanks )
+    for( CtiCCCapBankPtr capBank : capBanks )
     {
         int controlID = capBank->getControlDeviceId();
         if( controlID > 0 )
         {
             if(capBank->isExpresscom())
             {
-                pilMessages.push_back(createPorterRequestMsg(controlID, xcomTimeSyncCommand, _command->getUser()));
+                pilMessages.push_back(createPorterRequestMsg(controlID, xcomTimeSyncCommand, RequestType::Other, _command->getUser()));
             }
             else
             {
-                pilMessages.push_back(createPorterRequestMsg(controlID, timeSyncCommand, _command->getUser()));
+                pilMessages.push_back(createPorterRequestMsg(controlID, timeSyncCommand, RequestType::DnpTimesync, _command->getUser()));
             }
         }
     }
@@ -1336,8 +1352,7 @@ void CtiCCCommandExecutor::SendTimeSync()
     long paoId = _itemId;
     long controlID = 0;
     CtiMultiMsg* multi = new CtiMultiMsg();
-    CtiMultiMsg* multiPilMsg = new CtiMultiMsg();
-    CtiMultiMsg_vec& pilMessages = multiPilMsg->getData();
+    PorterRequests pilMessages;
     CtiMultiMsg_vec& pointChanges = multi->getData();
     EventLogEntries ccEvents;
 
@@ -1357,13 +1372,12 @@ void CtiCCCommandExecutor::SendTimeSync()
     printOutEventLogsByIdAndType(paoId, type, " Time Sync", _command->getUser(), pointChanges, ccEvents);
     queueCapBankTimeSyncPilMessages(pilMessages, capBanks);
 
-    if (multi->getCount() > 0 || multiPilMsg->getCount() > 0 )
+    if (multi->getCount() > 0 || !pilMessages.empty() )
     {
-        CtiCapController::getInstance()->confirmCapBankControl( multiPilMsg, multi );
+        CtiCapController::getInstance()->confirmCapBankControl( std::move(pilMessages), multi );
     }
     else
     {
-        delete multiPilMsg;
         delete multi;
     }
 
@@ -1416,7 +1430,7 @@ void CtiCCCommandExecutor::SendAllCapBankCommands()
     //Main work of this function, split the command to every bank attached to paoId
     std::vector<CtiSignalMsg*> signals;
     EventLogEntries events;
-    std::vector<CtiRequestMsg*> requests;
+    PorterRequests requests;
 
     // Grab the collections of banks to operate on.  If the paoType is anything other than CapBank then we need to
     //  filter out the disabled banks.  If it is an individual bank, then we do want to run the command on it, even
@@ -1532,13 +1546,13 @@ void CtiCCCommandExecutor::SendAllCapBankCommands()
 
     CtiCapController::submitEventLogEntries(events);
 
-    for each(CtiRequestMsg* message in requests)
+    for( auto& message : requests )
     {
-        CtiCapController::getInstance()->manualCapBankControl(message,NULL);
+        CtiCapController::getInstance()->manualCapBankControl(std::move(message));
     }
     requests.clear();
 
-    for each(CtiSignalMsg* message in signals)
+    for( auto message : signals )
     {
         CtiCapController::getInstance()->sendMessageToDispatch(message, CALLSITE);
     }
@@ -2048,7 +2062,7 @@ void CtiCCCommandExecutor::OpenCapBank(long bankId, bool confirmImmediately)
         // Send the activeMQ command.
         Cti::CapControl::sendCapControlOperationMessage( CapControlOperationMessage::createOpenBankMessage( bankId, CtiTime() ) );
 
-        std::unique_ptr<CtiRequestMsg> reqMsg = createBankOpenRequest(*operatingCapBank);
+        auto reqMsg = createBankOpenRequest(*operatingCapBank);
 
         reqMsg->setSOE(5);
 
@@ -2337,7 +2351,7 @@ void CtiCCCommandExecutor::CloseCapBank(long bankId, bool confirmImmediately)
         // Send the activeMQ command.
         Cti::CapControl::sendCapControlOperationMessage( CapControlOperationMessage::createCloseBankMessage( bankId, CtiTime() ) );
 
-        std::unique_ptr<CtiRequestMsg> reqMsg = createBankCloseRequest(*operatingCapBank);
+        auto reqMsg = createBankCloseRequest(*operatingCapBank);
 
         reqMsg->setSOE(5);
 
@@ -3122,7 +3136,7 @@ void CtiCCCommandExecutor::Flip7010Device()
 
     if( controlID > 0 )
     {
-        std::unique_ptr<CtiRequestMsg> reqMsg = createBankFlipRequest(*currentCapBank);
+        auto reqMsg = createBankFlipRequest(*currentCapBank);
 
         reqMsg->setSOE(5);
 
@@ -3195,9 +3209,9 @@ void CtiCCCommandExecutor::Scan2WayDevice(long bankId)
                     store->getSubBusParentInfo(currentSubstationBus, spAreaId, areaId, stationId);
                     ccEvents.push_back(EventLogEntry(0, currentCapBank->getControlPointId(), spAreaId, areaId, stationId, currentSubstationBus->getPaoId(), currentFeeder->getPaoId(), capControlManualCommand, currentSubstationBus->getEventSequence(), currentCapBank->getControlStatus(), text, _command->getUser()));
 
-                    CtiRequestMsg* reqMsg = createPorterRequestMsg(cbcID,"scan integrity");
+                    auto reqMsg = createPorterRequestMsg(cbcID,"scan integrity", RequestType::Scan);
                     reqMsg->setSOE(5);
-                    CtiCapController::getInstance()->manualCapBankControl( reqMsg, multi );
+                    CtiCapController::getInstance()->manualCapBankControl( std::move(reqMsg), multi );
 
                     CtiCapController::submitEventLogEntries(ccEvents);
                 }
@@ -3226,8 +3240,7 @@ void CtiCCCommandExecutor::ConfirmSubstationBus()
     long controlID = 0;
     bool found = false;
     CtiMultiMsg* multi = new CtiMultiMsg();
-    CtiMultiMsg* multiPilMsg = new CtiMultiMsg();
-    CtiMultiMsg_vec& pilMessages = multiPilMsg->getData();
+    PorterRequests pilMessages;
     CtiMultiMsg_vec& pointChanges = multi->getData();
     EventLogEntries ccEvents;
 
@@ -3341,7 +3354,7 @@ void CtiCCCommandExecutor::ConfirmSubstationBus()
 
                             if( controlID > 0 )
                             {
-                                std::unique_ptr<CtiRequestMsg> reqMsg;
+                                PorterRequest reqMsg;
 
                                 if (currentCapBank->getControlStatus() == CtiCCCapBank::OpenPending)
                                 {
@@ -3352,7 +3365,7 @@ void CtiCCCommandExecutor::ConfirmSubstationBus()
                                     reqMsg = createBankCloseRequest(*currentCapBank);
                                 }
                                 reqMsg->setSOE(2);
-                                pilMessages.push_back(reqMsg.release());
+                                pilMessages.emplace_back(std::move(reqMsg));
                             }
                             else
                             {
@@ -3371,12 +3384,11 @@ void CtiCCCommandExecutor::ConfirmSubstationBus()
         }
     }
 
-    if (multi->getCount() > 0 || multiPilMsg->getCount() > 0)
-        CtiCapController::getInstance()->confirmCapBankControl(multiPilMsg, multi);
+    if (multi->getCount() > 0 || !pilMessages.empty())
+        CtiCapController::getInstance()->confirmCapBankControl(std::move(pilMessages), multi);
     else
     {
         delete multi;
-        delete multiPilMsg;
     }
 
     CtiCapController::submitEventLogEntries(ccEvents);
@@ -3395,8 +3407,7 @@ void CtiCCCommandExecutor::ConfirmFeeder()
     long controlID = 0;
     bool found = false;
     CtiMultiMsg* multi = new CtiMultiMsg();
-    CtiMultiMsg* multiPilMsg = new CtiMultiMsg();
-    CtiMultiMsg_vec& pilMessages = multiPilMsg->getData();
+    PorterRequests pilMessages;
     CtiMultiMsg_vec& pointChanges = multi->getData();
     EventLogEntries ccEvents;
 
@@ -3510,7 +3521,7 @@ void CtiCCCommandExecutor::ConfirmFeeder()
 
                 if( controlID > 0 )
                 {
-                    std::unique_ptr<CtiRequestMsg> reqMsg;
+                    PorterRequest reqMsg;
 
                     if (currentCapBank->getControlStatus() == CtiCCCapBank::OpenPending)
                     {
@@ -3521,7 +3532,7 @@ void CtiCCCommandExecutor::ConfirmFeeder()
                         reqMsg = createBankCloseRequest(*currentCapBank);
                     }
                     reqMsg->setSOE(2);
-                    pilMessages.push_back(reqMsg.release());
+                    pilMessages.emplace_back(std::move(reqMsg));
                 }
                 else
                 {
@@ -3543,12 +3554,11 @@ void CtiCCCommandExecutor::ConfirmFeeder()
     }
 
 
-    if (multi->getCount() > 0 || multiPilMsg->getCount() > 0)
-        CtiCapController::getInstance()->confirmCapBankControl(multiPilMsg, multi);
+    if (multi->getCount() > 0 || !pilMessages.empty())
+        CtiCapController::getInstance()->confirmCapBankControl(std::move(pilMessages), multi);
     else
     {
         delete multi;
-        delete multiPilMsg;
     }
 
     CtiCapController::submitEventLogEntries(ccEvents);
@@ -4009,7 +4019,7 @@ void CtiCCCommandExecutor::ConfirmOpen()
 
     if( controlID > 0 )
     {
-        std::unique_ptr<CtiRequestMsg> reqMsg = createBankOpenRequest(*operatingCapBank);
+        auto reqMsg = createBankOpenRequest(*operatingCapBank);
 
         reqMsg->setSOE(5);
 
@@ -4278,7 +4288,7 @@ void CtiCCCommandExecutor::ConfirmClose()
 
     if( controlID > 0 )
     {
-        std::unique_ptr<CtiRequestMsg> reqMsg = createBankCloseRequest(*operatingCapBank);
+        auto reqMsg = createBankCloseRequest(*operatingCapBank);
 
         reqMsg->setSOE(5);
 

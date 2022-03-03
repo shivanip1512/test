@@ -1,5 +1,9 @@
 package com.cannontech.message.dispatch.message;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.junit.jupiter.api.Assertions.fail;
+
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
@@ -9,8 +13,7 @@ import java.time.LocalDateTime;
 import java.time.ZoneOffset;
 import java.util.Date;
 
-import org.junit.Assert;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 import com.cannontech.common.point.PointQuality;
 import com.cannontech.database.data.point.PointType;
@@ -46,7 +49,7 @@ public class PointDataTest {
         try (ObjectOutputStream oos = new ObjectOutputStream(os)) {
             oos.writeObject(original);
         } catch (IOException e) {
-            Assert.fail(e.toString());
+            fail(e.toString());
         }
         
         ByteArrayInputStream is = new ByteArrayInputStream(os.toByteArray());
@@ -54,16 +57,16 @@ public class PointDataTest {
         try (ObjectInputStream ois = new ObjectInputStream(is)) {
             Object obj = ois.readObject();
 
-            Assert.assertTrue(obj instanceof PointData);
+            assertTrue(obj instanceof PointData);
             
             PointData reconstituted = (PointData)obj;
             
-            Assert.assertEquals(original, obj);
+            assertEquals(original, obj);
             
-            Assert.assertEquals(original.getSource(), reconstituted.getSource());
-            Assert.assertEquals(original.getTrackingId(), reconstituted.getTrackingId());
+            assertEquals(original.getSource(), reconstituted.getSource());
+            assertEquals(original.getTrackingId(), reconstituted.getTrackingId());
         } catch (ClassNotFoundException|IOException e) {
-            Assert.fail(e.toString());
+            fail(e.toString());
         }
     }
 }

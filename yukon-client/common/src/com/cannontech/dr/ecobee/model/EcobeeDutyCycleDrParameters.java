@@ -1,28 +1,34 @@
 package com.cannontech.dr.ecobee.model;
 
+import java.io.Serializable;
+
 import org.joda.time.Instant;
 
 /**
  * Contains all parameters required to initiate a duty cycle demand response event in Ecobee.
  */
-public final class EcobeeDutyCycleDrParameters {
+public final class EcobeeDutyCycleDrParameters implements Serializable {
+    private final int programId;
     private final Instant startTime;
     private final Instant endTime;
     private final int dutyCyclePercent;
-    private final boolean rampIn;
-    private final boolean rampOut;
-    private final boolean isOptional;
+    private final int randomTimeSeconds;
+    private final boolean isMandatory;
     private final int groupId;
-    
-    public EcobeeDutyCycleDrParameters(Instant startTime, Instant endTime, int dutyCyclePercent, boolean rampIn, 
-                                       boolean rampOut, boolean isOptional, int groupId) {
+
+    public EcobeeDutyCycleDrParameters(int programId, Instant startTime, Instant endTime, int dutyCyclePercent,
+            int randomTimeSeconds, boolean isMandatory, int groupId) {
+        this.programId = programId;
         this.startTime = startTime;
         this.endTime = endTime;
         this.dutyCyclePercent = dutyCyclePercent;
-        this.rampIn = rampIn;
-        this.rampOut = rampOut;
+        this.randomTimeSeconds = randomTimeSeconds;
+        this.isMandatory = isMandatory;
         this.groupId = groupId;
-        this.isOptional = isOptional;
+    }
+
+    public int getProgramId() {
+        return programId;
     }
 
     public Instant getStartTime() {
@@ -37,19 +43,16 @@ public final class EcobeeDutyCycleDrParameters {
         return dutyCyclePercent;
     }
 
-    public boolean isRampIn() {
-        return rampIn;
+    public int getRandomTimeSeconds() {
+        return randomTimeSeconds;
     }
 
-    public boolean isRampOut() {
-        return rampOut;
-    }
-    
-    public boolean isOptional() {
-        return isOptional;
+    public boolean isMandatory() {
+        return isMandatory;
     }
 
     public int getGroupId() {
         return groupId;
     }
+
 }

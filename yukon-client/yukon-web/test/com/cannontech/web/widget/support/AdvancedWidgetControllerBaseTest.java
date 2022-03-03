@@ -1,7 +1,8 @@
 package com.cannontech.web.widget.support;
 
-import org.junit.Assert;
-import org.junit.Test;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+
+import org.junit.jupiter.api.Test;
 import org.springframework.core.annotation.AnnotationUtils;
 import org.springframework.stereotype.Controller;
 
@@ -25,8 +26,7 @@ public class AdvancedWidgetControllerBaseTest {
     
     private void assertNoControllerAnnotation(Class<? extends AdvancedWidgetControllerBase> clazz) {
         Controller annotation = AnnotationUtils.findAnnotation(clazz, Controller.class);
-        Assert.assertNotNull("AdvancedWidgetControllers should have @Controller. Found annotation on " + clazz.getName(),
-                          annotation);
+        assertNotNull(annotation, "AdvancedWidgetControllers should have @Controller. Found annotation on " + clazz.getName());
     }
     
 }

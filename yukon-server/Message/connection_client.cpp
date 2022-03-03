@@ -40,7 +40,7 @@ struct InsideScope
 } // anonymous
 
 
-static std::atomic<long> clientConnectionCount = 0;
+static std::atomic_size_t clientConnectionCount = 0;
 
 /**
  * class constructor
@@ -148,10 +148,7 @@ bool CtiClientConnection::establishConnection()
                 // start connection to the broker, throws ConnectionException
                 _connection->start();
 
-                if( getDebugLevel() & DEBUGLEVEL_CONNECTION )
-                {
-                    CTILOG_DEBUG(dout, who() << " - connected to the broker");
-                }
+                CTILOG_DEBUG(dout, who() << " - connected to the broker");
 
                 _sessionIn  = _connection->createSession();
                 _sessionOut = _connection->createSession();
@@ -173,10 +170,7 @@ bool CtiClientConnection::establishConnection()
 
                     handshakeProducer.send( outMessage.get() );
 
-                    if( getDebugLevel() & DEBUGLEVEL_CONNECTION )
-                    {
-                        CTILOG_DEBUG(dout, who() << " - waiting for server reply.");
-                    }
+                    CTILOG_DEBUG(dout, who() << " - waiting for server reply.");
 
                     // We should block here until the delay expires or until the connection is closed
                     unique_ptr<cms::Message> inMessage( _consumer->receive( receiveMillis ));
@@ -309,6 +303,14 @@ void CtiClientConnection::abortConnection()
 }
 
 /**
+* Indicates whether the connection was re-established internally
+*/
+bool CtiClientConnection::hasReconnected()
+{
+    return _reconnected.exchange(false);
+}
+
+/**
  * send registration messages, if the connection was previously registered
  */
 void CtiClientConnection::writeRegistration()
@@ -317,10 +319,7 @@ void CtiClientConnection::writeRegistration()
     {
         if( _regMsg.get() ) // I know who I am....
         {
-            if( getDebugLevel() & DEBUGLEVEL_CONNECTION )
-            {
-                CTILOG_DEBUG(dout, who() << " - re-registering connection.");
-            }
+            CTILOG_DEBUG(dout, who() << " - re-registering connection.");
 
             sendMessage( *_regMsg );
 
@@ -328,6 +327,10 @@ void CtiClientConnection::writeRegistration()
             {
                 sendMessage( *_ptRegMsg );
             }
+
+            _reconnected.store(true);
+
+            CTILOG_DEBUG(dout, who() << " - indicating reconnection.");
         }
     }
     catch( cms::CMSException& e )
@@ -342,18 +345,24 @@ void CtiClientConnection::writeRegistration()
  * copy and save a registration message
  * @param msg reference to the message to save
  */
-void CtiClientConnection::recordRegistration( const CtiMessage& msg )
+void CtiClientConnection::recordRegistration( const CtiRegistrationMsg& msg )
 {
-    _regMsg.reset( dynamic_cast<CtiRegistrationMsg*>( msg.replicateMessage() ));
+    _regMsg = std::make_unique<CtiRegistrationMsg>(msg);
 }
 
 /**
  * copy and save a point registration message
  * @param msg reference to the message to save
  */
-void CtiClientConnection::recordPointRegistration( const CtiMessage& msg )
+void CtiClientConnection::recordPointRegistration( const CtiPointRegistrationMsg& msg )
 {
-    _ptRegMsg.reset( dynamic_cast<CtiPointRegistrationMsg*>( msg.replicateMessage() ));
+    //  Do not record incremental diff changes, since they are not valid to send alone
+    if( msg.isAddingPoints() ||
+        msg.isRemovingPoints() )
+    {
+        return;
+    }
+    _ptRegMsg = std::make_unique<CtiPointRegistrationMsg>(msg);
 }
 
 /**
@@ -368,21 +377,28 @@ void CtiClientConnection::messagePeek( const CtiMessage& msg )
         {
             case MSG_REGISTER:
             {
-                recordRegistration( msg );
+                if( auto regMsg = dynamic_cast<const CtiRegistrationMsg*>(&msg) )
+                {
+                    recordRegistration(*regMsg);
+                }
                 break;
             }
             case MSG_POINTREGISTRATION:
             {
-                recordPointRegistration( msg );
+                if( auto ptRegMsg = dynamic_cast<const CtiPointRegistrationMsg*>(&msg) )
+                {
+                    recordPointRegistration(*ptRegMsg);
+                }
                 break;
             }
             case MSG_MULTI:
             {
-                const CtiMultiMsg& pMulti = dynamic_cast<const CtiMultiMsg&>( msg );
-
-                for(int i = 0; i < pMulti.getCount() && i < 3; i++)    // Only look at the first three entries
+                if( auto pMulti = dynamic_cast<const CtiMultiMsg*>(&msg) )
                 {
-                    messagePeek( *pMulti.getData()[i] );               // recurse.
+                    for( int i = 0; i < pMulti->getCount() && i < 3; i++ )    // Only look at the first three entries
+                    {
+                        messagePeek(*pMulti->getData()[i]);               // recurse.
+                    }
                 }
                 break;
             }

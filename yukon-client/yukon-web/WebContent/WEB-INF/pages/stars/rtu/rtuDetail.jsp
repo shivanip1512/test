@@ -38,7 +38,7 @@
                     <cm:dropdownOption key="yukon.web.components.button.otherActions.label" href="${url}" icon="icon-cog-go"/>
                 </cti:displayForPageEditModes>
                 <li class="divider"></li>
-                <cm:dropdownOption icon="icon-cross" key="yukon.web.components.button.delete.label" classes="js-hide-dropdown"
+                <cm:dropdownOption icon="icon-delete" key="yukon.web.components.button.delete.label" classes="js-hide-dropdown"
                                     id="delete-option" data-ok-event="yukon:rtu:delete"/>
                 <d:confirm on="#delete-option" nameKey="confirmDelete" argument="${rtu.name}" />
                 <cti:url var="deleteUrl" value="/stars/rtu/delete" />
@@ -222,7 +222,7 @@
                 </cti:checkRolesAndProperties>
                 <c:if test="${isPointCreate}">
                     <div class="stacked-lg">
-                        <span class="fr"><i:inline key=".rtuPoints"/><tags:pointCreation paoId="${rtu.id}" buttonClasses="vam"/></span>
+                        <span class="fr"><i:inline key=".rtuPoints"/><tags:pointCreation paoId="${rtu.id}" buttonClasses="vam MB10"/></span>
                     </div>
                     <hr>
                 </c:if>

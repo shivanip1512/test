@@ -452,6 +452,20 @@ void CtiLMEnergyExchangeOfferRevision::restoreDynamicData()
     }
 }
 
+std::size_t CtiLMEnergyExchangeOfferRevision::getMemoryConsumption() const
+{
+    std::size_t sz = sizeof( *this )
+        +   dynamic_sizeof( _additionalinfo )
+        +   _lmenergyexchangehourlyoffers.capacity() * sizeof( CtiLMEnergyExchangeHourlyOffer* );
+
+    for ( const auto & offer : _lmenergyexchangehourlyoffers )
+    {
+        sz += offer->getMemoryConsumption();
+    }
+
+    return sz;
+}
+
 // Static Members
 
 // Possible  statuses

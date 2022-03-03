@@ -44,9 +44,9 @@ Mct440HolidaysCommand::Mct440HolidaysCommand(const CtiTime Now, const std::set<C
         {
             throw CommandException(
                ClientErrors::BadParameter,
-               "Invalid holiday (" + holiday.asStringUSFormat() + "),"
-                   " must be after " + Today.asStringUSFormat() +
-                   " and before " + NextYear.asStringUSFormat());
+               "Invalid holiday (" + holiday.asStringMDY() + "),"
+                   " must be after " + Today.asStringMDY() +
+                   " and before " + NextYear.asStringMDY());
         }
 
         _holidays.insert(holiday);
@@ -110,7 +110,7 @@ DlcCommand::request_ptr Mct440HolidaysCommand::decodeCommand(const CtiTime now, 
 
                     holiday_date += days;
 
-                    ss << holiday_date.asStringUSFormat() + "\n";
+                    ss << holiday_date.asStringMDY() + "\n";
                 }
             }
 

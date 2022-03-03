@@ -38,14 +38,16 @@ protected:
 
     std::string decodeHeader             ( const Bytes &response );
     std::string decodeMetricsIds         ( const Bytes &response );
-    std::string decodeChannelDescriptors ( const Bytes &response );
+
+    std::string decodeActiveChannelDescriptors ( const Bytes &response );
+    std::string decodeAllChannelDescriptors ( const Bytes &response );
+    std::string decodeChannelDescriptors ( const Bytes &response, const unsigned count_fieldLength );
 };
 
 /**
  * Channel Selection Configuration Command
  */
-class IM_EX_DEVDB RfnChannelSelectionCommand : public RfnChannelConfigurationCommand,
-       InvokerFor<RfnChannelSelectionCommand>
+class IM_EX_DEVDB RfnChannelSelectionCommand : public RfnChannelConfigurationCommand
 {
     enum
     {
@@ -65,13 +67,15 @@ protected:
     {
         Operation_SetChannelSelectionConfiguration  = 0x00,
         Operation_GetChannelSelectionConfiguration  = 0x01,
-        Operation_GetChannelSelectionActiveChannels = 0x02
+        Operation_GetChannelSelectionActiveChannels = 0x02,
+        Operation_GetChannelSelectionAvailableChannels = 0x03
     };
 
     enum
     {
         TlvType_ChannelSelection_Configuration  = 0x01,
-        TlvType_ChannelSelection_ActiveChannels = 0x02
+        TlvType_ChannelSelection_ActiveChannels = 0x02,
+        TlvType_ChannelSelection_AvailableChannels = 0x03
     };
 
     RfnChannelSelectionCommand() = default;
@@ -88,7 +92,8 @@ public:
 /**
  * Set Channel Selection Configuration Command
  */
-class IM_EX_DEVDB RfnSetChannelSelectionCommand : public RfnChannelSelectionCommand
+class IM_EX_DEVDB RfnSetChannelSelectionCommand : public RfnChannelSelectionCommand,
+       InvokerFor<RfnSetChannelSelectionCommand>
 {
     Bytes _setChannelSelectionTlvPayload;
 
@@ -105,7 +110,8 @@ public:
 /**
  * Get Channel Selection Configuration Command
  */
-class IM_EX_DEVDB RfnGetChannelSelectionCommand : public RfnChannelSelectionCommand
+class IM_EX_DEVDB RfnGetChannelSelectionCommand : public RfnChannelSelectionCommand,
+       InvokerFor<RfnGetChannelSelectionCommand>
 {
     unsigned char getOperation() const;
 
@@ -115,7 +121,19 @@ class IM_EX_DEVDB RfnGetChannelSelectionCommand : public RfnChannelSelectionComm
 /**
  * Get Full Channel Registration Description Command
  */
-class IM_EX_DEVDB RfnGetChannelSelectionFullDescriptionCommand : public RfnChannelSelectionCommand
+class IM_EX_DEVDB RfnGetChannelSelectionFullDescriptionCommand : public RfnChannelSelectionCommand,
+       InvokerFor<RfnGetChannelSelectionFullDescriptionCommand>
+{
+    unsigned char getOperation() const;
+
+    virtual unsigned char getExpectedTlvType() const;
+};
+
+/**
+ * Get All Available Channel Command
+ */
+class IM_EX_DEVDB RfnGetChannelSelectionAllAvailableCommand : public RfnChannelSelectionCommand,
+       InvokerFor<RfnGetChannelSelectionAllAvailableCommand>
 {
     unsigned char getOperation() const;
 

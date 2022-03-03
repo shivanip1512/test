@@ -3,19 +3,22 @@
 <!-- KEEP ALPHABETIZED BY KEY -->
 <properties>
 <entry key="yukon.common.add">Add</entry>
-<entry key="yukon.common.address">Address</entry>
+<entry key="yukon.common.addressSerial">Address/Serial</entry>
 <entry key="yukon.common.actions">Actions</entry>
 <entry key="yukon.common.all">All</entry>
 <entry key="yukon.common.allGroups">All Groups</entry>
+<entry key="yukon.common.allTypes">All Types</entry>
 <entry key="yukon.common.always">Always</entry>
 <entry key="yukon.common.assigned">Assigned</entry>
 <entry key="yukon.common.assignments">Assignments</entry>
 <entry key="yukon.common.attribute">Attribute</entry>
+<entry key="yukon.common.attributes">Attributes</entry>
 <entry key="yukon.common.attribute.select">Select Attribute</entry>
 <entry key="yukon.common.attribute.select.multi">Select Attribute(s)</entry>
 <entry key="yukon.common.attributeGroups.BLINK_AND_OUTAGE">Blink &amp; Outage</entry>
 <entry key="yukon.common.attributeGroups.CAPCONTROL">CapControl</entry>
 <entry key="yukon.common.attributeGroups.CURRENT">Current</entry>
+<entry key="yukon.common.attributeGroups.CUSTOM">Custom</entry>
 <entry key="yukon.common.attributeGroups.DEMAND">Demand</entry>
 <entry key="yukon.common.attributeGroups.ITRON">Itron</entry>
 <entry key="yukon.common.attributeGroups.OTHER">Other</entry>
@@ -52,6 +55,7 @@
 <entry key="yukon.common.available">Available</entry>
 <entry key="yukon.common.blank"></entry>
 <entry key="yukon.common.cancel">Cancel</entry>
+<entry key="yukon.common.cancelChanges">Cancel changes</entry>
 <entry key="yukon.common.celsius">°C</entry>
 <entry key="yukon.common.choose">Choose</entry>
 <entry key="yukon.common.chooseAccountNumbers">Choose Account Numbers</entry>
@@ -79,14 +83,17 @@
 <entry key="yukon.common.copy.prefix">Copy of</entry>
 <entry key="yukon.common.copy.suffix"> - Copy</entry>
 <entry key="yukon.common.create">Create</entry>
+<entry key="yukon.common.createPoint">Create Point</entry>
 <entry key="yukon.common.csv">CSV</entry>
 <entry key="yukon.common.dashes">---</entry>
 <entry key="yukon.common.dashesTwo">--</entry>
 <entry key="yukon.common.date">Date</entry>
 <entry key="yukon.common.dateRange">Date Range</entry>
+<entry key="yukon.common.dateTime">Date/Time</entry>
 <entry key="yukon.common.day">Day</entry>
 <entry key="yukon.common.default">(default)</entry>
 <entry key="yukon.common.degree">°</entry>
+<entry key="yukon.common.delete">Delete</entry>
 <entry key="yukon.common.deviceCount">Device Count</entry>
 <entry key="yukon.common.details">Details</entry>
 <entry key="yukon.common.decimalSeparator">.</entry>
@@ -117,6 +124,7 @@
 <entry key="yukon.common.distance.NAUTICAL_MILES">n.m.</entry>
 <entry key="yukon.common.download">Download</entry>
 <entry key="yukon.common.edit">Edit</entry>
+<entry key="yukon.common.editWithName">Edit {0}</entry>
 <entry key="yukon.common.email">Email</entry>
 <entry key="yukon.common.email.address">Email Address</entry>
 <entry key="yukon.common.email.send">Send Email</entry>
@@ -160,6 +168,7 @@
 <entry key="yukon.common.hours">Hours</entry>
 <entry key="yukon.common.html">HTML</entry>
 <entry key="yukon.common.instructions">Instructions</entry>
+<entry key="yukon.common.interval">Interval</entry>
 <entry key="yukon.common.invalidCron">Invalid Cron Expression</entry>
 <entry key="yukon.common.ipaddress">IP Address</entry>
 <entry key="yukon.common.inProgress">In Progress</entry>
@@ -184,20 +193,26 @@
 <entry key="yukon.common.mailEncryptionType.NONE">None</entry>
 <entry key="yukon.common.mailEncryptionType.SSL">SSL</entry>
 <entry key="yukon.common.mailEncryptionType.TLS">TLS</entry>
+<entry key="yukon.common.manufacturer">Manufacturer</entry>
 <entry key="yukon.common.mapDevices">Map Devices</entry>
 <entry key="yukon.common.max">Max</entry>
 <entry key="yukon.common.meterGroups.MCT">MCT</entry>
 <entry key="yukon.common.meterGroups.RF_MESH">RF Mesh</entry>
+<entry key="yukon.common.meterGroups.VIRTUAL">VIRTUAL</entry>
 <entry key="yukon.common.meterGroups.ELECTRONIC">Electronic Meters</entry>
+<entry key="yukon.common.meterNumber">Meter Number</entry>
 <entry key="yukon.common.min">Min</entry>
 <entry key="yukon.common.minuteAbbreviation">{0} min</entry>
 <entry key="yukon.common.minutes">Minutes</entry>
+<entry key="yukon.common.model">Model</entry>
 <entry key="yukon.common.month">Month</entry>
 <entry key="yukon.common.more">more</entry>
 <entry key="yukon.common.moreInfoSuffix">…</entry>
 <entry key="yukon.common.na">N/A</entry>
 <entry key="yukon.common.name">Name</entry>
 <entry key="yukon.common.networkManager">Network Manager</entry>
+<entry key="yukon.common.never">Never</entry>
+<entry key="yukon.common.new">New</entry>
 <entry key="yukon.common.no">No</entry>
 <entry key="yukon.common.noDevices">(No Devices Selected)</entry>
 <entry key="yukon.common.none">None</entry>
@@ -211,6 +226,7 @@
 <entry key="yukon.common.okButton">OK</entry>
 <entry key="yukon.common.on">On</entry>
 <entry key="yukon.common.or">or</entry>
+<entry key="yukon.common.otherActions">Other Actions</entry>
 <entry key="yukon.common.operationSuccess">Operation Successful</entry>
 <entry key="yukon.common.pageTitle">Energy Services Operations Center</entry>
 <entry key="yukon.common.pao.info.error.name.required">Name is required.</entry>
@@ -228,6 +244,7 @@
 <entry key="yukon.common.phase.B">B</entry>
 <entry key="yukon.common.phase.C">C</entry>
 <entry key="yukon.common.pleaseSelect">Please select</entry>
+<entry key="yukon.common.plusMore">(+{0} more)</entry>
 <entry key="yukon.common.point">Point</entry>
 <entry key="yukon.common.pointName">Point Name</entry>
 <entry key="yukon.common.pointOffset">Point Offset</entry>
@@ -262,16 +279,19 @@
 <entry key="yukon.common.search.noResultsFound">No results found.</entry>
 <entry key="yukon.common.search.placeholder">search</entry>
 <entry key="yukon.common.selectall">Select All</entry>
+<entry key="yukon.common.selectDateRange">Select Date Range</entry>
 <entry key="yukon.common.selectGroup">Select Device Group</entry>
 <entry key="yukon.common.selectGroup.more">and {0} more</entry>
 <entry key="yukon.common.selectGroup.title">Select Device Group</entry>
 <entry key="yukon.common.selectGroups">Select Device Group(s)</entry>
 <entry key="yukon.common.selectGroups.title">Select Device Group(s)</entry>
 <entry key="yukon.common.selector.selectOne">-- Select One --</entry>
+<entry key="yukon.common.selectPointTypes">Select Point Type(s)</entry>
 <entry key="yukon.common.sendCommand">Send Command</entry>
 <entry key="yukon.common.settings">Settings</entry>
 <entry key="yukon.common.serialNumber">Serial Number</entry>
 <entry key="yukon.common.showAll">Show All</entry>
+<entry key="yukon.common.specified">Specified</entry>
 <entry key="yukon.common.status">Status</entry>
 <entry key="yukon.common.start">Start</entry>
 <entry key="yukon.common.stop">Stop</entry>
@@ -284,6 +304,7 @@
 <entry key="yukon.common.thermostat.mode.HEAT">Heat</entry>
 <entry key="yukon.common.thermostat.mode.OFF">Off</entry>
 <entry key="yukon.common.thousandSeparator">,</entry>
+<entry key="yukon.common.time">Time</entry>
 <entry key="yukon.common.timeOffset">Time Offset</entry>
 <entry key="yukon.common.timeOffsetChoose">Choose Time Offset</entry>
 <entry key="yukon.common.timeOffsetMinError">Time Offset must be greater than or equal to {0}</entry>
@@ -351,6 +372,7 @@
 <entry key="yukon.common.unavailable">Unavailable</entry>
 <entry key="yukon.common.unknown">Unknown</entry>
 <entry key="yukon.common.value">Value/State</entry>
+<entry key="yukon.common.valueTxt">Value</entry>
 <entry key="yukon.common.view">view</entry>
 <entry key="yukon.common.viewAll">View All</entry>
 <entry key="yukon.common.viewDetails">View Details</entry>
@@ -360,4 +382,34 @@
 <entry key="yukon.common.weekend">Weekend</entry>
 <entry key="yukon.common.year">Year</entry>
 <entry key="yukon.common.yes">Yes</entry>
+<entry key="yukon.common.units.ms">ms</entry>
+<entry key="yukon.common.units.sec">sec</entry>
+
+<entry key="yukon.common.save.success">{0} saved successfully.</entry>
+<entry key="yukon.common.delete.success">{0} deleted successfully.</entry>
+
+
+<entry key="yukon.common.color.BLACK">Black</entry>
+<entry key="yukon.common.color.BLUE">Blue</entry>
+<entry key="yukon.common.color.BLUE_LIGHT">Light Blue</entry>
+<entry key="yukon.common.color.BLUE_DARK">Dark Blue</entry>
+<entry key="yukon.common.color.EMERALD">Emerald</entry>
+<entry key="yukon.common.color.GREEN">Green</entry>
+<entry key="yukon.common.color.GREEN_LIGHT">Light Green</entry>
+<entry key="yukon.common.color.GRAY">Gray</entry>
+<entry key="yukon.common.color.GRAY_LIGHT">Light Gray</entry>
+<entry key="yukon.common.color.NAVY">Navy</entry>
+<entry key="yukon.common.color.ORANGE">Orange</entry>
+<entry key="yukon.common.color.PINK">Pink</entry>
+<entry key="yukon.common.color.PURPLE">Purple</entry>
+<entry key="yukon.common.color.RED">Bright Red</entry>
+<entry key="yukon.common.color.RED_LIGHT">Light Red</entry>
+<entry key="yukon.common.color.SAGE">Sage</entry>
+<entry key="yukon.common.color.SILVER">Silver</entry>
+<entry key="yukon.common.color.SKY">Sky</entry>
+<entry key="yukon.common.color.TEAL">Teal</entry>
+<entry key="yukon.common.color.WHITE">White</entry>
+<entry key="yukon.common.color.WINE">Red</entry>  <!-- The Wine color is what will be presented to users as their option of a "red" color, so calling this Red. -->
+<entry key="yukon.common.color.YELLOW">Yellow</entry>
+
 </properties>

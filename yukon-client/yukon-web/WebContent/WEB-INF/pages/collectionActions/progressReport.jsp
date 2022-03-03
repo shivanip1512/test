@@ -21,7 +21,7 @@
     <c:forEach var="detail" items="${details}">
         <cti:msg2 var="detailText" key="${detail.formatKey}"/>
         <input type="hidden" id="detail-${detail}" value="${detailText}"/>
-        <input type="hidden" id="color-${detail}" value="${detail.color}"/>
+        <input type="hidden" id="color-${detail}" value="${detail.colorHex}"/>
     </c:forEach>
     <c:forEach var="executionStatus" items="${status}">
         <cti:msg2 var="statusText" key="${executionStatus.formatKey}"/>
@@ -61,7 +61,7 @@
                             <cti:param name="${cp.key}" value="${cp.value}"/>
                         </c:forEach>
                     </cti:url>
-                    <cm:dropdownOption icon="icon-map-sat" key=".mapDevices" href="${mapDevicesUrl}" newTab="true"/>
+                    <cm:dropdownOption icon="icon-map" key=".mapDevices" href="${mapDevicesUrl}" newTab="true"/>
                     <cti:url var="readAttributeUrl" value="/group/groupMeterRead/homeCollection">
                         <c:forEach items="${result.inputs.collection.collectionParameters}" var="cp">
                             <cti:param name="${cp.key}" value="${cp.value}"/>
@@ -108,8 +108,8 @@
     <tags:sectionContainer2 nameKey="results" helpText="${helpText}" controls="${controls}">
         <div class="buffered progress-lg">
             <span class="name"><i:inline key="yukon.common.progress"/>:&nbsp;</span>
-            <div class="progress dib vam js-progress">
-                <div class="progress-bar progress-bar-info progress-bar-striped active"
+            <div class="progress dif vam js-progress">
+                <div class="progress-bar progress-bar-info progress-bar-striped progress-bar-animated"
                      role="progressbar" aria-valuenow="60" aria-valuemin="0" aria-valuemax="100"></div>
             </div>
             <span class="js-percent-text"></span>

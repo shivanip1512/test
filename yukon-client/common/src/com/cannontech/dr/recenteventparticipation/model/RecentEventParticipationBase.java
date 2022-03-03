@@ -7,12 +7,14 @@ public abstract class RecentEventParticipationBase {
     private final String programName;
     private final String groupName;
     private final Instant startTime;
+    private final String externalEventId;
 
-    public RecentEventParticipationBase(int controlEventId, String programName, String groupName, Instant startTime) {
+    public RecentEventParticipationBase(int controlEventId, String programName, String groupName, Instant startTime, String externalEventId) {
         this.controlEventId = controlEventId;
         this.programName = programName;
         this.groupName = groupName;
         this.startTime = startTime;
+        this.externalEventId = externalEventId;
     }
 
     public String getProgramName() {
@@ -29,6 +31,10 @@ public abstract class RecentEventParticipationBase {
 
     public int getControlEventId() {
         return controlEventId;
+    }
+
+    public String getExternalEventId() {
+        return externalEventId;
     }
 
 }

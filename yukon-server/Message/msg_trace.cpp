@@ -90,3 +90,9 @@ CtiTraceMsg& CtiTraceMsg::setEnd(bool nd)
     return *this;
 }
 
+std::size_t CtiTraceMsg::getVariableSize() const
+{
+    return  Inherited::getVariableSize()
+        +   dynamic_sizeof( _trace );
+}
+

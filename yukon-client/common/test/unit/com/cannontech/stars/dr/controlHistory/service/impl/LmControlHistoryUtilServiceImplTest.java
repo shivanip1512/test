@@ -1,8 +1,9 @@
 package com.cannontech.stars.dr.controlHistory.service.impl;
 
-import java.util.List;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.fail;
 
-import junit.framework.Assert;
+import java.util.List;
 
 import org.joda.time.DateTimeZone;
 import org.joda.time.Duration;
@@ -10,7 +11,7 @@ import org.joda.time.Instant;
 import org.joda.time.ReadableInstant;
 import org.joda.time.format.DateTimeFormat;
 import org.joda.time.format.DateTimeFormatter;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 import com.cannontech.common.util.CtiUtilities;
 import com.cannontech.database.data.lite.LiteBase;
@@ -699,7 +700,7 @@ public class LmControlHistoryUtilServiceImplTest {
         Duration summaryDuration = 
             LmControlHistoryUtilServiceImpl.calculateSummaryControlValueForPeriod(observedControlHistory.getControlHistoryList(), summaryStartDate);
         
-        Assert.assertEquals(summaryDuration, Duration.standardMinutes(25));
+        assertEquals(summaryDuration, Duration.standardMinutes(25));
     }
 
     /**
@@ -716,7 +717,7 @@ public class LmControlHistoryUtilServiceImplTest {
         Duration summaryDuration = 
             LmControlHistoryUtilServiceImpl.calculateSummaryControlValueForPeriod(observedControlHistory.getControlHistoryList(), summaryStartDate);
         
-        Assert.assertEquals(summaryDuration, Duration.standardMinutes(30));
+        assertEquals(summaryDuration, Duration.standardMinutes(30));
     }
 
     /**
@@ -733,7 +734,7 @@ public class LmControlHistoryUtilServiceImplTest {
         Duration summaryDuration = 
             LmControlHistoryUtilServiceImpl.calculateSummaryControlValueForPeriod(observedControlHistory.getControlHistoryList(), summaryStartDate);
         
-        Assert.assertEquals(summaryDuration, Duration.standardHours(1).plus(Duration.standardMinutes(15)));
+        assertEquals(summaryDuration, Duration.standardHours(1).plus(Duration.standardMinutes(15)));
     }
 
     /**
@@ -750,7 +751,7 @@ public class LmControlHistoryUtilServiceImplTest {
         Duration summaryDuration = 
             LmControlHistoryUtilServiceImpl.calculateSummaryControlValueForPeriod(observedControlHistory.getControlHistoryList(), summaryStartDate);
         
-        Assert.assertEquals(summaryDuration, Duration.standardHours(1).plus(Duration.standardMinutes(30)));
+        assertEquals(summaryDuration, Duration.standardHours(1).plus(Duration.standardMinutes(30)));
     }
 
     /**
@@ -767,7 +768,7 @@ public class LmControlHistoryUtilServiceImplTest {
         Duration summaryDuration = 
             LmControlHistoryUtilServiceImpl.calculateSummaryControlValueForPeriod(observedControlHistory.getControlHistoryList(), summaryStartDate);
         
-        Assert.assertEquals(summaryDuration, Duration.standardHours(5));
+        assertEquals(summaryDuration, Duration.standardHours(5));
     }
 
     /**
@@ -784,7 +785,7 @@ public class LmControlHistoryUtilServiceImplTest {
         Duration summaryDuration = 
             LmControlHistoryUtilServiceImpl.calculateSummaryControlValueForPeriod(observedControlHistory.getControlHistoryList(), summaryStartDate);
         
-        Assert.assertEquals(summaryDuration, Duration.standardHours(23).plus(Duration.standardMinutes(30)));
+        assertEquals(summaryDuration, Duration.standardHours(23).plus(Duration.standardMinutes(30)));
     }
 
     /**
@@ -801,7 +802,7 @@ public class LmControlHistoryUtilServiceImplTest {
         Duration summaryDuration = 
             LmControlHistoryUtilServiceImpl.calculateSummaryControlValueForPeriod(observedControlHistory.getControlHistoryList(), summaryStartDate);
         
-        Assert.assertEquals(summaryDuration, Duration.standardHours(25).plus(Duration.standardMinutes(30)));
+        assertEquals(summaryDuration, Duration.standardHours(25).plus(Duration.standardMinutes(30)));
     }
 
     /**
@@ -818,7 +819,7 @@ public class LmControlHistoryUtilServiceImplTest {
         Duration summaryDuration = 
             LmControlHistoryUtilServiceImpl.calculateSummaryControlValueForPeriod(observedControlHistory.getControlHistoryList(), summaryStartDate);
         
-        Assert.assertEquals(summaryDuration, Duration.standardHours(26).plus(Duration.standardMinutes(30)));
+        assertEquals(summaryDuration, Duration.standardHours(26).plus(Duration.standardMinutes(30)));
     }
 
     
@@ -846,7 +847,7 @@ public class LmControlHistoryUtilServiceImplTest {
         checkControlHistoryEntryStartAndStopDates(controlHistoryResultEntry,
                                                   controlHistoryOne.getStartInstant(),
                                                   controlHistoryOne.getEndInstant());
-        Assert.assertEquals(controlHistoryResultEntry.getControlDuration(), 
+        assertEquals(controlHistoryResultEntry.getControlDuration(), 
                             Duration.standardHours(4));
     }
     
@@ -875,7 +876,7 @@ public class LmControlHistoryUtilServiceImplTest {
         checkControlHistoryEntryStartAndStopDates(controlHistoryResultEntry,
                                                   controlHistoryOne.getStartInstant(),
                                                   controlHistoryOne.getEndInstant());
-        Assert.assertEquals(controlHistoryResultEntry.getControlDuration(), 
+        assertEquals(controlHistoryResultEntry.getControlDuration(), 
                             Duration.standardHours(4));
     }
 
@@ -902,7 +903,7 @@ public class LmControlHistoryUtilServiceImplTest {
         checkControlHistoryEntryStartAndStopDates(controlHistoryResultEntry,
                                                   controlHistoryTwo.getStartInstant(),
                                                   enrollmentTwo.getGroupEnrollStop());
-        Assert.assertEquals(controlHistoryResultEntry.getControlDuration(), 
+        assertEquals(controlHistoryResultEntry.getControlDuration(), 
                             Duration.standardHours(2));
     }
     
@@ -930,7 +931,7 @@ public class LmControlHistoryUtilServiceImplTest {
         checkControlHistoryEntryStartAndStopDates(controlHistoryResultEntry,
                                                   enrollmentOne.getGroupEnrollStart(),
                                                   controlHistoryThree.getEndInstant());
-        Assert.assertEquals(controlHistoryResultEntry.getControlDuration(),
+        assertEquals(controlHistoryResultEntry.getControlDuration(),
                             Duration.standardHours(3));
 
     }
@@ -959,7 +960,7 @@ public class LmControlHistoryUtilServiceImplTest {
         checkControlHistoryEntryStartAndStopDates(controlHistoryResultEntry,
                                                   enrollmentTwo.getGroupEnrollStart(),
                                                   controlHistoryThree.getEndInstant());
-        Assert.assertEquals(controlHistoryResultEntry.getControlDuration(),
+        assertEquals(controlHistoryResultEntry.getControlDuration(),
                             Duration.standardHours(3));
 
     }
@@ -988,7 +989,7 @@ public class LmControlHistoryUtilServiceImplTest {
         checkControlHistoryEntryStartAndStopDates(controlHistoryResultEntry,
                                                   enrollmentTwo.getGroupEnrollStart(),
                                                   enrollmentTwo.getGroupEnrollStop());
-        Assert.assertEquals(controlHistoryResultEntry.getControlDuration(),
+        assertEquals(controlHistoryResultEntry.getControlDuration(),
                             Duration.standardHours(5));
     }
     
@@ -1059,7 +1060,7 @@ public class LmControlHistoryUtilServiceImplTest {
         checkControlHistoryEntryStartAndStopDates(controlHistoryResultEntry, 
                                                   controlHistoryOvernightOne.getStartInstant(), 
                                                   controlHistoryOvernightOne.getEndInstant());
-        Assert.assertEquals(controlHistoryResultEntry.getControlDuration(),
+        assertEquals(controlHistoryResultEntry.getControlDuration(),
                             Duration.standardHours(5));
 
     }
@@ -1131,7 +1132,7 @@ public class LmControlHistoryUtilServiceImplTest {
         checkControlHistoryEntryStartAndStopDates(controlHistoryResultEntry, 
                                                   optOutTwo.getOptOutStop(), 
                                                   controlHistoryTwo.getEndInstant());
-        Assert.assertEquals(controlHistoryResultEntry.getControlDuration(),
+        assertEquals(controlHistoryResultEntry.getControlDuration(),
                             Duration.standardHours(1));
 
     }
@@ -1286,30 +1287,30 @@ public class LmControlHistoryUtilServiceImplTest {
     // Validation Helper Methods
     private void checkForZeroControlHistoryEntries(List<ControlHistoryEntry> controlHistoryEntryList) {
         if (controlHistoryEntryList.size() != 0) {
-            Assert.fail("There should be no control history entries in the control history entry list");
+            fail("There should be no control history entries in the control history entry list");
         }
     }
 
     private void checkForOneControlHistoryEntries(List<ControlHistoryEntry> controlHistoryEntryList) {
         if (controlHistoryEntryList.size() != 1) {
-            Assert.fail("There should only be one control history entru in the control history entry list");
+            fail("There should only be one control history entru in the control history entry list");
         }
     }
     
     private void checkNumberOfControlHistoryEntries(List<ControlHistoryEntry> controlHistoryEntryList, int controlHistorySize) {
         if (controlHistoryEntryList.size() != controlHistorySize) {
-            Assert.fail("There should only be "+controlHistorySize+" control history entries in the control history entry list");
+            fail("There should only be "+controlHistorySize+" control history entries in the control history entry list");
         }
     }
     
     private void checkControlHistoryEntryStartAndStopDates(ControlHistoryEntry controlHistoryResultEntry,
                                                            ReadableInstant startDate, ReadableInstant stopDate){
-        Assert.assertEquals(controlHistoryResultEntry.getStartInstant(), startDate);
-        Assert.assertEquals(controlHistoryResultEntry.getEndInstant(), stopDate);
+        assertEquals(controlHistoryResultEntry.getStartInstant(), startDate);
+        assertEquals(controlHistoryResultEntry.getEndInstant(), stopDate);
     }
     
     private void checkControlHistoryEntryDuration(ControlHistoryEntry controlHistoryResultEntry, Duration duration) {
-        Assert.assertEquals(controlHistoryResultEntry.getControlDuration(), duration);
+        assertEquals(controlHistoryResultEntry.getControlDuration(), duration);
     }
 
     // Factory Helper Methods 

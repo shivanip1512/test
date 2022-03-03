@@ -1,0 +1,149 @@
+openapi: 3.0.0
+info:
+  title: Yukon API Documentation
+  version: 9.2.0
+  description: 'Yukon provides REST based API support for different modules like Load Management,Point,Comm Channel,Trends and Virtual Devices.'
+servers:
+  - url: /api/
+    description: Default - Works if documentation is hosted in same service as Yukon
+  - url: 'http://{baseURI}/api/'
+    description: Configurable - Works if documentation is hosted outside of Yukon
+    variables:
+      baseURI:
+        default: 'localhost:8080'
+        description: Base URI
+security:
+  - bearerAuth: []
+
+paths:
+  /token:
+    $ref: 'api/tokenApi.yaml#/token-generate'
+  /refreshToken:
+     $ref: 'api/tokenApi.yaml#/refreshToken'
+  /logout:
+     $ref: 'api/tokenApi.yaml#/logout' 
+
+  /devices/commChannels:
+    $ref: 'api/commChannelsApi.yaml#/post-operation'
+  /devices/commChannels/{id}:
+    $ref: 'api/commChannelsApi.yaml#/get-update-delete-operation'
+
+  /trends:
+    $ref: 'api/trendsApi.yaml#/post-operation'
+  /trends/{id}:
+    $ref: 'api/trendsApi.yaml#/get-update-delete-operation'
+  /trends/{id}/resetPeak:
+    $ref: 'api/trendsApi.yaml#/resetPeak'
+  
+  /dr/loadGroups:
+    $ref: 'api/loadGroupsApi.yaml#/post-operation'
+  /dr/loadGroups/{id}:
+    $ref: 'api/loadGroupsApi.yaml#/get-update-delete-operation'
+  /dr/loadGroups/{id}/copy:
+    $ref: 'api/loadGroupsApi.yaml#/copy-operation'
+
+  /dr/macroLoadGroups:
+    $ref: 'api/MacroLoadGroupsApi.yaml#/post-operation'
+  /dr/macroLoadGroups/{id}:
+    $ref: 'api/MacroLoadGroupsApi.yaml#/get-update-delete-operation'
+  /dr/macroLoadGroups/{id}/copy:
+    $ref: 'api/MacroLoadGroupsApi.yaml#/copy-operation'
+    
+  /dr/loadPrograms:
+    $ref: 'api/loadProgramsApi.yaml#/post-operation'
+  /dr/loadPrograms/{id}:
+    $ref: 'api/loadProgramsApi.yaml#/get-update-delete-operation'
+  /dr/loadPrograms/{id}/copy:
+    $ref: 'api/loadProgramsApi.yaml#/copy-operation'
+
+  /dr/constraints:
+    $ref: 'api/programConstraintsApi.yaml#/post-operation'
+  /dr/constraints/{id}:
+    $ref: 'api/programConstraintsApi.yaml#/get-update-delete-operation'
+  /dr/constraints/seasonSchedules:
+    $ref: 'api/programConstraintsApi.yaml#/season-schedules'
+  /dr/constraints/holidaySchedules:
+    $ref: 'api/programConstraintsApi.yaml#/holiday-schedules'
+
+  /dr/controlAreas:
+    $ref: 'api/controlAreasApi.yaml#/post-operation'
+  /dr/controlAreas/{id}:
+    $ref: 'api/controlAreasApi.yaml#/get-update-delete-operation'
+    
+  /dr/controlScenarios:
+    $ref: 'api/controlScenarioApi.yaml#/post-operation'
+  /dr/controlScenarios/{id}:
+    $ref: 'api/controlScenarioApi.yaml#/get-update-delete-operation'
+ 
+  /devices/virtualDevices:
+    $ref: 'api/virtualDevicesApi.yaml#/post-get-all-operation'
+  /devices/virtualDevices/{id}:
+    $ref: 'api/virtualDevicesApi.yaml#/get-update-delete-operation'
+
+  /device/getLatestReading:
+    $ref: 'api/deviceReadingsApi.yaml#/get-operation'
+
+  /points:
+    $ref: 'api/pointsApi.yaml#/post-operation'
+  /points/{id}/copy:
+    $ref: 'api/pointsApi.yaml#/copy-operation'
+  /points/{id}:
+    $ref: 'api/pointsApi.yaml#/get-update-delete-operation'
+   
+  /attributes:
+    $ref: 'api/attributesApi.yaml#/post-get-operation'
+  /attributes/{id}:
+    $ref: 'api/attributesApi.yaml#/get-update-delete-operation'
+  /attributeAssignments:
+    $ref: 'api/attributeAssignmentsApi.yaml#/post-get-operation'
+  /attributeAssignments/{id}:
+    $ref: 'api/attributeAssignmentsApi.yaml#/get-update-delete-operation'
+    
+  /picker/build/{type}:
+    $ref: 'api/pickerApi.yaml#/buildPicker-by-type'
+  /picker/idSearch:
+    $ref: 'api/pickerApi.yaml#/search-by-id'
+  /picker/search:
+    $ref: 'api/pickerApi.yaml#/search-by-query'
+
+  /routes:
+    $ref: 'api/routesApi.yaml#/post-operation'
+  /routes/{id}:
+    $ref: 'api/routesApi.yaml#/get-update-delete-operation'
+
+  /config/loggers:
+    $ref: 'api/yukonLoggingApi.yaml#/post-get-all-operation'
+  /config/loggers/{id}:
+    $ref: 'api/yukonLoggingApi.yaml#/get-update-delete-operation'
+
+  /macroRoutes:
+    $ref: 'api/macroRoutesApi.yaml#/post-operation'
+  /macroRoutes/{id}:
+    $ref: 'api/macroRoutesApi.yaml#/get-update-delete-operation'
+
+
+
+components:
+  securitySchemes:
+    bearerAuth:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT
+tags:
+  - name: Authentication
+  - name: Comm Channel
+  - name: Trend
+  - name: Load Group
+  - name: Macro Load Group
+  - name: Load Program
+  - name: Program Constraints
+  - name: Control Area 
+  - name: Control Scenario
+  - name: Device Readings
+  - name: Virtual Devices
+  - name: Points
+  - name: Attributes
+  - name: Picker
+  - name: Route
+  - name: Logger
+  - name: Macro Route

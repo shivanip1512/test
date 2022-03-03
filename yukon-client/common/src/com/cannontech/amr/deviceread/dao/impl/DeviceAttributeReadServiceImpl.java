@@ -60,7 +60,7 @@ import com.cannontech.user.YukonUserContext;
 import com.google.common.collect.ArrayListMultimap;
 import com.google.common.collect.Multimap;
 
-public class DeviceAttributeReadServiceImpl implements DeviceAttributeReadService, CollectionActionCancellationService  {
+public class DeviceAttributeReadServiceImpl implements DeviceAttributeReadService, CollectionActionCancellationService {
 
     private static final Logger log = YukonLogManager.getLogger(DeviceAttributeReadServiceImpl.class);
 
@@ -71,34 +71,34 @@ public class DeviceAttributeReadServiceImpl implements DeviceAttributeReadServic
     @Autowired private DeviceErrorTranslatorDao deviceErrorTranslatorDao;
     @Autowired private YukonUserContextMessageSourceResolver messageSourceResolver;
     @Autowired private CollectionActionService collectionActionService;
-        
-	@Override
-	public boolean isReadable(Iterable<? extends YukonPao> devices, Set<? extends Attribute> attributes,
-			LiteYukonUser user) {
 
-		if (log.isDebugEnabled()) {
-			log.debug("isReadable Attributes:" + attributes + " Devices:" + devices);
-		}
-		
-		if(attributes.isEmpty()) {
-		    return false;
-		}
+    @Override
+    public boolean isReadable(Iterable<? extends YukonPao> devices, Set<? extends Attribute> attributes,
+            LiteYukonUser user) {
 
-        Map<PaoType, List<PaoMultiPointIdentifier>> devicesAndPoints =
-            attributeService.findPaoMultiPointIdentifiersForAttributes(devices, attributes).stream()
-            .collect(Collectors.groupingBy(p -> p.getPao().getPaoType()));
+        if (log.isDebugEnabled()) {
+            log.debug("isReadable Attributes:" + attributes + " Devices:" + devices);
+        }
+
+        if (attributes.isEmpty()) {
+            return false;
+        }
+
+        Map<PaoType, List<PaoMultiPointIdentifier>> devicesAndPoints = attributeService
+                .findPaoMultiPointIdentifiersForAttributes(devices, attributes).stream()
+                .collect(Collectors.groupingBy(p -> p.getPao().getPaoType()));
 
         for (YukonPao pao : devices) {
-            Optional<DeviceAttributeReadStrategy> strategy =
-                strategies.stream().filter(s -> s.canRead(pao.getPaoIdentifier().getPaoType())).findFirst();
+            Optional<DeviceAttributeReadStrategy> strategy = strategies.stream()
+                    .filter(s -> s.canRead(pao.getPaoIdentifier().getPaoType())).findFirst();
             if (strategy.isPresent()
-                && strategy.get().isReadable(devicesAndPoints.get(pao.getPaoIdentifier().getPaoType()))) {
+                    && strategy.get().isReadable(devicesAndPoints.get(pao.getPaoIdentifier().getPaoType()))) {
                 return true;
             }
         }
         return false;
 
-	}
+    }
 
     @Override
     public void initiateRead(Iterable<? extends YukonPao> devices, Set<? extends Attribute> attributes,
@@ -111,21 +111,21 @@ public class DeviceAttributeReadServiceImpl implements DeviceAttributeReadServic
         DeviceCollectionSummary deviceCollectionSummary = new DeviceCollectionSummary(devices, attributes, user);
 
         int requestCount = deviceCollectionSummary.getRequestCount();
-        CommandRequestExecution execution =
-            commandRequestExecutionDao.createStartedExecution(CommandRequestType.DEVICE, type, requestCount, user);
+        CommandRequestExecution execution = commandRequestExecutionDao.createStartedExecution(CommandRequestType.DEVICE, type,
+                requestCount, user);
 
         if (log.isDebugEnabled()) {
             log.debug("creId  " + execution.getId());
         }
 
-        Multimap<DeviceAttributeReadStrategy, PaoMultiPointIdentifier> pointsForStrategy =
-            deviceCollectionSummary.getPointsForStrategy();
-       
+        Multimap<DeviceAttributeReadStrategy, PaoMultiPointIdentifier> pointsForStrategy = deviceCollectionSummary
+                .getPointsForStrategy();
+
         DeviceAttributeReadCallback strategyCallback = new DeviceAttributeReadCallback() {
-            
+
             List<StrategyType> types = Collections.synchronizedList(pointsForStrategy.keys().stream()
                     .map(s -> s.getStrategy()).collect(Collectors.toList()));
-            
+
             @Override
             public void receivedValue(PaoIdentifier pao, PointValueHolder value) {
                 callback.receivedValue(pao, value);
@@ -162,7 +162,7 @@ public class DeviceAttributeReadServiceImpl implements DeviceAttributeReadServic
                 callback.complete();
             }
         };
-           
+
         for (PaoIdentifier pao : deviceCollectionSummary.getErrors().keySet()) {
             strategyCallback.receivedError(pao, deviceCollectionSummary.getErrors().get(pao));
         }
@@ -175,26 +175,26 @@ public class DeviceAttributeReadServiceImpl implements DeviceAttributeReadServic
             }
         }
         commandRequestExecutionResultDao.saveUnsupported(deviceCollectionSummary.getUnsupportedDevices(),
-            execution.getId(), CommandRequestUnsupportedType.UNSUPPORTED);
+                execution.getId(), CommandRequestUnsupportedType.UNSUPPORTED);
     }
 
     @Override
     public int initiateRead(DeviceCollection deviceCollection, Set<? extends Attribute> attributes,
             DeviceRequestType type, SimpleCallback<CollectionActionResult> callback, YukonUserContext context) {
 
-        DeviceCollectionSummary deviceCollectionSummary =
-            new DeviceCollectionSummary(deviceCollection.getDeviceList(), attributes, context.getYukonUser());
+        DeviceCollectionSummary deviceCollectionSummary = new DeviceCollectionSummary(deviceCollection.getDeviceList(),
+                attributes, context.getYukonUser());
 
-        Multimap<DeviceAttributeReadStrategy, PaoMultiPointIdentifier> pointsForStrategy =
-            deviceCollectionSummary.getPointsForStrategy();
+        Multimap<DeviceAttributeReadStrategy, PaoMultiPointIdentifier> pointsForStrategy = deviceCollectionSummary
+                .getPointsForStrategy();
 
         CollectionActionResult result = collectionActionService.createResult(CollectionAction.READ_ATTRIBUTE,
-            getInputs(attributes, context), deviceCollection, CommandRequestType.DEVICE, type, context);
+                getInputs(attributes, context), deviceCollection, CommandRequestType.DEVICE, type, context);
 
         DeviceAttributeReadCallback strategyCallback = new DeviceAttributeReadCallback() {
             MessageSourceAccessor accessor = messageSourceResolver.getMessageSourceAccessor(context);
             Set<StrategyType> types = Collections.synchronizedSet(
-                pointsForStrategy.keys().stream().map(s -> s.getStrategy()).collect(Collectors.toSet()));
+                    pointsForStrategy.keys().stream().map(s -> s.getStrategy()).collect(Collectors.toSet()));
 
             @Override
             public void receivedValue(PaoIdentifier pao, PointValueHolder value) {
@@ -202,6 +202,7 @@ public class DeviceAttributeReadServiceImpl implements DeviceAttributeReadServic
                 detail.setValue(value);
                 result.appendToLogWithoutAddingToGroup(detail);
             }
+
             @Override
             public void receivedLastValue(PaoIdentifier pao, String value) {
                 CollectionActionLogDetail detail = new CollectionActionLogDetail(pao, CollectionActionDetail.SUCCESS);
@@ -221,7 +222,7 @@ public class DeviceAttributeReadServiceImpl implements DeviceAttributeReadServic
                 result.setExecutionExceptionText(accessor.getMessage(error.getSummary()));
                 collectionActionService.updateResult(result, CommandRequestExecutionStatus.FAILED);
             }
-            
+
             @Override
             public CollectionActionResult getResult() {
                 return result;
@@ -240,8 +241,8 @@ public class DeviceAttributeReadServiceImpl implements DeviceAttributeReadServic
             @Override
             public void complete() {
                 if (!result.isComplete()) {
-                    collectionActionService.updateResult(result, !result.isCanceled()
-                        ? CommandRequestExecutionStatus.COMPLETE : CommandRequestExecutionStatus.CANCELLED);
+                    collectionActionService.updateResult(result, !result
+                            .isCanceled() ? CommandRequestExecutionStatus.COMPLETE : CommandRequestExecutionStatus.CANCELLED);
                     if (callback != null) {
                         try {
                             callback.handle(result);
@@ -253,6 +254,8 @@ public class DeviceAttributeReadServiceImpl implements DeviceAttributeReadServic
             }
         };
 
+        collectionActionService.addUnsupportedToResult(CollectionActionDetail.UNSUPPORTED, result,
+                new ArrayList<>(deviceCollectionSummary.getUnsupportedDevices()));
         if (pointsForStrategy.isEmpty()) {
             strategyCallback.complete();
         } else {
@@ -264,9 +267,6 @@ public class DeviceAttributeReadServiceImpl implements DeviceAttributeReadServic
         int requestCount = deviceCollectionSummary.getRequestCount();
         result.getExecution().setRequestCount(requestCount);
         commandRequestExecutionDao.saveOrUpdate(result.getExecution());
-        new ArrayList<>(deviceCollectionSummary.getUnsupportedDevices());
-        collectionActionService.addUnsupportedToResult(CollectionActionDetail.UNSUPPORTED, result,
-            new ArrayList<>(deviceCollectionSummary.getUnsupportedDevices()));
         log.debug("updating request count =" + requestCount);
         commandRequestExecutionDao.saveOrUpdate(result.getExecution());
         return result.getCacheKey();
@@ -274,17 +274,17 @@ public class DeviceAttributeReadServiceImpl implements DeviceAttributeReadServic
 
     private LinkedHashMap<String, String> getInputs(Set<? extends Attribute> attributes, YukonUserContext context) {
         MessageSourceAccessor accessor = messageSourceResolver.getMessageSourceAccessor(context);
-        List<String> attributeStrings =
-            attributes.stream().map(attribute -> accessor.getMessage(attribute)).collect(Collectors.toList());
+        List<String> attributeStrings = attributes.stream().map(attribute -> accessor.getMessage(attribute))
+                .collect(Collectors.toList());
         LinkedHashMap<String, String> inputs = new LinkedHashMap<>();
         inputs.put(CollectionActionInput.ATTRIBUTES.name(), String.join(", ", attributeStrings));
         return inputs;
     }
-    
-	@Override
-	public DeviceReadResult initiateReadAndWait(YukonDevice device, Set<? extends Attribute> toRead,
-			DeviceRequestType requestType, LiteYukonUser user) {
-		DeviceReadResult result = new DeviceReadResult();
+
+    @Override
+    public DeviceReadResult initiateReadAndWait(YukonDevice device, Set<? extends Attribute> toRead,
+            DeviceRequestType requestType, LiteYukonUser user) {
+        DeviceReadResult result = new DeviceReadResult();
         WaitableDeviceAttributeReadCallback callback = new WaitableDeviceAttributeReadCallback() {
 
             @Override
@@ -315,46 +315,37 @@ public class DeviceAttributeReadServiceImpl implements DeviceAttributeReadServic
 
         };
 
-		Set<YukonDevice> meterSingleton = Collections.singleton(device);
-		initiateRead(meterSingleton, toRead, callback, requestType, user);
-		try {
-			callback.waitForCompletion();
-		} catch (InterruptedException e) {
-		}
-		if (result.isTimeout()) {
-            DeviceErrorDescription errorDescription = deviceErrorTranslatorDao.translateErrorCode(DeviceError.TIMEOUT);
-            MessageSourceResolvable detail =
-                YukonMessageSourceResolvable.createSingleCode("yukon.common.device.attributeRead.general.timeout");
-            SpecificDeviceErrorDescription error = new SpecificDeviceErrorDescription(errorDescription, detail);
-            result.addError(error);
-		}
-		return result;
-	}
+        Set<YukonDevice> meterSingleton = Collections.singleton(device);
+        initiateRead(meterSingleton, toRead, callback, requestType, user);
+        try {
+            callback.waitForCompletion();
+        } catch (InterruptedException e) {
+        }
+        return result;
+    }
 
-
-	private void completeExecution(CommandRequestExecution execution) {
-	    if (execution.getCommandRequestExecutionStatus() == CommandRequestExecutionStatus.STARTED) {
+    private void completeExecution(CommandRequestExecution execution) {
+        if (execution.getCommandRequestExecutionStatus() == CommandRequestExecutionStatus.STARTED) {
             log.debug("All strategies complete");
             execution.setStopTime(new Date());
             execution.setCommandRequestExecutionStatus(CommandRequestExecutionStatus.COMPLETE);
             commandRequestExecutionDao.saveOrUpdate(execution);
         }
-	}
+    }
 
-	private class DeviceCollectionSummary {
+    private class DeviceCollectionSummary {
 
         private Set<YukonPao> unsupportedDevices = new HashSet<>();
         private Set<YukonPao> supportedDevices = new HashSet<>();
         private Multimap<DeviceAttributeReadStrategy, PaoMultiPointIdentifier> pointsForStrategy = ArrayListMultimap.create();
         private int requestCount = 0;
-        private Map<PaoIdentifier, SpecificDeviceErrorDescription> errors =
-            new HashMap<>();
+        private Map<PaoIdentifier, SpecificDeviceErrorDescription> errors = new HashMap<>();
 
         public DeviceCollectionSummary(Iterable<? extends YukonPao> devices, Set<? extends Attribute> attributes,
                 LiteYukonUser user) {
 
-            PaoMultiPointIdentifierWithUnsupported paoPointIdentifiers =
-                attributeService.findPaoMultiPointIdentifiersForAttributesWithUnsupported(devices, attributes);
+            PaoMultiPointIdentifierWithUnsupported paoPointIdentifiers = attributeService
+                    .findPaoMultiPointIdentifiersForAttributesWithUnsupported(devices, attributes);
 
             Multimap<PaoIdentifier, PaoMultiPointIdentifier> paoToPoints = ArrayListMultimap.create();
 
@@ -381,7 +372,7 @@ public class DeviceAttributeReadServiceImpl implements DeviceAttributeReadServic
                                 log.debug("Unsupported device(no command):" + pao);
                             }
                             addSpecificDeviceErrorDescriptionError(
-                                "yukon.common.device.attributeRead.general.noCommand", pao.getPaoIdentifier());
+                                    "yukon.common.device.attributeRead.general.noCommand", pao.getPaoIdentifier());
                         }
                     }
                 }
@@ -391,10 +382,10 @@ public class DeviceAttributeReadServiceImpl implements DeviceAttributeReadServic
                         log.debug("Unsupported device(no strategy):" + pao);
                     }
                     addSpecificDeviceErrorDescriptionError("yukon.common.device.attributeRead.general.noStrategy",
-                        pao.getPaoIdentifier());
+                            pao.getPaoIdentifier());
                 }
             }
-                  
+
             for (YukonPao unsupported : paoPointIdentifiers.getUnsupportedDevices()) {
                 if (!unsupportedDevices.contains(unsupported) && !supportedDevices.contains(unsupported)) {
                     if (log.isDebugEnabled()) {
@@ -402,34 +393,34 @@ public class DeviceAttributeReadServiceImpl implements DeviceAttributeReadServic
                     }
                     unsupportedDevices.add(unsupported);
                     addSpecificDeviceErrorDescriptionError("yukon.common.device.attributeRead.general.noAttribute",
-                        unsupported.getPaoIdentifier());
+                            unsupported.getPaoIdentifier());
                 }
             }
-            
-            //request count that would be send to a device
+
+            // request count that would be send to a device
             if (!pointsForStrategy.isEmpty()) {
                 for (DeviceAttributeReadStrategy strategy : pointsForStrategy.keySet()) {
                     requestCount += strategy.getRequestCount(pointsForStrategy.get(strategy));
                 }
             }
         }
-        
+
         private void addSpecificDeviceErrorDescriptionError(String code, PaoIdentifier pao) {
             DeviceErrorDescription errorDescription = deviceErrorTranslatorDao.translateErrorCode(DeviceError.INVALID_ACTION);
-            MessageSourceResolvable detail =
-                YukonMessageSourceResolvable.createSingleCodeWithArguments(code, pao.getPaoIdentifier().getPaoType());
+            MessageSourceResolvable detail = YukonMessageSourceResolvable.createSingleCodeWithArguments(code,
+                    pao.getPaoIdentifier().getPaoType());
             SpecificDeviceErrorDescription error = new SpecificDeviceErrorDescription(errorDescription, detail, detail);
             errors.put(pao, error);
         }
-     
+
         public Set<YukonPao> getUnsupportedDevices() {
             return unsupportedDevices;
         }
-                
-        public Multimap<DeviceAttributeReadStrategy, PaoMultiPointIdentifier> getPointsForStrategy(){
+
+        public Multimap<DeviceAttributeReadStrategy, PaoMultiPointIdentifier> getPointsForStrategy() {
             return pointsForStrategy;
         }
-        
+
         public Map<PaoIdentifier, SpecificDeviceErrorDescription> getErrors() {
             return errors;
         }

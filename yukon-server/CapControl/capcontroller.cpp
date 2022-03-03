@@ -47,6 +47,8 @@
 #include "database_reader.h"
 #include "CapControlPredicates.h"
 #include "desolvers.h"
+#include "Requests.h"
+#include "std_helper.h"
 
 #include <boost/range/adaptor/filtered.hpp>
 #include <boost/range/algorithm/for_each.hpp>
@@ -55,12 +57,9 @@
 
 extern void refreshGlobalCParms();
 
-namespace Cti
-{
-namespace CapControl
+namespace Cti::CapControl
 {
 extern void writeRegulatorEventsToDatabase();
-}
 }
 
 
@@ -76,10 +75,12 @@ extern unsigned long _SCAN_WAIT_EXPIRE;
 using Cti::ThreadStatusKeeper;
 using std::endl;
 using std::string;
+using Cti::CapControl::PorterRequest;
+using Cti::CapControl::PorterRequests;
 using Cti::CapControl::EventLogEntry;
 using Cti::CapControl::EventLogEntries;
 
-//DLLEXPORT bool  bGCtrlC = false;
+using namespace Cti::Logging::Vector;
 
 /* The singleton instance of CtiCapController */
 CtiCapController* CtiCapController::_instance = NULL;
@@ -453,7 +454,6 @@ void CtiCapController::controlLoop()
         CtiCCSubstation_set stationChanges;
         CtiCCArea_set areaChanges;
         CtiMultiMsg* multiDispatchMsg = new CtiMultiMsg();
-        CtiMultiMsg* multiPilMsg = new CtiMultiMsg();
         CtiMultiMsg* multiCapMsg = new CtiMultiMsg();
         long lastThreadPulse = 0;
         CtiDate lastDailyResetDate;     // == CtiDate::now()
@@ -486,7 +486,7 @@ void CtiCapController::controlLoop()
                 dout->poke();  //  called around 2x/second (see boost::this_thread::sleep at bottom of loop)
 
                 CtiMultiMsg_vec& pointChanges = multiDispatchMsg->getData();
-                CtiMultiMsg_vec& pilMessages = multiPilMsg->getData();
+                PorterRequests pilMessages;
                 CtiMultiMsg_vec& capMessages = multiCapMsg->getData();
                 EventLogEntries ccEvents;
 
@@ -776,15 +776,16 @@ void CtiCapController::controlLoop()
                 try
                 {
                     //send pil commands to porter
-                    if( multiPilMsg->getCount() > 0 )
+                    if( ! pilMessages.empty() )
                     {
-                        multiPilMsg->resetTime(); // CGP 5/21/04 Update its time to current time.
                         if( _CC_DEBUG & CC_DEBUG_EXTENDED )
                         {
-                            CTILOG_DEBUG(dout, "PIL MESSAGES " << multiPilMsg);
+                            CTILOG_DEBUG(dout, "PIL MESSAGES " << pilMessages);
                         }
-                        getPorterConnection()->WriteConnQue( multiPilMsg, CALLSITE );
-                        multiPilMsg = new CtiMultiMsg();
+                        sendPorterRequests(
+                            *getPorterConnection(),
+                            std::move( pilMessages ),
+                            CALLSITE );
                     }
                 }
                 catch(...)
@@ -957,7 +958,7 @@ void CtiCapController::controlLoop()
 }
 
 void CtiCapController::checkBusForNeededControl(CtiCCAreaPtr currentArea,  CtiCCSubstationPtr currentStation, CtiCCSubstationBusPtr currentSubstationBus, const CtiTime& currentDateTime,
-                            CtiMultiMsg_vec& pointChanges, EventLogEntries &ccEvents, CtiMultiMsg_vec& pilMessages)
+                            CtiMultiMsg_vec& pointChanges, EventLogEntries &ccEvents, PorterRequests& pilMessages)
 {
 
     try
@@ -1072,7 +1073,7 @@ void CtiCapController::broadcastMessagesToClient(CtiCCSubstationBus_vec& substat
 }
 
 void CtiCapController::analyzeVerificationBus(CtiCCSubstationBusPtr currentSubstationBus, const CtiTime& currentDateTime,
-                            CtiMultiMsg_vec& pointChanges, EventLogEntries &ccEvents, CtiMultiMsg_vec& pilMessages,
+                            CtiMultiMsg_vec& pointChanges, EventLogEntries &ccEvents, PorterRequests& pilMessages,
                             CtiMultiMsg_vec& capMessages)
 {
     // shim out IVVC bus verification to its own function
@@ -3871,14 +3872,14 @@ void CtiCapController::sendMessageToDispatch( CtiMessage* message, Cti::CallSite
 
     Handles a manual cap bank control sent by a client application.
 ---------------------------------------------------------------------------*/
-void CtiCapController::manualCapBankControl( CtiRequestMsg* pilRequest, CtiMultiMsg* multiMsg )
+void CtiCapController::manualCapBankControl( PorterRequest pilRequest, CtiMultiMsg* multiMsg )
 {
     try
     {
-        if (pilRequest != NULL)
-        {
-            getPorterConnection()->WriteConnQue(pilRequest, CALLSITE);
-        }
+        Cti::CapControl::sendPorterRequest(
+            *getPorterConnection(), 
+            std::move(pilRequest), 
+            CALLSITE);
 
         if (multiMsg != NULL)
         {
@@ -3898,9 +3899,9 @@ void CtiCapController::manualCapBankControl( CtiRequestMsg* pilRequest, CtiMulti
     }
 }
 
-void CtiCapController::sendCapBankRequestAndPoints( std::unique_ptr<CtiRequestMsg> pilRequest, CtiMultiMsg* multiMsg)
+void CtiCapController::sendCapBankRequestAndPoints( PorterRequest pilRequest, CtiMultiMsg* multiMsg)
 {
-    getInstance()->manualCapBankControl(pilRequest.release(), multiMsg);
+    getInstance()->manualCapBankControl(std::move(pilRequest), multiMsg);
 }
 
 /*---------------------------------------------------------------------------
@@ -3910,20 +3911,16 @@ void CtiCapController::sendCapBankRequestAndPoints( std::unique_ptr<CtiRequestMs
     field state.  Just sends a command, does not look for var changes or
     update cap bank control status point.
 ---------------------------------------------------------------------------*/
-void CtiCapController::confirmCapBankControl( CtiMultiMsg* pilMultiMsg, CtiMultiMsg* multiMsg )
+void CtiCapController::confirmCapBankControl( PorterRequests pilMultiMsg, CtiMultiMsg* multiMsg )
 {
     try
     {
-        if (pilMultiMsg != NULL)
+        if ( ! pilMultiMsg.empty() )
         {
-            if (pilMultiMsg->getCount() > 0)
-            {
-                getPorterConnection()->WriteConnQue(pilMultiMsg, CALLSITE);
-            }
-            else
-            {
-                delete pilMultiMsg;
-            }
+            Cti::CapControl::sendPorterRequests(
+                *getPorterConnection(),
+                std::move( pilMultiMsg ),
+                CALLSITE );
         }
 
         if (multiMsg != NULL)
@@ -3984,7 +3981,7 @@ void CtiCapController::analyzeVerificationBusIvvc( CtiCCSubstationBusPtr current
                                                    const CtiTime &       currentDateTime,
                                                    CtiMultiMsg_vec &     pointChanges,
                                                    EventLogEntries &     ccEvents,
-                                                   CtiMultiMsg_vec &     pilMessages,
+                                                   PorterRequests &      pilMessages,
                                                    CtiMultiMsg_vec &     capMessages )
 {
     struct LocalScanState

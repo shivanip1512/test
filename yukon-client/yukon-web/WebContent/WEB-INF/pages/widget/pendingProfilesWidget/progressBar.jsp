@@ -20,7 +20,7 @@
 			<tr>
 				<td>
 					<div id="progressBorder_${requestId}" style="height:12px; width:100px; border:1px solid black; padding:0px; background-color:#CCCCCC;" align="left">
-						<div id="progressInner_${requestId}" style="height: 10px; width: ${percentDone}px; padding:1px; overflow:hidden; background-color:#093; ">
+						<div id="progressInner_${requestId}" style="height: 10px; width: ${percentDone}px; padding:1px; overflow:hidden; background-color:#2ca618; ">
 						</div>
 					</div>
 				</td>

@@ -10,7 +10,6 @@
 #include "MctBehavior.h"
 
 #include <boost/ptr_container/ptr_vector.hpp>
-#include <boost/bind.hpp>
 
 /*
     Move all MCT functions into here eventually. Phase 2 Make a MctBaseSim class containing shared functions.

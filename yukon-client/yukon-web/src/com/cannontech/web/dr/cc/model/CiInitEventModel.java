@@ -55,9 +55,12 @@ public class CiInitEventModel {
     }
     
     public DateTime getStopTime() {
-        return startTime.plus(Duration.standardHours(duration));
+        if (eventType == CiEventType.ECONOMIC || eventType == CiEventType.ISOC_SAME_DAY) {
+            return startTime.plus(Duration.standardHours(numberOfWindows));
+        }
+        return startTime.plus(Duration.standardMinutes(duration));
     }
-    
+
     public void setStartTime(DateTime startTime) {
         this.startTime = startTime;
     }

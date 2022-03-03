@@ -26,7 +26,17 @@
                                     <c:when test="${!log.invalid}">
                                         <td><cti:formatDate value="${log.start}" type="BOTH"/></td>
                                         <td><cti:formatDate value="${log.end}" type="BOTH"/></td>
-                                        <td><cti:formatDuration type="DHMS_REDUCED" startDate="${log.start}" endDate="${log.end}"/></td>
+                                        <td>
+                                            <cti:formatDuration var="duration" type="DHMS_REDUCED" startDate="${log.start}" endDate="${log.end}"/>
+                                            <c:choose>
+                                                <c:when test="${!empty duration}">
+                                                    ${duration}
+                                                </c:when>
+                                                <c:otherwise>
+                                                    <i:inline key=".durationLessThan1Second"/>
+                                                </c:otherwise>
+                                            </c:choose>
+                                        </td>
                                     </c:when>
                                     <c:otherwise>
                                         <td><i:inline key=".unknown"/></td>

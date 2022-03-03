@@ -1,13 +1,15 @@
 package com.cannontech.services.infrastructure.service.impl;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
 import org.joda.time.DateTime;
 import org.joda.time.Instant;
-import org.junit.Assert;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 import org.springframework.context.NoSuchMessageException;
 import org.springframework.test.util.ReflectionTestUtils;
 
@@ -21,7 +23,6 @@ import com.cannontech.common.smartNotification.model.InfrastructureWarningsEvent
 import com.cannontech.common.smartNotification.model.SmartNotificationEvent;
 import com.cannontech.database.data.lite.LiteYukonPAObject;
 import com.cannontech.infrastructure.model.InfrastructureWarning;
-import com.cannontech.infrastructure.model.InfrastructureWarningSeverity;
 import com.cannontech.infrastructure.model.InfrastructureWarningType;
 import com.cannontech.services.mock.EventLogMockServiceFactory;
 import com.cannontech.services.mock.StubServerDatabaseCache;
@@ -166,73 +167,55 @@ public class InfrastructureWarningsServiceImplTest {
         ReflectionTestUtils.setField(service, "systemMessageSourceAccessor", systemMessageSourceAccessor);
         ReflectionTestUtils.setField(service, "serverDatabaseCache", databaseCache);
         ReflectionTestUtils.setField(service, "infrastructureEventLogService", warningsLogService);
-        
+
         // Test Infrastructure Warnings event log logic
         List<InfrastructureWarning> eventLogWarnings = ReflectionTestUtils.invokeMethod(service,
                 "getAndLogEventLogWarnings", oldWarnings, newWarnings);
 
-        Assert.assertEquals("Incorrect number of infrastructure warning event log entries", 6, eventLogWarnings.size());
-        Assert.assertTrue("Event log warning for warning 4 is missing", eventLogWarnings.contains(warning4));
-        Assert.assertTrue("Event log warning for warning 5 is missing", eventLogWarnings.contains(warning5));
-        Assert.assertTrue("Event log warning for warning 6 is missing", eventLogWarnings.contains(warning6));
-        Assert.assertTrue("Event log warning for warning 10 is missing", eventLogWarnings.contains(warning10));
-        Assert.assertTrue("Event log warning for warning 11 is missing", eventLogWarnings.contains(warning11));
-        Assert.assertTrue("Event log warning for warning 12 is missing", eventLogWarnings.contains(warning12));
-        
+        assertEquals(6, eventLogWarnings.size(), "Incorrect number of infrastructure warning event log entries");
+        assertTrue(eventLogWarnings.contains(warning4), "Event log warning for warning 4 is missing");
+        assertTrue(eventLogWarnings.contains(warning5), "Event log warning for warning 5 is missing");
+        assertTrue(eventLogWarnings.contains(warning6), "Event log warning for warning 6 is missing");
+        assertTrue(eventLogWarnings.contains(warning10), "Event log warning for warning 10 is missing");
+        assertTrue(eventLogWarnings.contains(warning11), "Event log warning for warning 11 is missing");
+        assertTrue(eventLogWarnings.contains(warning12), "Event log warning for warning 12 is missing");
+
         // Test warnings smart notification logic
-        List<InfrastructureWarning> smartNotificationWarnings = ReflectionTestUtils.invokeMethod(service, 
-                "getSmartNotificationWarnings", oldWarnings, newWarnings);
-        
+        List<InfrastructureWarning> smartNotificationWarnings = ReflectionTestUtils.invokeMethod(service,
+                "getSmartNotifications", oldWarnings, newWarnings);
+
         // Test warnings timestamp logic
-        List<InfrastructureWarning> infrastructureWarnings =  ReflectionTestUtils.invokeMethod(service, 
+        List<InfrastructureWarning> infrastructureWarnings = ReflectionTestUtils.invokeMethod(service,
                 "getInfrastructureWarnings", oldWarnings, smartNotificationWarnings);
 
-        Assert.assertEquals("Timestamp should not be updated for repeated infrastructure warnings",
-                infrastructureWarnings.stream()
-                        .filter(warning -> warning.getPaoIdentifier().getPaoId() == 4)
-                        .findFirst()
-                        .get()
-                        .getTimestamp(),
+        assertEquals(infrastructureWarnings.stream()
+                .filter(warning -> warning.getPaoIdentifier().getPaoId() == 4)
+                .findFirst()
+                .get()
+                .getTimestamp(), now, "Timestamp should not be updated for repeated infrastructure warnings");
 
-                now);
-
-        List<SmartNotificationEvent> events = ReflectionTestUtils.invokeMethod(service, 
+        List<SmartNotificationEvent> events = ReflectionTestUtils.invokeMethod(service,
                 "getNotificationEventsForNewWarnings", smartNotificationWarnings, now);
-        
+
         // There should be 2 events for new Infrastructure Warnings
-        Assert.assertEquals("Incorrect number of infrastructure warning smart notification events", 4, events.size());
-        
+        assertEquals(4, events.size(), "Incorrect number of infrastructure warning smart notification events");
+
         // Check that warning 4 is present with appropriate parameters
-        SmartNotificationEvent device4event = new SmartNotificationEvent(now);
-        device4event.addParameters(InfrastructureWarningsEventAssembler.PAO_ID, 4);
-        device4event.addParameters(InfrastructureWarningsEventAssembler.WARNING_TYPE, InfrastructureWarningType.GATEWAY_COLOR);
-        device4event.addParameters(InfrastructureWarningsEventAssembler.WARNING_SEVERITY, InfrastructureWarningSeverity.LOW);
-        device4event.addParameters(InfrastructureWarningsEventAssembler.ARGUMENT_1, (short) 3);
-        Assert.assertTrue("Event for device 4 is missing", events.contains(device4event));
-        
+        SmartNotificationEvent device4event = InfrastructureWarningsEventAssembler.assemble(now, warning4);
+        assertTrue(events.contains(device4event), "Event for device 4 is missing");
+
         // Check that warning 5 is present with appropriate parameters
-        SmartNotificationEvent device5event = new SmartNotificationEvent(now);
-        device5event.addParameters(InfrastructureWarningsEventAssembler.PAO_ID, 5);
-        device5event.addParameters(InfrastructureWarningsEventAssembler.WARNING_TYPE, InfrastructureWarningType.GATEWAY_COLOR);
-        device5event.addParameters(InfrastructureWarningsEventAssembler.WARNING_SEVERITY, InfrastructureWarningSeverity.LOW);
-        device5event.addParameters(InfrastructureWarningsEventAssembler.ARGUMENT_1, (short) 3);
-        Assert.assertTrue("Event for device 5 is missing", events.contains(device5event));
-        
-        // Check that warning 8 is present with appropriate parameters
-        SmartNotificationEvent device8event = new SmartNotificationEvent(now);
-        device4event.addParameters(InfrastructureWarningsEventAssembler.PAO_ID, 8);
-        device4event.addParameters(InfrastructureWarningsEventAssembler.WARNING_TYPE, InfrastructureWarningType.GATEWAY_COLOR);
-        device4event.addParameters(InfrastructureWarningsEventAssembler.WARNING_SEVERITY, InfrastructureWarningSeverity.LOW);
-        device4event.addParameters(InfrastructureWarningsEventAssembler.ARGUMENT_1, (short) 3);
-        Assert.assertTrue("Event for device 8 is missing", events.contains(device8event));
-        
+        SmartNotificationEvent device5event = InfrastructureWarningsEventAssembler.assemble(now, warning5);
+        assertTrue(events.contains(device5event), "Event for device 5 is missing");
+
         // Check that warning 9 is present with appropriate parameters
-        SmartNotificationEvent device9event = new SmartNotificationEvent(now);
-        device5event.addParameters(InfrastructureWarningsEventAssembler.PAO_ID, 9);
-        device5event.addParameters(InfrastructureWarningsEventAssembler.WARNING_TYPE, InfrastructureWarningType.GATEWAY_COLOR);
-        device5event.addParameters(InfrastructureWarningsEventAssembler.WARNING_SEVERITY, InfrastructureWarningSeverity.LOW);
-        device5event.addParameters(InfrastructureWarningsEventAssembler.ARGUMENT_1, (short) 3);
-        Assert.assertTrue("Event for device 9 is missing", events.contains(device9event));
+        SmartNotificationEvent device9event = InfrastructureWarningsEventAssembler.assemble(now, warning10);
+        assertTrue(events.contains(device9event), "Event for device 9 is missing");
+
+        // Check that warning 10 is present with appropriate parameters
+        SmartNotificationEvent device10event = InfrastructureWarningsEventAssembler.assemble(now, warning11);
+        assertTrue(events.contains(device10event), "Event for device 10 is missing");
+        
     }
 
 }

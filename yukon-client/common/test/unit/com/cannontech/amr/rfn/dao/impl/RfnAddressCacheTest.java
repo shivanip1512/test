@@ -1,7 +1,7 @@
 package com.cannontech.amr.rfn.dao.impl;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNull;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNull;
 
 import java.sql.ResultSet;
 import java.sql.SQLException;
@@ -9,7 +9,7 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Set;
 
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 import org.springframework.dao.DataAccessException;
 import org.springframework.jdbc.core.RowCallbackHandler;
 import org.springframework.jdbc.core.RowMapper;
@@ -32,8 +32,8 @@ public class RfnAddressCacheTest {
     private static final RfnIdentifier rfnId1 = new RfnIdentifier("11235813", "ITRN", "C2SX"); 
     private static final RfnIdentifier rfnId2 = new RfnIdentifier("31415927", "ITRN", "C2SX"); 
     private static final RfnIdentifier rfnId2_updated = new RfnIdentifier("62831853", "ITRN", "C2SX"); 
-    private static final RfnIdentifier rfnId3 = new RfnIdentifier("7800000024", "CPS", "RFGateway2");
-    private static final RfnIdentifier rfnId4 = new RfnIdentifier("Jambalaya", "CPS", "RFGateway2"); 
+    private static final RfnIdentifier rfnId3 = new RfnIdentifier("7800000024", "EATON", "GWY800");
+    private static final RfnIdentifier rfnId4 = new RfnIdentifier("Jambalaya", "EATON", "GWY800"); 
     private static final RfnIdentifier nonexistent = new RfnIdentifier("apple", "banana", "cucumber"); 
     
     @Test
@@ -42,11 +42,11 @@ public class RfnAddressCacheTest {
         
         var rfnAddressCache = new RfnAddressCache(template, new MockAsyncDynamicDataSourceImpl());
 
-        assertNull("Nonexistent lookup", rfnAddressCache.getPaoIdFor(rfnId1));
-        assertNull("Nonexistent lookup", rfnAddressCache.getPaoIdFor(rfnId2));
-        assertNull("Nonexistent lookup", rfnAddressCache.getPaoIdFor(rfnId3));
-        assertNull("Nonexistent lookup", rfnAddressCache.getPaoIdFor(rfnId4));
-        assertNull("Nonexistent lookup", rfnAddressCache.getPaoIdFor(nonexistent));
+        assertNull(rfnAddressCache.getPaoIdFor(rfnId1), "Nonexistent lookup");
+        assertNull(rfnAddressCache.getPaoIdFor(rfnId2), "Nonexistent lookup");
+        assertNull(rfnAddressCache.getPaoIdFor(rfnId3), "Nonexistent lookup");
+        assertNull(rfnAddressCache.getPaoIdFor(rfnId4), "Nonexistent lookup");
+        assertNull(rfnAddressCache.getPaoIdFor(nonexistent), "Nonexistent lookup");
     }
 
     @Test
@@ -55,11 +55,11 @@ public class RfnAddressCacheTest {
         
         var rfnAddressCache = new RfnAddressCache(template, new MockAsyncDynamicDataSourceImpl());
 
-        assertEquals("Numeric serial lookup", Integer.valueOf(17), rfnAddressCache.getPaoIdFor(rfnId1));
-        assertNull("Nonexistent lookup", rfnAddressCache.getPaoIdFor(rfnId2));
-        assertNull("Nonexistent lookup", rfnAddressCache.getPaoIdFor(rfnId3));
-        assertNull("Nonexistent lookup", rfnAddressCache.getPaoIdFor(rfnId4));
-        assertNull("Nonexistent lookup", rfnAddressCache.getPaoIdFor(nonexistent));
+        assertEquals(Integer.valueOf(17), rfnAddressCache.getPaoIdFor(rfnId1), "Numeric serial lookup");
+        assertNull(rfnAddressCache.getPaoIdFor(rfnId2), "Nonexistent lookup");
+        assertNull(rfnAddressCache.getPaoIdFor(rfnId3), "Nonexistent lookup");
+        assertNull(rfnAddressCache.getPaoIdFor(rfnId4), "Nonexistent lookup");
+        assertNull(rfnAddressCache.getPaoIdFor(nonexistent), "Nonexistent lookup");
     }
     
     @Test
@@ -71,15 +71,15 @@ public class RfnAddressCacheTest {
         
         var rfnAddressCache = new RfnAddressCache(template, new MockAsyncDynamicDataSourceImpl());
 
-        assertEquals("Numeric lookup", Integer.valueOf(22), rfnAddressCache.getPaoIdFor(rfnId1));
-        assertEquals("Numeric lookup", Integer.valueOf(23), rfnAddressCache.getPaoIdFor(rfnId2));
-        assertEquals("Gateway lookup", Integer.valueOf(24), rfnAddressCache.getPaoIdFor(rfnId3));
-        assertEquals("Text lookup", Integer.valueOf(25), rfnAddressCache.getPaoIdFor(rfnId4));
-        assertNull("Nonexistent lookup", rfnAddressCache.getPaoIdFor(nonexistent));
+        assertEquals(Integer.valueOf(22), rfnAddressCache.getPaoIdFor(rfnId1), "Numeric lookup");
+        assertEquals(Integer.valueOf(23), rfnAddressCache.getPaoIdFor(rfnId2), "Numeric lookup");
+        assertEquals(Integer.valueOf(24), rfnAddressCache.getPaoIdFor(rfnId3), "Gateway lookup");
+        assertEquals(Integer.valueOf(25), rfnAddressCache.getPaoIdFor(rfnId4), "Gateway lookup");
+        assertNull(rfnAddressCache.getPaoIdFor(nonexistent), "Nonexistent lookup");
         
         Set<Integer> multiple = rfnAddressCache.getPaoIdsFor(List.of(rfnId1, rfnId2, rfnId3, rfnId4, nonexistent));
         
-        assertEquals("Multiple lookup", Set.of(22, 23, 24, 25), multiple);
+        assertEquals(Set.of(22, 23, 24, 25), multiple, "Multiple lookup");
     }
     
     @Test
@@ -97,7 +97,7 @@ public class RfnAddressCacheTest {
         
         Set<Integer> multiple = rfnAddressCache.getPaoIdsFor(List.of(rfnId1, rfnId2, rfnId3, rfnId4, nonexistent));
         
-        assertEquals("Multiple lookup", Set.of(22, 23, 25), multiple);
+        assertEquals(Set.of(22, 23, 25), multiple, "Multiple lookup");
     }
     
     @Test
@@ -116,7 +116,7 @@ public class RfnAddressCacheTest {
         
         Set<Integer> multiple = rfnAddressCache.getPaoIdsFor(List.of(rfnId1, rfnId2, rfnId3, rfnId4, nonexistent));
         
-        assertEquals("Multiple lookup", Set.of(22, 23, 24, 25), multiple);
+        assertEquals(Set.of(22, 23, 24, 25), multiple, "Multiple lookup");
     }
     
     @Test
@@ -130,15 +130,15 @@ public class RfnAddressCacheTest {
 
         template.setData(List.of(makeRfnAddress(23, rfnId2_updated)));
         
-        assertEquals("Numeric lookup", Integer.valueOf(23), rfnAddressCache.getPaoIdFor(rfnId2));
-        assertNull("Nonexistent lookup", rfnAddressCache.getPaoIdFor(rfnId2_updated));
+        assertEquals(Integer.valueOf(23), rfnAddressCache.getPaoIdFor(rfnId2), "Numeric lookup");
+        assertNull(rfnAddressCache.getPaoIdFor(rfnId2_updated), "Nonexistent lookup");
 
         var dbChange = new DBChangeMsg(23, DBChangeMsg.CHANGE_PAO_DB, PaoCategory.DEVICE.getDbString(), DbChangeType.UPDATE);
         
         rfnAddressCache.dbChangeReceived(dbChange);
         
-        assertNull("Nonexistent lookup", rfnAddressCache.getPaoIdFor(rfnId2));
-        assertEquals("Numeric lookup", Integer.valueOf(23), rfnAddressCache.getPaoIdFor(rfnId2_updated));
+        assertNull(rfnAddressCache.getPaoIdFor(rfnId2), "Nonexistent lookup");
+        assertEquals(Integer.valueOf(23), rfnAddressCache.getPaoIdFor(rfnId2_updated), "Numeric lookup");
     }
     
     @Test
@@ -149,14 +149,14 @@ public class RfnAddressCacheTest {
         
         var rfnAddressCache = new RfnAddressCache(template, new MockAsyncDynamicDataSourceImpl());
 
-        assertNull("Nonexistent lookup", rfnAddressCache.getPaoIdFor(rfnId3));
+        assertNull(rfnAddressCache.getPaoIdFor(rfnId3), "Nonexistent lookup");
 
         template.setData(List.of(makeRfnAddress(24, rfnId3)));
         
         rfnAddressCache.dbChangeReceived(new DBChangeMsg(24, DBChangeMsg.CHANGE_PAO_DB, PaoCategory.DEVICE.getDbString(), DbChangeType.ADD));
         rfnAddressCache.dbChangeReceived(new DBChangeMsg(24, DBChangeMsg.CHANGE_PAO_DB, PaoCategory.DEVICE.getDbString(), DbChangeType.UPDATE));
 
-        assertEquals("Numeric lookup", Integer.valueOf(24), rfnAddressCache.getPaoIdFor(rfnId3));
+        assertEquals(Integer.valueOf(24), rfnAddressCache.getPaoIdFor(rfnId3), "Numeric lookup");
     }
     
     @Test
@@ -167,7 +167,7 @@ public class RfnAddressCacheTest {
         
         var rfnAddressCache = new RfnAddressCache(template, new MockAsyncDynamicDataSourceImpl());
 
-        assertNull("Nonexistent lookup", rfnAddressCache.getPaoIdFor(rfnId3));
+        assertNull(rfnAddressCache.getPaoIdFor(rfnId3), "Nonexistent lookup");
 
         template.setData(List.of(makeRfnAddress(24, rfnId3)));  //  Provide the data in case they try to load (which they shouldn't)
         
@@ -175,7 +175,7 @@ public class RfnAddressCacheTest {
         rfnAddressCache.dbChangeReceived(new DBChangeMsg(24, DBChangeMsg.CHANGE_PAO_DB, PaoCategory.DEVICE.getDbString(), DbChangeType.UPDATE));
         rfnAddressCache.dbChangeReceived(new DBChangeMsg(24, DBChangeMsg.CHANGE_PAO_DB, PaoCategory.DEVICE.getDbString(), DbChangeType.DELETE));
 
-        assertNull("Nonexistent lookup", rfnAddressCache.getPaoIdFor(rfnId3));
+        assertNull(rfnAddressCache.getPaoIdFor(rfnId3), "Nonexistent lookup");
     }
     
     @Test
@@ -187,8 +187,8 @@ public class RfnAddressCacheTest {
         
         var rfnAddressCache = new RfnAddressCache(template, new MockAsyncDynamicDataSourceImpl());
 
-        assertEquals("Numeric lookup", Integer.valueOf(23), rfnAddressCache.getPaoIdFor(rfnId2));
-        assertEquals("Numeric lookup", Integer.valueOf(24), rfnAddressCache.getPaoIdFor(rfnId3));
+        assertEquals(Integer.valueOf(23), rfnAddressCache.getPaoIdFor(rfnId2), "Numeric lookup");
+        assertEquals(Integer.valueOf(24), rfnAddressCache.getPaoIdFor(rfnId3), "Numeric lookup");
 
         //  A true swap requires three DBChanges due to the uniqueness 
         //    constraints on RfnAddress - changing A to tmp, B to A, then tmp to B.
@@ -200,8 +200,8 @@ public class RfnAddressCacheTest {
         rfnAddressCache.dbChangeReceived(new DBChangeMsg(24, DBChangeMsg.CHANGE_PAO_DB, PaoCategory.DEVICE.getDbString(), DbChangeType.UPDATE));
         rfnAddressCache.dbChangeReceived(new DBChangeMsg(23, DBChangeMsg.CHANGE_PAO_DB, PaoCategory.DEVICE.getDbString(), DbChangeType.UPDATE));
         
-        assertEquals("Numeric lookup", Integer.valueOf(24), rfnAddressCache.getPaoIdFor(rfnId2));
-        assertEquals("Numeric lookup", Integer.valueOf(23), rfnAddressCache.getPaoIdFor(rfnId3));
+        assertEquals(Integer.valueOf(24), rfnAddressCache.getPaoIdFor(rfnId2), "Numeric lookup");
+        assertEquals(Integer.valueOf(23), rfnAddressCache.getPaoIdFor(rfnId3), "Numeric lookup");
     }
     
     private static RfnAddress makeRfnAddress(int paoId, RfnIdentifier rfnIdentifier) {

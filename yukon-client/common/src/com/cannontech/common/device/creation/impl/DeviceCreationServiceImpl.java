@@ -337,6 +337,11 @@ public class DeviceCreationServiceImpl implements DeviceCreationService {
 
     }
     
+    @Override
+    public SimpleDevice getOrCreateTemplateDevice(String templateName) {
+        return deviceDao.getYukonDeviceForDevice(retrieveExistingDeviceByTemplate(templateName));
+    }
+    
     /*
      * Validates template name and creates device for the template.
      */

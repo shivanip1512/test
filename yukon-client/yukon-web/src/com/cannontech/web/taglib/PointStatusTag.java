@@ -9,7 +9,7 @@ import org.springframework.beans.factory.annotation.Autowire;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Configurable;
 
-import com.cannontech.common.gui.util.Colors;
+import com.cannontech.common.YukonColorPalette;
 import com.cannontech.core.dao.PointDao;
 import com.cannontech.core.dao.StateGroupDao;
 import com.cannontech.database.data.lite.LitePoint;
@@ -66,7 +66,7 @@ public class PointStatusTag extends YukonTagSupport {
                 color = "rgb(255,255,255)";
             } else {
                 LiteState s = stateGroupDao.findLiteState(p.getStateGroupID(), rawState);
-                color = Colors.getColorString(s.getFgColor()).toLowerCase();
+                color = YukonColorPalette.getColor(s.getFgColor()).getHexValue();
             }
         }
         

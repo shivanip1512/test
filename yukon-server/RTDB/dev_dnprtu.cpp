@@ -100,12 +100,14 @@ YukonError_t DnpRtuDevice::ExecuteRequest(CtiRequestMsg *pReq, CtiCommandParser 
     {
         if( _executeId )
         {
-            if( _lastIntegrityScan + _childScanQuietPeriod > std::chrono::system_clock::now() )
-            {
-                auto lastScan = std::chrono::system_clock::to_time_t(_lastIntegrityScan);
+            const auto Now = std::chrono::steady_clock::now();
 
-                return insertReturnMsg(ClientErrors::None, OutMessage, retList, 
-                            std::string("Parent RTU already scanned at ") + std::ctime(&lastScan));
+            if( _lastIntegrityScan + _childScanQuietPeriod > Now )
+            {
+                const auto lastScan = std::chrono::duration_cast<std::chrono::milliseconds>(Now - _lastIntegrityScan);
+
+                return insertReturnMsg(ClientErrors::None, OutMessage, retList,
+                            std::string("Parent RTU already scanned ") + std::to_string(lastScan.count()) + " millis ago");
             }
             else
             {
@@ -115,12 +117,11 @@ YukonError_t DnpRtuDevice::ExecuteRequest(CtiRequestMsg *pReq, CtiCommandParser 
             }
         }
 
-        _lastIntegrityScan = std::chrono::system_clock::now();
+        _lastIntegrityScan = std::chrono::steady_clock::now();
     }
 
-    auto nRet = Inherited::ExecuteRequest(pReq, parse, OutMessage, vgList, retList, outList);
+    return Inherited::ExecuteRequest(pReq, parse, OutMessage, vgList, retList, outList);
     
-    return nRet;
 }
 
 void DnpRtuDevice::addChildDevice(const long childDeviceId)

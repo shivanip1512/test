@@ -235,24 +235,22 @@
     <entry key="yukon.web.modules.dev.rfnTest.numEventsSent">{0,choice,0#no events sent|1#{0} event sent successfully|1&lt;{0} events sent successfully}</entry>
     <entry key="yukon.web.modules.dev.rfnTest.sendEvent.title">RFN Event Archive Request Test</entry>
     <entry key="yukon.web.modules.dev.rfnTest.sendAlarm.title">RFN Alarm Archive Request Test</entry>
-    <entry key="yukon.web.modules.dev.rfnTest.viewDataSimulator.pageName">Data Simulator</entry>
     <entry key="yukon.web.modules.dev.rfnTest.tests.title">Archive Request Test Pages</entry>
     <entry key="yukon.web.modules.dev.rfnTest.send.label">Send Archive Request</entry>
     <entry key="yukon.web.modules.dev.rfnTest.sendMessage.label">Send Message</entry>
     <entry key="yukon.web.modules.dev.rfnTest.broadcast.label">Send Verification Command</entry>
-    <entry key="yukon.web.modules.dev.rfnTest.meterReadArchiveRequest.label">Meter Read Archive Request</entry>
-    <entry key="yukon.web.modules.dev.rfnTest.lcrReadArchiveRequest.label">LCR Read Archive Request</entry>
-    <entry key="yukon.web.modules.dev.rfnTest.deviceArchiveRequest.label">Device Archive Request</entry>
-    <entry key="yukon.web.modules.dev.rfnTest.lcrDataSimulator.label">LCR Data Simulator</entry>
-    <entry key="yukon.web.modules.dev.rfnTest.rfnMeterSimulator.label">RFN Meter Simulator</entry>
-    <entry key="yukon.web.modules.dev.rfnTest.dataStreamingSimulator.label">Data Streaming Simulator</entry>
-    <entry key="yukon.web.modules.dev.rfnTest.mappingSimulator.label">Mapping Simulator</entry>
-    <entry key="yukon.web.modules.dev.rfnTest.eventArchiveRequest.label">Event Archive Request</entry>
-    <entry key="yukon.web.modules.dev.rfnTest.alarmArchiveRequest.label">Alarm Archive Request</entry>
-    <entry key="yukon.web.modules.dev.rfnTest.rfLocationArchiveRequest.label">RF Location Archive Request</entry>
-    <entry key="yukon.web.modules.dev.rfnTest.viewGatewayDataSimulator.crumbTitle">NM Gateway Simulator</entry>
+    <entry key="yukon.web.modules.dev.rfnTest.viewMeterReadArchive.pageName">Meter Read Archive Request</entry>
+    <entry key="yukon.web.modules.dev.rfnTest.lcrReadArchiveRequest.pageName">LCR Read Archive Request</entry>
+    <entry key="yukon.web.modules.dev.rfnTest.deviceArchive.pageName">Device Archive Request</entry>
+    <entry key="yukon.web.modules.dev.rfnTest.viewLcrDataSimulator.pageName">LCR Data Simulator</entry>
+    <entry key="yukon.web.modules.dev.rfnTest.rfnDeviceDeleteSimulator.pageName">RFN Device Simulator</entry>
+    <entry key="yukon.web.modules.dev.rfnTest.rfnMeterSimulator.pageName">RFN Meter Simulator</entry>
+    <entry key="yukon.web.modules.dev.rfnTest.dataStreamingSimulator.pageName">Data Streaming Simulator</entry>
+    <entry key="yukon.web.modules.dev.rfnTest.mappingSimulator.pageName">Mapping Simulator</entry>
+    <entry key="yukon.web.modules.dev.rfnTest.viewEventArchive.pageName">Event Archive Request</entry>
+    <entry key="yukon.web.modules.dev.rfnTest.alarmArchiveRequest.pageName">Alarm Archive Request</entry>
+    <entry key="yukon.web.modules.dev.rfnTest.rfLocationArchiveRequest.pageName">RF Location Archive Request</entry>
     <entry key="yukon.web.modules.dev.rfnTest.viewGatewayDataSimulator.pageName">NM Gateway Simulator</entry>
-    <entry key="yukon.web.modules.dev.rfnTest.gatewaySimulator.label">NM Gateway Simulator</entry>
     <entry key="yukon.web.modules.dev.rfnTest.gatewaySimulator.gatewayCreated">Gateway {0} creation message sent.</entry>
     <entry key="yukon.web.modules.dev.rfnTest.gatewaySimulator.gatewayDelete">Gateway {0} delete message sent.</entry>
     <entry key="yukon.web.modules.dev.rfnTest.gatewaySimulator.gatewayDataResponse">Gateway {0} Response Data message sent.</entry>
@@ -272,24 +270,45 @@
     <entry key="yukon.web.modules.dev.rfnTest.dataType.METER_CONFIGURATION_ID">Meter Configuration ID</entry>
     <entry key="yukon.web.modules.dev.rfnTest.dataType.METER_STATUS_CODE">Meter Configuration Status Code</entry>
     <entry key="yukon.web.modules.dev.rfnTest.dataType.METER_STATUS_DETAIL">Meter Configuration Status Detail</entry>
+    <entry key="yukon.web.modules.dev.rfnTest.dataType.OLD_DNP3_ADDRESS">Old DNP3 Address</entry>
+    <entry key="yukon.web.modules.dev.rfnTest.dataType.NEW_DNP3_ADDRESS">New DNP3 Address</entry>
     <entry key="yukon.web.modules.dev.rfnTest.lcrDataSimulator.title">LCR Data Simulator</entry>
+    <entry key="yukon.web.modules.dev.rfnTest.rfnDeviceDeletionSimulator.title">RFN Device Delete Simulator</entry>
+    <entry key="yukon.web.modules.dev.rfnTest.rfnDeviceDeletionSimulator.simStartFailed">Simulator failed to start</entry>
+    <entry key="yukon.web.modules.dev.rfnTest.rfnDeviceDeletionSimulator.simStartSuccess">Simulator started</entry>
+    <entry key="yukon.web.modules.dev.rfnTest.rfnDeviceDeletionSimulator.simStopFailed">Simulator failed to stop</entry>
+    <entry key="yukon.web.modules.dev.rfnTest.rfnDeviceDeletionSimulator.simStopSuccess">Simulator stopped</entry>
     <entry key="yukon.web.modules.dev.rfnTest.rfnMeterSimulator.title">RFN Meter Simulator</entry>
+    <entry key="yukon.web.modules.dev.rfnTest.rfnMeterSimulator.data.title">RFN Meter Data Simulator</entry>
+    <entry key="yukon.web.modules.dev.rfnTest.rfnMeterSimulator.data.duplicates">Duplicates</entry>
+    <entry key="yukon.web.modules.dev.rfnTest.rfnMeterSimulator.data.status.title">RFN Meter Data Simulator Status</entry>
     <entry key="yukon.web.modules.dev.rfnTest.rfnMeterSimulator.rfnMeterType">RFN Meter Type</entry>
     <entry key="yukon.web.modules.dev.rfnTest.rfnMeterSimulator.deviceId">Device Id</entry>
-    <entry key="yukon.web.modules.dev.rfnTest.rfnMeterSimulatorTest.title">RFN Meter Simulator Test</entry>
-    <entry key="yukon.web.modules.dev.rfnTest.rfnMeterReadAndControlMeterSimulator.title">RFN Read and Control Simulator</entry>
-    <entry key="yukon.web.modules.dev.rfnTest.rfnMeterReadAndControlMeterSimulator.simStartFailed">Failed to start simulator</entry>
-    <entry key="yukon.web.modules.dev.rfnTest.rfnMeterReadAndControlMeterSimulator.simStartSuccess">Simulator started</entry>
-    <entry key="yukon.web.modules.dev.rfnTest.rfnMeterReadAndControlMeterSimulator.simStopFailed">Failed to stop simulator</entry>
-    <entry key="yukon.web.modules.dev.rfnTest.rfnMeterReadAndControlMeterSimulator.simStopSuccess">Simulator stopped</entry>
+    <entry key="yukon.web.modules.dev.rfnTest.rfnMeterSimulator.data.test.title">RFN Meter Data Simulator Test</entry>
+    <entry key="yukon.web.modules.dev.rfnTest.rfnMeterSimulator.readAndControl.title">RFN Read and Control Simulator</entry>
+    <entry key="yukon.web.modules.dev.rfnTest.rfnMeterSimulator.readAndControl.simStartFailed">Failed to start simulator</entry>
+    <entry key="yukon.web.modules.dev.rfnTest.rfnMeterSimulator.readAndControl.simStartSuccess">Simulator started</entry>
+    <entry key="yukon.web.modules.dev.rfnTest.rfnMeterSimulator.readAndControl.simStopFailed">Failed to stop simulator</entry>
+    <entry key="yukon.web.modules.dev.rfnTest.rfnMeterSimulator.readAndControl.simStopSuccess">Simulator stopped</entry>
+    <entry key="yukon.web.modules.dev.rfnTest.rfnMeterSimulator.deviceConfig.title">RFN Meter Device Config Simulator</entry>
+    <entry key="yukon.web.modules.dev.rfnTest.rfnMeterSimulator.deviceConfig.helpText"><![CDATA[<p>The RFN Device Config Simulator is 
+        controlled via the Field Simulator.  You can control the fail/success percentage of the Device Config writes and reads for a single
+        Device Group.</p>
+        <p>Note that the Device Group must be a simple Device Group, not a composed Device Group.</p>]]></entry>
+    <entry key="yukon.web.modules.dev.rfnTest.rfnMeterSimulator.deviceConfig.deviceGroup">Device Group</entry>
+    <entry key="yukon.web.modules.dev.rfnTest.rfnMeterSimulator.deviceConfig.failureRate">Failure rate %</entry>
+    <entry key="yukon.web.modules.dev.rfnTest.rfnMeterSimulator.deviceConfig.configure.label">Configure</entry>
+    <entry key="yukon.web.modules.dev.rfnTest.rfnMeterSimulator.deviceConfig.configurationSuccess">Field Simulator configuration successfully sent</entry>
+    <entry key="yukon.web.modules.dev.rfnTest.rfnMeterSimulator.deviceConfig.configurationFailed">Error encountered while configuring Field Simulator</entry>
     <entry key="yukon.web.modules.dev.rfnTest.lcrDataSimulator.serialNumberRangeLcr6200">RFN LCR 6200 Serial Number Range</entry>
     <entry key="yukon.web.modules.dev.rfnTest.lcrDataSimulator.serialNumberRangeLcr6600">RFN LCR 6600 Serial Number Range</entry>
     <entry key="yukon.web.modules.dev.rfnTest.lcrDataSimulator.serialNumberRangeLcr6700">RFN LCR 6700 Serial Number Range</entry>
+    <entry key="yukon.web.modules.dev.rfnTest.lcrDataSimulator.serialNumberRangeLcr6200S">LCR 6200S Serial Number Range</entry>
     <entry key="yukon.web.modules.dev.rfnTest.lcrDataSimulator.serialNumberRangeLcr6600S">LCR 6600S Serial Number Range</entry>
     <entry key="yukon.web.modules.dev.rfnTest.lcrDataSimulator.serialNumberRangeLcr6601S">LCR 6601S Serial Number Range</entry>
     <entry key="yukon.web.modules.dev.rfnTest.lcrDataSimulator.duplicates">Duplicates</entry>
     <entry key="yukon.web.modules.dev.rfnTest.lcrDataSimulator.tlvVersion">TLV Version</entry>
-    <entry key="yukon.web.modules.dev.rfnTest.rfnMeterDataSimulator.reportingInterval">Reporting Interval</entry>
+    <entry key="yukon.web.modules.dev.rfnTest.rfnMeterSimulator.data.reportingInterval">Reporting Interval</entry>
     <entry key="yukon.web.modules.dev.rfnTest.sendLcrDeviceMessages.label">Simulate Existing Devices</entry>
     <entry key="yukon.web.modules.dev.rfnTest.sendRfnMeterMessages.label">Simulate Existing RFN Meters</entry>
     <entry key="yukon.web.modules.dev.rfnTest.sendRfnDisconnectMessage.label">Disconnect from Meter</entry>
@@ -299,8 +318,8 @@
     <entry key="yukon.web.modules.dev.rfnTest.stopSendingRfnMeterMessages.label">Stop Simulating Existing RFN Meters</entry>
     <entry key="yukon.web.modules.dev.rfnTest.startSimulator.label">Simulate Serial Number Range</entry>
     <entry key="yukon.web.modules.dev.rfnTest.stopSimulator.label">Stop Simulating Serial Number Range</entry>
-    <entry key="yukon.web.modules.dev.rfnTest.pointMappingIcd.label">Yukon Point Mapping ICD</entry>
-    <entry key="yukon.web.modules.dev.rfnTest.pointMappingDecipher.label">Decipher Point Mapping</entry>
+    <entry key="yukon.web.modules.dev.rfnTest.pointMappingIcd.pageName">Yukon Point Mapping ICD</entry>
+    <entry key="yukon.web.modules.dev.rfnTest.pointMappingDecipher.pageName">Decipher Point Mapping</entry>
     <entry key="yukon.web.modules.dev.rfnTest.pointMappingDecipher.modifiers">Modifiers</entry>
     <entry key="yukon.web.modules.dev.rfnTest.pointMappingDecipher.uom">Unit Of Measure</entry>
     <entry key="yukon.web.modules.dev.rfnTest.pointMappingDecipher.baseModifiers">Base Modifiers</entry>
@@ -311,21 +330,18 @@
     <entry key="yukon.web.modules.dev.rfnTest.pointMappingDecipher.offset">Offset</entry>
     <entry key="yukon.web.modules.dev.rfnTest.pointMappingDecipher.multiplier">Multiplier</entry>
     <entry key="yukon.web.modules.dev.rfnTest.pointMappingDecipher.attributes">Attributes</entry>
-    <entry key="yukon.web.modules.dev.rfnTest.viewDataStreamingSimulator.crumbTitle">Data Streaming Simulator</entry>
     <entry key="yukon.web.modules.dev.rfnTest.viewDataStreamingSimulator.pageName">Data Streaming Simulator</entry>
     <entry key="yukon.web.modules.dev.rfnTest.dataStreamingSimulator.simulatorStart">Data streaming simulator started!</entry>
     <entry key="yukon.web.modules.dev.rfnTest.dataStreamingSimulator.gatewayAndDataStreamingSimulatorsStart">Data streaming and Gateway simulators started!</entry>
     <entry key="yukon.web.modules.dev.rfnTest.dataStreamingSimulator.simulatorStop">Data streaming simulator stopped.</entry>
-    <entry key="yukon.web.modules.dev.rfnTest.viewMappingSimulator.crumbTitle">Mapping Simulator</entry>
     <entry key="yukon.web.modules.dev.rfnTest.viewMappingSimulator.pageName">Mapping Simulator</entry>
     <entry key="yukon.web.modules.dev.rfnTest.mappingSimulator.simulatorStart">Mapping simulator started!</entry>
     <entry key="yukon.web.modules.dev.rfnTest.mappingSimulator.simulatorStop">Mapping simulator stopped.</entry>
     <entry key="yukon.web.modules.dev.rfnTest.mappingSimulator.databasePopulated">Database population started. See simulator service log entry for completion.</entry>
     <entry key="yukon.web.modules.dev.rfnTest.mappingSimulator.settingsUpdated">Settings have been updated.</entry>
-    <entry key="yukon.web.modules.dev.rfnTest.rfnConfigNotification.label">RFN Config Notification</entry>
+    <entry key="yukon.web.modules.dev.rfnTest.rfnConfigNotification.pageName">RFN Config Notification</entry>
     <entry key="yukon.web.modules.dev.rfnTest.rfnConfigNotification.helpText"><![CDATA[The RFN Config Notification Test simulates RFN Config Notification messages 
     from RFN nodes to Porter. ]]></entry>
-    <entry key="yukon.web.modules.dev.rfnTest.statusArchiveRequest.crumbTitle">Status Archive Request</entry>
     <entry key="yukon.web.modules.dev.rfnTest.statusArchiveRequest.pageName">Status Archive Request</entry>
     <entry key="yukon.web.modules.dev.rfnTest.statusArchiveRequest.demandReset.title">Demand Reset Status Archive</entry>
     <entry key="yukon.web.modules.dev.rfnTest.statusArchiveRequest.demandReset.helpText"><![CDATA[
@@ -351,12 +367,16 @@
     <entry key="yukon.web.modules.dev.smartNotificationsSimulator.crumbTitle">Smart Notifications Simulator</entry>
     
     <!-- Collection Actions Testing -->
-    <entry key="yukon.web.modules.dev.collectionActionsTesting.pageName">Collection Actions Testing</entry>
-    <entry key="yukon.web.modules.dev.collectionActionsTesting.crumbTitle">Collection Actions Testing</entry>
+    <entry key="yukon.web.modules.dev.cacheManagement.pageName">Cache Management </entry>
+    <entry key="yukon.web.modules.dev.cacheManagement.crumbTitle">Cache Management</entry>
     
     <!-- Itron Simulator -->
     <entry key="yukon.web.modules.dev.itronSimulator.pageName">Itron Simulator</entry>
     <entry key="yukon.web.modules.dev.itronSimulator.crumbTitle">Itron Simulator</entry>
+    
+    <!-- Eaton Cloud Simulator -->
+    <entry key="yukon.web.modules.dev.eatonCloudSimulator.pageName">Eaton Cloud Simulator</entry>
+    <entry key="yukon.web.modules.dev.eatonCloudSimulator.crumbTitle">Eaton Cloud Simulator</entry>
     
     <!-- JMS API -->
     <entry key="yukon.web.modules.dev.jmsApis.pageName">JMS APIs</entry>
@@ -389,26 +409,21 @@
     
     <!-- Ecobee Test -->
     <entry key="yukon.web.modules.dev.ecobee.mockTest.pageName">Ecobee Test</entry>
-    <entry key="yukon.web.modules.dev.ecobee.mockTest.registerDevice">Register Device</entry>
-    <entry key="yukon.web.modules.dev.ecobee.mockTest.moveDevice">Move Device</entry>
-    <entry key="yukon.web.modules.dev.ecobee.mockTest.createSet">Create Management Set</entry>
-    <entry key="yukon.web.modules.dev.ecobee.mockTest.moveSet">Move Management Set</entry>
-    <entry key="yukon.web.modules.dev.ecobee.mockTest.removeSet">Remove Set</entry>
-    <entry key="yukon.web.modules.dev.ecobee.mockTest.sendDR">Send DR</entry>
-    <entry key="yukon.web.modules.dev.ecobee.mockTest.sendRestore">Send Restore</entry>
-    <entry key="yukon.web.modules.dev.ecobee.mockTest.getHierarchy">Get Hierarchy</entry>
     <entry key="yukon.web.modules.dev.ecobee.mockTest.authenticate">Authenticate</entry>
-    <entry key="yukon.web.modules.dev.ecobee.mockTest.runtimeReport">Runtime Report</entry>
-    <entry key="yukon.web.modules.dev.ecobee.mockTest.assignThermostat">Assign Thermostat</entry>
+    <entry key="yukon.web.modules.dev.ecobee.mockTest.runtimeData">Runtime Data</entry>
     <entry key="yukon.web.modules.dev.ecobee.mockTest.saved">Saved Successfully</entry>
-    
-    <!-- Ecobee PGP Key Pair -->
-    <entry key="yukon.web.modules.dev.ecobeePGPKeyPair">Ecobee PGP Key Pair</entry>
-    <entry key="yukon.web.modules.dev.ecobeePGPKeyPair.pgpPublicKey">PGP Public key</entry>
-    <entry key="yukon.web.modules.dev.ecobeePGPKeyPair.pgpPrivateKey">PGP Private Key</entry>
-    <entry key="yukon.web.modules.dev.ecobeePGPKeyPair.save.success">Ecobee key pair saved successfully</entry>
-    <entry key="yukon.web.modules.dev.ecobeePGPKeyPair.save.failed">Provide public and private key</entry>
-    <entry key="yukon.web.modules.dev.ecobeePGPKeyPair.pageName">Save Ecobee PGP Key Pair</entry>
+    <entry key="yukon.web.modules.dev.ecobee.mockTest.createDevice">Create Device</entry>
+    <entry key="yukon.web.modules.dev.ecobee.mockTest.deleteDevice">Delete Device / Unenrollment</entry>
+    <entry key="yukon.web.modules.dev.ecobee.mockTest.enrollment">Enrollment</entry>
+    <entry key="yukon.web.modules.dev.ecobee.mockTest.issueDemandResponse">Issue Demand Response</entry>
+    <entry key="yukon.web.modules.dev.ecobee.mockTest.createPushConfiguration">Create Push Configuration</entry>
+    <entry key="yukon.web.modules.dev.ecobee.mockTest.showPushConfiguration">Show Push Configuration</entry>
+    <entry key="yukon.web.modules.dev.ecobee.mockTest.showUser">Show User</entry>
+    <entry key="yukon.web.modules.dev.ecobee.mockTest.getGroup">Get Group</entry>
+    <entry key="yukon.web.modules.dev.ecobee.mockTest.generateDiscrepency">Generate Discrepency</entry>
+    <entry key="yukon.web.modules.dev.ecobee.mockTest.cancelDemandResponse">Cancel Demand Response / Opt Out</entry>
+    <entry key="yukon.web.modules.dev.ecobee.mockTest.paginatedResponse">Paginated Response for Groups and Thermostats </entry>
+    <entry key="yukon.web.modules.dev.ecobee.mockTest.deviceStatusResponse">Device Status</entry>
     
     <!-- Itron Key Pair -->
     <entry key="yukon.web.modules.dev.itronKeyPair">Itron Key Pair</entry>
@@ -418,7 +433,15 @@
     <entry key="yukon.web.modules.dev.itronKeyPair.save.failed">Provide Public and Private Key</entry>
     <entry key="yukon.web.modules.dev.itronKeyPair.pageName">Save Itron Key Pair</entry>
     <entry key="yukon.web.modules.dev.itronKeyPair.loadError">Error loading Itron key pair. Keys may not be set.</entry>
-    
+
+    <!-- Eaton Cloud Auth Token -->
+    <entry key="yukon.web.modules.dev.eatonCloudToken.eatonCloudAuthToken">Eaton Cloud Authorization Token</entry>
+    <entry key="yukon.web.modules.dev.eatonCloudToken.username">Eaton Cloud Username</entry>
+    <entry key="yukon.web.modules.dev.eatonCloudToken.password">Eaton Cloud Password</entry>
+    <entry key="yukon.web.modules.dev.eatonCloudToken.applicationId">Eaton Cloud GUID</entry>
+    <entry key="yukon.web.modules.dev.eatonCloudToken.pageName">Eaton Cloud Token Test</entry>
+    <entry key="yukon.web.modules.dev.eatonCloudToken.loadError">Error loading Eaton Cloud Authorization Token</entry>
+
     <!-- Nest Test -->
     <entry key="yukon.web.modules.dev.nest.pageName">Nest Test</entry>
     <entry key="yukon.web.modules.dev.nest.viewNestVersion.pageName">Nest Version</entry>
@@ -569,12 +592,14 @@
     <entry key="yukon.web.modules.dev.alerts.error">All your base are belong to us.</entry>
     
     <entry key="yukon.web.modules.dev.inputs.pageName">Fun with Inputs</entry>
+    <entry key="yukon.web.modules.dev.charts.pageName">Charts and Graphs</entry>
     <entry key="yukon.web.modules.dev.labels.badges.pageName">Labels And Badges</entry>
     <entry key="yukon.web.modules.dev.progressbars.pageName">Progress Bars</entry>
     <entry key="yukon.web.modules.dev.timelines.pageName">Timelines</entry>
     <entry key="yukon.web.modules.dev.sliders.pageName">Sliders</entry>
     <entry key="yukon.web.modules.dev.steppers.pageName">Steppers</entry>
     <entry key="yukon.web.modules.dev.blocking.pageName">Blocking</entry>
+    <entry key="yukon.web.modules.dev.dropDown.pageName">Dropdowns</entry>
     
     <entry key="yukon.web.modules.dev.dialogs.pageName">Dialogs</entry>
     
@@ -620,10 +645,10 @@
     Period will divide the entire start-stop range into intervals. Value High/Low are upper and lower values for Analog points.
     ]]></entry>
     
-    <entry key="yukon.web.modules.dev.rfnMeterSimulator.helpText"><![CDATA[RFN Meter Simulator tool generates the  read archive requests with the point data for the existing all RFN meter device types or the chosen RFN meter types, as per the Reporting interval selected.
+    <entry key="yukon.web.modules.dev.rfnMeterSimulator.data.helpText"><![CDATA[RFN Meter Simulator tool generates the  read archive requests with the point data for the existing all RFN meter device types or the chosen RFN meter types, as per the Reporting interval selected.
     <br>The duplicate read archive request will be generated as per the percentage of duplicity mentioned while starting the simulator.]]></entry>
     
-    <entry key="yukon.web.modules.dev.rfnMeterReadAndControlMeterSimulator.helpText"><![CDATA[
+    <entry key="yukon.web.modules.dev.rfnMeterSimulator.readAndControl.helpText"><![CDATA[
     This simulator is designed to mock the functionality of the network manager in respect to sending and receiving messages along with the generation of meter data.
     It functions in a similar manner to the NM Gateway Simulator pertaining to activating and deactivating simulators.
     <h3>Current Simulators:</h3>

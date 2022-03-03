@@ -19,11 +19,15 @@ import org.springframework.context.MessageSourceResolvable;
 import com.cannontech.amr.disconnect.model.DisconnectCommand;
 import com.cannontech.amr.disconnect.model.DisconnectDeviceState;
 import com.cannontech.amr.meter.model.PlcMeter;
+import com.cannontech.amr.rfn.model.RfnMeter;
 import com.cannontech.clientutils.YukonLogManager;
 import com.cannontech.common.bulk.collection.device.model.CollectionAction;
 import com.cannontech.common.bulk.service.BulkImportType;
 import com.cannontech.common.device.DeviceRequestType;
+import com.cannontech.common.device.port.BaudRate;
+import com.cannontech.common.events.helper.EventLogHelper;
 import com.cannontech.common.events.loggers.AccountEventLogService;
+import com.cannontech.common.events.loggers.CommChannelEventLogService;
 import com.cannontech.common.events.loggers.CommandRequestExecutorEventLogService;
 import com.cannontech.common.events.loggers.CommandScheduleEventLogService;
 import com.cannontech.common.events.loggers.CommanderEventLogService;
@@ -33,10 +37,12 @@ import com.cannontech.common.events.loggers.DemandResetEventLogService;
 import com.cannontech.common.events.loggers.DemandResponseEventLogService;
 import com.cannontech.common.events.loggers.DeviceConfigEventLogService;
 import com.cannontech.common.events.loggers.DisconnectEventLogService;
+import com.cannontech.common.events.loggers.EatonCloudEventLogService;
 import com.cannontech.common.events.loggers.EcobeeEventLogService;
 import com.cannontech.common.events.loggers.EndpointEventLogService;
 import com.cannontech.common.events.loggers.GatewayEventLogService;
 import com.cannontech.common.events.loggers.HardwareEventLogService;
+import com.cannontech.common.events.loggers.InfrastructureEventLogService;
 import com.cannontech.common.events.loggers.InventoryConfigEventLogService;
 import com.cannontech.common.events.loggers.ItronEventLogService;
 import com.cannontech.common.events.loggers.MeteringEventLogService;
@@ -55,6 +61,7 @@ import com.cannontech.common.events.loggers.ZigbeeEventLogService;
 import com.cannontech.common.events.model.EventSource;
 import com.cannontech.common.exception.BadAuthenticationException.Type;
 import com.cannontech.common.i18n.Displayable;
+import com.cannontech.common.log.model.YukonLogger;
 import com.cannontech.common.pao.PaoIdentifier;
 import com.cannontech.common.pao.PaoType;
 import com.cannontech.common.pao.model.PaoLocation;
@@ -63,15 +70,19 @@ import com.cannontech.core.dao.impl.LoginStatusEnum;
 import com.cannontech.core.roleproperties.YukonRole;
 import com.cannontech.core.roleproperties.YukonRoleProperty;
 import com.cannontech.database.YNBoolean;
+import com.cannontech.database.data.device.Rfn1200;
 import com.cannontech.database.data.lite.LiteYukonUser;
 import com.cannontech.database.data.point.PointType;
+import com.cannontech.database.db.device.RfnAddress;
 import com.cannontech.database.db.device.lm.GearControlMethod;
-import com.cannontech.dr.ecobee.model.EcobeeDiscrepancyType;
+import com.cannontech.dr.ecobee.model.EcobeeZeusDiscrepancyType;
 import com.cannontech.dr.nest.model.v3.EnrollmentState;
 import com.cannontech.dr.nest.model.v3.RushHourEventType;
 import com.cannontech.dr.nest.model.v3.SchedulabilityError;
 import com.cannontech.dr.rfn.model.PqrConfig;
 import com.cannontech.i18n.YukonMessageSourceResolvable;
+import com.cannontech.infrastructure.model.InfrastructureWarningSeverity;
+import com.cannontech.infrastructure.model.InfrastructureWarningType;
 import com.cannontech.system.DREncryption;
 import com.cannontech.system.GlobalSettingType;
 import com.cannontech.web.dev.database.objects.DevEventLog;
@@ -85,16 +96,19 @@ public class DevEventLogCreationService {
     @Autowired private CommanderEventLogService commandEventLogService;
     @Autowired private CommandRequestExecutorEventLogService commandRequestExecutorEventLogService;
     @Autowired private CommandScheduleEventLogService commandScheduleEventLogService;
+    @Autowired private CommChannelEventLogService commChannelEventLogService;
     @Autowired private DataStreamingEventLogService dataStreamingEventLogService;
     @Autowired private DatabaseMigrationEventLogService databaseMigrationEventLogService;
     @Autowired private DemandResetEventLogService demandResetEventLogService;
     @Autowired private DemandResponseEventLogService demandResponseEventLogService;
     @Autowired private DeviceConfigEventLogService deviceConfigEventLogService;
     @Autowired private DisconnectEventLogService disconnectEventLogService;
+    @Autowired private EatonCloudEventLogService eatonCloudEventLogService;
     @Autowired private EndpointEventLogService endPointEventLogService;
     @Autowired private EcobeeEventLogService ecobeeEventLogService;
     @Autowired private GatewayEventLogService gatewayEventLogService;
     @Autowired private HardwareEventLogService hardwareEventLogService;
+    @Autowired private InfrastructureEventLogService infrastructureEventLogService;
     @Autowired private InventoryConfigEventLogService inventoryConfigEventLogService;
     @Autowired private ItronEventLogService itronEventLogService;
     @Autowired private MeteringEventLogService meteringEventLogService;
@@ -110,6 +124,7 @@ public class DevEventLogCreationService {
     @Autowired private UsersEventLogService usersEventLogService;
     @Autowired private ValidationEventLogService validationEventLogService;
     @Autowired private ZigbeeEventLogService zigbeeEventLogService;
+    @Autowired private EventLogHelper eventLogHelper;
 
     private Map<LogType, DevEventLogExecutable> eventLogExecutables;
 
@@ -342,6 +357,19 @@ public class DevEventLogCreationService {
                 commandScheduleEventLogService.scheduleUpdated(yukonUser, commandScheduleId);
             }
         });
+        executables.put(LogType.COMM_CHANNEL, new DevEventLogExecutable() {
+            @Override
+            public void execute(DevEventLog devEventLog) {
+                LiteYukonUser yukonUser = new LiteYukonUser(0, devEventLog.getUsername());
+                String commChannelName = devEventLog.getIndicatorString() + "commChannelName";
+                PaoType portType = PaoType.TCPPORT;
+                BaudRate baudRate = BaudRate.BAUD_1200;
+
+                commChannelEventLogService.commChannelCreated(commChannelName, portType, baudRate, yukonUser);
+                commChannelEventLogService.commChannelUpdated(commChannelName, portType, baudRate, yukonUser);
+                commChannelEventLogService.commChannelDeleted(commChannelName, portType, baudRate, yukonUser);
+            }
+        });
         executables.put(LogType.DATA_STREAMING, new DevEventLogExecutable() {
             @Override
             public void execute(DevEventLog devEventLog) {
@@ -517,35 +545,35 @@ public class DevEventLogCreationService {
                 String input = "add config";
                 String statistics = "Completed: 1";
                 
-                deviceConfigEventLogService.assignConfigToDeviceCompleted(deviceConfig, deviceName, yukonUser, 1);
-                deviceConfigEventLogService.unassignConfigFromDeviceCompleted(deviceName, yukonUser, 0);
+                deviceConfigEventLogService.changeConfigOfDeviceCompleted(deviceConfig, deviceName, yukonUser, 1);
+                deviceConfigEventLogService.removeConfigFromDeviceCompleted(deviceName, yukonUser, 0);
                 
-                deviceConfigEventLogService.readConfigFromDeviceInitiated(deviceName, yukonUser);
-                deviceConfigEventLogService.readConfigFromDeviceCompleted(deviceName, 1);
+                deviceConfigEventLogService.validateConfigOnDeviceInitiated(deviceName, yukonUser);
+                deviceConfigEventLogService.validateConfigOnDeviceCompleted(deviceName, 1);
                 
-                deviceConfigEventLogService.sendConfigToDeviceInitiated(deviceName, yukonUser);
-                deviceConfigEventLogService.sendConfigToDeviceCompleted(deviceName, 0);
+                deviceConfigEventLogService.uploadConfigToDeviceInitiated(deviceName, yukonUser);
+                deviceConfigEventLogService.uploadConfigToDeviceCompleted(deviceName, 0);
                 
                 deviceConfigEventLogService.verifyConfigFromDeviceInitiated(deviceName, yukonUser);
                 deviceConfigEventLogService.verifyConfigFromDeviceCompleted(deviceName, 1);
                 
-                deviceConfigEventLogService.sendConfigInitiated(action, deviceConfig, deviceCount, yukonUser, resultKey);
-                deviceConfigEventLogService.sendConfigCompleted(action, input, statistics, creStatus, resultKey);
-                deviceConfigEventLogService.sendConfigCancelled(action, input, statistics, yukonUser, resultKey);
+                deviceConfigEventLogService.uploadConfigInitiated(action, deviceConfig, deviceCount, yukonUser, resultKey);
+                deviceConfigEventLogService.uploadConfigCompleted(action, input, statistics, creStatus, resultKey);
+                deviceConfigEventLogService.uploadConfigCancelled(action, input, statistics, yukonUser, resultKey);
                 
-                deviceConfigEventLogService.readConfigInitiated(action, deviceConfig, deviceCount, yukonUser, resultKey);
-                deviceConfigEventLogService.readConfigCompleted(action, input, statistics, creStatus, resultKey);
-                deviceConfigEventLogService.readConfigCancelled(action, input, statistics, yukonUser, resultKey);
+                deviceConfigEventLogService.validateConfigInitiated(action, deviceConfig, deviceCount, yukonUser, resultKey);
+                deviceConfigEventLogService.validateConfigCompleted(action, input, statistics, creStatus, resultKey);
+                deviceConfigEventLogService.validateConfigCancelled(action, input, statistics, yukonUser, resultKey);
                 
                 deviceConfigEventLogService.verifyConfigInitiated(action, deviceConfig, deviceCount, yukonUser, resultKey);
                 deviceConfigEventLogService.verifyConfigCompleted(action, input, statistics, creStatus, resultKey);
                 deviceConfigEventLogService.verifyConfigCancelled(action, input, statistics, yukonUser, resultKey);
                 
-                deviceConfigEventLogService.assignConfigInitiated(action, deviceConfig, deviceCount, yukonUser, resultKey);
-                deviceConfigEventLogService.assignConfigCompleted(action, input, statistics, creStatus, resultKey);
+                deviceConfigEventLogService.changeConfigInitiated(action, deviceConfig, deviceCount, yukonUser, resultKey);
+                deviceConfigEventLogService.changeConfigCompleted(action, input, statistics, creStatus, resultKey);
                 
-                deviceConfigEventLogService.unassignConfigInitiated(action, deviceConfig, deviceCount, yukonUser, resultKey);
-                deviceConfigEventLogService.unassignConfigCompleted(action, input, statistics, creStatus, resultKey);
+                deviceConfigEventLogService.removeConfigInitiated(action, deviceConfig, deviceCount, yukonUser, resultKey);
+                deviceConfigEventLogService.removeConfigCompleted(action, input, statistics, creStatus, resultKey);
             }
         });
         executables.put(LogType.DISCONNECT, new DevEventLogExecutable() {
@@ -687,7 +715,6 @@ public class DevEventLogCreationService {
                 itronEventLogService.addServicePoint(accountNumber, userName);
                 itronEventLogService.removeHANDeviceFromServicePoint(macAddress);
                 
-                itronEventLogService.addMacAddressToGroup(macAddress, groupName);
                 itronEventLogService.getGroupIdFromItron(groupName);
                 itronEventLogService.optOut(accountNumber, yukonGroupId, macAddress);
                 itronEventLogService.sendEnrollmentRequest(accountNumber, programId);
@@ -722,6 +749,13 @@ public class DevEventLogCreationService {
                 String serialNumberOrAddress = "45445";
                 PaoType paoType = PaoType.RFN410FD;
                 
+                PaoIdentifier paoId = new PaoIdentifier(12345, paoType);
+                RfnIdentifier rfnId = new RfnIdentifier(serialNumberOrAddress, "Manufacturer", "model");
+                
+                RfnMeter oldRfnMeter = new RfnMeter(paoId, rfnId, serialNumberOrAddress, deviceName, false);
+                RfnMeter newRfnMeter = new RfnMeter(paoId, rfnId, serialNumberOrAddress, deviceName, false);
+                
+                
                 meteringEventLogService.readNowPushedForReadingsWidget(user, meterNumber);
                 meteringEventLogService.scheduleDeleted(user, scheduleName);
                 meteringEventLogService.jobStarted(deviceRequestType, scheduleName, deviceGroup, retry, user, jobId);
@@ -736,7 +770,7 @@ public class DevEventLogCreationService {
                 meteringEventLogService.tryCompleted(deviceRequestType, scheduleName, tryNumber, commands, contextId, executionId);
                 meteringEventLogService.meterCreated(deviceName, meterNumber, serialNumberOrAddress, paoType, user.getUsername());
                 meteringEventLogService.meterDeleted(deviceName, meterNumber, user.getUsername());
-                meteringEventLogService.meterEdited(deviceName, meterNumber, user.getUsername());
+                meteringEventLogService.meterEdited(deviceName, meterNumber, user.getUsername(), oldRfnMeter, newRfnMeter);
             }
         });
         executables.put(LogType.MULTISPEAK, new DevEventLogExecutable() {
@@ -857,15 +891,40 @@ public class DevEventLogCreationService {
         executables.put(LogType.RFN_DEVICE, new DevEventLogExecutable() {
             @Override
             public void execute(DevEventLog devEventLog) {
+                String username = "Dev Setup Test User";
                 String templateName = devEventLog.getIndicatorString() + "TemplateName";
                 String sensorManufacturer = devEventLog.getIndicatorString() + "SensorManufacturer";
                 String sensorModel = devEventLog.getIndicatorString() + "SensorModel";
                 String sensorSerialNumber = "45666545";
                 RfnIdentifier rfnIdentifier = new RfnIdentifier(sensorSerialNumber, sensorManufacturer, sensorModel);
-                
+
+                RfnAddress rfnAddress = new RfnAddress();
+                rfnAddress.setManufacturer("Test Manufacturer");
+                rfnAddress.setSerialNumber("123456789");
+                rfnAddress.setModel("Test Mode");
+                rfnAddress.setDeviceID(987654321);
+
+                Rfn1200 oldRfn1200 = new Rfn1200();
+                oldRfn1200.setPAOName("Old RFN-1200");
+                oldRfn1200.setRfnAddress(rfnAddress);
+                oldRfn1200.setDisabled(false);
+                oldRfn1200.setDeviceID(998877);
+                Rfn1200 newRfn1200 = new Rfn1200();
+                newRfn1200.setPAOName("New RFN-1200");
+                newRfn1200.setRfnAddress(rfnAddress);
+                newRfn1200.setDisabled(false);
+                newRfn1200.setDeviceID(998877);
+
                 rfnDeviceEventLogService.createdNewDeviceAutomatically(rfnIdentifier, templateName,  templateName);
-                rfnDeviceEventLogService.receivedDataForUnkownDeviceTemplate(templateName);
+                rfnDeviceEventLogService.receivedDataForUnkownDeviceTemplate(templateName, sensorSerialNumber);
                 rfnDeviceEventLogService.unableToCreateDeviceFromTemplate(templateName, sensorManufacturer, sensorModel, sensorSerialNumber);
+                rfnDeviceEventLogService.outageEventReceived(sensorSerialNumber, "RfnEvent", "Outage", new Instant(), null);
+                rfnDeviceEventLogService.outageEventReceived(sensorSerialNumber, "RfnEvent", "Restore", new Instant(), new Instant());
+                rfnDeviceEventLogService.outageEventReceived(sensorSerialNumber, "RfnAlarm", "Outage", new Instant(), null);
+                rfnDeviceEventLogService.outageEventReceived(sensorSerialNumber, "RfnAlarm", "Restore", null, new Instant());
+                rfnDeviceEventLogService.rfn1200Created(rfnIdentifier, "Old RFN-1200", username);
+                rfnDeviceEventLogService.rfn1200Updated(oldRfn1200, newRfn1200, username);
+                rfnDeviceEventLogService.rfn1200Deleted("New RFN-1200", username);
             }
         });
         executables.put(LogType.STARS, new DevEventLogExecutable() {
@@ -972,6 +1031,26 @@ public class DevEventLogCreationService {
                 systemEventLogService.maintenanceTaskEnabled(user, taskName);
                 systemEventLogService.maintenanceTaskSettingsUpdated(user, taskName);
                 
+                String attributeName = "testAttribute";
+                Integer attributeId = 42;
+                Integer pointOffset = 1000;
+                systemEventLogService.attributeCreated(user, attributeId, attributeName);
+                systemEventLogService.attributeUpdated(user, attributeName, "newAttributeName");
+                systemEventLogService.attributeDeleted(user, attributeName);
+                systemEventLogService.attributeAssigned(user, attributeName, PaoType.VIRTUAL_SYSTEM, PointType.CalcAnalog, pointOffset);
+                systemEventLogService.attributeAssignmentDeleted(user, attributeName, PaoType.VIRTUAL_SYSTEM, PointType.CalcAnalog, pointOffset);
+                
+                String loggerName = devEventLog.getIndicatorString() + "LoggerName";
+                String loggerLevel = devEventLog.getIndicatorString() + "LoggerLevel";
+                Date expirationDate = new Date();
+                systemEventLogService.loggerAdded(loggerName, loggerLevel, expirationDate, user);
+                systemEventLogService.loggerUpdated(loggerName, loggerLevel, expirationDate, user);
+                systemEventLogService.loggerDeleted(loggerName, user);
+                
+                String yukonService = "Web Server";
+                String typeOrValue = "Ecobee Private Key";
+                eventLogHelper.decryptionFailedEventLog(yukonService, typeOrValue);
+        
             }
         });
         executables.put(LogType.TOOLS, new DevEventLogExecutable() {
@@ -1030,6 +1109,13 @@ public class DevEventLogCreationService {
                 toolsEventLogService.scheduleUpdated(user, scheduleName, type, scheduledRun);
                 toolsEventLogService.scheduleDeleted(user, scheduleName);
                 toolsEventLogService.scheduleImportError(scheduleName, type, error);
+
+                String trendName = devEventLog.getIndicatorString() + "TrendName";
+                DateTime resetPeakStartDate = new DateTime();
+                toolsEventLogService.trendCreated(trendName, user);
+                toolsEventLogService.trendUpdated(trendName, user);
+                toolsEventLogService.trendDeleted(trendName, user);
+                toolsEventLogService.resetPeak(trendName, user, resetPeakStartDate);
 
             }
         });
@@ -1139,13 +1225,10 @@ public class DevEventLogCreationService {
             @Override
             public void execute(DevEventLog devEventLog) {
                 LiteYukonUser yukonUser = new LiteYukonUser(0, devEventLog.getUsername());
-                LocalDate endDate = LocalDate.now();
-                LocalDate startDate = LocalDate.now().minusDays(1);
-                String loadGroupIds = devEventLog.getIndicatorString() + "123, 456, 789";
-
-                ecobeeEventLogService.syncIssueFixed(yukonUser, EcobeeDiscrepancyType.EXTRANEOUS_DEVICE.toString(), devEventLog.getEventSource());
-                ecobeeEventLogService.allSyncIssuesFixed(yukonUser, devEventLog.getEventSource());
-                ecobeeEventLogService.dataDownloaded(yukonUser, startDate, endDate, loadGroupIds, devEventLog.getEventSource());
+                ecobeeEventLogService.reconciliationCompleted(0, "123453625", EcobeeZeusDiscrepancyType.MISSING_DEVICE.toString(),
+                        yukonUser, 1);
+                ecobeeEventLogService.reconciliationStarted(1, yukonUser);
+                ecobeeEventLogService.reconciliationResults(10, 5, 4, 1);
             }
         });
         executables.put(LogType.GATEWAY, new DevEventLogExecutable() {
@@ -1232,6 +1315,34 @@ public class DevEventLogCreationService {
                 pqrEventLogService.sendConfig(user, totalCount, config.toString());
             }
         });
+        executables.put(LogType.INFRASTRUCTURE, new DevEventLogExecutable() {
+            @Override
+            public void execute(DevEventLog devEventLog) {
+                String testPaoName = "123456789";
+                String message = "Text of the warning";
+                InfrastructureWarningType warningType = InfrastructureWarningType.GATEWAY_CONNECTION_STATUS;
+                InfrastructureWarningSeverity severity = InfrastructureWarningSeverity.HIGH;
+
+                infrastructureEventLogService.warningGenerated(testPaoName,
+                                                               warningType.toString(),
+                                                               severity.toString(),
+                                                               message);
+                infrastructureEventLogService.warningCleared(testPaoName, warningType.toString());
+            }
+        });
+        executables.put(LogType.EATON_CLOUD, new DevEventLogExecutable() {
+            @Override
+            public void execute(DevEventLog devEventLog) {
+                String guid = "60521f5e-8af1-4a78-abba-abb4f94ed6ba";
+                String deviceLabel = "91564844";
+                int dutyCyclePercent = 50;
+                int dutyCyclePeriod = 900;
+                int criticality = 100;
+                eatonCloudEventLogService.sendShed(deviceLabel, "1", "1", guid, dutyCyclePercent, dutyCyclePeriod, criticality,
+                        1);
+                eatonCloudEventLogService.sendRestore(deviceLabel, guid, "1", 1);
+            }
+        });
         eventLogExecutables = ImmutableMap.copyOf(executables);
     }
 
@@ -1244,28 +1355,31 @@ public class DevEventLogCreationService {
         COMMAND(CommanderEventLogService.class, 12),
         COMMAND_REQUEST_EXECUTOR(CommandRequestExecutorEventLogService.class, 2),
         COMMAND_SCHEDULE(CommandScheduleEventLogService.class, 6),
+        COMM_CHANNEL(CommChannelEventLogService.class, 3),
         DATA_STREAMING(DataStreamingEventLogService.class, 6),
         DATABASE_MIGRATION(DatabaseMigrationEventLogService.class, 3),
         DEMAND_RESET(DemandResetEventLogService.class, 8),
         DEMAND_RESPONSE(DemandResponseEventLogService.class, 54),
         DEVICE_CONFIG(DeviceConfigEventLogService.class, 21),
         DISCONNECT(DisconnectEventLogService.class, 10),
-        ECOBEE(EcobeeEventLogService.class, 3),
+        EATON_CLOUD(EatonCloudEventLogService.class, 2),
+        ECOBEE(EcobeeEventLogService.class, 4),
         ENDPOINT(EndpointEventLogService.class, 11),
         GATEWAY(GatewayEventLogService.class, 9),
         HARDWARE(HardwareEventLogService.class, 23),
-        INVENTORY_CONFIG(InventoryConfigEventLogService.class, 5),  
-        ITRON(ItronEventLogService.class, 14),
+        INFRASTRUCTURE(InfrastructureEventLogService.class, 2),
+        INVENTORY_CONFIG(InventoryConfigEventLogService.class, 5),
+        ITRON(ItronEventLogService.class, 13),
         METERING(MeteringEventLogService.class, 15),
         MULTISPEAK(MultispeakEventLogService.class, 35),
         NEST(NestEventLogService.class, 12),
         OUTAGE(OutageEventLogService.class, 10),
         POINT(PointEventLogService.class, 15),
         POWER_QUALITY_RESPONSE(PqrEventLogService.class, 1),
-        RFN_DEVICE(RfnDeviceEventLogService.class, 3),
+        RFN_DEVICE(RfnDeviceEventLogService.class, 7),
         STARS(StarsEventLogService.class, 26),
-        SYSTEM(SystemEventLogService.class, 35),
-        TOOLS(ToolsEventLogService.class, 28),
+        SYSTEM(SystemEventLogService.class, 44),
+        TOOLS(ToolsEventLogService.class, 32),
         USERS(UsersEventLogService.class, 23),
         VALIDATION(ValidationEventLogService.class, 10),
         ZIGBEE(ZigbeeEventLogService.class, 12),

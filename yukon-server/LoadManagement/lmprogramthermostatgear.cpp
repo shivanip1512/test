@@ -102,3 +102,9 @@ void CtiLMProgramThermostatGear::restore(Cti::RowReader &rdr)
     rdr["ramprate"] >> _profile.rampRate;
 }
 
+std::size_t CtiLMProgramThermostatGear::getVariableSize() const
+{
+    return  CtiLMProgramDirectGear::getVariableSize()
+        +   dynamic_sizeof( _settings );
+}
+

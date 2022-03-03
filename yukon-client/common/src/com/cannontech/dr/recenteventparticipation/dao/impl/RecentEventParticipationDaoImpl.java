@@ -1,17 +1,23 @@
 package com.cannontech.dr.recenteventparticipation.dao.impl;
 
+import static com.cannontech.dr.recenteventparticipation.ControlEventDeviceStatus.FAILED_WILL_RETRY;
+import static com.cannontech.dr.recenteventparticipation.ControlEventDeviceStatus.FAILED;
 import static com.cannontech.dr.recenteventparticipation.ControlEventDeviceStatus.UNKNOWN;
 
 import java.sql.SQLException;
 import java.util.Date;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
+import java.util.stream.Collectors;
 
 import javax.annotation.PostConstruct;
 
+import org.apache.logging.log4j.Logger;
 import org.joda.time.Instant;
 import org.springframework.beans.factory.annotation.Autowired;
 
+import com.cannontech.clientutils.YukonLogManager;
 import com.cannontech.common.model.PagingParameters;
 import com.cannontech.common.util.Range;
 import com.cannontech.common.util.SqlFragmentSource;
@@ -19,6 +25,7 @@ import com.cannontech.common.util.SqlStatementBuilder;
 import com.cannontech.core.dynamic.AsyncDynamicDataSource;
 import com.cannontech.core.dynamic.DatabaseChangeEventListener;
 import com.cannontech.database.SqlParameterSink;
+import com.cannontech.database.TypeRowMapper;
 import com.cannontech.database.YukonJdbcTemplate;
 import com.cannontech.database.YukonResultSet;
 import com.cannontech.database.YukonRowCallbackHandler;
@@ -37,6 +44,7 @@ import com.cannontech.stars.database.data.lite.LiteInventoryBase;
 import com.cannontech.stars.dr.optout.dao.OptOutEventDao;
 import com.cannontech.stars.dr.optout.model.OptOutEvent;
 import com.cannontech.stars.dr.optout.model.OptOutEventState;
+import com.google.common.collect.ImmutableList;
 import com.google.common.collect.Maps;
 
 public class RecentEventParticipationDaoImpl implements RecentEventParticipationDao {
@@ -44,7 +52,7 @@ public class RecentEventParticipationDaoImpl implements RecentEventParticipation
     @Autowired private AsyncDynamicDataSource asyncDynamicDataSource;
     @Autowired private OptOutEventDao optOutEventDao;
     @Autowired private InventoryBaseDao inventoryBaseDao;
-
+    private static final Logger log = YukonLogManager.getLogger(RecentEventParticipationDaoImpl.class);
     /**
      * The DB change Listener updates the OptOutEventId in ControlEventDevice
      */
@@ -87,7 +95,7 @@ public class RecentEventParticipationDaoImpl implements RecentEventParticipation
     }
 
     @Override
-    public void createNewEventMapping(int programId, long eventId, int groupId, Instant startTime, Instant stopTime) {
+    public void createNewEventMapping(int programId, long eventId, int groupId, Instant startTime, Instant stopTime, String externalEventId) {
         SqlStatementBuilder sql = new SqlStatementBuilder();
         SqlParameterSink p = sql.insertInto("ControlEvent");
         p.addValue("ControlEventId", eventId);
@@ -95,8 +103,8 @@ public class RecentEventParticipationDaoImpl implements RecentEventParticipation
         p.addValue("StartTime", startTime);
         p.addValue("ScheduledStopTime", stopTime);
         p.addValue("ProgramId", programId);
+        p.addValue("ExternalEventId", externalEventId);
         jdbcTemplate.update(sql);
-
     }
 
     @Override
@@ -118,40 +126,6 @@ public class RecentEventParticipationDaoImpl implements RecentEventParticipation
         jdbcTemplate.update(sql);
     }
 
-    @Override
-    public void updateDeviceControlEvent(int eventId, int deviceId, List<ControlEventDeviceStatus> skipUpdateForStatus,
-            ControlEventDeviceStatus receivedDeviceStatus, Instant deviceReceivedTime) {
-        SqlStatementBuilder where = new SqlStatementBuilder();
-        if (receivedDeviceStatus != ControlEventDeviceStatus.SUCCESS_COMPLETED) {
-            where.append("EXISTS");
-            where.append("(SELECT 1 FROM ControlEventDevice");
-            where.append("WHERE");
-            where.append(getWhereClauseFragment(eventId, deviceId));
-            where.append("AND RESULT").in_k(skipUpdateForStatus).append(")");
-            where.append("AND");
-        }
-        where.append(getWhereClauseFragment(eventId, deviceId));
-        updateDeviceControlEvent(eventId, deviceId, receivedDeviceStatus.name(), deviceReceivedTime, where);
-    }
-
-    private SqlFragmentSource getWhereClauseFragment(int eventId, int deviceId) {
-        SqlStatementBuilder whereClause = new SqlStatementBuilder();
-        whereClause.append("ControlEventId").eq(eventId);
-        whereClause.append("  AND DeviceId").eq(deviceId);
-        return whereClause;
-    }
-
-    private void updateDeviceControlEvent(int eventId, int deviceId, String receivedDeviceStatus,
-            Instant deviceReceivedTime, SqlFragmentSource where) {
-        SqlStatementBuilder sql = new SqlStatementBuilder();
-        sql.append("UPDATE ControlEventDevice");
-        sql.set("Result", receivedDeviceStatus, "DeviceReceivedTime", deviceReceivedTime);
-        sql.append("WHERE");
-        sql.appendFragment(where);
-        jdbcTemplate.update(sql);
-
-    }
-
     private final static YukonRowMapper<RecentEventParticipationSummary> recentEventParticipationSummaryRowMapper =
         new YukonRowMapper<RecentEventParticipationSummary>() {
             @Override
@@ -160,8 +134,10 @@ public class RecentEventParticipationDaoImpl implements RecentEventParticipation
                 Instant startTime = rs.getInstant("StartTime");
                 int numConfirmed = rs.getInt("Confirmed");
                 int numUnknowns = rs.getInt("Unknown");
+                int numFailed = rs.getInt("Failed");
+                int numConfirmedRetry = rs.getInt("ConfirmedRetry");
                 RecentEventParticipationSummary recentEventParticipationSummary =
-                    new RecentEventParticipationSummary(programName, startTime, numConfirmed, numUnknowns);
+                    new RecentEventParticipationSummary(programName, startTime, numConfirmed, numUnknowns, numFailed, numConfirmedRetry);
                 return recentEventParticipationSummary;
             }
         };
@@ -171,8 +147,7 @@ public class RecentEventParticipationDaoImpl implements RecentEventParticipation
         SqlStatementBuilder sql = new SqlStatementBuilder();
         sql.append("SELECT * FROM (");
         sql.append("    SELECT ROW_NUMBER() OVER (ORDER BY ce.StartTime DESC) AS RowNumber, pgypo.PAOName AS ProgramName, ce.StartTime AS StartTime,");
-        sql.append("      SUM(CASE WHEN ced.Result").eq_k(UNKNOWN).append("THEN 1 ELSE 0 END) Unknown,");
-        sql.append("      SUM(CASE WHEN ced.Result").in_k(ControlEventDeviceStatus.getAllDeviceStatus()).append("THEN 1 ELSE 0 END) Confirmed");
+        sql.append(getSumSql());
         sql.append("    FROM ControlEvent ce");
         sql.append("      JOIN ControlEventDevice ced ON ced.ControlEventId = ce.ControlEventId");
         sql.append("      JOIN YukonPAObject pgypo on pgypo.PAObjectId = ce.ProgramId");
@@ -180,6 +155,19 @@ public class RecentEventParticipationDaoImpl implements RecentEventParticipation
         sql.append("WHERE tbl.RowNumber").lte(numberOfEvents);
         List<RecentEventParticipationSummary> recentEventParticipationSummaries = jdbcTemplate.query(sql, recentEventParticipationSummaryRowMapper);
         return recentEventParticipationSummaries;
+    }
+    
+    public SqlStatementBuilder getSumSql() {
+        SqlStatementBuilder sql = new SqlStatementBuilder();
+        sql.append("SUM(CASE WHEN ced.Result").eq_k(UNKNOWN).append("THEN 1 ELSE 0 END) Unknown,");
+        sql.append("SUM(CASE WHEN ced.Result").in_k(List.of(FAILED, FAILED_WILL_RETRY)).append("THEN 1 ELSE 0 END) Failed,");
+        sql.append("SUM(CASE WHEN ced.Result").in_k(List.of(ControlEventDeviceStatus.SUCCESS_COMPLETED,
+                ControlEventDeviceStatus.SUCCESS_RECEIVED, ControlEventDeviceStatus.SUCCESS_STARTED))
+                .append("AND ced.RetryTime is NULL THEN 1 ELSE 0 END) Confirmed,");
+        sql.append("SUM(CASE WHEN ced.Result").in_k(List.of(ControlEventDeviceStatus.SUCCESS_COMPLETED,
+                ControlEventDeviceStatus.SUCCESS_RECEIVED, ControlEventDeviceStatus.SUCCESS_STARTED))
+                .append("AND ced.RetryTime is NOT NULL THEN 1 ELSE 0 END) ConfirmedRetry");
+        return sql;
     }
 
     private final static YukonRowMapper<RecentEventParticipationStats> recentEventParticipationStatsRowMapper =
@@ -193,9 +181,12 @@ public class RecentEventParticipationDaoImpl implements RecentEventParticipation
                 Instant startTime = rs.getInstant("StartTime");
                 int numConfirmed = rs.getInt("Confirmed");
                 int numUnknowns = rs.getInt("Unknown");
+                int numFailed = rs.getInt("Failed");
+                int numConfirmedRetry = rs.getInt("ConfirmedRetry");
+                String externalEventId = rs.getString("ExternalEventId");
                 RecentEventParticipationStats recentEventParticipationStats =
                     new RecentEventParticipationStats(controlEventId, programName, loadGroupName, startTime, numConfirmed,
-                        numUnknowns);
+                        numUnknowns, externalEventId, numFailed, numConfirmedRetry);
                 return recentEventParticipationStats;
             }
         };
@@ -206,11 +197,10 @@ public class RecentEventParticipationDaoImpl implements RecentEventParticipation
 
         sql.append("SELECT * FROM (");
         sql.append("    SELECT ROW_NUMBER() OVER (ORDER BY EventId DESC");
-        sql.append("    ) AS RowNumber, EventId, Program, LoadGroup, StartTime, Unknown, Confirmed ");
+        sql.append("    ) AS RowNumber, EventId, Program, LoadGroup, StartTime, Unknown, Confirmed, Failed, ConfirmedRetry, ExternalEventId");
         sql.append("    FROM (");
-        sql.append("        SELECT ce.ControlEventId AS EventId, pgypo.PAOName AS Program, lgypo.PAOName AS LoadGroup, ce.StartTime AS StartTime,");
-        sql.append("          SUM(CASE WHEN ced.Result").eq_k(UNKNOWN).append("THEN 1 ELSE 0 END) Unknown,");
-        sql.append("          SUM(CASE WHEN ced.Result").in_k(ControlEventDeviceStatus.getAllDeviceStatus()).append("THEN 1 ELSE 0 END) Confirmed");
+        sql.append("        SELECT ce.ControlEventId AS EventId, pgypo.PAOName AS Program, lgypo.PAOName AS LoadGroup, ce.StartTime AS StartTime, ExternalEventId, ");
+        sql.append(getSumSql());
         sql.append("        FROM ControlEvent ce");
         sql.append("          JOIN ControlEventDevice ced ON ced.ControlEventId = ce.ControlEventId");
         sql.append("          JOIN YukonPAObject dypo ON dypo.PAObjectId = ced.DeviceId");
@@ -220,7 +210,7 @@ public class RecentEventParticipationDaoImpl implements RecentEventParticipation
             sql.append("      WHERE StartTime").gt(range.getMin());
             sql.append("      AND StartTime").lt(range.getMax());
         }
-        sql.append("        GROUP BY ce.ControlEventId, ce.StartTime, lgypo.PAOName, pgypo.PAOName) AS innertable");
+        sql.append("        GROUP BY ce.ControlEventId, ce.StartTime, lgypo.PAOName, pgypo.PAOName, ExternalEventId) AS innertable");
         sql.append("    ) outertable ");
         sql.append("WHERE RowNumber BETWEEN").append(pagingParameters.getOneBasedStartIndex());
         sql.append("  AND").append(pagingParameters.getOneBasedEndIndex());
@@ -238,8 +228,9 @@ public class RecentEventParticipationDaoImpl implements RecentEventParticipation
                 String groupName = rs.getString("LoadGroup");
                 Instant startTime = rs.getInstant("StartTime");
                 Instant stopTime = rs.getInstant("StopTime");
+                String externalEventId = rs.getString("ExternalEventId");
                 RecentEventParticipationDetail recentEventParticipationDetail =
-                    new RecentEventParticipationDetail(eventId, programName, groupName, startTime, stopTime, null);
+                    new RecentEventParticipationDetail(eventId, programName, groupName, startTime, stopTime, null, externalEventId);
                 return recentEventParticipationDetail;
             }
         };
@@ -302,6 +293,7 @@ public class RecentEventParticipationDaoImpl implements RecentEventParticipation
     private SqlFragmentSource getControlAuditBaseQuery() {
         SqlStatementBuilder sql = new SqlStatementBuilder();
         sql.append("SELECT DISTINCT ce.ControlEventId AS EventId, ce.StartTime, ce.ScheduledStopTime AS StopTime, ");
+        sql.append("ce.ExternalEventId AS ExternalEventId, ");
         sql.append("lgypo.PAOName AS LoadGroup, pgypo.PAOName AS ProgramName");
         sql.append("FROM ControlEvent ce");
         sql.append("  JOIN ControlEventDevice ced ON ced.ControlEventId = ce.ControlEventId");
@@ -312,30 +304,32 @@ public class RecentEventParticipationDaoImpl implements RecentEventParticipation
         return sql;
     }
 
-    private final static YukonRowMapper<ControlDeviceDetail> controlDeviceDetailMapper =
-        new YukonRowMapper<ControlDeviceDetail>() {
+    private final static YukonRowMapper<ControlDeviceDetail> controlDeviceDetailMapper = new YukonRowMapper<ControlDeviceDetail>() {
 
-            @Override
-            public ControlDeviceDetail mapRow(YukonResultSet rs) throws SQLException {
-                String deviceName = rs.getString("DeviceName");
-                String accountNumber = rs.getString("AccountNumber");
-                String serialNumber = rs.getString("SerialNumber");
-                String result = rs.getString("Result");
-                String eventPhase = ControlEventDeviceStatus.valueOf(result).getEventPhase() == null ? "Unknown"
-                        : ControlEventDeviceStatus.valueOf(result).getEventPhase().getJsonString();
-                String participationState =
-                        ControlEventDeviceStatus.valueOf(result).getEventPhase() == null ? "Unreported" : "Confirmed";
-                ControlOptOutStatus optOutStatus = ControlOptOutStatus.valueOf(rs.getString("OptoutStatus"));
-                ControlDeviceDetail controlDeviceDetail =
-                    new ControlDeviceDetail(deviceName, accountNumber, serialNumber, participationState, eventPhase, optOutStatus);
-                return controlDeviceDetail;
-            }
-        };
+        @Override
+        public ControlDeviceDetail mapRow(YukonResultSet rs) throws SQLException {
+            String deviceName = rs.getString("DeviceName");
+            String accountNumber = rs.getString("AccountNumber");
+            String serialNumber = rs.getString("SerialNumber");
+            String result = rs.getString("Result");
+            String eventPhase = ControlEventDeviceStatus.valueOf(result)
+                    .getEventPhase() == null ? "Unknown" : ControlEventDeviceStatus.valueOf(result).getEventPhase()
+                            .getJsonString();
+            String participationState = ControlEventDeviceStatus.valueOf(result)
+                    .getEventPhase() == null ? "Unreported" : "Confirmed";
+            ControlOptOutStatus optOutStatus = ControlOptOutStatus.valueOf(rs.getString("OptoutStatus"));
+            String failReason = rs.getString("FailReason");
+            Instant retryTime = rs.getInstant("RetryTime");
+            ControlDeviceDetail controlDeviceDetail = new ControlDeviceDetail(deviceName, accountNumber, serialNumber,
+                    participationState, eventPhase, optOutStatus, failReason, retryTime);
+            return controlDeviceDetail;
+        }
+    };
 
     @Override
     public List<ControlDeviceDetail> getControlEventDeviceData(int eventId) {
         SqlStatementBuilder sql = new SqlStatementBuilder();
-        sql.append("SELECT dypo.PAOName AS DeviceName, ca.AccountNumber, ced.Result, lmbh.ManufacturerSerialNumber AS SerialNumber,");
+        sql.append("SELECT dypo.PAOName AS DeviceName, ca.AccountNumber, ced.Result, ced.FailReason, ced.RetryTime, lmbh.ManufacturerSerialNumber AS SerialNumber,");
         sql.append("  CASE WHEN ced.OptOutEventId IS NULL THEN").appendArgument_k(ControlOptOutStatus.NONE);
         sql.append("       WHEN ced.OptOutEventId IS NOT NULL THEN");
         sql.append("         CASE WHEN (SELECT StartDate");
@@ -368,4 +362,77 @@ public class RecentEventParticipationDaoImpl implements RecentEventParticipation
         }
         return jdbcTemplate.queryForInt(sql);
     }
-}
+    
+    @Override
+    public Integer getExternalEventId(int groupId) {
+        SqlStatementBuilder sql = new SqlStatementBuilder();
+        sql.append("SELECT ce.ExternalEventID");
+        sql.append("FROM ControlEvent ce");
+        sql.append("WHERE ce.GroupId").eq(groupId);
+        sql.append("AND StartTime = (SELECT max(StartTime) from ControlEvent where GroupId").eq(groupId).append(")");
+        try {
+            return jdbcTemplate.queryForInt(sql);
+        } catch (Exception e) {
+            log.error("ExternalEventID doesn't exist for group id:{}", groupId, e);
+            return null;
+        }
+    }
+
+    @Override
+    public void updateDeviceControlEvent(String externalEventId, int deviceId, ControlEventDeviceStatus status,
+            Instant deviceReceivedTime, String failReason, Instant retryTime) {
+       
+        /*
+         * if the current status is SUCCESS_RECEIVED, and we receive SUCCESS_STARTED, it will update. If we receive them out of
+         * order, it will prevent us from updating the SUCCESS_STARTED status to SUCCESS_RECEIVED
+         */
+        //list of statuses that are "earlier" than the received status
+        List<ControlEventDeviceStatus> statusesToUpdate =
+                ImmutableList.copyOf(ControlEventDeviceStatus.values())
+                             .stream()
+                             .filter(messageStatus -> messageStatus.getMessageOrder() <= status.getMessageOrder())
+                             .collect(Collectors.toList());
+        
+        SqlStatementBuilder sql = new SqlStatementBuilder();
+        sql.append("UPDATE ControlEventDevice");
+        sql.append("SET Result").eq(status);
+        sql.append(",");
+        sql.append("DeviceReceivedTime").eq(deviceReceivedTime);
+        if (failReason != null) {
+            sql.append(",");
+            sql.append("FailReason").eq(failReason);
+        }
+        if (retryTime != null) {
+            sql.append(",");
+            sql.append("RetryTime").eq(retryTime);
+        }
+        sql.append("WHERE ControlEventId in (SELECT ControlEventId from ControlEvent WHERE ExternalEventId").eq(externalEventId).append(")");
+        sql.append("AND Result").in(statusesToUpdate);
+        sql.append("AND DeviceId").eq(deviceId);
+        jdbcTemplate.update(sql);
+    }
+    
+    @Override
+    public Set<Integer> getDeviceIdsByExternalEventIdAndStatuses(Integer externalEventId, List<ControlEventDeviceStatus> statuses) {
+        SqlStatementBuilder sql = new SqlStatementBuilder();
+        sql.append("SELECT DeviceId");
+        sql.append("FROM ControlEventDevice ced");
+        sql.append("  JOIN ControlEvent ce ON ced.ControlEventId = ce.ControlEventId");
+        sql.append("WHERE Result").in_k(statuses);
+        sql.append("AND ce.ExternalEventId").eq(externalEventId);
+        return jdbcTemplate.query(sql, TypeRowMapper.INTEGER)
+                .stream().distinct().collect(Collectors.toSet());
+    }
+    
+    @Override
+    public int failWillRetryDevices(Integer externalEventId) {
+        SqlStatementBuilder sql = new SqlStatementBuilder();
+        sql.append("UPDATE ControlEventDevice").set("Result", ControlEventDeviceStatus.FAILED);
+        sql.append("WHERE Result").in_k(List.of(ControlEventDeviceStatus.FAILED_WILL_RETRY, ControlEventDeviceStatus.UNKNOWN));
+        if(externalEventId != null) {
+            sql.append("AND ControlEventId = (select ControlEventId from ControlEvent where ExternalEventId").eq(externalEventId).append(")"); 
+        }
+        return jdbcTemplate.update(sql);
+    }
+}    
+    

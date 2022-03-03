@@ -12,6 +12,7 @@ import java.util.Date;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 import java.util.concurrent.ArrayBlockingQueue;
 import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.ExecutorService;
@@ -50,11 +51,13 @@ import com.cannontech.common.i18n.MessageSourceAccessor;
 import com.cannontech.common.i18n.ObjectFormattingService;
 import com.cannontech.common.model.Direction;
 import com.cannontech.common.model.SortingParameters;
-import com.cannontech.common.pao.PaoType;
+import com.cannontech.common.pao.PaoIdentifier;
+import com.cannontech.common.pao.attribute.model.Attribute;
 import com.cannontech.common.pao.attribute.model.BuiltInAttribute;
+import com.cannontech.common.pao.attribute.model.CustomAttribute;
+import com.cannontech.common.pao.attribute.service.AttributeService;
 import com.cannontech.common.pao.definition.dao.PaoDefinitionDao;
 import com.cannontech.common.pao.definition.model.PaoPointIdentifier;
-import com.cannontech.common.pao.definition.model.PaoTypePointIdentifier;
 import com.cannontech.common.pao.definition.model.PointIdentifier;
 import com.cannontech.common.util.CtiUtilities;
 import com.cannontech.common.util.Range;
@@ -87,10 +90,11 @@ import com.cannontech.system.dao.GlobalSettingDao;
 import com.cannontech.user.YukonUserContext;
 import com.cannontech.util.ServletUtil;
 import com.cannontech.web.common.flashScope.FlashScope;
+import com.cannontech.web.common.pao.service.YukonPointHelper;
+import com.cannontech.web.common.service.CachedPointDataCorrelationService;
 import com.cannontech.web.common.sort.SortableColumn;
 import com.cannontech.web.security.annotation.CheckPermissionLevel;
 import com.cannontech.web.tools.points.PointBackingBean;
-import com.cannontech.web.updater.point.CachedPointDataCorrelationService;
 import com.cannontech.yukon.IDatabaseCache;
 import com.google.common.collect.ImmutableMap;
 import com.google.common.collect.Lists;
@@ -114,6 +118,8 @@ public class HistoricalReadingsController {
     @Autowired private StateGroupDao stateGroupDao;
     @Autowired private DateFormattingService dateFormattingService;
     @Autowired private GlobalSettingDao globalSettingDao;
+    @Autowired private AttributeService attributeService;
+    @Autowired private YukonPointHelper yukonPointHelper;
     
     private static final String baseKey = "yukon.web.modules.amr.widgetClasses.MeterReadingsWidget.historicalReadings.";
     private Logger log = YukonLogManager.getLogger(HistoricalReadingsController.class);
@@ -180,7 +186,7 @@ public class HistoricalReadingsController {
         model.addAttribute("title", title);
         LitePoint litePoint = pointDao.getLitePoint(pointId);
         model.addAttribute("showTrend", !litePoint.getPointTypeEnum().isStatus());
-        cachedPointDataCorrelationService.correlateAndLog(pointId);
+        cachedPointDataCorrelationService.correlateAndLog(pointId, context);
         
         return "historicalReadings/view.jsp";
     }
@@ -464,15 +470,29 @@ public class HistoricalReadingsController {
             Map<Integer, PointInfo> pointInfoByPointIds = pointDao.getPointInfoByPointIds(Sets.newHashSet(pointId));
             PointInfo pointInfo = pointInfoByPointIds.get(pointId);
             if (pointInfo != null) {
-                PaoType paoType = databaseCache.getAllPaosMap().get(deviceId).getPaoIdentifier().getPaoType();
+                PaoIdentifier paoIdentifier = databaseCache.getAllPaosMap().get(deviceId).getPaoIdentifier();
                 PointIdentifier pointIdentifier = pointInfo.getPointIdentifier();
-                BuiltInAttribute builtInAttribute = 
-                        paoDefinitionDao.findOneAttributeForPaoTypeAndPoint(
-                                PaoTypePointIdentifier.of(paoType, pointIdentifier));
-                if (builtInAttribute != null) {
-                    attributeMsg = objectFormattingService.formatObjectAsString(builtInAttribute, context);
+                PaoPointIdentifier paoPointIdent = new PaoPointIdentifier(paoIdentifier, pointIdentifier);
+                Set<BuiltInAttribute> builtInAttributes = paoDefinitionDao
+                        .findAttributeForPaoTypeAndPoint(paoPointIdent.getPaoTypePointIdentifier());
+                List<CustomAttribute> customAttributes = attributeService
+                        .findCustomAttributesForPaoTypeAndPoint(paoPointIdent.getPaoTypePointIdentifier());
+                MessageSourceAccessor accessor = messageSourceResolver.getMessageSourceAccessor(context);
+                List<Attribute> attributes = yukonPointHelper.getSortedAttributes(builtInAttributes, customAttributes, accessor);
+                Attribute attributeToDisplay = yukonPointHelper.getFirstAttribute(paoIdentifier.getPaoType(),
+                                                        accessor, builtInAttributes, customAttributes, attributes);
+                if (attributeToDisplay != null) {
+                    attributeMsg = objectFormattingService.formatObjectAsString(attributeToDisplay, context);
+                } else {
+                    //if no attribute is assigned to the point, just use the point name
+                    attributeMsg = pointInfo.getName();
                 }
             }
+        } else {
+        	//just return point name
+            Map<Integer, PointInfo> pointInfoByPointIds = pointDao.getPointInfoByPointIds(Sets.newHashSet(pointId));
+            PointInfo pointInfo = pointInfoByPointIds.get(pointId);
+            attributeMsg = pointInfo.getName();
         }
         return attributeMsg;
     }

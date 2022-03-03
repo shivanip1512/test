@@ -1,0 +1,94 @@
+attributes:
+  title: attributes
+  required:
+    - name
+  type: object
+  properties:
+    name:
+      type: string
+      maxLength: 60
+      description: 'Name of the attribute.'
+    
+
+attributeAssignments:
+  title: attributeAssignments
+  required:
+    - attributeId
+    - paoType
+    - pointType
+    - offset
+  type: object
+  properties:
+    attributeId:
+      type: integer
+      description: 'Unique identifier for the attribute.'
+    paoType:
+      type: string
+      description: 'The type of object. Common examples include: RFN420FD, RFN430A3R, RFN530S4ERXR, RFWMETER, RFW201, GWY801, CBC_8024, MCT420CD, LCR6700_RFN.'
+    pointType:
+      type: string
+      description: 'Point type.'
+      enum:
+        - Status
+        - Analog
+        - PulseAccumulator
+        - DemandAccumulator
+        - CalcAnalog
+        - StatusOutput
+        - AnalogOutput
+        - System
+        - CalcStatus
+    offset:
+      type: integer
+      description: 'The offset value is used to uniquely identify the type of data input.'
+
+attributes Response Schema:
+   type: object
+   properties:
+    customAttributeId:
+      type: integer
+      description: 'Unique identifier for the attribute.'
+    name:
+      type: string
+      maxLength: 60
+      description: 'Name of the attribute.'
+
+id:
+  required:
+    - id
+  type: object
+  properties:
+    id:
+      type: integer
+      description: 'Unique identifier for the attribute.'
+      
+
+components:
+  examples:
+    Attributes Request: 
+      value:
+        name: Test API Attribute
+       
+    Attributes Response:
+      value:
+        customAttributeId: 7
+        name: Test API Attribute
+       
+    Attributes Assignment:   
+      value:
+        attributeId: 62
+        paoType: VIRTUAL_SYSTEM
+        pointType: CalcAnalog
+        offset: 1000
+    
+    List Attributes:
+      value:
+        - customAttributeId: 2
+          name: test
+        - customAttributeId: 32
+          name: test API Attribute
+    id:
+      value:
+        id: 62
+    
+    

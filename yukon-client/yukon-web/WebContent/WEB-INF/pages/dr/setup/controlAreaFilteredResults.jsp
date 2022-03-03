@@ -27,7 +27,7 @@
                     <td>
                         <c:choose>
                             <c:when test="${empty filteredResult.triggers || fn:length(filteredResult.triggers) == 0}">
-                                <i:inline key="yukon.common.none.choice"/>
+                                <i:inline key="yukon.common.none"/>
                             </c:when>
                             <c:otherwise>
                                 <cti:triggerName pointId="${filteredResult.triggers[0].triggerPointId}" type="${filteredResult.triggers[0].triggerType}"/>
@@ -39,7 +39,7 @@
                         </c:choose>
                     </td>
                     <td>
-                        ${programsForControlArea[filteredResult.controlAreaId]}
+                        ${fn:escapeXml(programsForControlArea[filteredResult.controlAreaId])}
                     </td>
                 </tr>
              </c:forEach>

@@ -1,28 +1,29 @@
 Manifest-Version: 1.0
 Main-Class: com.cannontech.message.service.BrokerService
 Class-Path: ./ 
+ aspectjweaver-1.9.6.jar 
  common.jar 
  yukonappserver.jar 
  sqljdbc42.jar 
  ojdbc10.jar 
- spring-aop-5.1.5.RELEASE.jar 
- spring-aspects-5.1.5.RELEASE.jar 
- spring-beans-5.1.5.RELEASE.jar 
- spring-context-5.1.5.RELEASE.jar 
- spring-context-support-5.1.5.RELEASE.jar 
- spring-core-5.1.5.RELEASE.jar 
- spring-expression-5.1.5.RELEASE.jar 
- spring-instrument-5.1.5.RELEASE.jar 
- spring-jdbc-5.1.5.RELEASE.jar 
- spring-jms-5.1.5.RELEASE.jar 
- spring-messaging-5.1.5.RELEASE.jar 
- spring-orm-5.1.5.RELEASE.jar 
- spring-oxm-5.1.5.RELEASE.jar 
- spring-test-5.1.5.RELEASE.jar 
- spring-tx-5.1.5.RELEASE.jar 
- spring-context-indexer-5.1.5.RELEASE.jar 
- spring-jcl-5.1.5.RELEASE.jar 
- spring-webflux-5.1.5.RELEASE.jar 
+ spring-aop-5.3.8.jar 
+ spring-aspects-5.3.8.jar 
+ spring-beans-5.3.8.jar 
+ spring-context-5.3.8.jar 
+ spring-context-support-5.3.8.jar 
+ spring-core-5.3.8.jar 
+ spring-expression-5.3.8.jar 
+ spring-instrument-5.3.8.jar 
+ spring-jdbc-5.3.8.jar 
+ spring-jms-5.3.8.jar 
+ spring-messaging-5.3.8.jar 
+ spring-orm-5.3.8.jar 
+ spring-oxm-5.3.8.jar 
+ spring-test-5.3.8.jar 
+ spring-tx-5.3.8.jar 
+ spring-context-indexer-5.3.8.jar 
+ spring-jcl-5.3.8.jar 
+ spring-webflux-5.3.8.jar 
  javax.jms-api-2.0.1.jar 
  servlet-api.jar 
  ../log/ 

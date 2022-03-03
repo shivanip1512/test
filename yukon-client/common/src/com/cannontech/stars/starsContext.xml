@@ -260,6 +260,7 @@
     <bean class="com.cannontech.stars.dr.honeywell.HoneywellBuilder"/>
     <bean class="com.cannontech.stars.dr.nest.NestBuilder"/>
     <bean class="com.cannontech.stars.dr.itron.ItronBuilder"/>
+    <bean class="com.cannontech.stars.dr.eatonCloud.EatonCloudLcrBuilder"/>
 
     <bean class="com.cannontech.stars.dr.displayable.dao.impl.DisplayableInventoryEnrollmentDaoImpl"/>
     
@@ -272,6 +273,7 @@
     <bean class="com.cannontech.stars.dr.hardware.service.impl.HoneywellCommandStrategy"/>
     <bean class="com.cannontech.stars.dr.hardware.service.impl.ItronCommandStrategy"/>
     <bean class="com.cannontech.stars.dr.hardware.service.impl.MeterCommandStrategy"/>
+    <bean class="com.cannontech.stars.dr.hardware.service.impl.EatonCloudCommandStrategy"/>
     <bean id="porterExpressComCommandBuilder" class="com.cannontech.stars.dr.hardware.service.impl.PorterExpressComCommandBuilder"/>
    
     <!-- OPERATOR GENERAL -->
@@ -293,6 +295,6 @@
     <bean class="com.cannontech.common.tdc.service.impl.TdcServiceImpl"/>
     <bean class="com.cannontech.common.tag.service.impl.TagServiceImpl"/>   
     <bean class="com.cannontech.common.rtu.service.impl.RtuDnpServiceImpl"/>
-    <bean class="com.cannontech.common.rtu.dao.impl.RtuDnpDaoImpl"/>
+    <bean class="com.cannontech.common.device.dao.impl.DevicePointDaoImpl"/>
  
 </beans>

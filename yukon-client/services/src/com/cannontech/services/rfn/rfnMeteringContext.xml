@@ -95,6 +95,16 @@
       <jms:listener destination="yukon.qr.obj.amr.rfn.LocationResponse" ref="locationArchiveResponseListener" method="handleArchiveRequest"/>
     </jms:listener-container>
     
+    <bean id="rfnDeviceDeleteConfirmationListener" class="com.cannontech.services.rfn.endpoint.RfnDeviceDeleteConfirmationListener"/>
+    <jms:listener-container
+            connection-factory="connectionFactory"
+            destination-type="queue"
+            concurrency="2"
+            container-type="simple"
+            container-class="com.cannontech.services.jms.ContextLoggingMessageListenerContainer">
+        <jms:listener destination="com.eaton.eas.yukon.networkmanager.RfnDeviceDeleteConfirmationReply" ref="rfnDeviceDeleteConfirmationListener" method="handleRfnDeviceDeletionConfirmation"/>
+    </jms:listener-container>
+    
     <bean class="com.cannontech.services.calculated.CommunicationTrackingIntervalAndLoadProfileCalculator">
         <property name="basedOn" value="DELIVERED_KWH"/>
         <property name="perInterval" value="DELIVERED_KWH_PER_INTERVAL"/>
@@ -151,9 +161,111 @@
     </bean>
     <bean class="com.cannontech.services.calculated.PerIntervalAndLoadProfileCalculator">
         <property name="basedOn" value="KVAH"/>
-        <property name="perInterval"><null/></property>
+        <property name="perInterval" value="DELIVERED_KVAH_PER_INTERVAL"></property>
         <property name="loadProfile" value="KVA_LOAD_PROFILE"></property>
         <qualifier value="kVAh"/>
+    </bean>
+    <bean class="com.cannontech.services.calculated.PerIntervalAndLoadProfileCalculator">
+        <property name="basedOn" value="DELIVERED_KWH_RATE_A"/>
+        <property name="perInterval" value="DELIVERED_KWH_RATE_A_PER_INTERVAL"></property>
+        <property name="loadProfile" value="DELIVERED_KW_RATE_A_LOAD_PROFILE"></property>
+        <qualifier value="kWhRateA"/>
+    </bean>
+    <bean class="com.cannontech.services.calculated.PerIntervalAndLoadProfileCalculator">
+        <property name="basedOn" value="DELIVERED_KWH_RATE_B"/>
+        <property name="perInterval" value="DELIVERED_KWH_RATE_B_PER_INTERVAL"></property>
+        <property name="loadProfile" value="DELIVERED_KW_RATE_B_LOAD_PROFILE"></property>
+        <qualifier value="kWhRateB"/>
+    </bean>
+    <bean class="com.cannontech.services.calculated.PerIntervalAndLoadProfileCalculator">
+        <property name="basedOn" value="DELIVERED_KWH_RATE_C"/>
+        <property name="perInterval" value="DELIVERED_KWH_RATE_C_PER_INTERVAL"></property>
+        <property name="loadProfile" value="DELIVERED_KW_RATE_C_LOAD_PROFILE"></property>
+        <qualifier value="kWhRateC"/>
+    </bean>
+    <bean class="com.cannontech.services.calculated.PerIntervalAndLoadProfileCalculator">
+        <property name="basedOn" value="DELIVERED_KWH_RATE_D"/>
+        <property name="perInterval" value="DELIVERED_KWH_RATE_D_PER_INTERVAL"></property>
+        <property name="loadProfile" value="DELIVERED_KW_RATE_D_LOAD_PROFILE"></property>
+        <qualifier value="kWhRateD"/>
+    </bean>
+    <bean class="com.cannontech.services.calculated.PerIntervalAndLoadProfileCalculator">
+        <property name="basedOn" value="RECEIVED_KWH_RATE_A"/>
+        <property name="perInterval" value="RECEIVED_KWH_RATE_A_PER_INTERVAL"></property>
+        <property name="loadProfile" value="RECEIVED_KW_RATE_A_LOAD_PROFILE"></property>
+        <qualifier value="ReceivedkWhRateA"/>
+    </bean>
+    <bean class="com.cannontech.services.calculated.PerIntervalAndLoadProfileCalculator">
+        <property name="basedOn" value="RECEIVED_KWH_RATE_B"/>
+        <property name="perInterval" value="RECEIVED_KWH_RATE_B_PER_INTERVAL"></property>
+        <property name="loadProfile" value="RECEIVED_KW_RATE_B_LOAD_PROFILE"></property>
+        <qualifier value="ReceivedkWhRateB"/>
+    </bean>
+    <bean class="com.cannontech.services.calculated.PerIntervalAndLoadProfileCalculator">
+        <property name="basedOn" value="RECEIVED_KWH_RATE_C"/>
+        <property name="perInterval" value="RECEIVED_KWH_RATE_C_PER_INTERVAL"></property>
+        <property name="loadProfile" value="RECEIVED_KW_RATE_C_LOAD_PROFILE"></property>
+        <qualifier value="ReceivedkWhRateC"/>
+    </bean>
+    <bean class="com.cannontech.services.calculated.PerIntervalAndLoadProfileCalculator">
+        <property name="basedOn" value="RECEIVED_KWH_RATE_D"/>
+        <property name="perInterval" value="RECEIVED_KWH_RATE_D_PER_INTERVAL"></property>
+        <property name="loadProfile" value="RECEIVED_KW_RATE_D_LOAD_PROFILE"></property>
+        <qualifier value="ReceivedkWhRateD"/>
+    </bean>
+    <bean class="com.cannontech.services.calculated.PerIntervalAndLoadProfileCalculator">
+        <property name="basedOn" value="RECEIVED_KVAH"/>
+        <property name="perInterval" value="RECEIVED_KVAH_PER_INTERVAL"></property>
+        <property name="loadProfile"><null/></property>
+        <qualifier value="ReceivedkVAh"/>
+    </bean>
+    <bean class="com.cannontech.services.calculated.PerIntervalAndLoadProfileCalculator">
+        <property name="basedOn" value="NET_KWH_RATE_A"/>
+        <property name="perInterval" value="NET_KWH_RATE_A_PER_INTERVAL"></property>
+        <property name="loadProfile" value="NET_KW_RATE_A_LOAD_PROFILE"></property>
+        <qualifier value="NetkWhRateA"/>
+    </bean>
+    <bean class="com.cannontech.services.calculated.PerIntervalAndLoadProfileCalculator">
+        <property name="basedOn" value="NET_KWH_RATE_B"/>
+        <property name="perInterval" value="NET_KWH_RATE_B_PER_INTERVAL"></property>
+        <property name="loadProfile" value="NET_KW_RATE_B_LOAD_PROFILE"></property>
+        <qualifier value="NetkWhRateB"/>
+    </bean>
+    <bean class="com.cannontech.services.calculated.PerIntervalAndLoadProfileCalculator">
+        <property name="basedOn" value="NET_KWH_RATE_C"/>
+        <property name="perInterval" value="NET_KWH_RATE_C_PER_INTERVAL"></property>
+        <property name="loadProfile" value="NET_KW_RATE_C_LOAD_PROFILE"></property>
+        <qualifier value="NetkWhRateC"/>
+    </bean>
+    <bean class="com.cannontech.services.calculated.PerIntervalAndLoadProfileCalculator">
+        <property name="basedOn" value="NET_KWH_RATE_D"/>
+        <property name="perInterval" value="NET_KWH_RATE_D_PER_INTERVAL"></property>
+        <property name="loadProfile" value="NET_KW_RATE_D_LOAD_PROFILE"></property>
+        <qualifier value="NetkWhRateD"/>
+    </bean>
+    <bean class="com.cannontech.services.calculated.PerIntervalAndLoadProfileCalculator">
+        <property name="basedOn" value="SUM_KWH_RATE_A"/>
+        <property name="perInterval" value="SUM_KWH_RATE_A_PER_INTERVAL"></property>
+        <property name="loadProfile" value="SUM_KW_RATE_A_LOAD_PROFILE"></property>
+        <qualifier value="SumkWhRateA"/>
+    </bean>
+    <bean class="com.cannontech.services.calculated.PerIntervalAndLoadProfileCalculator">
+        <property name="basedOn" value="SUM_KWH_RATE_B"/>
+        <property name="perInterval" value="SUM_KWH_RATE_B_PER_INTERVAL"></property>
+        <property name="loadProfile" value="SUM_KW_RATE_B_LOAD_PROFILE"></property>
+        <qualifier value="SumkWhRateB"/>
+    </bean>
+    <bean class="com.cannontech.services.calculated.PerIntervalAndLoadProfileCalculator">
+        <property name="basedOn" value="SUM_KWH_RATE_C"/>
+        <property name="perInterval" value="SUM_KWH_RATE_C_PER_INTERVAL"></property>
+        <property name="loadProfile" value="SUM_KW_RATE_C_LOAD_PROFILE"></property>
+        <qualifier value="SumkWhRateC"/>
+    </bean>
+    <bean class="com.cannontech.services.calculated.PerIntervalAndLoadProfileCalculator">
+        <property name="basedOn" value="SUM_KWH_RATE_D"/>
+        <property name="perInterval" value="SUM_KWH_RATE_D_PER_INTERVAL"></property>
+        <property name="loadProfile" value="SUM_KW_RATE_D_LOAD_PROFILE"></property>
+        <qualifier value="SumkWhRateD"/>
     </bean>
     <bean id= "missingGatewayFirstDataTimes" class="java.util.concurrent.ConcurrentHashMap"/>
        
@@ -212,5 +324,15 @@
             container-type="simple"
             container-class="com.cannontech.services.jms.ContextLoggingMessageListenerContainer">
         <jms:listener destination="com.eaton.eas.yukon.networkmanager.RfnNodeWiFiCommArchiveRequest" ref="rfnNodeWiFiCommArchiveRequestListener" method="handleArchiveRequest"/>
+    </jms:listener-container>
+    
+    <bean id="rfnRelayCellularCommArchiveRequestListener" class="com.cannontech.services.rfn.endpoint.RfnRelayCellularCommArchiveRequestListener"/>
+    <jms:listener-container
+            connection-factory="connectionFactory"
+            destination-type="queue"
+            concurrency="2"
+            container-type="simple"
+            container-class="com.cannontech.services.jms.ContextLoggingMessageListenerContainer">
+        <jms:listener destination="com.eaton.eas.yukon.networkmanager.RfnRelayCellularCommArchiveRequest" ref="rfnRelayCellularCommArchiveRequestListener" method="handleArchiveRequest"/>
     </jms:listener-container>
 </beans>

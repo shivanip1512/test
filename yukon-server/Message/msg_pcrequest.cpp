@@ -178,3 +178,9 @@ CtiRequestMsg& CtiRequestMsg::operator=(const CtiRequestMsg& aRef)
  return *this;
 }
 
+std::size_t CtiRequestMsg::getVariableSize() const
+{
+    return  Inherited::getVariableSize()
+        +   dynamic_sizeof( _command_string );
+}
+

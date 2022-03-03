@@ -33,22 +33,34 @@ struct test_RfnResidentialDevice : RfnResidentialDevice
     {
         return false;
     }
+
+    bool hasRfnFirmwareSupportIn(double version) const override
+    {
+        return true;
+    }
 };
 
 struct test_state_rfnResidential
 {
     std::unique_ptr<CtiRequestMsg> request;
     RfnDevice::ReturnMsgList     returnMsgs;
+    RfnDevice::RequestMsgList    requestMsgs;
     RfnDevice::RfnCommandList    rfnRequests;
 
     Cti::Test::Override_DynamicPaoInfoManager overrideDynamicPaoInfoManager;
     boost::shared_ptr<Cti::Test::test_DeviceConfig> fixtureConfig;
     Cti::Test::Override_ConfigManager overrideConfigManager;
+    const decltype(Cti::Test::set_to_central_timezone()) tzOverride;
+    const CtiTime execute_time;
+    const CtiTime decode_time;
 
     test_state_rfnResidential() :
         request( new CtiRequestMsg ),
         fixtureConfig(new Cti::Test::test_DeviceConfig),
-        overrideConfigManager(fixtureConfig)
+        overrideConfigManager(fixtureConfig),
+        tzOverride(Cti::Test::set_to_central_timezone()),
+        execute_time(CtiDate(27, 8, 2013), 15),
+        decode_time (CtiDate(27, 8, 2013), 16)
     {
     }
 
@@ -71,9 +83,6 @@ namespace std {
 namespace test_cmd_rfn_ConfigNotification {
     extern const std::vector<uint8_t> payload;
 }
-
-const CtiTime execute_time( CtiDate( 27, 8, 2013 ) , 15 );
-const CtiTime decode_time ( CtiDate( 27, 8, 2013 ) , 16 );
 
 
 BOOST_FIXTURE_TEST_SUITE( test_dev_rfnResidential, test_state_rfnResidential )
@@ -139,7 +148,7 @@ BOOST_AUTO_TEST_CASE( test_isDisconnectType )
         {
             std::unique_ptr<CtiDeviceBase> dev(createDeviceType(type));
 
-            const auto deviceType = DeviceTypes { type };
+            const auto deviceType = static_cast<DeviceTypes>( type );
 
             const bool isResidentialDevice = !! dynamic_cast<RfnResidentialDevice*>(dev.get());
 
@@ -147,6 +156,275 @@ BOOST_AUTO_TEST_CASE( test_isDisconnectType )
             BOOST_CHECK_EQUAL(test_RfnResidentialDevice::isDisconnectType(deviceType).has_value(), isResidentialDevice);
         }
     }
+}
+
+
+BOOST_AUTO_TEST_CASE(test_control_connect_arm)
+{
+    test_RfnResidentialDevice dut;
+
+    dut.setDeviceType(TYPE_RFN420CD);
+
+    CtiCommandParser parse("control connect arm");
+
+    request->setUserMessageId(11235);
+
+    BOOST_CHECK_EQUAL(ClientErrors::None, dut.ExecuteRequest(request.get(), parse, returnMsgs, requestMsgs, rfnRequests));
+    BOOST_REQUIRE_EQUAL(1, returnMsgs.size());
+    BOOST_REQUIRE_EQUAL(1, rfnRequests.size());
+
+    const auto& returnMsgPtr = returnMsgs.front();
+
+    BOOST_REQUIRE(returnMsgPtr);
+
+    const auto& returnMsg = *returnMsgPtr;
+
+    BOOST_CHECK_EQUAL(returnMsg.Status(), 0);
+    BOOST_CHECK_EQUAL(returnMsg.ResultString(), "1 command queued for device");
+
+    const auto& command = rfnRequests.front();
+
+    BOOST_CHECK_EQUAL(command->getCommandName(), "RFN Meter Disconnect - Arm for resume");
+
+    Commands::RfnCommand::RfnRequestPayload rcv = command->executeCommand(execute_time);
+
+    std::vector<unsigned char> exp {
+            0x80, 0x02 };
+
+    BOOST_CHECK_EQUAL(rcv, exp);
+
+    const std::vector< unsigned char > response {
+            0x81, //  Response 
+            0x02, //  Command type
+            0x00, //  Success
+            0x02, //  Status (Armed)
+    };
+
+    const auto commandResults = command->handleResponse(CtiTime::now(), response);
+
+    BOOST_REQUIRE_EQUAL(commandResults.size(), 1);
+    BOOST_CHECK_EQUAL(commandResults[0].description, 
+        "RFN Meter Disconnect - Arm for resume:"
+        "\nUser message ID : 11235"
+        "\nReply type      : 0 - SUCCESS"
+        "\nStatus          : 3 - ARMED");
+    BOOST_CHECK_EQUAL(commandResults[0].status, 0);
+    BOOST_CHECK(commandResults[0].points.empty());
+}
+
+BOOST_AUTO_TEST_CASE(test_control_connect)
+{
+    test_RfnResidentialDevice dut;
+
+    dut.setDeviceType(TYPE_RFN420CD);
+
+    CtiCommandParser parse("control connect");
+
+    request->setUserMessageId(11235);
+
+    BOOST_CHECK_EQUAL(ClientErrors::None, dut.ExecuteRequest(request.get(), parse, returnMsgs, requestMsgs, rfnRequests));
+    BOOST_REQUIRE_EQUAL(1, returnMsgs.size());
+    BOOST_REQUIRE_EQUAL(1, rfnRequests.size());
+
+    const auto& returnMsgPtr = returnMsgs.front();
+
+    BOOST_REQUIRE(returnMsgPtr);
+
+    const auto& returnMsg = *returnMsgPtr;
+
+    BOOST_CHECK_EQUAL(returnMsg.Status(), 0);
+    BOOST_CHECK_EQUAL(returnMsg.ResultString(), "1 command queued for device");
+
+    const auto& command = rfnRequests.front();
+
+    BOOST_CHECK_EQUAL(command->getCommandName(), "RFN Meter Disconnect - Resume immediately");
+
+    Commands::RfnCommand::RfnRequestPayload rcv = command->executeCommand(execute_time);
+
+    std::vector<unsigned char> exp{
+            0x80, 0x03 };
+
+    BOOST_CHECK_EQUAL(rcv, exp);
+
+    const std::vector<unsigned char> response {
+            0x81, //  Response 
+            0x03, //  Command type
+            0x00, //  Success
+            0x03, //  Status (Resumed)
+    };
+
+    const auto commandResults = command->handleResponse(CtiTime::now(), response);
+
+    BOOST_REQUIRE_EQUAL(commandResults.size(), 1);
+    BOOST_CHECK_EQUAL(commandResults[0].description, 
+        "RFN Meter Disconnect - Resume immediately:"
+        "\nUser message ID : 11235"
+        "\nReply type      : 0 - SUCCESS"
+        "\nStatus          : 1 - CONNECTED");
+    BOOST_CHECK_EQUAL(commandResults[0].status, 0);
+    BOOST_CHECK(commandResults[0].points.empty());
+}
+
+BOOST_AUTO_TEST_CASE(test_control_disconnect_failure)
+{
+    test_RfnResidentialDevice dut;
+
+    dut.setDeviceType(TYPE_RFN420CD);
+
+    CtiCommandParser parse("control disconnect");
+
+    request->setUserMessageId(11235);
+
+    BOOST_CHECK_EQUAL(ClientErrors::None, dut.ExecuteRequest(request.get(), parse, returnMsgs, requestMsgs, rfnRequests));
+    BOOST_REQUIRE_EQUAL(1, returnMsgs.size());
+    BOOST_REQUIRE_EQUAL(1, rfnRequests.size());
+
+    const auto& returnMsgPtr = returnMsgs.front();
+
+    BOOST_REQUIRE(returnMsgPtr);
+
+    const auto& returnMsg = *returnMsgPtr;
+
+    BOOST_CHECK_EQUAL(returnMsg.Status(), 0);
+    BOOST_CHECK_EQUAL(returnMsg.ResultString(), "1 command queued for device");
+
+    const auto& command = rfnRequests.front();
+
+    BOOST_CHECK_EQUAL(command->getCommandName(), "RFN Meter Disconnect - Terminate service");
+
+    Commands::RfnCommand::RfnRequestPayload rcv = command->executeCommand(execute_time);
+
+    std::vector<unsigned char> exp {
+            0x80, 0x01 };
+
+    BOOST_CHECK_EQUAL(rcv, exp);
+
+    const std::vector<unsigned char> response {
+            0x81, //  Response command
+            0x01, //  Echoed action (Terminate)
+            0x01, //  Command status (Failure)
+            0x02, //  TLV type 2 (Meter failure)
+            0x01, //  TLV length 1
+            0x06
+    };
+
+    const auto commandResults = command->handleResponse(CtiTime::now(), response);
+
+    BOOST_REQUIRE_EQUAL(commandResults.size(), 1);
+    BOOST_CHECK_EQUAL(commandResults[0].description, 
+        "RFN Meter Disconnect - Terminate service:"
+        "\nUser message ID : 11235"
+        "\nReply type      : 1 - FAILURE"
+        "\nStatus          : 0 - UNKNOWN"
+        "\nDetails         : Meter failure 6 - Command rejected because service disconnect is not enabled.");
+    BOOST_CHECK_EQUAL(commandResults[0].status, 0);
+    BOOST_CHECK(commandResults[0].points.empty());
+}
+
+BOOST_AUTO_TEST_CASE(test_control_disconnect)
+{
+    test_RfnResidentialDevice dut;
+
+    dut.setDeviceType(TYPE_RFN420CD);
+
+    CtiCommandParser parse("control disconnect");
+
+    request->setUserMessageId(11235);
+
+    BOOST_CHECK_EQUAL(ClientErrors::None, dut.ExecuteRequest(request.get(), parse, returnMsgs, requestMsgs, rfnRequests));
+    BOOST_REQUIRE_EQUAL(1, returnMsgs.size());
+    BOOST_REQUIRE_EQUAL(1, rfnRequests.size());
+
+    const auto& returnMsgPtr = returnMsgs.front();
+
+    BOOST_REQUIRE(returnMsgPtr);
+
+    const auto& returnMsg = *returnMsgPtr;
+
+    BOOST_CHECK_EQUAL(returnMsg.Status(), 0);
+    BOOST_CHECK_EQUAL(returnMsg.ResultString(), "1 command queued for device");
+
+    const auto& command = rfnRequests.front();
+
+    BOOST_CHECK_EQUAL(command->getCommandName(), "RFN Meter Disconnect - Terminate service");
+
+    Commands::RfnCommand::RfnRequestPayload rcv = command->executeCommand(execute_time);
+
+    std::vector<unsigned char> exp{
+            0x80, 0x01 };
+
+    BOOST_CHECK_EQUAL(rcv, exp);
+
+    const std::vector<unsigned char> response{
+            0x81, //  Response 
+            0x01, //  Command type
+            0x00, //  Success
+            0x01, //  Status (Terminated)
+    };
+
+    const auto commandResults = command->handleResponse(CtiTime::now(), response);
+
+    BOOST_REQUIRE_EQUAL(commandResults.size(), 1);
+    BOOST_CHECK_EQUAL(commandResults[0].description,
+        "RFN Meter Disconnect - Terminate service:"
+        "\nUser message ID : 11235"
+        "\nReply type      : 0 - SUCCESS"
+        "\nStatus          : 2 - DISCONNECTED");
+    BOOST_CHECK_EQUAL(commandResults[0].status, 0);
+    BOOST_CHECK(commandResults[0].points.empty());
+}
+
+BOOST_AUTO_TEST_CASE(test_getstatus_disconnect)
+{
+    test_RfnResidentialDevice dut;
+
+    dut.setDeviceType(TYPE_RFN420CD);
+
+    CtiCommandParser parse("getstatus disconnect");
+
+    request->setUserMessageId(11235);
+
+    BOOST_CHECK_EQUAL(ClientErrors::None, dut.ExecuteRequest(request.get(), parse, returnMsgs, requestMsgs, rfnRequests));
+    BOOST_REQUIRE_EQUAL(1, returnMsgs.size());
+    BOOST_REQUIRE_EQUAL(1, rfnRequests.size());
+
+    const auto& returnMsgPtr = returnMsgs.front();
+
+    BOOST_REQUIRE(returnMsgPtr);
+
+    const auto& returnMsg = *returnMsgPtr;
+
+    BOOST_CHECK_EQUAL(returnMsg.Status(), 0);
+    BOOST_CHECK_EQUAL(returnMsg.ResultString(), "1 command queued for device");
+
+    const auto& command = rfnRequests.front();
+
+    BOOST_CHECK_EQUAL(command->getCommandName(), "RFN Meter Disconnect - Query");
+
+    Commands::RfnCommand::RfnRequestPayload rcv = command->executeCommand(execute_time);
+
+    std::vector<unsigned char> exp{
+            0x80, 0x04 };
+
+    BOOST_CHECK_EQUAL(rcv, exp);
+
+    const std::vector< unsigned char > response{
+            0x81, //  Response 
+            0x04, //  Command type
+            0x00, //  Success
+            0x07, //  Status (Cycling Disconnect Active Resumed)
+    };
+
+    const auto commandResults = command->handleResponse(CtiTime::now(), response);
+
+    BOOST_REQUIRE_EQUAL(commandResults.size(), 1);
+    BOOST_CHECK_EQUAL(commandResults[0].description, 
+        "RFN Meter Disconnect - Query:"
+        "\nUser message ID : 11235"
+        "\nReply type      : 0 - SUCCESS"
+        "\nStatus          : 7 - CONNECTED_CYCLING_ACTIVE");
+    BOOST_CHECK_EQUAL(commandResults[0].status, 0);
+    BOOST_CHECK(commandResults[0].points.empty());
 }
 
 
@@ -161,7 +439,7 @@ BOOST_AUTO_TEST_CASE( test_putconfig_tou_schedule )
                            "schedule 4 b/00:00 c/00:01 d/08:59 a/12:12 b/23:01 c/23:55 "
                            "default b");
 
-    BOOST_CHECK_EQUAL( ClientErrors::None, dut.ExecuteRequest(request.get(), parse, returnMsgs, rfnRequests) );
+    BOOST_CHECK_EQUAL( ClientErrors::None, dut.ExecuteRequest(request.get(), parse, returnMsgs, requestMsgs, rfnRequests) );
 
     BOOST_REQUIRE_EQUAL( 1, returnMsgs.size() );
     BOOST_REQUIRE_EQUAL( 1, rfnRequests.size() );
@@ -222,7 +500,7 @@ BOOST_AUTO_TEST_CASE( test_putconfig_tou_schedule_badparam )
 
         std::string exp = "Invalid switch time for SCHEDULE_2 - (01:02, expected > 01:03)";
 
-        BOOST_CHECK_EQUAL( ClientErrors::None, dut.ExecuteRequest(request.get(), parse, returnMsgs, rfnRequests) );
+        BOOST_CHECK_EQUAL( ClientErrors::None, dut.ExecuteRequest(request.get(), parse, returnMsgs, requestMsgs, rfnRequests) );
 
         BOOST_CHECK_EQUAL( 0, rfnRequests.size() );
         BOOST_REQUIRE_EQUAL( 1, returnMsgs.size() );
@@ -245,7 +523,7 @@ BOOST_AUTO_TEST_CASE( test_putconfig_tou_schedule_badparam )
 
         std::string exp = "Invalid midnight time for SCHEDULE_3 - (00:01, expected 00:00)";
 
-        BOOST_CHECK_EQUAL( ClientErrors::None, dut.ExecuteRequest(request.get(), parse, returnMsgs, rfnRequests) );
+        BOOST_CHECK_EQUAL( ClientErrors::None, dut.ExecuteRequest(request.get(), parse, returnMsgs, requestMsgs, rfnRequests) );
 
         BOOST_CHECK_EQUAL( 0, rfnRequests.size() );
         BOOST_REQUIRE_EQUAL( 1, returnMsgs.size() );
@@ -268,7 +546,7 @@ BOOST_AUTO_TEST_CASE( test_putconfig_tou_schedule_badparam )
 
         std::string exp = "Invalid switch time for SCHEDULE_4 - (03:60)";
 
-        BOOST_CHECK_EQUAL( ClientErrors::None, dut.ExecuteRequest(request.get(), parse, returnMsgs, rfnRequests) );
+        BOOST_CHECK_EQUAL( ClientErrors::None, dut.ExecuteRequest(request.get(), parse, returnMsgs, requestMsgs, rfnRequests) );
 
         BOOST_CHECK_EQUAL( 0, rfnRequests.size() );
         BOOST_REQUIRE_EQUAL( 1, returnMsgs.size() );
@@ -291,7 +569,7 @@ BOOST_AUTO_TEST_CASE( test_putconfig_tou_schedule_badparam )
 
         std::string exp = "Invalid rate for SCHEDULE_1 - (e)";
 
-        BOOST_CHECK_EQUAL( ClientErrors::None, dut.ExecuteRequest(request.get(), parse, returnMsgs, rfnRequests) );
+        BOOST_CHECK_EQUAL( ClientErrors::None, dut.ExecuteRequest(request.get(), parse, returnMsgs, requestMsgs, rfnRequests) );
 
         BOOST_CHECK_EQUAL( 0, rfnRequests.size() );
         BOOST_REQUIRE_EQUAL( 1, returnMsgs.size() );
@@ -314,7 +592,7 @@ BOOST_AUTO_TEST_CASE( test_putconfig_tou_schedule_badparam )
 
         std::string exp = "Invalid number of switch time for SCHEDULE_2 - (7, expected 6)";
 
-        BOOST_CHECK_EQUAL( ClientErrors::None, dut.ExecuteRequest(request.get(), parse, returnMsgs, rfnRequests) );
+        BOOST_CHECK_EQUAL( ClientErrors::None, dut.ExecuteRequest(request.get(), parse, returnMsgs, requestMsgs, rfnRequests) );
 
         BOOST_CHECK_EQUAL( 0, rfnRequests.size() );
         BOOST_REQUIRE_EQUAL( 1, returnMsgs.size() );
@@ -338,7 +616,7 @@ BOOST_AUTO_TEST_CASE( test_putconfig_tou_schedule_badparam )
 
         std::string exp = "Invalid schedule - (SCHEDULE_5)";
 
-        BOOST_CHECK_EQUAL( ClientErrors::None, dut.ExecuteRequest(request.get(), parse, returnMsgs, rfnRequests) );
+        BOOST_CHECK_EQUAL( ClientErrors::None, dut.ExecuteRequest(request.get(), parse, returnMsgs, requestMsgs, rfnRequests) );
 
         BOOST_CHECK_EQUAL( 0, rfnRequests.size() );
         BOOST_REQUIRE_EQUAL( 1, returnMsgs.size() );
@@ -356,7 +634,7 @@ BOOST_AUTO_TEST_CASE( test_putconfig_tou_enable )
 
     CtiCommandParser parse("putconfig tou enable");
 
-    BOOST_CHECK_EQUAL( ClientErrors::None, dut.ExecuteRequest(request.get(), parse, returnMsgs, rfnRequests) );
+    BOOST_CHECK_EQUAL( ClientErrors::None, dut.ExecuteRequest(request.get(), parse, returnMsgs, requestMsgs, rfnRequests) );
     BOOST_CHECK_EQUAL( 1, returnMsgs.size() );
     BOOST_REQUIRE_EQUAL( 1, rfnRequests.size() );
 
@@ -386,7 +664,7 @@ BOOST_AUTO_TEST_CASE( test_putconfig_tou_disable )
 
     CtiCommandParser parse("putconfig tou disable");
 
-    BOOST_CHECK_EQUAL( ClientErrors::None, dut.ExecuteRequest(request.get(), parse, returnMsgs, rfnRequests) );
+    BOOST_CHECK_EQUAL( ClientErrors::None, dut.ExecuteRequest(request.get(), parse, returnMsgs, requestMsgs, rfnRequests) );
     BOOST_REQUIRE_EQUAL( 1, returnMsgs.size() );
     BOOST_REQUIRE_EQUAL( 1, rfnRequests.size() );
 
@@ -416,7 +694,7 @@ BOOST_AUTO_TEST_CASE( test_getconfig_tou_schedule )
 
     CtiCommandParser parse("getconfig tou");
 
-    BOOST_CHECK_EQUAL( ClientErrors::None, dut.ExecuteRequest(request.get(), parse, returnMsgs, rfnRequests) );
+    BOOST_CHECK_EQUAL( ClientErrors::None, dut.ExecuteRequest(request.get(), parse, returnMsgs, requestMsgs, rfnRequests) );
     BOOST_REQUIRE_EQUAL( 1, returnMsgs.size() );
     BOOST_REQUIRE_EQUAL( 1, rfnRequests.size() );
 
@@ -592,7 +870,7 @@ BOOST_AUTO_TEST_CASE( test_putconfig_tou_install )
             resetTestState();
             CtiCommandParser parse("putconfig install tou verify");
 
-            BOOST_CHECK_EQUAL( ClientErrors::None, dut.ExecuteRequest(request.get(), parse, returnMsgs, rfnRequests) );
+            BOOST_CHECK_EQUAL( ClientErrors::None, dut.ExecuteRequest(request.get(), parse, returnMsgs, requestMsgs, rfnRequests) );
             BOOST_CHECK_EQUAL( 0, rfnRequests.size() );
             BOOST_REQUIRE_EQUAL( 3, returnMsgs.size()  );
 
@@ -618,7 +896,7 @@ BOOST_AUTO_TEST_CASE( test_putconfig_tou_install )
             resetTestState();
             CtiCommandParser parse("putconfig install tou");
 
-            BOOST_CHECK_EQUAL( ClientErrors::None, dut.ExecuteRequest(request.get(), parse, returnMsgs, rfnRequests) );
+            BOOST_CHECK_EQUAL( ClientErrors::None, dut.ExecuteRequest(request.get(), parse, returnMsgs, requestMsgs, rfnRequests) );
             BOOST_REQUIRE_EQUAL( 1, returnMsgs.size() );
             BOOST_REQUIRE_EQUAL( 2, rfnRequests.size() );
 
@@ -709,7 +987,7 @@ BOOST_AUTO_TEST_CASE( test_putconfig_tou_install )
             resetTestState();
             CtiCommandParser parse("putconfig install tou");
 
-            BOOST_CHECK_EQUAL( ClientErrors::None, dut.ExecuteRequest(request.get(), parse, returnMsgs, rfnRequests) );
+            BOOST_CHECK_EQUAL( ClientErrors::None, dut.ExecuteRequest(request.get(), parse, returnMsgs, requestMsgs, rfnRequests) );
             BOOST_CHECK_EQUAL( 0, rfnRequests.size() );
             BOOST_REQUIRE_EQUAL( 1, returnMsgs.size()  );
 
@@ -723,7 +1001,7 @@ BOOST_AUTO_TEST_CASE( test_putconfig_tou_install )
             resetTestState();
             CtiCommandParser parse("putconfig install tou verify");
 
-            BOOST_CHECK_EQUAL( ClientErrors::None, dut.ExecuteRequest(request.get(), parse, returnMsgs, rfnRequests) );
+            BOOST_CHECK_EQUAL( ClientErrors::None, dut.ExecuteRequest(request.get(), parse, returnMsgs, requestMsgs, rfnRequests) );
             BOOST_CHECK_EQUAL( 0, rfnRequests.size() );
             BOOST_REQUIRE_EQUAL( 1, returnMsgs.size()  );
 
@@ -737,7 +1015,7 @@ BOOST_AUTO_TEST_CASE( test_putconfig_tou_install )
             resetTestState();
             CtiCommandParser parse("putconfig install tou force");
 
-            BOOST_CHECK_EQUAL( ClientErrors::None, dut.ExecuteRequest(request.get(), parse, returnMsgs, rfnRequests) );
+            BOOST_CHECK_EQUAL( ClientErrors::None, dut.ExecuteRequest(request.get(), parse, returnMsgs, requestMsgs, rfnRequests) );
             BOOST_REQUIRE_EQUAL( 1, returnMsgs.size() );
             BOOST_REQUIRE_EQUAL( 2, rfnRequests.size() );
 
@@ -809,7 +1087,7 @@ BOOST_AUTO_TEST_CASE( test_putconfig_tou_install )
             resetTestState();
             CtiCommandParser parse("putconfig install tou verify");
 
-            BOOST_CHECK_EQUAL( ClientErrors::None, dut.ExecuteRequest(request.get(), parse, returnMsgs, rfnRequests) );
+            BOOST_CHECK_EQUAL( ClientErrors::None, dut.ExecuteRequest(request.get(), parse, returnMsgs, requestMsgs, rfnRequests) );
             BOOST_CHECK_EQUAL( 0, rfnRequests.size() );
             BOOST_REQUIRE_EQUAL( 3, returnMsgs.size()  );
 
@@ -835,7 +1113,7 @@ BOOST_AUTO_TEST_CASE( test_putconfig_tou_install )
             resetTestState();
             CtiCommandParser parse("getconfig install tou");
 
-            BOOST_CHECK_EQUAL( ClientErrors::None, dut.ExecuteRequest(request.get(), parse, returnMsgs, rfnRequests) );
+            BOOST_CHECK_EQUAL( ClientErrors::None, dut.ExecuteRequest(request.get(), parse, returnMsgs, requestMsgs, rfnRequests) );
             BOOST_REQUIRE_EQUAL( 1, returnMsgs.size() );
             BOOST_REQUIRE_EQUAL( 1, rfnRequests.size() );
 
@@ -906,7 +1184,7 @@ BOOST_AUTO_TEST_CASE( test_putconfig_tou_install )
             resetTestState();
             CtiCommandParser parse("putconfig install tou verify");
 
-            BOOST_CHECK_EQUAL( ClientErrors::None, dut.ExecuteRequest(request.get(), parse, returnMsgs, rfnRequests) );
+            BOOST_CHECK_EQUAL( ClientErrors::None, dut.ExecuteRequest(request.get(), parse, returnMsgs, requestMsgs, rfnRequests) );
             BOOST_CHECK_EQUAL( 0, rfnRequests.size() );
             BOOST_REQUIRE_EQUAL( 1, returnMsgs.size()  );
 
@@ -920,13 +1198,11 @@ BOOST_AUTO_TEST_CASE( test_putconfig_tou_install )
 
 BOOST_AUTO_TEST_CASE( test_putconfig_tou_holiday )
 {
-    Cti::Test::set_to_central_timezone();
-
     test_RfnResidentialDevice dut;
 
     CtiCommandParser parse("putconfig emetcon holiday 02/01/2025 06/14/2036 12/30/2050");
 
-    BOOST_CHECK_EQUAL( ClientErrors::None, dut.ExecuteRequest(request.get(), parse, returnMsgs, rfnRequests) );
+    BOOST_CHECK_EQUAL( ClientErrors::None, dut.ExecuteRequest(request.get(), parse, returnMsgs, requestMsgs, rfnRequests) );
     BOOST_REQUIRE_EQUAL( 1, returnMsgs.size() );
     BOOST_REQUIRE_EQUAL( 1, rfnRequests.size() );
 
@@ -961,7 +1237,7 @@ BOOST_AUTO_TEST_CASE( test_putconfig_tou_holiday_active )
 
     CtiCommandParser parse("putconfig emetcon holiday active");
 
-    BOOST_CHECK_EQUAL( ClientErrors::None, dut.ExecuteRequest(request.get(), parse, returnMsgs, rfnRequests) );
+    BOOST_CHECK_EQUAL( ClientErrors::None, dut.ExecuteRequest(request.get(), parse, returnMsgs, requestMsgs, rfnRequests) );
     BOOST_REQUIRE_EQUAL( 1, returnMsgs.size() );
     BOOST_REQUIRE_EQUAL( 1, rfnRequests.size() );
 
@@ -991,7 +1267,7 @@ BOOST_AUTO_TEST_CASE( test_putconfig_tou_holiday_cancel )
 
     CtiCommandParser parse("putconfig emetcon holiday cancel");
 
-    BOOST_CHECK_EQUAL( ClientErrors::None, dut.ExecuteRequest(request.get(), parse, returnMsgs, rfnRequests) );
+    BOOST_CHECK_EQUAL( ClientErrors::None, dut.ExecuteRequest(request.get(), parse, returnMsgs, requestMsgs, rfnRequests) );
     BOOST_REQUIRE_EQUAL( 1, returnMsgs.size() );
     BOOST_REQUIRE_EQUAL( 1, rfnRequests.size() );
 
@@ -1021,7 +1297,7 @@ BOOST_AUTO_TEST_CASE( test_getconfig_tou_holiday )
 
     CtiCommandParser parse("getconfig emetcon holiday");
 
-    BOOST_CHECK_EQUAL( ClientErrors::None, dut.ExecuteRequest(request.get(), parse, returnMsgs, rfnRequests) );
+    BOOST_CHECK_EQUAL( ClientErrors::None, dut.ExecuteRequest(request.get(), parse, returnMsgs, requestMsgs, rfnRequests) );
     BOOST_REQUIRE_EQUAL( 1, returnMsgs.size() );
     BOOST_REQUIRE_EQUAL( 1, rfnRequests.size() );
 
@@ -1058,7 +1334,7 @@ BOOST_AUTO_TEST_CASE( test_putconfig_disconnect_on_demand )
     {
         CtiCommandParser parse("putconfig install disconnect");
 
-        BOOST_CHECK_EQUAL( ClientErrors::None, dut.ExecuteRequest(request.get(), parse, returnMsgs, rfnRequests) );
+        BOOST_CHECK_EQUAL( ClientErrors::None, dut.ExecuteRequest(request.get(), parse, returnMsgs, requestMsgs, rfnRequests) );
         BOOST_REQUIRE_EQUAL( 1, returnMsgs.size() );
         BOOST_REQUIRE_EQUAL( 1, rfnRequests.size() );
 
@@ -1141,7 +1417,7 @@ BOOST_AUTO_TEST_CASE( test_putconfig_disconnect_demand_threshold )
     {
         CtiCommandParser parse("putconfig install disconnect");
 
-        BOOST_CHECK_EQUAL( ClientErrors::None, dut.ExecuteRequest(request.get(), parse, returnMsgs, rfnRequests) );
+        BOOST_CHECK_EQUAL( ClientErrors::None, dut.ExecuteRequest(request.get(), parse, returnMsgs, requestMsgs, rfnRequests) );
         BOOST_REQUIRE_EQUAL( 1, returnMsgs.size() );
         BOOST_REQUIRE_EQUAL( 1, rfnRequests.size() );
 
@@ -1223,7 +1499,7 @@ BOOST_AUTO_TEST_CASE( test_putconfig_disconnect_cycling )
     {
         CtiCommandParser parse("putconfig install disconnect");
 
-        BOOST_CHECK_EQUAL( ClientErrors::None, dut.ExecuteRequest(request.get(), parse, returnMsgs, rfnRequests) );
+        BOOST_CHECK_EQUAL( ClientErrors::None, dut.ExecuteRequest(request.get(), parse, returnMsgs, requestMsgs, rfnRequests) );
         BOOST_REQUIRE_EQUAL( 1, returnMsgs.size() );
         BOOST_REQUIRE_EQUAL( 1, rfnRequests.size() );
 
@@ -1296,7 +1572,7 @@ BOOST_AUTO_TEST_CASE( test_putconfig_install_disconnect_invalid_config )
 
         CtiCommandParser parse("putconfig install disconnect");
 
-        BOOST_CHECK_EQUAL( ClientErrors::None, dut.ExecuteRequest(request.get(), parse, returnMsgs, rfnRequests) );
+        BOOST_CHECK_EQUAL( ClientErrors::None, dut.ExecuteRequest(request.get(), parse, returnMsgs, requestMsgs, rfnRequests) );
         BOOST_REQUIRE_EQUAL( 2, returnMsgs.size() );
         BOOST_REQUIRE_EQUAL( 0, rfnRequests.size() );
 
@@ -1325,7 +1601,7 @@ BOOST_AUTO_TEST_CASE( test_putconfig_install_disconnect_invalid_config )
 
         CtiCommandParser parse("putconfig install disconnect");
 
-        BOOST_CHECK_EQUAL( ClientErrors::None, dut.ExecuteRequest(request.get(), parse, returnMsgs, rfnRequests) );
+        BOOST_CHECK_EQUAL( ClientErrors::None, dut.ExecuteRequest(request.get(), parse, returnMsgs, requestMsgs, rfnRequests) );
         BOOST_REQUIRE_EQUAL( 2, returnMsgs.size() );
         BOOST_REQUIRE_EQUAL( 0, rfnRequests.size() );
 
@@ -1348,7 +1624,7 @@ BOOST_AUTO_TEST_CASE( test_putconfig_voltage_profile )
 
     CtiCommandParser parse("putconfig emetcon voltage profile demandinterval 17 lpinterval 34");
 
-    BOOST_CHECK_EQUAL( ClientErrors::None, dut.ExecuteRequest(request.get(), parse, returnMsgs, rfnRequests) );
+    BOOST_CHECK_EQUAL( ClientErrors::None, dut.ExecuteRequest(request.get(), parse, returnMsgs, requestMsgs, rfnRequests) );
     BOOST_REQUIRE_EQUAL( 1, returnMsgs.size() );
     BOOST_REQUIRE_EQUAL( 0, rfnRequests.size() );
 
@@ -1366,7 +1642,7 @@ BOOST_AUTO_TEST_CASE( test_putconfig_voltage_profile_enable )
 
     CtiCommandParser parse("putconfig emetcon voltage profile enable");
 
-    BOOST_CHECK_EQUAL( ClientErrors::None, dut.ExecuteRequest(request.get(), parse, returnMsgs, rfnRequests) );
+    BOOST_CHECK_EQUAL( ClientErrors::None, dut.ExecuteRequest(request.get(), parse, returnMsgs, requestMsgs, rfnRequests) );
     BOOST_REQUIRE_EQUAL( 1, returnMsgs.size() );
     BOOST_REQUIRE_EQUAL( 0, rfnRequests.size() );
 
@@ -1384,7 +1660,7 @@ BOOST_AUTO_TEST_CASE( test_putconfig_voltage_profile_disable )
 
     CtiCommandParser parse("putconfig emetcon voltage profile disable");
 
-    BOOST_CHECK_EQUAL( ClientErrors::None, dut.ExecuteRequest(request.get(), parse, returnMsgs, rfnRequests) );
+    BOOST_CHECK_EQUAL( ClientErrors::None, dut.ExecuteRequest(request.get(), parse, returnMsgs, requestMsgs, rfnRequests) );
     BOOST_REQUIRE_EQUAL( 1, returnMsgs.size() );
     BOOST_REQUIRE_EQUAL( 0, rfnRequests.size() );
 
@@ -1402,7 +1678,7 @@ BOOST_AUTO_TEST_CASE( test_getconfig_voltage_profile )
 
     CtiCommandParser parse("getconfig voltage profile");
 
-    BOOST_CHECK_EQUAL( ClientErrors::None, dut.ExecuteRequest(request.get(), parse, returnMsgs, rfnRequests) );
+    BOOST_CHECK_EQUAL( ClientErrors::None, dut.ExecuteRequest(request.get(), parse, returnMsgs, requestMsgs, rfnRequests) );
     BOOST_REQUIRE_EQUAL( 1, returnMsgs.size() );
     BOOST_REQUIRE_EQUAL( 0, rfnRequests.size() );
 
@@ -1420,7 +1696,7 @@ BOOST_AUTO_TEST_CASE( test_getvalue_voltage_profile_state )
 
     CtiCommandParser parse("getconfig voltage profile state");
 
-    BOOST_CHECK_EQUAL( ClientErrors::None, dut.ExecuteRequest(request.get(), parse, returnMsgs, rfnRequests) );
+    BOOST_CHECK_EQUAL( ClientErrors::None, dut.ExecuteRequest(request.get(), parse, returnMsgs, requestMsgs, rfnRequests) );
     BOOST_REQUIRE_EQUAL( 1, returnMsgs.size() );
     BOOST_REQUIRE_EQUAL( 0, rfnRequests.size() );
 
@@ -1438,7 +1714,7 @@ BOOST_AUTO_TEST_CASE( test_immediate_demand_freeze )
 
     CtiCommandParser    parse("putstatus freeze");
 
-    BOOST_CHECK_EQUAL( ClientErrors::None, dev.ExecuteRequest(request.get(), parse, returnMsgs, rfnRequests) );
+    BOOST_CHECK_EQUAL( ClientErrors::None, dev.ExecuteRequest(request.get(), parse, returnMsgs, requestMsgs, rfnRequests) );
     BOOST_REQUIRE_EQUAL( 1, returnMsgs.size() );
     BOOST_REQUIRE_EQUAL( 1, rfnRequests.size() );
 
@@ -1471,7 +1747,7 @@ BOOST_AUTO_TEST_CASE( test_tou_critical_peak_cancel )
 
     CtiCommandParser    parse("putstatus tou critical peak cancel");
 
-    BOOST_CHECK_EQUAL( ClientErrors::None, dev.ExecuteRequest(request.get(), parse, returnMsgs, rfnRequests) );
+    BOOST_CHECK_EQUAL( ClientErrors::None, dev.ExecuteRequest(request.get(), parse, returnMsgs, requestMsgs, rfnRequests) );
     BOOST_REQUIRE_EQUAL( 1, returnMsgs.size() );
     BOOST_REQUIRE_EQUAL( 1, rfnRequests.size() );
 
@@ -1504,7 +1780,7 @@ BOOST_AUTO_TEST_CASE( test_tou_critical_peak_today )
 
     CtiCommandParser    parse("putstatus tou critical peak rate b until 23:00");
 
-    BOOST_CHECK_EQUAL( ClientErrors::None, dev.ExecuteRequest(request.get(), parse, returnMsgs, rfnRequests) );
+    BOOST_CHECK_EQUAL( ClientErrors::None, dev.ExecuteRequest(request.get(), parse, returnMsgs, requestMsgs, rfnRequests) );
     BOOST_REQUIRE_EQUAL( 1, returnMsgs.size() );
     BOOST_REQUIRE_EQUAL( 1, rfnRequests.size() );
 
@@ -1537,7 +1813,7 @@ BOOST_AUTO_TEST_CASE( test_tou_critical_peak_tomorrow )
 
     CtiCommandParser    parse("putstatus tou critical peak rate b until 8:00");
 
-    BOOST_CHECK_EQUAL( ClientErrors::None, dev.ExecuteRequest(request.get(), parse, returnMsgs, rfnRequests) );
+    BOOST_CHECK_EQUAL( ClientErrors::None, dev.ExecuteRequest(request.get(), parse, returnMsgs, requestMsgs, rfnRequests) );
     BOOST_REQUIRE_EQUAL( 1, returnMsgs.size() );
     BOOST_REQUIRE_EQUAL( 1, rfnRequests.size() );
 
@@ -1563,6 +1839,182 @@ BOOST_AUTO_TEST_CASE( test_tou_critical_peak_tomorrow )
     }
 }
 
+BOOST_AUTO_TEST_CASE( test_putconfig_install_demand )
+{
+    test_RfnResidentialDevice dut;
+
+    Cti::Test::test_DeviceConfig &cfg = *fixtureConfig;  //  get a reference to the shared_ptr in the fixture
+
+    cfg.insertValue( RfnStrings::demandInterval, "5" );
+
+    dut.setDeviceType(TYPE_RFN410FX);
+
+    BOOST_CHECK( ! dut.hasDynamicInfo(CtiTableDynamicPaoInfo::Key_RFN_DemandInterval) );
+
+    CtiCommandParser parse("putconfig install demand");
+
+    BOOST_CHECK_EQUAL( ClientErrors::None, dut.ExecuteRequest(request.get(), parse, returnMsgs, requestMsgs, rfnRequests) );
+    BOOST_REQUIRE_EQUAL( 1, returnMsgs.size() );
+    BOOST_REQUIRE_EQUAL( 1, rfnRequests.size() );
+
+    const auto& returnMsgPtr = returnMsgs.front();
+    
+    BOOST_REQUIRE( returnMsgPtr );
+    
+    const auto& returnMsg = *returnMsgPtr;
+
+    BOOST_CHECK_EQUAL( returnMsg.Status(),       0 );
+    BOOST_CHECK_EQUAL( returnMsg.ResultString(), "1 command queued for device" );
+
+    const auto& command = rfnRequests.front();
+
+    Commands::RfnCommand::RfnRequestPayload rcv = command->executeCommand( execute_time );
+
+    std::vector<unsigned char> exp { 
+            0x62, 0x05 };
+
+    BOOST_CHECK_EQUAL( rcv, exp );
+
+    std::vector<unsigned char> response{
+            0x63, 0x00 };
+
+    command->handleResponse( CtiTime::now(), response );
+
+    dut.extractCommandResult( *command );
+
+    BOOST_CHECK( dut.hasDynamicInfo(CtiTableDynamicPaoInfo::Key_RFN_DemandInterval) );
+
+    BOOST_CHECK_EQUAL( 5, dut.getDynamicInfo(CtiTableDynamicPaoInfo::Key_RFN_DemandInterval) );
+}
+
+BOOST_AUTO_TEST_CASE( test_putconfig_install_demand_configCurrent )
+{
+    test_RfnResidentialDevice dut;
+
+    Cti::Test::test_DeviceConfig &cfg = *fixtureConfig;  //  get a reference to the shared_ptr in the fixture
+
+    cfg.insertValue( RfnStrings::demandInterval, "5" );
+
+    dut.setDeviceType(TYPE_RFN410FX);
+
+    dut.setDynamicInfo(CtiTableDynamicPaoInfo::Key_RFN_DemandInterval, 5);
+
+    CtiCommandParser parse("putconfig install demand");
+
+    BOOST_CHECK_EQUAL( ClientErrors::None, dut.ExecuteRequest(request.get(), parse, returnMsgs, requestMsgs, rfnRequests) );
+    BOOST_REQUIRE_EQUAL( 1, returnMsgs.size() );
+    BOOST_CHECK_EQUAL  ( 0, rfnRequests.size() );
+
+    const auto & returnMsg = *returnMsgs.front();
+
+    BOOST_CHECK_EQUAL( returnMsg.Status(),       0 );
+    BOOST_CHECK_EQUAL( returnMsg.ResultString(), "Config demand is current." );
+}
+
+BOOST_AUTO_TEST_CASE(test_putconfig_install_demand_force)
+{
+    test_RfnResidentialDevice dut;
+
+    Cti::Test::test_DeviceConfig& cfg = *fixtureConfig;  //  get a reference to the shared_ptr in the fixture
+
+    cfg.insertValue(RfnStrings::demandInterval, "5");
+
+    dut.setDeviceType(TYPE_RFN410FX);
+
+    dut.setDynamicInfo(CtiTableDynamicPaoInfo::Key_RFN_DemandInterval, 5);
+
+    CtiCommandParser parse("putconfig install demand force");
+
+    BOOST_CHECK_EQUAL(ClientErrors::None, dut.ExecuteRequest(request.get(), parse, returnMsgs, requestMsgs, rfnRequests));
+    BOOST_REQUIRE_EQUAL(1, returnMsgs.size());
+    BOOST_REQUIRE_EQUAL(1, rfnRequests.size());
+
+    const auto& returnMsgPtr = returnMsgs.front();
+
+    BOOST_REQUIRE(returnMsgPtr);
+
+    const auto& returnMsg = *returnMsgPtr;
+
+    BOOST_CHECK_EQUAL(returnMsg.Status(), 0);
+    BOOST_CHECK_EQUAL(returnMsg.ResultString(), "1 command queued for device");
+
+    const auto& command = rfnRequests.front();
+
+    Commands::RfnCommand::RfnRequestPayload rcv = command->executeCommand(execute_time);
+
+    std::vector<unsigned char> exp{
+            0x62, 0x05 };
+
+    BOOST_CHECK_EQUAL(rcv, exp);
+
+    std::vector<unsigned char> response{
+            0x63, 0x00 };
+
+    command->handleResponse(CtiTime::now(), response);
+
+    dut.extractCommandResult(*command);
+
+    BOOST_CHECK(dut.hasDynamicInfo(CtiTableDynamicPaoInfo::Key_RFN_DemandInterval));
+
+    BOOST_CHECK_EQUAL(5, dut.getDynamicInfo(CtiTableDynamicPaoInfo::Key_RFN_DemandInterval));
+}
+
+BOOST_AUTO_TEST_CASE(test_putconfig_install_demand_verify)
+{
+    test_RfnResidentialDevice dut;
+
+    Cti::Test::test_DeviceConfig& cfg = *fixtureConfig;  //  get a reference to the shared_ptr in the fixture
+
+    cfg.insertValue(RfnStrings::demandInterval, "5");
+
+    dut.setDeviceType(TYPE_RFN410FX);
+
+    BOOST_CHECK(! dut.hasDynamicInfo(CtiTableDynamicPaoInfo::Key_RFN_DemandInterval));
+
+    {
+        CtiCommandParser parse("putconfig install demand verify");
+
+        BOOST_CHECK_EQUAL(ClientErrors::None, dut.ExecuteRequest(request.get(), parse, returnMsgs, requestMsgs, rfnRequests));
+        BOOST_REQUIRE_EQUAL(1, returnMsgs.size());
+        BOOST_CHECK_EQUAL(0, rfnRequests.size());
+
+        const auto& returnMsg = *returnMsgs.front();
+
+        BOOST_CHECK_EQUAL(returnMsg.Status(), 219);
+        BOOST_CHECK_EQUAL(returnMsg.ResultString(), "Config demand is NOT current.");
+    }
+    returnMsgs.clear();
+
+    dut.setDynamicInfo(CtiTableDynamicPaoInfo::Key_RFN_DemandInterval, 7);
+    {
+        CtiCommandParser parse("putconfig install demand verify");
+
+        BOOST_CHECK_EQUAL(ClientErrors::None, dut.ExecuteRequest(request.get(), parse, returnMsgs, requestMsgs, rfnRequests));
+        BOOST_REQUIRE_EQUAL(1, returnMsgs.size());
+        BOOST_CHECK_EQUAL(0, rfnRequests.size());
+
+        const auto& returnMsg = *returnMsgs.front();
+
+        BOOST_CHECK_EQUAL(returnMsg.Status(), 219);
+        BOOST_CHECK_EQUAL(returnMsg.ResultString(), "Config demand is NOT current.");
+    }
+    returnMsgs.clear();
+
+    dut.setDynamicInfo(CtiTableDynamicPaoInfo::Key_RFN_DemandInterval, 5);
+    {
+        CtiCommandParser parse("putconfig install demand verify");
+
+        BOOST_CHECK_EQUAL(ClientErrors::None, dut.ExecuteRequest(request.get(), parse, returnMsgs, requestMsgs, rfnRequests));
+        BOOST_REQUIRE_EQUAL(1, returnMsgs.size());
+        BOOST_CHECK_EQUAL(0, rfnRequests.size());
+
+        const auto& returnMsg = *returnMsgs.front();
+
+        BOOST_CHECK_EQUAL(returnMsg.Status(), 0);
+        BOOST_CHECK_EQUAL(returnMsg.ResultString(), "Config demand is current.");
+    }
+}
+
 BOOST_AUTO_TEST_CASE( test_putconfig_install_freezeday )
 {
     test_RfnResidentialDevice dut;
@@ -1578,7 +2030,7 @@ BOOST_AUTO_TEST_CASE( test_putconfig_install_freezeday )
     {
         CtiCommandParser parse("putconfig install freezeday");
 
-        BOOST_CHECK_EQUAL( ClientErrors::None, dut.ExecuteRequest(request.get(), parse, returnMsgs, rfnRequests) );
+        BOOST_CHECK_EQUAL( ClientErrors::None, dut.ExecuteRequest(request.get(), parse, returnMsgs, requestMsgs, rfnRequests) );
         BOOST_REQUIRE_EQUAL( 1, returnMsgs.size() );
         BOOST_REQUIRE_EQUAL( 1, rfnRequests.size() );
 
@@ -1610,6 +2062,100 @@ BOOST_AUTO_TEST_CASE( test_putconfig_install_freezeday )
             BOOST_CHECK( dut.hasDynamicInfo(CtiTableDynamicPaoInfo::Key_RFN_DemandFreezeDay) );
 
             BOOST_CHECK_EQUAL( 7, dut.getDynamicInfo(CtiTableDynamicPaoInfo::Key_RFN_DemandFreezeDay) );
+        }
+    }
+}
+
+BOOST_AUTO_TEST_CASE(test_putconfig_install_metlib)
+{
+    test_RfnResidentialDevice dut;
+
+    dut.setDeviceType(TYPE_RFN520FAX);
+
+    Cti::Test::test_DeviceConfig& cfg = *fixtureConfig;  //  get a reference to the shared_ptr in the fixture
+
+    cfg.insertValue(RfnStrings::MetrologyLibraryEnabled, "true");
+
+    BOOST_CHECK(! dut.hasDynamicInfo(CtiTableDynamicPaoInfo::Key_RFN_MetrologyLibraryEnabled));
+
+    {
+        CtiCommandParser parse("putconfig install metlib");
+
+        BOOST_CHECK_EQUAL(ClientErrors::None, dut.ExecuteRequest(request.get(), parse, returnMsgs, requestMsgs, rfnRequests));
+        BOOST_REQUIRE_EQUAL(1, returnMsgs.size());
+        BOOST_REQUIRE_EQUAL(1, rfnRequests.size());
+
+        {
+            const auto& returnMsg = *returnMsgs.front();
+
+            BOOST_CHECK_EQUAL(returnMsg.Status(), 0);
+            BOOST_CHECK_EQUAL(returnMsg.ResultString(), "1 command queued for device");
+        }
+
+        RfnDevice::RfnCommandList::iterator rfnRequest_itr = rfnRequests.begin();
+        {
+            auto& command = *rfnRequest_itr++;
+
+            Commands::RfnCommand::RfnRequestPayload rcv = command->executeCommand(execute_time);
+
+            std::vector<unsigned char> exp {
+                0x57, 0x00, 0x00 };
+
+            BOOST_CHECK_EQUAL(rcv, exp);
+
+            std::vector<unsigned char> response {
+                0x58, 0x00, 0x00, 0x00 };
+
+            command->handleResponse(CtiTime::now(), response);
+
+            dut.extractCommandResult(*command);
+
+            BOOST_CHECK(dut.hasDynamicInfo(CtiTableDynamicPaoInfo::Key_RFN_MetrologyLibraryEnabled));
+
+            BOOST_CHECK_EQUAL(static_cast<long>(true), dut.getDynamicInfo(CtiTableDynamicPaoInfo::Key_RFN_MetrologyLibraryEnabled));
+        }
+    }
+
+    returnMsgs.clear();
+    rfnRequests.clear();
+
+    cfg.insertValue(RfnStrings::MetrologyLibraryEnabled, "false");
+
+    {
+        CtiCommandParser parse("putconfig install metlib");
+
+        BOOST_CHECK_EQUAL(ClientErrors::None, dut.ExecuteRequest(request.get(), parse, returnMsgs, requestMsgs, rfnRequests));
+        BOOST_REQUIRE_EQUAL(1, returnMsgs.size());
+        BOOST_REQUIRE_EQUAL(1, rfnRequests.size());
+
+        {
+            const auto& returnMsg = *returnMsgs.front();
+
+            BOOST_CHECK_EQUAL(returnMsg.Status(), 0);
+            BOOST_CHECK_EQUAL(returnMsg.ResultString(), "1 command queued for device");
+        }
+
+        RfnDevice::RfnCommandList::iterator rfnRequest_itr = rfnRequests.begin();
+        {
+            auto& command = *rfnRequest_itr++;
+
+            Commands::RfnCommand::RfnRequestPayload rcv = command->executeCommand(execute_time);
+
+            std::vector<unsigned char> exp {
+                0x57, 0x00, 0x01 };
+
+            BOOST_CHECK_EQUAL(rcv, exp);
+
+            std::vector<unsigned char> response {
+                0x58, 0x00, 0x00, 0x01 };
+
+            command->handleResponse(CtiTime::now(), response);
+
+            dut.extractCommandResult(*command);
+
+            BOOST_CHECK(dut.hasDynamicInfo(CtiTableDynamicPaoInfo::Key_RFN_MetrologyLibraryEnabled));
+
+            BOOST_CHECK_EQUAL(static_cast<long>(false), dut.getDynamicInfo(CtiTableDynamicPaoInfo::Key_RFN_MetrologyLibraryEnabled));
         }
     }
 }
@@ -1653,7 +2199,7 @@ BOOST_AUTO_TEST_CASE( test_putconfig_install_channel_configuration )
     {
         CtiCommandParser parse("putconfig install channelconfig");
 
-        BOOST_CHECK_EQUAL( ClientErrors::None, dut.ExecuteRequest(request.get(), parse, returnMsgs, rfnRequests) );
+        BOOST_CHECK_EQUAL( ClientErrors::None, dut.ExecuteRequest(request.get(), parse, returnMsgs, requestMsgs, rfnRequests) );
 
         BOOST_REQUIRE_EQUAL( 1, returnMsgs.size() );
         {
@@ -1792,7 +2338,7 @@ BOOST_AUTO_TEST_CASE(test_putconfig_install_demand_interval)
 
         CtiCommandParser parse("putconfig install demand");
 
-        BOOST_CHECK_EQUAL(ClientErrors::None, dut.ExecuteRequest(request.get(), parse, returnMsgs, rfnRequests));
+        BOOST_CHECK_EQUAL(ClientErrors::None, dut.ExecuteRequest(request.get(), parse, returnMsgs, requestMsgs, rfnRequests));
 
         BOOST_CHECK(rfnRequests.empty());
 
@@ -1815,7 +2361,7 @@ BOOST_AUTO_TEST_CASE(test_putconfig_install_demand_interval)
 
         CtiCommandParser parse("putconfig install demand");
 
-        BOOST_CHECK_EQUAL(ClientErrors::None, dut.ExecuteRequest(request.get(), parse, returnMsgs, rfnRequests));
+        BOOST_CHECK_EQUAL(ClientErrors::None, dut.ExecuteRequest(request.get(), parse, returnMsgs, requestMsgs, rfnRequests));
 
         BOOST_REQUIRE_EQUAL(1, returnMsgs.size());
         {
@@ -1991,14 +2537,14 @@ BOOST_AUTO_TEST_CASE( test_putconfig_install_all_device )
             };
 
     const std::vector< std::vector<bool> > returnExpectMoreExp {
-            { true, true, true, true, true, true, true, false },
-                                                      // no config data                   -> 8 error messages, NOTE: last expectMore expected to be false
-            { true, true, true, true, true, true, true },
-                                                      // add demand freeze day config     -> 7 error messages
-            { true, true, true, true, true },         // add TOU config                   -> 5 error messages
-            { true, true, true },                     // add temperature alarming config  -> 3 error messages
-            { true },                                 // add channel config               -> config sent successfully
-            { true },                                 // add demand interval config       -> config sent successfully
+            { true, true, true, true, true, true, true, true, false },
+                                                            // no config data                   -> 9 error messages, NOTE: last expectMore expected to be false
+            { true, true, true, true, true, true, true, true },
+                                                            // add demand freeze day config     -> 8 error messages
+            { true, true, true, true, true, true },         // add TOU config                   -> 6 error messages
+            { true, true, true, true },                     // add temperature alarming config  -> 4 error messages
+            { true },                                       // add channel config               -> config sent successfully
+            { true },                                       // add demand interval config       -> config sent successfully
             };
 
     std::vector<int> requestMsgsRcv;
@@ -2008,7 +2554,7 @@ BOOST_AUTO_TEST_CASE( test_putconfig_install_all_device )
 
     ////// empty configuration (no valid configuration) //////
 
-    BOOST_CHECK_EQUAL( ClientErrors::None, dut.ExecuteRequest( request.get(), parse, returnMsgs, rfnRequests) );
+    BOOST_CHECK_EQUAL( ClientErrors::None, dut.ExecuteRequest( request.get(), parse, returnMsgs, requestMsgs, rfnRequests) );
 
     requestMsgsRcv.push_back( rfnRequests.size() );
 
@@ -2027,7 +2573,7 @@ BOOST_AUTO_TEST_CASE( test_putconfig_install_all_device )
                         category.first,
                         category.second));
 
-        BOOST_CHECK_EQUAL( ClientErrors::None, dut.ExecuteRequest( request.get(), parse, returnMsgs, rfnRequests) );
+        BOOST_CHECK_EQUAL( ClientErrors::None, dut.ExecuteRequest( request.get(), parse, returnMsgs, requestMsgs, rfnRequests) );
 
         requestMsgsRcv.push_back( rfnRequests.size() );
 
@@ -2259,9 +2805,10 @@ BOOST_AUTO_TEST_CASE( test_putconfig_install_groupMessageCount )
 
     request->setUserMessageId(11235);
 
-    BOOST_CHECK_EQUAL( ClientErrors::None, dut.ExecuteRequest( request.get(), parse, returnMsgs, rfnRequests) );
+    BOOST_CHECK_EQUAL( ClientErrors::None, dut.ExecuteRequest( request.get(), parse, returnMsgs, requestMsgs, rfnRequests) );
 
     BOOST_CHECK_EQUAL( 1, rfnRequests.size() );
+    BOOST_CHECK_EQUAL( 0, requestMsgs.size() );
 
     std::vector<bool> expectMoreRcv;
     const std::vector<bool> expectMoreExp { true, true, true, true, true };
@@ -2460,15 +3007,15 @@ BOOST_AUTO_TEST_CASE( test_putconfig_install_all_disconnect_meter )
 
 
     const std::vector< std::vector<bool> > returnExpectMoreExp {
-            { true, true, true, true, true, true, true, true, true, false },
-                                                              // no config data                   -> 10 error messages, NOTE: last expectMore expected to be false
-            { true, true, true, true, true, true, true, true, true },
-                                                              // add remote disconnect config     -> 9 error messages
-            { true, true, true, true, true, true, true },     // add demand freeze day config     -> 7 error messages
-            { true, true, true, true, true },                 // add TOU config                   -> 5 error messages
-            { true, true, true },                             // add temperature alarming config  -> 3 error messages
-            { true },                                         // add channel config               -> config sent successfully
-            { true }                                          // add demand interval config       -> config sent successfully
+            { true, true, true, true, true, true, true, true, true, true, false },
+                                                                    // no config data                   -> 11 error messages, NOTE: last expectMore expected to be false
+            { true, true, true, true, true, true, true, true, true, true },
+                                                                    // add remote disconnect config     -> 10 error messages
+            { true, true, true, true, true, true, true, true },     // add demand freeze day config     -> 8 error messages
+            { true, true, true, true, true, true },                 // add TOU config                   -> 6 error messages
+            { true, true, true, true },                             // add temperature alarming config  -> 4 error messages
+            { true },                                               // add channel config               -> config sent successfully
+            { true }                                                // add demand interval config       -> config sent successfully
             };
 
     std::vector<int> requestMsgsRcv;
@@ -2480,7 +3027,7 @@ BOOST_AUTO_TEST_CASE( test_putconfig_install_all_disconnect_meter )
 
     BOOST_TEST_MESSAGE( parse.getCommandStr() << ":");
 
-    BOOST_CHECK_EQUAL( ClientErrors::None, dut.ExecuteRequest( request.get(), parse, returnMsgs, rfnRequests ) );
+    BOOST_CHECK_EQUAL( ClientErrors::None, dut.ExecuteRequest( request.get(), parse, returnMsgs, requestMsgs, rfnRequests ) );
 
     requestMsgsRcv.push_back( rfnRequests.size() );
 
@@ -2501,7 +3048,7 @@ BOOST_AUTO_TEST_CASE( test_putconfig_install_all_disconnect_meter )
         
         BOOST_TEST_MESSAGE( parse.getCommandStr() << ":" );
 
-        BOOST_CHECK_EQUAL( ClientErrors::None, dut.ExecuteRequest( request.get(), parse, returnMsgs, rfnRequests ) );
+        BOOST_CHECK_EQUAL( ClientErrors::None, dut.ExecuteRequest( request.get(), parse, returnMsgs, requestMsgs, rfnRequests ) );
 
         requestMsgsRcv.push_back( rfnRequests.size() );
 
@@ -2586,9 +3133,9 @@ BOOST_AUTO_TEST_CASE( test_config_notification )
         { PI::Key_RFN_Schedule4Rate4, "A" },
         { PI::Key_RFN_Schedule4Rate5, "D" },
          
-        { PI::Key_RFN_Holiday1, "03/14/2018" },
-        { PI::Key_RFN_Holiday2, "06/27/2018" },
-        { PI::Key_RFN_Holiday3, "02/07/2018" },
+        { PI::Key_RFN_Holiday1, "2018-03-14" },
+        { PI::Key_RFN_Holiday2, "2018-06-27" },
+        { PI::Key_RFN_Holiday3, "not-a-date-time" },
          
         { PI::Key_RFN_DemandFreezeDay, 32 },
          
@@ -2607,7 +3154,9 @@ BOOST_AUTO_TEST_CASE( test_config_notification )
         { PI::Key_RFN_TempAlarmHighTempThreshold, 5889 },
     
         { PI::Key_RFN_RecordingIntervalSeconds,  7200 },
-        { PI::Key_RFN_ReportingIntervalSeconds, 86400 } 
+        { PI::Key_RFN_ReportingIntervalSeconds, 86400 },
+
+        { PI::Key_RFN_MetrologyLibraryEnabled, false },
     };
 
     BOOST_CHECK_EQUAL(overrideDynamicPaoInfoManager.dpi->dirtyEntries[-1].size(), std::size(dpiExpected));
@@ -2657,4 +3206,1420 @@ R"SQUID(DATA_STREAMING_JSON{
 })SQUID");
 }
 
+BOOST_AUTO_TEST_CASE( test_putconfig_install_all_device_metlib_support_but_missing_confg_entry_no_dynamic_pao_info )
+{
+    using boost::assign::list_of;
+
+    test_RfnResidentialDevice dut;
+    dut.setDeviceType(TYPE_RFN520FAXD);
+
+    typedef std::map<std::string, std::string>    CategoryItems;
+    typedef std::pair<std::string, CategoryItems> CategoryDefinition;
+    typedef std::vector<CategoryDefinition>       ConfigInstallItems;
+
+    const ConfigInstallItems configurations {
+
+            CategoryDefinition { "rfnDisconnectConfiguration", 
+                CategoryItems {
+                    { RfnStrings::DisconnectMode, "CYCLING" },
+                    { RfnStrings::ConnectMinutes, "100" },
+                    { RfnStrings::DisconnectMinutes, "60" } } },
+
+            CategoryDefinition { "demandFreeze", 
+                CategoryItems {
+                    { RfnStrings::demandFreezeDay, "7" } } },
+
+            CategoryDefinition { "tou", 
+                CategoryItems {
+                    // SCHEDULE_1
+                    { RfnStrings::Schedule1Time0, "00:00" },
+                    { RfnStrings::Schedule1Time1, "00:01" },
+                    { RfnStrings::Schedule1Time2, "10:06" },
+                    { RfnStrings::Schedule1Time3, "12:22" },
+                    { RfnStrings::Schedule1Time4, "23:33" },
+                    { RfnStrings::Schedule1Time5, "23:44" },
+
+                    { RfnStrings::Schedule1Rate0, "A" },
+                    { RfnStrings::Schedule1Rate1, "B" },
+                    { RfnStrings::Schedule1Rate2, "C" },
+                    { RfnStrings::Schedule1Rate3, "D" },
+                    { RfnStrings::Schedule1Rate4, "A" },
+                    { RfnStrings::Schedule1Rate5, "B" },
+
+                    // SCHEDULE_2
+                    { RfnStrings::Schedule2Time0, "00:00" },
+                    { RfnStrings::Schedule2Time1, "01:23" },
+                    { RfnStrings::Schedule2Time2, "03:12" },
+                    { RfnStrings::Schedule2Time3, "04:01" },
+                    { RfnStrings::Schedule2Time4, "05:23" },
+                    { RfnStrings::Schedule2Time5, "16:28" },
+
+                    { RfnStrings::Schedule2Rate0, "D" },
+                    { RfnStrings::Schedule2Rate1, "A" },
+                    { RfnStrings::Schedule2Rate2, "B" },
+                    { RfnStrings::Schedule2Rate3, "C" },
+                    { RfnStrings::Schedule2Rate4, "D" },
+                    { RfnStrings::Schedule2Rate5, "A" },
+
+                    // SCHEDULE_3
+                    { RfnStrings::Schedule3Time0, "00:00" },
+                    { RfnStrings::Schedule3Time1, "01:02" },
+                    { RfnStrings::Schedule3Time2, "02:03" },
+                    { RfnStrings::Schedule3Time3, "04:05" },
+                    { RfnStrings::Schedule3Time4, "05:06" },
+                    { RfnStrings::Schedule3Time5, "06:07" },
+
+                    { RfnStrings::Schedule3Rate0, "C" },
+                    { RfnStrings::Schedule3Rate1, "D" },
+                    { RfnStrings::Schedule3Rate2, "A" },
+                    { RfnStrings::Schedule3Rate3, "B" },
+                    { RfnStrings::Schedule3Rate4, "C" },
+                    { RfnStrings::Schedule3Rate5, "D" },
+
+                    // SCHEDULE_4
+                    { RfnStrings::Schedule4Time0, "00:00" },
+                    { RfnStrings::Schedule4Time1, "00:01" },
+                    { RfnStrings::Schedule4Time2, "08:59" },
+                    { RfnStrings::Schedule4Time3, "12:12" },
+                    { RfnStrings::Schedule4Time4, "23:01" },
+                    { RfnStrings::Schedule4Time5, "23:55" },
+
+                    { RfnStrings::Schedule4Rate0, "B" },
+                    { RfnStrings::Schedule4Rate1, "C" },
+                    { RfnStrings::Schedule4Rate2, "D" },
+                    { RfnStrings::Schedule4Rate3, "A" },
+                    { RfnStrings::Schedule4Rate4, "B" },
+                    { RfnStrings::Schedule4Rate5, "C" },
+
+                    // day table
+                    { RfnStrings::SundaySchedule,    "SCHEDULE_1" },
+                    { RfnStrings::MondaySchedule,    "SCHEDULE_1" },
+                    { RfnStrings::TuesdaySchedule,   "SCHEDULE_3" },
+                    { RfnStrings::WednesdaySchedule, "SCHEDULE_2" },
+                    { RfnStrings::ThursdaySchedule,  "SCHEDULE_4" },
+                    { RfnStrings::FridaySchedule,    "SCHEDULE_2" },
+                    { RfnStrings::SaturdaySchedule,  "SCHEDULE_3" },
+                    { RfnStrings::HolidaySchedule,   "SCHEDULE_3" },
+
+                    // default rate
+                    { RfnStrings::DefaultTouRate, "B" },
+
+                    // set TOU enabled
+                    { RfnStrings::touEnabled, "true" } } },
+
+            CategoryDefinition { "rfnTempAlarm", 
+                CategoryItems {
+                    { RfnStrings::TemperatureAlarmEnabled,           "true" },
+                    { RfnStrings::TemperatureAlarmRepeatInterval,    "15"   },
+                    { RfnStrings::TemperatureAlarmRepeatCount,       "3"    },
+                    { RfnStrings::TemperatureAlarmHighTempThreshold, "50"   } } },
+
+            CategoryDefinition { "rfnChannelConfiguration", 
+                CategoryItems {
+                    { RfnStrings::ChannelConfiguration::EnabledChannels_Prefix, "1" },
+                    { RfnStrings::ChannelConfiguration::EnabledChannels_Prefix + ".0." +
+                      RfnStrings::ChannelConfiguration::EnabledChannels::Attribute, "DELIVERED_KWH" },
+                    { RfnStrings::ChannelConfiguration::EnabledChannels_Prefix + ".0." +
+                      RfnStrings::ChannelConfiguration::EnabledChannels::Read, "MIDNIGHT" },
+                    { RfnStrings::ChannelConfiguration::RecordingIntervalMinutes, "123" },
+                    { RfnStrings::ChannelConfiguration::ReportingIntervalMinutes, "456" } } },
+
+            CategoryDefinition { "rfnDemand", 
+                CategoryItems {
+                    { RfnStrings::demandInterval, "13" } } }
+            };
+
+    const std::vector<int> requestMsgsExp {
+            0,   // no config data                   -> no request
+            1,   // add remote disconnect config     -> +1 request
+            2,   // add demand freeze day config     -> +1 request
+            4,   // add TOU config                   -> +2 request
+            5,   // add temperature alarming config  -> +1 request
+            7,   // add channel config               -> +2 request
+            8,   // add demand interval config       -> +1 request
+            };
+
+    std::vector<int> requestMsgsRcv;
+
+    CtiCommandParser parse("putconfig install all");
+
+    ////// empty configuration (no valid configuration) //////
+
+    BOOST_TEST_MESSAGE( parse.getCommandStr() << ":");
+
+    BOOST_CHECK_EQUAL( ClientErrors::None, dut.ExecuteRequest( request.get(), parse, returnMsgs, requestMsgs, rfnRequests ) );
+
+    requestMsgsRcv.push_back( rfnRequests.size() );
+
+    ////// add each configuration //////
+
+    auto & cfg = *fixtureConfig;  //  get a reference to the shared_ptr in the fixture
+
+    for( const auto & category : configurations )
+    {
+        resetTestState(); // note: reset test state does not erase the current configuration
+
+        cfg.addCategory(
+                Cti::Config::Category::ConstructCategory(
+                        category.first,
+                        category.second));
+        
+        BOOST_TEST_MESSAGE( parse.getCommandStr() << ":" );
+
+        BOOST_CHECK_EQUAL( ClientErrors::None, dut.ExecuteRequest( request.get(), parse, returnMsgs, requestMsgs, rfnRequests ) );
+
+        requestMsgsRcv.push_back( rfnRequests.size() );
+    }
+
+    BOOST_CHECK_EQUAL_COLLECTIONS( requestMsgsRcv.begin(), requestMsgsRcv.end(), requestMsgsExp.begin(), requestMsgsExp.end() );
+}
+
+BOOST_AUTO_TEST_CASE( test_putconfig_install_all_device_metlib_support_but_missing_confg_entry_with_dynamic_pao_info_enabled )
+{
+    using boost::assign::list_of;
+
+    test_RfnResidentialDevice dut;
+    dut.setDeviceType(TYPE_RFN520FAXD);
+
+    typedef std::map<std::string, std::string>    CategoryItems;
+    typedef std::pair<std::string, CategoryItems> CategoryDefinition;
+    typedef std::vector<CategoryDefinition>       ConfigInstallItems;
+
+    const ConfigInstallItems configurations {
+
+            CategoryDefinition { "rfnDisconnectConfiguration", 
+                CategoryItems {
+                    { RfnStrings::DisconnectMode, "CYCLING" },
+                    { RfnStrings::ConnectMinutes, "100" },
+                    { RfnStrings::DisconnectMinutes, "60" } } },
+
+            CategoryDefinition { "demandFreeze", 
+                CategoryItems {
+                    { RfnStrings::demandFreezeDay, "7" } } },
+
+            CategoryDefinition { "tou", 
+                CategoryItems {
+                    // SCHEDULE_1
+                    { RfnStrings::Schedule1Time0, "00:00" },
+                    { RfnStrings::Schedule1Time1, "00:01" },
+                    { RfnStrings::Schedule1Time2, "10:06" },
+                    { RfnStrings::Schedule1Time3, "12:22" },
+                    { RfnStrings::Schedule1Time4, "23:33" },
+                    { RfnStrings::Schedule1Time5, "23:44" },
+
+                    { RfnStrings::Schedule1Rate0, "A" },
+                    { RfnStrings::Schedule1Rate1, "B" },
+                    { RfnStrings::Schedule1Rate2, "C" },
+                    { RfnStrings::Schedule1Rate3, "D" },
+                    { RfnStrings::Schedule1Rate4, "A" },
+                    { RfnStrings::Schedule1Rate5, "B" },
+
+                    // SCHEDULE_2
+                    { RfnStrings::Schedule2Time0, "00:00" },
+                    { RfnStrings::Schedule2Time1, "01:23" },
+                    { RfnStrings::Schedule2Time2, "03:12" },
+                    { RfnStrings::Schedule2Time3, "04:01" },
+                    { RfnStrings::Schedule2Time4, "05:23" },
+                    { RfnStrings::Schedule2Time5, "16:28" },
+
+                    { RfnStrings::Schedule2Rate0, "D" },
+                    { RfnStrings::Schedule2Rate1, "A" },
+                    { RfnStrings::Schedule2Rate2, "B" },
+                    { RfnStrings::Schedule2Rate3, "C" },
+                    { RfnStrings::Schedule2Rate4, "D" },
+                    { RfnStrings::Schedule2Rate5, "A" },
+
+                    // SCHEDULE_3
+                    { RfnStrings::Schedule3Time0, "00:00" },
+                    { RfnStrings::Schedule3Time1, "01:02" },
+                    { RfnStrings::Schedule3Time2, "02:03" },
+                    { RfnStrings::Schedule3Time3, "04:05" },
+                    { RfnStrings::Schedule3Time4, "05:06" },
+                    { RfnStrings::Schedule3Time5, "06:07" },
+
+                    { RfnStrings::Schedule3Rate0, "C" },
+                    { RfnStrings::Schedule3Rate1, "D" },
+                    { RfnStrings::Schedule3Rate2, "A" },
+                    { RfnStrings::Schedule3Rate3, "B" },
+                    { RfnStrings::Schedule3Rate4, "C" },
+                    { RfnStrings::Schedule3Rate5, "D" },
+
+                    // SCHEDULE_4
+                    { RfnStrings::Schedule4Time0, "00:00" },
+                    { RfnStrings::Schedule4Time1, "00:01" },
+                    { RfnStrings::Schedule4Time2, "08:59" },
+                    { RfnStrings::Schedule4Time3, "12:12" },
+                    { RfnStrings::Schedule4Time4, "23:01" },
+                    { RfnStrings::Schedule4Time5, "23:55" },
+
+                    { RfnStrings::Schedule4Rate0, "B" },
+                    { RfnStrings::Schedule4Rate1, "C" },
+                    { RfnStrings::Schedule4Rate2, "D" },
+                    { RfnStrings::Schedule4Rate3, "A" },
+                    { RfnStrings::Schedule4Rate4, "B" },
+                    { RfnStrings::Schedule4Rate5, "C" },
+
+                    // day table
+                    { RfnStrings::SundaySchedule,    "SCHEDULE_1" },
+                    { RfnStrings::MondaySchedule,    "SCHEDULE_1" },
+                    { RfnStrings::TuesdaySchedule,   "SCHEDULE_3" },
+                    { RfnStrings::WednesdaySchedule, "SCHEDULE_2" },
+                    { RfnStrings::ThursdaySchedule,  "SCHEDULE_4" },
+                    { RfnStrings::FridaySchedule,    "SCHEDULE_2" },
+                    { RfnStrings::SaturdaySchedule,  "SCHEDULE_3" },
+                    { RfnStrings::HolidaySchedule,   "SCHEDULE_3" },
+
+                    // default rate
+                    { RfnStrings::DefaultTouRate, "B" },
+
+                    // set TOU enabled
+                    { RfnStrings::touEnabled, "true" } } },
+
+            CategoryDefinition { "rfnTempAlarm", 
+                CategoryItems {
+                    { RfnStrings::TemperatureAlarmEnabled,           "true" },
+                    { RfnStrings::TemperatureAlarmRepeatInterval,    "15"   },
+                    { RfnStrings::TemperatureAlarmRepeatCount,       "3"    },
+                    { RfnStrings::TemperatureAlarmHighTempThreshold, "50"   } } },
+
+            CategoryDefinition { "rfnChannelConfiguration", 
+                CategoryItems {
+                    { RfnStrings::ChannelConfiguration::EnabledChannels_Prefix, "1" },
+                    { RfnStrings::ChannelConfiguration::EnabledChannels_Prefix + ".0." +
+                      RfnStrings::ChannelConfiguration::EnabledChannels::Attribute, "DELIVERED_KWH" },
+                    { RfnStrings::ChannelConfiguration::EnabledChannels_Prefix + ".0." +
+                      RfnStrings::ChannelConfiguration::EnabledChannels::Read, "MIDNIGHT" },
+                    { RfnStrings::ChannelConfiguration::RecordingIntervalMinutes, "123" },
+                    { RfnStrings::ChannelConfiguration::ReportingIntervalMinutes, "456" } } },
+
+            CategoryDefinition { "rfnDemand", 
+                CategoryItems {
+                    { RfnStrings::demandInterval, "13" } } }
+            };
+
+    // set the dynamic pao info in the device
+    dut.setDynamicInfo( CtiTableDynamicPaoInfo::Key_RFN_MetrologyLibraryEnabled,    1 );    // enabled
+
+    const std::vector<int> requestMsgsExp {
+            0,   // no config data                   -> no request
+            1,   // add remote disconnect config     -> +1 request
+            2,   // add demand freeze day config     -> +1 request
+            4,   // add TOU config                   -> +2 request
+            5,   // add temperature alarming config  -> +1 request
+            7,   // add channel config               -> +2 request
+            8,   // add demand interval config       -> +1 request
+            };
+
+    std::vector<int> requestMsgsRcv;
+
+    CtiCommandParser parse("putconfig install all");
+
+    ////// empty configuration (no valid configuration) //////
+
+    BOOST_TEST_MESSAGE( parse.getCommandStr() << ":");
+
+    BOOST_CHECK_EQUAL( ClientErrors::None, dut.ExecuteRequest( request.get(), parse, returnMsgs, requestMsgs, rfnRequests ) );
+
+    requestMsgsRcv.push_back( rfnRequests.size() );
+
+    ////// add each configuration //////
+
+    auto & cfg = *fixtureConfig;  //  get a reference to the shared_ptr in the fixture
+
+    for( const auto & category : configurations )
+    {
+        resetTestState(); // note: reset test state does not erase the current configuration
+
+        cfg.addCategory(
+                Cti::Config::Category::ConstructCategory(
+                        category.first,
+                        category.second));
+        
+        BOOST_TEST_MESSAGE( parse.getCommandStr() << ":" );
+
+        BOOST_CHECK_EQUAL( ClientErrors::None, dut.ExecuteRequest( request.get(), parse, returnMsgs, requestMsgs, rfnRequests ) );
+
+        requestMsgsRcv.push_back( rfnRequests.size() );
+    }
+
+    BOOST_CHECK_EQUAL_COLLECTIONS( requestMsgsRcv.begin(), requestMsgsRcv.end(), requestMsgsExp.begin(), requestMsgsExp.end() );
+}
+
+// the dut for these tests is set up as firmware 9.5 now which supports the Demand Freeze config category by default.
+// The following tests cover this situation.
+BOOST_AUTO_TEST_CASE( test_putconfig_install_all_device_metlib_support_but_missing_confg_entry_with_dynamic_pao_info_disabled )
+{
+    using boost::assign::list_of;
+
+    test_RfnResidentialDevice dut;
+    dut.setDeviceType(TYPE_RFN520FAXD);
+
+    typedef std::map<std::string, std::string>    CategoryItems;
+    typedef std::pair<std::string, CategoryItems> CategoryDefinition;
+    typedef std::vector<CategoryDefinition>       ConfigInstallItems;
+
+    const ConfigInstallItems configurations {
+
+            CategoryDefinition { "rfnDisconnectConfiguration", 
+                CategoryItems {
+                    { RfnStrings::DisconnectMode, "CYCLING" },
+                    { RfnStrings::ConnectMinutes, "100" },
+                    { RfnStrings::DisconnectMinutes, "60" } } },
+
+            CategoryDefinition { "demandFreeze", 
+                CategoryItems {
+                    { RfnStrings::demandFreezeDay, "7" } } },
+
+            CategoryDefinition { "tou", 
+                CategoryItems {
+                    // SCHEDULE_1
+                    { RfnStrings::Schedule1Time0, "00:00" },
+                    { RfnStrings::Schedule1Time1, "00:01" },
+                    { RfnStrings::Schedule1Time2, "10:06" },
+                    { RfnStrings::Schedule1Time3, "12:22" },
+                    { RfnStrings::Schedule1Time4, "23:33" },
+                    { RfnStrings::Schedule1Time5, "23:44" },
+
+                    { RfnStrings::Schedule1Rate0, "A" },
+                    { RfnStrings::Schedule1Rate1, "B" },
+                    { RfnStrings::Schedule1Rate2, "C" },
+                    { RfnStrings::Schedule1Rate3, "D" },
+                    { RfnStrings::Schedule1Rate4, "A" },
+                    { RfnStrings::Schedule1Rate5, "B" },
+
+                    // SCHEDULE_2
+                    { RfnStrings::Schedule2Time0, "00:00" },
+                    { RfnStrings::Schedule2Time1, "01:23" },
+                    { RfnStrings::Schedule2Time2, "03:12" },
+                    { RfnStrings::Schedule2Time3, "04:01" },
+                    { RfnStrings::Schedule2Time4, "05:23" },
+                    { RfnStrings::Schedule2Time5, "16:28" },
+
+                    { RfnStrings::Schedule2Rate0, "D" },
+                    { RfnStrings::Schedule2Rate1, "A" },
+                    { RfnStrings::Schedule2Rate2, "B" },
+                    { RfnStrings::Schedule2Rate3, "C" },
+                    { RfnStrings::Schedule2Rate4, "D" },
+                    { RfnStrings::Schedule2Rate5, "A" },
+
+                    // SCHEDULE_3
+                    { RfnStrings::Schedule3Time0, "00:00" },
+                    { RfnStrings::Schedule3Time1, "01:02" },
+                    { RfnStrings::Schedule3Time2, "02:03" },
+                    { RfnStrings::Schedule3Time3, "04:05" },
+                    { RfnStrings::Schedule3Time4, "05:06" },
+                    { RfnStrings::Schedule3Time5, "06:07" },
+
+                    { RfnStrings::Schedule3Rate0, "C" },
+                    { RfnStrings::Schedule3Rate1, "D" },
+                    { RfnStrings::Schedule3Rate2, "A" },
+                    { RfnStrings::Schedule3Rate3, "B" },
+                    { RfnStrings::Schedule3Rate4, "C" },
+                    { RfnStrings::Schedule3Rate5, "D" },
+
+                    // SCHEDULE_4
+                    { RfnStrings::Schedule4Time0, "00:00" },
+                    { RfnStrings::Schedule4Time1, "00:01" },
+                    { RfnStrings::Schedule4Time2, "08:59" },
+                    { RfnStrings::Schedule4Time3, "12:12" },
+                    { RfnStrings::Schedule4Time4, "23:01" },
+                    { RfnStrings::Schedule4Time5, "23:55" },
+
+                    { RfnStrings::Schedule4Rate0, "B" },
+                    { RfnStrings::Schedule4Rate1, "C" },
+                    { RfnStrings::Schedule4Rate2, "D" },
+                    { RfnStrings::Schedule4Rate3, "A" },
+                    { RfnStrings::Schedule4Rate4, "B" },
+                    { RfnStrings::Schedule4Rate5, "C" },
+
+                    // day table
+                    { RfnStrings::SundaySchedule,    "SCHEDULE_1" },
+                    { RfnStrings::MondaySchedule,    "SCHEDULE_1" },
+                    { RfnStrings::TuesdaySchedule,   "SCHEDULE_3" },
+                    { RfnStrings::WednesdaySchedule, "SCHEDULE_2" },
+                    { RfnStrings::ThursdaySchedule,  "SCHEDULE_4" },
+                    { RfnStrings::FridaySchedule,    "SCHEDULE_2" },
+                    { RfnStrings::SaturdaySchedule,  "SCHEDULE_3" },
+                    { RfnStrings::HolidaySchedule,   "SCHEDULE_3" },
+
+                    // default rate
+                    { RfnStrings::DefaultTouRate, "B" },
+
+                    // set TOU enabled
+                    { RfnStrings::touEnabled, "true" } } },
+
+            CategoryDefinition { "rfnTempAlarm", 
+                CategoryItems {
+                    { RfnStrings::TemperatureAlarmEnabled,           "true" },
+                    { RfnStrings::TemperatureAlarmRepeatInterval,    "15"   },
+                    { RfnStrings::TemperatureAlarmRepeatCount,       "3"    },
+                    { RfnStrings::TemperatureAlarmHighTempThreshold, "50"   } } },
+
+            CategoryDefinition { "rfnChannelConfiguration", 
+                CategoryItems {
+                    { RfnStrings::ChannelConfiguration::EnabledChannels_Prefix, "1" },
+                    { RfnStrings::ChannelConfiguration::EnabledChannels_Prefix + ".0." +
+                      RfnStrings::ChannelConfiguration::EnabledChannels::Attribute, "DELIVERED_KWH" },
+                    { RfnStrings::ChannelConfiguration::EnabledChannels_Prefix + ".0." +
+                      RfnStrings::ChannelConfiguration::EnabledChannels::Read, "MIDNIGHT" },
+                    { RfnStrings::ChannelConfiguration::RecordingIntervalMinutes, "123" },
+                    { RfnStrings::ChannelConfiguration::ReportingIntervalMinutes, "456" } } },
+
+            CategoryDefinition { "rfnDemand", 
+                CategoryItems {
+                    { RfnStrings::demandInterval, "13" } } }
+            };
+
+    // set the dynamic pao info in the device
+    dut.setDynamicInfo( CtiTableDynamicPaoInfo::Key_RFN_MetrologyLibraryEnabled,    0 );    // disabled
+
+    const std::vector<int> requestMsgsExp {
+            0,   // no config data                   -> no request
+            1,   // add remote disconnect config     -> +1 request
+            2,   // add demand freeze day config     -> +1 request
+            2,   // add TOU config                   -> no request
+            3,   // add temperature alarming config  -> +1 request
+            5,   // add channel config               -> +2 request
+            5,   // add demand interval config       -> no request
+            };
+
+    std::vector<int> requestMsgsRcv;
+
+    CtiCommandParser parse("putconfig install all");
+
+    ////// empty configuration (no valid configuration) //////
+
+    BOOST_TEST_MESSAGE( parse.getCommandStr() << ":");
+
+    BOOST_CHECK_EQUAL( ClientErrors::None, dut.ExecuteRequest( request.get(), parse, returnMsgs, requestMsgs, rfnRequests ) );
+
+    requestMsgsRcv.push_back( rfnRequests.size() );
+
+    ////// add each configuration //////
+
+    auto & cfg = *fixtureConfig;  //  get a reference to the shared_ptr in the fixture
+
+    for( const auto & category : configurations )
+    {
+        resetTestState(); // note: reset test state does not erase the current configuration
+
+        cfg.addCategory(
+                Cti::Config::Category::ConstructCategory(
+                        category.first,
+                        category.second));
+        
+        BOOST_TEST_MESSAGE( parse.getCommandStr() << ":" );
+
+        BOOST_CHECK_EQUAL( ClientErrors::None, dut.ExecuteRequest( request.get(), parse, returnMsgs, requestMsgs, rfnRequests ) );
+
+        requestMsgsRcv.push_back( rfnRequests.size() );
+    }
+
+    BOOST_CHECK_EQUAL_COLLECTIONS( requestMsgsRcv.begin(), requestMsgsRcv.end(), requestMsgsExp.begin(), requestMsgsExp.end() );
+}
+
+BOOST_AUTO_TEST_CASE( test_putconfig_install_all_device_metlib_support_but_confg_entry_disabled )
+{
+    using boost::assign::list_of;
+
+    test_RfnResidentialDevice dut;
+    dut.setDeviceType(TYPE_RFN520FAXD);
+
+    typedef std::map<std::string, std::string>    CategoryItems;
+    typedef std::pair<std::string, CategoryItems> CategoryDefinition;
+    typedef std::vector<CategoryDefinition>       ConfigInstallItems;
+
+    const ConfigInstallItems configurations {
+
+            CategoryDefinition { "rfnMetrologyConfiguration", 
+                CategoryItems {
+                    { RfnStrings::MetrologyLibraryEnabled, "false" } } },
+
+            CategoryDefinition { "rfnDisconnectConfiguration", 
+                CategoryItems {
+                    { RfnStrings::DisconnectMode, "CYCLING" },
+                    { RfnStrings::ConnectMinutes, "100" },
+                    { RfnStrings::DisconnectMinutes, "60" } } },
+
+            CategoryDefinition { "demandFreeze", 
+                CategoryItems {
+                    { RfnStrings::demandFreezeDay, "7" } } },
+
+            CategoryDefinition { "tou", 
+                CategoryItems {
+                    // SCHEDULE_1
+                    { RfnStrings::Schedule1Time0, "00:00" },
+                    { RfnStrings::Schedule1Time1, "00:01" },
+                    { RfnStrings::Schedule1Time2, "10:06" },
+                    { RfnStrings::Schedule1Time3, "12:22" },
+                    { RfnStrings::Schedule1Time4, "23:33" },
+                    { RfnStrings::Schedule1Time5, "23:44" },
+
+                    { RfnStrings::Schedule1Rate0, "A" },
+                    { RfnStrings::Schedule1Rate1, "B" },
+                    { RfnStrings::Schedule1Rate2, "C" },
+                    { RfnStrings::Schedule1Rate3, "D" },
+                    { RfnStrings::Schedule1Rate4, "A" },
+                    { RfnStrings::Schedule1Rate5, "B" },
+
+                    // SCHEDULE_2
+                    { RfnStrings::Schedule2Time0, "00:00" },
+                    { RfnStrings::Schedule2Time1, "01:23" },
+                    { RfnStrings::Schedule2Time2, "03:12" },
+                    { RfnStrings::Schedule2Time3, "04:01" },
+                    { RfnStrings::Schedule2Time4, "05:23" },
+                    { RfnStrings::Schedule2Time5, "16:28" },
+
+                    { RfnStrings::Schedule2Rate0, "D" },
+                    { RfnStrings::Schedule2Rate1, "A" },
+                    { RfnStrings::Schedule2Rate2, "B" },
+                    { RfnStrings::Schedule2Rate3, "C" },
+                    { RfnStrings::Schedule2Rate4, "D" },
+                    { RfnStrings::Schedule2Rate5, "A" },
+
+                    // SCHEDULE_3
+                    { RfnStrings::Schedule3Time0, "00:00" },
+                    { RfnStrings::Schedule3Time1, "01:02" },
+                    { RfnStrings::Schedule3Time2, "02:03" },
+                    { RfnStrings::Schedule3Time3, "04:05" },
+                    { RfnStrings::Schedule3Time4, "05:06" },
+                    { RfnStrings::Schedule3Time5, "06:07" },
+
+                    { RfnStrings::Schedule3Rate0, "C" },
+                    { RfnStrings::Schedule3Rate1, "D" },
+                    { RfnStrings::Schedule3Rate2, "A" },
+                    { RfnStrings::Schedule3Rate3, "B" },
+                    { RfnStrings::Schedule3Rate4, "C" },
+                    { RfnStrings::Schedule3Rate5, "D" },
+
+                    // SCHEDULE_4
+                    { RfnStrings::Schedule4Time0, "00:00" },
+                    { RfnStrings::Schedule4Time1, "00:01" },
+                    { RfnStrings::Schedule4Time2, "08:59" },
+                    { RfnStrings::Schedule4Time3, "12:12" },
+                    { RfnStrings::Schedule4Time4, "23:01" },
+                    { RfnStrings::Schedule4Time5, "23:55" },
+
+                    { RfnStrings::Schedule4Rate0, "B" },
+                    { RfnStrings::Schedule4Rate1, "C" },
+                    { RfnStrings::Schedule4Rate2, "D" },
+                    { RfnStrings::Schedule4Rate3, "A" },
+                    { RfnStrings::Schedule4Rate4, "B" },
+                    { RfnStrings::Schedule4Rate5, "C" },
+
+                    // day table
+                    { RfnStrings::SundaySchedule,    "SCHEDULE_1" },
+                    { RfnStrings::MondaySchedule,    "SCHEDULE_1" },
+                    { RfnStrings::TuesdaySchedule,   "SCHEDULE_3" },
+                    { RfnStrings::WednesdaySchedule, "SCHEDULE_2" },
+                    { RfnStrings::ThursdaySchedule,  "SCHEDULE_4" },
+                    { RfnStrings::FridaySchedule,    "SCHEDULE_2" },
+                    { RfnStrings::SaturdaySchedule,  "SCHEDULE_3" },
+                    { RfnStrings::HolidaySchedule,   "SCHEDULE_3" },
+
+                    // default rate
+                    { RfnStrings::DefaultTouRate, "B" },
+
+                    // set TOU enabled
+                    { RfnStrings::touEnabled, "true" } } },
+
+            CategoryDefinition { "rfnTempAlarm", 
+                CategoryItems {
+                    { RfnStrings::TemperatureAlarmEnabled,           "true" },
+                    { RfnStrings::TemperatureAlarmRepeatInterval,    "15"   },
+                    { RfnStrings::TemperatureAlarmRepeatCount,       "3"    },
+                    { RfnStrings::TemperatureAlarmHighTempThreshold, "50"   } } },
+
+            CategoryDefinition { "rfnChannelConfiguration", 
+                CategoryItems {
+                    { RfnStrings::ChannelConfiguration::EnabledChannels_Prefix, "1" },
+                    { RfnStrings::ChannelConfiguration::EnabledChannels_Prefix + ".0." +
+                      RfnStrings::ChannelConfiguration::EnabledChannels::Attribute, "DELIVERED_KWH" },
+                    { RfnStrings::ChannelConfiguration::EnabledChannels_Prefix + ".0." +
+                      RfnStrings::ChannelConfiguration::EnabledChannels::Read, "MIDNIGHT" },
+                    { RfnStrings::ChannelConfiguration::RecordingIntervalMinutes, "123" },
+                    { RfnStrings::ChannelConfiguration::ReportingIntervalMinutes, "456" } } },
+
+            CategoryDefinition { "rfnDemand", 
+                CategoryItems {
+                    { RfnStrings::demandInterval, "13" } } }
+            };
+
+    const std::vector<int> requestMsgsExp {
+            0,   // no config data                   -> no request
+            1,   // add metlib config                -> +1 request
+            2,   // add remote disconnect config     -> +1 request
+            3,   // add demand freeze day config     -> +1 request
+            3,   // add TOU config                   -> no request
+            4,   // add temperature alarming config  -> +1 request
+            6,   // add channel config               -> +2 request
+            6,   // add demand interval config       -> no request
+            };
+
+    std::vector<int> requestMsgsRcv;
+
+    CtiCommandParser parse("putconfig install all");
+
+    ////// empty configuration (no valid configuration) //////
+
+    BOOST_TEST_MESSAGE( parse.getCommandStr() << ":");
+
+    BOOST_CHECK_EQUAL( ClientErrors::None, dut.ExecuteRequest( request.get(), parse, returnMsgs, requestMsgs, rfnRequests ) );
+
+    requestMsgsRcv.push_back( rfnRequests.size() );
+
+    ////// add each configuration //////
+
+    auto & cfg = *fixtureConfig;  //  get a reference to the shared_ptr in the fixture
+
+    for( const auto & category : configurations )
+    {
+        resetTestState(); // note: reset test state does not erase the current configuration
+
+        cfg.addCategory(
+                Cti::Config::Category::ConstructCategory(
+                        category.first,
+                        category.second));
+        
+        BOOST_TEST_MESSAGE( parse.getCommandStr() << ":" );
+
+        BOOST_CHECK_EQUAL( ClientErrors::None, dut.ExecuteRequest( request.get(), parse, returnMsgs, requestMsgs, rfnRequests ) );
+
+        requestMsgsRcv.push_back( rfnRequests.size() );
+    }
+
+    BOOST_CHECK_EQUAL_COLLECTIONS( requestMsgsRcv.begin(), requestMsgsRcv.end(), requestMsgsExp.begin(), requestMsgsExp.end() );
+}
+
+BOOST_AUTO_TEST_CASE( test_putconfig_install_all_device_metlib_support_with_confg_entry_enabled )
+{
+    using boost::assign::list_of;
+
+    test_RfnResidentialDevice dut;
+    dut.setDeviceType(TYPE_RFN520FAXD);
+
+    typedef std::map<std::string, std::string>    CategoryItems;
+    typedef std::pair<std::string, CategoryItems> CategoryDefinition;
+    typedef std::vector<CategoryDefinition>       ConfigInstallItems;
+
+    const ConfigInstallItems configurations {
+
+            CategoryDefinition { "rfnMetrologyConfiguration", 
+                CategoryItems {
+                    { RfnStrings::MetrologyLibraryEnabled, "true" } } },
+
+            CategoryDefinition { "rfnDisconnectConfiguration", 
+                CategoryItems {
+                    { RfnStrings::DisconnectMode, "CYCLING" },
+                    { RfnStrings::ConnectMinutes, "100" },
+                    { RfnStrings::DisconnectMinutes, "60" } } },
+
+            CategoryDefinition { "demandFreeze", 
+                CategoryItems {
+                    { RfnStrings::demandFreezeDay, "7" } } },
+
+            CategoryDefinition { "tou", 
+                CategoryItems {
+                    // SCHEDULE_1
+                    { RfnStrings::Schedule1Time0, "00:00" },
+                    { RfnStrings::Schedule1Time1, "00:01" },
+                    { RfnStrings::Schedule1Time2, "10:06" },
+                    { RfnStrings::Schedule1Time3, "12:22" },
+                    { RfnStrings::Schedule1Time4, "23:33" },
+                    { RfnStrings::Schedule1Time5, "23:44" },
+
+                    { RfnStrings::Schedule1Rate0, "A" },
+                    { RfnStrings::Schedule1Rate1, "B" },
+                    { RfnStrings::Schedule1Rate2, "C" },
+                    { RfnStrings::Schedule1Rate3, "D" },
+                    { RfnStrings::Schedule1Rate4, "A" },
+                    { RfnStrings::Schedule1Rate5, "B" },
+
+                    // SCHEDULE_2
+                    { RfnStrings::Schedule2Time0, "00:00" },
+                    { RfnStrings::Schedule2Time1, "01:23" },
+                    { RfnStrings::Schedule2Time2, "03:12" },
+                    { RfnStrings::Schedule2Time3, "04:01" },
+                    { RfnStrings::Schedule2Time4, "05:23" },
+                    { RfnStrings::Schedule2Time5, "16:28" },
+
+                    { RfnStrings::Schedule2Rate0, "D" },
+                    { RfnStrings::Schedule2Rate1, "A" },
+                    { RfnStrings::Schedule2Rate2, "B" },
+                    { RfnStrings::Schedule2Rate3, "C" },
+                    { RfnStrings::Schedule2Rate4, "D" },
+                    { RfnStrings::Schedule2Rate5, "A" },
+
+                    // SCHEDULE_3
+                    { RfnStrings::Schedule3Time0, "00:00" },
+                    { RfnStrings::Schedule3Time1, "01:02" },
+                    { RfnStrings::Schedule3Time2, "02:03" },
+                    { RfnStrings::Schedule3Time3, "04:05" },
+                    { RfnStrings::Schedule3Time4, "05:06" },
+                    { RfnStrings::Schedule3Time5, "06:07" },
+
+                    { RfnStrings::Schedule3Rate0, "C" },
+                    { RfnStrings::Schedule3Rate1, "D" },
+                    { RfnStrings::Schedule3Rate2, "A" },
+                    { RfnStrings::Schedule3Rate3, "B" },
+                    { RfnStrings::Schedule3Rate4, "C" },
+                    { RfnStrings::Schedule3Rate5, "D" },
+
+                    // SCHEDULE_4
+                    { RfnStrings::Schedule4Time0, "00:00" },
+                    { RfnStrings::Schedule4Time1, "00:01" },
+                    { RfnStrings::Schedule4Time2, "08:59" },
+                    { RfnStrings::Schedule4Time3, "12:12" },
+                    { RfnStrings::Schedule4Time4, "23:01" },
+                    { RfnStrings::Schedule4Time5, "23:55" },
+
+                    { RfnStrings::Schedule4Rate0, "B" },
+                    { RfnStrings::Schedule4Rate1, "C" },
+                    { RfnStrings::Schedule4Rate2, "D" },
+                    { RfnStrings::Schedule4Rate3, "A" },
+                    { RfnStrings::Schedule4Rate4, "B" },
+                    { RfnStrings::Schedule4Rate5, "C" },
+
+                    // day table
+                    { RfnStrings::SundaySchedule,    "SCHEDULE_1" },
+                    { RfnStrings::MondaySchedule,    "SCHEDULE_1" },
+                    { RfnStrings::TuesdaySchedule,   "SCHEDULE_3" },
+                    { RfnStrings::WednesdaySchedule, "SCHEDULE_2" },
+                    { RfnStrings::ThursdaySchedule,  "SCHEDULE_4" },
+                    { RfnStrings::FridaySchedule,    "SCHEDULE_2" },
+                    { RfnStrings::SaturdaySchedule,  "SCHEDULE_3" },
+                    { RfnStrings::HolidaySchedule,   "SCHEDULE_3" },
+
+                    // default rate
+                    { RfnStrings::DefaultTouRate, "B" },
+
+                    // set TOU enabled
+                    { RfnStrings::touEnabled, "true" } } },
+
+            CategoryDefinition { "rfnTempAlarm", 
+                CategoryItems {
+                    { RfnStrings::TemperatureAlarmEnabled,           "true" },
+                    { RfnStrings::TemperatureAlarmRepeatInterval,    "15"   },
+                    { RfnStrings::TemperatureAlarmRepeatCount,       "3"    },
+                    { RfnStrings::TemperatureAlarmHighTempThreshold, "50"   } } },
+
+            CategoryDefinition { "rfnChannelConfiguration", 
+                CategoryItems {
+                    { RfnStrings::ChannelConfiguration::EnabledChannels_Prefix, "1" },
+                    { RfnStrings::ChannelConfiguration::EnabledChannels_Prefix + ".0." +
+                      RfnStrings::ChannelConfiguration::EnabledChannels::Attribute, "DELIVERED_KWH" },
+                    { RfnStrings::ChannelConfiguration::EnabledChannels_Prefix + ".0." +
+                      RfnStrings::ChannelConfiguration::EnabledChannels::Read, "MIDNIGHT" },
+                    { RfnStrings::ChannelConfiguration::RecordingIntervalMinutes, "123" },
+                    { RfnStrings::ChannelConfiguration::ReportingIntervalMinutes, "456" } } },
+
+            CategoryDefinition { "rfnDemand", 
+                CategoryItems {
+                    { RfnStrings::demandInterval, "13" } } }
+            };
+
+    const std::vector<int> requestMsgsExp {
+            0,   // no config data                   -> no request
+            1,   // add metlib config                -> +1 request
+            2,   // add remote disconnect config     -> +1 request
+            3,   // add demand freeze day config     -> +1 request
+            5,   // add TOU config                   -> +2 request
+            6,   // add temperature alarming config  -> +1 request
+            8,   // add channel config               -> +2 request
+            9,   // add demand interval config       -> +1 request
+            };
+
+    std::vector<int> requestMsgsRcv;
+
+    CtiCommandParser parse("putconfig install all");
+
+    ////// empty configuration (no valid configuration) //////
+
+    BOOST_TEST_MESSAGE( parse.getCommandStr() << ":");
+
+    BOOST_CHECK_EQUAL( ClientErrors::None, dut.ExecuteRequest( request.get(), parse, returnMsgs, requestMsgs, rfnRequests ) );
+
+    requestMsgsRcv.push_back( rfnRequests.size() );
+
+    ////// add each configuration //////
+
+    auto & cfg = *fixtureConfig;  //  get a reference to the shared_ptr in the fixture
+
+    for( const auto & category : configurations )
+    {
+        resetTestState(); // note: reset test state does not erase the current configuration
+
+        cfg.addCategory(
+                Cti::Config::Category::ConstructCategory(
+                        category.first,
+                        category.second));
+        
+        BOOST_TEST_MESSAGE( parse.getCommandStr() << ":" );
+
+        BOOST_CHECK_EQUAL( ClientErrors::None, dut.ExecuteRequest( request.get(), parse, returnMsgs, requestMsgs, rfnRequests ) );
+
+        requestMsgsRcv.push_back( rfnRequests.size() );
+    }
+
+    BOOST_CHECK_EQUAL_COLLECTIONS( requestMsgsRcv.begin(), requestMsgsRcv.end(), requestMsgsExp.begin(), requestMsgsExp.end() );
+}
+
 BOOST_AUTO_TEST_SUITE_END()
+
+// This device is configured for firmware version 9.4 which has the support for the Demand Freeze part when
+// the metrology library is enabled.  The following test fixture covers that situation.
+struct test_RfnResidentialDevice_fw9_4 : RfnResidentialDevice
+{
+    using RfnResidentialDevice::isDisconnectType;
+    using RfnResidentialDevice::isDisconnectConfigSupported;
+    using CtiDeviceBase::setDeviceType;
+
+    test_RfnResidentialDevice_fw9_4()
+    {
+        _name= "test";
+    }
+
+    bool isDemandIntervalConfigSupported() const override
+    {
+        return true;
+    }
+
+    bool areAggregateCommandsSupported() const override 
+    {
+        return false;
+    }
+
+    bool hasRfnFirmwareSupportIn(double version) const override
+    {
+        return true;
+    }
+
+    bool supportsDemandFreezeConfiguration( Cti::Config::DeviceConfigSPtr deviceConfig ) override
+    {
+//        return hasRfnFirmwareSupportIn( 9.5 ) || ! isMetrologyLibraryDisabled( deviceConfig );
+
+        return ! isMetrologyLibraryDisabled( deviceConfig );
+    }
+};
+
+BOOST_FIXTURE_TEST_SUITE( test_dev_rfnResidential_fw9_4, test_state_rfnResidential )
+
+BOOST_AUTO_TEST_CASE( test_putconfig_install_all_device_metlib_support_but_missing_confg_entry_with_dynamic_pao_info_disabled_fw9_4 )
+{
+    using boost::assign::list_of;
+
+    test_RfnResidentialDevice_fw9_4 dut;
+    dut.setDeviceType(TYPE_RFN520FAXD);
+
+    typedef std::map<std::string, std::string>    CategoryItems;
+    typedef std::pair<std::string, CategoryItems> CategoryDefinition;
+    typedef std::vector<CategoryDefinition>       ConfigInstallItems;
+
+    const ConfigInstallItems configurations {
+
+            CategoryDefinition { "rfnDisconnectConfiguration", 
+                CategoryItems {
+                    { RfnStrings::DisconnectMode, "CYCLING" },
+                    { RfnStrings::ConnectMinutes, "100" },
+                    { RfnStrings::DisconnectMinutes, "60" } } },
+
+            CategoryDefinition { "demandFreeze", 
+                CategoryItems {
+                    { RfnStrings::demandFreezeDay, "7" } } },
+
+            CategoryDefinition { "tou", 
+                CategoryItems {
+                    // SCHEDULE_1
+                    { RfnStrings::Schedule1Time0, "00:00" },
+                    { RfnStrings::Schedule1Time1, "00:01" },
+                    { RfnStrings::Schedule1Time2, "10:06" },
+                    { RfnStrings::Schedule1Time3, "12:22" },
+                    { RfnStrings::Schedule1Time4, "23:33" },
+                    { RfnStrings::Schedule1Time5, "23:44" },
+
+                    { RfnStrings::Schedule1Rate0, "A" },
+                    { RfnStrings::Schedule1Rate1, "B" },
+                    { RfnStrings::Schedule1Rate2, "C" },
+                    { RfnStrings::Schedule1Rate3, "D" },
+                    { RfnStrings::Schedule1Rate4, "A" },
+                    { RfnStrings::Schedule1Rate5, "B" },
+
+                    // SCHEDULE_2
+                    { RfnStrings::Schedule2Time0, "00:00" },
+                    { RfnStrings::Schedule2Time1, "01:23" },
+                    { RfnStrings::Schedule2Time2, "03:12" },
+                    { RfnStrings::Schedule2Time3, "04:01" },
+                    { RfnStrings::Schedule2Time4, "05:23" },
+                    { RfnStrings::Schedule2Time5, "16:28" },
+
+                    { RfnStrings::Schedule2Rate0, "D" },
+                    { RfnStrings::Schedule2Rate1, "A" },
+                    { RfnStrings::Schedule2Rate2, "B" },
+                    { RfnStrings::Schedule2Rate3, "C" },
+                    { RfnStrings::Schedule2Rate4, "D" },
+                    { RfnStrings::Schedule2Rate5, "A" },
+
+                    // SCHEDULE_3
+                    { RfnStrings::Schedule3Time0, "00:00" },
+                    { RfnStrings::Schedule3Time1, "01:02" },
+                    { RfnStrings::Schedule3Time2, "02:03" },
+                    { RfnStrings::Schedule3Time3, "04:05" },
+                    { RfnStrings::Schedule3Time4, "05:06" },
+                    { RfnStrings::Schedule3Time5, "06:07" },
+
+                    { RfnStrings::Schedule3Rate0, "C" },
+                    { RfnStrings::Schedule3Rate1, "D" },
+                    { RfnStrings::Schedule3Rate2, "A" },
+                    { RfnStrings::Schedule3Rate3, "B" },
+                    { RfnStrings::Schedule3Rate4, "C" },
+                    { RfnStrings::Schedule3Rate5, "D" },
+
+                    // SCHEDULE_4
+                    { RfnStrings::Schedule4Time0, "00:00" },
+                    { RfnStrings::Schedule4Time1, "00:01" },
+                    { RfnStrings::Schedule4Time2, "08:59" },
+                    { RfnStrings::Schedule4Time3, "12:12" },
+                    { RfnStrings::Schedule4Time4, "23:01" },
+                    { RfnStrings::Schedule4Time5, "23:55" },
+
+                    { RfnStrings::Schedule4Rate0, "B" },
+                    { RfnStrings::Schedule4Rate1, "C" },
+                    { RfnStrings::Schedule4Rate2, "D" },
+                    { RfnStrings::Schedule4Rate3, "A" },
+                    { RfnStrings::Schedule4Rate4, "B" },
+                    { RfnStrings::Schedule4Rate5, "C" },
+
+                    // day table
+                    { RfnStrings::SundaySchedule,    "SCHEDULE_1" },
+                    { RfnStrings::MondaySchedule,    "SCHEDULE_1" },
+                    { RfnStrings::TuesdaySchedule,   "SCHEDULE_3" },
+                    { RfnStrings::WednesdaySchedule, "SCHEDULE_2" },
+                    { RfnStrings::ThursdaySchedule,  "SCHEDULE_4" },
+                    { RfnStrings::FridaySchedule,    "SCHEDULE_2" },
+                    { RfnStrings::SaturdaySchedule,  "SCHEDULE_3" },
+                    { RfnStrings::HolidaySchedule,   "SCHEDULE_3" },
+
+                    // default rate
+                    { RfnStrings::DefaultTouRate, "B" },
+
+                    // set TOU enabled
+                    { RfnStrings::touEnabled, "true" } } },
+
+            CategoryDefinition { "rfnTempAlarm", 
+                CategoryItems {
+                    { RfnStrings::TemperatureAlarmEnabled,           "true" },
+                    { RfnStrings::TemperatureAlarmRepeatInterval,    "15"   },
+                    { RfnStrings::TemperatureAlarmRepeatCount,       "3"    },
+                    { RfnStrings::TemperatureAlarmHighTempThreshold, "50"   } } },
+
+            CategoryDefinition { "rfnChannelConfiguration", 
+                CategoryItems {
+                    { RfnStrings::ChannelConfiguration::EnabledChannels_Prefix, "1" },
+                    { RfnStrings::ChannelConfiguration::EnabledChannels_Prefix + ".0." +
+                      RfnStrings::ChannelConfiguration::EnabledChannels::Attribute, "DELIVERED_KWH" },
+                    { RfnStrings::ChannelConfiguration::EnabledChannels_Prefix + ".0." +
+                      RfnStrings::ChannelConfiguration::EnabledChannels::Read, "MIDNIGHT" },
+                    { RfnStrings::ChannelConfiguration::RecordingIntervalMinutes, "123" },
+                    { RfnStrings::ChannelConfiguration::ReportingIntervalMinutes, "456" } } },
+
+            CategoryDefinition { "rfnDemand", 
+                CategoryItems {
+                    { RfnStrings::demandInterval, "13" } } }
+            };
+
+    // set the dynamic pao info in the device
+    dut.setDynamicInfo( CtiTableDynamicPaoInfo::Key_RFN_MetrologyLibraryEnabled,    0 );    // disabled
+
+    const std::vector<int> requestMsgsExp {
+            0,   // no config data                   -> no request
+            1,   // add remote disconnect config     -> +1 request
+            1,   // add demand freeze day config     -> no request
+            1,   // add TOU config                   -> no request
+            2,   // add temperature alarming config  -> +1 request
+            4,   // add channel config               -> +2 request
+            4,   // add demand interval config       -> no request
+            };
+
+    std::vector<int> requestMsgsRcv;
+
+    CtiCommandParser parse("putconfig install all");
+
+    ////// empty configuration (no valid configuration) //////
+
+    BOOST_TEST_MESSAGE( parse.getCommandStr() << ":");
+
+    BOOST_CHECK_EQUAL( ClientErrors::None, dut.ExecuteRequest( request.get(), parse, returnMsgs, requestMsgs, rfnRequests ) );
+
+    requestMsgsRcv.push_back( rfnRequests.size() );
+
+    ////// add each configuration //////
+
+    auto & cfg = *fixtureConfig;  //  get a reference to the shared_ptr in the fixture
+
+    for( const auto & category : configurations )
+    {
+        resetTestState(); // note: reset test state does not erase the current configuration
+
+        cfg.addCategory(
+                Cti::Config::Category::ConstructCategory(
+                        category.first,
+                        category.second));
+        
+        BOOST_TEST_MESSAGE( parse.getCommandStr() << ":" );
+
+        BOOST_CHECK_EQUAL( ClientErrors::None, dut.ExecuteRequest( request.get(), parse, returnMsgs, requestMsgs, rfnRequests ) );
+
+        requestMsgsRcv.push_back( rfnRequests.size() );
+    }
+
+    BOOST_CHECK_EQUAL_COLLECTIONS( requestMsgsRcv.begin(), requestMsgsRcv.end(), requestMsgsExp.begin(), requestMsgsExp.end() );
+}
+
+BOOST_AUTO_TEST_CASE( test_putconfig_install_all_device_metlib_support_but_confg_entry_disabled_fw9_4 )
+{
+    using boost::assign::list_of;
+
+    test_RfnResidentialDevice_fw9_4 dut;
+    dut.setDeviceType(TYPE_RFN520FAXD);
+
+    typedef std::map<std::string, std::string>    CategoryItems;
+    typedef std::pair<std::string, CategoryItems> CategoryDefinition;
+    typedef std::vector<CategoryDefinition>       ConfigInstallItems;
+
+    const ConfigInstallItems configurations {
+
+            CategoryDefinition { "rfnMetrologyConfiguration", 
+                CategoryItems {
+                    { RfnStrings::MetrologyLibraryEnabled, "false" } } },
+
+            CategoryDefinition { "rfnDisconnectConfiguration", 
+                CategoryItems {
+                    { RfnStrings::DisconnectMode, "CYCLING" },
+                    { RfnStrings::ConnectMinutes, "100" },
+                    { RfnStrings::DisconnectMinutes, "60" } } },
+
+            CategoryDefinition { "demandFreeze", 
+                CategoryItems {
+                    { RfnStrings::demandFreezeDay, "7" } } },
+
+            CategoryDefinition { "tou", 
+                CategoryItems {
+                    // SCHEDULE_1
+                    { RfnStrings::Schedule1Time0, "00:00" },
+                    { RfnStrings::Schedule1Time1, "00:01" },
+                    { RfnStrings::Schedule1Time2, "10:06" },
+                    { RfnStrings::Schedule1Time3, "12:22" },
+                    { RfnStrings::Schedule1Time4, "23:33" },
+                    { RfnStrings::Schedule1Time5, "23:44" },
+
+                    { RfnStrings::Schedule1Rate0, "A" },
+                    { RfnStrings::Schedule1Rate1, "B" },
+                    { RfnStrings::Schedule1Rate2, "C" },
+                    { RfnStrings::Schedule1Rate3, "D" },
+                    { RfnStrings::Schedule1Rate4, "A" },
+                    { RfnStrings::Schedule1Rate5, "B" },
+
+                    // SCHEDULE_2
+                    { RfnStrings::Schedule2Time0, "00:00" },
+                    { RfnStrings::Schedule2Time1, "01:23" },
+                    { RfnStrings::Schedule2Time2, "03:12" },
+                    { RfnStrings::Schedule2Time3, "04:01" },
+                    { RfnStrings::Schedule2Time4, "05:23" },
+                    { RfnStrings::Schedule2Time5, "16:28" },
+
+                    { RfnStrings::Schedule2Rate0, "D" },
+                    { RfnStrings::Schedule2Rate1, "A" },
+                    { RfnStrings::Schedule2Rate2, "B" },
+                    { RfnStrings::Schedule2Rate3, "C" },
+                    { RfnStrings::Schedule2Rate4, "D" },
+                    { RfnStrings::Schedule2Rate5, "A" },
+
+                    // SCHEDULE_3
+                    { RfnStrings::Schedule3Time0, "00:00" },
+                    { RfnStrings::Schedule3Time1, "01:02" },
+                    { RfnStrings::Schedule3Time2, "02:03" },
+                    { RfnStrings::Schedule3Time3, "04:05" },
+                    { RfnStrings::Schedule3Time4, "05:06" },
+                    { RfnStrings::Schedule3Time5, "06:07" },
+
+                    { RfnStrings::Schedule3Rate0, "C" },
+                    { RfnStrings::Schedule3Rate1, "D" },
+                    { RfnStrings::Schedule3Rate2, "A" },
+                    { RfnStrings::Schedule3Rate3, "B" },
+                    { RfnStrings::Schedule3Rate4, "C" },
+                    { RfnStrings::Schedule3Rate5, "D" },
+
+                    // SCHEDULE_4
+                    { RfnStrings::Schedule4Time0, "00:00" },
+                    { RfnStrings::Schedule4Time1, "00:01" },
+                    { RfnStrings::Schedule4Time2, "08:59" },
+                    { RfnStrings::Schedule4Time3, "12:12" },
+                    { RfnStrings::Schedule4Time4, "23:01" },
+                    { RfnStrings::Schedule4Time5, "23:55" },
+
+                    { RfnStrings::Schedule4Rate0, "B" },
+                    { RfnStrings::Schedule4Rate1, "C" },
+                    { RfnStrings::Schedule4Rate2, "D" },
+                    { RfnStrings::Schedule4Rate3, "A" },
+                    { RfnStrings::Schedule4Rate4, "B" },
+                    { RfnStrings::Schedule4Rate5, "C" },
+
+                    // day table
+                    { RfnStrings::SundaySchedule,    "SCHEDULE_1" },
+                    { RfnStrings::MondaySchedule,    "SCHEDULE_1" },
+                    { RfnStrings::TuesdaySchedule,   "SCHEDULE_3" },
+                    { RfnStrings::WednesdaySchedule, "SCHEDULE_2" },
+                    { RfnStrings::ThursdaySchedule,  "SCHEDULE_4" },
+                    { RfnStrings::FridaySchedule,    "SCHEDULE_2" },
+                    { RfnStrings::SaturdaySchedule,  "SCHEDULE_3" },
+                    { RfnStrings::HolidaySchedule,   "SCHEDULE_3" },
+
+                    // default rate
+                    { RfnStrings::DefaultTouRate, "B" },
+
+                    // set TOU enabled
+                    { RfnStrings::touEnabled, "true" } } },
+
+            CategoryDefinition { "rfnTempAlarm", 
+                CategoryItems {
+                    { RfnStrings::TemperatureAlarmEnabled,           "true" },
+                    { RfnStrings::TemperatureAlarmRepeatInterval,    "15"   },
+                    { RfnStrings::TemperatureAlarmRepeatCount,       "3"    },
+                    { RfnStrings::TemperatureAlarmHighTempThreshold, "50"   } } },
+
+            CategoryDefinition { "rfnChannelConfiguration", 
+                CategoryItems {
+                    { RfnStrings::ChannelConfiguration::EnabledChannels_Prefix, "1" },
+                    { RfnStrings::ChannelConfiguration::EnabledChannels_Prefix + ".0." +
+                      RfnStrings::ChannelConfiguration::EnabledChannels::Attribute, "DELIVERED_KWH" },
+                    { RfnStrings::ChannelConfiguration::EnabledChannels_Prefix + ".0." +
+                      RfnStrings::ChannelConfiguration::EnabledChannels::Read, "MIDNIGHT" },
+                    { RfnStrings::ChannelConfiguration::RecordingIntervalMinutes, "123" },
+                    { RfnStrings::ChannelConfiguration::ReportingIntervalMinutes, "456" } } },
+
+            CategoryDefinition { "rfnDemand", 
+                CategoryItems {
+                    { RfnStrings::demandInterval, "13" } } }
+            };
+
+    const std::vector<int> requestMsgsExp {
+            0,   // no config data                   -> no request
+            1,   // add metlib config                -> +1 request
+            2,   // add remote disconnect config     -> +1 request
+            2,   // add demand freeze day config     -> no request
+            2,   // add TOU config                   -> no request
+            3,   // add temperature alarming config  -> +1 request
+            5,   // add channel config               -> +2 request
+            5,   // add demand interval config       -> no request
+            };
+
+    std::vector<int> requestMsgsRcv;
+
+    CtiCommandParser parse("putconfig install all");
+
+    ////// empty configuration (no valid configuration) //////
+
+    BOOST_TEST_MESSAGE( parse.getCommandStr() << ":");
+
+    BOOST_CHECK_EQUAL( ClientErrors::None, dut.ExecuteRequest( request.get(), parse, returnMsgs, requestMsgs, rfnRequests ) );
+
+    requestMsgsRcv.push_back( rfnRequests.size() );
+
+    ////// add each configuration //////
+
+    auto & cfg = *fixtureConfig;  //  get a reference to the shared_ptr in the fixture
+
+    for( const auto & category : configurations )
+    {
+        resetTestState(); // note: reset test state does not erase the current configuration
+
+        cfg.addCategory(
+                Cti::Config::Category::ConstructCategory(
+                        category.first,
+                        category.second));
+        
+        BOOST_TEST_MESSAGE( parse.getCommandStr() << ":" );
+
+        BOOST_CHECK_EQUAL( ClientErrors::None, dut.ExecuteRequest( request.get(), parse, returnMsgs, requestMsgs, rfnRequests ) );
+
+        requestMsgsRcv.push_back( rfnRequests.size() );
+    }
+
+    BOOST_CHECK_EQUAL_COLLECTIONS( requestMsgsRcv.begin(), requestMsgsRcv.end(), requestMsgsExp.begin(), requestMsgsExp.end() );
+}
+
+BOOST_AUTO_TEST_CASE( test_putconfig_install_all_device_metlib_support_with_confg_entry_enabled_fw9_4 )
+{
+    using boost::assign::list_of;
+
+    test_RfnResidentialDevice_fw9_4 dut;
+    dut.setDeviceType(TYPE_RFN520FAXD);
+
+    typedef std::map<std::string, std::string>    CategoryItems;
+    typedef std::pair<std::string, CategoryItems> CategoryDefinition;
+    typedef std::vector<CategoryDefinition>       ConfigInstallItems;
+
+    const ConfigInstallItems configurations {
+
+            CategoryDefinition { "rfnMetrologyConfiguration", 
+                CategoryItems {
+                    { RfnStrings::MetrologyLibraryEnabled, "true" } } },
+
+            CategoryDefinition { "rfnDisconnectConfiguration", 
+                CategoryItems {
+                    { RfnStrings::DisconnectMode, "CYCLING" },
+                    { RfnStrings::ConnectMinutes, "100" },
+                    { RfnStrings::DisconnectMinutes, "60" } } },
+
+            CategoryDefinition { "demandFreeze", 
+                CategoryItems {
+                    { RfnStrings::demandFreezeDay, "7" } } },
+
+            CategoryDefinition { "tou", 
+                CategoryItems {
+                    // SCHEDULE_1
+                    { RfnStrings::Schedule1Time0, "00:00" },
+                    { RfnStrings::Schedule1Time1, "00:01" },
+                    { RfnStrings::Schedule1Time2, "10:06" },
+                    { RfnStrings::Schedule1Time3, "12:22" },
+                    { RfnStrings::Schedule1Time4, "23:33" },
+                    { RfnStrings::Schedule1Time5, "23:44" },
+
+                    { RfnStrings::Schedule1Rate0, "A" },
+                    { RfnStrings::Schedule1Rate1, "B" },
+                    { RfnStrings::Schedule1Rate2, "C" },
+                    { RfnStrings::Schedule1Rate3, "D" },
+                    { RfnStrings::Schedule1Rate4, "A" },
+                    { RfnStrings::Schedule1Rate5, "B" },
+
+                    // SCHEDULE_2
+                    { RfnStrings::Schedule2Time0, "00:00" },
+                    { RfnStrings::Schedule2Time1, "01:23" },
+                    { RfnStrings::Schedule2Time2, "03:12" },
+                    { RfnStrings::Schedule2Time3, "04:01" },
+                    { RfnStrings::Schedule2Time4, "05:23" },
+                    { RfnStrings::Schedule2Time5, "16:28" },
+
+                    { RfnStrings::Schedule2Rate0, "D" },
+                    { RfnStrings::Schedule2Rate1, "A" },
+                    { RfnStrings::Schedule2Rate2, "B" },
+                    { RfnStrings::Schedule2Rate3, "C" },
+                    { RfnStrings::Schedule2Rate4, "D" },
+                    { RfnStrings::Schedule2Rate5, "A" },
+
+                    // SCHEDULE_3
+                    { RfnStrings::Schedule3Time0, "00:00" },
+                    { RfnStrings::Schedule3Time1, "01:02" },
+                    { RfnStrings::Schedule3Time2, "02:03" },
+                    { RfnStrings::Schedule3Time3, "04:05" },
+                    { RfnStrings::Schedule3Time4, "05:06" },
+                    { RfnStrings::Schedule3Time5, "06:07" },
+
+                    { RfnStrings::Schedule3Rate0, "C" },
+                    { RfnStrings::Schedule3Rate1, "D" },
+                    { RfnStrings::Schedule3Rate2, "A" },
+                    { RfnStrings::Schedule3Rate3, "B" },
+                    { RfnStrings::Schedule3Rate4, "C" },
+                    { RfnStrings::Schedule3Rate5, "D" },
+
+                    // SCHEDULE_4
+                    { RfnStrings::Schedule4Time0, "00:00" },
+                    { RfnStrings::Schedule4Time1, "00:01" },
+                    { RfnStrings::Schedule4Time2, "08:59" },
+                    { RfnStrings::Schedule4Time3, "12:12" },
+                    { RfnStrings::Schedule4Time4, "23:01" },
+                    { RfnStrings::Schedule4Time5, "23:55" },
+
+                    { RfnStrings::Schedule4Rate0, "B" },
+                    { RfnStrings::Schedule4Rate1, "C" },
+                    { RfnStrings::Schedule4Rate2, "D" },
+                    { RfnStrings::Schedule4Rate3, "A" },
+                    { RfnStrings::Schedule4Rate4, "B" },
+                    { RfnStrings::Schedule4Rate5, "C" },
+
+                    // day table
+                    { RfnStrings::SundaySchedule,    "SCHEDULE_1" },
+                    { RfnStrings::MondaySchedule,    "SCHEDULE_1" },
+                    { RfnStrings::TuesdaySchedule,   "SCHEDULE_3" },
+                    { RfnStrings::WednesdaySchedule, "SCHEDULE_2" },
+                    { RfnStrings::ThursdaySchedule,  "SCHEDULE_4" },
+                    { RfnStrings::FridaySchedule,    "SCHEDULE_2" },
+                    { RfnStrings::SaturdaySchedule,  "SCHEDULE_3" },
+                    { RfnStrings::HolidaySchedule,   "SCHEDULE_3" },
+
+                    // default rate
+                    { RfnStrings::DefaultTouRate, "B" },
+
+                    // set TOU enabled
+                    { RfnStrings::touEnabled, "true" } } },
+
+            CategoryDefinition { "rfnTempAlarm", 
+                CategoryItems {
+                    { RfnStrings::TemperatureAlarmEnabled,           "true" },
+                    { RfnStrings::TemperatureAlarmRepeatInterval,    "15"   },
+                    { RfnStrings::TemperatureAlarmRepeatCount,       "3"    },
+                    { RfnStrings::TemperatureAlarmHighTempThreshold, "50"   } } },
+
+            CategoryDefinition { "rfnChannelConfiguration", 
+                CategoryItems {
+                    { RfnStrings::ChannelConfiguration::EnabledChannels_Prefix, "1" },
+                    { RfnStrings::ChannelConfiguration::EnabledChannels_Prefix + ".0." +
+                      RfnStrings::ChannelConfiguration::EnabledChannels::Attribute, "DELIVERED_KWH" },
+                    { RfnStrings::ChannelConfiguration::EnabledChannels_Prefix + ".0." +
+                      RfnStrings::ChannelConfiguration::EnabledChannels::Read, "MIDNIGHT" },
+                    { RfnStrings::ChannelConfiguration::RecordingIntervalMinutes, "123" },
+                    { RfnStrings::ChannelConfiguration::ReportingIntervalMinutes, "456" } } },
+
+            CategoryDefinition { "rfnDemand", 
+                CategoryItems {
+                    { RfnStrings::demandInterval, "13" } } }
+            };
+
+    const std::vector<int> requestMsgsExp {
+            0,   // no config data                   -> no request
+            1,   // add metlib config                -> +1 request
+            2,   // add remote disconnect config     -> +1 request
+            3,   // add demand freeze day config     -> +1 request
+            5,   // add TOU config                   -> +2 request
+            6,   // add temperature alarming config  -> +1 request
+            8,   // add channel config               -> +2 request
+            9,   // add demand interval config       -> +1 request
+            };
+
+    std::vector<int> requestMsgsRcv;
+
+    CtiCommandParser parse("putconfig install all");
+
+    ////// empty configuration (no valid configuration) //////
+
+    BOOST_TEST_MESSAGE( parse.getCommandStr() << ":");
+
+    BOOST_CHECK_EQUAL( ClientErrors::None, dut.ExecuteRequest( request.get(), parse, returnMsgs, requestMsgs, rfnRequests ) );
+
+    requestMsgsRcv.push_back( rfnRequests.size() );
+
+    ////// add each configuration //////
+
+    auto & cfg = *fixtureConfig;  //  get a reference to the shared_ptr in the fixture
+
+    for( const auto & category : configurations )
+    {
+        resetTestState(); // note: reset test state does not erase the current configuration
+
+        cfg.addCategory(
+                Cti::Config::Category::ConstructCategory(
+                        category.first,
+                        category.second));
+        
+        BOOST_TEST_MESSAGE( parse.getCommandStr() << ":" );
+
+        BOOST_CHECK_EQUAL( ClientErrors::None, dut.ExecuteRequest( request.get(), parse, returnMsgs, requestMsgs, rfnRequests ) );
+
+        requestMsgsRcv.push_back( rfnRequests.size() );
+    }
+
+    BOOST_CHECK_EQUAL_COLLECTIONS( requestMsgsRcv.begin(), requestMsgsRcv.end(), requestMsgsExp.begin(), requestMsgsExp.end() );
+}
+
+BOOST_AUTO_TEST_SUITE_END()
+

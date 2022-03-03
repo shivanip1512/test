@@ -9,9 +9,14 @@
 #include <boost/noncopyable.hpp>
 #include <boost/thread.hpp>
 #include <boost/optional.hpp>
+#include <boost/bind/bind.hpp>
 
 #include <string>
 #include <atomic>
+
+namespace Cti::CalcLogic {
+    class CalcWorkerThread;
+}
 
 namespace Cti {
 
@@ -19,36 +24,36 @@ class IM_EX_CTIBASE WorkerThread : private boost::noncopyable
 {
 public:
 
-    class Function
+    class FunctionImpl
     {
+    private:
         void init()
         {
             assert( _function );
         }
 
-    public:
         const std::function<void ()> _function;
 
         template <typename F>
-        Function( F f ) : _function(f)
+        FunctionImpl( F f ) : _function(f)
         {
             init();
         }
 
         template <typename F, typename A1>
-        Function( F f, A1 a1 ) : _function( boost::bind( f, a1 ))
+        FunctionImpl( F f, A1 a1 ) : _function( boost::bind( f, a1 ))
         {
             init();
         }
 
         template <typename F, typename A1, typename A2>
-        Function( F f, A1 a1, A2 a2 ) : _function( boost::bind( f, a1, a2 ))
+        FunctionImpl( F f, A1 a1, A2 a2 ) : _function( boost::bind( f, a1, a2 ))
         {
             init();
         }
 
         template <typename F, typename A1, typename A2, typename A3>
-        Function( F f, A1 a1, A2 a2, A3 a3 ) : _function( boost::bind( f, a1, a2, a3 ))
+        FunctionImpl( F f, A1 a1, A2 a2, A3 a3 ) : _function( boost::bind( f, a1, a2, a3 ))
         {
             init();
         }
@@ -57,22 +62,25 @@ public:
         std::string                  _name;
         boost::optional<int>         _priority;
 
-        Function& name( const std::string &name )
+        FunctionImpl& name( const std::string& function_name)
         {
-            _name = name + " (" + CtiTime{}.asString() + ")";
+            _name = function_name + " (" + CtiTime{}.asString() + ")";
             return *this;
         }
-
-        Function& priority( int priority )
+    public:
+        FunctionImpl& priority( int priority )
         {
             _priority = priority;
             return *this;
         }
+
+        friend class WorkerThread;
+        friend class Cti::CalcLogic::CalcWorkerThread;
     };
 
     typedef boost::thread_interrupted Interrupted;
 
-    WorkerThread( const Function &function );
+    WorkerThread( const FunctionImpl& function );
     virtual ~WorkerThread();
 
     bool isRunning();
@@ -87,6 +95,19 @@ public:
     static void interruptionPoint();
     static void sleepFor( const Timing::Chrono &duration );
 
+    //  Require callers to provide a name before we expose FunctionImpl
+    struct FunctionBuilder {
+        FunctionImpl function;
+        FunctionImpl name(const std::string& function_name) {
+            return function.name(function_name);
+        }
+    };
+
+    template <typename... Ts>
+    static FunctionBuilder Function(Ts... args) {
+        return { FunctionImpl(args...) };
+    }
+
 protected:
 
     static bool isFailedTermination();
@@ -94,7 +115,7 @@ protected:
 private:
 
     mutable boost::thread       _thread;
-    Function                    _function;
+    FunctionImpl                _function;
 
     static ConcurrentSet<boost::thread::id> _failed_terminations;
 

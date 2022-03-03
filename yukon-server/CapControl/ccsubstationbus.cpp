@@ -19,6 +19,8 @@ using Cti::CapControl::PointResponsePtr;
 using Cti::CapControl::PointResponseKey;
 using Cti::CapControl::ConvertIntToVerificationStrategy;
 using Cti::CapControl::PointResponseDaoPtr;
+using Cti::CapControl::PorterRequest;
+using Cti::CapControl::PorterRequests;
 using Cti::CapControl::EventLogEntry;
 using Cti::CapControl::EventLogEntries;
 using Cti::CapControl::Database::DatabaseDaoFactory;
@@ -37,7 +39,7 @@ using std::map;
 
 extern unsigned long _CC_DEBUG;
 extern bool _IGNORE_NOT_NORMAL_FLAG;
-extern unsigned long _SEND_TRIES;
+extern long _SEND_TRIES;
 extern bool _USE_FLIP_FLAG;
 extern unsigned long _POINT_AGE;
 extern unsigned long _SCAN_WAIT_EXPIRE;
@@ -995,7 +997,7 @@ bool CtiCCSubstationBus::maxOperationsHitDisableBus()
 
 
 ---------------------------------------------------------------------------*/
-void CtiCCSubstationBus::checkForAndProvideNeededControl(const CtiTime& currentDateTime, CtiMultiMsg_vec& pointChanges, EventLogEntries &ccEvents, CtiMultiMsg_vec& pilMessages)
+void CtiCCSubstationBus::checkForAndProvideNeededControl(const CtiTime& currentDateTime, CtiMultiMsg_vec& pointChanges, EventLogEntries &ccEvents, PorterRequests& pilMessages)
 {
     bool keepGoing = true;
 
@@ -1323,9 +1325,9 @@ void CtiCCSubstationBus::figureAndSetTargetVarValue()
 
 
 ---------------------------------------------------------------------------*/
-void CtiCCSubstationBus::regularSubstationBusControl(double lagLevel, double leadLevel, const CtiTime& currentDateTime, CtiMultiMsg_vec& pointChanges, EventLogEntries &ccEvents, CtiMultiMsg_vec& pilMessages)
+void CtiCCSubstationBus::regularSubstationBusControl(double lagLevel, double leadLevel, const CtiTime& currentDateTime, CtiMultiMsg_vec& pointChanges, EventLogEntries &ccEvents, PorterRequests& pilMessages)
 {
-    CtiRequestMsg* request = NULL;
+    PorterRequest request;
 
     try
     {
@@ -1663,7 +1665,7 @@ void CtiCCSubstationBus::regularSubstationBusControl(double lagLevel, double lea
 
         if( request != NULL )
         {
-            pilMessages.push_back(request);
+            pilMessages.emplace_back(std::move(request));
             setLastOperationTime(currentDateTime);
             setLastFeederControlled(currentFeeder->getPaoId());
             ((CtiCCFeeder*)_ccfeeders.at(currentPosition))->setLastOperationTime(currentDateTime);
@@ -1691,9 +1693,9 @@ void CtiCCSubstationBus::regularSubstationBusControl(double lagLevel, double lea
 
 
 ---------------------------------------------------------------------------*/
-void CtiCCSubstationBus::optimizedSubstationBusControl(double lagLevel, double leadLevel, const CtiTime& currentDateTime, CtiMultiMsg_vec& pointChanges, EventLogEntries &ccEvents, CtiMultiMsg_vec& pilMessages)
+void CtiCCSubstationBus::optimizedSubstationBusControl(double lagLevel, double leadLevel, const CtiTime& currentDateTime, CtiMultiMsg_vec& pointChanges, EventLogEntries &ccEvents, PorterRequests& pilMessages)
 {
-    CtiRequestMsg* request = NULL;
+    PorterRequest request;
     CtiCCFeeder* lastFeederControlled = NULL;
     int positionLastFeederControlled = -1;
 
@@ -2052,7 +2054,7 @@ void CtiCCSubstationBus::optimizedSubstationBusControl(double lagLevel, double l
 
         if( request != NULL )
         {
-            pilMessages.push_back(request);
+            pilMessages.emplace_back(std::move(request));
             setLastOperationTime(currentDateTime);
             setLastFeederControlled(lastFeederControlled->getPaoId());
             lastFeederControlled->setLastOperationTime(currentDateTime);
@@ -4140,10 +4142,10 @@ void CtiCCSubstationBus::setCurrentVerificationCapBankId(long capBankId)
 }
 
 
-bool CtiCCSubstationBus::sendNextCapBankVerificationControl(const CtiTime& currentDateTime, CtiMultiMsg_vec& pointChanges, EventLogEntries &ccEvents, CtiMultiMsg_vec& pilMessages)
+bool CtiCCSubstationBus::sendNextCapBankVerificationControl(const CtiTime& currentDateTime, CtiMultiMsg_vec& pointChanges, EventLogEntries &ccEvents, PorterRequests& pilMessages)
 {
     bool retVal = true;
-    CtiRequestMsg* request = NULL;
+    PorterRequest request;
     for (long i = 0; i < _ccfeeders.size(); i++)
     {
         CtiCCFeeder* currentFeeder = (CtiCCFeeder*) _ccfeeders.at(i);
@@ -4311,11 +4313,11 @@ bool CtiCCSubstationBus::sendNextCapBankVerificationControl(const CtiTime& curre
                     }
                     else if (currentCapBank->getVCtrlIndex() == 5)
                     {
-                        request = NULL;
+                        request = {};
                     }
                     if( request != NULL )
                     {
-                        pilMessages.push_back(request);
+                        pilMessages.emplace_back(std::move(request));
                         setLastOperationTime(currentDateTime);
                         setLastFeederControlled(currentFeeder->getPaoId());
                         currentFeeder->setLastCapBankControlledDeviceId( currentCapBank->getPaoId());
@@ -4346,11 +4348,11 @@ bool CtiCCSubstationBus::sendNextCapBankVerificationControl(const CtiTime& curre
     return retVal;
 }
 
-void CtiCCSubstationBus::startVerificationOnCapBank(const CtiTime& currentDateTime, CtiMultiMsg_vec& pointChanges, EventLogEntries &ccEvents, CtiMultiMsg_vec& pilMessages)
+void CtiCCSubstationBus::startVerificationOnCapBank(const CtiTime& currentDateTime, CtiMultiMsg_vec& pointChanges, EventLogEntries &ccEvents, PorterRequests& pilMessages)
 {
     //get CapBank to perform verification on...subbus stores, currentCapBankToVerifyId
 
-    CtiRequestMsg* request = NULL;
+    PorterRequest request;
 
     for (long i = 0; i < _ccfeeders.size(); i++)
     {
@@ -4441,7 +4443,7 @@ void CtiCCSubstationBus::startVerificationOnCapBank(const CtiTime& currentDateTi
 
                     if( request != NULL )
                     {
-                        pilMessages.push_back(request);
+                        pilMessages.emplace_back(std::move(request));
                         setLastOperationTime(currentDateTime);
                         setLastFeederControlled(currentFeeder->getPaoId());
                         currentFeeder->setLastCapBankControlledDeviceId( currentCapBank->getPaoId());
@@ -4606,7 +4608,7 @@ bool CtiCCSubstationBus::isVerificationAlreadyControlled()
     return returnBoolean;
 }
 
-void CtiCCSubstationBus::analyzeVerificationByFeeder(const CtiTime& currentDateTime, CtiMultiMsg_vec& pointChanges, EventLogEntries &ccEvents, CtiMultiMsg_vec& pilMessages, CtiMultiMsg_vec& capMessages)
+void CtiCCSubstationBus::analyzeVerificationByFeeder(const CtiTime& currentDateTime, CtiMultiMsg_vec& pointChanges, EventLogEntries &ccEvents, PorterRequests& pilMessages, CtiMultiMsg_vec& capMessages)
 {
     bool verifyCapFound = false;
 
@@ -4805,7 +4807,7 @@ bool CtiCCSubstationBus::isPastMaxConfirmTime(const CtiTime& currentDateTime)
 
     Returns boolean if .
 ---------------------------------------------------------------------------*/
-bool CtiCCSubstationBus::checkForAndPerformSendRetry(const CtiTime& currentDateTime, CtiMultiMsg_vec& pointChanges, EventLogEntries &ccEvents, CtiMultiMsg_vec& pilMessages)
+bool CtiCCSubstationBus::checkForAndPerformSendRetry(const CtiTime& currentDateTime, CtiMultiMsg_vec& pointChanges, EventLogEntries &ccEvents, PorterRequests& pilMessages)
 {
     bool returnBoolean = false;
 
@@ -4883,7 +4885,7 @@ bool CtiCCSubstationBus::checkForAndPerformSendRetry(const CtiTime& currentDateT
 }
 
 
-bool CtiCCSubstationBus::checkForAndPerformVerificationSendRetry(const CtiTime& currentDateTime, CtiMultiMsg_vec& pointChanges, EventLogEntries &ccEvents, CtiMultiMsg_vec& pilMessages)
+bool CtiCCSubstationBus::checkForAndPerformVerificationSendRetry(const CtiTime& currentDateTime, CtiMultiMsg_vec& pointChanges, EventLogEntries &ccEvents, PorterRequests& pilMessages)
 {
    bool returnBoolean = false;
 
@@ -5674,7 +5676,7 @@ bool CtiCCSubstationBus::scanAllMonitorPoints()
     return issueTwoWayScans( _multipleMonitorPoints, getAllCapBanks() );
 }
 
-void CtiCCSubstationBus::analyzeMultiVoltBus1(const CtiTime& currentDateTime, CtiMultiMsg_vec& pointChanges, EventLogEntries &ccEvents, CtiMultiMsg_vec& pilMessages)
+void CtiCCSubstationBus::analyzeMultiVoltBus1(const CtiTime& currentDateTime, CtiMultiMsg_vec& pointChanges, EventLogEntries &ccEvents, PorterRequests& pilMessages)
 {
     CtiCCMonitorPointPtr outOfRangeMonitorPoint;
 
@@ -5825,7 +5827,7 @@ void CtiCCSubstationBus::analyzeMultiVoltBus1(const CtiTime& currentDateTime, Ct
     }
 }
 
-void CtiCCSubstationBus::analyzeMultiVoltBus(const CtiTime& currentDateTime, CtiMultiMsg_vec& pointChanges, EventLogEntries &ccEvents, CtiMultiMsg_vec& pilMessages)
+void CtiCCSubstationBus::analyzeMultiVoltBus(const CtiTime& currentDateTime, CtiMultiMsg_vec& pointChanges, EventLogEntries &ccEvents, PorterRequests& pilMessages)
 {
     CtiCCMonitorPointPtr outOfRangeMonitorPoint;
 
@@ -5839,16 +5841,7 @@ void CtiCCSubstationBus::analyzeMultiVoltBus(const CtiTime& currentDateTime, Cti
                 {
                     if (!areAllMonitorPointsInVoltageRange(outOfRangeMonitorPoint))
                     {
-                        if (voltControlBankSelectProcess(*outOfRangeMonitorPoint, pointChanges, ccEvents, pilMessages))
-                        {
-                            setOperationSentWaitFlag(true);
-                            setLastOperationTime(currentDateTime);
-                            setRecentlyControlledFlag(true);
-                            //setCurrentDailyOperations(getCurrentDailyOperations() + 1);
-                            //setRecentlyControlledFlag(true);
-                            setBusUpdatedFlag(true);
-                        }
-                        else
+                        if ( ! voltControlBankSelectProcess(*outOfRangeMonitorPoint, pointChanges, ccEvents, pilMessages))
                         {
                             CTILOG_INFO(dout, "No Bank Available for Control");
 
@@ -6040,9 +6033,9 @@ std::vector< Value >
 }
 
 
-bool CtiCCSubstationBus::analyzeBusForVarImprovement(CtiMultiMsg_vec& pointChanges, EventLogEntries &ccEvents, CtiMultiMsg_vec& pilMessages)
+bool CtiCCSubstationBus::analyzeBusForVarImprovement(CtiMultiMsg_vec& pointChanges, EventLogEntries &ccEvents, PorterRequests& pilMessages)
 {
-    CtiRequestMsg * request = nullptr;
+    PorterRequest request;
     CtiCCCapBankPtr bank    = nullptr;
     CtiCCFeederPtr  feeder  = nullptr;
 
@@ -6376,11 +6369,18 @@ bool CtiCCSubstationBus::analyzeBusForVarImprovement(CtiMultiMsg_vec& pointChang
 
     if ( request != NULL )
     {
-        pilMessages.push_back( request );
+        pilMessages.emplace_back( std::move( request ) );
 
-        setOperationSentWaitFlag( true );
+        feeder->setLastCapBankControlledDeviceId( bank->getPaoId() );
+        feeder->setRecentlyControlledFlag( true );
+        feeder->setVarValueBeforeControl( feeder->getCurrentVarLoadPointValue() );
+        feeder->setLastOperationTime( currentDateTime );
+
+        setLastFeederControlled(feeder->getPaoId());
+        setRecentlyControlledFlag( true );
         setVarValueBeforeControl( getCurrentVarLoadPointValue() );
-        setLastFeederControlled( feeder->getPaoId());
+        setLastOperationTime( currentDateTime );
+        setOperationSentWaitFlag( true );
         setCurrentDailyOperationsAndSendMsg( getCurrentDailyOperations() + 1, pointChanges );
 
         figureEstimatedVarLoadPointValue();
@@ -6389,9 +6389,7 @@ bool CtiCCSubstationBus::analyzeBusForVarImprovement(CtiMultiMsg_vec& pointChang
             pointChanges.push_back(new CtiPointDataMsg(getEstimatedVarLoadPointId(),getEstimatedVarLoadPointValue(),NormalQuality,AnalogPointType));
         }
 
-        feeder->setLastCapBankControlledDeviceId( bank->getPaoId() );
-        feeder->setRecentlyControlledFlag( true );
-        feeder->setVarValueBeforeControl( feeder->getCurrentVarLoadPointValue() );
+        setBusUpdatedFlag( true );
 
         return true;
     }
@@ -6400,11 +6398,11 @@ bool CtiCCSubstationBus::analyzeBusForVarImprovement(CtiMultiMsg_vec& pointChang
 }
 
 
-bool CtiCCSubstationBus::voltControlBankSelectProcess(const CtiCCMonitorPoint & point, CtiMultiMsg_vec &pointChanges, EventLogEntries &ccEvents, CtiMultiMsg_vec &pilMessages)
+bool CtiCCSubstationBus::voltControlBankSelectProcess(const CtiCCMonitorPoint & point, CtiMultiMsg_vec &pointChanges, EventLogEntries &ccEvents, PorterRequests& pilMessages)
 {
     bool retVal = false;
 
-    CtiRequestMsg* request = NULL;
+    PorterRequest request;
 
     CtiCCCapBank* bestBank = NULL;
     CtiCCFeederPtr  parentFeeder = nullptr;
@@ -6758,21 +6756,28 @@ bool CtiCCSubstationBus::voltControlBankSelectProcess(const CtiCCMonitorPoint & 
        }
        if ( request && bestBank && parentFeeder )
        {
-            pilMessages.push_back(request);
-           //setLastOperationTime(currentDateTime);
-            setOperationSentWaitFlag(true);
-            setLastFeederControlled( parentFeeder->getPaoId());
-            parentFeeder->setLastCapBankControlledDeviceId( bestBank->getPaoId());
-            parentFeeder->setRecentlyControlledFlag(true);
-            parentFeeder->setVarValueBeforeControl(parentFeeder->getCurrentVarLoadPointValue());
-            setVarValueBeforeControl(getCurrentVarLoadPointValue() );
+            pilMessages.emplace_back(std::move(request));
+
+            parentFeeder->setLastCapBankControlledDeviceId( bestBank->getPaoId() );
+            parentFeeder->setRecentlyControlledFlag( true );
+            parentFeeder->setVarValueBeforeControl( parentFeeder->getCurrentVarLoadPointValue() );
+
+            parentFeeder->setLastOperationTime( Now );
+            setLastFeederControlled( parentFeeder->getPaoId() );
+            setRecentlyControlledFlag( true );
+            setVarValueBeforeControl( getCurrentVarLoadPointValue() );
+            setLastOperationTime( Now );
+            setOperationSentWaitFlag( true );
+
             setCurrentDailyOperationsAndSendMsg(getCurrentDailyOperations() + 1, pointChanges);
+
             figureEstimatedVarLoadPointValue();
             if( getEstimatedVarLoadPointId() > 0 )
             {
                 pointChanges.push_back(new CtiPointDataMsg(getEstimatedVarLoadPointId(),getEstimatedVarLoadPointValue(),NormalQuality,AnalogPointType));
             }
-            setOperationSentWaitFlag(true);
+
+            setBusUpdatedFlag(true);
 
             retVal = true;
        }
@@ -7073,9 +7078,9 @@ std::set<long> CtiCCSubstationBus::getAllCapBankIds()
 }
 
 void CtiCCSubstationBus::checkForAndProvideNeededTimeOfDayControl(const CtiTime& currentDateTime,
-                        CtiMultiMsg_vec& pointChanges, EventLogEntries &ccEvents, CtiMultiMsg_vec& pilMessages)
+                        CtiMultiMsg_vec& pointChanges, EventLogEntries &ccEvents, PorterRequests& pilMessages)
 {
-    CtiRequestMsg* request = NULL;
+    PorterRequest request;
 
     if( !getDisableFlag() &&
         currentDateTime.seconds() >= getLastOperationTime().seconds() + getStrategy()->getControlDelayTime() )
@@ -7199,7 +7204,7 @@ void CtiCCSubstationBus::checkForAndProvideNeededTimeOfDayControl(const CtiTime&
 
                         try
                         {
-                            pilMessages.push_back(request);
+                            pilMessages.emplace_back(std::move(request));
                             setLastOperationTime(currentDateTime);
                             setLastFeederControlled(currentFeeder->getPaoId());
                             currentFeeder->setLastOperationTime(currentDateTime);
@@ -7235,9 +7240,9 @@ void CtiCCSubstationBus::checkForAndProvideNeededTimeOfDayControl(const CtiTime&
 }
 
 void CtiCCSubstationBus::checkForAndProvideNeededFallBackControl(const CtiTime& currentDateTime,
-                        CtiMultiMsg_vec& pointChanges, EventLogEntries &ccEvents, CtiMultiMsg_vec& pilMessages)
+                        CtiMultiMsg_vec& pointChanges, EventLogEntries &ccEvents, PorterRequests& pilMessages)
 {
-    CtiRequestMsg* request = NULL;
+    PorterRequest request;
 
     map <long, long> controlid_action_map;
     controlid_action_map.clear();
@@ -7317,7 +7322,7 @@ void CtiCCSubstationBus::checkForAndProvideNeededFallBackControl(const CtiTime& 
                                     feed->createForcedVarConfirmation(bank, pointChanges, ccEvents, "LikeDay Control");
 
 
-                                    pilMessages.push_back(request);
+                                    pilMessages.emplace_back(std::move(request));
                                     setLastOperationTime(currentDateTime);
                                     setLastFeederControlled(feed->getPaoId());
                                     feed->setLastOperationTime(currentDateTime);

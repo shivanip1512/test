@@ -119,8 +119,14 @@ public class BillableDeviceFactory {
         case DeviceTypes.RFN520FRX:
         case DeviceTypes.RFN520FAXD:
         case DeviceTypes.RFN520FRXD:
+        case DeviceTypes.RFN520FAXE:
+        case DeviceTypes.RFN520FRXE:
+        case DeviceTypes.RFN520FAXED:
+        case DeviceTypes.RFN520FRXED:
         case DeviceTypes.RFN530FAX:
         case DeviceTypes.RFN530FRX:
+        case DeviceTypes.RFN530FAXE:
+        case DeviceTypes.RFN530FRXE:
         case DeviceTypes.RFN530S4X:
         case DeviceTypes.RFN530S4EAX:
         case DeviceTypes.RFN530S4EAXR:

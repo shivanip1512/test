@@ -14,7 +14,6 @@ import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
-import org.springframework.web.bind.annotation.ResponseBody;
 
 import com.cannontech.clientutils.YukonLogManager;
 import com.cannontech.common.events.loggers.GatewayEventLogService;
@@ -29,11 +28,11 @@ import com.cannontech.common.rfn.model.GatewaySettings;
 import com.cannontech.common.rfn.model.NmCommunicationException;
 import com.cannontech.common.rfn.model.RfnGateway;
 import com.cannontech.common.rfn.model.RfnGatewayData;
-import com.cannontech.common.rfn.model.TimeoutExecutionException;
 import com.cannontech.common.rfn.service.RfnGatewayService;
 import com.cannontech.common.util.JsonUtils;
 import com.cannontech.core.authorization.service.RoleAndPropertyDescriptionService;
 import com.cannontech.core.dao.DuplicateException;
+import com.cannontech.core.roleproperties.HierarchyPermissionLevel;
 import com.cannontech.core.roleproperties.YukonRoleProperty;
 import com.cannontech.i18n.YukonMessageSourceResolvable;
 import com.cannontech.i18n.YukonUserContextMessageSourceResolver;
@@ -42,7 +41,8 @@ import com.cannontech.system.dao.GlobalSettingDao;
 import com.cannontech.user.YukonUserContext;
 import com.cannontech.web.PageEditMode;
 import com.cannontech.web.common.flashScope.FlashScope;
-import com.cannontech.web.security.annotation.CheckRoleProperty;
+import com.cannontech.web.security.annotation.CheckPermissionLevel;
+import com.cannontech.web.stars.gateway.GatewayControllerHelper;
 import com.cannontech.web.stars.gateway.model.GatewaySettingsValidator;
 import com.cannontech.web.widget.support.AdvancedWidgetControllerBase;
 import com.cannontech.web.widget.support.SimpleWidgetInput;
@@ -52,6 +52,7 @@ import com.cannontech.web.widget.support.SimpleWidgetInput;
  */
 @Controller
 @RequestMapping("/gatewayInformationWidget/*")
+@CheckPermissionLevel(property = YukonRoleProperty.MANAGE_INFRASTRUCTURE, level = HierarchyPermissionLevel.VIEW)
 public class GatewayInformationWidget extends AdvancedWidgetControllerBase {
     
     private static final Logger log = YukonLogManager.getLogger(GatewayInformationWidget.class);
@@ -62,7 +63,8 @@ public class GatewayInformationWidget extends AdvancedWidgetControllerBase {
     @Autowired private GatewaySettingsValidator validator;
     @Autowired private GlobalSettingDao globalSettingDao;
     @Autowired private GatewayEventLogService gatewayEventLogService;
-    
+    @Autowired private GatewayControllerHelper helper;
+
     @Autowired
     public GatewayInformationWidget(@Qualifier("widgetInput.deviceId")
             SimpleWidgetInput simpleWidgetInput,
@@ -92,7 +94,7 @@ public class GatewayInformationWidget extends AdvancedWidgetControllerBase {
         return "gatewayInformationWidget/render.jsp";
     }
     
-    @CheckRoleProperty(YukonRoleProperty.INFRASTRUCTURE_CREATE_AND_UPDATE)
+    @CheckPermissionLevel(property = YukonRoleProperty.MANAGE_INFRASTRUCTURE, level = HierarchyPermissionLevel.UPDATE)
     @RequestMapping(value="edit", method=RequestMethod.GET)
     public String editDialog(ModelMap model, int deviceId, YukonUserContext userContext) {
         
@@ -102,6 +104,7 @@ public class GatewayInformationWidget extends AdvancedWidgetControllerBase {
         try {
             
             RfnGateway gateway = rfnGatewayService.getGatewayByPaoIdWithData(deviceId);
+            model.addAttribute("isVirtualGateway", gateway.getPaoIdentifier().getPaoType() == PaoType.VIRTUAL_GATEWAY);
             GatewaySettings settings = rfnGatewayService.gatewayAsSettings(gateway);
             model.addAttribute("settings", settings);
             
@@ -111,10 +114,13 @@ public class GatewayInformationWidget extends AdvancedWidgetControllerBase {
             model.addAttribute("errorMsg", errorMsg);
         }
         
+        //get all NM IP Address/Port combos
+        model.addAttribute("nmIPAddressPorts", helper.getAllGatewayNMIPPorts());
+        
         return "gatewayInformationWidget/settings.jsp";
     }
     
-    @CheckRoleProperty(YukonRoleProperty.INFRASTRUCTURE_CREATE_AND_UPDATE)
+    @CheckPermissionLevel(property = YukonRoleProperty.MANAGE_INFRASTRUCTURE, level = HierarchyPermissionLevel.UPDATE)
     @RequestMapping(value="configure", method=RequestMethod.GET)
     public String configureDialog(ModelMap model, int deviceId, YukonUserContext userContext) {
         
@@ -138,7 +144,7 @@ public class GatewayInformationWidget extends AdvancedWidgetControllerBase {
     }
     
     /** Configure the gateway */
-    @CheckRoleProperty(YukonRoleProperty.INFRASTRUCTURE_CREATE_AND_UPDATE)
+    @CheckPermissionLevel(property = YukonRoleProperty.MANAGE_INFRASTRUCTURE, level = HierarchyPermissionLevel.UPDATE)
     @RequestMapping(value="configure", method=RequestMethod.POST)
     public String configure(ModelMap model, YukonUserContext userContext, HttpServletResponse resp, FlashScope flash,
             int deviceId, @ModelAttribute("configuration") GatewayConfiguration configuration, BindingResult result) {
@@ -200,7 +206,7 @@ public class GatewayInformationWidget extends AdvancedWidgetControllerBase {
     }
     
     /** Update the gateway */
-    @CheckRoleProperty(YukonRoleProperty.INFRASTRUCTURE_CREATE_AND_UPDATE)
+    @CheckPermissionLevel(property = YukonRoleProperty.MANAGE_INFRASTRUCTURE, level = HierarchyPermissionLevel.UPDATE)
     @RequestMapping(value="edit", method=RequestMethod.PUT)
     public String update(ModelMap model,
             YukonUserContext userContext,
@@ -214,7 +220,8 @@ public class GatewayInformationWidget extends AdvancedWidgetControllerBase {
 
         validator.validate(settings, result);
         model.addAttribute("deviceId", deviceId);
-        
+        model.addAttribute("nmIPAddressPorts", helper.getAllGatewayNMIPPorts());
+
         if (result.hasErrors()) {
             resp.setStatus(HttpStatus.BAD_REQUEST.value());
             model.addAttribute("mode", PageEditMode.EDIT);
@@ -223,6 +230,7 @@ public class GatewayInformationWidget extends AdvancedWidgetControllerBase {
         
         try {
             
+            String port = String.valueOf(settings.getPort());
             String updateServerUrl = null;
             Authentication auth = new Authentication();
             RfnGateway gateway = rfnGatewayService.getGatewayByPaoIdWithData(deviceId);
@@ -239,23 +247,29 @@ public class GatewayInformationWidget extends AdvancedWidgetControllerBase {
                 auth.setPassword(settings.getUpdateServerLogin().getPassword());
             }
 
+            if (settings.isUseDefaultPort()) {
+                port = null;
+            }
+            
             RfnGatewayData.Builder builder = new RfnGatewayData.Builder();
             RfnGatewayData data = builder.copyOf(gateway.getData())
            .ipAddress(settings.getIpAddress())
-           .port(String.valueOf(settings.getPort()))
+           .port(port)
            .name(settings.getName())
            .admin(settings.getAdmin())
            .superAdmin(settings.getSuperAdmin())
            .updateServerUrl(updateServerUrl)
            .updateServerLogin(auth)
+           .nmIpAddress(settings.getNmIpAddress())
+           .nmPort(settings.getNmPort())
            .build();
-            
+                        
             gateway.setData(data);
             
             GatewayUpdateResult updateResult = rfnGatewayService.updateGateway(gateway, userContext.getYukonUser());
             
             if (updateResult == GatewayUpdateResult.SUCCESSFUL) {
-                log.info("Gateway updated: " + gateway);
+                log.info("NM updated gateway: {}", gateway);
                 gatewayEventLogService.updatedGateway(userContext.getYukonUser(), gateway.getName(), 
                                                       gateway.getRfnIdentifier().getSensorSerialNumber(), 
                                                       settings.getIpAddress(),
@@ -288,31 +302,4 @@ public class GatewayInformationWidget extends AdvancedWidgetControllerBase {
             return "gatewayInformationWidget/settings.jsp";
         }
     }
-    
-    /** Test the connection, return result as json. */
-    @RequestMapping("test-connection")
-    public @ResponseBody Map<String, Object> testConnection(YukonUserContext userContext, 
-            int id, String ip, String username, String password) {
-        
-        MessageSourceAccessor accessor = messageResolver.getMessageSourceAccessor(userContext);
-        
-        Map<String, Object> json = new HashMap<>();
-        try {
-            boolean success = false;
-            if (ip == null || username == null || password == null) {
-                success = rfnGatewayService.testConnection(id);
-            } else {
-                success = rfnGatewayService.testConnection(id, ip, username, password);
-            }
-            json.put("success", success);
-        } catch (NmCommunicationException e) {
-            json.put("success", false);
-            if (e.getCause() instanceof TimeoutExecutionException) {
-                json.put("message", accessor.getMessage(baseKey + "login.failed.timeout"));
-            }
-        }
-        
-        return json;
-    }
-
 }

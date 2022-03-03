@@ -12,6 +12,8 @@ import org.joda.time.Instant;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import com.cannontech.clientutils.YukonLogManager;
+import com.cannontech.common.events.helper.EventLogHelper;
+import com.cannontech.common.util.BootstrapUtils;
 import com.cannontech.database.db.security.EncryptionKey;
 import com.cannontech.encryption.CryptoException;
 import com.cannontech.encryption.CryptoUtils;
@@ -29,6 +31,7 @@ public class ItronSecurityServiceImpl implements ItronSecurityService {
     private Logger log = YukonLogManager.getLogger(ItronSecurityServiceImpl.class);
     @Autowired private EncryptedRouteDao encryptedRouteDao;
     @Autowired private GlobalSettingDaoImpl globalSettingDaoImpl;
+    @Autowired private EventLogHelper eventLogHelper;
     
     @Override
     public Instant generateItronSshRsaPublicPrivateKeys(String comment) {
@@ -115,6 +118,8 @@ public class ItronSecurityServiceImpl implements ItronSecurityService {
             return itronKeyPair;
         } catch (Exception e) {
             log.debug("Exception getting ItronSshRsaKeyPair", e);
+            eventLogHelper.decryptionFailedEventLog(BootstrapUtils.getApplicationName(), "Itron Private Key Password");
+
             throw new ItronSecurityException("Error retrieving Itron keys.", e);
         }
     }

@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE suite SYSTEM "http://testng.org/testng-1.0.dtd">
+<suite name="Selenium test Suite" verbose="1">
+	<listeners>
+        <listener class-name="com.eaton.screenshotutils.TestListener"></listener>
+        <listener class-name="org.uncommons.reportng.HTMLReporter"/>
+      	<listener class-name="org.uncommons.reportng.JUnitXMLReporter"/>
+    </listeners>
+  <test name="All Tests">
+    <packages>
+    	<package name="com.eaton.api.tests.*"/>
+    	<package name="com.eaton.tests.*"/>  	
+    </packages>
+  </test>
+</suite>

@@ -4,10 +4,12 @@ import java.io.BufferedReader;
 import java.io.FileReader;
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Comparator;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
+import java.util.stream.Collectors;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
@@ -31,6 +33,9 @@ import com.cannontech.common.bulk.collection.device.model.DeviceCollection;
 import com.cannontech.common.config.MasterConfigBoolean;
 import com.cannontech.common.device.groups.model.DeviceGroup;
 import com.cannontech.common.device.groups.service.DeviceGroupService;
+import com.cannontech.common.dr.gear.setup.OperationalState;
+import com.cannontech.common.dr.setup.LMSetupFilter;
+import com.cannontech.common.pao.PaoType;
 import com.cannontech.common.util.JsonUtils;
 import com.cannontech.common.validator.SimpleValidator;
 import com.cannontech.common.validator.YukonValidationUtils;
@@ -40,6 +45,7 @@ import com.cannontech.util.Validator;
 import com.cannontech.web.common.flashScope.FlashScope;
 import com.cannontech.web.dev.model.Person;
 import com.cannontech.web.group.DisableNodeCallback;
+import com.cannontech.web.i18n.IconSvg;
 import com.cannontech.web.security.annotation.CheckCparm;
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.ImmutableMap;
@@ -182,6 +188,11 @@ public class StyleGuideController {
         return "styleguide/inputs.jsp";
     }
     
+    @RequestMapping("/styleguide/charts")
+    public String charts(ModelMap model) {
+        return "styleguide/charts.jsp";
+    }
+
     public class NumericInput {
         private float temperature;
 
@@ -255,10 +266,28 @@ public class StyleGuideController {
         return "styleguide/device.collections.jsp";
     }
     
+    @RequestMapping("/styleguide/drop-down")
+    public String dropDown(ModelMap model) {
+        model.addAttribute("operationalStates", OperationalState.values());
+        return "styleguide/dropDown.jsp";
+    }
+    
     private void setupSprites(ModelMap model, HttpServletRequest request) throws IOException {
         ArrayList<String> sprites16Array = new ArrayList<String>();
         ArrayList<String> sprites32Array = new ArrayList<String>();
         ArrayList<String> spritesNew32Array = new ArrayList<String>();
+        
+        //First add all from IconSvg
+        IconSvg[] iconSvgs = IconSvg.values();
+        for (IconSvg iconSvg : iconSvgs) {
+        	if (iconSvg.getIconClass().contains("icon-32-")) {
+        		sprites32Array.add(iconSvg.getIconClass());
+        	} else if (iconSvg.getIconClass().contains("icon-app-32")) {
+        		spritesNew32Array.add(iconSvg.getIconClass());
+        	} else {
+        		sprites16Array.add(iconSvg.getIconClass());
+        	}
+        }
 
         BufferedReader br = new BufferedReader(new FileReader(request.getServletContext().getRealPath("/WebConfig/yukon/styles/icons.css")));
         try {
@@ -306,7 +335,7 @@ public class StyleGuideController {
         
         @Override
         protected void doValidation(Person person, Errors errors) {
-            YukonValidationUtils.checkIsBlankOrExceedsMaxLength(errors, "name", person.getName(), false, 60);
+            YukonValidationUtils.checkIsBlankOrExceedsMaxLengthOrBlacklistedChars(errors, "name", person.getName(), false, 60);
             int age = person.getAge();
             String email = person.getEmail();
             if (age < 1 || age > 120) errors.rejectValue("age", null, "Age should be between 1 and 120.");

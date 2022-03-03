@@ -1,0 +1,662 @@
+TCPPORT:
+  title: TCPPORT
+  required:
+    - deviceType
+    - deviceName
+    - baudRate
+  type: object
+  properties:
+    deviceName:
+      type: string
+      maxLength: 60
+      description: 'Name for the comm channel.'
+    deviceType:
+      type: string
+      description: 'Type of channel.'
+      enum:
+        - TCPPORT
+    enable:
+      type: boolean
+      default: true
+      description: 'Flag to enable channel.'
+    baudRate:
+      type: string
+      description: 'Baud Rate.'
+      enum:
+        - BAUD_300
+        - BAUD_1200
+        - BAUD_2400
+        - BAUD_4800
+        - BAUD_9600
+        - BAUD_14400
+        - BAUD_28800
+        - BAUD_38400
+        - BAUD_57600
+        - BAUD_115200
+    timing:
+      $ref: '#/timing'
+
+UDPPORT:
+  title: UDPPORT
+  required:
+    - deviceType
+    - deviceName
+    - portNumber
+    - baudRate
+  type: object
+  properties:
+    deviceName:
+      type: string
+      maxLength: 60
+      description: 'Name for the comm channel.'
+    deviceType:
+      type: string
+      description: 'Type of channel.'
+      enum:
+        - UDPPORT
+    enable:
+      type: boolean
+      default: true
+      description: 'Flag to enable channel.'
+    baudRate:
+      type: string
+      description: 'Baud Rate.'
+      enum:
+        - BAUD_300
+        - BAUD_1200
+        - BAUD_2400
+        - BAUD_4800
+        - BAUD_9600
+        - BAUD_14400
+        - BAUD_28800
+        - BAUD_38400
+        - BAUD_57600
+        - BAUD_115200
+    portNumber:
+      type: number
+      minimum: 1
+      maximum: 65535
+      description: 'Port Number.'
+    keyInHex:
+      type: string
+      pattern: '[0-9a-fA-F]*'
+      maximum: 32
+      description: 'Key In Hex.'
+    protocolWrap:
+      type: string
+      description: 'Protocol Wrap.'
+      enum:
+        - IDLC
+        - None
+    carrierDetectWaitInMilliseconds:
+      type: number
+      minimum: 0
+      maximum: 999
+      description: 'Carrier Detect Wait In MiliSeconds.'
+    ipAddress:
+      type: string
+      description: 'IP Address(In case Of UDP Port ipAddress value is set to default UDP). User cannot change the IPAddress.'
+    timing:
+      $ref: '#/timing'
+    sharing:
+      $ref: '#/sharing'
+      
+TSERVER_SHARED:
+  title: TSERVER_SHARED
+  required:
+    - deviceType
+    - deviceName
+    - portNumber
+    - baudRate
+    - ipAddress
+  type: object
+  properties:
+    deviceName:
+      type: string
+      maxLength: 60
+      description: 'Name for the comm channel.'
+    deviceType:
+      type: string
+      description: 'Type of channel.'
+      enum:
+        - TSERVER_SHARED
+    enable:
+      type: boolean
+      default: true
+      description: 'Flag to enable channel.'
+    baudRate:
+      type: string
+      description: 'Baud Rate.'
+      enum:
+        - BAUD_300
+        - BAUD_1200
+        - BAUD_2400
+        - BAUD_4800
+        - BAUD_9600
+        - BAUD_14400
+        - BAUD_28800
+        - BAUD_38400
+        - BAUD_57600
+        - BAUD_115200
+    portNumber:
+      type: number
+      minimum: 1
+      maximum: 65535
+      description: 'Port Number.'
+    protocolWrap:
+      type: string
+      description: 'Protocol Wrap.'
+      enum:
+        - IDLC
+        - None
+    carrierDetectWaitInMilliseconds:
+      type: number
+      minimum: 0
+      maximum: 999
+      description: 'Carrier Detect Wait In MiliSeconds.'
+    ipAddress:
+      type: string
+      pattern: '^([a-zA-Z0-9]|[a-zA-Z0-9][a-zA-Z0-9\\-]{0,61}[a-zA-Z0-9])(\\.([a-zA-Z0-9]|[a-zA-Z0-9][a-zA-Z0-9\\-]{0,61}[a-zA-Z0-9]))*$'
+      description: 'IP Address.'
+    timing:
+      $ref: '#/timing'
+    sharing:
+      $ref: '#/sharing'
+    
+LOCAL_SHARED:
+  title: LOCAL_SHARED
+  required:
+    - deviceType
+    - deviceName
+    - physicalPort
+    - baudRate
+  type: object
+  properties:
+    deviceName:
+      type: string
+      maxLength: 60
+      description: 'Name for the comm channel.'
+    deviceType:
+      type: string
+      description: 'Type of channel.'
+      enum:
+        - LOCAL_SHARED
+    enable:
+      type: boolean
+      default: true
+      description: 'Flag to enable channel.'
+    baudRate:
+      type: string
+      description: 'Baud Rate.'
+      enum:
+        - BAUD_300
+        - BAUD_1200
+        - BAUD_2400
+        - BAUD_4800
+        - BAUD_9600
+        - BAUD_14400
+        - BAUD_28800
+        - BAUD_38400
+        - BAUD_57600
+        - BAUD_115200
+    protocolWrap:
+      type: string
+      description: 'Protocol Wrap.'
+      enum:
+        - IDLC
+        - None
+    carrierDetectWaitInMilliseconds:
+      type: number
+      minimum: 0
+      maximum: 999
+      description: 'Carrier Detect Wait In MiliSeconds.'
+    physicalPort:
+      type: string
+      maximum: 8
+      description: 'Physical Port.'
+    timing:
+      $ref: '#/timing'
+    sharing:
+      $ref: '#/sharing'
+
+TCPPORT Response Schema:
+  title: TCPPORT
+  type: object
+  properties:
+    deviceId:
+      type: integer
+      description: 'Unique identifier of the TCP Port.'
+    deviceName:
+      type: string
+      maxLength: 60
+      description: 'Name for the comm channel.'
+    deviceType:
+      type: string
+      description: 'Type of channel.'
+      enum:
+        - TCPPORT
+    enable:
+      type: boolean
+      default: true
+      description: 'Flag to enable channel.'
+    baudRate:
+      type: string
+      description: 'Baud Rate.'
+      enum:
+        - BAUD_300
+        - BAUD_1200
+        - BAUD_2400
+        - BAUD_4800
+        - BAUD_9600
+        - BAUD_14400
+        - BAUD_28800
+        - BAUD_38400
+        - BAUD_57600
+        - BAUD_115200
+    timing:
+      $ref: '#/timing'
+
+UDPPORT Response Schema:
+  title: UDPPORT
+  type: object
+  properties:
+    deviceId:
+      type: integer
+      description: 'Unique identifier of the UDP Terminal Server.'
+    deviceName:
+      type: string
+      maxLength: 60
+      description: 'Name for the comm channel.'
+    deviceType:
+      type: string
+      description: 'Type of channel.'
+      enum:
+        - UDPPORT
+    enable:
+      type: boolean
+      default: true
+      description: 'Flag to enable channel.'
+    baudRate:
+      type: string
+      description: 'Baud Rate.'
+      enum:
+        - BAUD_300
+        - BAUD_1200
+        - BAUD_2400
+        - BAUD_4800
+        - BAUD_9600
+        - BAUD_14400
+        - BAUD_28800
+        - BAUD_38400
+        - BAUD_57600
+        - BAUD_115200
+    portNumber:
+      type: number
+      minimum: 1
+      maximum: 65535
+      description: 'Port Number.'
+    keyInHex:
+      type: string
+      pattern: '[0-9a-fA-F]*'
+      maximum: 32
+      description: 'Key In Hex.'
+    protocolWrap:
+      type: string
+      description: 'Protocol Wrap.'
+      enum:
+        - IDLC
+        - None
+    carrierDetectWaitInMilliseconds:
+      type: number
+      minimum: 0
+      maximum: 999
+      description: 'Carrier Detect Wait In MiliSeconds.'
+    ipAddress:
+      type: string
+      description: 'IP Address(In case Of UDP Port ipAddress value is set to default UDP). User cannot change the IPAddress.'
+    timing:
+      $ref: '#/timing'
+    sharing:
+      $ref: '#/sharing'
+      
+TSERVER_SHARED Response Schema:
+  title: TSERVER_SHARED
+  type: object
+  properties:
+    deviceId:
+      type: integer
+      description: 'Unique identifier of the Terminal Server.'
+    deviceName:
+      type: string
+      maxLength: 60
+      description: 'Name for the comm channel.'
+    deviceType:
+      type: string
+      description: 'Type of channel.'
+      enum:
+        - TSERVER_SHARED
+    enable:
+      type: boolean
+      default: true
+      description: 'Flag to enable channel.'
+    baudRate:
+      type: string
+      description: 'Baud Rate.'
+      enum:
+        - BAUD_300
+        - BAUD_1200
+        - BAUD_2400
+        - BAUD_4800
+        - BAUD_9600
+        - BAUD_14400
+        - BAUD_28800
+        - BAUD_38400
+        - BAUD_57600
+        - BAUD_115200
+    portNumber:
+      type: number
+      minimum: 1
+      maximum: 65535
+      description: 'Port Number.'
+    protocolWrap:
+      type: string
+      description: 'Protocol Wrap.'
+      enum:
+        - IDLC
+        - None
+    carrierDetectWaitInMilliseconds:
+      type: number
+      minimum: 0
+      maximum: 999
+      description: 'Carrier Detect Wait In MiliSeconds.'
+    ipAddress:
+      type: string
+      pattern: '^([a-zA-Z0-9]|[a-zA-Z0-9][a-zA-Z0-9\\-]{0,61}[a-zA-Z0-9])(\\.([a-zA-Z0-9]|[a-zA-Z0-9][a-zA-Z0-9\\-]{0,61}[a-zA-Z0-9]))*$'
+      description: 'IP Address.'
+    timing:
+      $ref: '#/timing'
+    sharing:
+      $ref: '#/sharing'
+    
+LOCAL_SHARED Response Schema:
+  title: LOCAL_SHARED
+  type: object
+  properties:
+    deviceId:
+      type: integer
+      description: 'Unique identifier of the Local Shared Port.'
+    deviceName:
+      type: string
+      maxLength: 60
+      description: 'Name for the comm channel.'
+    deviceType:
+      type: string
+      description: 'Type of channel.'
+      enum:
+        - LOCAL_SHARED
+    enable:
+      type: boolean
+      default: true
+      description: 'Flag to enable channel.'
+    baudRate:
+      type: string
+      description: 'Baud Rate.'
+      enum:
+        - BAUD_300
+        - BAUD_1200
+        - BAUD_2400
+        - BAUD_4800
+        - BAUD_9600
+        - BAUD_14400
+        - BAUD_28800
+        - BAUD_38400
+        - BAUD_57600
+        - BAUD_115200
+    protocolWrap:
+      type: string
+      description: 'Protocol Wrap.'
+      enum:
+        - IDLC
+        - None
+    carrierDetectWaitInMilliseconds:
+      type: number
+      minimum: 0
+      maximum: 999
+      description: 'Carrier Detect Wait In MiliSeconds.'
+    physicalPort:
+      type: string
+      maximum: 8
+      description: 'Physical Port.'
+    timing:
+      $ref: '#/timing'
+    sharing:
+      $ref: '#/sharing'
+
+timing:
+  type: object
+  properties:
+    preTxWait:
+      type: integer
+      default: 25
+      minimum: 0
+      maximum: 10000000
+      description: 'Pre Tx Wait.'
+    rtsToTxWait:
+      type: integer
+      default: 0
+      minimum: 0
+      maximum: 10000000
+      description: 'RTS To Tx Wait.'
+    postTxWait:
+      type: integer
+      default: 0
+      minimum: 0
+      maximum: 10000000
+      description: 'Post Tx Wait.'
+    receiveDataWait:
+      type: integer
+      default: 0
+      minimum: 0
+      maximum: 1000
+      description: 'Receive Data Wait.'
+    extraTimeOut:
+      type: integer
+      default: 0
+      minimum: 0
+      maximum: 999
+      description: 'Additional Time Out.'
+    postCommWait:
+      type: integer
+      default: 0
+      minimum: 0
+      maximum: 100000
+      description: 'Post Comm Wait.'
+
+sharing:
+  type: object
+  properties:
+    sharedPortType:
+      type: string
+      default: NONE
+      description: 'Shared Port Type.'
+      enum:
+        - NONE
+        - ACS
+        - ILEX
+    sharedSocketNumber:
+      type: number
+      default: 1025
+      minimum: 1
+      maximum: 65535
+      description: 'Shared Socket Number.When Shared Port type is NONE then Socket Number is 1025.'  
+
+id:
+  required:
+    - id
+  type: object
+  properties:
+    id:
+      type: integer
+      description: 'Unique identifier of the CommChannel.'
+
+components:
+  examples:
+    TCP Port Request: 
+      value:
+        deviceType: TCPPORT
+        deviceName: Test TCP Port 
+        enable: true
+        baudRate: BAUD_300
+        timing:
+          preTxWait: 25
+          rtsToTxWait: 0
+          postTxWait: 0
+          receiveDataWait: 0
+          extraTimeOut: 0
+          postCommWait: 0
+
+    TCP Port Response: 
+      value:
+        deviceId: 21
+        deviceType: TCPPORT
+        deviceName: Test TCP Port 
+        enable: true
+        baudRate: BAUD_300
+        timing:
+          preTxWait: 25
+          rtsToTxWait: 0
+          postTxWait: 0
+          receiveDataWait: 0
+          extraTimeOut: 0
+          postCommWait: 0
+            
+    UDP Terminal Server Request:
+      value:
+        deviceName: Test Udpport
+        enable: true
+        baudRate: BAUD_2400
+        deviceType: UDPPORT
+        portNumber: 5534
+        carrierDetectWaitInMilliseconds: 544
+        protocolWrap: IDLC
+        timing:
+          preTxWait: 87
+          rtsToTxWait: 823
+          postTxWait: 89
+          receiveDataWait: 76
+          extraTimeOut: 98
+          postCommWait: 150
+        sharing:
+          sharedPortType: ACS
+          sharedSocketNumber: 100
+        keyInHex: 00112233445566778899aabbccddeeff
+        
+    UDP Terminal Server Response:
+      value:
+        deviceId: 45
+        deviceName: Test Udpport
+        enable: true
+        baudRate: BAUD_2400
+        deviceType: UDPPORT
+        portNumber: 5534
+        carrierDetectWaitInMilliseconds: 544
+        protocolWrap: IDLC
+        timing:
+          preTxWait: 87
+          rtsToTxWait: 823
+          postTxWait: 89
+          receiveDataWait: 76
+          extraTimeOut: 98
+          postCommWait: 150
+        sharing:
+          sharedPortType: ACS
+          sharedSocketNumber: 100
+        keyInHex: 00112233445566778899aabbccddeeff
+
+    Terminal Server Request:
+      value:
+        deviceName: Test TserverShared Port
+        enable: true
+        baudRate: BAUD_2400
+        deviceType: TSERVER_SHARED
+        portNumber: 1234
+        ipAddress: 127.0.0.1
+        carrierDetectWaitInMilliseconds: 123
+        protocolWrap: IDLC
+        timing:
+          preTxWait: 87
+          rtsToTxWait: 823
+          postTxWait: 89
+          receiveDataWait: 76
+          extraTimeOut: 98
+          postCommWait: 150
+        sharing:
+          sharedPortType: ACS
+          sharedSocketNumber: 100
+
+    Terminal Server Response:
+      value:
+        deviceId: 45
+        deviceName: Test TserverShared Port
+        enable: true
+        baudRate: BAUD_2400
+        deviceType: TSERVER_SHARED
+        portNumber: 1234
+        ipAddress: 127.0.0.1
+        carrierDetectWaitInMilliseconds: 123
+        protocolWrap: IDLC
+        timing:
+          preTxWait: 87
+          rtsToTxWait: 823
+          postTxWait: 89
+          receiveDataWait: 76
+          extraTimeOut: 98
+          postCommWait: 150
+        sharing:
+          sharedPortType: ACS
+          sharedSocketNumber: 100
+
+    Local Shared Port Request:
+      value:
+        deviceName: Test LocalShared Port
+        enable: true
+        baudRate: BAUD_2400
+        deviceType: LOCAL_SHARED
+        carrierDetectWaitInMilliseconds: 544
+        protocolWrap: IDLC
+        timing:
+          preTxWait: 87
+          rtsToTxWait: 823
+          postTxWait: 89
+          receiveDataWait: 76
+          extraTimeOut: 98
+          postCommWait: 150
+        sharing:
+          sharedPortType: ACS
+          sharedSocketNumber: 100
+        physicalPort: com2
+ 
+    Local Shared Port Response:
+      value:
+        deviceId: 87
+        deviceName: Test LocalShared Port
+        enable: true
+        baudRate: BAUD_2400
+        deviceType: LOCAL_SHARED
+        carrierDetectWaitInMilliseconds: 544
+        protocolWrap: IDLC
+        timing:
+          preTxWait: 87
+          rtsToTxWait: 823
+          postTxWait: 89
+          receiveDataWait: 76
+          extraTimeOut: 98
+          postCommWait: 150
+        sharing:
+          sharedPortType: ACS
+          sharedSocketNumber: 100
+        physicalPort: com2
+    id:
+      value:
+        id: 39223
+  

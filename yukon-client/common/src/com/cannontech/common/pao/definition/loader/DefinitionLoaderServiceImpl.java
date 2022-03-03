@@ -2,6 +2,7 @@ package com.cannontech.common.pao.definition.loader;
 
 import java.util.Arrays;
 import java.util.HashMap;
+import java.util.LinkedHashMap;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
@@ -105,7 +106,7 @@ public class DefinitionLoaderServiceImpl implements DefinitionLoaderService{
         for (Pao pao : fileLoader.getPaos()) {
             PaoType paoType = PaoType.valueOf(pao.getPaoType());
             if (paoAttributeAttrDefinitionMap.get(paoType) == null) {
-                paoAttributeAttrDefinitionMap.put(paoType, new HashMap<>());
+                paoAttributeAttrDefinitionMap.put(paoType, new LinkedHashMap<>());
             }
             Map<Attribute, AttributeDefinition> attrDefMap = paoAttributeAttrDefinitionMap.get(paoType);
             if (pao.getPointInfos() != null) {
@@ -330,7 +331,7 @@ public class DefinitionLoaderServiceImpl implements DefinitionLoaderService{
                 Point componentPoint = allPoints.get(component.getPoint());
                 PointIdentifier pointIdentifier = createPointIdentifier(componentPoint);
                 CalcPointComponent calcPointComponent =
-                    new CalcPointComponent(pointIdentifier, componentType.toString(), component.getOperator());
+                    new CalcPointComponent(pointIdentifier, componentType.value(), component.getOperator());
                 calcPointComponents.add(calcPointComponent);
             }
 
@@ -373,5 +374,10 @@ public class DefinitionLoaderServiceImpl implements DefinitionLoaderService{
         PointType type = PointType.getForString(point.getType());
         PointIdentifier pointIdentifier = new PointIdentifier(type, point.getOffset());
         return pointIdentifier;
+    }
+
+    @Override
+    public Map<String, Point> getSystemDevicePoints() {
+        return fileLoader.getPoints(PaoType.SYSTEM.getDbString());
     }
 }

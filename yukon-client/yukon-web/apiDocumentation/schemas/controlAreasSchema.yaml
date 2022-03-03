@@ -1,0 +1,385 @@
+ControlArea:
+  title: Control Area
+  required:
+    - name
+    - controlInterval
+    - minResponseTime
+    - dailyDefaultState
+    - allTriggersActiveFlag
+  type: object
+  properties:
+    name:
+      type: string
+      maxLength: 60
+      description: 'Name of the control area.'
+      
+    controlInterval:
+      type: integer  
+      minimum: 0
+      maximum: 1800
+      description: 'How often the system checks to see if control is needed.
+                    Valid values are (in min)- 0, 1, 2, 3, 4, 5, 10, 15, 30.'
+                    
+    minResponseTime:
+      type: integer  
+      minimum: 0
+      maximum: 1800
+      description: 'Number of minutes to wait after control starts before re-evaluating control.
+                    After re-evaluation more or less programs may be controlled depending on configuration 
+                    and the trigger values.
+                    Valid values are (in min)- 0, 1, 2, 3, 4, 5, 10, 15, 30.'
+    dailyStartTimeInMinutes:
+      type: integer  
+      minimum: 0
+      maximum: 1439
+      description: 'Daily start time in minutes.'
+    dailyStopTimeInMinutes:
+      type: integer  
+      minimum: 0
+      maximum: 1439
+      description: 'Daily stop time in minutes.'
+    allTriggersActiveFlag:
+      type: boolean
+      description: 'Flag to set all trigger active to perform control.'
+    dailyDefaultState: 
+      type: string
+      enum: 
+        - None 
+        - Enabled
+        - Disabled
+      description: 'The control area reverts to this state each day at midnight.'
+     
+    trigger:
+      $ref: '#/trigger'
+    programAssignment:
+      $ref: '#/programAssignment'
+     
+trigger:
+  type: array
+  items:
+    required:
+      - triggerNumber
+      - triggerType
+      - triggerPointId
+      - thresholdPointId
+      - normalState
+      - threshold
+      - peakPointId
+      - controlAreaProjection
+      
+    type: object
+    properties:
+      triggerNumber:
+        type: integer  
+        minimum: 1
+        maximum: 2
+        description: 'Number of trigger.
+                      This field is required when trigger object is present in request.'
+      triggerPointId:
+        type: integer  
+        description: 'Unique identifier of point id. Point to use for the trigger.
+                      This field is required when trigger object is present in request.'
+      normalState:
+        type: integer  
+        description: 'Normal state for the status point. Enabled only for Status triggers.
+                      This field is required when trigger object is present in request and trigger type is STATUS.'
+      threshold:
+        type: number
+        minimum: -999999.99999999
+        maximum: 999999.99999999
+        description: 'Control starts when the trigger value exceeds the threshold.
+                      This field is required when trigger object is present in request and trigger type is THRESHOLD.'
+      atku:
+        type: integer  
+        minimum: -2147483648
+        maximum: 2147483647
+        description: 'Optional automatic threshold kickup offset. If the peak load value exceeds the threshold,
+                      the threshold is automatically increased to the new peak load value minus this offset.
+                      A value of zero disables the automatic threshold kickup offset.
+                      This field is required when trigger object is present in request.'
+      minRestoreOffset:
+        type: number
+        minimum: -99999.9999
+        maximum: 99999.9999
+        default: 0.0
+        description: 'The threshold minus the minimum restore offset is the level that the load must be below 
+                      before control can stop.
+                      This field is required when  trigger object is present in request.'
+      peakPointId:
+        type: integer  
+        description: 'Unique identifier of point id. Peak tracking to record the highest peak load value.
+                      This field is required when trigger object is present in request.'
+      thresholdPointId:
+        type: integer  
+        description: 'Unique identifier of point id.
+                      This field is required when trigger object is present in request and trigger type is THRESHOLD_POINT.'        
+      triggerPointName:
+        type: string
+        description: 'Name of the point.
+                      This field is required when trigger object is present in request.'
+      triggerType:
+        type: string
+        enum: 
+          - THRESHOLD_POINT 
+          - THRESHOLD
+          - STATUS
+        description: 'The control area reverts to this state each day at midnight.
+                     Status – Control occurs on a status change.
+                     Threshold – Control occurs when the threshold is surpassed.
+                     This field is required when trigger object is present in request.'
+      controlAreaProjection:
+        description: 'This field is required when trigger object is present in request and trigger type is THRESHOLD.'
+        required:
+          - ControlAreaProjectionType
+          - projectionPoint
+          - projectAheadDuration
+        type: object
+        properties:
+          ControlAreaProjectionType:
+            type: string
+            enum: 
+              - NONE 
+              - LSF
+            description: 'The control area reverts to this state each day at midnight.
+                         This field is required when trigger object is present in request and trigger type is THRESHOLD.
+                         LSF (Least Squared Fit) is the type of projection.'
+          projectionPoint:
+            type: integer  
+            minimum: 2
+            maximum: 12
+            description: 'Samples – Number of trigger values to use in the LSF projection. 
+                           If the trigger values in the projection are older than one hour, the current trigger 
+                           value is used.
+                           This field is required when trigger object is present in request and trigger type is 
+                           THRESHOLD and ControlAreaProjectionType is LSF.'
+                      
+          projectAheadDuration:
+            type: integer  
+            description: 'Ahead – How far ahead in time to project values.   
+                      This field is required when trigger object is present in request and trigger type is 
+                      THRESHOLD and ControlAreaProjectionType is LSF.
+                      valid values are 5 min, 10 min, 15 min, 20 min, 25 min, 30 min, 35 min, 40 min, 45 min, 50 min, 55 min, 60 min.'
+             
+programAssignment:
+  required:
+    - programId
+    - startPriority
+    - stopPriority
+  type: object
+  properties:
+    programId:
+      type: integer  
+      description: 'Unique identifier of load program.
+                    This field is required when programAssignment object is present in request.'
+    startPriority:
+      type: integer 
+      minimum: 1
+      maximum: 1024      
+      description: 'Controls when load programs are started. A load program with a start priority
+                   of one starts before a load program with a start priority of two.
+                   This field is required when programAssignment object is present in request.'
+    stopPriority:
+      type: integer  
+      minimum: 1
+      maximum: 1024      
+      description: 'Controls when load programs are stopped. A load program with a stop priority of one 
+                    stops before a load program with a stop priority of two.
+                    This field is required when programAssignment object is present in request.'
+
+id:
+  title: id
+  type: object
+  properties:
+    id:
+      type: integer  
+      description: 'Unique identifier of the control area.'
+
+ControlArea Response Schema:
+  type: object
+  properties:
+    controlAreaId:
+      type: integer  
+      description: 'Unique identifier of the control area.'
+    name:
+      type: string
+      maxLength: 60
+      description: 'Name of the control area.'
+      
+    controlInterval:
+      type: integer  
+      minimum: 0
+      maximum: 1800
+      description: 'How often the system checks to see if control is needed.
+                    Valid values are (in min)- 0, 1, 2, 3, 4, 5, 10, 15, 30.'
+                    
+    minResponseTime:
+      type: integer  
+      minimum: 0
+      maximum: 1800
+      description: 'Number of minutes to wait after control starts before re-evaluating control.
+                    After re-evaluation more or less programs may be controlled depending on configuration 
+                    and the trigger values.
+                    Valid values are (in min)- 0, 1, 2, 3, 4, 5, 10, 15, 30.'
+    dailyStartTimeInMinutes:
+      type: integer  
+      minimum: 0
+      maximum: 1439
+      description: 'Daily start time in minutes.'
+    dailyStopTimeInMinutes:
+      type: integer  
+      minimum: 0
+      maximum: 1439
+      description: 'Daily stop time in minutes.'
+    allTriggersActiveFlag:
+      type: boolean
+      description: 'Flag to set all trigger active to perform control.'
+    dailyDefaultState: 
+      type: string
+      enum: 
+        - None 
+        - Enabled
+        - Disabled
+      description: 'The control area reverts to this state each day at midnight.'
+     
+    trigger:
+      $ref: '#/trigger'
+    programAssignment:
+      $ref: '#/programAssignment'
+
+components:
+  examples:
+    
+    Control Area with Threshold Point Trigger Request:
+      value:
+        name: Threshold_point_controlarea_test
+        controlInterval: 0
+        minResponseTime: 0
+        dailyDefaultState: None
+        dailyStartTimeInMinutes: 120
+        dailyStopTimeInMinutes: 180
+        allTriggersActiveFlag: false
+        triggers:
+          - triggerType: THRESHOLD_POINT
+            triggerPointId: -110
+            minRestoreOffset: 0
+            peakPointId: -110
+            thresholdPointId: -110
+        programAssignment:
+          - programId: 81367
+            startPriority: 1
+            stopPriority: 2
+    
+    Control Area with Threshold Point Trigger Response:
+      value:
+        controlAreaId: 10
+        name: Threshold_point_controlarea_test
+        controlInterval: 0
+        minResponseTime: 0
+        dailyDefaultState: None
+        dailyStartTimeInMinutes: 120
+        dailyStopTimeInMinutes: 180
+        allTriggersActiveFlag: false
+        triggers:
+          - triggerType: THRESHOLD_POINT
+            triggerPointId: -110
+            minRestoreOffset: 0
+            peakPointId: -110
+            thresholdPointId: -110
+        programAssignment:
+          - programId: 81367
+            startPriority: 1
+            stopPriority: 2
+    
+    Control Area with Threshold Trigger Request:
+      value:  
+        name: Threshold_controlarea_test
+        controlInterval: 0
+        minResponseTime: 0 
+        dailyDefaultState: None
+        dailyStartTimeInMinutes: 120
+        dailyStopTimeInMinutes: 180
+        allTriggersActiveFlag: false
+        triggers:
+          - triggerType: THRESHOLD
+            triggerPointId: -110
+            threshold: 33.33
+            controlAreaProjection:
+              projectionType: LSF
+              projectionPoint: 8
+              projectAheadDuration: 2100
+            atku: 2
+            minRestoreOffset: 0
+            peakPointId: -110
+            thresholdPointId: -110
+        programAssignment:
+          - programId: 81367
+            startPriority: 1
+            stopPriority: 2
+    
+    Control Area with Threshold Trigger Response:
+      value:  
+        controlAreaId: 9
+        name: Threshold_controlarea_test
+        controlInterval: 0
+        minResponseTime: 0 
+        dailyDefaultState: None
+        dailyStartTimeInMinutes: 120
+        dailyStopTimeInMinutes: 180
+        allTriggersActiveFlag: false
+        triggers:
+          - triggerType: THRESHOLD
+            triggerPointId: -110
+            threshold: 33.33
+            controlAreaProjection:
+              projectionType: LSF
+              projectionPoint: 8
+              projectAheadDuration: 2100
+            atku: 2
+            minRestoreOffset: 0
+            peakPointId: -110
+            thresholdPointId: -110
+        programAssignment:
+          - programId: 81367
+            startPriority: 1
+            stopPriority: 2
+    
+    Control Area with Status Trigger Request:
+      value: 
+        name: Status_controlarea_test
+        controlInterval: 0
+        minResponseTime: 0
+        dailyDefaultState: None
+        dailyStartTimeInMinutes: 120
+        dailyStopTimeInMinutes: 180
+        allTriggersActiveFlag: false
+        triggers:
+          - triggerType: STATUS
+            triggerPointId: -110
+            normalState: 0
+        programAssignment:
+          - programId: 81367
+            startPriority: 1
+            stopPriority: 2
+            
+    Control Area with Status Trigger Response:
+      value: 
+        controlAreaId: 8
+        name: Status_controlarea_test
+        controlInterval: 0
+        minResponseTime: 0
+        dailyDefaultState: None
+        dailyStartTimeInMinutes: 120
+        dailyStopTimeInMinutes: 180
+        allTriggersActiveFlag: false
+        triggers:
+          - triggerType: STATUS
+            triggerPointId: -110
+            normalState: 0
+        programAssignment:
+          - programId: 81367
+            startPriority: 1
+            stopPriority: 2
+
+    id:
+      value:
+        id: 39223

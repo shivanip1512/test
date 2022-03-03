@@ -17,7 +17,7 @@
     <entry key="yukon.web.modules.operator.newOperation">New Action</entry>
     <entry key="yukon.web.modules.operator.progress">Progress</entry>
     <entry key="yukon.web.modules.operator.notesLabel">Note:</entry>
-    <entry key="yukon.web.modules.operator.serialNumber">Serial No</entry>
+    <entry key="yukon.web.modules.operator.serialNumber">Serial Number</entry>
     <entry key="yukon.web.modules.operator.successCount">Successful</entry>
     <entry key="yukon.web.modules.operator.successful">Successful</entry>
     <entry key="yukon.web.modules.operator.unsupportedCount">Unsupported</entry>
@@ -30,10 +30,46 @@
     <entry key="yukon.web.modules.operator.gateways.list.connected">Connected</entry>
     <entry key="yukon.web.modules.operator.gateways.list.firmwareUpdates">Firmware Version Updates</entry>
     <entry key="yukon.web.modules.operator.gateways.list.duplicateColors">Duplicate gateway colors detected: {0}</entry>
-    <entry key="yukon.web.modules.operator.gateways.list.firmwareUpdates.none">No firmware updates</entry>
     <entry key="yukon.web.modules.operator.gateways.list.firmwareUpdates.timestamp">Timestamp</entry>
     <entry key="yukon.web.modules.operator.gateways.list.firmwareUpdates.totalGateways">Total Gateways</entry>
     <entry key="yukon.web.modules.operator.gateways.list.firmwareUpdates.totalServers">Total Update Servers</entry>
+    <entry key="yukon.web.modules.operator.gateways.list.manageFirmware">Manage Firmware</entry>
+    <entry key="yukon.web.modules.operator.gateways.list.manageCertificates">Manage Certificates</entry>
+    <entry key="yukon.web.modules.operator.gateways.list.gateways">Gateways</entry>
+    <entry key="yukon.web.modules.operator.gateways.list.updateGateways">Update NM IP Address/Port</entry>
+    <entry key="yukon.web.modules.operator.gateways.list.NAME">Name</entry>
+    <entry key="yukon.web.modules.operator.gateways.list.SERIALNUMBER">Serial Number</entry>
+    <entry key="yukon.web.modules.operator.gateways.list.FIRMWAREVERSION">Firmware Version</entry>
+    <entry key="yukon.web.modules.operator.gateways.list.LASTCOMMUNICATION">Last Communication</entry>
+    <entry key="yukon.web.modules.operator.gateways.list.downloadNetwork">Download Network Info</entry>
+    <entry key="yukon.web.modules.operator.gateways.list.downloadNetworkWarning">Network Information download may take several minutes. Please allow time for download to complete.</entry>
+
+    <!-- Manage Firmware -->
+    <entry key="yukon.web.modules.operator.gateways.manageFirmware.pageName">Manage Firmware</entry>
+    <entry key="yukon.web.modules.operator.gateways.manageFirmware.updateServer.set">Set Update Servers</entry>
+    <entry key="yukon.web.modules.operator.gateways.manageFirmware.firmwareUpdate">Update Firmware Version</entry>
+    <entry key="yukon.web.modules.operator.gateways.manageFirmware.firmwareUpdate.confirmMultiple">This will update {0} gateway(s) using {1} server(s).</entry>
+    <entry key="yukon.web.modules.operator.gateways.manageFirmware.firmwareUpdates.none">No firmware updates</entry>
+    <entry key="yukon.web.modules.operator.gateways.manageFirmware.TIMESTAMP">Timestamp</entry>
+    <entry key="yukon.web.modules.operator.gateways.manageFirmware.PENDING">Pending</entry>
+    <entry key="yukon.web.modules.operator.gateways.manageFirmware.FAILED">Failed</entry>
+    <entry key="yukon.web.modules.operator.gateways.manageFirmware.SUCCESSFUL">Successful</entry>
+
+    <!-- Certificate Updates -->
+    <entry key="yukon.web.modules.operator.gateways.manageCertificates.pageName">Manage Certificates</entry>
+    <entry key="yukon.web.modules.operator.gateways.manageCertificates.cert.update.label">Update Certificate</entry>
+    <entry key="yukon.web.modules.operator.gateways.manageCertificates.cert.updates.none">No certificate updates</entry>
+    <entry key="yukon.web.modules.operator.gateways.manageCertificates.cert.update.more"> and {0} more...</entry>
+    <entry key="yukon.web.modules.operator.gateways.manageCertificates.TIMESTAMP">Timestamp</entry>
+    <entry key="yukon.web.modules.operator.gateways.manageCertificates.PENDING">Pending</entry>
+    <entry key="yukon.web.modules.operator.gateways.manageCertificates.FAILED">Failed</entry>
+    <entry key="yukon.web.modules.operator.gateways.manageCertificates.SUCCESSFUL">Successful</entry>
+    <entry key="yukon.web.modules.operator.gateways.manageCertificates.CERTIFICATE">Certificate</entry>
+    
+    <!-- Certificate Updates Popup-->
+    <entry key="yukon.web.modules.operator.gateways.cert.update.noGatewaySelected">Please select a Gateway.</entry>
+    <entry key="yukon.web.modules.operator.gateways.cert.update.gateways">Gateways</entry>
+
     <!-- Firmware Updates popup -->
     <entry key="yukon.web.modules.operator.gateways.firmware.update.label">Firmware Version Updates</entry>
     <entry key="yukon.web.modules.operator.gateways.firmware.update.failed">Failed</entry>
@@ -45,7 +81,11 @@
     <entry key="yukon.web.modules.operator.gateways.firmware.update.availableVersion">Available Version</entry>
     <entry key="yukon.web.modules.operator.gateways.firmware.update.url">Update Server URL</entry>
     <entry key="yukon.web.modules.operator.gateways.firmware.update.failType">Failure Type</entry>
-    
+
+    <!-- Firmware And Certificate Information Widget -->
+    <entry key="yukon.web.modules.operator.gateways.firmwareInformationWidget.firmwareUpdates.title">Firmware Updates</entry>
+    <entry key="yukon.web.modules.operator.gateways.firmwareInformationWidget.certificateUpdates.title">Certificate Updates</entry>
+
     <!-- Gateway Details -->
     <entry key="yukon.web.modules.operator.gateways.detail.pageName">Gateway</entry>
     <entry key="yukon.web.modules.operator.gateways.detail.pageDescription">{0}</entry>
@@ -80,20 +120,21 @@
     <entry key="yukon.web.modules.operator.gateways.detail.tooltip.nodesWithInfo">Nodes with Info: {0}; Nodes Without Info: {1}</entry>
     <entry key="yukon.web.modules.operator.gateways.detail.tooltip.nodesWithSNs">Nodes with Serial Numbers: {0}; Total Nodes: {1}</entry>
     <entry key="yukon.web.modules.operator.gateways.detail.infraStructureWarnings.title">Infrastructure Warnings</entry>
+    <entry key="yukon.web.modules.operator.gateways.detail.gatewayEvents.title">Gateway Events</entry>
     <entry key="yukon.web.modules.operator.gateways.detail.wifiCapableCount">Wi-Fi Capable Count</entry>
     <entry key="yukon.web.modules.operator.gateways.detail.viewWiFiMeters">View Wi-Fi Meters</entry>
-
+    <entry key="yukon.web.modules.operator.gateways.detail.cellularCapableCount">Cellular Capable Count</entry>
+    <entry key="yukon.web.modules.operator.gateways.detail.viewCellularDevices">View Cellular Devices</entry>
+    
     <!-- Gateway Common Words -->
     <entry key="yukon.web.modules.operator.gateways.cert">Certificate</entry>
-    <entry key="yukon.web.modules.operator.gateways.cert.update.note"><![CDATA[The certificate update tool is only applicable for legacy Gateway 1.5.<br>For GWY-800 and newer, certificates are updated using the firmware upgrade tool.]]></entry>
+    <entry key="yukon.web.modules.operator.gateways.cert.update.note"><![CDATA[The certificate update tool is only applicable for legacy Gateway 1.5.<br>For all other gateways, certificates are updated using the firmware upgrade tool.]]></entry>
     <entry key="yukon.web.modules.operator.gateways.cert.update.more"> and {0} more...</entry>
-    <entry key="yukon.web.modules.operator.gateways.cert.update.gateways">Gateways</entry>
     <entry key="yukon.web.modules.operator.gateways.cert.update.label">Certificate Update</entry>
     <entry key="yukon.web.modules.operator.gateways.cert.update.file">Certificate File</entry>
     <entry key="yukon.web.modules.operator.gateways.cert.update.file.ioerror">Error reading certificate file.</entry>
     <entry key="yukon.web.modules.operator.gateways.cert.update.file.invalid">Not a valid certificate file.</entry>
     <entry key="yukon.web.modules.operator.gateways.cert.updates">Certificate Updates</entry>
-    <entry key="yukon.web.modules.operator.gateways.cert.updates.none">No certificate updates</entry>
     <entry key="yukon.web.modules.operator.gateways.cert.update.failType">Failure Type</entry>
     <entry key="yukon.web.modules.operator.gateways.cert.update.fail.TIMEOUT">Timeout waiting for response</entry>
     <entry key="yukon.web.modules.operator.gateways.cert.update.fail.INVALID_RFN_ID">Invalid RFN identifier</entry>
@@ -132,9 +173,13 @@
     <entry key="yukon.web.modules.operator.gateways.username.required">Username is required.</entry>
     <entry key="yukon.web.modules.operator.gateways.password.required">Password is required.</entry>
     <entry key="yukon.web.modules.operator.gateways.updateserver.url.required">Server URL is required when not using defaults.</entry>
+    <entry key="yukon.web.modules.operator.gateways.updateserver.password.required">Password is required when not using defaults.</entry>
     <entry key="yukon.web.modules.operator.gateways.updateserver.username.required">Username is required when not using defaults.</entry>
+    <entry key="yukon.web.modules.operator.gateways.bulkUpdate.gateways.required">Gateway selection is required.</entry>
+    <entry key="yukon.web.modules.operator.gateways.bulkUpdate.gatewaySuccessMessage">The following gateways were updated successfully: {0}.</entry>
+    <entry key="yukon.web.modules.operator.gateways.bulkUpdate.gatewayErrorMessage">An error occurred while trying to update the following gateways: {0}.</entry>
+    
     <entry key="yukon.web.modules.operator.gateways.ipAddress.required">IP Address is required.</entry>
-    <entry key="yukon.web.modules.operator.gateways.port.required">Port is required.</entry>
     <entry key="yukon.web.modules.operator.gateways.ipAddress.invalid">Not a valid IP Address.</entry>
     <entry key="yukon.web.modules.operator.gateways.latitude.invalid">Latitude must be between -90 and 90.</entry>
     <entry key="yukon.web.modules.operator.gateways.latitude.required">Latitude cannot be empty.</entry>
@@ -167,9 +212,12 @@
     <entry key="yukon.web.modules.operator.gateways.appMode.failsafe">Fail-Safe</entry>
     <entry key="yukon.web.modules.operator.gateways.connectionType">Connection Type</entry>
     <entry key="yukon.web.modules.operator.gateways.ipaddress">IP Address</entry>
+    <entry key="yukon.web.modules.operator.gateways.nmipaddressPort">NM IP Address/Port</entry>
+    <entry key="yukon.web.modules.operator.gateways.nmipaddressPortHelpText">The IP Address and Port that the gateway should use to connect to Network Manager.</entry>
+    <entry key="yukon.web.modules.operator.gateways.nmipaddress">NM IP Address</entry>
+    <entry key="yukon.web.modules.operator.gateways.nmport">NM Port</entry>
     <entry key="yukon.web.modules.operator.gateways.useDefaultPort">Use Default Port</entry>
     <entry key="yukon.web.modules.operator.gateways.connectionStatus">Connection Status</entry>
-    <entry key="yukon.web.modules.operator.gateways.firmwareVersion">Firmware Version</entry>
     <entry key="yukon.web.modules.operator.gateways.firmwareUpdateAvailable">Firmware Update Available</entry>
     <entry key="yukon.web.modules.operator.gateways.lastComms">Last Communication</entry>
     <entry key="yukon.web.modules.operator.gateways.radios">Radios</entry>
@@ -179,13 +227,10 @@
     <entry key="yukon.web.modules.operator.gateways.optional">(optional)</entry>
     <entry key="yukon.web.modules.operator.gateways.latitude">Latitude</entry>
     <entry key="yukon.web.modules.operator.gateways.longitude">Longitude</entry>
-    <entry key="yukon.web.modules.operator.gateways.firmwareUpdate">Update Firmware Version</entry>
-    <entry key="yukon.web.modules.operator.gateways.firmwareUpdate.note">The firmware update tool is applicable for GWY-800 and newer devices with a firmware version of at least 6.1.0 and for legacy Gateway 1.5 with firmware version of at least 6.1.1.</entry>
-    <entry key="yukon.web.modules.operator.gateways.firmwareUpdate.confirmMultiple">This will update {0} gateway(s) using {1} server(s).</entry>
+    <entry key="yukon.web.modules.operator.gateways.firmwareUpdate.note">The firmware update tool is applicable for GWY-800, GWY-801 or Virtual Gateway devices with a firmware version of at least 6.1.0 and for legacy Gateway 1.5 with firmware version of at least 6.1.1.</entry>
     <entry key="yukon.web.modules.operator.gateways.firmwareUpdate.send">Send</entry>
     <entry key="yukon.web.modules.operator.gateways.firmwareUpdate.success">Firmware Updates sent!</entry>
     <entry key="yukon.web.modules.operator.gateways.updateServer">Firmware Upgrade Server</entry>
-    <entry key="yukon.web.modules.operator.gateways.updateServer.set">Set Update Servers</entry>
     <entry key="yukon.web.modules.operator.gateways.updateServer.default">Default Server</entry>
     <entry key="yukon.web.modules.operator.gateways.updateServer.url">Server URL</entry>
     <entry key="yukon.web.modules.operator.gateways.updateServer.login">Server Authentication</entry>
@@ -202,7 +247,7 @@
     <entry key="yukon.web.modules.operator.gateways.port">Port: {0}</entry>
     <entry key="yukon.web.modules.operator.gateways.default.port">Port</entry>
     <entry key="yukon.web.modules.operator.gateways.default.port.title">Port Selection</entry>
-    <entry key="yukon.web.modules.operator.gateways.default.port.helpText"><![CDATA[Default port for a physical gateway is <b>32030</b>.<BR/>For virtual gateway, enter the port (commonly <b>32035</b>) at which you deployed the virtual gateway.]]></entry>
+    <entry key="yukon.web.modules.operator.gateways.default.port.helpText"><![CDATA[Select No to enter a specific port number, else a default value will be automatically selected.<BR/>The default port for a physical gateway is <b>32030</b>.<BR/>For virtual gateway, select No and enter the port (commonly <b>32035</b>) at which you deployed the virtual gateway.]]></entry>
     <entry key="yukon.web.modules.operator.gateways.conflictType.RADIO">Radio</entry>
     <entry key="yukon.web.modules.operator.gateways.conflictType.APPLICATION">Application</entry>
     <entry key="yukon.web.modules.operator.gateways.conflictType.UPPER_STACK">Upper Stack</entry>
@@ -232,9 +277,6 @@
     <entry key="yukon.web.modules.operator.gateways.networkManagerCommError">Unable to load gateways. There was an error communicating with Network Manager.</entry>
     <entry key="yukon.web.modules.operator.gateways.ipv6prefix">IPv6 Prefix</entry>
     
-    <!--  Keys below are for certificate update table headers -->
-    <entry key="yukon.web.modules.operator.gateways.certUpdate.tableheader.TIMESTAMP">Timestamp</entry>
-    <entry key="yukon.web.modules.operator.gateways.certUpdate.tableheader.CERTIFICATE">Certificate</entry>
     <!-- Keys below are used by mockups (/stars/gatewaysMockup)-->
     <entry key="yukon.common.gateways.lastComm.SUCCESS">Success</entry>
     <entry key="yukon.common.gateways.lastComm.FAILURE">Failure</entry>
@@ -248,13 +290,27 @@
     <entry key="yukon.web.modules.operator.gateways.streamingDetail">View Data Streaming Summary</entry>
     <entry key="yukon.web.modules.operator.gateways.streamingCapacityHistory">View History</entry>
     
-    <!-- WiFi Connection Status page -->
-    <entry key="yukon.web.modules.operator.wifiConnection.refreshMsg">A refresh of the Wi-Fi Connection data has been requested. It may take a few minutes for the data to update.</entry>
-    <entry key="yukon.web.modules.operator.wifiConnection.pageName">Connected Devices</entry>
-    <entry key="yukon.web.modules.operator.wifiConnection.statusLastUpdated">Status Last Updated</entry>
-    <entry key="yukon.web.modules.operator.wifiConnection.rssiLastUpdated">RSSI Last Updated</entry>
-    <entry key="yukon.web.modules.operator.wifiConnection.refreshStatus">Refresh Communication Status</entry>
-    <entry key="yukon.web.modules.operator.wifiConnection.allStatuses">All Communication Statuses</entry>
-    <entry key="yukon.web.modules.operator.wifiConnection.refreshAll">Refresh Status</entry>
+    <!-- Connected Devices pages -->
+    <entry key="yukon.web.modules.operator.connectedDevices.statusLastUpdated">Status Last Updated</entry>
+    <entry key="yukon.web.modules.operator.connectedDevices.rssiLastUpdated">RSSI Last Updated</entry>
+    <entry key="yukon.web.modules.operator.connectedDevices.queryStatus">Query Communication Status</entry>
+    <entry key="yukon.web.modules.operator.connectedDevices.allStatuses">All Communication Statuses</entry>
+    <entry key="yukon.web.modules.operator.connectedDevices.queryAll">Query Status</entry>
     
+    <!-- WiFi Connection Status page -->
+    <entry key="yukon.web.modules.operator.wifiConnection.queryMsg">A query of the Wi-Fi Connection data has been requested. It may take a few minutes for the data to update.</entry>
+    <entry key="yukon.web.modules.operator.wifiConnection.pageName">Wi-Fi Connected Devices</entry>
+    
+    <!-- Cellular Connection Status page -->
+    <entry key="yukon.web.modules.operator.cellConnection.queryMsg">A query of the Cellular Connection data has been requested. It may take a few minutes for the data to update.</entry>
+    <entry key="yukon.web.modules.operator.cellConnection.pageName">Cellular Connected Devices</entry>
+    
+    <!-- Virtual Devices pages -->
+    <entry key="yukon.web.modules.operator.virtualDevices.list.pageName">Virtual Devices</entry>
+    <entry key="yukon.web.modules.operator.virtualDevices.list.create">Create Virtual Device</entry>
+    
+    <entry key="yukon.web.modules.operator.virtualDevice.detail.pageName">Virtual Device</entry>
+    <entry key="yukon.web.modules.operator.virtualDevice.detail.pageDescription">{0}</entry>
+    <entry key="yukon.web.modules.operator.virtualDevice.detail.pageTitle">{0}</entry>
+  
 </properties>

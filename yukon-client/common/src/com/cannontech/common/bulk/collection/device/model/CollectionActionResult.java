@@ -1,11 +1,6 @@
 package com.cannontech.common.bulk.collection.device.model;
 
-import static com.cannontech.common.device.commands.CommandRequestExecutionStatus.CANCELLED;
-import static com.cannontech.common.device.commands.CommandRequestExecutionStatus.COMPLETE;
-import static com.cannontech.common.device.commands.CommandRequestExecutionStatus.FAILED;
-import static com.cannontech.common.device.commands.CommandRequestExecutionStatus.STARTED;
-import static com.cannontech.common.device.commands.CommandRequestExecutionStatus.CANCELING;
-
+import static com.cannontech.common.device.commands.CommandRequestExecutionStatus.*;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.util.ArrayList;
@@ -17,7 +12,6 @@ import java.util.Map;
 import java.util.stream.Collectors;
 
 import org.apache.commons.lang3.StringUtils;
-import org.apache.logging.log4j.Logger;
 import org.joda.time.DateTimeZone;
 import org.joda.time.Instant;
 import org.joda.time.format.DateTimeFormat;
@@ -63,9 +57,11 @@ public class CollectionActionResult {
         Collections.synchronizedList(new ArrayList<CollectionActionCancellationCallback>());
     private boolean isCanceled;
     private YukonUserContext context;
-    private Logger logger;
     private DeviceMemoryCollectionProducer producer;
     private boolean loadedFromDatabase;
+
+    public CollectionActionResult() {
+    }
 
     public CollectionActionResult(CollectionAction action, List<? extends YukonPao> allDevices,
             LinkedHashMap<String, String> inputs, CommandRequestExecution execution,
@@ -322,10 +318,6 @@ public class CollectionActionResult {
     public YukonUserContext getContext() {
         return context;
     }
-
-    public void setLogger(Logger logger) {
-        this.logger = logger;
-    }
     
     public boolean hasLogFile() {
         return logService == null ? false : logService.hasLog(cacheKey);
@@ -364,46 +356,81 @@ public class CollectionActionResult {
         return loadedFromDatabase;
     }
 
-    public void log() {
-        if(logger == null) {
-            throw new RuntimeException("Logger is not initialized.");
+    @Override
+    public String toString() {
+        StringBuilder sb = new StringBuilder();
+        DateTimeFormatter df = null;
+        if (context != null) {
+            df = DateTimeFormat.forPattern("MMM dd YYYY HH:mm:ss")
+                    .withZone(context.getJodaTimeZone());
+        } else {
+            df = DateTimeFormat.forPattern("MMM dd YYYY HH:mm:ss");
         }
-        if (logger.isDebugEnabled()) {
-            DateTimeFormatter df = DateTimeFormat.forPattern("MMM dd YYYY HH:mm:ss");
-            df.withZone(DateTimeZone.getDefault());
-            logger.debug("Key=" + getCacheKey() + " Status=" + getStatus());
-            logger.debug("<<<Loaded from database=" + loadedFromDatabase +">>>");
-            logger.debug("Start Time:" + startTime.toString(df));
-            logger.debug(stopTime == null ? "" : "Stop Time:" + startTime.toString(df));
-            if (execution != null) {
-                logger.debug("creId:" + execution.getId() + " Execution Type:" + execution.getCommandRequestExecutionType());
-            }
-            if (verificationExecution != null) {
-                logger.debug("verifCreId:" + verificationExecution.getId() + " Execution Type:"
-                    + verificationExecution.getCommandRequestExecutionType());
-            }
-            logger.debug("---Inputs---");
-            logger.debug("Action:" + getAction());
-            if (getInputs().getInputs() != null) {
-                getInputs().getInputs().forEach((k, v) -> logger.debug(k + ": " + v));
-            }
-            logger.debug("Process:" + getAction().getProcess());
-            logger.debug("Devices:" + getInputs().getCollection().getDeviceCount());
-
-            logger.debug("---Results---");
-            logger.debug("executionExceptionText=" + executionExceptionText);
-            logger.debug("isCancelable:" + isCancelable());
-            logger.debug("Progress=" + getCounts().getPercentCompleted() + "%");
-            
-            getCounts().getPercentages().keySet().forEach(detail -> {
-                logger.debug("------" + detail + "    device count=" + getDeviceCollection(detail).getDeviceCount()
-                    + "   " + getCounts().getPercentages().get(detail) + "%");
-            });
-
-            if (cancelationCallbacks != null) {
-                logger.debug("cancelationCallbacks:" + cancelationCallbacks.size());
-            }
-            logger.debug("-----------------------------------------------------");
+        sb.append(getCacheKey());
+        sb.append(" [");
+        sb.append(getStatus());
+        sb.append(" ");
+        sb.append(getAction());
+        sb.append("(");
+        sb.append(getAction().getProcess());
+        sb.append(") ");
+        sb.append("devices:");
+        sb.append(getInputs().getCollection().getDeviceCount());
+        if (getInputs() != null && getInputs().getInputs() != null) {
+            sb.append(" ");
+            sb.append(getInputs().getInputs());
         }
+        sb.append("]");
+        sb.append(" Loaded from db:");
+        sb.append(loadedFromDatabase);
+        sb.append(" Start:" + startTime.toString(df));
+        sb.append( stopTime == null ? "" : " Stop:" + startTime.toString(df));
+        if (execution != null) {
+            sb.append(" ");
+            sb.append("[");
+            sb.append("creId:");
+            sb.append(execution.getId());
+            sb.append(" type:");
+            sb.append(execution.getCommandRequestExecutionType());
+            sb.append("]");
+        }
+        if (verificationExecution != null) {
+            sb.append(" ");
+            sb.append("[verification ");
+            sb.append("creId:");
+            sb.append(verificationExecution.getId());
+            sb.append(" type:");
+            sb.append(verificationExecution.getCommandRequestExecutionType());
+            sb.append("]");
+        }
+        sb.append(" isCancelable:");
+        sb.append(isCancelable());
+        sb.append(" isTerminatable:");
+        sb.append(isTerminatable());
+        sb.append(" Progress:");
+        sb.append(getCounts().getPercentCompleted());
+        sb.append("%");
+        sb.append(" [");
+        getCounts().getPercentages().keySet().forEach(detail -> {
+            sb.append(" ");
+            sb.append(detail);
+            sb.append(" ");
+            sb.append(getDeviceCollection(detail).getDeviceCount());
+            sb.append(" ");
+            sb.append("(");
+            sb.append(getCounts().getPercentages().get(detail));
+            sb.append("%");
+            sb.append(")");
+        });
+        sb.append("]");
+        if (!cancelationCallbacks.isEmpty()) {
+            sb.append(" callbacks:");
+            sb.append(cancelationCallbacks.size());
+        }
+        if(executionExceptionText != null) {
+            sb.append(" ");
+            sb.append(executionExceptionText);
+        }
+        return sb.toString();
     }
 }

@@ -20,9 +20,7 @@ using std::list;
 using std::vector;
 using std::make_pair;
 
-namespace Cti {
-namespace Devices {
-
+namespace Cti::Devices {
 
         const Mct420Device::CommandSet       Mct420Device::_commandStore = {
             {CommandStore(EmetconProtocol::GetConfig_Multiplier, EmetconProtocol::IO_Function_Read, 0xf3, 2)},
@@ -281,21 +279,24 @@ const Mct420Device::FunctionReadValueMappings *Mct420Device::getReadValueMaps(vo
 
 Mct420Device::ConfigPartsList Mct420Device::getPartsList()
 {
-    if( ! isSupported(Feature_Disconnect) )
+    ConfigPartsList partsList;
+
+    if( isSupported(Feature_Display) )
     {
-        return {
-            PutConfigPart_display,
-            PutConfigPart_meter_parameters,
-            PutConfigPart_freeze_day,
-            PutConfigPart_timezone };
+        partsList.push_back(PutConfigPart_display);
     }
 
-    return {
-        PutConfigPart_display,
-        PutConfigPart_meter_parameters,
-        PutConfigPart_disconnect,
-        PutConfigPart_freeze_day,
-        PutConfigPart_timezone };
+    partsList.push_back(PutConfigPart_meter_parameters);
+
+    if( isSupported(Feature_Disconnect) )
+    {
+        partsList.push_back(PutConfigPart_disconnect);
+    }
+
+    partsList.push_back(PutConfigPart_freeze_day);
+    partsList.push_back(PutConfigPart_timezone);
+
+    return partsList;
 }
 
 
@@ -337,6 +338,12 @@ YukonError_t Mct420Device::executePutConfig( CtiRequestMsg     *pReq,
     OutMessage->Request.RouteID   = getRouteID();
     strncpy(OutMessage->Request.CommandStr, pReq->CommandString().c_str(), COMMAND_STR_SIZE);
 
+    //  Disallow the MCT-410 version of "putconfig meter parameters" - see re_mct410_meter_parameters in cmdparse.cpp
+    if( parse.isKeyValid("display_resolution") &&
+        parse.isKeyValid("display_test_duration") )
+    {
+        return ClientErrors::NoMethod;
+    }
     if( parse.isKeyValid("lcd_cycle_time") )
     {
         OutMessage->Sequence = EmetconProtocol::PutConfig_Parameters;
@@ -1072,6 +1079,21 @@ bool Mct420Device::isSupported(const Mct420Device::Features feature) const
         {
             return sspecAtLeast(SspecRev_LcdDisplayDigitConfiguration);
         }
+        case Feature_Display:
+        {
+            switch( getDeviceType() )
+            {
+                case TYPEMCT420CD:
+                case TYPEMCT420CL:
+                {
+                    return true;
+                }
+                default:
+                {
+                    return false;
+                }
+            }
+        }
     }
 
     return false;
@@ -1115,5 +1137,3 @@ bool Mct420Device::isSupported(const Mct410Device::Features feature) const
 
 
 }
-}
-

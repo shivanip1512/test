@@ -23,38 +23,38 @@ public class MonitoringCountUpdaterHandler implements DeviceDataUpdaterHandler {
 
     private static final Logger log = YukonLogManager.getLogger(MonitoringCountUpdaterHandler.class);
 
-	@Autowired private DeviceGroupService deviceGroupService;
-	@Autowired private MonitorCacheService cacheService;
+    @Autowired private DeviceGroupService deviceGroupService;
+    @Autowired private MonitorCacheService cacheService;
     @Autowired private YukonUserContextMessageSourceResolver messageSourceResolver;
     
     // monitorId / monitoring device count
     private final Cache<Integer, Integer> monitorIdToDeviceCount =
         CacheBuilder.newBuilder().expireAfterWrite(30, TimeUnit.SECONDS).build();
 
-	@Override
-	public String handle(int monitorId, YukonUserContext userContext) {
-		try {
-		    Integer cachedCount = monitorIdToDeviceCount.getIfPresent(monitorId);
+    @Override
+    public String handle(int monitorId, YukonUserContext userContext) {
+        try {
+            Integer cachedCount = monitorIdToDeviceCount.getIfPresent(monitorId);
             if (cachedCount == null) {
                 DeviceDataMonitor monitor = cacheService.getDeviceMonitor(monitorId);
                 DeviceGroup group = monitor.getGroup();
                 cachedCount = deviceGroupService.getDeviceCount(Collections.singletonList(group));
                 monitorIdToDeviceCount.put(monitorId, cachedCount);
             }
-			return String.valueOf(cachedCount);
-		} catch (NotFoundException e) {
-			// no monitor by that id or no device group
-		    log.debug("no monitor found with id " + monitorId);
-		}
-		
+            return String.valueOf(cachedCount);
+        } catch (NotFoundException e) {
+            // no monitor by that id or no device group
+            log.debug("no monitor found with id " + monitorId);
+        }
+        
         MessageSourceAccessor messageSourceAccessor = messageSourceResolver.getMessageSourceAccessor(userContext);
         return messageSourceAccessor.getMessage("yukon.common.na");
-	}
+    }
 
-	@Override
-	public DeviceDataMonitorUpdaterTypeEnum getUpdaterType() {
-		return DeviceDataMonitorUpdaterTypeEnum.MONITORING_COUNT;
-	}
+    @Override
+    public DeviceDataMonitorUpdaterTypeEnum getUpdaterType() {
+        return DeviceDataMonitorUpdaterTypeEnum.MONITORING_COUNT;
+    }
 
     @Override
     public boolean isValueAvailableImmediately() {

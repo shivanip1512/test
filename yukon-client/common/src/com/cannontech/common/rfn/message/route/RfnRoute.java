@@ -19,6 +19,14 @@ import com.cannontech.common.rfn.message.metadatamulti.RfnMetadataMultiRequest;
  *          /    \
  *         N5    N6
  * </pre>
+ * 
+ * The linked list of RfnIdentifiers represents a path.
+ * When query PRIMARY_FORWARD_ROUTE, it indicates the node's primary route to
+ *     its primary forward gateway.
+ * You may have null RfnIdentifier inside the path. For example,
+ *     you may have a path -> null -> deviceA -> null -> null -> gateway. 
+ * 
+ * @author lizhu2
  */
 public class RfnRoute extends LinkedList<RfnIdentifier> {
 

@@ -131,7 +131,7 @@
     </Midl>
     <ClCompile>
       <Optimization>Disabled</Optimization>
-      <AdditionalIncludeDirectories>$(DBGHELP)\include;$(BOOST)\include;$(OPENSSL)\include;$(SQLAPI)\include;$(THRIFT)\include;$(XERCES)\include;.;..\common\include;..\database\include;..\deviceconfiguration\include;..\message\include;..\message\serialization;..\porter\include;..\protocol\include;..\scanner\include;.\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(DBGHELP)\include;$(BOOST)\include;$(MICROSOFT_GSL)\include;$(OPENSSL)\include;$(SQLAPI)\include;$(THRIFT)\include;$(XERCES)\include;.;..\common\include;..\database\include;..\deviceconfiguration\include;..\message\include;..\message\serialization;..\porter\include;..\protocol\include;..\scanner\include;.\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <PreprocessorDefinitions>USING_PCH;_DEBUG;WIN32;_WINDOWS;_CRT_NONSTDC_NO_WARNINGS;BOOST_ALL_DYN_LINK;BOOST_ENABLE_ASSERT_HANDLER;NOMINMAX;WIN32;_CONSOLE;_DEBUG;_DLL_DEVDB;_REENTRANT;_WINDOWS;_X86_=1;__DLL__;D_FILE_NAME=ctidevdb;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <MinimalRebuild>false</MinimalRebuild>
       <RuntimeLibrary>MultiThreadedDebugDLL</RuntimeLibrary>
@@ -143,6 +143,7 @@
       <DebugInformationFormat>ProgramDatabase</DebugInformationFormat>
       <MultiProcessorCompilation>true</MultiProcessorCompilation>
       <AdditionalOptions>/await</AdditionalOptions>
+      <DisableSpecificWarnings>4103</DisableSpecificWarnings>
     </ClCompile>
     <ResourceCompile>
       <PreprocessorDefinitions>_DEBUG;BOOST_ALL_DYN_LINK;BOOST_ENABLE_ASSERT_HANDLER;NOMINMAX;WIN32;_CONSOLE;_DEBUG;_DLL_DEVDB;_REENTRANT;_WINDOWS;_X86_=1;__DLL__;D_FILE_NAME=ctidevdb;%(PreprocessorDefinitions)</PreprocessorDefinitions>
@@ -151,7 +152,7 @@
     </ResourceCompile>
     <Link>
       <GenerateDebugInformation>true</GenerateDebugInformation>
-      <AdditionalDependencies>$(BOOST)\lib\boost_system-vc141-mt-gd-x32-1_67.lib;$(BOOST)\lib\boost_filesystem-vc141-mt-gd-x32-1_67.lib;$(BOOST)\lib\boost_regex-vc141-mt-gd-x32-1_67.lib;$(BOOST)\lib\boost_thread-vc141-mt-gd-x32-1_67.lib;$(BOOST)\lib\boost_date_time-vc141-mt-gd-x32-1_67.lib;$(BOOST)\lib\boost_chrono-vc141-mt-gd-x32-1_67.lib;$(XERCES)\$(CONFIGURATION)\lib\xerces-c_3D.lib;$(OPENSSL)\$(CONFIGURATION)\lib\libssl.lib;$(OPENSSL)\$(CONFIGURATION)\lib\libcrypto.lib;$(SQLAPI)\lib\sqlapid.lib;..\lib-debug\ctibase.lib;..\lib-debug\ctimsg.lib;..\lib-debug\ctiprot.lib;..\lib-debug\ctidbsrc.lib;..\lib-debug\ctipntdb.lib;..\lib-debug\cticonfig.lib;..\lib-debug\dynpaoinfo.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>$(BOOST)\lib\boost_system-$(BOOST_VERSION).lib;$(BOOST)\lib\boost_filesystem-$(BOOST_VERSION).lib;$(BOOST)\lib\boost_regex-$(BOOST_VERSION).lib;$(BOOST)\lib\boost_thread-$(BOOST_VERSION).lib;$(BOOST)\lib\boost_date_time-$(BOOST_VERSION).lib;$(BOOST)\lib\boost_chrono-$(BOOST_VERSION).lib;$(XERCES)\$(CONFIGURATION)\lib\xerces-c_3D.lib;$(OPENSSL)\$(CONFIGURATION)\lib\libssl.lib;$(OPENSSL)\$(CONFIGURATION)\lib\libcrypto.lib;$(SQLAPI)\lib\sqlapid.lib;..\lib-debug\ctibase.lib;..\lib-debug\ctimsg.lib;..\lib-debug\ctiprot.lib;..\lib-debug\ctidbsrc.lib;..\lib-debug\ctipntdb.lib;..\lib-debug\cticonfig.lib;..\lib-debug\dynpaoinfo.lib;%(AdditionalDependencies)</AdditionalDependencies>
       <AdditionalLibraryDirectories>.;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
       <ProgramDatabaseFile>$(SolutionDir)pdb-debug\$(TargetName).pdb</ProgramDatabaseFile>
       <ImportLibrary>$(SolutionDir)lib-debug\$(TargetName).lib</ImportLibrary>
@@ -181,7 +182,7 @@
     <ClCompile>
       <Optimization>MaxSpeed</Optimization>
       <IntrinsicFunctions>true</IntrinsicFunctions>
-      <AdditionalIncludeDirectories>$(DBGHELP)\include;$(BOOST)\include;$(OPENSSL)\include;$(SQLAPI)\include;$(THRIFT)\include;$(XERCES)\include;.;..\common\include;..\database\include;..\deviceconfiguration\include;..\message\include;..\message\serialization;..\porter\include;..\protocol\include;..\scanner\include;.\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(DBGHELP)\include;$(BOOST)\include;$(MICROSOFT_GSL)\include;$(OPENSSL)\include;$(SQLAPI)\include;$(THRIFT)\include;$(XERCES)\include;.;..\common\include;..\database\include;..\deviceconfiguration\include;..\message\include;..\message\serialization;..\porter\include;..\protocol\include;..\scanner\include;.\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <PreprocessorDefinitions>USING_PCH;NDEBUG;WIN32;_WINDOWS;_CRT_NONSTDC_NO_WARNINGS;BOOST_ALL_DYN_LINK;BOOST_ENABLE_ASSERT_HANDLER;NOMINMAX;WIN32;_CONSOLE;_DLL_DEVDB;_REENTRANT;_WINDOWS;_X86_=1;__DLL__;D_FILE_NAME=ctidevdb;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <RuntimeLibrary>MultiThreadedDLL</RuntimeLibrary>
       <RuntimeTypeInfo>true</RuntimeTypeInfo>
@@ -192,6 +193,7 @@
       <DebugInformationFormat>ProgramDatabase</DebugInformationFormat>
       <MultiProcessorCompilation>true</MultiProcessorCompilation>
       <AdditionalOptions>/await</AdditionalOptions>
+      <DisableSpecificWarnings>4103</DisableSpecificWarnings>
     </ClCompile>
     <ResourceCompile>
       <PreprocessorDefinitions>NDEBUG;BOOST_ALL_DYN_LINK;BOOST_ENABLE_ASSERT_HANDLER;NOMINMAX;WIN32;_CONSOLE;_DLL_DEVDB;_REENTRANT;_WINDOWS;_X86_=1;__DLL__;D_FILE_NAME=ctidevdb;%(PreprocessorDefinitions)</PreprocessorDefinitions>
@@ -200,7 +202,7 @@
     </ResourceCompile>
     <Link>
       <GenerateDebugInformation>true</GenerateDebugInformation>
-      <AdditionalDependencies>$(BOOST)\lib\boost_system-vc141-mt-x32-1_67.lib;$(BOOST)\lib\boost_filesystem-vc141-mt-x32-1_67.lib;$(BOOST)\lib\boost_regex-vc141-mt-x32-1_67.lib;$(BOOST)\lib\boost_thread-vc141-mt-x32-1_67.lib;$(BOOST)\lib\boost_date_time-vc141-mt-x32-1_67.lib;$(BOOST)\lib\boost_chrono-vc141-mt-x32-1_67.lib;$(XERCES)\$(CONFIGURATION)\lib\xerces-c_3.lib;$(OPENSSL)\$(CONFIGURATION)\lib\libssl.lib;$(OPENSSL)\$(CONFIGURATION)\lib\libcrypto.lib;$(SQLAPI)\lib\sqlapi.lib;..\lib\ctibase.lib;..\lib\ctimsg.lib;..\lib\ctiprot.lib;..\lib\ctidbsrc.lib;..\lib\ctipntdb.lib;..\lib\cticonfig.lib;..\lib\dynpaoinfo.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>$(BOOST)\lib\boost_system-$(BOOST_VERSION).lib;$(BOOST)\lib\boost_filesystem-$(BOOST_VERSION).lib;$(BOOST)\lib\boost_regex-$(BOOST_VERSION).lib;$(BOOST)\lib\boost_thread-$(BOOST_VERSION).lib;$(BOOST)\lib\boost_date_time-$(BOOST_VERSION).lib;$(BOOST)\lib\boost_chrono-$(BOOST_VERSION).lib;$(XERCES)\$(CONFIGURATION)\lib\xerces-c_3.lib;$(OPENSSL)\$(CONFIGURATION)\lib\libssl.lib;$(OPENSSL)\$(CONFIGURATION)\lib\libcrypto.lib;$(SQLAPI)\lib\sqlapi.lib;..\lib\ctibase.lib;..\lib\ctimsg.lib;..\lib\ctiprot.lib;..\lib\ctidbsrc.lib;..\lib\ctipntdb.lib;..\lib\cticonfig.lib;..\lib\dynpaoinfo.lib;%(AdditionalDependencies)</AdditionalDependencies>
       <AdditionalLibraryDirectories>.;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
       <OptimizeReferences>
       </OptimizeReferences>
@@ -253,7 +255,7 @@
     </ResourceCompile>
     <Link>
       <GenerateDebugInformation>true</GenerateDebugInformation>
-      <AdditionalDependencies>$(BOOST)\lib\boost_system-vc141-mt-gd-x32-1_67.lib;$(BOOST)\lib\boost_filesystem-vc141-mt-gd-x32-1_67.lib;$(BOOST)\lib\boost_regex-vc141-mt-gd-x32-1_67.lib;$(BOOST)\lib\boost_thread-vc141-mt-gd-x32-1_67.lib;$(BOOST)\lib\boost_date_time-vc141-mt-gd-x32-1_67.lib;$(BOOST)\lib\boost_chrono-vc141-mt-gd-x32-1_67.lib;$(XERCES)\$(CONFIGURATION)\lib\xerces-c_3D.lib;$(OPENSSL)\$(CONFIGURATION)\lib\libssl.lib;$(OPENSSL)\$(CONFIGURATION)\lib\libcrypto.lib;$(SQLAPI)\lib\sqlapid.lib;..\lib-debug\ctibase.lib;..\lib-debug\ctimsg.lib;..\lib-debug\ctiprot.lib;..\lib-debug\ctidbsrc.lib;..\lib-debug\ctipntdb.lib;..\lib-debug\cticonfig.lib;..\lib-debug\dynpaoinfo.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>$(BOOST)\lib\boost_system-$(BOOST_VERSION).lib;$(BOOST)\lib\boost_filesystem-$(BOOST_VERSION).lib;$(BOOST)\lib\boost_regex-$(BOOST_VERSION).lib;$(BOOST)\lib\boost_thread-$(BOOST_VERSION).lib;$(BOOST)\lib\boost_date_time-$(BOOST_VERSION).lib;$(BOOST)\lib\boost_chrono-$(BOOST_VERSION).lib;$(XERCES)\$(CONFIGURATION)\lib\xerces-c_3D.lib;$(OPENSSL)\$(CONFIGURATION)\lib\libssl.lib;$(OPENSSL)\$(CONFIGURATION)\lib\libcrypto.lib;$(SQLAPI)\lib\sqlapid.lib;..\lib-debug\ctibase.lib;..\lib-debug\ctimsg.lib;..\lib-debug\ctiprot.lib;..\lib-debug\ctidbsrc.lib;..\lib-debug\ctipntdb.lib;..\lib-debug\cticonfig.lib;..\lib-debug\dynpaoinfo.lib;%(AdditionalDependencies)</AdditionalDependencies>
       <AdditionalLibraryDirectories>.;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
       <ProgramDatabaseFile>
       </ProgramDatabaseFile>
@@ -315,7 +317,7 @@ if exist $(OutDir)$(TargetName).pdb xcopy /d/y/f $(OutDir)$(TargetName).pdb $(So
     </ResourceCompile>
     <Link>
       <GenerateDebugInformation>true</GenerateDebugInformation>
-      <AdditionalDependencies>$(BOOST)\lib\boost_system-vc141-mt-x32-1_67.lib;$(BOOST)\lib\boost_filesystem-vc141-mt-x32-1_67.lib;$(BOOST)\lib\boost_regex-vc141-mt-x32-1_67.lib;$(BOOST)\lib\boost_thread-vc141-mt-x32-1_67.lib;$(BOOST)\lib\boost_date_time-vc141-mt-x32-1_67.lib;$(BOOST)\lib\boost_chrono-vc141-mt-x32-1_67.lib;$(XERCES)\$(CONFIGURATION)\lib\xerces-c_3.lib;$(OPENSSL)\$(CONFIGURATION)\lib\libssl.lib;$(OPENSSL)\$(CONFIGURATION)\lib\libcrypto.lib;$(SQLAPI)\lib\sqlapi.lib;..\lib\ctibase.lib;..\lib\ctimsg.lib;..\lib\ctiprot.lib;..\lib\ctidbsrc.lib;..\lib\ctipntdb.lib;..\lib\cticonfig.lib;..\lib\dynpaoinfo.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>$(BOOST)\lib\boost_system-$(BOOST_VERSION).lib;$(BOOST)\lib\boost_filesystem-$(BOOST_VERSION).lib;$(BOOST)\lib\boost_regex-$(BOOST_VERSION).lib;$(BOOST)\lib\boost_thread-$(BOOST_VERSION).lib;$(BOOST)\lib\boost_date_time-$(BOOST_VERSION).lib;$(BOOST)\lib\boost_chrono-$(BOOST_VERSION).lib;$(XERCES)\$(CONFIGURATION)\lib\xerces-c_3.lib;$(OPENSSL)\$(CONFIGURATION)\lib\libssl.lib;$(OPENSSL)\$(CONFIGURATION)\lib\libcrypto.lib;$(SQLAPI)\lib\sqlapi.lib;..\lib\ctibase.lib;..\lib\ctimsg.lib;..\lib\ctiprot.lib;..\lib\ctidbsrc.lib;..\lib\ctipntdb.lib;..\lib\cticonfig.lib;..\lib\dynpaoinfo.lib;%(AdditionalDependencies)</AdditionalDependencies>
       <AdditionalLibraryDirectories>.;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
       <OptimizeReferences>
       </OptimizeReferences>
@@ -384,12 +386,15 @@ if exist $(OutDir)$(TargetName).pdb xcopy /d/y/f $(OutDir)$(TargetName).pdb $(So
     <ClCompile Include="cmd_mct440_holidays.cpp">
     </ClCompile>
     <ClCompile Include="cmd_rfn_Aggregate.cpp" />
+    <ClCompile Include="cmd_rfn_CommStatus.cpp" />
     <ClCompile Include="cmd_rfn_ConfigNotification.cpp" />
     <ClCompile Include="cmd_rfn_DataStreamingConfiguration.cpp" />
     <ClCompile Include="cmd_rfn_DemandInterval.cpp" />
     <ClCompile Include="cmd_rfn_Individual.cpp" />
+    <ClCompile Include="cmd_rfn_MeterDisconnect.cpp" />
     <ClCompile Include="cmd_rfn_MeterProgramming.cpp" />
-    <ClCompile Include="cmd_rfn_Wifi.cpp" />
+    <ClCompile Include="cmd_rfn_MeterRead.cpp" />
+    <ClCompile Include="cmd_rfn_Metrology.cpp" />
     <ClCompile Include="cmd_rf_da_dnpAddress.cpp">
     </ClCompile>
     <ClCompile Include="cmd_rfn.cpp">
@@ -564,6 +569,7 @@ if exist $(OutDir)$(TargetName).pdb xcopy /d/y/f $(OutDir)$(TargetName).pdb $(So
     <ClCompile Include="dev_rfnResidentialVoltage.cpp" />
     <ClCompile Include="dev_rfn_LgyrFocus_al.cpp" />
     <ClCompile Include="dev_rf_BatteryNode.cpp" />
+    <ClCompile Include="dev_rf_cellular_relay.cpp" />
     <ClCompile Include="dev_rf_da.cpp">
     </ClCompile>
     <ClCompile Include="dev_rfn.cpp">
@@ -624,6 +630,7 @@ if exist $(OutDir)$(TargetName).pdb xcopy /d/y/f $(OutDir)$(TargetName).pdb $(So
     </ClCompile>
     <ClCompile Include="mgr_route.cpp">
     </ClCompile>
+    <ClCompile Include="rfn_uom.cpp" />
     <ClCompile Include="rte_ccu.cpp">
     </ClCompile>
     <ClCompile Include="rte_expresscom.cpp">
@@ -657,11 +664,14 @@ if exist $(OutDir)$(TargetName).pdb xcopy /d/y/f $(OutDir)$(TargetName).pdb $(So
     <ClInclude Include="include\cmd_mct440_holidays.h" />
     <ClInclude Include="include\cmd_mct4xx.h" />
     <ClInclude Include="include\cmd_rfn_Aggregate.h" />
+    <ClInclude Include="include\cmd_rfn_CommStatus.h" />
     <ClInclude Include="include\cmd_rfn_ConfigNotification.h" />
     <ClInclude Include="include\cmd_rfn_DataStreamingConfiguration.h" />
     <ClInclude Include="include\cmd_rfn_DemandInterval.h" />
     <ClInclude Include="include\cmd_rfn_Individual.h" />
-    <ClInclude Include="include\cmd_rfn_Wifi.h" />
+    <ClInclude Include="include\cmd_rfn_MeterDisconnect.h" />
+    <ClInclude Include="include\cmd_rfn_MeterRead.h" />
+    <ClInclude Include="include\cmd_rfn_Metrology.h" />
     <ClInclude Include="include\cmd_rf_da_dnpAddress.h" />
     <ClInclude Include="include\cmd_rfn.h" />
     <ClInclude Include="include\cmd_rfn_CentronLcdConfiguration.h" />
@@ -764,6 +774,7 @@ if exist $(OutDir)$(TargetName).pdb xcopy /d/y/f $(OutDir)$(TargetName).pdb $(So
     <ClInclude Include="include\dev_rfnResidentialVoltage.h" />
     <ClInclude Include="include\dev_rfn_LgyrFocus_al.h" />
     <ClInclude Include="include\dev_rf_BatteryNode.h" />
+    <ClInclude Include="include\dev_rf_cellular_relay.h" />
     <ClInclude Include="include\dev_rf_da.h" />
     <ClInclude Include="include\dev_rfn.h" />
     <ClInclude Include="include\dev_rfn410centron.h" />
@@ -821,7 +832,7 @@ if exist $(OutDir)$(TargetName).pdb xcopy /d/y/f $(OutDir)$(TargetName).pdb $(So
     <ClInclude Include="include\pt_dyn_dispatch.h" />
     <ClInclude Include="include\pt_numeric.h" />
     <ClInclude Include="include\pt_status.h" />
-    <ClInclude Include="include\rtdb_test_helpers.h" />
+    <ClInclude Include="include\rfn_uom.h" />
     <ClInclude Include="include\rte_base.h" />
     <ClInclude Include="include\rte_ccu.h" />
     <ClInclude Include="include\rte_expresscom.h" />

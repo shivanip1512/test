@@ -31,9 +31,9 @@ import com.cannontech.common.pao.definition.model.PaoTagDefinition;
 import com.cannontech.common.pao.definition.model.PointIdentifier;
 import com.cannontech.common.pao.definition.model.PointTemplate;
 import com.cannontech.core.dao.StateGroupDao;
-import com.cannontech.core.dao.UnitMeasureDao;
 import com.cannontech.database.data.lite.LiteStateGroup;
 import com.cannontech.database.data.point.PointType;
+import com.cannontech.database.data.point.UnitOfMeasure;
 import com.cannontech.user.YukonUserContext;
 import com.google.common.collect.Sets;
 
@@ -41,7 +41,6 @@ import com.google.common.collect.Sets;
 public class DeviceDefinitionViewerController {
 
     @Autowired private PaoDefinitionDao paoDefinitionDao;
-	@Autowired private UnitMeasureDao unitMeasureDao;
 	@Autowired private StateGroupDao stateGroupDao;
     @Autowired private AttributeService attributeService;
     private static final String NO_FILTER = "ALL";
@@ -53,13 +52,13 @@ public class DeviceDefinitionViewerController {
 
         // init
         Set<PaoDefinition> allDefinitions = paoDefinitionDao.getAllPaoDefinitions();
-        Map<String, Set<PaoDefinition>> allDeviceTypes = new LinkedHashMap<String, Set<PaoDefinition>>();
-        Set<PaoDefinition> displayDefinitions = new LinkedHashSet<PaoDefinition>();
+        Map<String, Set<PaoDefinition>> allDeviceTypes = new LinkedHashMap<>();
+        Set<PaoDefinition> displayDefinitions = new LinkedHashSet<>();
         
-        Set<String> allDisplayGroups = new LinkedHashSet<String>();
-        Set<String> allChangeGroups = new HashSet<String>();
+        Set<String> allDisplayGroups = new LinkedHashSet<>();
+        Set<String> allChangeGroups = new HashSet<>();
         SortedSet<Attribute> allAttributes = Sets.newTreeSet(attributeService.getNameComparator(context));
-        Set<PaoTag> allTags = new HashSet<PaoTag>();
+        Set<PaoTag> allTags = new HashSet<>();
         
         // parameters
         String deviceTypeParam = definitionsFilter.getDeviceType();
@@ -93,13 +92,13 @@ public class DeviceDefinitionViewerController {
         	}
         	
         	// allAttributes
-        	List<AttributeDefinition> definitionAttributes = new ArrayList<AttributeDefinition>(paoDefinitionDao.getDefinedAttributes(deviceDefiniton.getType()));
+        	List<AttributeDefinition> definitionAttributes = new ArrayList<>(paoDefinitionDao.getDefinedAttributes(deviceDefiniton.getType()));
         	for (AttributeDefinition attribute : definitionAttributes) {
         	    allAttributes.add(attribute.getAttribute());
         	}
         	
         	// allTags
-        	List<PaoTag> definitionTags = new ArrayList<PaoTag>(paoDefinitionDao.getSupportedTags(deviceDefiniton));
+        	List<PaoTag> definitionTags = new ArrayList<>(paoDefinitionDao.getSupportedTags(deviceDefiniton));
         	for (PaoTag tag : definitionTags) {
         		if (!allTags.contains(tag)) {
         			allTags.add(tag);
@@ -134,7 +133,7 @@ public class DeviceDefinitionViewerController {
         }
         
          // display definitions info
-        Map<String, Set<DeviceInfo>> displayDefinitionsMap = new HashMap<String, Set<DeviceInfo>>();
+        Map<String, Set<DeviceInfo>> displayDefinitionsMap = new HashMap<>();
         for (PaoDefinition deviceDefiniton : displayDefinitions) {
         	String displayGroup = deviceDefiniton.getDisplayGroup();
         	DeviceInfo deviceInfo = new DeviceInfo(deviceDefiniton);
@@ -172,7 +171,7 @@ public class DeviceDefinitionViewerController {
     }
 
 	private Map<String, Set<PaoDefinition>> sortDeviceTypesByGroupOrder(Map<String, Set<PaoDefinition>> allDeviceTypes) {
-		Map<String, Set<PaoDefinition>> sortedAllDeviceTypes = new LinkedHashMap<String, Set<PaoDefinition>>();
+		Map<String, Set<PaoDefinition>> sortedAllDeviceTypes = new LinkedHashMap<>();
 		for (String displayGroup : DISPLAY_GROUP_ORDER) {
 			Set<PaoDefinition> deviceSet = allDeviceTypes.remove(displayGroup);
 			if (deviceSet != null) {
@@ -184,7 +183,7 @@ public class DeviceDefinitionViewerController {
 	}
 	
 	private Map<String, Set<DeviceInfo>> sortDisplayDefinitionsByGroupOrder(Map<String, Set<DeviceInfo>> displayDefinitionsMap) {
-		Map<String, Set<DeviceInfo>> sortedDisplayDefinitionsMap = new LinkedHashMap<String, Set<DeviceInfo>>();
+		Map<String, Set<DeviceInfo>> sortedDisplayDefinitionsMap = new LinkedHashMap<>();
 		for (String displayGroup : DISPLAY_GROUP_ORDER) {
 			Set<DeviceInfo> deviceSet = displayDefinitionsMap.remove(displayGroup);
 			if (deviceSet != null) {
@@ -196,7 +195,7 @@ public class DeviceDefinitionViewerController {
 	}
 	
 	private Set<String> sortDisplayGroupsByDisplayGroupOrder(Set<String> allDisplayGroups) {
-		Set<String> sortedAllDisplayGroups = new LinkedHashSet<String>();
+		Set<String> sortedAllDisplayGroups = new LinkedHashSet<>();
 		for (String displayGroup : DISPLAY_GROUP_ORDER) {
 			if (allDisplayGroups.contains(displayGroup)) {
 				sortedAllDisplayGroups.add(displayGroup);
@@ -217,29 +216,29 @@ public class DeviceDefinitionViewerController {
 		
 		public DeviceInfo(PaoDefinition deviceDefiniton) {
 			
-			this.definition = deviceDefiniton;
+			definition = deviceDefiniton;
 			
 			// points
-			List<PointTemplate> pointTemplates = new ArrayList<PointTemplate>(paoDefinitionDao.getAllPointTemplates(deviceDefiniton));
+			List<PointTemplate> pointTemplates = new ArrayList<>(paoDefinitionDao.getAllPointTemplates(deviceDefiniton));
 			Collections.sort(pointTemplates);
 			
-			this.points = new ArrayList<PointTemplateWrapper>();
+			points = new ArrayList<>();
 			for (PointTemplate pointTemplate : pointTemplates) {
-				this.points.add(new PointTemplateWrapper(deviceDefiniton, pointTemplate));
+				points.add(new PointTemplateWrapper(deviceDefiniton, pointTemplate));
 			}
 			
 			// attributes
-			List<AttributeDefinition> attributes = new ArrayList<AttributeDefinition>(paoDefinitionDao.getDefinedAttributes(deviceDefiniton.getType()));
+			List<AttributeDefinition> attributes = new ArrayList<>(paoDefinitionDao.getDefinedAttributes(deviceDefiniton.getType()));
 			Collections.sort(attributes);
-			this.attributes = new ArrayList<AttributeWrapper>();
+			this.attributes = new ArrayList<>();
 			for (AttributeDefinition attribute : attributes) {
 				this.attributes.add(new AttributeWrapper(deviceDefiniton, attribute));
 			}
 			
 			// commands
-			List<CommandDefinition> commands = new ArrayList<CommandDefinition>(paoDefinitionDao.getAvailableCommands(deviceDefiniton));
+			List<CommandDefinition> commands = new ArrayList<>(paoDefinitionDao.getAvailableCommands(deviceDefiniton));
 			Collections.sort(commands);
-			this.commands = new ArrayList<CommandDefinitionWrapper>();
+			this.commands = new ArrayList<>();
 			for (CommandDefinition commandDefinition : commands) {
 				this.commands.add(new CommandDefinitionWrapper(commandDefinition, deviceDefiniton));
 			}
@@ -247,7 +246,7 @@ public class DeviceDefinitionViewerController {
 			// tags
 			Map<PaoTag, PaoTagDefinition> tagMap = 
 			    paoDefinitionDao.getSupportedTagsForPaoType(definition.getType());
-			this.tagDefinitions = tagMap.values();
+			tagDefinitions = tagMap.values();
 		}
 
 		public PaoDefinition getDefinition() {
@@ -278,18 +277,18 @@ public class DeviceDefinitionViewerController {
 		public PointTemplateWrapper(PaoDefinition deviceDefiniton, PointTemplate pointTemplate) {
 			
 			this.pointTemplate = pointTemplate;
-			this.pointType = pointTemplate.getPointIdentifier().getPointType();
-			this.uomString = "";
-			this.stateGroup = "";
+			pointType = pointTemplate.getPointIdentifier().getPointType();
+			uomString = "";
+			stateGroup = "";
 			int uom = pointTemplate.getUnitOfMeasure();
 			if (uom >= 0) {
-				this.uomString = unitMeasureDao.getLiteUnitMeasure(pointTemplate.getUnitOfMeasure()).getUnitMeasureName();
+			    uomString = UnitOfMeasure.getForId(pointTemplate.getUnitOfMeasure()).getAbbreviation();
 			} else {
 				int stateGroupId = pointTemplate.getStateGroupId();
 				LiteStateGroup liteStateGroup = stateGroupDao.getStateGroup(stateGroupId);
-				this.stateGroup = liteStateGroup.getStateGroupName();
+				stateGroup = liteStateGroup.getStateGroupName();
 			}
-			this.init = paoDefinitionDao.getInitPointTemplates(deviceDefiniton).contains(pointTemplate);
+			init = paoDefinitionDao.getInitPointTemplates(deviceDefiniton).contains(pointTemplate);
 		}
 
 		public PointTemplate getPointTemplate() {
@@ -320,7 +319,7 @@ public class DeviceDefinitionViewerController {
 			if (attribute instanceof AttributeDefinition) {
                 AttributeDefinition basicAttributeLookup = attribute;
                 
-                this.pointTemplateWrapper = new PointTemplateWrapper(deviceDefiniton, basicAttributeLookup.getPointTemplate());
+                pointTemplateWrapper = new PointTemplateWrapper(deviceDefiniton, basicAttributeLookup.getPointTemplate());
             }
 		}
 		
@@ -335,7 +334,7 @@ public class DeviceDefinitionViewerController {
 	public class CommandDefinitionWrapper {
 		
 		private final CommandDefinition commandDefinition;
-		private final List<String> pointNames = new ArrayList<String>();
+		private final List<String> pointNames = new ArrayList<>();
 		
 		public CommandDefinitionWrapper(CommandDefinition commandDefinition, PaoDefinition deviceDefiniton) {
 			

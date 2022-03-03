@@ -190,11 +190,10 @@ public class MeterProgrammingDaoImpl implements MeterProgrammingDao {
                 SqlStatementBuilder sql = new SqlStatementBuilder();
                 sql.append("SELECT PAObjectID, type");
                 sql.append("FROM MeterProgramStatus status JOIN YukonPAObject ypo ON status.DeviceId = ypo.PAObjectID");
-                sql.append("JOIN MeterProgramAssignment assignment ON assignment.DeviceId = status.DeviceId");
-                sql.append("AND status.DeviceId").in(subList.stream()
+                sql.append("WHERE status.DeviceId").in(subList.stream()
                                               .map(SimpleDevice::getDeviceId)
                                               .collect(Collectors.toList()));
-                sql.append("AND assignment.Guid").eq(guid.toString());
+                sql.append("AND status.ReportedGuid").eq(guid.toString());
                 sql.append("AND status.Status").in(nonRetriableStatusus);
                 Log.debug(sql);
                 return sql;

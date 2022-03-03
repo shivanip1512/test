@@ -48,14 +48,14 @@
             <form id="startForm" action="${submitUrl}" method="post">
                 <cti:csrfToken/>
                 <tags:nameValueContainer2>
-                    <tags:nameValue2 nameKey=".syncType" nameClass="vam">
+                    <tags:nameValue2 nameKey=".syncType" nameClass="vam" nameColumnWidth="100px">
                         <select name="multispeakSyncType" id="multispeakSyncTypeSelect">
                             <c:forEach var="type" items="${multispeakSyncTypes}">
                                 <option value="${type}"><cti:msg key="${type.formatKey}"/></option>
                             </c:forEach>
                         </select>
                         <cti:msg2 key=".startButton" var="label"/>
-                        <cti:button id="startButton" label="${label}" classes="primary action fr" type="submit"/>
+                        <cti:button id="startButton" label="${label}" classes="primary action fr MR0" type="submit"/>
                     </tags:nameValue2>
                 </tags:nameValueContainer2>
             </form>

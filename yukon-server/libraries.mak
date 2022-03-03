@@ -27,9 +27,9 @@ APR_ICONV_DLL   = libapriconv-1.dll
 
 BOOST_BIN       = $(BOOST)\bin
 !IF "$(CONFIGURATION)"=="DEBUG"
-BOOST_VERSION = vc141-mt-gd-x32-1_67
+BOOST_VERSION = vc142-mt-gd-x32-1_76
 !ELSE
-BOOST_VERSION = vc141-mt-x32-1_67
+BOOST_VERSION = vc142-mt-x32-1_76
 !ENDIF
 BOOST_DLL_1 = boost_chrono-$(BOOST_VERSION).dll
 BOOST_DLL_2 = boost_date_time-$(BOOST_VERSION).dll
@@ -61,8 +61,6 @@ MICROSOFT_RT_DLL  = vcruntime140d.dll
 MICROSOFT_VCP_DLL = msvcp140.dll
 MICROSOFT_RT_DLL  = vcruntime140.dll
 !ENDIF
-
-MICROSOFT_SQL_DLL = ntwdblib.dll
 
 OPENSSL_BIN     = $(OPENSSL)\$(CONFIGURATION)\bin
 OPENSSL_DLL_1   = libcrypto-1_1.dll
@@ -101,7 +99,6 @@ ALL: $(BIN) $(LIB) $(PDB) \
   $(BIN)\$(DBGHELP_DLL) \
   $(BIN)\$(LOG4CXX_DLL) \
   $(BIN)\$(MICROSOFT_RT_DLL) \
-  $(BIN)\$(MICROSOFT_SQL_DLL) \
   $(BIN)\$(MICROSOFT_VCP_DLL) \
   $(BIN)\$(OPENSSL_DLL_1) \
   $(BIN)\$(OPENSSL_DLL_2) \
@@ -135,7 +132,6 @@ $(BIN)\$(LOG4CXX_DLL):$(LOG4CXX_BIN)\$(LOG4CXX_DLL); copy $? $@
 
 $(BIN)\$(MICROSOFT_VCP_DLL):$(MICROSOFT_VC)\$(MICROSOFT_VCP_DLL); copy $? $@
 $(BIN)\$(MICROSOFT_RT_DLL):$(MICROSOFT_VC)\$(MICROSOFT_RT_DLL);  copy $? $@
-$(BIN)\$(MICROSOFT_SQL_DLL):$(MICROSOFT_SQL)\$(MICROSOFT_SQL_DLL); copy $? $@
 
 $(BIN)\$(OPENSSL_DLL_1):$(OPENSSL_BIN)\$(OPENSSL_DLL_1); copy $? $@
 $(BIN)\$(OPENSSL_DLL_2):$(OPENSSL_BIN)\$(OPENSSL_DLL_2); copy $? $@

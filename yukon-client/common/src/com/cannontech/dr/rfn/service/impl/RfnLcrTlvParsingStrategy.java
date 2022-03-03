@@ -7,14 +7,10 @@ import java.util.Set;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.stream.Collectors;
 
-import javax.jms.ConnectionFactory;
-
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.logging.log4j.Logger;
 import org.joda.time.Instant;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.jms.core.JmsTemplate;
-
 import com.cannontech.amr.rfn.service.RfnDataValidator;
 import com.cannontech.clientutils.YukonLogManager;
 import com.cannontech.common.exception.ParseException;
@@ -47,13 +43,12 @@ public class RfnLcrTlvParsingStrategy implements RfnLcrParsingStrategy {
     @Autowired protected AsyncDynamicDataSource asyncDynamicDataSource;
     @Autowired private PqrEventDao pqrEventDao;
     @Autowired private PqrEventParsingService pqrEventLogParsingService;
-    protected JmsTemplate jmsTemplate;
 
     private static final Logger log = YukonLogManager.getLogger(RfnLcrTlvParsingStrategy.class);
 
     @Override
-    public void parseRfLcrReading(RfnLcrArchiveRequest request, RfnDevice rfnDevice,
-            AtomicInteger archivedReadings) throws ParseException {
+    public void parseRfLcrReading(RfnLcrArchiveRequest request, RfnDevice rfnDevice, AtomicInteger archivedReadings,
+            AtomicInteger pointDataProduced) throws ParseException {
         RfnLcrReadingArchiveRequest reading = ((RfnLcrReadingArchiveRequest) request);
         ListMultimap<FieldType, byte[]> decodedPayload = null;
 
@@ -85,6 +80,7 @@ public class RfnLcrTlvParsingStrategy implements RfnLcrParsingStrategy {
             messagesToSend = rfnLcrDataMappingService.mapPointData(reading, decodedPayload);
             asyncDynamicDataSource.putValues(messagesToSend);
             archivedReadings.addAndGet(messagesToSend.size());
+            pointDataProduced.addAndGet(messagesToSend.size());
             if (log.isDebugEnabled()) {
                 log.debug(messagesToSend.size() + " PointDatas generated for RfnLcrReadingArchiveRequest");
             }
@@ -96,7 +92,7 @@ public class RfnLcrTlvParsingStrategy implements RfnLcrParsingStrategy {
                                                                            .collect(Collectors.toSet());
 
             if (CollectionUtils.isNotEmpty(commonAddressingFields)) {
-                rfnLcrDataMappingService.storeAddressingData(jmsTemplate, decodedPayload, rfnDevice);
+                rfnLcrDataMappingService.storeAddressingData(decodedPayload, rfnDevice);
             }
             
             if(schema.supportsPowerQualityResponse()) {
@@ -112,13 +108,6 @@ public class RfnLcrTlvParsingStrategy implements RfnLcrParsingStrategy {
             log.warn("Discarding invalid or old pointdata for device " + rfnDevice + " with timestamp " + payloadTime);
         }
 
-    }
-
-    @Autowired
-    public void setConnectionFactory(ConnectionFactory connectionFactory) {
-        jmsTemplate = new JmsTemplate(connectionFactory);
-        jmsTemplate.setExplicitQosEnabled(true);
-        jmsTemplate.setDeliveryPersistent(false);
     }
 
     @Override

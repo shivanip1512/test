@@ -75,7 +75,7 @@ public class CollectionActionLogDetailServiceImpl implements CollectionActionLog
      * entries in the log file for the same devices.
      */
     private Cache<Integer, Set<CollectionActionLogDetail>> cache =
-        CacheBuilder.newBuilder().expireAfterAccess(1, TimeUnit.DAYS).build();
+        CacheBuilder.newBuilder().expireAfterAccess(2, TimeUnit.DAYS).build();
 
     /**
      * Point id -> Point name
@@ -100,9 +100,9 @@ public class CollectionActionLogDetailServiceImpl implements CollectionActionLog
 
     @Override
     public List<CollectionActionLogDetail> buildLogDetails(List<? extends YukonPao> paos,
-            CollectionActionDetail detail) {
+            CollectionActionDetail detail, String deviceErrorText) {
         return paos.stream()
-                .map(pao -> new CollectionActionLogDetail(pao, detail))
+                .map(pao -> new CollectionActionLogDetail(pao, detail, deviceErrorText))
                 .collect(Collectors.toList());
     }
        
@@ -170,13 +170,14 @@ public class CollectionActionLogDetailServiceImpl implements CollectionActionLog
                             pointName = pointNames.getIfPresent(pointId);
                             if (pointName == null) {
                                 try {
-                                    pointName = pointDao.getLitePoint(pointId).getPointName();
+                                    LitePoint point = pointDao.getLitePoint(pointId);
+                                    pointName = point.getPointName();
+                                    pointNames.put(point.getLiteID(), pointName);
+                                    log.debug("Unable to find point with id:{} in cache. Attempted the load from DB point name:{}", pointId, pointName);
                                 } catch (NotFoundException e) {
                                     pointName = "";
-                                    log.error(e);
+                                    log.error("Error", e);
                                 }
-                                log.debug("Unable to find point with id=" + pointId
-                                    + "in cache. Attempted the load from DB point name=" + pointName);
                             }
                         }
                         try {

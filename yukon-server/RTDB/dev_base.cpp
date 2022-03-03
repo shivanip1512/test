@@ -561,7 +561,7 @@ YukonError_t CtiDeviceBase::ResultDecode(const INMESS&, const CtiTime, CtiMessag
     return ClientErrors::NoMethodForResultDecode;
 }
 
-YukonError_t CtiDeviceBase::ProcessResult(const INMESS&, const CtiTime, CtiMessageList &vgList, CtiMessageList &retList, OutMessageList &outList)
+YukonError_t CtiDeviceBase::ProcessInMessageResult(const INMESS&, const CtiTime, CtiMessageList &vgList, CtiMessageList &retList, OutMessageList &outList)
 {
     return ClientErrors::NoMethodForProcessResult;
 }

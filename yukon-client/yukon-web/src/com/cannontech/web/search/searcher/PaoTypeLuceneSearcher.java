@@ -43,7 +43,7 @@ public class PaoTypeLuceneSearcher extends AbstractLuceneSearcher<UltraLightPao>
         try {
             return this.getIndexManager().getSearchTemplate().doCallBackSearch(query, new TopDocsCallbackHandler<SearchResults<UltraLightPao>>() {
                 public SearchResults<UltraLightPao> processHits(TopDocs topDocs, IndexSearcher indexSearcher) throws IOException {
-                    if (topDocs.totalHits != 1) {
+                    if (topDocs.totalHits.value != 1) {
                         return SearchResults.emptyResult();
                     }
                     

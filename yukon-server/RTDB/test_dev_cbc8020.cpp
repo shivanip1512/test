@@ -900,6 +900,8 @@ BOOST_AUTO_TEST_CASE(test_enable_ovuv_override)
 
 BOOST_AUTO_TEST_CASE(test_integrity_scan)
 {
+    const auto tzOverride = Cti::Test::set_to_central_timezone();
+
     TestCbc8020Device dev;
 
     dev._name = "Test CBC-8020";

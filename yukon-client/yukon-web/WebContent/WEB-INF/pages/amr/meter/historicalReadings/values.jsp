@@ -35,7 +35,7 @@
                                     <cti:msg2 var="disabledTitle" key=".editDisabled"/>
                                     <span title="${disabledTitle}"><cm:dropdownOption key="components.button.edit.label" icon="icon-pencil" disabled="true"/></span>
                                     <cti:checkRolesAndProperties value="MANAGE_POINT_DATA" level="OWNER">
-                                    <span title="${disabledTitle}"><cm:dropdownOption key="components.button.delete.label" icon="icon-cross" disabled="true"/></span>
+                                    <span title="${disabledTitle}"><cm:dropdownOption key="components.button.delete.label" icon="icon-delete" disabled="true"/></span>
                                     </cti:checkRolesAndProperties>
                                 </c:when>
                                 <c:otherwise>
@@ -50,7 +50,7 @@
                                         data-url="${editUrl}" data-event="yukon:historical:readings:editValue" data-point-id="${pointId}"></div>
                                     <cm:dropdownOption key="components.button.edit.label" icon="icon-pencil" data-popup=".js-edit-value-${id}"/>
                                     <cti:checkRolesAndProperties value="MANAGE_POINT_DATA" level="OWNER">
-                                        <cm:dropdownOption data-popup=".js-delete-value-${id}" key="components.button.delete.label" icon="icon-cross"/>
+                                        <cm:dropdownOption data-popup=".js-delete-value-${id}" key="components.button.delete.label" icon="icon-delete"/>
                                         <div class="dn js-delete-value-${id}" data-dialog data-title="<cti:msg2 key=".value.confirmDelete.title"/>" 
                                             data-ok-text="<cti:msg2 key="components.button.delete.label"/>" data-event="yukon:historical:readings:delete" 
                                             data-timestamp="${dateTime}" data-value="${point.value}" data-pointId="${pointId}">
@@ -59,9 +59,9 @@
                                     </cti:checkRolesAndProperties>
                                 </c:otherwise>
                             </c:choose>
-                        </cm:dropdown>    
-                    </td>      
-                </cti:checkRolesAndProperties>         
+                        </cm:dropdown>
+                    </td>
+                </cti:checkRolesAndProperties>
             </tr>
         </c:forEach>
     </tbody>

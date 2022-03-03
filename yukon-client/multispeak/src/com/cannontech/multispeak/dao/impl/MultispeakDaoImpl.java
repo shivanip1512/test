@@ -206,13 +206,13 @@ public final class MultispeakDaoImpl implements MultispeakDao {
             sink.addValue("Interface", mspInterface.getMspInterface().trim());
             sink.addValue("Endpoint", mspInterface.getMspEndpoint().trim());
             sink.addValue("Version", mspInterface.getVersion());
-            sink.addValue("InUserName", mspInterface.getInUserName());
-            sink.addValue("InPassword", mspInterface.getInPassword());
-            sink.addValue("OutUserName", mspInterface.getOutUserName());
-            sink.addValue("OutPassword", mspInterface.getOutPassword());
-            sink.addValue("UseVendorAuth", mspInterface.isUseVendorAuth());
+            sink.addValueSafe("InUserName", StringUtils.trimToEmpty(mspInterface.getInUserName()));
+            sink.addValueSafe("InPassword", StringUtils.trimToEmpty(mspInterface.getInPassword()));
+            sink.addValueSafe("OutUserName", StringUtils.trimToEmpty(mspInterface.getOutUserName()));
+            sink.addValueSafe("OutPassword", StringUtils.trimToEmpty(mspInterface.getOutPassword()));
+            sink.addValue("UseVendorAuth", mspInterface.getUseVendorAuth());
             sink.addValue("ValidateCertificate", mspInterface.getValidateCertificate());
-            
+
             int numAdded = jdbcTemplate.update(sql);
             clearMultispeakVendorCache();
             return numAdded;
@@ -368,10 +368,10 @@ public final class MultispeakDaoImpl implements MultispeakDao {
         String interfaceStr = rset.getString("Interface");
         String endpoint = rset.getString("Endpoint");
         MultiSpeakVersion version = rset.getEnum("Version", MultiSpeakVersion.class);
-        String inUserName = rset.getString("InUserName");
-        String inPassword = rset.getString("InPassword");
-        String outUserName = rset.getString("OutUserName");
-        String outPassword = rset.getString("OutPassword");
+        String inUserName = rset.getStringSafe("InUserName");
+        String inPassword = rset.getStringSafe("InPassword");
+        String outUserName = rset.getStringSafe("OutUserName");
+        String outPassword = rset.getStringSafe("OutPassword");
         boolean useVendorAuth = rset.getBoolean("UseVendorAuth");
         boolean validateCertificate = rset.getBoolean("ValidateCertificate");
         MultispeakInterface mspInterface = new MultispeakInterface(vendorID, interfaceStr, endpoint, version,

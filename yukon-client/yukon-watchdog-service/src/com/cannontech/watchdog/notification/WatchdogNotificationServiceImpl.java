@@ -6,6 +6,8 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 import javax.annotation.PostConstruct;
+
+import org.apache.commons.collections4.CollectionUtils;
 import org.apache.logging.log4j.Logger;
 import org.joda.time.DateTime;
 import org.joda.time.Hours;
@@ -14,8 +16,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import com.cannontech.clientutils.YukonLogManager;
+import com.cannontech.common.config.SmtpHelper;
 import com.cannontech.common.i18n.MessageSourceAccessor;
-import com.cannontech.common.smartNotification.dao.SmartNotificationSubscriptionDao;
 import com.cannontech.common.smartNotification.model.SmartNotificationEvent;
 import com.cannontech.common.smartNotification.model.SmartNotificationEventType;
 import com.cannontech.common.smartNotification.model.WatchdogAssembler;
@@ -23,10 +25,9 @@ import com.cannontech.common.smartNotification.service.SmartNotificationEventCre
 import com.cannontech.common.util.WebserverUrlResolver;
 import com.cannontech.core.dao.NotFoundException;
 import com.cannontech.i18n.YukonUserContextMessageSourceResolver;
-import com.cannontech.system.GlobalSettingType;
-import com.cannontech.system.dao.GlobalSettingDao;
 import com.cannontech.tools.email.EmailMessage;
 import com.cannontech.tools.email.EmailService;
+import com.cannontech.tools.email.SystemEmailSettingsType;
 import com.cannontech.user.YukonUserContext;
 import com.cannontech.watchdog.base.YukonServices;
 import com.cannontech.watchdog.model.WatchdogWarnings;
@@ -39,16 +40,18 @@ public class WatchdogNotificationServiceImpl implements WatchdogNotificationServ
     @Autowired private SmartNotificationEventCreationService smartNotificationEventCreationService;
     @Autowired private EmailService emailService;
     @Autowired private YukonUserContextMessageSourceResolver messageSourceResolver;
-    @Autowired private SmartNotificationSubscriptionDao subscriptionDao;
     @Autowired private WebserverUrlResolver webserverUrlResolver;
-    @Autowired private GlobalSettingDao globalSettingDao;
+    @Autowired private SmtpHelper smtpHelper;
     
     private List<ServiceStatusWatchdog> serviceStatusWatchers;
     private MessageSourceAccessor messageSourceAccessor;
     private DateTime lastNotificationSendTime;
+    private static List<String> sendToEmailIds;
+    private static String sender;
     
     private final List<YukonServices> requiredServicesForSmartNotif = new ArrayList<>(
-        Arrays.asList(YukonServices.MESSAGEBROKER, YukonServices.NOTIFICATIONSERVICE, YukonServices.SERVICEMANAGER));
+            Arrays.asList(YukonServices.MESSAGEBROKER, YukonServices.NOTIFICATIONSERVICE, YukonServices.SERVICEMANAGER,
+                    YukonServices.DATABASE));
     
     @PostConstruct
     public void init() {
@@ -91,7 +94,10 @@ public class WatchdogNotificationServiceImpl implements WatchdogNotificationServ
             log.info("Not sending any notification now as notification was send at " + lastNotificationSendTime);
         } else {
             try {
-                List<String> sendToEmailIds = getSubscribedUsersEmailId();
+                loadEmailIds();
+                if (CollectionUtils.isEmpty(sendToEmailIds)) {
+                    throw new NotFoundException("No user subscribed for notification for watchdog");
+                }
                 String subject = messageSourceAccessor.getMessage("yukon.watchdog.notification.subject");
                 StringBuilder msgBuilder = new StringBuilder();
                 String message = messageSourceAccessor.getMessage("yukon.watchdog.notification.text");
@@ -102,25 +108,22 @@ public class WatchdogNotificationServiceImpl implements WatchdogNotificationServ
                     msgBuilder.append(messageSourceAccessor.getMessage("yukon.watchdog.notification." + s.toString()));
                 }
                 msgBuilder.append("\n\nSee " + webserverUrlResolver.getUrlBase());
-                String sender = globalSettingDao.getString(GlobalSettingType.MAIL_FROM_ADDRESS);
-                EmailMessage emailMessage =
-                        EmailMessage.newMessageBccOnly(subject, msgBuilder.toString(), sender, sendToEmailIds);
+                EmailMessage emailMessage = EmailMessage.newMessageBccOnly(subject, msgBuilder.toString(), sender,
+                        sendToEmailIds);
                 emailService.sendMessage(emailMessage);
             } catch (Exception e) {
                 log.error("Watch dog is unable to send Internal Notification " + e);
             }
         }
     }
-    
-    /*
-     * Return list of users subscribed for watchdog notifications
+
+    /**
+     * Update Email IDs of subscribers and Sender.
      */
-    private List<String> getSubscribedUsersEmailId() throws NotFoundException {
-        List<String> emailAddresses = subscriptionDao.getSubscribedEmails(SmartNotificationEventType.YUKON_WATCHDOG);
-        if (emailAddresses.isEmpty()) {
-            throw new NotFoundException("No user subscribed for notification for watchdog");
-        }
-        return emailAddresses;
+    private void loadEmailIds() {
+        sendToEmailIds = Arrays.asList(
+                smtpHelper.getCachedValue(SystemEmailSettingsType.WATCHDOG_SUBSCRIBER_EMAILS.getKey()).split("\\s*,\\s*"));
+        sender = smtpHelper.getCachedValue(SystemEmailSettingsType.MAIL_FROM_ADDRESS.getKey());
     }
 
     /*

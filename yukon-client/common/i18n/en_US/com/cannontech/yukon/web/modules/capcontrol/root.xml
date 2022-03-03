@@ -313,7 +313,7 @@
     <entry key="yukon.web.modules.capcontrol.comments.save">Save</entry>
     <entry key="yukon.web.modules.capcontrol.comments.cancel">Cancel</entry>
     <entry key="yukon.web.modules.capcontrol.comments.clickToEdit">Click to edit</entry>
-    <entry key="yukon.web.modules.capcontrol.comments.enterText">Enter Comment Text:</entry>
+    <entry key="yukon.web.modules.capcontrol.comments.enterText">Comment Text</entry>
     <entry key="yukon.web.modules.capcontrol.comments.enterComment">Enter a comment for this operation:</entry>
     <entry key="yukon.web.modules.capcontrol.comments.previousComment">&lt;Choose a previously entered comment&gt;</entry>
     
@@ -874,10 +874,12 @@
     <entry key="yukon.web.modules.capcontrol.import.importContainer.title">File Upload</entry>
     <entry key="yukon.web.modules.capcontrol.import.resultContainer.title">Import Results</entry>
     <entry key="yukon.web.modules.capcontrol.import.importTypeSelect">Import type</entry>
+    <entry key="yukon.web.modules.capcontrol.import.importFile">Import File</entry>
     <entry key="yukon.web.modules.capcontrol.import.importTypes.CBC">CBC</entry>
     <entry key="yukon.web.modules.capcontrol.import.importTypes.HIERARCHY">Hierarchy</entry>
     <entry key="yukon.web.modules.capcontrol.import.importTypes.REGULATOR">Regulator</entry>
     <entry key="yukon.web.modules.capcontrol.import.importTypes.POINT_MAPPING">Point Mapping</entry>
+    <entry key="yukon.web.modules.capcontrol.import.importTypes.IVVC_ZONE">IVVC Zone</entry>
     <entry key="yukon.web.modules.capcontrol.import.errorProcessingFile">Importer encountered errors processing the file.</entry>
     <entry key="yukon.web.modules.capcontrol.import.missingRequiredColumn">File is missing a required column (or data for a required column): {0}</entry>
     <entry key="yukon.web.modules.capcontrol.import.processedWithErrors">File was processed successfully, but import errors occurred. See details below.</entry>
@@ -886,6 +888,7 @@
     <entry key="yukon.web.modules.capcontrol.import.importCbcFileSuccess">CBC file import completed successfully.</entry>
     <entry key="yukon.web.modules.capcontrol.import.cbcFileEmpty">CBC Import File is empty.</entry>
     <entry key="yukon.web.modules.capcontrol.import.importHierarchyFileSuccess">Hierarchy file import completed successfully.</entry>
+    <entry key="yukon.web.modules.capcontrol.import.importIvvcZoneFileSuccess">IVVC Zone file import completed successfully.</entry>
     <entry key="yukon.web.modules.capcontrol.import.hierarchyFileEmpty">Hierarchy Import File is empty.</entry>
     <entry key="yukon.web.modules.capcontrol.import.missingDataResult">{0} - Import failed because of missing required fields: {1}.</entry>
     <entry key="yukon.web.modules.capcontrol.import.invalidDataResult">{0} - Import failed because of invalid data in field(s): {1}</entry>
@@ -961,6 +964,8 @@
     <li>Reverse Set Point - REVERSE_SET_POINT</li>
     <li>Reverse Bandwidth - REVERSE_BANDWIDTH</li>
     <li>Reverse Flow Indicator - REVERSE_FLOW_INDICATOR</li>
+    <li>Power Flow Indeterminate - POWER_FLOW_INDETERMINATE</li>
+    <li>Control Power Flow Reverse - CONTROL_POWER_FLOW_REVERSE</li>
     <li>Control Mode - CONTROL_MODE</li>
     </ul>
     ]]></entry>
@@ -968,6 +973,56 @@
     <entry key="yukon.web.modules.capcontrol.import.description.POINT_MAPPING.DEVICE TYPE">Required when ACTION is Add or Update&lt;br&gt;Type of physical device which reports points&lt;br&gt;Ex. RTU_DNP</entry>
     <entry key="yukon.web.modules.capcontrol.import.description.POINT_MAPPING.DEVICE NAME">Required when ACTION is Add or Update&lt;br&gt;Name of the Physical device</entry>
     
+    <!-- IVVC Zone Import Fields -->
+    <entry key="yukon.web.modules.capcontrol.import.description.IVVC_ZONE.TYPE">
+        <![CDATA[Type of CapControl object<br>
+        Options: ZONE, CAP BANK, VOLTAGE POINT, REGULATOR]]>
+    </entry>   
+    <entry key="yukon.web.modules.capcontrol.import.description.IVVC_ZONE.ACTION">Options: ADD, UPDATE, REMOVE</entry>   
+    <entry key="yukon.web.modules.capcontrol.import.description.IVVC_ZONE.ZONE NAME">Name of the Zone (must be unique)</entry>   
+    <entry key="yukon.web.modules.capcontrol.import.description.IVVC_ZONE.ZONE TYPE">
+        <![CDATA[Required when TYPE is ZONE<br>
+        Options: Gang Operated, Three Phase, Single Phase]]>
+    </entry>   
+    <entry key="yukon.web.modules.capcontrol.import.description.IVVC_ZONE.PARENT ZONE">
+        <![CDATA[Required when TYPE is ZONE<br>
+        Name of the Parent Zone, or ROOT for a root zone]]>
+    </entry>   
+    <entry key="yukon.web.modules.capcontrol.import.description.IVVC_ZONE.SUBSTATION BUS">
+        <![CDATA[Required when TYPE is ZONE and PARENT ZONE is ROOT<br>
+        Name of the Substation Bus that this zone belongs]]>
+    </entry>   
+    <entry key="yukon.web.modules.capcontrol.import.description.IVVC_ZONE.GRAPH START POSITION">
+        <![CDATA[Required when TYPE is ZONE<br>
+        Starting position of the graph for this zone]]>
+    </entry>   
+    <entry key="yukon.web.modules.capcontrol.import.description.IVVC_ZONE.POSITION">
+        <![CDATA[Required when TYPE is CAP BANK or VOLTAGE POINT<br>
+        Position to place it on the graph]]>
+    </entry>   
+    <entry key="yukon.web.modules.capcontrol.import.description.IVVC_ZONE.DISTANCE">
+        <![CDATA[Required when TYPE is CAP BANK or VOLTAGE POINT<br>
+        Distance value]]>
+    </entry>   
+    <entry key="yukon.web.modules.capcontrol.import.description.IVVC_ZONE.VOLTAGE POINT NAME">
+        <![CDATA[Required when TYPE is VOLTAGE POINT<br>
+        Name of existing point]]>
+    </entry>   
+    <entry key="yukon.web.modules.capcontrol.import.description.IVVC_ZONE.DEVICE NAME">
+        <![CDATA[Required when TYPE is CAP BANK, VOLTAGE POINT or REGULATOR<br>
+        Name of existing device (Name of existing Cap Bank, Regulator or device the point belongs to)]]>
+    </entry>   
+    <entry key="yukon.web.modules.capcontrol.import.description.IVVC_ZONE.PHASE">
+        <![CDATA[Required when TYPE is VOLTAGE POINT or REGULATOR<br>
+        Phase of the voltage or regulator<br>
+        Options: A, B, C - When TYPE is VOLTAGE POINT<br>
+        Options: A, B, C, Gang - When TYPE is REGULATOR]]>
+    </entry>   
+    <entry key="yukon.web.modules.capcontrol.import.description.IVVC_ZONE.IGNORE">
+        <![CDATA[Required when TYPE is VOLTAGE POINT<br> 
+        Options: True, False]]>
+    </entry>
+   
     <!-- ControlAlgorithm.java -->
     <entry key="yukon.web.modules.capcontrol.controlAlgorithm.NONE">None</entry>
     <entry key="yukon.web.modules.capcontrol.controlAlgorithm.KVAR">kVAr</entry>
@@ -1023,6 +1078,8 @@
     <entry key="yukon.web.modules.capcontrol.regulatorPointMapping.REVERSE_SET_POINT">Reverse Set Point</entry>
     <entry key="yukon.web.modules.capcontrol.regulatorPointMapping.REVERSE_FLOW_INDICATOR">Reverse Flow Indicator</entry>
     <entry key="yukon.web.modules.capcontrol.regulatorPointMapping.CONTROL_MODE">Control Mode</entry>
+    <entry key="yukon.web.modules.capcontrol.regulatorPointMapping.POWER_FLOW_INDETERMINATE">Power Flow Indeterminate</entry>
+    <entry key="yukon.web.modules.capcontrol.regulatorPointMapping.CONTROL_POWER_FLOW_REVERSE">Control Power Flow Reverse</entry>
     
     <entry key="yukon.web.modules.capcontrol.targetSetting.UPPER_VOLT_LIMIT">Upper Volt Limit</entry>
     <entry key="yukon.web.modules.capcontrol.targetSetting.LOWER_VOLT_LIMIT">Lower Volt Limit</entry>

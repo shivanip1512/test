@@ -1,3 +1,4 @@
+#pragma code_page(65001) // UTF-8
 #ifndef WIN32_LEAN_AND_MEAN
 #define WIN32_LEAN_AND_MEAN
 #endif /* Prevents winsock.h from being included in windows.h */
@@ -23,7 +24,7 @@ BEGIN
             VALUE "FileDescription",  STR(D_FILE_NAME)
             VALUE "ProductName",      "Yukon\0"
             VALUE "ProductVersion",   STR(D_PRODUCT_VERSION_STR)
-            VALUE "LegalCopyright",   "� 2002-2019 Eaton. All rights reserved.\0"
+            VALUE "LegalCopyright",  L"© 2002-2020 Eaton. All rights reserved.\0"
         END
     END
 

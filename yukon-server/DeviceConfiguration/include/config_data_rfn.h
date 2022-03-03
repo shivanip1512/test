@@ -162,6 +162,8 @@ struct IM_EX_CONFIG RfnStrings
         static const std::string ReportingIntervalSeconds;
         static const std::string RecordingIntervalSeconds;
     };
+
+    static const std::string MetrologyLibraryEnabled;
 };
 
 }

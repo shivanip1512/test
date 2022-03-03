@@ -9,14 +9,11 @@ import java.util.concurrent.ExecutionException;
 import java.util.concurrent.Executor;
 
 import javax.annotation.PostConstruct;
-import javax.jms.ConnectionFactory;
-
 import org.apache.logging.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 
 import com.cannontech.amr.rfn.dao.RfnDeviceDao;
-import com.cannontech.amr.rfn.impl.NmSyncServiceImpl;
 import com.cannontech.clientutils.YukonLogManager;
 import com.cannontech.common.config.ConfigurationSource;
 import com.cannontech.common.pao.PaoIdentifier;
@@ -30,6 +27,9 @@ import com.cannontech.common.rfn.service.BlockingJmsReplyHandler;
 import com.cannontech.common.rfn.service.RfnGatewayDataCache;
 import com.cannontech.common.util.jms.RequestReplyTemplate;
 import com.cannontech.common.util.jms.RequestReplyTemplateImpl;
+import com.cannontech.common.util.jms.YukonJmsTemplate;
+import com.cannontech.common.util.jms.YukonJmsTemplateFactory;
+import com.cannontech.common.util.jms.api.JmsApiDirectory;
 import com.google.common.cache.AbstractLoadingCache;
 import com.google.common.cache.LoadingCache;
 
@@ -37,25 +37,19 @@ public class RfnGatewayDataCacheImpl implements RfnGatewayDataCache {
     
     private static final Logger log = YukonLogManager.getLogger(RfnGatewayDataCacheImpl.class);
     private static final String gatewayDataRequestCparm = "RFN_GATEWAY_DATA_REQUEST";
-    private static final String gatewayDataRequestQueue = "yukon.qr.obj.common.rfn.GatewayDataRequest";
-    
-    //Autowired in constructor
-    private ConnectionFactory connectionFactory;
     private ConfigurationSource configurationSource;
     private LoadingCache<PaoIdentifier, RfnGatewayData> cache;
     private Executor executor;
-    @Autowired private NmSyncServiceImpl nmSyncService;
-    
+
+    @Autowired private YukonJmsTemplateFactory jmsTemplateFactory;
+
     //Created in post-construct
     private RequestReplyTemplate<GatewayDataResponse> requestTemplate;
     
     @Autowired
-    public RfnGatewayDataCacheImpl(ConnectionFactory connectionFactory, 
-                                   ConfigurationSource configurationSource, 
-                                   final RfnDeviceDao rfnDeviceDao, 
-                                   @Qualifier("gatewayCache") Executor executor) {
-        
-        this.connectionFactory = connectionFactory;
+    public RfnGatewayDataCacheImpl(ConfigurationSource configurationSource, final RfnDeviceDao rfnDeviceDao,
+            @Qualifier("gatewayCache") Executor executor) {
+
         this.configurationSource = configurationSource;
         this.executor = executor;
         cache = new InternalGatewayDataCache(rfnDeviceDao);
@@ -63,8 +57,9 @@ public class RfnGatewayDataCacheImpl implements RfnGatewayDataCache {
     
     @PostConstruct
     public void init() {
-        requestTemplate = new RequestReplyTemplateImpl<>(gatewayDataRequestCparm, configurationSource,
-                connectionFactory, gatewayDataRequestQueue, false, true);
+        YukonJmsTemplate jmsTemplate = jmsTemplateFactory.createTemplate(JmsApiDirectory.RF_GATEWAY_DATA);
+        requestTemplate = new RequestReplyTemplateImpl<>(gatewayDataRequestCparm, configurationSource, jmsTemplate,
+                 true);
     }
     
     @Override
@@ -89,7 +84,7 @@ public class RfnGatewayDataCacheImpl implements RfnGatewayDataCache {
                     try {
                         cache.get(paoIdentifier);
                     } catch (Exception e) {
-                        log.error("Asynchronous rfn gateway cache update failed for: " + paoIdentifier, e);
+//                        log.error("Asynchronous rfn gateway cache update failed for: " + paoIdentifier, e);
                     }
                 }
             };
@@ -138,7 +133,7 @@ public class RfnGatewayDataCacheImpl implements RfnGatewayDataCache {
             if (data != null) {
                 return data;
             }
-            
+            log.debug("Loading gateway data for {}", key);
             //Prepare the request
             RfnDevice device = rfnDeviceDao.getDeviceForId(key.getPaoId());
             RfnIdentifier rfnIdentifier = device.getRfnIdentifier();
@@ -149,7 +144,6 @@ public class RfnGatewayDataCacheImpl implements RfnGatewayDataCache {
             BlockingJmsReplyHandler<GatewayDataResponse> replyHandler = new BlockingJmsReplyHandler<>(GatewayDataResponse.class);
             requestTemplate.send(request, replyHandler);
             GatewayDataResponse response = replyHandler.waitForCompletion();
-            nmSyncService.syncGatewayName(device, response.getName());
             //If the response rfnId has a newer model, update the Yukon gateway device
             RfnIdentifier responseRfnIdentifier = response.getRfnIdentifier();
             if (rfnIdentifier.getSensorModel().equalsIgnoreCase(GATEWAY_1_MODEL_STRING) &&

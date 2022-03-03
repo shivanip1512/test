@@ -114,7 +114,9 @@ public enum GlobalSettingType implements DisplayableEnum {
     RF_BROADCAST_PERFORMANCE(GlobalSettingSubCategory.DR, InputTypeFactory.enumType(OnOff.class), OnOff.OFF),
     ECOBEE_USERNAME(GlobalSettingSubCategory.DR, stringType(), null),
     ECOBEE_PASSWORD(GlobalSettingSubCategory.DR, stringType(), null),
-    ECOBEE_SERVER_URL(GlobalSettingSubCategory.DR, stringType(), "https://api.ecobee.com/1/", GlobalSettingTypeValidators.urlValidator),
+    ECOBEE_PROGRAM_ID(GlobalSettingSubCategory.DR, stringType(), null),
+    ECOBEE_SERVER_URL(GlobalSettingSubCategory.DR, stringType(), "https://es.ecobee.com/ecp/api/v1/", GlobalSettingTypeValidators.urlValidator),
+    ECOBEE_REPORTING_URL(GlobalSettingSubCategory.DR, stringType(), null, GlobalSettingTypeValidators.urlValidator),
     ECOBEE_SEND_NOTIFICATIONS(GlobalSettingSubCategory.DR, booleanType(), false),
     HONEYWELL_WIFI_SERVICE_BUS_QUEUE(GlobalSettingSubCategory.DR, stringType(), null),
     HONEYWELL_WIFI_SERVICE_BUS_CONNECTION_STRING(GlobalSettingSubCategory.DR, stringType(), null),
@@ -125,11 +127,19 @@ public enum GlobalSettingType implements DisplayableEnum {
     ITRON_HCM_API_URL(GlobalSettingSubCategory.DR, stringType(), null, GlobalSettingTypeValidators.urlValidator),
     ITRON_HCM_USERNAME(GlobalSettingSubCategory.DR, stringType(), null),
     ITRON_HCM_PASSWORD(GlobalSettingSubCategory.DR, stringType(), null),
-    ITRON_HCM_DATA_COLLECTION_HOURS(GlobalSettingSubCategory.DR, integerType(), 4),
+    ITRON_HCM_DATA_COLLECTION_MINUTES(GlobalSettingSubCategory.DR, 15, Range.inclusive(5, 1440)),
+    ITRON_HCM_RESPONSE_TIMEOUT_SECONDS(GlobalSettingSubCategory.DR, 120, Range.inclusive(1, 600)),
     ITRON_SFTP_URL(GlobalSettingSubCategory.DR, stringType(), null),
     ITRON_SFTP_USERNAME(GlobalSettingSubCategory.DR, stringType(), null),
     ITRON_SFTP_PASSWORD(GlobalSettingSubCategory.DR, stringType(), null),
     ITRON_SFTP_PRIVATE_KEY_PASSWORD(GlobalSettingSubCategory.DR, stringType(), null),
+    RUNTIME_CALCULATION_INTERVAL_HOURS(GlobalSettingSubCategory.DR, 2, Range.inclusive(1, 24)),
+    EATON_CLOUD_DEVICE_CREATION_INTERVAL(GlobalSettingSubCategory.DR, 24, Range.inclusive(1,720)),
+    EATON_CLOUD_DEVICE_READ_INTERVAL_MINUTES(GlobalSettingSubCategory.DR, integerType(), 60),
+    EATON_CLOUD_SERVICE_ACCOUNT_ID(GlobalSettingSubCategory.DR, stringType(), null, GlobalSettingTypeValidators.guidValidator),
+    EATON_CLOUD_SECRET(GlobalSettingSubCategory.DR, stringType(), null),
+    EATON_CLOUD_SECRET2(GlobalSettingSubCategory.DR, stringType(), null),
+    EATON_CLOUD_URL(GlobalSettingSubCategory.DR, stringType(), "https://blu-dr-api.eaton.com", GlobalSettingTypeValidators.urlValidator),
 
     // Web Server
     GOOGLE_ANALYTICS_ENABLED(GlobalSettingSubCategory.WEB_SERVER, booleanType(), true),
@@ -198,10 +208,11 @@ public enum GlobalSettingType implements DisplayableEnum {
     
     // Dashboard Widgets
     DATA_AVAILABILITY_WINDOW_IN_DAYS(GlobalSettingSubCategory.DASHBOARD_WIDGET, 3, Range.inclusive(1, 7)),
-    GATEWAY_CONNECTION_WARNING_MINUTES(GlobalSettingSubCategory.DASHBOARD_WIDGET, integerType(), 60),
+    DEVICE_CONNECTION_WARNING_MINUTES(GlobalSettingSubCategory.DASHBOARD_WIDGET, integerType(), 60),
     GATEWAY_CONNECTED_NODES_WARNING_THRESHOLD(GlobalSettingSubCategory.DASHBOARD_WIDGET, integerType(), 3500),
     GATEWAY_CONNECTED_NODES_CRITICAL_THRESHOLD(GlobalSettingSubCategory.DASHBOARD_WIDGET, integerType(), 5000),
     GATEWAY_READY_NODES_THRESHOLD(GlobalSettingSubCategory.DASHBOARD_WIDGET, integerType(), 25),
+    CELLULAR_RELAY_DESCENDANT_COUNT_WARNING_THRESHOLD(GlobalSettingSubCategory.DASHBOARD_WIDGET, integerType(), 400),
     PORTER_QUEUE_COUNTS_HISTORICAL_MONTHS(GlobalSettingSubCategory.DASHBOARD_WIDGET, integerType(), 3),
     PORTER_QUEUE_COUNTS_TREND_MAX_NUM_PORTS(GlobalSettingSubCategory.DASHBOARD_WIDGET, integerType(), 5),
     PORTER_QUEUE_COUNTS_MINUTES_TO_WAIT_BEFORE_REFRESH(GlobalSettingSubCategory.DASHBOARD_WIDGET, integerType(), 15),
@@ -220,35 +231,41 @@ public enum GlobalSettingType implements DisplayableEnum {
     private final Object validationValue;
     private final TypeValidator<?> validator; 
     private final static ImmutableList<GlobalSettingType> sensitiveSettings;
-
+    private final static ImmutableList<GlobalSettingType> nonViewableSensitiveSettings;
+    
     static {
         final Builder<GlobalSettingSubCategory, GlobalSettingType> b = ImmutableSetMultimap.builder();
         for (GlobalSettingType globalSettingType : values()) {
             b.put(globalSettingType.getCategory(), globalSettingType);
         }
         categoryMapping = b.build();
-        
+
         sensitiveSettings = ImmutableList.of(
-            ECOBEE_PASSWORD,
-            ECOBEE_USERNAME,
-            RFN_FIRMWARE_UPDATE_SERVER_USER,
-            RFN_FIRMWARE_UPDATE_SERVER_PASSWORD,
-            HONEYWELL_WIFI_SERVICE_BUS_CONNECTION_STRING,
-            HONEYWELL_WIFI_SERVICE_BUS_QUEUE,
-            HONEYWELL_APPLICATIONID,
-            HONEYWELL_CLIENTID,
-            HONEYWELL_SECRET,
-            OADR_KEYSTORE_PASSWORD,
-            OADR_TRUSTSTORE_PASSWORD,
-            SMTP_USERNAME,
-            SMTP_PASSWORD,
-            ITRON_HCM_USERNAME,
-            ITRON_HCM_PASSWORD,
-            ITRON_SFTP_USERNAME,
-            ITRON_SFTP_PASSWORD,
-            ITRON_SFTP_PRIVATE_KEY_PASSWORD,
-            NETWORK_MANAGER_DB_PASSWORD,
-            CLOUD_IOT_HUB_CONNECTION_STRING);
+                ECOBEE_USERNAME,
+                RFN_FIRMWARE_UPDATE_SERVER_USER,
+                SMTP_USERNAME,
+                ITRON_HCM_USERNAME,
+                ITRON_SFTP_USERNAME,
+                HONEYWELL_WIFI_SERVICE_BUS_QUEUE,
+                HONEYWELL_APPLICATIONID,
+                HONEYWELL_CLIENTID);
+
+        nonViewableSensitiveSettings = ImmutableList.of(
+                ECOBEE_PASSWORD,
+                RFN_FIRMWARE_UPDATE_SERVER_PASSWORD,
+                HONEYWELL_WIFI_SERVICE_BUS_CONNECTION_STRING,
+                HONEYWELL_SECRET,
+                OADR_KEYSTORE_PASSWORD,
+                OADR_TRUSTSTORE_PASSWORD,
+                SMTP_PASSWORD,
+                ITRON_HCM_PASSWORD,
+                ITRON_SFTP_PASSWORD,
+                ITRON_SFTP_PRIVATE_KEY_PASSWORD,
+                NETWORK_MANAGER_DB_PASSWORD,
+                CLOUD_IOT_HUB_CONNECTION_STRING,
+                EATON_CLOUD_SERVICE_ACCOUNT_ID,
+                EATON_CLOUD_SECRET,
+                EATON_CLOUD_SECRET2);
         }
 
     private GlobalSettingType(GlobalSettingSubCategory category, InputType<?> type, Object defaultValue) {
@@ -295,6 +312,10 @@ public enum GlobalSettingType implements DisplayableEnum {
         return sensitiveSettings.contains(this);
     }
 
+    public boolean isNonViewableSensitiveInformation() {
+        return nonViewableSensitiveSettings.contains(this);
+    }
+
     public Object getDefaultValue() {
         return defaultValue;
     }
@@ -326,6 +347,10 @@ public enum GlobalSettingType implements DisplayableEnum {
 
     public static ImmutableList<GlobalSettingType> getSensitiveSettings() {
         return sensitiveSettings;
+    }
+
+    public static ImmutableList<GlobalSettingType> getNonviewablesensitivesettings() {
+        return nonViewableSensitiveSettings;
     }
 
 }

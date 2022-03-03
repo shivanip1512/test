@@ -36,6 +36,7 @@
     <entry key="yukon.web.modules.operator.inventory.lastName">Last Name</entry>
     <entry key="yukon.web.modules.operator.inventory.workOrderNumber">Work Order #</entry>
     <entry key="yukon.web.modules.operator.inventory.altTrackingNumber">Alt Tracking #</entry>
+    <entry key="yukon.web.modules.operator.inventory.macAddress">MAC Address</entry>
     <entry key="yukon.web.modules.operator.inventory.actions.note">Processing will continue if you wish to navigate away from this page at any time.</entry>
 
     <!-- /inventory/inventoryList.jsp -->

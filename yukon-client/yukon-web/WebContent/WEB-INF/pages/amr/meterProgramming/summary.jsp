@@ -1,9 +1,9 @@
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
 <%@ taglib prefix="cm" tagdir="/WEB-INF/tags/contextualMenu" %>
 <%@ taglib prefix="cti" uri="http://cannontech.com/tags/cti" %>
-<%@ taglib prefix="i" tagdir="/WEB-INF/tags/i18n" %>
 <%@ taglib prefix="fn" uri="http://java.sun.com/jsp/jstl/functions" %>
 <%@ taglib prefix="form" uri="http://www.springframework.org/tags/form"%>
+<%@ taglib prefix="i" tagdir="/WEB-INF/tags/i18n" %>
 <%@ taglib prefix="tags" tagdir="/WEB-INF/tags" %>
 
 <cti:standardPage module="amr" page="meterProgramming.summary">
@@ -23,17 +23,19 @@
                 <span class="vat"><i:inline key="yukon.common.filterBy"/></span>
                 
                 <cti:msg2 var="allPrograms" key=".allPrograms"/>&nbsp;
-                <select id="programSelect" class="js-selected-programs" multiple="multiple" data-placeholder="${allPrograms}">
+                <select id="programSelect" class="js-selected-programs w300" size="1" multiple="multiple" data-placeholder="${allPrograms}">
                     <c:forEach var="program" items="${programList}">
                         <c:set var="selectedText" value=""/>
-                        <c:if test="${fn:contains(selectedPrograms, program.name)}">
-                            <c:set var="selectedText" value="selected='selected'"/>
-                        </c:if>
+                        <c:forEach var="selectedProgram" items="${selectedPrograms}">
+                            <c:if test="${selectedProgram == program.name}">
+                                <c:set var="selectedText" value="selected='selected'"/>
+                            </c:if>
+                        </c:forEach>
                         <option value="${program}" data-guid="${program.guid}" data-source="${program.source}" ${selectedText}>${fn:escapeXml(program.name)}</option>
                     </c:forEach>
                 </select>
                 
-                <div class="button-group ML15">
+                <div class="button-group ML15 MB5">
                     <c:forEach var="status" items="${statusList}">
                         <tags:check path="statuses" key="${status.formatKey}" classes="M0" value="${status}"></tags:check>
                     </c:forEach>
@@ -61,6 +63,7 @@
             <%@ include file="summaryResults.jsp" %>
         </div>
 
+    <cti:includeScript link="YUKON_UPDATER"/>
     <cti:includeScript link="/resources/js/pages/yukon.ami.meterProgramming.summary.js" />
 
 </cti:standardPage>

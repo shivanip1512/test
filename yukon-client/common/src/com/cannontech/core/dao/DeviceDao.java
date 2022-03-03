@@ -75,9 +75,7 @@ public interface DeviceDao {
      */
     LiteYukonPAObject getLiteYukonPAObject(String deviceName, PaoType paoType);
 
-    List<Integer> getDevicesByPort(int portId);
-
-    List<Integer> getDevicesByDeviceAddress(Integer masterAddress, Integer slaveAddress);
+    List<DisplayableDevice> getDevicesByPortAndDeviceAddress(int portId, int masterAddress, int slaveAddress);
 
     void enableDevice(YukonDevice device);
 
@@ -205,4 +203,44 @@ public interface DeviceDao {
      * @return The PaoMacAddress of each device with a primary mac address, but no secondary mac address.
      */
     List<PaoMacAddress> findAllDevicesWithNoSecondaryMacAddress();
+
+    /**
+     * @return true if guid exists
+     */
+    boolean isGuidExists(String guid);
+    
+    /**
+     * @return guid for device
+     */
+    String getGuid(int deviceId) throws NotFoundException;
+
+    /**
+     * Update the guid for the specified device.
+     */
+    void updateGuid(int deviceId, String guid);
+    
+    /**
+     * Inserts guid.
+     */
+    void insertGuid(int deviceId, String guid);
+
+    /**
+     * Returns disabled devices
+     */
+    List<SimpleDevice> getDisabledDevices(Iterable<Integer> ids);
+
+    /**
+     * Returns a map of DeviceIDs to their respective GUIDs
+     */
+    Map<Integer, String> getGuids(Iterable<Integer> deviceIds);
+    
+    /**
+     * Returns a list of all the guids in DeviceGuid table as a List<String>
+     */
+    List<String> getGuids();
+
+    /**
+     * Returns a list of all the devices ids that have guids
+     */
+    List<Integer> getDeviceIdsWithGuids();
 }

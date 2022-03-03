@@ -1,8 +1,11 @@
 package com.cannontech.common.dr.gear.setup.model;
 
+import com.cannontech.common.device.port.DBPersistentConverter;
 import com.cannontech.common.dr.gear.setup.fields.BeatThePeakGearFields;
+import com.cannontech.common.dr.gear.setup.fields.EatonCloudCycleGearFields;
 import com.cannontech.common.dr.gear.setup.fields.EcobeeCycleGearFields;
 import com.cannontech.common.dr.gear.setup.fields.EcobeeSetpointGearFields;
+import com.cannontech.common.dr.gear.setup.fields.EcobeePlusGearFields;
 import com.cannontech.common.dr.gear.setup.fields.HoneywellCycleGearFields;
 import com.cannontech.common.dr.gear.setup.fields.HoneywellSetpointGearFields;
 import com.cannontech.common.dr.gear.setup.fields.ItronCycleGearFields;
@@ -32,7 +35,7 @@ import com.fasterxml.jackson.annotation.JsonSubTypes;
 import com.fasterxml.jackson.annotation.JsonTypeInfo;
 
 @JsonInclude(Include.NON_NULL)
-public class ProgramGear {
+public class ProgramGear implements DBPersistentConverter<LMProgramDirectGear> {
 
     private Integer gearId;
     private String gearName;
@@ -44,6 +47,7 @@ public class ProgramGear {
         @JsonSubTypes.Type(value = BeatThePeakGearFields.class, name = "BeatThePeak"),
         @JsonSubTypes.Type(value = EcobeeCycleGearFields.class, name = "EcobeeCycle"),
         @JsonSubTypes.Type(value = EcobeeSetpointGearFields.class, name = "EcobeeSetpoint"),
+        @JsonSubTypes.Type(value = EcobeePlusGearFields.class, name = "EcobeePlus"),
         @JsonSubTypes.Type(value = HoneywellCycleGearFields.class, name = "HoneywellCycle"),
         @JsonSubTypes.Type(value = HoneywellSetpointGearFields.class, name = "HoneywellSetpoint"),
         @JsonSubTypes.Type(value = ItronCycleGearFields.class, name = "ItronCycle"),
@@ -62,7 +66,8 @@ public class ProgramGear {
         @JsonSubTypes.Type(value = TrueCycleGearFields.class, name = "TrueCycle"),
         @JsonSubTypes.Type(value = MagnitudeCycleGearFields.class, name = "MagnitudeCycle"),
         @JsonSubTypes.Type(value = TargetCycleGearFields.class, name = "TargetCycle"),
-        @JsonSubTypes.Type(value = MeterDisconnectGearFields.class, name = "MeterDisconnect")
+        @JsonSubTypes.Type(value = MeterDisconnectGearFields.class, name = "MeterDisconnect"),
+        @JsonSubTypes.Type(value = EatonCloudCycleGearFields.class, name = "EatonCloudCycle")
     })
     
     private ProgramGearFields fields;
@@ -109,22 +114,7 @@ public class ProgramGear {
         this.fields = fields;
     }
 
-    public LMProgramDirectGear buildDBPersistent() {
-
-        LMProgramDirectGear programDirectGear = controlMethod.createNewGear();
-
-        programDirectGear.setGearID(getGearId());
-        programDirectGear.setGearNumber(getGearNumber());
-        programDirectGear.setGearName(getGearName());
-        programDirectGear.setControlMethod(controlMethod);
-        if (fields != null) {
-            fields.buildDBPersistent(programDirectGear);
-        }
-
-        return programDirectGear;
-
-    }
-
+    @Override
     public void buildModel(LMProgramDirectGear directGear) {
 
         GearControlMethod controlMethod = directGear.getControlMethod();
@@ -139,4 +129,13 @@ public class ProgramGear {
 
     }
 
+    @Override
+    public void buildDBPersistent(LMProgramDirectGear directGear) {
+        directGear.setGearNumber(getGearNumber());
+        directGear.setGearName(getGearName());
+        directGear.setControlMethod(controlMethod);
+        if (fields != null) {
+            fields.buildDBPersistent(directGear);
+        }
+    }
 }

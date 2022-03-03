@@ -6,6 +6,7 @@
     <tags>
         <tag name="METER_DISCONNECT_PROGRAM_ENROLLMENT"/>
         <tag name="LM_PROGRAM"/>
+        <tag name="SUPPORTS_PING"/>
     </tags>
     <pointInfos>
         <pointInfo name="Available Load Reduction" attributes="AVAILABLE_LOAD_REDUCTION"/>

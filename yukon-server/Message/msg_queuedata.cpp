@@ -151,3 +151,8 @@ CtiMessage* CtiQueueDataMsg::replicateMessage() const
     return( (CtiMessage*)ret );
 }
 
+std::size_t CtiQueueDataMsg::getVariableSize() const
+{
+    return Inherited::getVariableSize();
+}
+

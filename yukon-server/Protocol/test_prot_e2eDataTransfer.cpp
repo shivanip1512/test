@@ -112,6 +112,63 @@ BOOST_AUTO_TEST_CASE( test_handleIndication )
     BOOST_CHECK_EQUAL_RANGES(payloadExpected, er.data);
 }
 
+BOOST_AUTO_TEST_CASE(test_handleIndication_separate_data)
+{
+    test_E2eDataTransferProtocol e2e;
+
+    e2e.id = 0x2978;
+
+    Cti::Test::byte_str outboundPayload =
+        "80 01";
+
+    const unsigned long token = 0x14374;
+
+    const std::vector<unsigned char> outboundPayloadVector(outboundPayload.begin(), outboundPayload.end());
+    const std::vector<unsigned char> msg = e2e.createRequest(outboundPayloadVector, endpointId, token);
+
+    Cti::Test::byte_str expected =
+        "43 01 79 29 01 43 74 ff 80 01";
+
+    BOOST_CHECK_EQUAL_RANGES(expected, msg);
+
+    {
+        const byte_str inbound =
+            "60 00 79 29";
+
+        const auto er = e2e.handleIndication(inbound.bytes, endpointId);
+
+        BOOST_CHECK_EQUAL(false,  er.block.has_value());
+        BOOST_CHECK_EQUAL(0,      er.code);
+        BOOST_CHECK_EQUAL(false,  er.confirmable);
+        BOOST_CHECK_EQUAL(true,   er.data.empty());
+        BOOST_CHECK_EQUAL(0x2979, er.id);
+        BOOST_CHECK_EQUAL(false,  er.nodeOriginated);
+        BOOST_CHECK_EQUAL(true,   er.path.empty());
+        BOOST_CHECK_EQUAL(false,  er.token.has_value());
+    }
+    {
+        const byte_str inbound =
+            "43 45 2f a2 01 43 74 ff 81 01 01 02 01 06";
+
+        const auto er = e2e.handleIndication(inbound.bytes, endpointId);
+
+        BOOST_CHECK_EQUAL(false,   er.block.has_value());
+        BOOST_CHECK_EQUAL(69,      er.code);
+        BOOST_CHECK_EQUAL(true,    er.confirmable);
+        
+        Cti::Test::byte_str expectedPayload = "81 01 01 02 01 06";
+        BOOST_CHECK_EQUAL_RANGES(expectedPayload, er.data);
+        
+        BOOST_CHECK_EQUAL(0xa22f,  er.id);
+        BOOST_CHECK_EQUAL(false,   er.nodeOriginated);
+        BOOST_CHECK_EQUAL(true,    er.path.empty());
+        
+        BOOST_REQUIRE(er.token);
+        BOOST_CHECK_EQUAL(0x14374, er.token.value());
+    }
+}
+
+
 BOOST_AUTO_TEST_CASE(test_handleIndication_repeat)
 {
     test_E2eDataTransferProtocol e2e;
@@ -161,20 +218,21 @@ BOOST_AUTO_TEST_CASE( test_handleIndication_duplicatePacket )
     const auto er = e2e.handleIndication(inbound.bytes, endpointId);
 
     BOOST_CHECK_EQUAL(er.confirmable, false);
+    BOOST_CHECK_EQUAL(er.nodeOriginated, true);
     BOOST_CHECK_EQUAL(er.block.has_value(), false);
     BOOST_CHECK(er.data.empty());
     BOOST_REQUIRE(er.token);
     BOOST_CHECK_EQUAL(*er.token, token);
 
-    try
-    {
-        e2e.handleIndication(inbound.bytes, endpointId);
-        BOOST_FAIL("Did not throw");
-    }
-    catch( Cti::Protocols::E2e::DuplicatePacket &ex )
-    {
-        BOOST_CHECK_EQUAL(ex.what(), "Duplicate packet, id: 29442");
-    }
+    //  Duplicates are retries, and are handled identically to the initial request
+    e2e.handleIndication(inbound.bytes, endpointId);
+
+    BOOST_CHECK_EQUAL(er.confirmable, false);
+    BOOST_CHECK_EQUAL(er.nodeOriginated, true);
+    BOOST_CHECK_EQUAL(er.block.has_value(), false);
+    BOOST_CHECK(er.data.empty());
+    BOOST_REQUIRE(er.token);
+    BOOST_CHECK_EQUAL(*er.token, token);
 }
 
 BOOST_AUTO_TEST_CASE( test_handleIndication_requestNotAcceptable )

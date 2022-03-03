@@ -104,12 +104,7 @@
 			<attribute name="org.eclipse.jst.component.dependency" value="../"/>
 		</attributes>
 	</classpathentry>
-	<classpathentry exported="true" kind="lib" path="/third-party/mailapi-1.5.1.jar" sourcepath="/third-party/linked-sources/mailapi-1.5.1-sources.jar">
-		<attributes>
-			<attribute name="org.eclipse.jst.component.dependency" value="../"/>
-		</attributes>
-	</classpathentry>
-	<classpathentry exported="true" kind="lib" path="/third-party/smtp-1.5.1.jar" sourcepath="/third-party/linked-sources/smtp-1.5.1-sources.jar">
+	<classpathentry kind="lib" path="/third-party/jakarta.activation-api-2.0.1.jar">
 		<attributes>
 			<attribute name="org.eclipse.jst.component.dependency" value="../"/>
 		</attributes>
@@ -129,17 +124,17 @@
 			<attribute name="org.eclipse.jst.component.dependency" value="../"/>
 		</attributes>
 	</classpathentry>
-	<classpathentry exported="true" kind="lib" path="/third-party/commons-io-2.6.jar">
+	<classpathentry exported="true" kind="lib" path="/third-party/commons-io-2.11.0.jar">
 		<attributes>
 			<attribute name="org.eclipse.jst.component.dependency" value="../"/>
 		</attributes>
 	</classpathentry>
-	<classpathentry exported="true" kind="lib" path="/third-party/quartz-2.2.1.jar">
+	<classpathentry exported="true" kind="lib" path="/third-party/quartz-2.3.2.jar">
 		<attributes>
 			<attribute name="org.eclipse.jst.component.dependency" value="../"/>
 		</attributes>
 	</classpathentry>
-	<classpathentry kind="lib" path="/third-party/dom4j-2.1.1.jar">
+	<classpathentry kind="lib" path="/third-party/dom4j-2.1.3.jar">
 		<attributes>
 			<attribute name="org.eclipse.jst.component.dependency" value="../"/>
 		</attributes>
@@ -159,12 +154,17 @@
 			<attribute name="org.eclipse.jst.component.dependency" value="../"/>
 		</attributes>
 	</classpathentry>
-	<classpathentry kind="lib" path="/third-party/spring-integration-core-5.1.3.RELEASE.jar">
+	<classpathentry kind="lib" path="/third-party/spring-integration-core-5.5.1.jar">
 		<attributes>
 			<attribute name="org.eclipse.jst.component.dependency" value="../"/>
 		</attributes>
 	</classpathentry>
-	<classpathentry kind="lib" path="/third-party/spring-integration-jms-5.1.3.RELEASE.jar">
+	<classpathentry kind="lib" path="/third-party/spring-retry-1.3.1.jar">
+		<attributes>
+			<attribute name="org.eclipse.jst.component.dependency" value="../"/>
+		</attributes>
+	</classpathentry>
+	<classpathentry kind="lib" path="/third-party/spring-integration-jms-5.5.1.jar">
 		<attributes>
 			<attribute name="org.eclipse.jst.component.dependency" value="../"/>
 		</attributes>
@@ -194,107 +194,112 @@
 			<attribute name="org.eclipse.jst.component.dependency" value="../"/>
 		</attributes>
 	</classpathentry>
-	<classpathentry exported="true" kind="lib" path="/third-party/spring-aop-5.1.5.RELEASE.jar" sourcepath="/third-party/linked-sources/spring-aop-5.1.5.RELEASE-sources.jar">
+	<classpathentry exported="true" kind="lib" path="/third-party/spring-aop-5.3.8.jar" sourcepath="/third-party/linked-sources/spring-aop-5.3.8-sources.jar">
 		<attributes>
 			<attribute name="org.eclipse.jst.component.dependency" value="../"/>
 		</attributes>
 	</classpathentry>
-	<classpathentry exported="true" kind="lib" path="/third-party/spring-aspects-5.1.5.RELEASE.jar" sourcepath="/third-party/linked-sources/spring-aspects-5.1.5.RELEASE-sources.jar">
+	<classpathentry exported="true" kind="lib" path="/third-party/spring-aspects-5.3.8.jar" sourcepath="/third-party/linked-sources/spring-aspects-5.3.8-sources.jar">
 		<attributes>
 			<attribute name="org.eclipse.jst.component.dependency" value="../"/>
 		</attributes>
 	</classpathentry>
-	<classpathentry exported="true" kind="lib" path="/third-party/spring-beans-5.1.5.RELEASE.jar" sourcepath="/third-party/linked-sources/spring-beans-5.1.5.RELEASE-sources.jar">
+	<classpathentry exported="true" kind="lib" path="/third-party/aspectjweaver-1.9.6.jar" sourcepath="/third-party/linked-sources/aspectjweaver-1.9.6-sources.jar">
 		<attributes>
 			<attribute name="org.eclipse.jst.component.dependency" value="../"/>
 		</attributes>
 	</classpathentry>
-	<classpathentry exported="true" kind="lib" path="/third-party/spring-context-5.1.5.RELEASE.jar" sourcepath="/third-party/linked-sources/spring-context-5.1.5.RELEASE-sources.jar">
+	<classpathentry exported="true" kind="lib" path="/third-party/spring-beans-5.3.8.jar" sourcepath="/third-party/linked-sources/spring-beans-5.3.8-sources.jar">
 		<attributes>
 			<attribute name="org.eclipse.jst.component.dependency" value="../"/>
 		</attributes>
 	</classpathentry>
-	<classpathentry exported="true" kind="lib" path="/third-party/spring-context-support-5.1.5.RELEASE.jar" sourcepath="/third-party/linked-sources/spring-context-support-5.1.5.RELEASE-sources.jar">
+	<classpathentry exported="true" kind="lib" path="/third-party/spring-context-5.3.8.jar" sourcepath="/third-party/linked-sources/spring-context-5.3.8-sources.jar">
 		<attributes>
 			<attribute name="org.eclipse.jst.component.dependency" value="../"/>
 		</attributes>
 	</classpathentry>
-	<classpathentry exported="true" kind="lib" path="/third-party/spring-core-5.1.5.RELEASE.jar" sourcepath="/third-party/linked-sources/spring-core-5.1.5 .RELEASE-sources.jar">
+	<classpathentry exported="true" kind="lib" path="/third-party/spring-context-support-5.3.8.jar" sourcepath="/third-party/linked-sources/spring-context-support-5.3.8-sources.jar">
 		<attributes>
 			<attribute name="org.eclipse.jst.component.dependency" value="../"/>
 		</attributes>
 	</classpathentry>
-	<classpathentry exported="true" kind="lib" path="/third-party/spring-expression-5.1.5.RELEASE.jar" sourcepath="/third-party/linked-sources/spring-expression-5.1.5.RELEASE-sources.jar">
+	<classpathentry exported="true" kind="lib" path="/third-party/spring-core-5.3.8.jar" sourcepath="/third-party/linked-sources/spring-core-5.3.8-sources.jar">
 		<attributes>
 			<attribute name="org.eclipse.jst.component.dependency" value="../"/>
 		</attributes>
 	</classpathentry>
-	<classpathentry exported="true" kind="lib" path="/third-party/spring-instrument-5.1.5.RELEASE.jar" sourcepath="/third-party/linked-sources/spring-instrument-5.1.5.RELEASE-sources.jar">
+	<classpathentry exported="true" kind="lib" path="/third-party/spring-expression-5.3.8.jar" sourcepath="/third-party/linked-sources/spring-expression-5.3.8-sources.jar">
 		<attributes>
 			<attribute name="org.eclipse.jst.component.dependency" value="../"/>
 		</attributes>
 	</classpathentry>
-	<classpathentry exported="true" kind="lib" path="/third-party/spring-jdbc-5.1.5.RELEASE.jar" sourcepath="/third-party/linked-sources/spring-jdbc-5.1.5.RELEASE-sources.jar">
+	<classpathentry exported="true" kind="lib" path="/third-party/spring-instrument-5.3.8.jar" sourcepath="/third-party/linked-sources/spring-instrument-5.3.8-sources.jar">
 		<attributes>
 			<attribute name="org.eclipse.jst.component.dependency" value="../"/>
 		</attributes>
 	</classpathentry>
-	<classpathentry exported="true" kind="lib" path="/third-party/spring-jms-5.1.5.RELEASE.jar" sourcepath="/third-party/linked-sources/spring-jms-5.1.5.RELEASE-sources.jar">
+	<classpathentry exported="true" kind="lib" path="/third-party/spring-jdbc-5.3.8.jar" sourcepath="/third-party/linked-sources/spring-jdbc-5.3.8-sources.jar">
 		<attributes>
 			<attribute name="org.eclipse.jst.component.dependency" value="../"/>
 		</attributes>
 	</classpathentry>
-	<classpathentry exported="true" kind="lib" path="/third-party/spring-messaging-5.1.5.RELEASE.jar" sourcepath="/third-party/linked-sources/spring-messaging-5.1.5.RELEASE-sources.jar">
+	<classpathentry exported="true" kind="lib" path="/third-party/spring-jms-5.3.8.jar" sourcepath="/third-party/linked-sources/spring-jms-5.3.8-sources.jar">
 		<attributes>
 			<attribute name="org.eclipse.jst.component.dependency" value="../"/>
 		</attributes>
 	</classpathentry>
-	<classpathentry exported="true" kind="lib" path="/third-party/spring-orm-5.1.5.RELEASE.jar" sourcepath="/third-party/linked-sources/spring-orm-5.1.5.RELEASE-sources.jar">
+	<classpathentry exported="true" kind="lib" path="/third-party/spring-messaging-5.3.8.jar" sourcepath="/third-party/linked-sources/spring-messaging-5.3.8-sources.jar">
 		<attributes>
 			<attribute name="org.eclipse.jst.component.dependency" value="../"/>
 		</attributes>
 	</classpathentry>
-	<classpathentry exported="true" kind="lib" path="/third-party/spring-oxm-5.1.5.RELEASE.jar" sourcepath="/third-party/linked-sources/spring-oxm-5.1.5.RELEASE-sources.jar">
+	<classpathentry exported="true" kind="lib" path="/third-party/spring-orm-5.3.8.jar" sourcepath="/third-party/linked-sources/spring-orm-5.3.8-sources.jar">
 		<attributes>
 			<attribute name="org.eclipse.jst.component.dependency" value="../"/>
 		</attributes>
 	</classpathentry>
-	<classpathentry exported="true" kind="lib" path="/third-party/spring-test-5.1.5.RELEASE.jar" sourcepath="/third-party/linked-sources/spring-test-5.1.5.RELEASE-sources.jar">
+	<classpathentry exported="true" kind="lib" path="/third-party/spring-oxm-5.3.8.jar" sourcepath="/third-party/linked-sources/spring-oxm-5.3.8-sources.jar">
 		<attributes>
 			<attribute name="org.eclipse.jst.component.dependency" value="../"/>
 		</attributes>
 	</classpathentry>
-	<classpathentry exported="true" kind="lib" path="/third-party/spring-tx-5.1.5.RELEASE.jar" sourcepath="/third-party/linked-sources/spring-tx-5.1.5.RELEASE-sources.jar">
+	<classpathentry exported="true" kind="lib" path="/third-party/spring-test-5.3.8.jar" sourcepath="/third-party/linked-sources/spring-test-5.3.8-sources.jar">
 		<attributes>
 			<attribute name="org.eclipse.jst.component.dependency" value="../"/>
 		</attributes>
 	</classpathentry>
-	<classpathentry exported="true" kind="lib" path="/third-party/spring-web-5.1.5.RELEASE.jar" sourcepath="/third-party/linked-sources/spring-web-5.1.5.RELEASE-sources.jar">
+	<classpathentry exported="true" kind="lib" path="/third-party/spring-tx-5.3.8.jar" sourcepath="/third-party/linked-sources/spring-tx-5.3.8-sources.jar">
 		<attributes>
 			<attribute name="org.eclipse.jst.component.dependency" value="../"/>
 		</attributes>
 	</classpathentry>
-	<classpathentry exported="true" kind="lib" path="/third-party/spring-webmvc-5.1.5.RELEASE.jar" sourcepath="/third-party/linked-sources/spring-framework-5.1.5.RELEASE/libs/spring-webmvc-5.1.5.RELEASE-sources.jar">
+	<classpathentry exported="true" kind="lib" path="/third-party/spring-web-5.3.8.jar" sourcepath="/third-party/linked-sources/spring-web-5.3.8-sources.jar">
 		<attributes>
 			<attribute name="org.eclipse.jst.component.dependency" value="../"/>
 		</attributes>
 	</classpathentry>
-	<classpathentry exported="true" kind="lib" path="/third-party/spring-websocket-5.1.5.RELEASE.jar" sourcepath="/third-party/linked-sources/spring-websocket-5.1.5.RELEASE-sources.jar">
+	<classpathentry exported="true" kind="lib" path="/third-party/spring-webmvc-5.3.8.jar" sourcepath="/third-party/linked-sources/spring-framework-5.3.8/libs/spring-webmvc-5.3.8-sources.jar">
 		<attributes>
 			<attribute name="org.eclipse.jst.component.dependency" value="../"/>
 		</attributes>
 	</classpathentry>
-	<classpathentry exported="true" kind="lib" path="/third-party/spring-context-indexer-5.1.5.RELEASE.jar" sourcepath="/third-party/linked-sources/spring-context-indexer-5.1.5.RELEASE-sources.jar">
+	<classpathentry exported="true" kind="lib" path="/third-party/spring-websocket-5.3.8.jar" sourcepath="/third-party/linked-sources/spring-websocket-5.3.8-sources.jar">
 		<attributes>
 			<attribute name="org.eclipse.jst.component.dependency" value="../"/>
 		</attributes>
 	</classpathentry>
-	<classpathentry exported="true" kind="lib" path="/third-party/spring-jcl-5.1.5.RELEASE.jar" sourcepath="/third-party/linked-sources/spring-jcl-5.1.5.RELEASE.jar-sources.jar">
+	<classpathentry exported="true" kind="lib" path="/third-party/spring-context-indexer-5.3.8.jar" sourcepath="/third-party/linked-sources/spring-context-indexer-5.3.8-sources.jar">
 		<attributes>
 			<attribute name="org.eclipse.jst.component.dependency" value="../"/>
 		</attributes>
 	</classpathentry>
-	<classpathentry exported="true" kind="lib" path="/third-party/spring-webflux-5.1.5.RELEASE.jar" sourcepath="/third-party/linked-sources/spring-webflux-5.1.5.RELEASE-sources.jar">
+	<classpathentry exported="true" kind="lib" path="/third-party/spring-jcl-5.3.8.jar" sourcepath="/third-party/linked-sources/spring-jcl-5.3.8.jar-sources.jar">
+		<attributes>
+			<attribute name="org.eclipse.jst.component.dependency" value="../"/>
+		</attributes>
+	</classpathentry>
+	<classpathentry exported="true" kind="lib" path="/third-party/spring-webflux-5.3.8.jar" sourcepath="/third-party/linked-sources/spring-webflux-5.3.8-sources.jar">
 		<attributes>
 			<attribute name="org.eclipse.jst.component.dependency" value="../"/>
 		</attributes>
@@ -304,12 +309,12 @@
 			<attribute name="org.eclipse.jst.component.dependency" value="../"/>
 		</attributes>
 	</classpathentry>
-	<classpathentry exported="true" kind="lib" path="/third-party/reactive-streams-1.0.2.jar" sourcepath="/third-party/linked-sources/reactive-streams-1.0.2.jar">
+	<classpathentry exported="true" kind="lib" path="/third-party/reactive-streams-1.0.3.jar" sourcepath="/third-party/linked-sources/reactive-streams-1.0.3.jar">
 		<attributes>
 			<attribute name="org.eclipse.jst.component.dependency" value="../"/>
 		</attributes>
 	</classpathentry>
-	<classpathentry exported="true" kind="lib" path="/third-party/reactor-core-3.2.1.RELEASE.jar" sourcepath="/third-party/linked-sources/reactor-core-3.2.1.RELEASE.jar">
+	<classpathentry exported="true" kind="lib" path="/third-party/reactor-core-3.4.12.jar" sourcepath="/third-party/linked-sources/reactor-core-3.4.12.jar">
 		<attributes>
 			<attribute name="org.eclipse.jst.component.dependency" value="../"/>
 		</attributes>
@@ -324,14 +329,12 @@
 			<attribute name="org.eclipse.jst.component.dependency" value="../"/>
 		</attributes>
 	</classpathentry>
-	<classpathentry exported="true" kind="lib" path="/third-party/hamcrest-core-1.3.jar" sourcepath="/third-party/linked-sources/hamcrest-core-1.3-sources.jar"/>
-	<classpathentry exported="true" kind="lib" path="/third-party/junit-4.12.jar" sourcepath="/third-party/linked-sources/junit-4.12-sources.jar"/>
-	<classpathentry exported="true" kind="lib" path="/third-party/spring-xml-3.0.7.RELEASE.jar" sourcepath="/third-party/linked-sources/spring-xml-3.0.7.RELEASE-sources.jar">
+	<classpathentry exported="true" kind="lib" path="/third-party/spring-xml-3.1.1.jar" sourcepath="/third-party/linked-sources/spring-xml-3.1.1-sources.jar">
 		<attributes>
 			<attribute name="org.eclipse.jst.component.dependency" value="../"/>
 		</attributes>
 	</classpathentry>
-	<classpathentry exported="true" kind="lib" path="/third-party/stax2-api-3.1.4.jar" sourcepath="/third-party/linked-sources/stax2-api-3.1.4-sources.jar">
+	<classpathentry exported="true" kind="lib" path="/third-party/stax2-api-4.2.1.jar" sourcepath="/third-party/linked-sources/stax2-api-4.2.1-sources.jar">
 		<attributes>
 			<attribute name="org.eclipse.jst.component.dependency" value="../"/>
 		</attributes>
@@ -402,30 +405,30 @@
 			<attribute name="org.eclipse.jst.component.dependency" value="../"/>
 		</attributes>
 	</classpathentry>
-	<classpathentry exported="true" kind="lib" path="/third-party/jackson-databind-2.10.1.jar" sourcepath="/third-party/linked-sources/jackson-databind-2.10.1-sources.jar">
+	<classpathentry exported="true" kind="lib" path="/third-party/jackson-databind-2.13.0.jar" sourcepath="/third-party/linked-sources/jackson-databind-2.13.0-sources.jar">
 		<attributes>
 			<attribute name="org.eclipse.jst.component.dependency" value="../"/>
 		</attributes>
 	</classpathentry>
-	<classpathentry exported="true" kind="lib" path="/third-party/jackson-core-2.10.1.jar" sourcepath="/third-party/linked-sources/jackson-core-2.10.1-sources.jar">
+	<classpathentry exported="true" kind="lib" path="/third-party/jackson-core-2.13.0.jar" sourcepath="/third-party/linked-sources/jackson-core-2.13.0-sources.jar">
 		<attributes>
 			<attribute name="org.eclipse.jst.component.dependency" value="../"/>
 		</attributes>
 	</classpathentry>
-	<classpathentry exported="true" kind="lib" path="/third-party/jackson-annotations-2.10.1.jar" sourcepath="/third-party/linked-sources/jackson-annotations-2.10.1-sources.jar">
+	<classpathentry exported="true" kind="lib" path="/third-party/jackson-annotations-2.13.0.jar" sourcepath="/third-party/linked-sources/jackson-annotations-2.13.0-sources.jar">
 		<attributes>
 			<attribute name="org.eclipse.jst.component.dependency" value="../"/>
 		</attributes>
 	</classpathentry>
-	<classpathentry exported="true" kind="lib" path="/third-party/jackson-dataformat-csv-2.9.6.jar" sourcepath="/third-party/linked-sources/jackson-annotations-2.10.1-sources.jar">
+	<classpathentry exported="true" kind="lib" path="/third-party/jackson-dataformat-csv-2.9.6.jar" sourcepath="/third-party/linked-sources/jackson-dataformat-csv-2.9.6-sources.jar">
 		<attributes>
 			<attribute name="org.eclipse.jst.component.dependency" value="../"/>
 		</attributes>
 	</classpathentry>
 	<classpathentry exported="true" kind="lib" path="/third-party/snakeyaml-1.18.2.jar" sourcepath="/third-party/linked-sources/snakeyaml-1.18.2-sources.jar"/>
-	<classpathentry kind="lib" path="/third-party/easymock-3.0.jar" sourcepath="/third-party/linked-sources/easymock-3.0-sources.jar"/>
+	<classpathentry exported="true" kind="lib" path="/third-party/easymock-3.0.jar" sourcepath="/third-party/linked-sources/easymock-3.0-sources.jar"/>
 	<classpathentry kind="lib" path="/third-party/objenesis-1.2.jar"/>
-	<classpathentry exported="true" kind="lib" path="/third-party/log4j-slf4j-impl-2.11.2.jar">
+	<classpathentry exported="true" kind="lib" path="/third-party/log4j-slf4j-impl-2.17.1.jar">
 		<attributes>
 			<attribute name="org.eclipse.jst.component.dependency" value="../"/>
 		</attributes>
@@ -447,22 +450,22 @@
 	</classpathentry>
 	<classpathentry combineaccessrules="false" exported="true" kind="src" path="/yukon-shared"/>
 	<classpathentry kind="lib" path="/third-party/h2-1.4.178.jar" sourcepath="/third-party/linked-sources/h2-1.4.178-sources.jar"/>
-	<classpathentry exported="true" kind="lib" path="/third-party/activemq-broker-5.15.10.jar" sourcepath="/third-party/linked-sources/activemq-parent-5.15.10-source-release.zip">
+	<classpathentry exported="true" kind="lib" path="/third-party/activemq-broker-5.16.1.jar" sourcepath="/third-party/linked-sources/activemq-parent-5.16.1-source-release.zip">
 		<attributes>
 			<attribute name="org.eclipse.jst.component.dependency" value="../"/>
 		</attributes>
 	</classpathentry>
-	<classpathentry exported="true" kind="lib" path="/third-party/activemq-client-5.15.10.jar" sourcepath="/third-party/linked-sources/activemq-parent-5.15.10-source-release.zip">
+	<classpathentry exported="true" kind="lib" path="/third-party/activemq-client-5.16.1.jar" sourcepath="/third-party/linked-sources/activemq-parent-5.16.1-source-release.zip">
 		<attributes>
 			<attribute name="org.eclipse.jst.component.dependency" value="../"/>
 		</attributes>
 	</classpathentry>
-	<classpathentry exported="true" kind="lib" path="/third-party/activemq-kahadb-store-5.15.10.jar" sourcepath="/third-party/linked-sources/activemq-parent-5.15.10-source-release.zip">
+	<classpathentry exported="true" kind="lib" path="/third-party/activemq-kahadb-store-5.16.1.jar" sourcepath="/third-party/linked-sources/activemq-parent-5.16.1-source-release.zip">
 		<attributes>
 			<attribute name="org.eclipse.jst.component.dependency" value="../"/>
 		</attributes>
 	</classpathentry>
-	<classpathentry exported="true" kind="lib" path="/third-party/activemq-openwire-legacy-5.15.10.jar" sourcepath="/third-party/linked-sources/activemq-parent-5.15.10-source-release.zip">
+	<classpathentry exported="true" kind="lib" path="/third-party/activemq-openwire-legacy-5.16.1.jar" sourcepath="/third-party/linked-sources/activemq-parent-5.16.1-source-release.zip">
 		<attributes>
 			<attribute name="org.eclipse.jst.component.dependency" value="../"/>
 		</attributes>
@@ -472,7 +475,7 @@
 			<attribute name="org.eclipse.jst.component.dependency" value="../"/>
 		</attributes>
 	</classpathentry>
-	<classpathentry exported="true" kind="lib" path="/third-party/slf4j-api-1.7.25.jar">
+	<classpathentry exported="true" kind="lib" path="/third-party/slf4j-api-1.7.32.jar">
 		<attributes>
 			<attribute name="org.eclipse.jst.component.dependency" value="../"/>
 		</attributes>
@@ -508,97 +511,92 @@
 			<attribute name="org.eclipse.jst.component.dependency" value="../"/>
 		</attributes>
 	</classpathentry>
-	<classpathentry kind="lib" path="/third-party/annotation-detector-3.0.4.jar"/>
-	<classpathentry kind="lib" path="/third-party/applicationinsights-core-1.0.2.jar"/>
-	<classpathentry kind="lib" path="/third-party/applicationinsights-web-1.0.2.jar"/>
-	<classpathentry kind="lib" path="/third-party/commons-lang-2.6.jar"/>
 	<classpathentry kind="lib" path="/third-party/commons-validator-1.4.0.jar"/>
 	<classpathentry exported="true" kind="lib" path="/third-party/gson-1.7.2.jar">
 		<attributes>
 			<attribute name="org.eclipse.jst.component.dependency" value="../"/>
 		</attributes>
 	</classpathentry>
-	<classpathentry kind="lib" path="/third-party/mail-1.4.5.jar"/>
-	<classpathentry exported="true" kind="lib" path="/third-party/azure-servicebus-3.1.3.jar"/>
-	<classpathentry exported="true" kind="lib" path="/third-party/accessors-smart-1.2.jar"/>
-	<classpathentry exported="true" kind="lib" path="/third-party/activation-1.1.jar"/>
-	<classpathentry exported="true" kind="lib" path="/third-party/adal4j-1.6.2.jar"/>
-	<classpathentry exported="true" kind="lib" path="/third-party/adapter-rxjava-2.4.0.jar"/>
-	<classpathentry exported="true" kind="lib" path="/third-party/asm-5.0.4.jar"/>
-	<classpathentry exported="true" kind="lib" path="/third-party/async-http-client-2.5.2.jar"/>
-	<classpathentry exported="true" kind="lib" path="/third-party/async-http-client-netty-utils-2.5.2.jar"/>
-	<classpathentry exported="true" kind="lib" path="/third-party/azure-annotations-1.7.0.jar"/>
-	<classpathentry exported="true" kind="lib" path="/third-party/azure-client-authentication-1.6.7.jar"/>
-	<classpathentry exported="true" kind="lib" path="/third-party/azure-client-runtime-1.6.7.jar"/>
-	<classpathentry exported="true" kind="lib" path="/third-party/client-runtime-1.6.7.jar"/>
-	<classpathentry exported="true" kind="lib" path="/third-party/converter-jackson-2.5.0.jar"/>
-	<classpathentry exported="true" kind="lib" path="/third-party/jackson-datatype-joda-2.9.8.jar"/>
-	<classpathentry exported="true" kind="lib" path="/third-party/javax.activation-1.2.0.jar"/>
-	<classpathentry exported="true" kind="lib" path="/third-party/javax.mail-1.6.1.jar"/>
-	<classpathentry exported="true" kind="lib" path="/third-party/jcip-annotations-1.0-1.jar"/>
-	<classpathentry exported="true" kind="lib" path="/third-party/json-smart-2.3.jar"/>
-	<classpathentry exported="true" kind="lib" path="/third-party/lang-tag-1.4.4.jar"/>
-	<classpathentry exported="true" kind="lib" path="/third-party/logging-interceptor-3.11.0.jar"/>
-	<classpathentry exported="true" kind="lib" path="/third-party/netty-buffer-4.1.27.Final.jar"/>
-	<classpathentry exported="true" kind="lib" path="/third-party/netty-codec-4.1.27.Final.jar"/>
-	<classpathentry exported="true" kind="lib" path="/third-party/netty-codec-dns-4.1.27.Final.jar"/>
-	<classpathentry exported="true" kind="lib" path="/third-party/netty-codec-http-4.1.27.Final.jar"/>
-	<classpathentry exported="true" kind="lib" path="/third-party/netty-codec-socks-4.1.27.Final.jar"/>
-	<classpathentry exported="true" kind="lib" path="/third-party/netty-common-4.1.27.Final.jar"/>
-	<classpathentry exported="true" kind="lib" path="/third-party/netty-handler-4.1.27.Final.jar"/>
-	<classpathentry exported="true" kind="lib" path="/third-party/netty-handler-proxy-4.1.27.Final.jar"/>
-	<classpathentry exported="true" kind="lib" path="/third-party/netty-reactive-streams-2.0.0.jar"/>
-	<classpathentry exported="true" kind="lib" path="/third-party/netty-resolver-4.1.27.Final.jar"/>
-	<classpathentry exported="true" kind="lib" path="/third-party/netty-resolver-dns-4.1.27.Final.jar"/>
-	<classpathentry exported="true" kind="lib" path="/third-party/netty-transport-4.1.27.Final.jar"/>
-	<classpathentry exported="true" kind="lib" path="/third-party/netty-transport-native-epoll-4.1.27.Final-linux-x86_64.jar"/>
-	<classpathentry exported="true" kind="lib" path="/third-party/netty-transport-native-unix-common-4.1.27.Final.jar"/>
-	<classpathentry exported="true" kind="lib" path="/third-party/nimbus-jose-jwt-8.2.1.jar"/>
-	<classpathentry exported="true" kind="lib" path="/third-party/oauth2-oidc-sdk-5.64.4.jar"/>
-	<classpathentry exported="true" kind="lib" path="/third-party/okhttp-3.12.0.jar"/>
-	<classpathentry exported="true" kind="lib" path="/third-party/okhttp-urlconnection-3.11.0.jar"/>
-	<classpathentry exported="true" kind="lib" path="/third-party/okio-1.15.0.jar"/>
-	<classpathentry exported="true" kind="lib" path="/third-party/proton-j-0.31.0.jar"/>
-	<classpathentry exported="true" kind="lib" path="/third-party/qpid-proton-j-extensions-1.2.1.jar"/>
-	<classpathentry exported="true" kind="lib" path="/third-party/retrofit-2.5.0.jar"/>
-	<classpathentry exported="true" kind="lib" path="/third-party/rxjava-1.3.8.jar"/>
-	<classpathentry exported="true" kind="lib" path="/third-party/commons-configuration2-2.3.jar">
+	<classpathentry exported="true" kind="lib" path="/third-party/azure-core-1.23.1.jar"/>
+	<classpathentry exported="true" kind="lib" path="/third-party/azure-core-amqp-2.3.5.jar"/>
+	<classpathentry exported="true" kind="lib" path="/third-party/azure-core-http-netty-1.11.4.jar"/>
+	<classpathentry exported="true" kind="lib" path="/third-party/azure-messaging-servicebus-7.5.1.jar"/>
+	<classpathentry exported="true" kind="lib" path="/third-party/jackson-dataformat-xml-2.13.0.jar"/>
+	<classpathentry exported="true" kind="lib" path="/third-party/jackson-datatype-jsr310-2.13.0.jar"/>
+	<classpathentry exported="true" kind="lib" path="/third-party/netty-resolver-dns-classes-macos-4.1.70.Final.jar"/>
+	<classpathentry exported="true" kind="lib" path="/third-party/netty-tcnative-classes-2.0.46.Final.jar"/>
+	<classpathentry exported="true" kind="lib" path="/third-party/netty-transport-classes-epoll-4.1.70.Final.jar"/>
+	<classpathentry exported="true" kind="lib" path="/third-party/netty-transport-classes-kqueue-4.1.70.Final.jar"/>
+	<classpathentry kind="lib" path="/third-party/jackson-datatype-joda-2.12.3.jar">
 		<attributes>
 			<attribute name="org.eclipse.jst.component.dependency" value="../"/>
 		</attributes>
 	</classpathentry>
-	<classpathentry exported="true" kind="lib" path="/third-party/jjwt-api-0.10.6.jar">
+	<classpathentry exported="true" kind="lib" path="/third-party/jakarta.mail-2.0.1.jar">
 		<attributes>
 			<attribute name="org.eclipse.jst.component.dependency" value="../"/>
 		</attributes>
 	</classpathentry>
-	<classpathentry exported="true" kind="lib" path="/third-party/jjwt-impl-0.10.6.jar">
+	<classpathentry exported="true" kind="lib" path="/third-party/logging-mailhandler-2.0.1.jar"/>
+	<classpathentry exported="true" kind="lib" path="/third-party/netty-buffer-4.1.70.Final.jar"/>
+	<classpathentry exported="true" kind="lib" path="/third-party/netty-codec-4.1.70.Final.jar"/>
+	<classpathentry exported="true" kind="lib" path="/third-party/netty-codec-dns-4.1.70.Final.jar"/>
+	<classpathentry exported="true" kind="lib" path="/third-party/netty-codec-http2-4.1.70.Final.jar"/>
+	<classpathentry exported="true" kind="lib" path="/third-party/netty-codec-http-4.1.70.Final.jar"/>
+	<classpathentry exported="true" kind="lib" path="/third-party/netty-codec-socks-4.1.70.Final.jar"/>
+	<classpathentry exported="true" kind="lib" path="/third-party/netty-common-4.1.70.Final.jar"/>
+	<classpathentry exported="true" kind="lib" path="/third-party/netty-handler-4.1.70.Final.jar"/>
+	<classpathentry exported="true" kind="lib" path="/third-party/netty-handler-proxy-4.1.70.Final.jar"/>
+	<classpathentry exported="true" kind="lib" path="/third-party/netty-resolver-4.1.70.Final.jar"/>
+	<classpathentry exported="true" kind="lib" path="/third-party/netty-resolver-dns-4.1.70.Final.jar"/>
+	<classpathentry exported="true" kind="lib" path="/third-party/netty-resolver-dns-native-macos-4.1.70.Final-osx-x86_64.jar"/>
+	<classpathentry exported="true" kind="lib" path="/third-party/netty-tcnative-boringssl-static-2.0.46.Final.jar"/>
+	<classpathentry exported="true" kind="lib" path="/third-party/netty-transport-4.1.70.Final.jar"/>
+	<classpathentry exported="true" kind="lib" path="/third-party/netty-transport-native-epoll-4.1.70.Final-linux-x86_64.jar"/>
+	<classpathentry exported="true" kind="lib" path="/third-party/netty-transport-native-kqueue-4.1.70.Final-osx-x86_64.jar"/>
+	<classpathentry exported="true" kind="lib" path="/third-party/netty-transport-native-unix-common-4.1.70.Final.jar"/>
+	<classpathentry exported="true" kind="lib" path="/third-party/proton-j-0.33.8.jar"/>
+	<classpathentry exported="true" kind="lib" path="/third-party/qpid-proton-j-extensions-1.2.4.jar"/>
+	<classpathentry exported="true" kind="lib" path="/third-party/reactor-netty-core-1.0.13.jar"/>
+	<classpathentry exported="true" kind="lib" path="/third-party/reactor-netty-http-1.0.13.jar"/>
+	<classpathentry exported="true" kind="lib" path="/third-party/woodstox-core-6.2.6.jar"/>
+	<classpathentry kind="lib" path="/third-party/commons-configuration2-2.7.jar">
 		<attributes>
 			<attribute name="org.eclipse.jst.component.dependency" value="../"/>
 		</attributes>
 	</classpathentry>
-	<classpathentry exported="true" kind="lib" path="/third-party/jjwt-jackson-0.10.6.jar">
+	<classpathentry exported="true" kind="lib" path="/third-party/jjwt-api-0.11.2.jar">
 		<attributes>
 			<attribute name="org.eclipse.jst.component.dependency" value="../"/>
 		</attributes>
 	</classpathentry>
-	<classpathentry exported="true" kind="lib" path="/third-party/log4j-api-2.11.2.jar">
+	<classpathentry exported="true" kind="lib" path="/third-party/jjwt-impl-0.11.2.jar">
 		<attributes>
 			<attribute name="org.eclipse.jst.component.dependency" value="../"/>
 		</attributes>
 	</classpathentry>
-	<classpathentry exported="true" kind="lib" path="/third-party/log4j-core-2.11.2.jar">
+	<classpathentry exported="true" kind="lib" path="/third-party/jjwt-jackson-0.11.2.jar">
 		<attributes>
 			<attribute name="org.eclipse.jst.component.dependency" value="../"/>
 		</attributes>
 	</classpathentry>
-	<classpathentry kind="lib" path="/third-party/log4j-jcl-2.11.2.jar">
+	<classpathentry exported="true" kind="lib" path="/third-party/log4j-api-2.17.1.jar">
+		<attributes>
+			<attribute name="org.eclipse.jst.component.dependency" value="../"/>
+		</attributes>
+	</classpathentry>
+	<classpathentry exported="true" kind="lib" path="/third-party/log4j-core-2.17.1.jar">
+		<attributes>
+			<attribute name="org.eclipse.jst.component.dependency" value="../"/>
+		</attributes>
+	</classpathentry>
+	<classpathentry kind="lib" path="/third-party/log4j-jcl-2.17.1.jar">
 		<attributes>
 			<attribute name="org.eclipse.jst.component.dependency" value="../"/>
 		</attributes>
 	</classpathentry>
 	<classpathentry kind="lib" path="/third-party/catalina.jar"/>
-	<classpathentry kind="lib" path="/third-party/tomcat-juli-9.0.31.jar"/>
+	<classpathentry kind="lib" path="/third-party/tomcat-juli-9.0.56.jar"/>
 	<classpathentry exported="true" kind="lib" path="/third-party/itronDeviceManagerTypes_v1_8.jar" sourcepath="/third-party/linked-sources/itronDeviceManagerTypes_v1_8_sources.jar">
 		<attributes>
 			<attribute name="org.eclipse.jst.component.dependency" value="../"/>
@@ -624,12 +622,12 @@
 			<attribute name="org.eclipse.jst.component.dependency" value="../"/>
 		</attributes>
 	</classpathentry>
-	<classpathentry exported="true" kind="lib" path="/third-party/spring-ws-core-3.0.7.RELEASE.jar">
+	<classpathentry exported="true" kind="lib" path="/third-party/spring-ws-core-3.1.1.jar">
 		<attributes>
 			<attribute name="org.eclipse.jst.component.dependency" value="../"/>
 		</attributes>
 	</classpathentry>
-	<classpathentry exported="true" kind="lib" path="/third-party/commons-compress-1.19.jar">
+	<classpathentry exported="true" kind="lib" path="/third-party/commons-compress-1.21.jar">
 		<attributes>
 			<attribute name="org.eclipse.jst.component.dependency" value="../"/>
 		</attributes>
@@ -645,5 +643,20 @@
 		</attributes>
 	</classpathentry>
 	<classpathentry kind="lib" path="/third-party/commons-vfs2-2.2.jar"/>
+	<classpathentry kind="lib" path="/third-party/commons-text-1.9.jar">
+		<attributes>
+			<attribute name="org.eclipse.jst.component.dependency" value="../"/>
+		</attributes>
+	</classpathentry>
+	<classpathentry exported="true" kind="lib" path="/third-party/apiguardian-api-1.1.0.jar"/>
+	<classpathentry exported="true" kind="lib" path="/third-party/junit-jupiter-api-5.7.1.jar"/>
+	<classpathentry exported="true" kind="lib" path="/third-party/junit-platform-commons-1.7.1.jar"/>
+	<classpathentry exported="true" kind="lib" path="/third-party/junit-jupiter-engine-5.7.1.jar"/>
+	<classpathentry exported="true" kind="lib" path="/third-party/junit-platform-engine-1.7.1.jar"/>
+	<classpathentry exported="true" kind="lib" path="/third-party/opentest4j-1.2.0.jar"/>
+	<classpathentry exported="true" kind="lib" path="/third-party/hamcrest-2.2.jar"/>
+	<classpathentry exported="true" kind="lib" path="/third-party/hamcrest-core-2.2.jar"/>
+	<classpathentry exported="true" kind="lib" path="/third-party/hamcrest-library-2.2.jar"/>
+	<classpathentry exported="true" kind="lib" path="/third-party/junit-jupiter-params-5.7.1.jar"/>
 	<classpathentry kind="output" path="bin"/>
 </classpath>

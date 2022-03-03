@@ -22,6 +22,7 @@ import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.RequestMapping;
 
 import com.cannontech.clientutils.YukonLogManager;
+import com.cannontech.common.config.ConfigurationSource;
 import com.cannontech.common.device.config.dao.DeviceConfigurationDao;
 import com.cannontech.common.device.config.dao.InvalidConfigurationRemovalException;
 import com.cannontech.common.device.config.model.DeviceConfigCategory;
@@ -35,6 +36,8 @@ import com.cannontech.common.pao.definition.dao.ConfigurationCategory;
 import com.cannontech.common.pao.definition.dao.PaoDefinitionDao;
 import com.cannontech.common.pao.definition.model.PaoDefinition;
 import com.cannontech.common.pao.definition.model.PaoTag;
+import com.cannontech.common.rfn.util.RfnFeature;
+import com.cannontech.common.rfn.util.RfnFeatureHelper;
 import com.cannontech.common.stream.StreamUtils;
 import com.cannontech.core.dao.DuplicateException;
 import com.cannontech.core.roleproperties.YukonRoleProperty;
@@ -69,6 +72,7 @@ public class DeviceConfigurationConfigController {
     @Autowired private ObjectFormattingService formattingService;
     @Autowired private PaoDefinitionDao paoDefinitionDao;
     @Autowired private RolePropertyDao rolePropertyDao;
+    @Autowired private ConfigurationSource configurationSource;
     
     private final Comparator<PaoType> paoTypeAlphaComparator = new Comparator<PaoType>() {
         @Override
@@ -555,6 +559,23 @@ public class DeviceConfigurationConfigController {
         model.addAttribute("optionalCategoryToDeviceTypesMap", optionalTypes);
         
         model.addAttribute("editingRoleProperty", YukonRoleProperty.ADMIN_EDIT_CONFIG);
+        
+        //Add attributes needed for RFN Metrology Configuration
+        model.addAttribute("rfnMetrologyConfigurationType", CategoryType.RFN_METROLOGY_CONFIGURATION.value());
+        model.addAttribute("displayRfnMetrologyWarning", !RfnFeatureHelper.isSupported(RfnFeature.METROLOGY_ENABLE_DISABLE, configurationSource));
+        
+        model.addAttribute("touConfigurationType", CategoryType.TOU.value());
+        model.addAttribute("demandFreezeConfigurationType", CategoryType.DEMAND_FREEZE.value());
+        model.addAttribute("rfnDemandConfigurationType", CategoryType.RFN_DEMAND.value());
+
+        // Check list of supported devices to check if any support advanced metrology configuration
+        // https://confluence-prod.tcc.etn.com/display/EASAMIMAR/Advanced+Metrology
+        boolean supportsAdvancedMetrology = false;
+        if (deviceConfigTypes != null) {
+            supportsAdvancedMetrology = deviceConfigTypes.getSupportedTypes().keySet().stream()
+                    .anyMatch(paoDefinitionDao::isAdvancedMetrologyConfigurationType);
+        }
+        model.addAttribute("rfnMetrologyConfigurationSupported", supportsAdvancedMetrology);
     }
     
     private Map<String, Collection<PaoType>> collectCategoryMap(Collection<Entry<ConfigurationCategory, PaoType>> categoryTypeLists) {

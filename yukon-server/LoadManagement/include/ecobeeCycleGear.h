@@ -21,5 +21,12 @@ public:
     virtual bool stopControl( CtiLMGroupPtr currentLMGroup );
 
     virtual unsigned long estimateOffTime( long controlSeconds );
+
+    std::size_t getFixedSize() const override    { return sizeof( *this ); }
+
+    // Custom Gear settings
+
+    bool isRampInOut() const;
+
 };
 

@@ -24,7 +24,7 @@
 <%--CHANNELS PROFILING--%>
 <input type="hidden" name="channelNum" id="channelNum" value="">
 <input type="hidden" name="newToggleVal" id="newToggleVal" value="">
-<table class="compact-results-table">
+<table class="compact-results-table no-stripes">
     <thead>
     <tr align="left">
       <th align="left"><i:inline key=".scanning.channel"/></th>
@@ -49,7 +49,7 @@
                     
                     <c:choose>
                     <c:when test="${empty c.jobInfos}">
-                        <tr>
+                        <tr style="border:none">
                             <c:if test="${c.channelProfilingOn}">
                                 <td><strong class="success"><i:inline key="yukon.common.on"/></strong></td>
                                 <td><i:inline key=".scanning.neverStops"/></td>

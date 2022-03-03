@@ -14,13 +14,13 @@ import com.cannontech.amr.rfn.service.RfnDataValidator;
 import com.cannontech.amr.rfn.service.processor.RfnArchiveRequestProcessor;
 import com.cannontech.amr.rfn.service.processor.RfnEventConditionDataProcessorHelper;
 import com.cannontech.clientutils.YukonLogManager;
+import com.cannontech.common.events.loggers.RfnDeviceEventLogService;
 import com.cannontech.common.pao.attribute.model.BuiltInAttribute;
 import com.cannontech.common.point.PointQuality;
 import com.cannontech.common.rfn.model.InvalidEventMessageException;
 import com.cannontech.common.rfn.model.RfnDevice;
 import com.cannontech.database.db.point.stategroup.OutageStatus;
 import com.cannontech.message.dispatch.message.PointData;
-import com.cannontech.spring.YukonSpringHook;
 
 public class RfnOutageEventArchiveRequestProcessor extends RfnEventConditionDataProcessorHelper
         implements RfnArchiveRequestProcessor {
@@ -28,10 +28,12 @@ public class RfnOutageEventArchiveRequestProcessor extends RfnEventConditionData
     private final static Logger log = YukonLogManager.getLogger(RfnOutageEventArchiveRequestProcessor.class);
 
     @Autowired private RfnDataValidator rfnDataValidator;
-
+    @Autowired private RfnDeviceEventLogService rfnDeviceEventLogService;
+    
     @Override
     public void process(RfnDevice device, RfnEvent event, List<? super PointData> pointDatas, Instant now) {
 
+        boolean isUnsolicited = event instanceof RfnAlarm;
         Instant eventInstant = instantOf(event);
         PointQuality quality = PointQuality.Normal;
         
@@ -44,7 +46,9 @@ public class RfnOutageEventArchiveRequestProcessor extends RfnEventConditionData
             }
         }
         
-        rfnMeterEventService.processAttributePointData(device, pointDatas, BuiltInAttribute.OUTAGE_STATUS, eventInstant, OutageStatus.BAD.getRawState(), quality, now);
+        rfnMeterEventService.processAttributePointData(device, pointDatas, BuiltInAttribute.OUTAGE_STATUS, eventInstant, OutageStatus.BAD.getRawState(), quality, now, isUnsolicited);
+        rfnDeviceEventLogService.outageEventReceived(device.getRfnIdentifier().getSensorSerialNumber(), 
+                                                     event.getClass().getSimpleName(), getRfnConditionType().name(), eventInstant, null);
 
         try {
             rfnMeterEventService.processAttributePointData(device, 
@@ -53,10 +57,11 @@ public class RfnOutageEventArchiveRequestProcessor extends RfnEventConditionData
                                                            eventInstant, 
                                                            getLongEventData(event, RfnConditionDataType.COUNT), 
                                                            quality, 
-                                                           now);
+                                                           now,
+                                                           isUnsolicited);
         } catch (InvalidEventMessageException ex) {
             if (event instanceof RfnAlarm) {
-                log.trace("{} restore alarm received with no COUNT, not sending RFN_OUTAGE_RESTORE_COUNT update", device);
+                log.trace("{} restore alarm received with no COUNT, not sending RFN_OUTAGE_COUNT update", device);
             } else {
                 log.error("Invalid Event Message device:" + device + " event:" + event + " pointDatas:" + pointDatas,
                     ex);

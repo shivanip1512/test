@@ -11,6 +11,7 @@
     <context:annotation-config/>
     
     <bean class="com.cannontech.support.service.impl.SupportBundleServiceImpl" />
+    <bean class="com.cannontech.support.service.impl.RFNetworkSupportBundleService"/>
     
     <bean class="com.cannontech.support.service.impl.SupportBundlePaoTypeCountsWriter"> 
         <property name="name" value="paoTypeCsvSource"/>

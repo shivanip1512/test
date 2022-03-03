@@ -9,11 +9,9 @@ import java.util.Set;
 import java.util.concurrent.TimeUnit;
 
 import javax.annotation.PostConstruct;
-import javax.jms.ConnectionFactory;
 
 import org.apache.logging.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.jms.core.JmsTemplate;
 import org.springframework.util.StringUtils;
 
 import com.cannontech.amr.rfn.dao.RfnDeviceDao;
@@ -29,6 +27,9 @@ import com.cannontech.common.rfn.model.RfnGatewayFirmwareUpdateResult;
 import com.cannontech.common.rfn.model.RfnGatewayFirmwareUpdateSummary;
 import com.cannontech.common.rfn.service.RfnGatewayFirmwareUpgradeService;
 import com.cannontech.common.rfn.service.RfnGatewayService;
+import com.cannontech.common.util.jms.YukonJmsTemplate;
+import com.cannontech.common.util.jms.YukonJmsTemplateFactory;
+import com.cannontech.common.util.jms.api.JmsApiDirectory;
 import com.cannontech.system.GlobalSettingType;
 import com.cannontech.system.dao.GlobalSettingDao;
 import com.google.common.cache.Cache;
@@ -37,29 +38,23 @@ import com.google.common.cache.CacheBuilder;
 public class RfnGatewayFirmwareUpgradeServiceImpl implements RfnGatewayFirmwareUpgradeService {
     
     private static final Logger log = YukonLogManager.getLogger(RfnGatewayServiceImpl.class);
-    private static final String firmwareUpdateRequestQueue = "yukon.qr.obj.common.rfn.RfnGatewayFirmwareUpdateRequest";
-    
+
     @Autowired private RfnGatewayFirmwareUpgradeDao firmwareUpgradeDao;
     @Autowired private RfnDeviceDao rfnDeviceDao;
     @Autowired private RfnGatewayService rfnGatewayService;
     @Autowired private GlobalSettingDao globalSettingDao;
-    
+    @Autowired private YukonJmsTemplateFactory jmsTemplateFactory;
+
+    private YukonJmsTemplate jmsTemplate;
     private Cache<String, String> firmwareUpdateVersionCache;
-    private JmsTemplate firmwareUpdateRequestTemplate;
-    
-    @Autowired
-    public void setConnectionFactory(ConnectionFactory connectionFactory) {
-        firmwareUpdateRequestTemplate = new JmsTemplate(connectionFactory);
-        firmwareUpdateRequestTemplate.setExplicitQosEnabled(true);
-        firmwareUpdateRequestTemplate.setDeliveryPersistent(false);
-    }
-    
+
     @PostConstruct
     public void init() {
         firmwareUpdateVersionCache = CacheBuilder.newBuilder()
                                                  .expireAfterWrite(1, TimeUnit.MINUTES)
                                                  .initialCapacity(2) //We expect only 1 or 2 firmware update servers
                                                  .build();
+        jmsTemplate = jmsTemplateFactory.createTemplate(JmsApiDirectory.RF_GATEWAY_FIRMWARE_UPGRADE);
     }
     
     @Override
@@ -82,7 +77,7 @@ public class RfnGatewayFirmwareUpgradeServiceImpl implements RfnGatewayFirmwareU
             request.setReleaseVersion(serverInfo.getAvailableVersion());
             
             log.debug("Sending firmware update request: " + request);
-            firmwareUpdateRequestTemplate.convertAndSend(firmwareUpdateRequestQueue, request);
+            jmsTemplate.convertAndSend(request);
         }
         
         return updateId;

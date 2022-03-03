@@ -10,8 +10,8 @@ public class RecentEventParticipationDetail extends RecentEventParticipationBase
     private List<ControlDeviceDetail> deviceDetails;
 
     public RecentEventParticipationDetail(int eventId, String programName, String groupName, Instant startTime,
-            Instant stopTime, List<ControlDeviceDetail> deviceDetails) {
-        super(eventId, programName, groupName, startTime);
+            Instant stopTime, List<ControlDeviceDetail> deviceDetails, String externalEventId) {
+        super(eventId, programName, groupName, startTime, externalEventId);
         this.stopTime = stopTime;
         this.deviceDetails = deviceDetails;
     }

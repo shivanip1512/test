@@ -5,7 +5,6 @@ import static com.cannontech.common.device.commands.CommandRequestExecutionStatu
 import static com.cannontech.common.device.commands.CommandRequestExecutionStatus.FAILED;
 import static com.cannontech.common.device.commands.CommandRequestExecutionStatus.STARTED;
 
-import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Date;
 import java.util.HashMap;
@@ -186,11 +185,18 @@ public class CommandExecutionServiceImpl implements CommandExecutionService {
 
     @Override
     public CommandResultHolder execute(CommandRequestBase command, DeviceRequestType type, LiteYukonUser user) {
+        ExecutionParameters params = createExecParams(type, user, false);
+        CommandRequestExecution execution = createAndSaveExecution(params, Lists.newArrayList(command));
+        return execute(command, type, execution, user);
+
+    }
+    
+    @Override
+    public CommandResultHolder execute(CommandRequestBase command, DeviceRequestType type,  CommandRequestExecution execution, LiteYukonUser user) {
         CollectingCommandCompletionCallback callback = new CollectingCommandCompletionCallback();
         WaitableCommandCompletionCallback<? extends CommandRequestBase> waitableCallback =
             waitableFactory.createWaitable(callback, command.getPaoType());
         ExecutionParameters params = createExecParams(type, user, false);
-        CommandRequestExecution execution = createAndSaveExecution(params, Lists.newArrayList(command));
         CommandRequestExecutionIdentifier identifier =
             sendToPorter(Lists.newArrayList(command), waitableCallback, params, execution);
         callback.setCommandRequestExecutionIdentifier(identifier);
@@ -295,7 +301,7 @@ public class CommandExecutionServiceImpl implements CommandExecutionService {
             boolean nothingWritten = true;
             String commandToSend = null;
             // ids of devices that were send to porter
-            List<Integer> deviceIdsProcessed = new ArrayList<>();
+            Set<Integer> deviceIdsProcessed = new HashSet<>();
             try {
                 for (RequestHolder requestHolder : commandRequests) {
                     if (listener.isCanceled()) {

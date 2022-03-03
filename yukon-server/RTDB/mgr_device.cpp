@@ -63,6 +63,7 @@
 #include <boost/range/adaptor/type_erased.hpp>
 #include <boost/range/adaptor/uniqued.hpp>
 #include <boost/range/any_range.hpp>
+#include <boost/bind/bind.hpp>
 
 using namespace Cti;  //  in preparation for moving devices to their own namespace
 using namespace std;
@@ -178,8 +179,16 @@ bool CtiDeviceManager::refreshDevices(Cti::RowReader &rdr)
             //  The device in this row is already in the list.  We need to
             //    update the list entry to the new settings
 
-            // Fills himself in from the reader
-            existing_device->DecodeDatabaseReader(rdr);
+            // Single failure should not fail the following devices
+            try
+            {
+                // Fills himself in from the reader
+                existing_device->DecodeDatabaseReader(rdr);
+            }
+            catch (...)
+            {
+                CTILOG_UNKNOWN_EXCEPTION_ERROR(dout);
+            }
 
             // Mark it updated...  should DecodeDatabaseReader() do this?
             existing_device->setUpdatedFlag();
@@ -193,14 +202,22 @@ bool CtiDeviceManager::refreshDevices(Cti::RowReader &rdr)
 
             if( new_device )
             {
-                // Fills himself in from the reader
-                new_device->DecodeDatabaseReader(rdr);
+                // Single failure should not fail the following devices
+                try
+                {
+                    // Fills himself in from the reader
+                    new_device->DecodeDatabaseReader(rdr);
+                }
+                catch (...)
+                {
+                    CTILOG_UNKNOWN_EXCEPTION_ERROR(dout);
+                }
 
                 // Mark it updated...  should DecodeDatabaseReader() do this?
                 new_device->setUpdatedFlag();
 
                 // Stuff it in the list
-                _smartMap.insert( new_device->getID(), new_device );
+                _smartMap.insert(new_device->getID(), new_device);
 
                 addAssociations(*new_device);
             }
@@ -764,7 +781,7 @@ void CtiDeviceManager::refreshList(const Cti::Database::id_set &paoids, const lo
     {
         Timing::DebugTimer timer("removing invalidated devices ");
 
-        std::vector<CtiDeviceSPtr> evictedDevices;
+        std::vector<CtiDeviceSPtr> devicesToEvict;
 
         //  If this was a "reload all"...
         if( paoids.empty() )
@@ -772,7 +789,7 @@ void CtiDeviceManager::refreshList(const Cti::Database::id_set &paoids, const lo
             //  ...make sure we loaded something before we evict any records
             if( rowFound )
             {
-                evictedDevices = _smartMap.findAll(boost::bind(&CtiDeviceManager::shouldDiscardDevice, this, _1));
+                devicesToEvict = getDiscardableDevices();
             }
         }
         else
@@ -783,25 +800,37 @@ void CtiDeviceManager::refreshList(const Cti::Database::id_set &paoids, const lo
                 {
                     if( shouldDiscardDevice(dev) )
                     {
-                        evictedDevices.push_back(dev);
+                        devicesToEvict.push_back(dev);
                     }
                 }
             }
         }
 
-        if( ! evictedDevices.empty() )
+        evictDevices(devicesToEvict);
+    }
+}
+
+std::vector<CtiDeviceSPtr> CtiDeviceManager::getDiscardableDevices() const
+{
+    using namespace boost::placeholders;
+
+    return _smartMap.findAll(boost::bind(&CtiDeviceManager::shouldDiscardDevice, this, _1));
+}
+
+void CtiDeviceManager::evictDevices(std::vector<CtiDeviceSPtr> &devices)
+{
+    if( ! devices.empty() )
+    {
+        //  We need to grab the writer lock since we're modifying the associations.
+        coll_type::writer_lock_guard_t guard(getLock());
+
+        for (const auto & evictedDevice : devices)
         {
-            //  We need to grab the writer lock since we're modifying the associations.
-            coll_type::writer_lock_guard_t guard(getLock());
+            CTILOG_INFO(dout, "Evicting \""<< evictedDevice->getName() <<"\" from list");
 
-            for each( CtiDeviceSPtr evictedDevice in evictedDevices )
-            {
-                CTILOG_INFO(dout, "Evicting \""<< evictedDevice->getName() <<"\" from list");
+            removeAssociations(*evictedDevice);
 
-                removeAssociations(*evictedDevice);
-
-                _smartMap.remove(evictedDevice->getID());
-            }
+            _smartMap.remove(evictedDevice->getID());
         }
     }
 }

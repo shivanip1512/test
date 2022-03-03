@@ -1,7 +1,9 @@
 package com.cannontech.dr.rfn.service;
 
-import static org.junit.Assert.*;
-import org.junit.Test;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+
+import org.junit.jupiter.api.Test;
+
 import com.cannontech.dr.rfn.service.ParsingService.Schema;
 
 public class ExiParsingServiceTest {
@@ -16,24 +18,24 @@ public class ExiParsingServiceTest {
     public void testHeaderSchemaVersionParsing() {
         Schema result;
         result = ParsingService.getSchema(noExpressComHeaderSchema_0_0_2);
-        assertEquals("The getSchema() method is not returning the expected schema version for this header data.",
-            Schema.SCHEMA_0_0_2, result);
+        assertEquals(Schema.SCHEMA_0_0_2, result,
+                "The getSchema() method is not returning the expected schema version for this header data.");
 
         result = ParsingService.getSchema(noExpressComHeaderSchema_0_0_3);
-        assertEquals("The getSchema() method is not returning the expected schema version for this header data.",
-            Schema.SCHEMA_0_0_3, result);
+        assertEquals(Schema.SCHEMA_0_0_3, result,
+                "The getSchema() method is not returning the expected schema version for this header data.");
 
         result = ParsingService.getSchema(withExpressComHeaderSchema_0_0_2);
-        assertEquals("The getSchema() method is not returning the expected schema version for this header data.",
-            Schema.SCHEMA_0_0_2, result);
+        assertEquals(Schema.SCHEMA_0_0_2, result,
+                "The getSchema() method is not returning the expected schema version for this header data.");
 
         result = ParsingService.getSchema(withExpressComHeaderSchema_0_0_3);
-        assertEquals("The getSchema() method is not returning the expected schema version for this header data.",
-            Schema.SCHEMA_0_0_3, result);
+        assertEquals(Schema.SCHEMA_0_0_3, result,
+                "The getSchema() method is not returning the expected schema version for this header data.");
 
         result = ParsingService.getSchema(fromDRReport_6600_v1_1_1_ex3);
-        assertEquals("The getSchema() method is not returning the expected schema version for this header data.",
-            Schema.SCHEMA_0_0_3, result);
+        assertEquals(Schema.SCHEMA_0_0_3, result,
+                "The getSchema() method is not returning the expected schema version for this header data.");
 
     }
 }

@@ -11,8 +11,6 @@ import java.util.Map;
 import java.util.Set;
 
 import javax.annotation.PostConstruct;
-import javax.jms.ConnectionFactory;
-
 import org.apache.commons.io.IOUtils;
 import org.apache.logging.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -35,26 +33,27 @@ import com.cannontech.common.rfn.service.RfnGatewayService;
 import com.cannontech.common.util.jms.JmsReplyHandler;
 import com.cannontech.common.util.jms.RequestReplyTemplate;
 import com.cannontech.common.util.jms.RequestReplyTemplateImpl;
+import com.cannontech.common.util.jms.YukonJmsTemplate;
+import com.cannontech.common.util.jms.YukonJmsTemplateFactory;
+import com.cannontech.common.util.jms.api.JmsApiDirectory;
 
 public class RfnGatewayCertificateUpdateServiceImpl implements RfnGatewayCertificateUpdateService {
 
     private static final Logger log = YukonLogManager.getLogger(RfnGatewayCertificateUpdateServiceImpl.class);
 
     private final static String configName = "RFN_GATEWAY_UPGRADE_REQUEST";
-    private final static String queueName = "yukon.qr.obj.common.rfn.GatewayUpgradeRequest";
-
-    @Autowired private ConnectionFactory connectionFactory;
     @Autowired private ConfigurationSource configurationSource;
     @Autowired private RfnGatewayService gatewayService;
     @Autowired private GatewayCertificateUpdateDao certificateUpdateDao;
     @Autowired private RfnDeviceLookupService rfnDeviceLookupService;
+    @Autowired private YukonJmsTemplateFactory jmsTemplateFactory;
 
     private RequestReplyTemplate<RfnGatewayUpgradeRequestAck> qrTemplate;
 
     @PostConstruct
     public void initialize() {
-        qrTemplate = new RequestReplyTemplateImpl<RfnGatewayUpgradeRequestAck>(configName, configurationSource,
-                                                                               connectionFactory, queueName, false);
+        YukonJmsTemplate jmsTemplate = jmsTemplateFactory.createTemplate(JmsApiDirectory.RF_GATEWAY_CERTIFICATE_UPDATE);
+        qrTemplate = new RequestReplyTemplateImpl<RfnGatewayUpgradeRequestAck>(configName, configurationSource, jmsTemplate);
     }
 
     @Override

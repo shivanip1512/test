@@ -1,13 +1,14 @@
 package com.cannontech.common.util;
 
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
+
 import java.text.DateFormat;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
 
-import org.junit.Assert;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 public class SimpleTemplateProcessorTest {
     DateFormat dateTimeInstance = DateFormat.getDateInstance(DateFormat.SHORT);
@@ -23,7 +24,7 @@ public class SimpleTemplateProcessorTest {
         
         String result = tp.process(template, data);
         
-        Assert.assertEquals("Tom Mack", result);
+        assertEquals("Tom Mack", result);
     }
 
     @Test
@@ -38,7 +39,7 @@ public class SimpleTemplateProcessorTest {
         
         String result = tp.process(template, data);
         
-        Assert.assertEquals("Tom Mack is 29", result);
+        assertEquals("Tom Mack is 29", result);
     }
     
     @Test
@@ -57,7 +58,7 @@ public class SimpleTemplateProcessorTest {
         
         String result = tp.process(template, data);
         
-        Assert.assertEquals("Tom Mack needs carrots, eggs, salt", result);
+        assertEquals("Tom Mack needs carrots, eggs, salt", result);
     }
     
     @Test
@@ -76,7 +77,7 @@ public class SimpleTemplateProcessorTest {
         
         String result = tp.process(template, data);
         
-        Assert.assertEquals("Tom Mack needs <b>carrots</b>, <b>eggs</b>, <b>salt</b>", result);
+        assertEquals("Tom Mack needs <b>carrots</b>, <b>eggs</b>, <b>salt</b>", result);
     }
     
 

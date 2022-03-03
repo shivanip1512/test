@@ -4,6 +4,14 @@ import com.cannontech.common.exception.DisplayableRuntimeException;
 import com.cannontech.common.pao.PaoType;
 
 public class DeviceCreationException extends DisplayableRuntimeException {
+    
+    public static enum Type {
+        UNKNOWN,
+        GUID_ALREADY_EXISTS,
+        GUID_DOES_NOT_EXIST,
+    }
+    
+    private Type type = Type.UNKNOWN;
 
     private static final String keyBase = "yukon.exception.deviceCreationException.";
 
@@ -14,6 +22,16 @@ public class DeviceCreationException extends DisplayableRuntimeException {
 
     public DeviceCreationException(String message, String key) {
         super(message, keyBase + key);
+    }
+    
+    public DeviceCreationException(String message, String key, Type type, Throwable cause) {
+        super(message, keyBase + key, cause);
+        this.type = type;
+    }
+    
+    public DeviceCreationException(String message, String key, Type type) {
+        super(message, keyBase + key);
+        this.type = type;
     }
 
     public DeviceCreationException(String message, String key, Throwable cause) {
@@ -42,5 +60,9 @@ public class DeviceCreationException extends DisplayableRuntimeException {
 
     public DeviceCreationException(String message, String key, String ecName, PaoType paoType) {
         super(message, keyBase + key, ecName, paoType);
+    }
+    
+    public Type getType() {
+        return type;
     }
 }

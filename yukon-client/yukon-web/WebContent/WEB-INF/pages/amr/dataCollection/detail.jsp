@@ -52,7 +52,7 @@
                                 </c:forEach>
                                 <c:set var="buttonText" value="green"/>
                                 <c:if test="${range eq 'EXPECTED'}">
-                                    <c:set var="buttonText" value="pie-blue"/>
+                                    <c:set var="buttonText" value="blue"/>
                                 </c:if> 
                                 <c:if test="${range eq 'OUTDATED'}">
                                     <c:set var="buttonText" value="orange"/>
@@ -66,7 +66,8 @@
                     </tags:nameValue2>                    
                     <tags:nameValue2 nameKey=".primaryGateway">
                          <cti:msg2 var="gatewayPlaceholder" key=".selectGateways"/>
-                        <select name="selectedGatewayIds" class="js-primary-gateway-select" multiple="multiple" data-placeholder="${gatewayPlaceholder}">
+                        <select name="selectedGatewayIds" class="js-primary-gateway-select w300" multiple="multiple" 
+                            data-placeholder="${gatewayPlaceholder}" size="1">
                             <c:forEach var="gateway" items="${gateways}">
                                 <c:set var="checked" value=""/>
                                 <c:forEach var="selectedGateway" items="${selectedGateways}">
@@ -95,7 +96,7 @@
             <cm:dropdown icon="icon-cog">
                 <cm:dropdownOption key=".collectionActions" icon="icon-cog-go" classes="js-collection-action" data-collection-action="${collectionActionsType}"/> 
                 <cm:dropdownOption icon="icon-csv" key=".download" classes="js-download"/>  
-                <cm:dropdownOption icon="icon-map-sat" key=".mapDevices" classes="js-collection-action" data-collection-action="${mappingType}"/>
+                <cm:dropdownOption icon="icon-map" key=".mapDevices" classes="js-collection-action" data-collection-action="${mappingType}"/>
                 <cm:dropdownOption icon="icon-read" key=".readAttribute" classes="js-collection-action" data-collection-action="${readAttributeType}"/>          
                 <cm:dropdownOption icon="icon-ping" key=".sendCommand" classes="js-collection-action" data-collection-action="${sendCommandType}"/>
             </cm:dropdown>
@@ -119,7 +120,6 @@
         <%@ include file="deviceTable.jsp" %>
     </div>
     
-    <cti:includeScript link="HIGH_STOCK"/>
     <cti:includeScript link="/resources/js/widgets/yukon.widget.dataCollection.js"/>
     <cti:includeScript link="/resources/js/pages/yukon.ami.dataCollection.detail.js"/>
 

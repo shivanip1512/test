@@ -1,0 +1,167 @@
+Trend:
+  title: Trend
+  required:
+    - trendName
+   
+  type: object
+  properties:
+    trendName:
+      type: string
+      maxLength: 40
+      description: 'Name for the trend.'
+    trendSeries:
+      $ref: '#/trendSeries'
+
+trendSeries:
+  type: array
+  items:
+    required:
+    - label
+    type: object
+    properties:
+      type:
+        type: string
+        default: BASIC_TYPE
+        description: 'Graph Type of trend.'
+        enum:
+          - BASIC_TYPE
+          - USAGE_TYPE
+          - PEAK_TYPE
+          - YESTERDAY_TYPE
+          - MARKER_TYPE
+          - DATE_TYPE
+      pointId:
+        type: number
+        description: 'Point Id. Point Id for MARKER_TYPE is -100.'
+      label:
+        type: string
+        maxLength: 40
+        description: 'Label for the selected point. label is mandatory when trendSeries is passed.'
+      color:
+        type: string
+        default: BLUE
+        description: 'Color.'
+        enum:
+        - BLACK
+        - SKY
+        - BLUE
+        - TEAL
+        - GRAY
+        - GREEN
+        - SAGE
+        - ORANGE
+        - PURPLE
+        - WINE
+        - YELLOW
+      axis:
+        type: string
+        default: LEFT
+        description: 'Axis.'
+        enum:
+        - LEFT
+        - RIGHT
+      multiplier:
+        type: number
+        default: 1
+        description: 'Multiplier.'
+      style:
+        type: string
+        default: LINE
+        description: 'Render Style. Render Style for MARKER_TYPE is LINE.'
+        enum:
+        - LINE
+        - LINE_SHAPES
+        - LINE_AREA
+        - LINE_AREA_SHAPES
+        - STEP
+        - STEP_SHAPES
+        - STEP_AREA
+        - STEP_AREA_SHAPES
+        - BAR
+        - BAR_3D
+      date:
+        type: string
+        format: date-type
+        description: 'Date in MM/dd/yyyy format. Applicable only when type is DATE_TYPE.'
+id:
+  title: id
+  required:
+    - id
+  type: object
+  properties:
+    id:
+      type: integer
+      description: 'Unique identifier for Trend.'
+      
+resetPeak:
+  title: resetPeak
+  required:
+    - date
+  type: object
+  properties:
+    date:
+      type: string
+      format: date-type
+      description: 'Date in MM/dd/yyyy format.'
+      
+trendId:
+  title: trendId
+  required:
+    - trendId
+  type: object
+  properties:
+    trendId:
+      type: integer
+      description: 'Unique identifier for Trend.'
+
+Trend Response Schema:
+  type: object
+  properties:
+    trendId:
+      type: integer
+      description: 'Unique identifier for Trend.'
+    trendName:
+      type: string
+      maxLength: 40
+      description: 'Name for the trend.'
+    trendSeries:
+      $ref: '#/trendSeries'
+
+components:
+  examples:
+    Trend Request:
+      value:
+        trendName: Test Trend
+        trendSeries:
+          - type: DATE_TYPE
+            pointId: -110
+            label: System Device / System Point
+            color: BLACK
+            axis: LEFT
+            multiplier: 1.2
+            style: LINE
+            date: 07/22/2020
+    Trend Response:
+      value:
+        trendId: 7
+        trendName: Test Trend
+        trendSeries:
+          - type: DATE_TYPE
+            pointId: -110
+            label: System Device / System Point
+            color: BLACK
+            axis: LEFT
+            multiplier: 1.2
+            style: LINE
+            date: 07/22/2020
+    id:
+      value:
+        id: 11
+        
+    resetPeak:
+      value:
+        startDate: 06/30/2020
+      
+    trendId: 
+      value:
+        trendId: 10

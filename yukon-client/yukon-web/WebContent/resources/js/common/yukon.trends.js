@@ -32,17 +32,14 @@ yukon.trends = (function () {
             var legend = {
                     enabled: true,
                     align: 'center',
-                    backgroundColor: '#fefefe',
-                    borderColor: '#ccc',
+                    backgroundColor: yg.colors.WHITE,
+                    borderColor: yg.colors.GRAY_LIGHT,
                     borderWidth: 1,
                     borderRadius: 1,
                     layout: 'vertical',
                     verticalAlign: 'bottom',
                     shadow: true,
                     title : {
-                        style:{
-                            "color" :"#ff0000"
-                            },
                         text:trend.truncateMessage
                     },
                     maxHeight: 80
@@ -84,6 +81,9 @@ yukon.trends = (function () {
                     }
                 },
                 series : trend.series,
+                time: {
+                    timezone: yg.timezone
+                },
                 tooltip: {
                     dateTimeLabelFormats: dateTimeLabelFormats,
                     xDateFormat: labelFormat,

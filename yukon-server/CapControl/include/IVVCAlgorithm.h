@@ -6,6 +6,8 @@
 #include "ZoneManager.h"
 #include "VoltageRegulatorManager.h"
 
+using Cti::CapControl::VoltageRegulatorManager;
+
 
 namespace Cti           {
 namespace Messaging     {
@@ -51,26 +53,31 @@ class IVVCAlgorithm
             MissingObject
         };
 
-        ValidityCheckResults hasValidData( PointDataRequestPtr & request,
-                                           const CtiTime & timeNow,
+        ValidityCheckResults hasValidData( IVVCStatePtr state,
+                                           PointDataRequestPtr & request,
+                                           const CtiTime timeNow,
                                            const CtiCCSubstationBusPtr subbus,
                                            const IVVCStrategy & strategy );
 
-        bool processZoneByPhase( PointDataRequestPtr & request, 
-                                 const CtiTime & timeNow,
+        bool processZoneByPhase( IVVCStatePtr state,
+                                 PointDataRequestPtr & request, 
+                                 const CtiTime timeNow,
                                  const CtiCCSubstationBusPtr subbus,
                                  const IVVCStrategy & strategy, 
                                  const long zoneId,
-                                 bool & dataIsValid );
+                                 bool & dataIsValid,
+                                 std::set<std::string> & events );
 
-        bool processZoneByAggregate( PointDataRequestPtr & request, 
-                                     const CtiTime & timeNow,
+        bool processZoneByAggregate( IVVCStatePtr state,
+                                     PointDataRequestPtr & request, 
+                                     const CtiTime timeNow,
                                      const CtiCCSubstationBusPtr subbus,
                                      const IVVCStrategy & strategy, 
                                      const long zoneId,
-                                     bool & dataIsValid );
+                                     bool & dataIsValid,
+                                     std::set<std::string> & events );
 
-        bool determineWatchPoints(CtiCCSubstationBusPtr subbus, bool sendScan, std::set<PointRequest>& pointRequests, IVVCStrategy* strategy);
+        bool determineWatchPoints(IVVCState::DeviceInformation & deviceInformation, CtiCCSubstationBusPtr subbus, bool sendScan, std::set<PointRequest>& pointRequests, bool isBusOptimizedFeeder);
         bool determineDmvWatchPoints(CtiCCSubstationBusPtr subbus, bool sendScan, std::set<PointRequest>& pointRequests, ControlStrategy::ControlMethodType strategyControlMethod, std::set<long> & dmvWattVarPointIDs );
 
         double calculateTargetPFVars(const double targetPF, const double wattValue);
@@ -96,7 +103,7 @@ class IVVCAlgorithm
                                         const bool isPeakTime ) const;
 
         void tapOperation(IVVCStatePtr state, CtiCCSubstationBusPtr subbus, IVVCStrategy* strategy, const PointValueMap & pointValues);
-        void tapOpZoneNormalization(const long parentID, const Cti::CapControl::ZoneManager &zoneManager, IVVCState::TapOperationZoneMap &tapOp);
+        void tapOpZoneNormalization(const long parentID, const Cti::CapControl::ZoneManager& zoneManager, IVVCState::TapOperationZoneMap& tapOp, IVVCState::TapOperationInhibitMap & tapInhibit);
 
         virtual bool operateBank(long bankId, CtiCCSubstationBusPtr subbus, DispatchConnectionPtr dispatchConnection, IVVCStrategy* strategy);
         virtual void sendPointChangesAndEvents(DispatchConnectionPtr dispatchConnection, CtiMultiMsg_vec& pointChanges, const Cti::CapControl::EventLogEntries &ccEvents);
@@ -109,7 +116,7 @@ class IVVCAlgorithm
         virtual bool busAnalysisState(IVVCStatePtr state, CtiCCSubstationBusPtr subbus, IVVCStrategy* strategy, DispatchConnectionPtr dispatchConnection);
 
         void setupNextBankToVerify(IVVCStatePtr state, CtiCCSubstationBusPtr subbus, Cti::CapControl::EventLogEntries &ccEvents);
-        bool allRegulatorsInRemoteMode(const long subbusId) const;
+        bool allRegulatorsInRemoteMode(IVVCStatePtr state, CtiCCSubstationBusPtr subbus) const;
 
         void sendDisableRemoteControl( CtiCCSubstationBusPtr subbus );
         void handleCommsLost(IVVCStatePtr state, CtiCCSubstationBusPtr subbus);
@@ -130,15 +137,18 @@ class IVVCAlgorithm
                                                IVVCStrategy * strategy,
                                                IVVCState::TapOperationZoneMap & solution );
 
+        void finalizeMultiTapSolution( CtiCCSubstationBusPtr subbus, IVVCStatePtr state );
+        void processInhibitedRegulator( VoltageRegulatorManager::SharedPtr regulator, IVVCStatePtr state );
+
         double getVmaxForPoint( const long pointID, CtiCCSubstationBusPtr subbus, IVVCStrategy * strategy ) const;
 
-        void findPointInRequest( const long pointID, const PointValueMap & pointValues, PointDataRequestPtr & request, const CtiTime & timeNow,
+        void findPointInRequest( IVVCStatePtr state, const long pointID, const PointValueMap & pointValues, PointDataRequestPtr & request, const CtiTime timeNow,
                                  int & totalPoints, int & missingPoints, int & stalePoints );
         bool analysePointRequestData( const long subbusID, const int totalPoints, const int missingPoints, 
                                       const int stalePoints, const double minimum, 
                                       const Cti::Messaging::CapControl::IVVCAnalysisScenarios & incompleteScenario,
                                       const Cti::Messaging::CapControl::IVVCAnalysisScenarios & staleScenario,
-                                      const CtiTime & timeNow, const std::string & type );
+                                      const CtiTime timeNow, const std::string & type );
 
         void updateMaxOvervoltages( const long pointID,
                                     const Cti::CapControl::Phase & phase,
@@ -146,8 +156,6 @@ class IVVCAlgorithm
                                     std::map<Cti::CapControl::Phase, double> cumulativeOffsets,
                                     PointValueMap & voltages, 
                                     std::map<Cti::CapControl::Phase, double> & maxOverages );
-
-        std::string handleReverseFlow( CtiCCSubstationBusPtr subbus );
 
         bool isAnyRegulatorInBadPowerFlow( IVVCStatePtr state, CtiCCSubstationBusPtr subbus );
 

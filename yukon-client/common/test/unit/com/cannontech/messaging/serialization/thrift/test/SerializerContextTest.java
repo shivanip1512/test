@@ -1,12 +1,13 @@
 package com.cannontech.messaging.serialization.thrift.test;
 
+import static org.junit.jupiter.api.Assertions.fail;
+
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashSet;
 import java.util.List;
 
-import org.junit.Assert;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 import com.cannontech.messaging.serialization.thrift.ThriftSerializer;
 
@@ -28,7 +29,7 @@ public class SerializerContextTest extends ContextAwareTestBase{
         
         for (ThriftSerializer serializer : allSerializerList) {
             if (!usedSerializers.remove(serializer)) {
-                Assert.fail("Serializer'" + serializer.getClass() + "' is never used in a MessageFactory");
+                fail("Serializer'" + serializer.getClass() + "' is never used in a MessageFactory");
             }
         }
     }

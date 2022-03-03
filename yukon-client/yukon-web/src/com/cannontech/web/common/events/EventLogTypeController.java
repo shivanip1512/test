@@ -6,8 +6,8 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 import java.util.Map;
-import java.util.Set;
 import java.util.Map.Entry;
+import java.util.Set;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
@@ -63,7 +63,6 @@ import com.cannontech.web.common.flashScope.FlashScopeMessageType;
 import com.cannontech.web.input.DatePropertyEditorFactory;
 import com.cannontech.web.input.EventLogColumnTypePropertyEditor;
 import com.cannontech.web.security.annotation.CheckRoleProperty;
-import com.cannontech.web.stars.dr.operator.validator.EventLogCategoryValidator;
 import com.cannontech.web.stars.dr.operator.validator.EventLogTypeValidator;
 import com.cannontech.web.util.JsTreeNode;
 import com.cannontech.web.util.WebFileUtils;
@@ -84,7 +83,6 @@ public class EventLogTypeController {
     private final String eventLogResolvablePrefix ="yukon.common.events.";
     
     @Autowired private DatePropertyEditorFactory datePropertyEditorFactory;
-    @Autowired private EventLogCategoryValidator eventLogCategoryValidator;
     @Autowired private EventLogFilterFactory eventLogFilterFactory;
     @Autowired private EventLogTypeValidator eventLogTypeValidator;
     @Autowired private EventLogDao eventLogDao;
@@ -123,16 +121,19 @@ public class EventLogTypeController {
         final MessageSourceAccessor messageSourceAccessor = 
             messageResolver.getMessageSourceAccessor(userContext);
 
+        List<Integer> argumentIndexes = Lists.newArrayList(); // the EventLog column name number part only; shall be index into searchResults.resultList
         List<EventLogFilter> eventLogFilters = filter.getEventLogFilters();
         columnNames.add(messageSourceAccessor.getMessage("yukon.web.modules.support.eventViewer.byType.event"));
-        columnNames.add(messageSourceAccessor.getMessage("yukon.web.modules.support.eventViewer.byType.dateAndTime"));
+        columnNames.add(messageSourceAccessor.getMessage("yukon.web.modules.support.eventViewer.byType.date"));
+        columnNames.add(messageSourceAccessor.getMessage("yukon.web.modules.support.eventViewer.byType.time"));
         for (EventLogFilter eventLogFilter : eventLogFilters) {
             columnNames.add(messageSourceAccessor.getMessage(eventLogFilter.getKey()));
+            argumentIndexes.add(eventLogFilter.getArgumentColumn().getColumnIndex());
         }
         
         // Get data grid
         List<List<String>> dataGrid = 
-            eventLogUIService.getDataGridRowByType(searchResult, userContext);
+            eventLogUIService.getDataGridRowByType(searchResult, argumentIndexes, userContext);
         
         // Build and write csv report
         WebFileUtils.writeToCSV(response, columnNames, dataGrid, filter.getEventLogType() + ".csv");

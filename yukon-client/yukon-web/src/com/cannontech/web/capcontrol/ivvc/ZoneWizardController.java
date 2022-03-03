@@ -211,6 +211,8 @@ public class ZoneWizardController {
         SubBus subBus = cache.getSubBus(zoneDto.getSubstationBusId());
         model.addAttribute("subBusName", subBus.getCcName());
         model.addAttribute("mode", PageEditMode.EDIT.name());
+        //get possible parent zones
+        model.addAttribute("parentZones", zoneDtoHelper.getAvailableParentZonesForZone(zoneDto));
     }
     
     private void setupCommonAttributes(ModelMap model, AbstractZone zoneDto) {

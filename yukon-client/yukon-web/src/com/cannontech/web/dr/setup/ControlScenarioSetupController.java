@@ -31,7 +31,7 @@ import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 import com.cannontech.clientutils.YukonLogManager;
 import com.cannontech.common.dr.setup.ControlScenario;
 import com.cannontech.common.dr.setup.LMDelete;
-import com.cannontech.common.dr.setup.LMDto;
+import com.cannontech.common.dr.setup.LMGearDto;
 import com.cannontech.common.dr.setup.LmSetupFilterType;
 import com.cannontech.common.dr.setup.ProgramDetails;
 import com.cannontech.core.roleproperties.HierarchyPermissionLevel;
@@ -91,7 +91,7 @@ public class ControlScenarioSetupController {
     public String view(ModelMap model, YukonUserContext userContext, @PathVariable int id, FlashScope flash,
             HttpServletRequest request) {
         try {
-            String url = helper.findWebServerUrl(request, userContext, ApiURL.drControlScenarioRetrieveUrl + id);
+            String url = helper.findWebServerUrl(request, userContext, ApiURL.drControlScenarioUrl + "/" + id);
             model.addAttribute("mode", PageEditMode.VIEW);
             ControlScenario controlScenario = retrieveScenario(userContext, request, id, url);
             if (controlScenario == null) {
@@ -118,7 +118,7 @@ public class ControlScenarioSetupController {
             if (model.containsAttribute("controlScenario")) {
                 controlScenario = (ControlScenario) model.get("controlScenario");
             } else {
-                String url = helper.findWebServerUrl(request, userContext, ApiURL.drControlScenarioRetrieveUrl + id);
+                String url = helper.findWebServerUrl(request, userContext, ApiURL.drControlScenarioUrl + "/" + id);
                 controlScenario = retrieveScenario(userContext, request, id, url);
                 if (controlScenario == null) {
                     flash.setError(new YukonMessageSourceResolvable(baseKey + "controlScenario.retrieve.error"));
@@ -143,12 +143,12 @@ public class ControlScenarioSetupController {
             FlashScope flash, HttpServletRequest request) {
         try {
             // Api call to delete control scenario
-            String url = helper.findWebServerUrl(request, userContext, ApiURL.drControlScenarioDeleteUrl + id);
+            String url = helper.findWebServerUrl(request, userContext, ApiURL.drControlScenarioUrl + "/" + id);
             ResponseEntity<? extends Object> response =
                 apiRequestHelper.callAPIForObject(userContext, request, url, HttpMethod.DELETE, Object.class, lmDelete);
 
             if (response.getStatusCode() == HttpStatus.OK) {
-                flash.setConfirm(new YukonMessageSourceResolvable(baseKey + "delete.success", lmDelete.getName()));
+                flash.setConfirm(new YukonMessageSourceResolvable("yukon.common.delete.success", lmDelete.getName()));
                 return "redirect:" + setupRedirectLink;
             }
         } catch (ApiCommunicationException e) {
@@ -156,8 +156,8 @@ public class ControlScenarioSetupController {
             flash.setError(new YukonMessageSourceResolvable(communicationKey));
             return "redirect:" + setupRedirectLink;
         } catch (RestClientException ex) {
-            log.error("Error deleting Scenario : ", ex.getMessage());
-            flash.setError(new YukonMessageSourceResolvable(baseKey + "delete.error", lmDelete.getName()));
+            log.error("Error deleting scenario: {}. Error: {}", lmDelete.getName(), ex.getMessage());
+            flash.setError(new YukonMessageSourceResolvable("yukon.web.api.delete.error", lmDelete.getName(), ex.getMessage()));
             return "redirect:" + setupRedirectLink;
         }
         return "redirect:" + setupRedirectLink;
@@ -171,28 +171,28 @@ public class ControlScenarioSetupController {
         try {
             ResponseEntity<? extends Object> response = null;
             if (controlScenario.getId() == null) {
-                String url = helper.findWebServerUrl(request, userContext, ApiURL.drControlScenarioCreateUrl);
+                String url = helper.findWebServerUrl(request, userContext, ApiURL.drControlScenarioUrl);
                 response = apiRequestHelper.callAPIForObject(userContext, request, url, HttpMethod.POST, Object.class,
                     controlScenario);
             } else {
                 String url = helper.findWebServerUrl(request, userContext,
-                    ApiURL.drControlScenarioUpdateUrl + controlScenario.getId());
-                response = apiRequestHelper.callAPIForObject(userContext, request, url, HttpMethod.POST, Object.class,
+                    ApiURL.drControlScenarioUrl + "/" + controlScenario.getId());
+                response = apiRequestHelper.callAPIForObject(userContext, request, url, HttpMethod.PUT, Object.class,
                     controlScenario);
             }
             if (response.getStatusCode() == HttpStatus.UNPROCESSABLE_ENTITY) {
                 BindException error = new BindException(controlScenario, "controlScenario");
-                result = helper.populateBindingError(result, error, response);
+                result = helper.populateBindingErrorForApiErrorModel(result, error, response, "yukon.web.error.");
                 if (result.hasFieldErrors("allPrograms")) {
                     flash.setError(result.getFieldError("allPrograms"));
                 }
                 return bindAndForward(controlScenario, result, redirectAttributes);
             }
 
-            if (response.getStatusCode() == HttpStatus.OK) {
+            if (response.getStatusCode() == HttpStatus.OK || response.getStatusCode() == HttpStatus.CREATED) {
                 HashMap<String, Integer> paoIdMap = (HashMap<String, Integer>) response.getBody();
-                int controlScenarioId = paoIdMap.get("paoId");
-                flash.setConfirm(new YukonMessageSourceResolvable(baseKey + "save.success", controlScenario.getName()));
+                int controlScenarioId = paoIdMap.get("id");
+                flash.setConfirm(new YukonMessageSourceResolvable("yukon.common.save.success", controlScenario.getName()));
                 return "redirect:/dr/setup/controlScenario/" + controlScenarioId;
             }
         } catch (ApiCommunicationException e) {
@@ -200,8 +200,8 @@ public class ControlScenarioSetupController {
             flash.setError(new YukonMessageSourceResolvable(communicationKey));
             return "redirect:" + setupRedirectLink;
         } catch (RestClientException ex) {
-            log.error("Error creating Scenario: ", ex.getMessage());
-            flash.setError(new YukonMessageSourceResolvable(baseKey + "save.error", controlScenario.getName()));
+            log.error("Error creating scenario: {}. Error: {}", controlScenario.getName(), ex.getMessage());
+            flash.setError(new YukonMessageSourceResolvable("yukon.web.api.save.error", controlScenario.getName(), ex.getMessage()));
             return "redirect:" + setupRedirectLink;
         }
         return null;
@@ -264,8 +264,8 @@ public class ControlScenarioSetupController {
             List<LiteGear> allGears = retrieveGears(assignedProgram.getProgramId(), userContext, request);
             if (CollectionUtils.isNotEmpty(assignedProgram.getGears())) {
                 LiteGear selectGear = new LiteGear();
-                if (assignedProgram.getGears().get(0).getId() != null) {
-                    selectGear.setGearNumber(assignedProgram.getGears().get(0).getId());
+                if (assignedProgram.getGears().get(0).getGearNumber() != null) {
+                    selectGear.setGearNumber(assignedProgram.getGears().get(0).getGearNumber());
                     selectGear.setOwnerID(assignedProgram.getProgramId());
                     int index = allGears.indexOf(selectGear);
                     if (index != -1) {
@@ -283,7 +283,7 @@ public class ControlScenarioSetupController {
 
     private List<LiteGear> retrieveGears(Integer programId, YukonUserContext userContext, HttpServletRequest request) {
         List<LiteGear> liteGears = new ArrayList<>();
-        String url = helper.findWebServerUrl(request, userContext, ApiURL.drGetGearsForLoadProgram + programId);
+        String url = helper.findWebServerUrl(request, userContext, ApiURL.drLoadProgramUrl + "/" +  programId + "/gears");
         try {
             ResponseEntity<? extends Object> response = apiRequestHelper.callAPIForList(userContext, request, url,
                 LiteGear.class, HttpMethod.GET, LiteGear.class);
@@ -295,7 +295,7 @@ public class ControlScenarioSetupController {
         }
         return liteGears;
     }
-    private LMDto buildGear(LiteGear liteGear) {
-        return new LMDto(liteGear.getGearNumber(), liteGear.getGearName());
+    private LMGearDto buildGear(LiteGear liteGear) {
+        return new LMGearDto(liteGear.getGearNumber(), liteGear.getGearName());
     }
 }

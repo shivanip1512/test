@@ -2,6 +2,7 @@ package com.cannontech.common.device.config.model;
 
 import java.util.List;
 
+import com.cannontech.amr.errors.dao.DeviceError;
 import com.cannontech.common.pao.DisplayablePao;
 import com.google.common.collect.Lists;
 
@@ -10,7 +11,13 @@ public class VerifyResult {
     private LightDeviceConfiguration config;
     private List<String> matching = Lists.newArrayList();
     private List<String> discrepancies = Lists.newArrayList();
+    private DeviceError error;
 
+    public VerifyResult(DisplayablePao device, LightDeviceConfiguration config) {
+        this.device = device;
+        this.config = config;
+    }
+    
     public VerifyResult(DisplayablePao device) {
         this.device = device;
     }
@@ -37,6 +44,14 @@ public class VerifyResult {
     
     public List<String> getDiscrepancies() {
         return discrepancies;
+    }
+    
+    public void setError(DeviceError error) {
+        this.error = error;
+    }
+    
+    public DeviceError getError() {
+        return error;
     }
     
     public boolean isSynced() {

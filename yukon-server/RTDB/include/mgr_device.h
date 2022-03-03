@@ -89,6 +89,9 @@ protected:
 
     int getPortDevicePriority(long portid, long deviceid) const;
 
+    std::vector<CtiDeviceSPtr> getDiscardableDevices() const;
+    void evictDevices(std::vector<CtiDeviceSPtr> & devices);
+
 public:
 
     virtual ~CtiDeviceManager() = default;

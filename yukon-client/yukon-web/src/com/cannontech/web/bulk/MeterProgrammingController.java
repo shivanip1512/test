@@ -32,6 +32,8 @@ import com.cannontech.common.config.MasterConfigLicenseKey;
 import com.cannontech.common.device.programming.dao.MeterProgrammingDao;
 import com.cannontech.common.device.programming.model.MeterProgram;
 import com.cannontech.common.device.programming.service.MeterProgrammingService;
+import com.cannontech.common.exception.BadConfigurationException;
+import com.cannontech.common.exception.ServiceCommunicationFailedException;
 import com.cannontech.common.i18n.MessageSourceAccessor;
 import com.cannontech.common.pao.PaoType;
 import com.cannontech.common.pao.definition.dao.PaoDefinitionDao;
@@ -124,10 +126,17 @@ public class MeterProgrammingController {
             program.setPaoType(programModel.getPaoType());
             program.setPassword(programModel.getPassword());
             try {
-                UUID guid = meterProgrammingDao.saveMeterProgram(program);
+                UUID guid = meterProgrammingService.saveMeterProgram(program);
                 program.setGuid(guid);
-            } catch (DuplicateException e) {
+            } catch (@SuppressWarnings("unused") DuplicateException e) {
                 model.addAttribute("errorMsg", accessor.getMessage(baseKey + "duplicateName"));
+                return errorView(response, model, deviceCollection);
+            } catch (@SuppressWarnings("unused") BadConfigurationException e) {
+                model.addAttribute("errorMsg", accessor.getMessage(baseKey + "invalidProgram"));
+                return errorView(response, model, deviceCollection);
+            } catch (ServiceCommunicationFailedException e) {
+                log.catching(e);
+                model.addAttribute("errorMsg", accessor.getMessage(baseKey + "validationFailed"));
                 return errorView(response, model, deviceCollection);
             }
         } else {

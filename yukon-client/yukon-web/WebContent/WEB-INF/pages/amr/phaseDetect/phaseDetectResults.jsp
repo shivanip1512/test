@@ -1,7 +1,6 @@
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
 <%@ taglib prefix="fn" uri="http://java.sun.com/jsp/jstl/functions" %>
 <%@ taglib prefix="cti" uri="http://cannontech.com/tags/cti" %>
-<%@ taglib prefix="flot" tagdir="/WEB-INF/tags/flotChart" %>
 <%@ taglib prefix="i" tagdir="/WEB-INF/tags/i18n" %>
 <%@ taglib prefix="tags" tagdir="/WEB-INF/tags" %>
 
@@ -491,13 +490,12 @@
                 </tags:boxContainer2>
             </div>
             
+            <input type="hidden" class="js-cache-key" value="${cacheKey}"/>
             <div class="column two nogutter">
                 <!-- Pie Chart -->
-                <cti:url var="chartUrl" value="/amr/phaseDetect/chart">
-                    <cti:param name="key" value="${cacheKey}"/>
-                </cti:url>
-                <flot:ajaxChart url="${chartUrl}"/>
+                <div id="js-pie-chart-container"></div>
             </div>
         </div>
     </tags:sectionContainer2>
+    <cti:includeScript link="/resources/js/pages/yukon.ami.phaseDetectResults.js" />
 </cti:standardPage>

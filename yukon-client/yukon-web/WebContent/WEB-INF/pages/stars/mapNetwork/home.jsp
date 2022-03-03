@@ -4,6 +4,8 @@
 <%@ taglib prefix="tags" tagdir="/WEB-INF/tags" %>
 
 <cti:standardPage module="operator" page="mapNetwork">
+
+    <%@ include file="/WEB-INF/pages/tools/map/mapWarnings.jsp" %>
     
     <input type="hidden" class="js-device-id" value="${deviceId}"/>
     <cti:msg2 var="coordinatesDeleted" key=".location.delete.successful"/>

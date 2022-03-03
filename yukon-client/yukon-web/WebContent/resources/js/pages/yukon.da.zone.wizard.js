@@ -51,8 +51,8 @@ yukon.da.zone.wizard = (function () {
              click: function () {
                  submitFormViaAjax('zoneWizardPopup', 'zoneTypeForm', null);
                  $('#zoneWizardPopup').dialog({
-                     width: 'auto',
-                     height: 'auto',
+                     width: '700',
+                     height: '700',
                      buttons: _zoneDetailButtons
                  });
              }
@@ -84,9 +84,14 @@ yukon.da.zone.wizard = (function () {
           {
               text: yg.text.deleteButton,
               'class': "delete",
-              click: function () {
-                  var zoneId = $('#zoneId').val();
-                  window.location.href = yukon.url('/capcontrol/ivvc/wizard/deleteZone?zoneId=' + zoneId);
+               click: function () {
+                   var popup = $('#zoneWizardPopup'),
+                       confirmText = popup.find('.js-confirm-delete')[0].value;
+                   yukon.ui.confirm({
+                       confirmText: confirmText,
+                       dialog: popup,
+                       event: 'yukon:da:zone:delete',
+                   });   
               }
           },
          {
@@ -187,7 +192,7 @@ yukon.da.zone.wizard = (function () {
             if (_initialized)
                 return;
         
-            $('.js-zone-editor').click(function () {
+            $(document).on('click', '.js-zone-editor', function () {
                 var info = $('#zone-editor-info'),
                     url = info.data('editorUrl'),
                     title = info.data('editorTitle');
@@ -200,6 +205,11 @@ yukon.da.zone.wizard = (function () {
             });
 
             _initialized = true;
+            
+            $(document).on('yukon:da:zone:delete', function (ev) {
+                var zoneId = $('#zoneId').val();
+                window.location.href = yukon.url('/capcontrol/ivvc/wizard/deleteZone?zoneId=' + zoneId);
+            });
         }
 
     };

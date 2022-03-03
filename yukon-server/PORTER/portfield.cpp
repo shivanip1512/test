@@ -67,6 +67,10 @@ using namespace Cti;
 /* Threads that handle each port for communications */
 void PortThread(void *pid)
 {
+    extern std::atomic_int PortManagerThreadCount;
+
+    PortManagerThreadCount++;
+
     YukonError_t   status;
 
     CtiTime        nowTime, nextExpireTime, nextLogPoke;
@@ -79,7 +83,7 @@ void PortThread(void *pid)
     LONG           portid = (LONG)pid;      // NASTY CAST HERE!!!
 
     bool           profiling = (portid == gConfigParms.getValueAsULong("PORTER_PORT_PROFILING"));
-    LONG           expirationRate = gConfigParms.getValueAsULong("QUEUE_EXPIRE_TIMES_PER_DAY", 0);
+    LONG           expirationRate = gConfigParms.getValueAsULong("QUEUE_EXPIRE_TIMES_PER_DAY", 6);
     DWORD          ticks = 0;
 
     CtiDeviceSPtr  Device;
@@ -362,6 +366,8 @@ void PortThread(void *pid)
     }
 
     CTILOG_INFO(dout, "Shutdown PortThread for port "<< Port->getPortID() <<" / "<< Port->getName());
+
+    PortManagerThreadCount--;
 }
 
 /* Routine to initialize a remote based on it's type */
@@ -1173,16 +1179,6 @@ YukonError_t CommunicateDevice(const CtiPortSPtr &Port, INMESS &InMessage, OUTME
 
     try
     {
-        /* Load the post remote delay */
-        if(Port->isDialup())
-        {
-            Port->setDelay(POST_REMOTE_DELAY, 0);
-        }
-        else
-        {
-            Port->setDelay(POST_REMOTE_DELAY, Device->getPostDelay());
-        }
-
         trx.setTraceMask(TraceFlag, TraceErrorsOnly, TracePort == Port->getPortID(), TraceRemote);
 
         const int protocolType = GetPreferredProtocolWrap(Port, Device);

@@ -17,12 +17,12 @@
             <li><b>Device Group(s)</b> - Select one to many device groups to filter the results.</li>
             <li><b>Status</b> - Select any test event status to filter the results.</li>
                 <ul>
-                    <li><span class="fwb bg-color-pie-green txt-color-white">Confirmed Success (Green)</span> - 
-                    Device received the unique RF Broadcast Performance test message.</li>
+                    <li><span class="fwb bg-color-green txt-color-white">Confirmed Success (Green)</span> - 
+                    The devices in this category have reported receiving the unique RF broadcast performance message for the selected day.</li>
                     <li><span class="fwb bg-color-orange txt-color-white">Confirmed Missed (Orange)</span> - 
-                    Device did not receive the unique RF Broadcast Performance test message.</li>
+                    The devices in this category have reported all available data for the selected day and the analysis has determined the unique broadcast performance message was not received by the device.</li>
                     <li><span class="fwb bg-color-grey txt-color-white">Unreported (Grey)</span> - 
-                    Device has not yet reported all data required to confirm or deny receipt of unique RF Broadcast Performance test message.</li>
+                    The devices in this category have not reported all available data for the selected day and the analysis is unable to determine the success or failure of the unique broadcast performance receipt for the device. When the data is received, the device will re-categorized appropriately.</li>
             </ul>
         </ul>
         Click on the Filter button to filter the results.<br/>

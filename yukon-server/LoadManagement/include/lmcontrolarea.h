@@ -124,6 +124,8 @@ public:
 
     CtiLMControlArea* replicate() const;
 
+    std::size_t getMemoryConsumption() const;
+
     // Possible def operational states
     static const std::string DefOpStateEnabled;
     static const std::string DefOpStateDisabled;

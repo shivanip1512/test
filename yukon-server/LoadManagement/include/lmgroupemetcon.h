@@ -27,6 +27,8 @@ DECLARE_COLLECTABLE( CtiLMGroupEmetcon );
 
     CtiLMGroupEmetcon& operator=(const CtiLMGroupEmetcon& right);
 
+    std::size_t getFixedSize() const override   { return sizeof( *this ); }
+
     /* Static Members */
 
 private:

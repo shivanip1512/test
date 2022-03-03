@@ -9,6 +9,7 @@
         <tag name="DEVICE_ICON_TYPE" option="water_meter"/>
         <tag name="RFN_EVENTS"/>
         <tag name="RFN_POINT_CALCULATION"/>
+        <tag name="SUPPORTS_ATTRIBUTE_ASSIGNMENT"/>
         <tag name="WATER_METER_DETAIL_DISPLAYABLE"/>
     </tags>
     <configuration>

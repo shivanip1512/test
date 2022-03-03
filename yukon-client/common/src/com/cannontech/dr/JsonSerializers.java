@@ -1,19 +1,15 @@
 package com.cannontech.dr;
 
 import java.io.IOException;
-import java.util.Collection;
 import java.util.Optional;
 
 import org.joda.time.Duration;
 import org.joda.time.Instant;
-import org.joda.time.LocalDate;
 import org.joda.time.format.DateTimeFormat;
 import org.joda.time.format.DateTimeFormatter;
 import org.joda.time.format.ISODateTimeFormat;
 
 import com.cannontech.common.temperature.TemperatureUnit;
-import com.cannontech.dr.ecobee.message.EcobeeJobStatus;
-import com.cannontech.dr.ecobee.message.partial.Selection.SelectionType;
 import com.cannontech.dr.honeywellWifi.HoneywellWifiDataType;
 import com.cannontech.dr.honeywellWifi.azure.event.ConnectionStatus;
 import com.cannontech.dr.honeywellWifi.azure.event.EquipmentStatus;
@@ -25,8 +21,6 @@ import com.fasterxml.jackson.databind.DeserializationContext;
 import com.fasterxml.jackson.databind.JsonDeserializer;
 import com.fasterxml.jackson.databind.JsonSerializer;
 import com.fasterxml.jackson.databind.SerializerProvider;
-import com.google.common.base.Joiner;
-import com.google.common.collect.Lists;
 
 public interface JsonSerializers {
     public static final DateTimeFormatter COMBINED_DATE_TIME = 
@@ -208,122 +202,6 @@ public interface JsonSerializers {
         public void serialize(EventPhase phase, JsonGenerator jsonGenerator, SerializerProvider notUsed)
                 throws IOException, JsonProcessingException {
             jsonGenerator.writeString(phase.getJsonString());
-        }
-    }
-    
-    class TO_DATE extends JsonSerializer<Instant> {
-        private static final DateTimeFormatter ecobeeDateFormatter =
-            DateTimeFormat.forPattern("yyyy-MM-dd").withZoneUTC();
-
-        @Override
-        public void serialize(Instant date, JsonGenerator jsonGenerator, SerializerProvider notUsed)
-                throws IOException, JsonProcessingException {
-            String dateString = ecobeeDateFormatter.print(date);
-            jsonGenerator.writeString(dateString);
-        }
-    }
-
-    class TO_LOCAL_DATE extends JsonSerializer<LocalDate> {
-        private static final DateTimeFormatter ecobeeDateFormatter = DateTimeFormat.forPattern("yyyy-MM-dd");
-
-        @Override
-        public void serialize(LocalDate date, JsonGenerator jsonGenerator, SerializerProvider notUsed)
-                throws IOException, JsonProcessingException {
-            String dateString = ecobeeDateFormatter.print(date);
-            jsonGenerator.writeString(dateString);
-        }
-    }
-
-    class FROM_DATE extends JsonDeserializer<Instant> {
-        private static final DateTimeFormatter ecobeeDateFormatter =
-            DateTimeFormat.forPattern("yyyy-MM-dd").withZoneUTC();
-
-        @Override
-        public Instant deserialize(JsonParser paramJsonParser, DeserializationContext paramDeserializationContext)
-                throws IOException, JsonProcessingException {
-            return ecobeeDateFormatter.parseDateTime(paramJsonParser.getValueAsString()).toInstant();
-        }
-    }
-
-    class FROM_LOCAL_DATE extends JsonDeserializer<LocalDate> {
-        private static final DateTimeFormatter ecobeeDateFormatter =
-            DateTimeFormat.forPattern("yyyy-MM-dd").withZoneUTC();
-
-        @Override
-        public LocalDate deserialize(JsonParser paramJsonParser, DeserializationContext paramDeserializationContext)
-                throws IOException, JsonProcessingException {
-            return ecobeeDateFormatter.parseLocalDate(paramJsonParser.getValueAsString());
-        }
-    }
-
-    class TO_TIME extends JsonSerializer<Instant> {
-        private static final DateTimeFormatter ecobeeTimeFormatter =
-            DateTimeFormat.forPattern("HH:mm:ss").withZoneUTC();
-
-        @Override
-        public void serialize(Instant date, JsonGenerator jsonGenerator, SerializerProvider notUsed)
-                throws IOException, JsonProcessingException {
-            String dateString = ecobeeTimeFormatter.print(date);
-            jsonGenerator.writeString(dateString);
-        }
-    }
-
-    class FROM_TIME extends JsonDeserializer<Instant> {
-        private static final DateTimeFormatter ecobeeTimeFormatter =
-            DateTimeFormat.forPattern("HH:mm:ss").withZoneUTC();
-
-        @Override
-        public Instant deserialize(JsonParser paramJsonParser, DeserializationContext paramDeserializationContext)
-                throws IOException, JsonProcessingException {
-            return ecobeeTimeFormatter.parseDateTime(paramJsonParser.getValueAsString()).toInstant();
-        }
-    }
-
-    class TO_BASIC_CSV extends JsonSerializer<Collection<String>> {
-        @Override
-        public void serialize(Collection<String> strings, JsonGenerator jsonGenerator, SerializerProvider notUsed)
-                throws IOException, JsonProcessingException {
-            jsonGenerator.writeString(Joiner.on(",").join(strings));
-        }
-    }
-
-    class FROM_BASIC_CSV extends JsonDeserializer<Collection<String>> {
-        @Override
-        public Collection<String> deserialize(JsonParser jsonParser,
-                DeserializationContext paramDeserializationContext) throws IOException, JsonProcessingException {
-            return Lists.newArrayList(jsonParser.getValueAsString().split(","));
-        }
-    }
-
-    class TO_SELECTION_TYPE extends JsonSerializer<SelectionType> {
-        @Override
-        public void serialize(SelectionType selectionType, JsonGenerator jsonGenerator, SerializerProvider notUsed)
-                throws IOException, JsonProcessingException {
-            jsonGenerator.writeString(selectionType.getEcobeeString());
-        }
-    }
-
-    class FROM_SELECTION_TYPE extends JsonDeserializer<SelectionType> {
-        @Override
-        public SelectionType deserialize(JsonParser paramJsonParser,
-                DeserializationContext paramDeserializationContext) throws IOException, JsonProcessingException {
-            return SelectionType.fromEcobeeString(paramJsonParser.getValueAsString());
-        }
-    }
-
-    class TO_JOB_STATUS extends JsonSerializer<EcobeeJobStatus> {
-        @Override
-        public void serialize(EcobeeJobStatus status, JsonGenerator jsonGenerator, SerializerProvider notUsed)
-                throws IOException, JsonProcessingException {
-            jsonGenerator.writeString(status.getEcobeeStatusString());
-        }
-    }
-
-    class FROM_JOB_STATUS extends JsonDeserializer<EcobeeJobStatus> {
-        @Override
-        public EcobeeJobStatus deserialize(JsonParser paramJsonParser,
-                DeserializationContext paramDeserializationContext) throws IOException, JsonProcessingException {
-            return EcobeeJobStatus.fromEcobeeStatusString(paramJsonParser.getValueAsString());
         }
     }
 }

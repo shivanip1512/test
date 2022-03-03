@@ -54,6 +54,12 @@ public:
     }
 };
 
+template<class Enum>
+constexpr std::underlying_type_t<Enum> as_underlying(Enum value)
+{
+    return static_cast<std::underlying_type_t<Enum>>(value);
+}
+
 template <class Map>
 boost::optional<typename Map::mapped_type> mapFind( const Map &m, const typename Map::key_type &key )
 {
@@ -247,6 +253,27 @@ inline std::ostream &operator<<(std::ostream &logger, const std::set<long> &long
         logger << *itr;
 
         while( ++itr != long_set.end() )
+        {
+            logger << "," << *itr;
+        }
+    }
+    return logger << "}";
+}
+
+inline std::ostream& operator<<(std::ostream& logger, const std::set<std::string>& str_set)
+{
+    logger << "{";
+    if( str_set.empty() )
+    {
+        logger << "<empty>";
+    }
+    else
+    {
+        auto itr = str_set.begin();
+
+        logger << *itr;
+
+        while( ++itr != str_set.end() )
         {
             logger << "," << *itr;
         }

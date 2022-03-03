@@ -103,6 +103,8 @@ public class PerIntervalAndLoadProfileCalculator implements PointCalculator {
         PaoIdentifier pao = data.getPaoPointValue().getPaoIdentifier();
         PointValueQualityHolder pvqh = data.getPaoPointValue().getPointValueQualityHolder();
         Date timestamp = pvqh.getPointDataTimeStamp();
+        
+        log.debug("Attempting calculation for " + perInterval + " for data " + basedOn);
 
         if (!isValidTimestamp(timestamp)) {
             log.info("Interval and profile data calculations being skipped for " + timestamp + " for Id : "
@@ -182,9 +184,9 @@ public class PerIntervalAndLoadProfileCalculator implements PointCalculator {
             }
         }
         
-        if (pao.getPaoType().isWaterMeter() && (nextPerIntervalValue < 0 || previousPerIntervalValue < 0)) {
-            log.info("Error in previous/next RFW meter reading values, Interval and profile data calculations being skipped for "
-                + timestamp + " RFW meter Id : " + pao.getPaoId() + " : " + pointData);
+        if ((nextPerIntervalValue < 0 || previousPerIntervalValue < 0) && (basedOn == null || !basedOn.canCreateNegativeCalcualations())) {
+            log.info("Calculated negative previous/next RFN meter reading value. Interval and profile data calculations"
+                    + " being skipped for {}, RFN meter ID: {}, pointData: {}", timestamp, pao.getPaoId(), pointData);
             return; // Do not process further
         }
         
@@ -307,6 +309,7 @@ public class PerIntervalAndLoadProfileCalculator implements PointCalculator {
 
     @PostConstruct
     private void init() {
+        log.debug("Initializing Calculator for " + perInterval + " based on " + basedOn);
         Builder<PaoTypePointIdentifier> b = ImmutableSet.builder();
         Set<PaoType> types = paoDefinitionDao.getPaoTypesThatSupportTag(PaoTag.RFN_POINT_CALCULATION);
         for (PaoType type : types) {

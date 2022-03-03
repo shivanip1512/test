@@ -9,32 +9,37 @@ import com.cannontech.common.chart.service.impl.ChartDeltaWaterConverter;
 import com.cannontech.common.chart.service.impl.ChartNormalizedDeltaConverter;
 import com.cannontech.common.chart.service.impl.ChartPowerFactorDataConverter;
 import com.cannontech.common.i18n.DisplayableEnum;
-import com.cannontech.database.data.lite.LiteUnitMeasure;
+import com.cannontech.database.data.point.UnitOfMeasure;
 import com.cannontech.i18n.YukonMessageSourceResolvable;
 
 public enum ConverterType implements DisplayableEnum {
 
     RAW {
+        @Override
         public ChartDataConverter getDataConverter() {
             return new ChartDefaultConverter();
         }
     },
     NORMALIZED_DELTA {
+        @Override
         public ChartDataConverter getDataConverter() {
             return new ChartNormalizedDeltaConverter();
         }
     },
     DELTA_WATER {
+        @Override
         public ChartDataConverter getDataConverter() {
             return new ChartDeltaWaterConverter();
         }
     },
     POWERFACTOR {
+        @Override
         public ChartDataConverter getDataConverter() {
         	return new ChartPowerFactorDataConverter();
         }
     },
     DAILY_USAGE {
+        @Override
         public ChartDataConverter getDataConverter() {
             return new ChartDailyUsageDeltaConverter();
         }
@@ -64,8 +69,8 @@ public enum ConverterType implements DisplayableEnum {
      * @param chartIntervalString - (i18n'd) chartInterval string
      * @return {@link MessageSourceResolvable}
      */
-    public MessageSourceResolvable getFormattedUnits(LiteUnitMeasure unitMeasure, String chartIntervalString) {
+    public MessageSourceResolvable getFormattedUnits(UnitOfMeasure unitMeasure, String chartIntervalString) {
         return YukonMessageSourceResolvable.createSingleCodeWithArguments(baseKey + name(), 
-        		unitMeasure.getUnitMeasureName(), chartIntervalString);
+        		unitMeasure.getAbbreviation(), chartIntervalString);
     }
 }

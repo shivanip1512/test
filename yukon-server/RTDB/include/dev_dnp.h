@@ -87,6 +87,8 @@ public:
     LONG getAddress() const;
     LONG getMasterAddress() const;
 
+    int getPostDelay() const override;
+
     YukonError_t sendCommRequest( OUTMESS *&OutMessage, OutMessageList &outList );
     YukonError_t recvCommRequest( OUTMESS *OutMessage ) override;
 

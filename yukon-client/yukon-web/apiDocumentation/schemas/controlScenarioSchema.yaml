@@ -1,0 +1,142 @@
+ControlScenario:
+  title: Control Scenario
+  required:
+    - name
+  type: object
+  properties:
+    name:
+      type: string
+      maxLength: 60
+      description: 'Name of the control scenario.'
+    allPrograms:
+      description: 'Collection of programs required to create control scenario.'
+      $ref: '#/allPrograms'
+
+allPrograms:
+  type: array
+  items:
+    required:
+      - programId
+      - startOffsetInMinutes
+      - stopOffsetInMinutes
+    type: object
+    properties:
+      programId:
+        type: integer
+        description: 'Unique identifier of the load program.'
+      startOffsetInMinutes:
+        type: integer
+        minimum: 0
+        maximum: 1439
+        description: 'Start Offset value in minutes.'
+      stopOffsetInMinutes:
+        type: integer
+        minimum: 0
+        maximum: 1439
+        description: 'Stop Offset value in minutes.'
+      gears:
+        type: array
+        items:
+          required:
+            - gearNumber
+          type: object
+          properties:
+            gearNumber:
+              type: integer
+              minimum: 0
+              maximum: 16
+              description: Number of the gear.
+            gearName:
+              type: string
+              maxLength: 30
+              description: Name of the gear.
+
+allPrograms Response Schema:
+  type: array
+  items:
+    type: object
+    properties:
+      programId:
+        type: integer
+        description: 'Unique identifier of the load program.'
+      startOffsetInMinutes:
+        type: integer
+        minimum: 0
+        maximum: 1439
+        description: 'Start Offset value in minutes.'
+      stopOffsetInMinutes:
+        type: integer
+        minimum: 0
+        maximum: 1439
+        description: 'Stop Offset value in minutes.'
+      gears:
+        type: array
+        items:
+          required:
+            - gearNumber
+          type: object
+          properties:
+            gearNumber:
+              type: integer
+              minimum: 0
+              maximum: 16
+              description: Number of the gear.
+            gearName:
+              type: string
+              maxLength: 30
+              description: Name of the gear.
+
+id:
+  title: id
+  required:
+    - id
+  type: object
+  properties:
+    id:
+      type: integer
+      description: 'Unique identifier of the control scenario.'
+
+ControlScenario Response Schema:
+  type: object
+  properties:
+    id:
+      type: integer
+      description: 'Unique identifier of the control scenario.'
+    name:
+      type: string
+      maxLength: 60
+      description: 'Name of the control scenario.'
+    allPrograms:
+      description: 'Collection of programs required to create control scenario.'
+      $ref: '#/allPrograms Response Schema'
+
+components:
+  examples:
+    ControlScenario Request:
+      value:
+        name: Test Control Scenario
+        allPrograms: 
+          - programId: 1234
+            startOffsetInMinutes: 123
+            stopOffsetInMinutes: 235
+            gears: 
+              - gearNumber: 1
+                gearName : Test Gear-1
+              - gearNumber: 2
+                gearName : Test Gear-2
+    ControlScenario Response:
+      value:
+        id: 11
+        name: Test Control Scenario
+        allPrograms: 
+          - programId: 1234
+            startOffsetInMinutes: 123
+            stopOffsetInMinutes: 235
+            gears: 
+              - gearNumber: 1
+                gearName : Test Gear-1
+              - gearNumber: 2
+                gearName : Test Gear-2
+    ControlScenarioId:
+      value:
+        id: 1

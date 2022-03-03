@@ -5,6 +5,7 @@ import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -14,12 +15,15 @@ import java.util.regex.Pattern;
 
 import javax.servlet.http.HttpServletResponse;
 
+import org.joda.time.DateTime;
 import org.joda.time.DateTimeZone;
 import org.joda.time.Instant;
 import org.joda.time.LocalDate;
+import org.joda.time.format.DateTimeFormat;
 import org.jsoup.helper.Validate;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.MessageSourceResolvable;
+import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.ModelMap;
 import org.springframework.util.FileCopyUtils;
@@ -27,9 +31,9 @@ import org.springframework.validation.BindingResult;
 import org.springframework.validation.Errors;
 import org.springframework.validation.ValidationUtils;
 import org.springframework.validation.Validator;
+import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.ModelAttribute;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.ResponseBody;
 
 import com.cannontech.common.i18n.MessageSourceAccessor;
@@ -44,20 +48,22 @@ import com.cannontech.common.validator.SimpleValidator;
 import com.cannontech.common.validator.YukonValidationUtils;
 import com.cannontech.common.version.VersionTools;
 import com.cannontech.core.roleproperties.YukonRole;
-import com.cannontech.core.roleproperties.dao.RolePropertyDao;
 import com.cannontech.core.service.DateFormattingService;
 import com.cannontech.core.service.DateFormattingService.DateFormatEnum;
 import com.cannontech.database.PoolManager;
-import com.cannontech.i18n.YukonMessageSourceResolvable;
 import com.cannontech.i18n.YukonUserContextMessageSourceResolver;
 import com.cannontech.mbean.ServerDatabaseCache;
+import com.cannontech.support.rfn.message.RfnSupportBundleRequest;
+import com.cannontech.support.rfn.message.RfnSupportBundleResponseType;
+import com.cannontech.support.rfn.message.SupportBundleRequestType;
 import com.cannontech.support.service.SupportBundleService;
 import com.cannontech.support.service.SupportBundleWriter;
-import com.cannontech.tools.sftp.SftpWriter.Status;
+import com.cannontech.support.service.impl.RFNetworkSupportBundleService;
 import com.cannontech.user.YukonUserContext;
 import com.cannontech.util.ServletUtil;
 import com.cannontech.web.common.flashScope.FlashScope;
 import com.cannontech.web.common.flashScope.FlashScopeMessageType;
+import com.cannontech.web.security.annotation.CheckRole;
 import com.cannontech.web.support.SiteMapHelper.SiteMapWrapper;
 import com.cannontech.web.support.SupportBundle.BundleRangeSelection;
 import com.cannontech.web.support.logging.LogExplorerController;
@@ -72,6 +78,7 @@ public class SupportController {
     private final static String baseKey = "yukon.web.modules.support.supportBundle";
     private final static String manualsFolderName = CtiUtilities.getYukonBase() + "/Manuals/";
     private final static Pattern pdfFileName = Pattern.compile("(.*)\\.pdf$");
+    @Autowired private RFNetworkSupportBundleService rfNetworkSupportBundleService;
     @Autowired private SupportBundleService supportBundleService;
     @Autowired private List<SupportBundleWriter> writerList;
     @Autowired private DateFormattingService dateFormattingService;
@@ -80,22 +87,22 @@ public class SupportController {
     @Autowired private YukonUserContextMessageSourceResolver resolver;
     @Autowired private SiteMapHelper siteMapHelper;
     @Autowired private ObjectFormattingService objectFormattingService;
-    @Autowired private RolePropertyDao rolePropertyDao;
     @Autowired private ServerDatabaseCache serverDatabaseCache;
+    @Autowired private YukonUserContextMessageSourceResolver messageSourceResolver;
 
-    @RequestMapping(value="info")
+    @GetMapping("info")
     public String info(ModelMap model){
         model.addAttribute("buildInfo", VersionTools.getBuildInfo());
         model.addAttribute("versionDetails", VersionTools.getYukonDetails());
         return "info.jsp";
     }
     
-    @RequestMapping(value={"","/support"})
+    @GetMapping({"","/support"})
     public String support(ModelMap model, YukonUserContext context) {
         return supportBundle(model, new SupportBundle(), context);
     }
 
-    @RequestMapping("/manual")
+    @GetMapping("/manual")
     public void manual(String manualName, HttpServletResponse response) throws IOException  {
         File f = new File(manualsFolderName + manualName + ".pdf");
         InputStream is = new FileInputStream(f);
@@ -157,7 +164,8 @@ public class SupportController {
             }
         }        model.addAttribute("supportPages", supportPages);
     }
-
+   
+    
     /**
      * Adds names of manuals found in Yukon/Manuals to the model
      */
@@ -179,14 +187,17 @@ public class SupportController {
         setUpLogsAndInfo(model, context);
         setUpLinks(model, context);
         setUpManuals(model);
-        
         List<String> previousBundles = new ArrayList<>();
         for(File f : bundleService.getBundles()){
             previousBundles.add(f.getName());
         }
+        
         model.addAttribute("supportBundle", bundle);
+        model.addAttribute("now", new Date());
+        model.addAttribute("rfSupportBundle", new RfSupportBundle());
         model.addAttribute("bundleRangeSelectionOptions", BundleRangeSelection.values());
         model.addAttribute("bundleList", previousBundles);
+        model.addAttribute("rfBundleList", getPreviousRfBundleNames());
         model.addAttribute("writerList", writerList);
         model.addAttribute("inProgress", bundleService.isInProgress());
         return "support.jsp";
@@ -209,15 +220,11 @@ public class SupportController {
         };
 
 
-    @RequestMapping(value="createBundle", method = RequestMethod.POST)
-    public String createBundle(
-            ModelMap model, 
-            @ModelAttribute SupportBundle bundle,
-            BindingResult result, 
-            FlashScope flash, 
-            YukonUserContext userContext) {
+    @PostMapping("createBundle")
+    @CheckRole(YukonRole.OPERATOR_ADMINISTRATOR)
+    public String createBundle(ModelMap model, @ModelAttribute SupportBundle bundle,
+            BindingResult result, FlashScope flash, YukonUserContext userContext) {
 
-        rolePropertyDao.verifyRole(YukonRole.OPERATOR_ADMINISTRATOR, userContext.getYukonUser());
         detailsValidator.validate(bundle, result);
 
         if (result.hasErrors()) {
@@ -247,16 +254,68 @@ public class SupportController {
         return "redirect:viewBundleProgress";
     }
 
-    @RequestMapping(value="viewBundleProgress")
-    public String viewBundleProgress(YukonUserContext userContext) {
-        rolePropertyDao.verifyRole(YukonRole.OPERATOR_ADMINISTRATOR, userContext.getYukonUser());
+    private Validator detailsRfValidator = new SimpleValidator<RfSupportBundle>(RfSupportBundle.class) {
+        @Override
+        public void doValidation(RfSupportBundle rfBundle, Errors errors) {
+            ValidationUtils.rejectIfEmpty(errors, "customerName", baseKey + ".errorMsg.empty");
+            YukonValidationUtils.checkExceedsMaxLength(errors, "customerName",
+                    rfBundle.getCustomerName(), 40);
+
+            Pattern validCharacters = Pattern.compile("^[a-zA-Z0-9_\\-\\(\\)&%.# ]*$");
+            YukonValidationUtils.regexCheck(errors,
+                    "customerName",
+                    rfBundle.getCustomerName(),
+                    validCharacters,
+                    baseKey + ".errorMsg.invalidCharacters");
+        }
+    };
+   
+    @PostMapping("createRfBundle")
+    @CheckRole(YukonRole.OPERATOR_ADMINISTRATOR)
+    public String createRFBundle(@ModelAttribute RfSupportBundle rfSupportBundle, BindingResult result, ModelMap model, RfnSupportBundleRequest rfRequest,
+            YukonUserContext userContext, HttpServletResponse resp) throws Exception {
+        MessageSourceAccessor accessor = messageSourceResolver.getMessageSourceAccessor(userContext);
+
+        detailsRfValidator.validate(rfSupportBundle, result);
+        model.addAttribute("rfSupportBundle", rfSupportBundle);
+        model.addAttribute("now", new Date());
+        model.addAttribute("rfBundleList", getPreviousRfBundleNames());
+        
+        if (result.hasErrors()) {
+            resp.setStatus(HttpStatus.BAD_REQUEST.value());
+            model.addAttribute("errorMessage", accessor.getMessage("yukon.web.error.fieldErrorsExist"));
+            return "supportBundle/rfSupportBundle.jsp";
+        }
+        String suffix = new DateTime().toString(DateTimeFormat.forPattern("yyyy-MM-dd-HHmmss"));
+        String fileName = rfSupportBundle.getCustomerName() + "-" + suffix;
+        rfRequest.setFileName(fileName);
+        rfRequest.setFromTimestamp(rfSupportBundle.getDate().getTime());
+        rfRequest.setType(SupportBundleRequestType.NETWORK_DATA);
+        rfNetworkSupportBundleService.send(rfRequest);
+       
+        return "supportBundle/rfSupportBundle.jsp";
+    }
+    
+    @GetMapping("viewRfBundle")
+    @CheckRole(YukonRole.OPERATOR_ADMINISTRATOR)
+    public String viewRFBundle(ModelMap model) throws Exception {
+
+        model.addAttribute("rfBundleList", getPreviousRfBundleNames());
+
+        return "supportBundle/rfPreviousBundleTab.jsp";
+    }
+
+    @GetMapping("viewBundleProgress")
+    @CheckRole(YukonRole.OPERATOR_ADMINISTRATOR)
+    public String viewBundleProgress() {
         return "supportBundle/viewProgress.jsp";
     }
 
-    @RequestMapping(value = "bundleInProgress", method = RequestMethod.GET)
-    public @ResponseBody Map<String, Object> bundleInProgress(YukonUserContext userContext) {
-        rolePropertyDao.verifyRole(YukonRole.OPERATOR_ADMINISTRATOR, userContext.getYukonUser());
+    @GetMapping("bundleInProgress")
+    @CheckRole(YukonRole.OPERATOR_ADMINISTRATOR)
+    public @ResponseBody Map<String, Object> bundleInProgress() {
         Map<String, Object> json = new HashMap<>();
+        
         boolean inProgress = supportBundleService.isInProgress();
         json.put("inProgress", inProgress);
         if (!inProgress) {
@@ -264,10 +323,50 @@ public class SupportController {
         }
         return json;
     }
+   
+    @GetMapping("rfBundleInProgress")
+    @CheckRole(YukonRole.OPERATOR_ADMINISTRATOR)
+    public @ResponseBody Map<String, Object> rfBundleInProgress(YukonUserContext userContext) {
+        Map<String, Object> json = new HashMap<>();
+        RfnSupportBundleResponseType status = rfNetworkSupportBundleService.getStatus();
+        MessageSourceAccessor accessor = messageSourceResolver.getMessageSourceAccessor(userContext);
+        boolean isCompleted = false;
+        String message = null;
+        if (status == null) {
+            isCompleted = true;
+            message = accessor.getMessage("yukon.web.modules.support.rfSupportBundle.timeout");
+        } else {
+            switch (status) {
+            case STARTED:
+            case INPROGRESS:
+                isCompleted = false;
+                message = accessor.getMessage("yukon.web.modules.support.rfSupportBundle.started");
+                break;
+            case COMPLETED:
+                isCompleted = true;
+                message = accessor.getMessage("yukon.web.modules.support.rfSupportBundle.success");
+                break;
+            case FAILED:
+                isCompleted = true;
+                message = accessor.getMessage("yukon.web.modules.support.rfSupportBundle.failed");
+                break;
+            case TIMEOUT:
+                isCompleted = true;
+                message = accessor.getMessage("yukon.web.modules.support.rfSupportBundle.timeout");
+                break;
+            default:
+                break;
+            }
+        }
+        json.put("isCompleted", isCompleted);
+        json.put("message", message);
+        json.put("status", status);
+        return json;
+    }
 
-    @RequestMapping(value="getBundleProgress")
-    public String getBundleProgress(ModelMap model, YukonUserContext userContext) {
-        rolePropertyDao.verifyRole(YukonRole.OPERATOR_ADMINISTRATOR, userContext.getYukonUser());
+    @GetMapping("getBundleProgress")
+    @CheckRole(YukonRole.OPERATOR_ADMINISTRATOR)
+    public String getBundleProgress(ModelMap model) {
         Map<String, Boolean> thingsDoneMap = supportBundleService.getWritersDone();
         model.addAttribute("thingsDoneMap", thingsDoneMap);
         model.addAttribute("inProgress", supportBundleService.isInProgress());
@@ -276,13 +375,14 @@ public class SupportController {
         return "supportBundle/buildStatus.jsp";
     }
 
-    @RequestMapping(value="infoOnBundle")
+    @GetMapping("infoOnBundle")
+    @CheckRole(YukonRole.OPERATOR_ADMINISTRATOR)
     public @ResponseBody Map<String, String> infoOnBundle(String fileName, YukonUserContext userContext) {
-        rolePropertyDao.verifyRole(YukonRole.OPERATOR_ADMINISTRATOR, userContext.getYukonUser());
+
         MessageSourceAccessor accessor = resolver.getMessageSourceAccessor(userContext);
         Map<String, String> json = Maps.newHashMapWithExpectedSize(3);
 
-        File bundle = getBundleFileForFileName(fileName);
+        File bundle = getBundleFileForFileName(fileName, false);
         if (bundle == null){
             json.put("fileName", accessor.getMessage(baseKey + ".ftpUpload.failed.NO_FILE", ""));
             json.put("fileSize", "");
@@ -298,38 +398,20 @@ public class SupportController {
         return json;
     }
 
-    @RequestMapping(value="uploadBundle")
-    public String uploadBundle(String fileName, FlashScope flash, YukonUserContext userContext) {
-        rolePropertyDao.verifyRole(YukonRole.OPERATOR_ADMINISTRATOR, userContext.getYukonUser());
+    @PostMapping("downloadBundle")
+    @CheckRole(YukonRole.OPERATOR_ADMINISTRATOR)
+    public void downloadBundle(HttpServletResponse resp, String fileName, boolean isRfBundle) throws IOException {
 
-        File bundleToSend = getBundleFileForFileName(fileName);
-
-        if (bundleToSend == null) {
-            flash.setError(new YukonMessageSourceResolvable(baseKey + ".ftpUpload.failed.NO_FILE", ""));
-            return "redirect:/support";
-        }
-
-        Status ftpStatus = supportBundleService.uploadViaSftp(bundleToSend);
-        if (ftpStatus == Status.SUCCESS) {
-            flash.setConfirm(new YukonMessageSourceResolvable(baseKey +
-                ".ftpUpload.succeeded", bundleToSend.getName()));
+        File bundleToDownload = null;
+        if (isRfBundle) {
+            bundleToDownload = getBundleFileForFileName(fileName, true);
         } else {
-            flash.setError(new YukonMessageSourceResolvable(baseKey + ".ftpUpload.failed." +
-                ftpStatus, bundleToSend.getName()));
+            bundleToDownload = getBundleFileForFileName(fileName, false);
         }
-
-        return "redirect:/support";
-    }
-
-    @RequestMapping(value="downloadBundle")
-    public void downloadBundle(HttpServletResponse resp, String fileName, YukonUserContext userContext) throws IOException {
-        rolePropertyDao.verifyRole(YukonRole.OPERATOR_ADMINISTRATOR, userContext.getYukonUser());
-        
-        File bundleToDownload = getBundleFileForFileName(fileName);
         if (bundleToDownload == null) {
             return;
         }
-
+        
         resp.setContentType("application/zip");
 
         // set response header to the filename
@@ -340,12 +422,29 @@ public class SupportController {
         FileCopyUtils.copy(new FileInputStream(bundleToDownload), resp.getOutputStream());
     }
 
-    private File getBundleFileForFileName(String fileName){
-        for(File f : supportBundleService.getBundles()) {
-            if(fileName.equals(f.getName())) {
+    private File getBundleFileForFileName(String fileName, boolean isRfBundle) {
+        List<File> files = null;
+        if (isRfBundle) {
+            files = supportBundleService.getRfBundles();
+        } else {
+            files = supportBundleService.getBundles();
+        }
+        for (File f : files) {
+            if (fileName.equals(f.getName())) {
                 return f;
             }
         }
         return null;
+    }
+
+    /**
+     * Fetch previous RF bundle files and return them in list
+     */
+    private List<String> getPreviousRfBundleNames() {
+        List<String> previousRfBundles = new ArrayList<>();
+        for (File f : bundleService.getRfBundles()) {
+            previousRfBundles.add(f.getName());
+        }
+        return previousRfBundles;
     }
 }

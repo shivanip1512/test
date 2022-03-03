@@ -56,6 +56,7 @@ protected:
     enum Features
     {
         Feature_LcdDisplayDigitConfiguration,
+        Feature_Display,
     };
 
     enum

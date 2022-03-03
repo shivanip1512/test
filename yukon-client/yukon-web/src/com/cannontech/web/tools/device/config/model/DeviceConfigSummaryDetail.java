@@ -1,24 +1,26 @@
 package com.cannontech.web.tools.device.config.model;
 
+import org.apache.commons.lang3.builder.ToStringBuilder;
+import org.apache.commons.lang3.builder.ToStringStyle;
 import org.joda.time.Instant;
 
+import com.cannontech.common.device.config.dao.DeviceConfigurationDao.ConfigState;
+import com.cannontech.common.device.config.dao.DeviceConfigurationDao.LastAction;
+import com.cannontech.common.device.config.dao.DeviceConfigurationDao.LastActionStatus;
 import com.cannontech.common.device.config.model.LightDeviceConfiguration;
 import com.cannontech.common.device.model.DisplayableDevice;
-import com.cannontech.web.tools.device.config.model.DeviceConfigSummaryFilter.InSync;
-import com.cannontech.web.tools.device.config.model.DeviceConfigSummaryFilter.LastAction;
-import com.cannontech.web.tools.device.config.model.DeviceConfigSummaryFilter.LastActionStatus;
+import com.cannontech.web.tools.device.config.dao.DeviceConfigSummaryDao.StateSelection;
 
-public class DeviceConfigSummaryDetail {
-
+public class DeviceConfigSummaryDetail {   
     private DisplayableDevice device;
     private LightDeviceConfiguration deviceConfig;
     private LastAction action;
     private LastActionStatus status;
-    private InSync inSync;
+    private ConfigState state;
     private Instant actionStart;
     private Instant actionEnd;
     private Integer errorCode;
-
+    
     public DisplayableDevice getDevice() {
         return device;
     }
@@ -43,13 +45,6 @@ public class DeviceConfigSummaryDetail {
         this.status = status;
     }
 
-    public InSync getInSync() {
-        return inSync;
-    }
-
-    public void setInSync(InSync inSync) {
-        this.inSync = inSync;
-    }
 
     public Instant getActionStart() {
         return actionStart;
@@ -75,16 +70,32 @@ public class DeviceConfigSummaryDetail {
         this.deviceConfig = deviceConfig;
     }
 
-    public boolean isDisplayRead() {
+    public boolean isDisplayUpload() {
         return status != LastActionStatus.IN_PROGRESS && deviceConfig != null;
     }
 
-    public boolean isDisplaySend() {
+    public boolean isDisplayValidate() {
         return status != LastActionStatus.IN_PROGRESS && deviceConfig != null;
     }
-
-    public boolean isDisplayVerify() {
-        return status != LastActionStatus.IN_PROGRESS && deviceConfig != null;
+    
+    public boolean needsUpload() {
+        return StateSelection.NEEDS_UPLOAD.getStates().contains(state);
+    }
+    
+    public boolean needValidation() {
+        return StateSelection.NEEDS_VALIDATION.getStates().contains(state);
+    }
+    
+    public boolean isDisplayOutOfSyncPopup() {
+        return status != LastActionStatus.IN_PROGRESS && needsUpload();
+    }
+    
+    public boolean isDisplayFailurePopup() {
+        return status == LastActionStatus.FAILURE && errorCode != null ;
+    }
+    
+    public boolean isInProgress() {
+        return status == LastActionStatus.IN_PROGRESS;
     }
 
     public Integer getErrorCode() {
@@ -93,5 +104,19 @@ public class DeviceConfigSummaryDetail {
 
     public void setErrorCode(Integer errorCode) {
         this.errorCode = errorCode;
+    }
+    
+    public ConfigState getState() {
+        return state;
+    }
+
+    public void setState(ConfigState state) {
+        this.state = state;
+    }
+
+    @Override
+    public String toString() {
+        return ToStringBuilder.reflectionToString(this, ToStringStyle.SHORT_PREFIX_STYLE)
+                + System.getProperty("line.separator");
     }
 }

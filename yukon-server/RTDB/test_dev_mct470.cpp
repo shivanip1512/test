@@ -10,37 +10,21 @@
 #include "rtdb_test_helpers.h"
 #include "boost_test_helpers.h"
 
+#include <boost/algorithm/cxx11/all_of.hpp>
 #include <boost/assign/list_of.hpp>
 
 using namespace Cti::Protocols;
+using Cti::Test::isSentOnRouteMsg;
+using Cti::Test::makeInmessReply;
 using std::vector;
 typedef CtiTableDynamicPaoInfo Dpi;
 
-struct test_CtiDeviceCCU : CtiDeviceCCU
-{
-    test_CtiDeviceCCU()
-    {
-        _paObjectID = 12345;
-    }
-};
-
-struct test_CtiRouteCCU : CtiRouteCCU
-{
-    CtiDeviceSPtr ccu;
-
-    test_CtiRouteCCU() : ccu(new test_CtiDeviceCCU)
-    {
-        _tblPAO.setID(1234, test_tag);
-        setDevicePointer(ccu);
-    }
-};
-
 struct test_Mct470Device : Cti::Devices::Mct470Device
 {
-    CtiRouteSPtr rte;
+    boost::shared_ptr<Cti::Test::test_CtiRouteCCU> rte;
 
-    test_Mct470Device() :
-        rte(new test_CtiRouteCCU)
+    test_Mct470Device()
+        : rte(boost::make_shared<Cti::Test::test_CtiRouteCCU>())
     {
     }
 
@@ -71,6 +55,11 @@ struct test_Mct470Device : Cti::Devices::Mct470Device
         return rte;
     }
 };
+
+namespace Cti {
+    //  defined in rtdb/test_main.cpp
+    std::ostream& operator<<(std::ostream& o, const ConnectionHandle& h);
+}
 
 namespace std {
     //  defined in rtdb/test_main.cpp
@@ -185,7 +174,7 @@ BOOST_AUTO_TEST_CASE(test_dev_mct470_convertTimestamp_in_2009)
 
     std::vector<unsigned long> expected, results;
 
-    for each( utc34_checker tc in test_cases )
+    for( const auto tc : test_cases )
     {
         expected.push_back(build_gmt_seconds(tc.expected_time));
 
@@ -233,7 +222,7 @@ BOOST_AUTO_TEST_CASE(test_dev_mct470_convertTimestamp_in_2010)
 
     std::vector<unsigned long> expected, results;
 
-    for each( utc34_checker tc in test_cases )
+    for( const auto tc : test_cases )
     {
         expected.push_back(build_gmt_seconds(tc.expected_time));
 
@@ -281,7 +270,7 @@ BOOST_AUTO_TEST_CASE(test_dev_mct470_convertTimestamp_in_2011)
 
     std::vector<unsigned long> expected, results;
 
-    for each( utc34_checker tc in test_cases )
+    for( const auto tc : test_cases )
     {
         expected.push_back(build_gmt_seconds(tc.expected_time));
 
@@ -329,7 +318,7 @@ BOOST_AUTO_TEST_CASE(test_dev_mct470_convertTimestamp_in_2012)
 
     std::vector<unsigned long> expected, results;
 
-    for each( utc34_checker tc in test_cases )
+    for( const auto tc : test_cases )
     {
         expected.push_back(build_gmt_seconds(tc.expected_time));
 
@@ -649,6 +638,7 @@ BOOST_AUTO_TEST_CASE(test_dev_mct470_extractDynamicPaoInfo_MCT_LoadProfileChanne
 
 struct beginExecuteRequest_helper : resetGlobals_helper
 {
+    const Cti::ConnectionHandle connHandle{ 999 };
     CtiRequestMsg           request;
     std::list<CtiMessage*>  vgList, retList;
     std::list<OUTMESS*>     outList;
@@ -660,6 +650,7 @@ struct beginExecuteRequest_helper : resetGlobals_helper
         fixtureConfig(new Cti::Test::test_DeviceConfig),
         overrideConfigManager(fixtureConfig)
     {
+        request.setConnectionHandle(connHandle);
     }
 
     ~beginExecuteRequest_helper()
@@ -737,11 +728,12 @@ BOOST_FIXTURE_TEST_SUITE(command_executions, beginExecuteRequest_helper)
         BOOST_CHECK_EQUAL( ClientErrors::None, mct.beginExecuteRequest(&request, parse, vgList, retList, outList) );
 
         BOOST_CHECK( vgList.empty() );
-        BOOST_CHECK( retList.empty() );
-
+        BOOST_REQUIRE_EQUAL( retList.size(), 3 );
         BOOST_REQUIRE_EQUAL( outList.size(), 3 );
 
-        CtiDeviceBase::OutMessageList::const_iterator om_itr = outList.begin();
+        BOOST_CHECK( boost::algorithm::all_of( retList, isSentOnRouteMsg ) );
+
+        auto om_itr = outList.cbegin();
 
         {
             const OUTMESS *om = *om_itr++;
@@ -794,11 +786,12 @@ BOOST_FIXTURE_TEST_SUITE(command_executions, beginExecuteRequest_helper)
         BOOST_CHECK_EQUAL( ClientErrors::None, mct.beginExecuteRequest(&request, parse, vgList, retList, outList) );
 
         BOOST_CHECK( vgList.empty() );
-        BOOST_CHECK( retList.empty() );
-
+        BOOST_REQUIRE_EQUAL( retList.size(), 3 );
         BOOST_REQUIRE_EQUAL( outList.size(), 3 );
 
-        CtiDeviceBase::OutMessageList::const_iterator om_itr = outList.begin();
+        BOOST_CHECK( boost::algorithm::all_of( retList, isSentOnRouteMsg ) );
+
+        auto om_itr = outList.cbegin();
 
         {
             const OUTMESS *om = *om_itr++;
@@ -853,11 +846,12 @@ BOOST_FIXTURE_TEST_SUITE(command_executions, beginExecuteRequest_helper)
         BOOST_CHECK_EQUAL( ClientErrors::None, mct.beginExecuteRequest(&request, parse, vgList, retList, outList) );
 
         BOOST_CHECK( vgList.empty() );
-        BOOST_CHECK( retList.empty() );
-
+        BOOST_REQUIRE_EQUAL( retList.size(), 3 );
         BOOST_REQUIRE_EQUAL( outList.size(), 3 );
 
-        CtiDeviceBase::OutMessageList::const_iterator om_itr = outList.begin();
+        BOOST_CHECK( boost::algorithm::all_of( retList, isSentOnRouteMsg ) );
+
+        auto om_itr = outList.cbegin();
 
         {
             const OUTMESS *om = *om_itr++;
@@ -958,11 +952,12 @@ BOOST_FIXTURE_TEST_SUITE(command_executions, beginExecuteRequest_helper)
         BOOST_CHECK_EQUAL( ClientErrors::None, mct.beginExecuteRequest(&request, parse, vgList, retList, outList) );
 
         BOOST_CHECK( vgList.empty() );
-        BOOST_CHECK( retList.empty() );
-
+        BOOST_REQUIRE_EQUAL( retList.size(), 2 );
         BOOST_REQUIRE_EQUAL( outList.size(), 2 );
 
-        CtiDeviceBase::OutMessageList::const_iterator om_itr = outList.begin();
+        BOOST_CHECK( boost::algorithm::all_of( retList, isSentOnRouteMsg ) );
+
+        auto om_itr = outList.cbegin();
 
         {
             const OUTMESS *om = *om_itr++;
@@ -1007,11 +1002,12 @@ BOOST_FIXTURE_TEST_SUITE(command_executions, beginExecuteRequest_helper)
         BOOST_CHECK_EQUAL( ClientErrors::None, mct.beginExecuteRequest(&request, parse, vgList, retList, outList) );
 
         BOOST_CHECK( vgList.empty() );
-        BOOST_CHECK( retList.empty() );
-
+        BOOST_REQUIRE_EQUAL( retList.size(), 2 );
         BOOST_REQUIRE_EQUAL( outList.size(), 2 );
 
-        CtiDeviceBase::OutMessageList::const_iterator om_itr = outList.begin();
+        BOOST_CHECK( boost::algorithm::all_of( retList, isSentOnRouteMsg ) );
+
+        auto om_itr = outList.cbegin();
 
         {
             const OUTMESS *om = *om_itr++;
@@ -1127,11 +1123,12 @@ BOOST_FIXTURE_TEST_SUITE(command_executions, beginExecuteRequest_helper)
         BOOST_CHECK_EQUAL( ClientErrors::None, mct.beginExecuteRequest(&request, parse, vgList, retList, outList) );
 
         BOOST_CHECK( vgList.empty() );
-        BOOST_CHECK( retList.empty() );
-
+        BOOST_REQUIRE_EQUAL( retList.size(), 6 );
         BOOST_REQUIRE_EQUAL( outList.size(), 6 );
 
-        CtiDeviceBase::OutMessageList::const_iterator om_itr = outList.begin();
+        BOOST_CHECK( boost::algorithm::all_of( retList, isSentOnRouteMsg ) );
+
+        auto om_itr = outList.cbegin();
 
         // 3 writes
         {
@@ -1339,10 +1336,12 @@ BOOST_FIXTURE_TEST_SUITE(command_executions, beginExecuteRequest_helper)
         BOOST_CHECK_EQUAL( ClientErrors::None, mct.beginExecuteRequest(&request, parse, vgList, retList, outList) );
 
         BOOST_CHECK( vgList .empty() );
-        BOOST_CHECK( retList.empty() );
+        BOOST_REQUIRE_EQUAL( retList.size(), 6 );
         BOOST_REQUIRE_EQUAL( outList.size(), 6 );
 
-        CtiDeviceBase::OutMessageList::const_iterator om_itr = outList.begin();
+        BOOST_CHECK( boost::algorithm::all_of( retList, isSentOnRouteMsg ) );
+
+        auto om_itr = outList.cbegin();
 
         // 3 writes
         {
@@ -1692,17 +1691,15 @@ BOOST_FIXTURE_TEST_SUITE(command_executions, beginExecuteRequest_helper)
         BOOST_CHECK( vgList.empty() );
 
         {
-            const std::vector<std::string> resultString_exp = boost::assign::list_of
-                ("Emetcon DLC command sent on route ").repeat(24, "Emetcon DLC command sent on route ");
-            const std::vector<long> status_exp = boost::assign::list_of
-                (0).repeat(24, 0);
+            const std::vector<std::string> resultString_exp(25, "Emetcon DLC command sent on route ");
+            const std::vector<long> status_exp(25, 0);
 
             std::vector<std::string> resultString_rcv;
             std::vector<long> status_rcv;
 
-            for each( const CtiMessage *msg in retList )
+            for( const auto msg : retList )
             {
-                const CtiReturnMsg *retMsg = dynamic_cast<const CtiReturnMsg *>(msg);
+                auto retMsg = dynamic_cast<const CtiReturnMsg *>(msg);
 
                 BOOST_REQUIRE(retMsg);
 
@@ -1718,7 +1715,7 @@ BOOST_FIXTURE_TEST_SUITE(command_executions, beginExecuteRequest_helper)
 
         BOOST_REQUIRE_EQUAL( outList.size(), 25 );
 
-        CtiDeviceBase::OutMessageList::const_iterator om_itr = outList.begin();
+        auto om_itr = outList.cbegin();
 
         //  timezone (OMs 1-2)
         {
@@ -1999,11 +1996,12 @@ BOOST_FIXTURE_TEST_SUITE(command_executions, beginExecuteRequest_helper)
         BOOST_CHECK_EQUAL( ClientErrors::None, mct.beginExecuteRequest(&request, parse, vgList, retList, outList) );
 
         BOOST_CHECK( vgList.empty() );
-        BOOST_CHECK( retList.empty() );
-
+        BOOST_REQUIRE_EQUAL( retList.size(), 2 );
         BOOST_REQUIRE_EQUAL( outList.size(), 2 );
 
-        CtiDeviceBase::OutMessageList::const_iterator om_itr = outList.begin();
+        BOOST_CHECK( boost::algorithm::all_of( retList, isSentOnRouteMsg ) );
+
+        auto om_itr = outList.cbegin();
 
         {
             const OUTMESS *om = *om_itr++;
@@ -2047,11 +2045,12 @@ BOOST_FIXTURE_TEST_SUITE(command_executions, beginExecuteRequest_helper)
         BOOST_CHECK_EQUAL( ClientErrors::None, mct.beginExecuteRequest(&request, parse, vgList, retList, outList) );
 
         BOOST_CHECK( vgList.empty() );
-        BOOST_CHECK( retList.empty() );
-
+        BOOST_REQUIRE_EQUAL( retList.size(), 2 );
         BOOST_REQUIRE_EQUAL( outList.size(), 2 );
 
-        CtiDeviceBase::OutMessageList::const_iterator om_itr = outList.begin();
+        BOOST_CHECK( boost::algorithm::all_of( retList, isSentOnRouteMsg ) );
+
+        auto om_itr = outList.cbegin();
 
         {
             const OUTMESS *om = *om_itr++;
@@ -2118,11 +2117,12 @@ BOOST_FIXTURE_TEST_SUITE(command_executions, beginExecuteRequest_helper)
         BOOST_CHECK_EQUAL( ClientErrors::None, mct.beginExecuteRequest(&request, parse, vgList, retList, outList) );
 
         BOOST_CHECK( vgList.empty() );
-        BOOST_CHECK( retList.empty() );
-
+        BOOST_REQUIRE_EQUAL( retList.size(), 2 );
         BOOST_REQUIRE_EQUAL( outList.size(), 2 );
 
-        CtiDeviceBase::OutMessageList::const_iterator om_itr = outList.begin();
+        BOOST_CHECK( boost::algorithm::all_of( retList, isSentOnRouteMsg ) );
+
+        auto om_itr = outList.cbegin();
 
         {
             const OUTMESS *om = *om_itr++;
@@ -2166,11 +2166,12 @@ BOOST_FIXTURE_TEST_SUITE(command_executions, beginExecuteRequest_helper)
         BOOST_CHECK_EQUAL( ClientErrors::None, mct.beginExecuteRequest(&request, parse, vgList, retList, outList) );
 
         BOOST_CHECK( vgList.empty() );
-        BOOST_CHECK( retList.empty() );
-
+        BOOST_REQUIRE_EQUAL( retList.size(), 2 );
         BOOST_REQUIRE_EQUAL( outList.size(), 2 );
 
-        CtiDeviceBase::OutMessageList::const_iterator om_itr = outList.begin();
+        BOOST_CHECK( boost::algorithm::all_of( retList, isSentOnRouteMsg ) );
+
+        auto om_itr = outList.cbegin();
 
         {
             const OUTMESS *om = *om_itr++;
@@ -2250,17 +2251,15 @@ BOOST_FIXTURE_TEST_SUITE(command_executions, beginExecuteRequest_helper)
         BOOST_CHECK( vgList.empty() );
 
         {
-            const std::vector<std::string> resultString_exp = boost::assign::list_of
-                ("Emetcon DLC command sent on route ").repeat(16, "Emetcon DLC command sent on route ");
-            const std::vector<long> status_exp = boost::assign::list_of
-                (0).repeat(16, 0);
+            const std::vector<std::string> resultString_exp(17, "Emetcon DLC command sent on route ");
+            const std::vector<long> status_exp(17, 0);
 
             std::vector<std::string> resultString_rcv;
             std::vector<long> status_rcv;
 
-            for each( const CtiMessage *msg in retList )
+            for( const auto msg : retList )
             {
-                const CtiReturnMsg *retMsg = dynamic_cast<const CtiReturnMsg *>(msg);
+                auto retMsg = dynamic_cast<const CtiReturnMsg *>(msg);
 
                 BOOST_REQUIRE(retMsg);
 
@@ -2276,7 +2275,7 @@ BOOST_FIXTURE_TEST_SUITE(command_executions, beginExecuteRequest_helper)
 
         BOOST_REQUIRE_EQUAL( outList.size(), 17 );
 
-        CtiDeviceBase::OutMessageList::const_iterator om_itr = outList.begin();
+        auto om_itr = outList.cbegin();
 
         //  timezone (OMs 1-2)
         {
@@ -2519,6 +2518,775 @@ BOOST_FIXTURE_TEST_SUITE(command_executions, beginExecuteRequest_helper)
             BOOST_CHECK_EQUAL( om->Buffer.BSt.Length,   1 );
         }
     }
+
+    BOOST_AUTO_TEST_CASE(test_getconfig_install_all_mct470)
+    {
+        mct._type = TYPEMCT470;
+
+        request.setCommandString("getconfig install all");
+
+        CtiCommandParser parse(request.CommandString());
+
+        BOOST_CHECK_EQUAL( ClientErrors::None, mct.beginExecuteRequest(&request, parse, vgList, retList, outList) );
+
+        BOOST_CHECK( vgList.empty() );
+        BOOST_REQUIRE_EQUAL( retList.size(), 13 );
+        BOOST_REQUIRE_EQUAL( outList.size(), 13 );
+
+        BOOST_CHECK( boost::algorithm::all_of( retList, isSentOnRouteMsg ) );
+
+        BOOST_CHECK( boost::algorithm::all_of( retList, [](const CtiMessage* msg) {
+            auto retMsg = dynamic_cast<const CtiReturnMsg*>(msg);
+            return retMsg && retMsg->ExpectMore();
+        }));
+    }
+
+    BOOST_AUTO_TEST_CASE(test_getconfig_install_all_mct430)
+    {
+        mct._type = TYPEMCT430S4;
+
+        request.setCommandString("getconfig install all");
+
+        CtiCommandParser parse(request.CommandString());
+
+        BOOST_CHECK_EQUAL(ClientErrors::None, mct.beginExecuteRequest(&request, parse, vgList, retList, outList));
+
+        BOOST_CHECK(vgList.empty());
+        BOOST_REQUIRE_EQUAL(retList.size(), 9);
+        BOOST_REQUIRE_EQUAL(outList.size(), 9);
+
+        BOOST_CHECK(boost::algorithm::all_of(retList, isSentOnRouteMsg));
+
+        BOOST_CHECK(boost::algorithm::all_of(retList, [](const CtiMessage* msg) {
+            auto retMsg = dynamic_cast<const CtiReturnMsg*>(msg);
+            return retMsg && retMsg->ExpectMore();
+        }));
+    }
+
+
+    BOOST_AUTO_TEST_CASE(test_getconfig_install_all_inhibited)
+    {
+        mct.rte->ccu->setInhibited();
+
+        request.setCommandString("getconfig install all");
+
+        CtiCommandParser parse(request.CommandString());
+
+        BOOST_CHECK_EQUAL(ClientErrors::None, mct.beginExecuteRequest(&request, parse, vgList, retList, outList));
+
+        BOOST_CHECK(vgList.empty());
+        BOOST_CHECK_EQUAL(retList.size(), 18);
+        BOOST_CHECK(outList.empty());
+
+        BOOST_CHECK(std::all_of(retList.begin(), --retList.end(), [](const CtiMessage* msg) {
+            auto retMsg = dynamic_cast<const CtiReturnMsg*>(msg);
+            return retMsg && retMsg->ExpectMore();
+        }));
+
+        auto lastMsg = dynamic_cast<const CtiReturnMsg*>(retList.back());
+
+        BOOST_REQUIRE(lastMsg);
+        BOOST_CHECK_EQUAL(lastMsg->ExpectMore(), false);
+    }
+
+
+    BOOST_AUTO_TEST_CASE(test_getconfig_install_all_mct470_expectMore)
+    {
+        mct._type = TYPEMCT470;
+
+        constexpr int UserMessageId = 11235;
+
+        request.setCommandString("getconfig install all");
+        request.setUserMessageId(UserMessageId);
+
+        CtiCommandParser parse(request.CommandString());
+
+        BOOST_CHECK_EQUAL(ClientErrors::None, mct.beginExecuteRequest(&request, parse, vgList, retList, outList));
+
+        BOOST_REQUIRE_EQUAL(13, retList.size());
+        BOOST_CHECK(vgList.empty());
+        BOOST_REQUIRE_EQUAL(13, outList.size());
+
+        BOOST_CHECK_EQUAL(mct.getGroupMessageCount(UserMessageId, connHandle), 13);
+        
+        {
+            BOOST_CHECK(boost::algorithm::all_of(retList, isSentOnRouteMsg));
+            delete_container(retList);
+            retList.clear();
+        }
+
+        auto outList_itr = outList.cbegin();
+        {
+            auto outmess = *outList_itr++;
+
+            BOOST_REQUIRE(outmess);
+
+            BOOST_CHECK_EQUAL(outmess->Buffer.BSt.Function, 0x28);
+            BOOST_CHECK_EQUAL(outmess->Buffer.BSt.IO, 1);
+            BOOST_CHECK_EQUAL(outmess->Buffer.BSt.Length, 1);
+            BOOST_CHECK_EQUAL(outmess->Request.ProtocolInfo.Emetcon.Function, 0x28);
+            BOOST_CHECK_EQUAL(outmess->Request.ProtocolInfo.Emetcon.IO, 1);
+            BOOST_CHECK_EQUAL(outmess->Request.CommandStr, "getconfig install timezone");
+
+            INMESS im = makeInmessReply(*outmess);
+
+            mct.ProcessInMessageResult(im, CtiTime::now(), vgList, retList, outList);
+        }
+        BOOST_CHECK_EQUAL(mct.getGroupMessageCount(UserMessageId, connHandle), 12);
+        {
+            auto outmess = *outList_itr++;
+
+            BOOST_REQUIRE(outmess);
+
+            BOOST_CHECK_EQUAL(outmess->Buffer.BSt.Function, 0x1f);
+            BOOST_CHECK_EQUAL(outmess->Buffer.BSt.IO, 1);
+            BOOST_CHECK_EQUAL(outmess->Buffer.BSt.Length, 1);
+            BOOST_CHECK_EQUAL(outmess->Request.ProtocolInfo.Emetcon.Function, 0x1f);
+            BOOST_CHECK_EQUAL(outmess->Request.ProtocolInfo.Emetcon.IO, 1);
+            BOOST_CHECK_EQUAL(outmess->Request.CommandStr, "getconfig install timeadjusttolerance");
+
+            INMESS im = makeInmessReply(*outmess);
+
+            mct.ProcessInMessageResult(im, CtiTime::now(), vgList, retList, outList);
+        }
+        BOOST_CHECK_EQUAL(mct.getGroupMessageCount(UserMessageId, connHandle), 11);
+        {
+            auto outmess = *outList_itr++;
+
+            BOOST_REQUIRE(outmess);
+
+            BOOST_CHECK_EQUAL(outmess->Buffer.BSt.Function, 0x12);
+            BOOST_CHECK_EQUAL(outmess->Buffer.BSt.IO, 1);
+            BOOST_CHECK_EQUAL(outmess->Buffer.BSt.Length, 1);
+            BOOST_CHECK_EQUAL(outmess->Request.ProtocolInfo.Emetcon.Function, 0x12);
+            BOOST_CHECK_EQUAL(outmess->Request.ProtocolInfo.Emetcon.IO, 1);
+            BOOST_CHECK_EQUAL(outmess->Request.CommandStr, "getconfig install spid");
+
+            INMESS im = makeInmessReply(*outmess);
+
+            mct.ProcessInMessageResult(im, CtiTime::now(), vgList, retList, outList);
+        }
+        BOOST_CHECK_EQUAL(mct.getGroupMessageCount(UserMessageId, connHandle), 10);
+        {
+            auto outmess = *outList_itr++;
+
+            BOOST_REQUIRE(outmess);
+
+            BOOST_CHECK_EQUAL(outmess->Buffer.BSt.Function, 0x32);
+            BOOST_CHECK_EQUAL(outmess->Buffer.BSt.IO, 1);
+            BOOST_CHECK_EQUAL(outmess->Buffer.BSt.Length, 6);
+            BOOST_CHECK_EQUAL(outmess->Request.ProtocolInfo.Emetcon.Function, 0x32);
+            BOOST_CHECK_EQUAL(outmess->Request.ProtocolInfo.Emetcon.IO, 1);
+            BOOST_CHECK_EQUAL(outmess->Request.CommandStr, "getconfig install demandlp");
+
+            INMESS im = makeInmessReply(*outmess);
+
+            mct.ProcessInMessageResult(im, CtiTime::now(), vgList, retList, outList);
+        }
+        BOOST_CHECK_EQUAL(mct.getGroupMessageCount(UserMessageId, connHandle), 9);
+        {
+            auto outmess = *outList_itr++;
+
+            BOOST_REQUIRE(outmess);
+
+            BOOST_CHECK_EQUAL(outmess->Buffer.BSt.Function, 0x21);
+            BOOST_CHECK_EQUAL(outmess->Buffer.BSt.IO, 3);
+            BOOST_CHECK_EQUAL(outmess->Buffer.BSt.Length, 10);
+            BOOST_CHECK_EQUAL(outmess->Request.ProtocolInfo.Emetcon.Function, 0x21);
+            BOOST_CHECK_EQUAL(outmess->Request.ProtocolInfo.Emetcon.IO, 3);
+            BOOST_CHECK_EQUAL(outmess->Request.CommandStr, "getconfig install lpchannel 12");
+
+            INMESS im = makeInmessReply(*outmess);
+
+            mct.ProcessInMessageResult(im, CtiTime::now(), vgList, retList, outList);
+        }
+        BOOST_CHECK_EQUAL(mct.getGroupMessageCount(UserMessageId, connHandle), 8);
+        {
+            auto outmess = *outList_itr++;
+
+            BOOST_REQUIRE(outmess);
+
+            BOOST_CHECK_EQUAL(outmess->Buffer.BSt.Function, 0x22);
+            BOOST_CHECK_EQUAL(outmess->Buffer.BSt.IO, 3);
+            BOOST_CHECK_EQUAL(outmess->Buffer.BSt.Length, 10);
+            BOOST_CHECK_EQUAL(outmess->Request.ProtocolInfo.Emetcon.Function, 0x22);
+            BOOST_CHECK_EQUAL(outmess->Request.ProtocolInfo.Emetcon.IO, 3);
+            BOOST_CHECK_EQUAL(outmess->Request.CommandStr, "getconfig install lpchannel 34");
+
+            INMESS im = makeInmessReply(*outmess);
+
+            mct.ProcessInMessageResult(im, CtiTime::now(), vgList, retList, outList);
+        }
+        BOOST_CHECK_EQUAL(mct.getGroupMessageCount(UserMessageId, connHandle), 7);
+        {
+            auto outmess = *outList_itr++;
+
+            BOOST_REQUIRE(outmess);
+
+            BOOST_CHECK_EQUAL(outmess->Buffer.BSt.Function, 0x23);
+            BOOST_CHECK_EQUAL(outmess->Buffer.BSt.IO, 3);
+            BOOST_CHECK_EQUAL(outmess->Buffer.BSt.Length, 11);
+            BOOST_CHECK_EQUAL(outmess->Request.ProtocolInfo.Emetcon.Function, 0x23);
+            BOOST_CHECK_EQUAL(outmess->Request.ProtocolInfo.Emetcon.IO, 3);
+            BOOST_CHECK_EQUAL(outmess->Request.CommandStr, "getconfig install precannedtable nospid");
+
+            INMESS im = makeInmessReply(*outmess);
+
+            mct.ProcessInMessageResult(im, CtiTime::now(), vgList, retList, outList);
+        }
+        BOOST_CHECK_EQUAL(mct.getGroupMessageCount(UserMessageId, connHandle), 6);
+        {
+            auto outmess = *outList_itr++;
+
+            BOOST_REQUIRE(outmess);
+
+            BOOST_CHECK_EQUAL(outmess->Buffer.BSt.Function, 0x12);
+            BOOST_CHECK_EQUAL(outmess->Buffer.BSt.IO, 1);
+            BOOST_CHECK_EQUAL(outmess->Buffer.BSt.Length, 1);
+            BOOST_CHECK_EQUAL(outmess->Request.ProtocolInfo.Emetcon.Function, 0x12);
+            BOOST_CHECK_EQUAL(outmess->Request.ProtocolInfo.Emetcon.IO, 1);
+            BOOST_CHECK_EQUAL(outmess->Request.CommandStr, "getconfig install precannedtable spid");
+
+            INMESS im = makeInmessReply(*outmess);
+
+            mct.ProcessInMessageResult(im, CtiTime::now(), vgList, retList, outList);
+        }
+        BOOST_CHECK_EQUAL(mct.getGroupMessageCount(UserMessageId, connHandle), 5);
+        {
+            auto outmess = *outList_itr++;
+
+            BOOST_REQUIRE(outmess);
+
+            BOOST_CHECK_EQUAL(outmess->Buffer.BSt.Function, 0x03);
+            BOOST_CHECK_EQUAL(outmess->Buffer.BSt.IO, 1);
+            BOOST_CHECK_EQUAL(outmess->Buffer.BSt.Length, 1);
+            BOOST_CHECK_EQUAL(outmess->Request.ProtocolInfo.Emetcon.Function, 0x03);
+            BOOST_CHECK_EQUAL(outmess->Request.ProtocolInfo.Emetcon.IO, 1);
+            BOOST_CHECK_EQUAL(outmess->Request.CommandStr, "getconfig install configbyte");
+
+            INMESS im = makeInmessReply(*outmess);
+
+            mct.ProcessInMessageResult(im, CtiTime::now(), vgList, retList, outList);
+
+        }
+        BOOST_CHECK_EQUAL(mct.getGroupMessageCount(UserMessageId, connHandle), 4);
+        {
+            auto outmess = *outList_itr++;
+
+            BOOST_REQUIRE(outmess);
+
+            BOOST_CHECK_EQUAL(outmess->Buffer.BSt.Function, 0x48);
+            BOOST_CHECK_EQUAL(outmess->Buffer.BSt.IO, 1);
+            BOOST_CHECK_EQUAL(outmess->Buffer.BSt.Length, 2);
+            BOOST_CHECK_EQUAL(outmess->Request.ProtocolInfo.Emetcon.Function, 0x48);
+            BOOST_CHECK_EQUAL(outmess->Request.ProtocolInfo.Emetcon.IO, 1);
+            BOOST_CHECK_EQUAL(outmess->Request.CommandStr, "getconfig install relays");
+
+            INMESS im = makeInmessReply(*outmess);
+
+            mct.ProcessInMessageResult(im, CtiTime::now(), vgList, retList, outList);
+
+        }
+        BOOST_CHECK_EQUAL(mct.getGroupMessageCount(UserMessageId, connHandle), 3);
+        {
+            auto outmess = *outList_itr++;
+
+            BOOST_REQUIRE(outmess);
+
+            BOOST_CHECK_EQUAL(outmess->Buffer.BSt.Function, 0xae);
+            BOOST_CHECK_EQUAL(outmess->Buffer.BSt.IO, 3);
+            BOOST_CHECK_EQUAL(outmess->Buffer.BSt.Length, 13);
+            BOOST_CHECK_EQUAL(outmess->Request.ProtocolInfo.Emetcon.Function, 0xae);
+            BOOST_CHECK_EQUAL(outmess->Request.ProtocolInfo.Emetcon.IO, 3);
+            BOOST_CHECK_EQUAL(outmess->Request.CommandStr, "getconfig install tou schedule 1");
+
+            INMESS im = makeInmessReply(*outmess);
+
+            mct.ProcessInMessageResult(im, CtiTime::now(), vgList, retList, outList);
+        }
+        BOOST_CHECK_EQUAL(mct.getGroupMessageCount(UserMessageId, connHandle), 2);
+        {
+            auto outmess = *outList_itr++;
+
+            BOOST_REQUIRE(outmess);
+
+            BOOST_CHECK_EQUAL(outmess->Buffer.BSt.Function, 0xaf);
+            BOOST_CHECK_EQUAL(outmess->Buffer.BSt.IO, 3);
+            BOOST_CHECK_EQUAL(outmess->Buffer.BSt.Length, 13);
+            BOOST_CHECK_EQUAL(outmess->Request.ProtocolInfo.Emetcon.Function, 0xaf);
+            BOOST_CHECK_EQUAL(outmess->Request.ProtocolInfo.Emetcon.IO, 3);
+            BOOST_CHECK_EQUAL(outmess->Request.CommandStr, "getconfig install tou schedule 3");
+
+            INMESS im = makeInmessReply(*outmess);
+
+            mct.ProcessInMessageResult(im, CtiTime::now(), vgList, retList, outList);
+        }
+        BOOST_CHECK_EQUAL(mct.getGroupMessageCount(UserMessageId, connHandle), 1);
+        {
+            auto outmess = *outList_itr++;
+
+            BOOST_REQUIRE(outmess);
+
+            BOOST_CHECK_EQUAL(outmess->Buffer.BSt.Function, 0xad);
+            BOOST_CHECK_EQUAL(outmess->Buffer.BSt.IO, 3);
+            BOOST_CHECK_EQUAL(outmess->Buffer.BSt.Length, 11);
+            BOOST_CHECK_EQUAL(outmess->Request.ProtocolInfo.Emetcon.Function, 0xad);
+            BOOST_CHECK_EQUAL(outmess->Request.ProtocolInfo.Emetcon.IO, 3);
+            BOOST_CHECK_EQUAL(outmess->Request.CommandStr, "getconfig install tou");
+
+            INMESS im = makeInmessReply(*outmess);
+
+            mct.ProcessInMessageResult(im, CtiTime::now(), vgList, retList, outList);
+        }
+        BOOST_CHECK_EQUAL(mct.getGroupMessageCount(UserMessageId, connHandle), 0);
+
+        BOOST_CHECK_EQUAL(outList.size(), 13);  //  Make sure nothing was added
+
+        BOOST_REQUIRE_EQUAL(retList.size(), 13);
+        {
+            auto retList_itr = retList.cbegin();
+            {
+                auto retMsg = dynamic_cast<CtiReturnMsg*>(*retList_itr++);
+
+                BOOST_REQUIRE(retMsg);
+
+                BOOST_CHECK_EQUAL(retMsg->ResultString(), "Config data received: 00");
+                BOOST_CHECK_EQUAL(retMsg->ExpectMore(), true);
+                BOOST_CHECK_EQUAL(retMsg->UserMessageId(), UserMessageId);
+                BOOST_CHECK_EQUAL(retMsg->CommandString(), "getconfig install timezone");
+            }
+            {
+                auto retMsg = dynamic_cast<CtiReturnMsg*>(*retList_itr++);
+
+                BOOST_REQUIRE(retMsg);
+
+                BOOST_CHECK_EQUAL(retMsg->ResultString(), "Config data received: 00");
+                BOOST_CHECK_EQUAL(retMsg->ExpectMore(), true);
+                BOOST_CHECK_EQUAL(retMsg->UserMessageId(), UserMessageId);
+            }
+            {
+                auto retMsg = dynamic_cast<CtiReturnMsg*>(*retList_itr++);
+
+                BOOST_REQUIRE(retMsg);
+
+                BOOST_CHECK_EQUAL(retMsg->ResultString(), "Config data received: 00");
+                BOOST_CHECK_EQUAL(retMsg->ExpectMore(), true);
+                BOOST_CHECK_EQUAL(retMsg->UserMessageId(), UserMessageId);
+            }
+            {
+                auto retMsg = dynamic_cast<CtiReturnMsg*>(*retList_itr++);
+
+                BOOST_REQUIRE(retMsg);
+
+                BOOST_CHECK_EQUAL(retMsg->ResultString(), "Config data received: 000000000000");
+                BOOST_CHECK_EQUAL(retMsg->ExpectMore(), true);
+                BOOST_CHECK_EQUAL(retMsg->UserMessageId(), UserMessageId);
+            }
+            {
+                auto retMsg = dynamic_cast<CtiReturnMsg*>(*retList_itr++);
+
+                BOOST_REQUIRE(retMsg);
+
+                BOOST_CHECK_EQUAL(retMsg->ResultString(), "Config data received: 00000000000000000000");
+                BOOST_CHECK_EQUAL(retMsg->ExpectMore(), true);
+                BOOST_CHECK_EQUAL(retMsg->UserMessageId(), UserMessageId);
+            }
+            {
+                auto retMsg = dynamic_cast<CtiReturnMsg*>(*retList_itr++);
+
+                BOOST_REQUIRE(retMsg);
+
+                BOOST_CHECK_EQUAL(retMsg->ResultString(), "Config data received: 00000000000000000000");
+                BOOST_CHECK_EQUAL(retMsg->ExpectMore(), true);
+                BOOST_CHECK_EQUAL(retMsg->UserMessageId(), UserMessageId);
+            }
+            {
+                auto retMsg = dynamic_cast<CtiReturnMsg*>(*retList_itr++);
+
+                BOOST_REQUIRE(retMsg);
+
+                BOOST_CHECK_EQUAL(retMsg->ResultString(), "Config data received: 0000000000000000000000");
+                BOOST_CHECK_EQUAL(retMsg->ExpectMore(), true);
+                BOOST_CHECK_EQUAL(retMsg->UserMessageId(), UserMessageId);
+            }
+            {
+                auto retMsg = dynamic_cast<CtiReturnMsg*>(*retList_itr++);
+
+                BOOST_REQUIRE(retMsg);
+
+                BOOST_CHECK_EQUAL(retMsg->ResultString(), "Config data received: 00");
+                BOOST_CHECK_EQUAL(retMsg->ExpectMore(), true);
+                BOOST_CHECK_EQUAL(retMsg->UserMessageId(), UserMessageId);
+            }
+            {
+                auto retMsg = dynamic_cast<CtiReturnMsg*>(*retList_itr++);
+
+                BOOST_REQUIRE(retMsg);
+
+                BOOST_CHECK_EQUAL(retMsg->ResultString(), "Config data received: 00");
+                BOOST_CHECK_EQUAL(retMsg->ExpectMore(), true);
+                BOOST_CHECK_EQUAL(retMsg->UserMessageId(), UserMessageId);
+            }
+            {
+                auto retMsg = dynamic_cast<CtiReturnMsg*>(*retList_itr++);
+
+                BOOST_REQUIRE(retMsg);
+
+                BOOST_CHECK_EQUAL(retMsg->ResultString(), "Config data received: 0000");
+                BOOST_CHECK_EQUAL(retMsg->ExpectMore(), true);
+                BOOST_CHECK_EQUAL(retMsg->UserMessageId(), UserMessageId);
+            }
+            {
+                auto retMsg = dynamic_cast<CtiReturnMsg*>(*retList_itr++);
+
+                BOOST_REQUIRE(retMsg);
+
+                BOOST_CHECK_EQUAL(retMsg->ResultString(),
+                    " / TOU Schedule 1:"
+                    "\n00:00: A"
+                    "\n- end of day - "
+                    "\n"
+                    "\n / TOU Schedule 2:"
+                    "\n00:00: A"
+                    "\n- end of day - "
+                    "\n"
+                    "\n");
+                BOOST_CHECK_EQUAL(retMsg->ExpectMore(), true);
+                BOOST_CHECK_EQUAL(retMsg->UserMessageId(), UserMessageId);
+            }
+            {
+                auto retMsg = dynamic_cast<CtiReturnMsg*>(*retList_itr++);
+
+                BOOST_REQUIRE(retMsg);
+
+                BOOST_CHECK_EQUAL(retMsg->ResultString(), 
+                    " / TOU Schedule 3:"
+                    "\n00:00: A"
+                    "\n- end of day - "
+                    "\n"
+                    "\n / TOU Schedule 4:"
+                    "\n00:00: A"
+                    "\n- end of day - "
+                    "\n"
+                    "\n");
+                BOOST_CHECK_EQUAL(retMsg->ExpectMore(), true);
+                BOOST_CHECK_EQUAL(retMsg->UserMessageId(), UserMessageId);
+            }
+            {
+                auto retMsg = dynamic_cast<CtiReturnMsg*>(*retList_itr++);
+
+                BOOST_REQUIRE(retMsg);
+
+                BOOST_CHECK_EQUAL(retMsg->ResultString(), 
+                    " / TOU Status:"
+                    "\n"
+                    "\nCurrent time: not-a-time"
+                    "\nTime zone offset: 0.0 hours ( 0 minutes)"
+                    "\nCurrent rate: A"
+                    "\nCurrent schedule: 1"
+                    "\nDefault rate: A"
+                    "\n"
+                    "\nDay table: "
+                    "\nSchedule 1 - Sunday"
+                    "\nSchedule 1 - Monday"
+                    "\nSchedule 1 - Tuesday"
+                    "\nSchedule 1 - Wednesday"
+                    "\nSchedule 1 - Thursday"
+                    "\nSchedule 1 - Friday"
+                    "\nSchedule 1 - Saturday"
+                    "\nSchedule 1 - Holiday"
+                    "\n");
+                BOOST_CHECK_EQUAL(retMsg->ExpectMore(), false);
+                BOOST_CHECK_EQUAL(retMsg->UserMessageId(), UserMessageId);
+            }
+        }
+    }
+
+    BOOST_AUTO_TEST_CASE(test_getconfig_install_all_mct430_expectMore)
+    {
+        mct._type = TYPEMCT430S4;
+        constexpr int UserMessageId = 11235;
+
+        request.setCommandString("getconfig install all");
+        request.setUserMessageId(UserMessageId);
+
+        CtiCommandParser parse(request.CommandString());
+
+        BOOST_CHECK_EQUAL(ClientErrors::None, mct.beginExecuteRequest(&request, parse, vgList, retList, outList));
+
+        BOOST_REQUIRE_EQUAL(9, retList.size());
+        BOOST_CHECK(vgList.empty());
+        BOOST_REQUIRE_EQUAL(9, outList.size());
+
+        BOOST_CHECK_EQUAL(mct.getGroupMessageCount(UserMessageId, connHandle), 9);
+
+        {
+            BOOST_CHECK(boost::algorithm::all_of(retList, isSentOnRouteMsg));
+            delete_container(retList);
+            retList.clear();
+        }
+
+        auto outList_itr = outList.cbegin();
+        {
+            auto outmess = *outList_itr++;
+
+            BOOST_REQUIRE(outmess);
+
+            BOOST_CHECK_EQUAL(outmess->Buffer.BSt.Function, 0x28);
+            BOOST_CHECK_EQUAL(outmess->Buffer.BSt.IO, 1);
+            BOOST_CHECK_EQUAL(outmess->Buffer.BSt.Length, 1);
+            BOOST_CHECK_EQUAL(outmess->Request.ProtocolInfo.Emetcon.Function, 0x28);
+            BOOST_CHECK_EQUAL(outmess->Request.ProtocolInfo.Emetcon.IO, 1);
+            BOOST_CHECK_EQUAL(outmess->Request.CommandStr, "getconfig install timezone");
+
+            INMESS im = makeInmessReply(*outmess);
+
+            mct.ProcessInMessageResult(im, CtiTime::now(), vgList, retList, outList);
+
+            BOOST_CHECK_EQUAL(mct.getGroupMessageCount(UserMessageId, connHandle), 8);
+        }
+        BOOST_CHECK_EQUAL(9, outList.size());
+        {
+            auto outmess = *outList_itr++;
+
+            BOOST_REQUIRE(outmess);
+
+            BOOST_CHECK_EQUAL(outmess->Buffer.BSt.Function, 0x1f);
+            BOOST_CHECK_EQUAL(outmess->Buffer.BSt.IO, 1);
+            BOOST_CHECK_EQUAL(outmess->Buffer.BSt.Length, 1);
+            BOOST_CHECK_EQUAL(outmess->Request.ProtocolInfo.Emetcon.Function, 0x1f);
+            BOOST_CHECK_EQUAL(outmess->Request.ProtocolInfo.Emetcon.IO, 1);
+            BOOST_CHECK_EQUAL(outmess->Request.CommandStr, "getconfig install timeadjusttolerance");
+
+            INMESS im = makeInmessReply(*outmess);
+
+            mct.ProcessInMessageResult(im, CtiTime::now(), vgList, retList, outList);
+
+            BOOST_CHECK_EQUAL(mct.getGroupMessageCount(UserMessageId, connHandle), 7);
+        }
+        BOOST_CHECK_EQUAL(9, outList.size());
+        {
+            auto outmess = *outList_itr++;
+
+            BOOST_REQUIRE(outmess);
+
+            BOOST_CHECK_EQUAL(outmess->Buffer.BSt.Function, 0x12);
+            BOOST_CHECK_EQUAL(outmess->Buffer.BSt.IO, 1);
+            BOOST_CHECK_EQUAL(outmess->Buffer.BSt.Length, 1);
+            BOOST_CHECK_EQUAL(outmess->Request.ProtocolInfo.Emetcon.Function, 0x12);
+            BOOST_CHECK_EQUAL(outmess->Request.ProtocolInfo.Emetcon.IO, 1);
+            BOOST_CHECK_EQUAL(outmess->Request.CommandStr, "getconfig install spid");
+
+            INMESS im = makeInmessReply(*outmess);
+
+            mct.ProcessInMessageResult(im, CtiTime::now(), vgList, retList, outList);
+
+            BOOST_CHECK_EQUAL(mct.getGroupMessageCount(UserMessageId, connHandle), 6);
+        }
+        BOOST_CHECK_EQUAL(9, outList.size());
+        {
+            auto outmess = *outList_itr++;
+
+            BOOST_REQUIRE(outmess);
+
+            BOOST_CHECK_EQUAL(outmess->Buffer.BSt.Function, 0x32);
+            BOOST_CHECK_EQUAL(outmess->Buffer.BSt.IO, 1);
+            BOOST_CHECK_EQUAL(outmess->Buffer.BSt.Length, 6);
+            BOOST_CHECK_EQUAL(outmess->Request.ProtocolInfo.Emetcon.Function, 0x32);
+            BOOST_CHECK_EQUAL(outmess->Request.ProtocolInfo.Emetcon.IO, 1);
+            BOOST_CHECK_EQUAL(outmess->Request.CommandStr, "getconfig install demandlp");
+
+            INMESS im = makeInmessReply(*outmess);
+
+            mct.ProcessInMessageResult(im, CtiTime::now(), vgList, retList, outList);
+
+            BOOST_CHECK_EQUAL(mct.getGroupMessageCount(UserMessageId, connHandle), 5);
+        }
+        BOOST_CHECK_EQUAL(9, outList.size());
+        {
+            auto outmess = *outList_itr++;
+
+            BOOST_REQUIRE(outmess);
+
+            BOOST_CHECK_EQUAL(outmess->Buffer.BSt.Function, 0x21);
+            BOOST_CHECK_EQUAL(outmess->Buffer.BSt.IO, 3);
+            BOOST_CHECK_EQUAL(outmess->Buffer.BSt.Length, 10);
+            BOOST_CHECK_EQUAL(outmess->Request.ProtocolInfo.Emetcon.Function, 0x21);
+            BOOST_CHECK_EQUAL(outmess->Request.ProtocolInfo.Emetcon.IO, 3);
+            BOOST_CHECK_EQUAL(outmess->Request.CommandStr, "getconfig install lpchannel 12");
+
+            INMESS im = makeInmessReply(*outmess);
+
+            mct.ProcessInMessageResult(im, CtiTime::now(), vgList, retList, outList);
+
+            BOOST_CHECK_EQUAL(mct.getGroupMessageCount(UserMessageId, connHandle), 4);
+        }
+        BOOST_CHECK_EQUAL(9, outList.size());
+        {
+            auto outmess = *outList_itr++;
+
+            BOOST_REQUIRE(outmess);
+
+            BOOST_CHECK_EQUAL(outmess->Buffer.BSt.Function, 0x22);
+            BOOST_CHECK_EQUAL(outmess->Buffer.BSt.IO, 3);
+            BOOST_CHECK_EQUAL(outmess->Buffer.BSt.Length, 10);
+            BOOST_CHECK_EQUAL(outmess->Request.ProtocolInfo.Emetcon.Function, 0x22);
+            BOOST_CHECK_EQUAL(outmess->Request.ProtocolInfo.Emetcon.IO, 3);
+            BOOST_CHECK_EQUAL(outmess->Request.CommandStr, "getconfig install lpchannel 34");
+
+            INMESS im = makeInmessReply(*outmess);
+
+            mct.ProcessInMessageResult(im, CtiTime::now(), vgList, retList, outList);
+
+            BOOST_CHECK_EQUAL(mct.getGroupMessageCount(UserMessageId, connHandle), 3);
+        }
+        BOOST_CHECK_EQUAL(9, outList.size());
+        {
+            auto outmess = *outList_itr++;
+
+            BOOST_REQUIRE(outmess);
+
+            BOOST_CHECK_EQUAL(outmess->Buffer.BSt.Function, 0x23);
+            BOOST_CHECK_EQUAL(outmess->Buffer.BSt.IO, 3);
+            BOOST_CHECK_EQUAL(outmess->Buffer.BSt.Length, 11);
+            BOOST_CHECK_EQUAL(outmess->Request.ProtocolInfo.Emetcon.Function, 0x23);
+            BOOST_CHECK_EQUAL(outmess->Request.ProtocolInfo.Emetcon.IO, 3);
+            BOOST_CHECK_EQUAL(outmess->Request.CommandStr, "getconfig install precannedtable nospid");
+
+            INMESS im = makeInmessReply(*outmess);
+
+            mct.ProcessInMessageResult(im, CtiTime::now(), vgList, retList, outList);
+
+            BOOST_CHECK_EQUAL(mct.getGroupMessageCount(UserMessageId, connHandle), 2);
+        }
+        BOOST_CHECK_EQUAL(9, outList.size());
+        {
+            auto outmess = *outList_itr++;
+
+            BOOST_REQUIRE(outmess);
+
+            BOOST_CHECK_EQUAL(outmess->Buffer.BSt.Function, 0x12);
+            BOOST_CHECK_EQUAL(outmess->Buffer.BSt.IO, 1);
+            BOOST_CHECK_EQUAL(outmess->Buffer.BSt.Length, 1);
+            BOOST_CHECK_EQUAL(outmess->Request.ProtocolInfo.Emetcon.Function, 0x12);
+            BOOST_CHECK_EQUAL(outmess->Request.ProtocolInfo.Emetcon.IO, 1);
+            BOOST_CHECK_EQUAL(outmess->Request.CommandStr, "getconfig install precannedtable spid");
+
+            INMESS im = makeInmessReply(*outmess);
+
+            mct.ProcessInMessageResult(im, CtiTime::now(), vgList, retList, outList);
+
+            BOOST_CHECK_EQUAL(mct.getGroupMessageCount(UserMessageId, connHandle), 1);
+        }
+        BOOST_CHECK_EQUAL(9, outList.size());
+        {
+            auto outmess = *outList_itr++;
+
+            BOOST_REQUIRE(outmess);
+
+            BOOST_CHECK_EQUAL(outmess->Buffer.BSt.Function, 0x03);
+            BOOST_CHECK_EQUAL(outmess->Buffer.BSt.IO, 1);
+            BOOST_CHECK_EQUAL(outmess->Buffer.BSt.Length, 1);
+            BOOST_CHECK_EQUAL(outmess->Request.ProtocolInfo.Emetcon.Function, 0x03);
+            BOOST_CHECK_EQUAL(outmess->Request.ProtocolInfo.Emetcon.IO, 1);
+            BOOST_CHECK_EQUAL(outmess->Request.CommandStr, "getconfig install configbyte");
+
+            INMESS im = makeInmessReply(*outmess);
+
+            mct.ProcessInMessageResult(im, CtiTime::now(), vgList, retList, outList);
+
+            BOOST_CHECK_EQUAL(mct.getGroupMessageCount(UserMessageId, connHandle), 0);
+        }
+
+        BOOST_REQUIRE_EQUAL(retList.size(), 9);
+
+        {
+            auto retList_itr = retList.cbegin();
+
+            {
+                auto retMsg = dynamic_cast<CtiReturnMsg*>(*retList_itr++);
+
+                BOOST_REQUIRE(retMsg);
+
+                BOOST_CHECK_EQUAL(retMsg->ResultString(), "Config data received: 00");
+                BOOST_CHECK_EQUAL(retMsg->ExpectMore(), true);
+                BOOST_CHECK_EQUAL(retMsg->UserMessageId(), UserMessageId);
+            }
+            {
+                auto retMsg = dynamic_cast<CtiReturnMsg*>(*retList_itr++);
+
+                BOOST_REQUIRE(retMsg);
+
+                BOOST_CHECK_EQUAL(retMsg->ResultString(), "Config data received: 00");
+                BOOST_CHECK_EQUAL(retMsg->ExpectMore(), true);
+                BOOST_CHECK_EQUAL(retMsg->UserMessageId(), UserMessageId);
+            }
+            {
+                auto retMsg = dynamic_cast<CtiReturnMsg*>(*retList_itr++);
+
+                BOOST_REQUIRE(retMsg);
+
+                BOOST_CHECK_EQUAL(retMsg->ResultString(), "Config data received: 00");
+                BOOST_CHECK_EQUAL(retMsg->ExpectMore(), true);
+                BOOST_CHECK_EQUAL(retMsg->UserMessageId(), UserMessageId);
+            }
+            {
+                auto retMsg = dynamic_cast<CtiReturnMsg*>(*retList_itr++);
+
+                BOOST_REQUIRE(retMsg);
+
+                BOOST_CHECK_EQUAL(retMsg->ResultString(), "Config data received: 000000000000");
+                BOOST_CHECK_EQUAL(retMsg->ExpectMore(), true);
+                BOOST_CHECK_EQUAL(retMsg->UserMessageId(), UserMessageId);
+            }
+            {
+                auto retMsg = dynamic_cast<CtiReturnMsg*>(*retList_itr++);
+
+                BOOST_REQUIRE(retMsg);
+
+                BOOST_CHECK_EQUAL(retMsg->ResultString(), "Config data received: 00000000000000000000");
+                BOOST_CHECK_EQUAL(retMsg->ExpectMore(), true);
+                BOOST_CHECK_EQUAL(retMsg->UserMessageId(), UserMessageId);
+            }
+            {
+                auto retMsg = dynamic_cast<CtiReturnMsg*>(*retList_itr++);
+
+                BOOST_REQUIRE(retMsg);
+
+                BOOST_CHECK_EQUAL(retMsg->ResultString(), "Config data received: 00000000000000000000");
+                BOOST_CHECK_EQUAL(retMsg->ExpectMore(), true);
+                BOOST_CHECK_EQUAL(retMsg->UserMessageId(), UserMessageId);
+            }
+            {
+                auto retMsg = dynamic_cast<CtiReturnMsg*>(*retList_itr++);
+
+                BOOST_REQUIRE(retMsg);
+
+                BOOST_CHECK_EQUAL(retMsg->ResultString(), "Config data received: 0000000000000000000000");
+                BOOST_CHECK_EQUAL(retMsg->ExpectMore(), true);
+                BOOST_CHECK_EQUAL(retMsg->UserMessageId(), UserMessageId);
+            }
+            {
+                auto retMsg = dynamic_cast<CtiReturnMsg*>(*retList_itr++);
+
+                BOOST_REQUIRE(retMsg);
+
+                BOOST_CHECK_EQUAL(retMsg->ResultString(), "Config data received: 00");
+                BOOST_CHECK_EQUAL(retMsg->ExpectMore(), true);
+                BOOST_CHECK_EQUAL(retMsg->UserMessageId(), UserMessageId);
+            }
+            {
+                auto retMsg = dynamic_cast<CtiReturnMsg*>(*retList_itr++);
+
+                BOOST_REQUIRE(retMsg);
+
+                BOOST_CHECK_EQUAL(retMsg->ResultString(), "Config data received: 00");
+                BOOST_CHECK_EQUAL(retMsg->ExpectMore(), false);
+                BOOST_CHECK_EQUAL(retMsg->UserMessageId(), UserMessageId);
+            }
+        }
+    }
+
     BOOST_AUTO_TEST_CASE(test_putvalue_ied_reset_alpha)
     {
         mct._type = TYPEMCT470;
@@ -3350,6 +4118,9 @@ BOOST_FIXTURE_TEST_SUITE(command_executions, beginExecuteRequest_helper)
         BOOST_CHECK_EQUAL( ClientErrors::None, mct.beginExecuteRequest(&request, parse, vgList, retList, outList) );
 
         BOOST_REQUIRE_EQUAL( outList.size(), 1 );
+        BOOST_REQUIRE_EQUAL( retList.size(), 1 );
+
+        BOOST_CHECK( isSentOnRouteMsg( retList.front() ) );
 
         const OUTMESS *om = outList.front();
 
@@ -3365,6 +4136,8 @@ BOOST_FIXTURE_TEST_SUITE(command_executions, beginExecuteRequest_helper)
 
         delete_container(outList);
         outList.clear();
+        delete_container(retList);
+        retList.clear();
 
         unsigned char test_data[] = {
                 //  schedule 1
@@ -3442,6 +4215,8 @@ BOOST_FIXTURE_TEST_SUITE(command_executions, beginExecuteRequest_helper)
 
     BOOST_AUTO_TEST_CASE(test_getstatus_lp)
     {
+        const auto tzOverride = Cti::Test::set_to_central_timezone();
+
         mct._type = TYPEMCT470;
         mct._name = "Jimmy";
 
@@ -3450,6 +4225,9 @@ BOOST_FIXTURE_TEST_SUITE(command_executions, beginExecuteRequest_helper)
         BOOST_CHECK_EQUAL( ClientErrors::None, mct.beginExecuteRequest(&request, parse, vgList, retList, outList) );
 
         BOOST_REQUIRE_EQUAL( outList.size(), 1 );
+        BOOST_REQUIRE_EQUAL( retList.size(), 1 );
+
+        BOOST_CHECK( isSentOnRouteMsg( retList.front() ) );
 
         const OUTMESS *om = outList.front();
 
@@ -3465,6 +4243,8 @@ BOOST_FIXTURE_TEST_SUITE(command_executions, beginExecuteRequest_helper)
 
         delete_container(outList);
         outList.clear();
+        delete_container(retList);
+        retList.clear();
 
         unsigned char test_data[] = { 0x54, 0xDA, 0x5E, 0x6B, 5, 0, 0, 0, 0, 11, 60 };
 

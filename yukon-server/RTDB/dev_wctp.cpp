@@ -443,26 +443,19 @@ void CtiDeviceWctpTerminal::destroyBuffers()
 
      Note: We need to get the parser before we get the handler...
 */
-SAX2XMLReader* CtiDeviceWctpTerminal::getSAXParser()
+void CtiDeviceWctpTerminal::initParserAndHandler()
 {
     if(parser == NULL)
     {
         XMLPlatformUtils::Initialize();
 
         parser = XMLReaderFactory::createXMLReader();
-    }
 
-    return parser;
-}
-
-SAXWctpHandler* CtiDeviceWctpTerminal::getWctpHandler()
-{
-    if(handler == NULL)
-    {
         handler = CTIDBG_new SAXWctpHandler;
-    }
 
-    return handler;
+        parser->setContentHandler(handler);
+        parser->setErrorHandler(handler);
+    }
 }
 
 
@@ -956,9 +949,6 @@ YukonError_t CtiDeviceWctpTerminal::decodeResponse(CtiXfer  &xfer, YukonError_t 
     CHAR *out = (CHAR*)xfer.getOutBuffer();
     CHAR buf[256];
 
-    SAX2XMLReader  *parser;
-    SAXWctpHandler *handler;
-
     try
     {
         if( status == ClientErrors::None )     // Communications must have been successful
@@ -1055,12 +1045,7 @@ YukonError_t CtiDeviceWctpTerminal::decodeResponse(CtiXfer  &xfer, YukonError_t 
                             try
                             {
                                 // Prepare the WTCP message parser and handler
-                                //  obtaining the parser now initializes the Xerces XMLPlatformUtils.
-                                //      get parser first!
-                                parser = getSAXParser();
-                                handler = getWctpHandler();
-                                parser->setContentHandler(handler);
-                                parser->setErrorHandler(handler);
+                                initParserAndHandler();
                             }
                             catch(const XMLException& toCatch)
                             {

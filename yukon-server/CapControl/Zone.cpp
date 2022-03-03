@@ -1,6 +1,7 @@
 
 #include "precompiled.h"
 #include "Zone.h"
+#include "std_helper.h"
 
 
 namespace Cti           {
@@ -133,6 +134,15 @@ Zone::PhaseIdMap Zone::getRegulatorIds() const
     return _regulatorIds;
 }
 
+void Zone::addCacheEntry(const long Id, const LoggingHelperCacheEntry entry)
+{
+    loggingHelperCache.emplace(Id, entry);
+}
+
+boost::optional<LoggingHelperCacheEntry> Zone::getCacheEntry(const long Id)
+{     
+    return Cti::mapFind(loggingHelperCache, Id);
+}
 
 }
 }

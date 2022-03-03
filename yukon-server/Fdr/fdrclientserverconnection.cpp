@@ -54,6 +54,7 @@ CtiFDRClientServerConnection::CtiFDRClientServerConnection(const string& connect
 CtiFDRClientServerConnection::~CtiFDRClientServerConnection( )
 {
     _parentInterface->logEvent(_linkName + ": connection destroyed", "", true);
+    CloseHandle(_stillAliveEvent);
 }
 
 bool CtiFDRClientServerConnection::isRegistered ()
@@ -194,7 +195,8 @@ void CtiFDRClientServerConnection::threadFunctionSendDataTo( void )
             CTILOG_DEBUG(dout, logNow() <<"threadFunctionSentDataTo initializing");
         }
 
-        clock_t intervalStartTime = clock();
+        auto intervalStartTime = std::chrono::high_resolution_clock::now();
+
         int outCount = 0;
         // Now sit and wait for stuff to come in
         for (;;)
@@ -243,48 +245,31 @@ void CtiFDRClientServerConnection::threadFunctionSendDataTo( void )
 
                 if (outCount >= _parentInterface->getOutboundSendRate())
                 {
-                    clock_t currentTime = clock();
+                    const auto currentTime = std::chrono::high_resolution_clock::now();
                     //don't call sleep routine if nothing is set
-                    int sendInterval = _parentInterface->getOutboundSendInterval();
-                    int intervalClocks = sendInterval * CLOCKS_PER_SEC;
-                    if (currentTime < intervalStartTime + intervalClocks)
+                    const auto sendInterval = std::chrono::seconds(_parentInterface->getOutboundSendInterval());
+                    const auto intervalEndTime = intervalStartTime + sendInterval;
+
+                    if (currentTime < intervalEndTime)
                     {
-                        int clocksLeftInInterval = intervalClocks - (currentTime - intervalStartTime);
-                        int millisToSleep = clocksLeftInInterval * (1000.0 / CLOCKS_PER_SEC);
+                        const auto millisToSleep = std::chrono::duration_cast<std::chrono::milliseconds>(intervalEndTime - currentTime);
 
                         unsigned long elementCount = 0;
                         QueryQueue(_outboundQueue, &elementCount);
 
-                        //Do not let wait time be negative.
-                        if (millisToSleep < 0)
-                        {
-                            Cti::FormattedList loglist;
-                            loglist.add("Sleep Time")    << millisToSleep;
-                            loglist.add("Send Interval") << sendInterval;
-                            loglist.add("CPS")           << CLOCKS_PER_SEC;
-                            loglist.add("Start Time")    << intervalStartTime;
-                            loglist.add("Current Time")  << currentTime;
-
-                            CTILOG_WARN(dout, logNow() <<
-                                    loglist <<
-                                    endl << "Resetting Sleep Time to 1 second to prevent infinite lock on send thread.");
-
-                            millisToSleep = 1000;//default to 1 second.  prevents an infinite sleep. (negative value)
-                        }
-
                         if (getDebugLevel () & CONNECTION_INFORMATION_DEBUGLEVEL)
                         {
                             CTILOG_DEBUG(dout, logNow() <<"Maximum throughput of "<< _parentInterface->getOutboundSendRate() <<" entries reached, "
-                                    "waiting "<< millisToSleep <<" millisecond(s) with "<< elementCount <<" items left in queue");
+                                    "waiting " << millisToSleep << " with " << elementCount << " items left in queue");
                         }
-                        DWORD waitResult = WaitForSingleObject(_shutdownEvent, millisToSleep);
+                        DWORD waitResult = WaitForSingleObject(_shutdownEvent, millisToSleep.count());
                         if (waitResult == WAIT_OBJECT_0)
                         {
                             // shutdown event
                             break;
                         }
                     }
-                    outCount =0;
+                    outCount = 0;
                     intervalStartTime = currentTime;
                 }
             }

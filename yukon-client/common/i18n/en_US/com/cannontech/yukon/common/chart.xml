@@ -4,7 +4,7 @@
 
     <!-- ChartInterval --> 
     <entry key="yukon.common.chart.interval.MONTH">month</entry>
-	<entry key="yukon.common.chart.interval.WEEK">week</entry>
+    <entry key="yukon.common.chart.interval.WEEK">week</entry>
     <entry key="yukon.common.chart.interval.DAY">day</entry>
     <entry key="yukon.common.chart.interval.DAY_MIDNIGHT">day</entry>
     <entry key="yukon.common.chart.interval.HOUR">hour</entry>
@@ -13,7 +13,7 @@
     <entry key="yukon.common.chart.interval.FIVEMINUTE">interval</entry>
     <entry key="yukon.common.chart.interval.FIFTEENMINUTE">interval</entry>
 
-	<entry key="yukon.common.chart.model.converterType.RAW">{0}</entry>    
+    <entry key="yukon.common.chart.model.converterType.RAW">{0}</entry>    
     <entry key="yukon.common.chart.model.converterType.RAW.label">Raw</entry>    
     <entry key="yukon.common.chart.model.converterType.RAW.title">Raw</entry>    
     <entry key="yukon.common.chart.model.converterType.NORMALIZED_DELTA">{0} / day</entry>
@@ -25,8 +25,13 @@
     <entry key="yukon.common.chart.model.converterType.DELTA_WATER">{0} / {1}</entry>
     <entry key="yukon.common.chart.model.converterType.DELTA_WATER.label">Delta</entry>
     <entry key="yukon.common.chart.model.converterType.DELTA_WATER.title">Normalized Usage Data</entry>
-	<entry key="yukon.common.chart.model.converterType.POWERFACTOR">{0}</entry>
-	<entry key="yukon.common.chart.model.converterType.POWERFACTOR.label">Power Factor</entry>
-	<entry key="yukon.common.chart.model.converterType.POWERFACTOR.title">Power Factor</entry>
-	<entry key="yukon.common.chart.yLabel.temperature">Temperature</entry>
+    <entry key="yukon.common.chart.model.converterType.POWERFACTOR">{0}</entry>
+    <entry key="yukon.common.chart.model.converterType.POWERFACTOR.label">Power Factor</entry>
+    <entry key="yukon.common.chart.model.converterType.POWERFACTOR.title">Power Factor</entry>
+    <entry key="yukon.common.chart.yLabel.temperature">Temperature</entry>
+    <entry key="yukon.common.chart.label.minTemperature">Minimum Temperature</entry>
+    <entry key="yukon.common.chart.label.maxTemperature">Maximum Temperature</entry>
+
+    <entry key="yukon.common.chart.noData">No data to display</entry>
+    <entry key="yukon.common.chart.exceedsDataLimit">Results returned too much data. Please adjust date range.</entry>
 </properties>

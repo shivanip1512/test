@@ -131,7 +131,7 @@
     </Midl>
     <ClCompile>
       <Optimization>Disabled</Optimization>
-      <AdditionalIncludeDirectories>$(APR)\include;$(BOOST)\include;$(JSON);$(DBGHELP)\include;$(LOG4CXX)\include;$(OPENSSL)\include;$(SQLAPI)\include;$(XERCES)\include;$(YAML_CPP)\include;.;..\common\include;..\resource\include;.\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(APR)\include;$(BOOST)\include;$(DBGHELP)\include;$(JSON);$(LOG4CXX)\include;$(MICROSOFT_GSL)\include;$(OPENSSL)\include;$(SQLAPI)\include;$(XERCES)\include;$(YAML_CPP)\include;.;..\common\include;..\resource\include;.\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <PreprocessorDefinitions>USING_PCH;_DEBUG;WIN32;_WINDOWS;_CRT_NONSTDC_NO_WARNINGS;BOOST_ALL_DYN_LINK;BOOST_ENABLE_ASSERT_HANDLER;CTIBASE;NOMINMAX;WIN32;_CONSOLE;_DEBUG;_REENTRANT;_WINDOWS;_X86_=1;__DLL__;D_FILE_NAME=ctibase;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <MinimalRebuild>false</MinimalRebuild>
       <RuntimeLibrary>MultiThreadedDebugDLL</RuntimeLibrary>
@@ -143,6 +143,7 @@
       <DebugInformationFormat>ProgramDatabase</DebugInformationFormat>
       <MultiProcessorCompilation>true</MultiProcessorCompilation>
       <TreatSpecificWarningsAsErrors>4189;4101</TreatSpecificWarningsAsErrors>
+      <DisableSpecificWarnings>4103</DisableSpecificWarnings>
     </ClCompile>
     <ResourceCompile>
       <PreprocessorDefinitions>_DEBUG;BOOST_ALL_DYN_LINK;BOOST_ENABLE_ASSERT_HANDLER;CTIBASE;NOMINMAX;WIN32;_CONSOLE;_DEBUG;_REENTRANT;_WINDOWS;_X86_=1;__DLL__;D_FILE_NAME=ctibase;%(PreprocessorDefinitions)</PreprocessorDefinitions>
@@ -151,7 +152,7 @@
     </ResourceCompile>
     <Link>
       <GenerateDebugInformation>true</GenerateDebugInformation>
-      <AdditionalDependencies>$(APR)\$(CONFIGURATION)\lib\libapr-1.lib;$(LOG4CXX)\$(CONFIGURATION)\lib\log4cxx.lib;$(DBGHELP)\lib\dbghelp.lib;$(BOOST)\lib\boost_system-vc141-mt-gd-x32-1_67.lib;$(BOOST)\lib\boost_filesystem-vc141-mt-gd-x32-1_67.lib;$(BOOST)\lib\boost_regex-vc141-mt-gd-x32-1_67.lib;$(BOOST)\lib\boost_thread-vc141-mt-gd-x32-1_67.lib;$(BOOST)\lib\boost_date_time-vc141-mt-gd-x32-1_67.lib;$(BOOST)\lib\boost_chrono-vc141-mt-gd-x32-1_67.lib;$(OPENSSL)\$(CONFIGURATION)\lib\libssl.lib;$(OPENSSL)\$(CONFIGURATION)\lib\libcrypto.lib;$(XERCES)\$(CONFIGURATION)\lib\xerces-c_3D.lib;$(YAML_CPP)\$(CONFIGURATION)\libyaml-cppmdd.lib;$(SQLAPI)\lib\sqlapid.lib;kernel32.lib;advapi32.lib;wsock32.lib;winmm.lib;shlwapi.lib;Ws2_32.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>$(APR)\$(CONFIGURATION)\lib\libapr-1.lib;$(LOG4CXX)\$(CONFIGURATION)\lib\log4cxx.lib;$(DBGHELP)\lib\dbghelp.lib;$(BOOST)\lib\boost_system-$(BOOST_VERSION).lib;$(BOOST)\lib\boost_filesystem-$(BOOST_VERSION).lib;$(BOOST)\lib\boost_regex-$(BOOST_VERSION).lib;$(BOOST)\lib\boost_thread-$(BOOST_VERSION).lib;$(BOOST)\lib\boost_date_time-$(BOOST_VERSION).lib;$(BOOST)\lib\boost_chrono-$(BOOST_VERSION).lib;$(OPENSSL)\$(CONFIGURATION)\lib\libssl.lib;$(OPENSSL)\$(CONFIGURATION)\lib\libcrypto.lib;$(XERCES)\$(CONFIGURATION)\lib\xerces-c_3D.lib;$(YAML_CPP)\$(CONFIGURATION)\libyaml-cppmdd.lib;$(SQLAPI)\lib\sqlapid.lib;kernel32.lib;advapi32.lib;wsock32.lib;winmm.lib;shlwapi.lib;Ws2_32.lib;pdh.lib;%(AdditionalDependencies)</AdditionalDependencies>
       <AdditionalLibraryDirectories>.;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
       <ProgramDatabaseFile>$(SolutionDir)pdb-debug\$(TargetName).pdb</ProgramDatabaseFile>
       <ImportLibrary>$(SolutionDir)lib-debug\$(TargetName).lib</ImportLibrary>
@@ -183,7 +184,7 @@
     <ClCompile>
       <Optimization>MaxSpeed</Optimization>
       <IntrinsicFunctions>true</IntrinsicFunctions>
-      <AdditionalIncludeDirectories>$(APR)\include;$(BOOST)\include;$(JSON);$(DBGHELP)\include;$(LOG4CXX)\include;$(OPENSSL)\include;$(SQLAPI)\include;$(XERCES)\include;$(YAML_CPP)\include;.;..\common\include;..\resource\include;.\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(APR)\include;$(BOOST)\include;$(DBGHELP)\include;$(JSON);$(LOG4CXX)\include;$(MICROSOFT_GSL)\include;$(OPENSSL)\include;$(SQLAPI)\include;$(XERCES)\include;$(YAML_CPP)\include;.;..\common\include;..\resource\include;.\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <PreprocessorDefinitions>USING_PCH;NDEBUG;WIN32;_WINDOWS;_CRT_NONSTDC_NO_WARNINGS;BOOST_ALL_DYN_LINK;BOOST_ENABLE_ASSERT_HANDLER;CTIBASE;NOMINMAX;WIN32;_CONSOLE;_REENTRANT;_WINDOWS;_X86_=1;__DLL__;D_FILE_NAME=ctibase;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <RuntimeLibrary>MultiThreadedDLL</RuntimeLibrary>
       <RuntimeTypeInfo>true</RuntimeTypeInfo>
@@ -194,6 +195,7 @@
       <DebugInformationFormat>ProgramDatabase</DebugInformationFormat>
       <MultiProcessorCompilation>true</MultiProcessorCompilation>
       <AdditionalOptions>/Zm200</AdditionalOptions>
+      <DisableSpecificWarnings>4103</DisableSpecificWarnings>
     </ClCompile>
     <ResourceCompile>
       <PreprocessorDefinitions>NDEBUG;BOOST_ALL_DYN_LINK;BOOST_ENABLE_ASSERT_HANDLER;CTIBASE;NOMINMAX;WIN32;_CONSOLE;_REENTRANT;_WINDOWS;_X86_=1;__DLL__;D_FILE_NAME=ctibase;%(PreprocessorDefinitions)</PreprocessorDefinitions>
@@ -202,7 +204,7 @@
     </ResourceCompile>
     <Link>
       <GenerateDebugInformation>true</GenerateDebugInformation>
-      <AdditionalDependencies>$(APR)\$(CONFIGURATION)\lib\libapr-1.lib;$(LOG4CXX)\$(CONFIGURATION)\lib\log4cxx.lib;$(DBGHELP)\lib\dbghelp.lib;$(BOOST)\lib\boost_system-vc141-mt-x32-1_67.lib;$(BOOST)\lib\boost_filesystem-vc141-mt-x32-1_67.lib;$(BOOST)\lib\boost_regex-vc141-mt-x32-1_67.lib;$(BOOST)\lib\boost_thread-vc141-mt-x32-1_67.lib;$(BOOST)\lib\boost_date_time-vc141-mt-x32-1_67.lib;$(BOOST)\lib\boost_chrono-vc141-mt-x32-1_67.lib;$(OPENSSL)\$(CONFIGURATION)\lib\libssl.lib;$(OPENSSL)\$(CONFIGURATION)\lib\libcrypto.lib;$(XERCES)\$(CONFIGURATION)\lib\xerces-c_3.lib;$(YAML_CPP)\$(CONFIGURATION)\libyaml-cppmd.lib;$(SQLAPI)\lib\sqlapi.lib;kernel32.lib;advapi32.lib;wsock32.lib;winmm.lib;shlwapi.lib;Ws2_32.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>$(APR)\$(CONFIGURATION)\lib\libapr-1.lib;$(LOG4CXX)\$(CONFIGURATION)\lib\log4cxx.lib;$(DBGHELP)\lib\dbghelp.lib;$(BOOST)\lib\boost_system-$(BOOST_VERSION).lib;$(BOOST)\lib\boost_filesystem-$(BOOST_VERSION).lib;$(BOOST)\lib\boost_regex-$(BOOST_VERSION).lib;$(BOOST)\lib\boost_thread-$(BOOST_VERSION).lib;$(BOOST)\lib\boost_date_time-$(BOOST_VERSION).lib;$(BOOST)\lib\boost_chrono-$(BOOST_VERSION).lib;$(OPENSSL)\$(CONFIGURATION)\lib\libssl.lib;$(OPENSSL)\$(CONFIGURATION)\lib\libcrypto.lib;$(XERCES)\$(CONFIGURATION)\lib\xerces-c_3.lib;$(YAML_CPP)\$(CONFIGURATION)\libyaml-cppmd.lib;$(SQLAPI)\lib\sqlapi.lib;kernel32.lib;advapi32.lib;wsock32.lib;winmm.lib;shlwapi.lib;Ws2_32.lib;pdh.lib;%(AdditionalDependencies)</AdditionalDependencies>
       <AdditionalLibraryDirectories>.;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
       <OptimizeReferences>
       </OptimizeReferences>
@@ -254,7 +256,7 @@
     </ResourceCompile>
     <Link>
       <GenerateDebugInformation>true</GenerateDebugInformation>
-      <AdditionalDependencies>$(APR)\$(CONFIGURATION)\lib\libapr-1.lib;$(LOG4CXX)\$(CONFIGURATION)\lib\log4cxx.lib;$(DBGHELP)\lib\dbghelp.lib;$(BOOST)\lib\boost_system-vc141-mt-gd-x32-1_67.lib;$(BOOST)\lib\boost_filesystem-vc141-mt-gd-x32-1_67.lib;$(BOOST)\lib\boost_regex-vc141-mt-gd-x32-1_67.lib;$(BOOST)\lib\boost_thread-vc141-mt-gd-x32-1_67.lib;$(BOOST)\lib\boost_date_time-vc141-mt-gd-x32-1_67.lib;$(BOOST)\lib\boost_chrono-vc141-mt-gd-x32-1_67.lib;$(OPENSSL)\$(CONFIGURATION)\lib\libssl.lib;$(OPENSSL)\$(CONFIGURATION)\lib\libcrypto.lib;$(XERCES)\$(CONFIGURATION)\lib\xerces-c_3D.lib;$(SQLAPI)\lib\sqlapid.lib;kernel32.lib;advapi32.lib;wsock32.lib;winmm.lib;shlwapi.lib;Ws2_32.lib;psapi.lib;pdh.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>$(APR)\$(CONFIGURATION)\lib\libapr-1.lib;$(LOG4CXX)\$(CONFIGURATION)\lib\log4cxx.lib;$(DBGHELP)\lib\dbghelp.lib;$(BOOST)\lib\boost_system-$(BOOST_VERSION).lib;$(BOOST)\lib\boost_filesystem-$(BOOST_VERSION).lib;$(BOOST)\lib\boost_regex-$(BOOST_VERSION).lib;$(BOOST)\lib\boost_thread-$(BOOST_VERSION).lib;$(BOOST)\lib\boost_date_time-$(BOOST_VERSION).lib;$(BOOST)\lib\boost_chrono-$(BOOST_VERSION).lib;$(OPENSSL)\$(CONFIGURATION)\lib\libssl.lib;$(OPENSSL)\$(CONFIGURATION)\lib\libcrypto.lib;$(XERCES)\$(CONFIGURATION)\lib\xerces-c_3D.lib;$(SQLAPI)\lib\sqlapid.lib;kernel32.lib;advapi32.lib;wsock32.lib;winmm.lib;shlwapi.lib;Ws2_32.lib;psapi.lib;pdh.lib;%(AdditionalDependencies)</AdditionalDependencies>
       <AdditionalLibraryDirectories>.;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
       <ProgramDatabaseFile>
       </ProgramDatabaseFile>
@@ -309,7 +311,7 @@
     </ResourceCompile>
     <Link>
       <GenerateDebugInformation>true</GenerateDebugInformation>
-      <AdditionalDependencies>$(APR)\$(CONFIGURATION)\lib\libapr-1.lib;$(LOG4CXX)\$(CONFIGURATION)\lib\log4cxx.lib;$(DBGHELP)\lib\dbghelp.lib;$(BOOST)\lib\boost_system-vc141-mt-x32-1_67.lib;$(BOOST)\lib\boost_filesystem-vc141-mt-x32-1_67.lib;$(BOOST)\lib\boost_regex-vc141-mt-x32-1_67.lib;$(BOOST)\lib\boost_thread-vc141-mt-x32-1_67.lib;$(BOOST)\lib\boost_date_time-vc141-mt-x32-1_67.lib;$(BOOST)\lib\boost_chrono-vc141-mt-x32-1_67.lib;$(OPENSSL)\$(CONFIGURATION)\lib\libssl.lib;$(OPENSSL)\$(CONFIGURATION)\lib\libcrypto.lib;$(XERCES)\$(CONFIGURATION)\lib\xerces-c_3.lib;$(SQLAPI)\lib\sqlapi.lib;kernel32.lib;advapi32.lib;wsock32.lib;winmm.lib;shlwapi.lib;Ws2_32.lib;psapi.lib;pdh.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>$(APR)\$(CONFIGURATION)\lib\libapr-1.lib;$(LOG4CXX)\$(CONFIGURATION)\lib\log4cxx.lib;$(DBGHELP)\lib\dbghelp.lib;$(BOOST)\lib\boost_system-$(BOOST_VERSION).lib;$(BOOST)\lib\boost_filesystem-$(BOOST_VERSION).lib;$(BOOST)\lib\boost_regex-$(BOOST_VERSION).lib;$(BOOST)\lib\boost_thread-$(BOOST_VERSION).lib;$(BOOST)\lib\boost_date_time-$(BOOST_VERSION).lib;$(BOOST)\lib\boost_chrono-$(BOOST_VERSION).lib;$(OPENSSL)\$(CONFIGURATION)\lib\libssl.lib;$(OPENSSL)\$(CONFIGURATION)\lib\libcrypto.lib;$(XERCES)\$(CONFIGURATION)\lib\xerces-c_3.lib;$(SQLAPI)\lib\sqlapi.lib;kernel32.lib;advapi32.lib;wsock32.lib;winmm.lib;shlwapi.lib;Ws2_32.lib;psapi.lib;pdh.lib;%(AdditionalDependencies)</AdditionalDependencies>
       <AdditionalLibraryDirectories>.;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
       <OptimizeReferences>
       </OptimizeReferences>
@@ -528,7 +530,6 @@
     <ClInclude Include="include\AttributeService.h" />
     <ClInclude Include="include\BeatThePeakAlertLevel.h" />
     <ClInclude Include="include\boost_helper.h" />
-    <ClInclude Include="include\boost_test_helpers.h" />
     <ClInclude Include="include\boost_time.h" />
     <ClInclude Include="include\boostutil.h" />
     <ClInclude Include="include\CallSite.h" />
@@ -550,7 +551,6 @@
     <ClInclude Include="include\ctidate.h" />
     <ClInclude Include="include\ctidbgmem.h" />
     <ClInclude Include="include\ctipcptrqueue.h" />
-    <ClInclude Include="include\ctiqueues.h" />
     <ClInclude Include="include\ctitime.h" />
     <ClInclude Include="include\ctitokenizer.h" />
     <ClInclude Include="include\database_connection.h" />

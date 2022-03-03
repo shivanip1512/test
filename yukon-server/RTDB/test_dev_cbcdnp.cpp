@@ -218,6 +218,8 @@ BOOST_AUTO_TEST_CASE(test_enable_ovuv_override)
 
 BOOST_AUTO_TEST_CASE(test_integrity_scan)
 {
+    const auto tzOverride = Cti::Test::set_to_central_timezone();
+
     TestCbcDnpDevice dev;
 
     dev.setName("Test CBC DNP", test_tag);

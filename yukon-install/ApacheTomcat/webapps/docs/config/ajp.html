@@ -1,37 +1,7 @@
 <!DOCTYPE html SYSTEM "about:legacy-compat">
-<html lang="en"><head><META http-equiv="Content-Type" content="text/html; charset=UTF-8"><link href="../images/docs-stylesheet.css" rel="stylesheet" type="text/css"><title>Apache Tomcat 9 Configuration Reference (9.0.31) - The AJP Connector</title><meta name="author" content="Yoav Shapira"><meta name="author" content="Andrew R. Jaquith"><script type="application/javascript" data-comments-identifier="tomcat-9.0-doc/config/ajp">
-    "use strict"; // Enable strict mode
-
-    (function() {
-      var thisScript = document.currentScript;
-      if (!thisScript) { // Workaround for IE <= 11
-        var scripts = document.getElementsByTagName("script");
-        thisScript = scripts[scripts.length - 1];
-      }
-      document.addEventListener("DOMContentLoaded", (function() {
-        var commentsDiv = document.getElementById("comments_thread");
-        var commentsShortname = "tomcat";
-        var commentsIdentifier = "https://tomcat.apache.org/" +
-          thisScript.getAttribute("data-comments-identifier") + ".html";
-
-        (function(w, d) {
-          if (w.location.hostname.toLowerCase() == "tomcat.apache.org") {
-            var s = d.createElement("script");
-            s.type = "application/javascript";
-            s.async = true;
-            s.src = "https://comments.apache.org/show_comments.lua?site=" +
-              encodeURIComponent(commentsShortname) +
-              "&page=" + encodeURIComponent(commentsIdentifier);
-            d.head.appendChild(s);
-          } else {
-            commentsDiv.appendChild(d.createTextNode("Comments are disabled for this page at the moment."));
-          }
-        })(window, document);
-      }), false);
-    })();
-  </script></head><body><div id="wrapper"><header><div id="header"><div><div><div class="logo noPrint"><a href="https://tomcat.apache.org/"><img alt="Tomcat Home" src="../images/tomcat.png"></a></div><div style="height: 1px;"></div><div class="asfLogo noPrint"><a href="https://www.apache.org/" target="_blank"><img src="../images/asf-logo.svg" alt="The Apache Software Foundation" style="width: 266px; height: 83px;"></a></div><h1>Apache Tomcat 9 Configuration Reference</h1><div class="versionInfo">
-          Version 9.0.31,
-          <time datetime="2020-02-05">Feb 5 2020</time></div><div style="height: 1px;"></div><div style="clear: left;"></div></div></div></div></header><div id="middle"><div><div id="mainLeft" class="noprint"><div><nav><div><h2>Links</h2><ul><li><a href="../index.html">Docs Home</a></li><li><a href="index.html">Config Ref. Home</a></li><li><a href="https://wiki.apache.org/tomcat/FAQ">FAQ</a></li><li><a href="#comments_section">User Comments</a></li></ul></div><div><h2>Top Level Elements</h2><ul><li><a href="server.html">Server</a></li><li><a href="service.html">Service</a></li></ul></div><div><h2>Executors</h2><ul><li><a href="executor.html">Executor</a></li></ul></div><div><h2>Connectors</h2><ul><li><a href="http.html">HTTP/1.1</a></li><li><a href="http2.html">HTTP/2</a></li><li><a href="ajp.html">AJP</a></li></ul></div><div><h2>Containers</h2><ul><li><a href="context.html">Context</a></li><li><a href="engine.html">Engine</a></li><li><a href="host.html">Host</a></li><li><a href="cluster.html">Cluster</a></li></ul></div><div><h2>Nested Components</h2><ul><li><a href="cookie-processor.html">CookieProcessor</a></li><li><a href="credentialhandler.html">CredentialHandler</a></li><li><a href="globalresources.html">Global Resources</a></li><li><a href="jar-scanner.html">JarScanner</a></li><li><a href="jar-scan-filter.html">JarScanFilter</a></li><li><a href="listeners.html">Listeners</a></li><li><a href="loader.html">Loader</a></li><li><a href="manager.html">Manager</a></li><li><a href="realm.html">Realm</a></li><li><a href="resources.html">Resources</a></li><li><a href="sessionidgenerator.html">SessionIdGenerator</a></li><li><a href="valve.html">Valve</a></li></ul></div><div><h2>Cluster Elements</h2><ul><li><a href="cluster.html">Cluster</a></li><li><a href="cluster-manager.html">Manager</a></li><li><a href="cluster-channel.html">Channel</a></li><li><a href="cluster-membership.html">Channel/Membership</a></li><li><a href="cluster-sender.html">Channel/Sender</a></li><li><a href="cluster-receiver.html">Channel/Receiver</a></li><li><a href="cluster-interceptor.html">Channel/Interceptor</a></li><li><a href="cluster-valve.html">Valve</a></li><li><a href="cluster-deployer.html">Deployer</a></li><li><a href="cluster-listener.html">ClusterListener</a></li></ul></div><div><h2>web.xml</h2><ul><li><a href="filter.html">Filter</a></li></ul></div><div><h2>Other</h2><ul><li><a href="systemprops.html">System properties</a></li><li><a href="jaspic.html">JASPIC</a></li></ul></div></nav></div></div><div id="mainRight"><div id="content"><h2>The AJP Connector</h2><h3 id="Table_of_Contents">Table of Contents</h3><div class="text">
+<html lang="en"><head><META http-equiv="Content-Type" content="text/html; charset=UTF-8"><link href="../images/docs-stylesheet.css" rel="stylesheet" type="text/css"><title>Apache Tomcat 9 Configuration Reference (9.0.56) - The AJP Connector</title><meta name="author" content="Yoav Shapira"><meta name="author" content="Andrew R. Jaquith"></head><body><div id="wrapper"><header><div id="header"><div><div><div class="logo noPrint"><a href="https://tomcat.apache.org/"><img alt="Tomcat Home" src="../images/tomcat.png"></a></div><div style="height: 1px;"></div><div class="asfLogo noPrint"><a href="https://www.apache.org/" target="_blank"><img src="../images/asf-logo.svg" alt="The Apache Software Foundation" style="width: 266px; height: 83px;"></a></div><h1>Apache Tomcat 9 Configuration Reference</h1><div class="versionInfo">
+            Version 9.0.56,
+            <time datetime="2021-12-02">Dec 2 2021</time></div><div style="height: 1px;"></div><div style="clear: left;"></div></div></div></div></header><div id="middle"><div><div id="mainLeft" class="noprint"><div><nav><div><h2>Links</h2><ul><li><a href="../index.html">Docs Home</a></li><li><a href="index.html">Config Ref. Home</a></li><li><a href="https://wiki.apache.org/tomcat/FAQ">FAQ</a></li><li><a href="#comments_section">User Comments</a></li></ul></div><div><h2>Top Level Elements</h2><ul><li><a href="server.html">Server</a></li><li><a href="service.html">Service</a></li></ul></div><div><h2>Executors</h2><ul><li><a href="executor.html">Executor</a></li></ul></div><div><h2>Connectors</h2><ul><li><a href="http.html">HTTP/1.1</a></li><li><a href="http2.html">HTTP/2</a></li><li><a href="ajp.html">AJP</a></li></ul></div><div><h2>Containers</h2><ul><li><a href="context.html">Context</a></li><li><a href="engine.html">Engine</a></li><li><a href="host.html">Host</a></li><li><a href="cluster.html">Cluster</a></li></ul></div><div><h2>Nested Components</h2><ul><li><a href="cookie-processor.html">CookieProcessor</a></li><li><a href="credentialhandler.html">CredentialHandler</a></li><li><a href="globalresources.html">Global Resources</a></li><li><a href="jar-scanner.html">JarScanner</a></li><li><a href="jar-scan-filter.html">JarScanFilter</a></li><li><a href="listeners.html">Listeners</a></li><li><a href="loader.html">Loader</a></li><li><a href="manager.html">Manager</a></li><li><a href="realm.html">Realm</a></li><li><a href="resources.html">Resources</a></li><li><a href="sessionidgenerator.html">SessionIdGenerator</a></li><li><a href="valve.html">Valve</a></li></ul></div><div><h2>Cluster Elements</h2><ul><li><a href="cluster.html">Cluster</a></li><li><a href="cluster-manager.html">Manager</a></li><li><a href="cluster-channel.html">Channel</a></li><li><a href="cluster-membership.html">Channel/Membership</a></li><li><a href="cluster-sender.html">Channel/Sender</a></li><li><a href="cluster-receiver.html">Channel/Receiver</a></li><li><a href="cluster-interceptor.html">Channel/Interceptor</a></li><li><a href="cluster-valve.html">Valve</a></li><li><a href="cluster-deployer.html">Deployer</a></li><li><a href="cluster-listener.html">ClusterListener</a></li></ul></div><div><h2>web.xml</h2><ul><li><a href="filter.html">Filter</a></li></ul></div><div><h2>Other</h2><ul><li><a href="systemprops.html">System properties</a></li><li><a href="jaspic.html">JASPIC</a></li></ul></div></nav></div></div><div id="mainRight"><div id="content"><h2>The AJP Connector</h2><h3 id="Table_of_Contents">Table of Contents</h3><div class="text">
 <ul><li><a href="#Introduction">Introduction</a></li><li><a href="#Attributes">Attributes</a><ol><li><a href="#Common_Attributes">Common Attributes</a></li><li><a href="#Standard_Implementations">Standard Implementations</a></li><li><a href="#Java_TCP_socket_attributes">Java TCP socket attributes</a></li><li><a href="#NIO_specific_configuration">NIO specific configuration</a></li><li><a href="#NIO2_specific_configuration">NIO2 specific configuration</a></li><li><a href="#APR/native_specific_configuration">APR/native specific configuration</a></li></ol></li><li><a href="#Nested_Components">Nested Components</a></li><li><a href="#Special_Features">Special Features</a><ol><li><a href="#Proxy_Support">Proxy Support</a></li><li><a href="#Connector_Comparison">Connector Comparison</a></li></ol></li></ul>
 </div><h3 id="Introduction">Introduction</h3><div class="text">
 
@@ -103,6 +73,19 @@
       to <code>false</code> to skip the DNS lookup and return the IP
       address in String form instead (thereby improving performance).
       By default, DNS lookups are disabled.</p>
+    </td></tr><tr><td><code class="attributeName">encodedSolidusHandling</code></td><td>
+      <p>When set to <code>reject</code> request paths containing a
+      <code>%2f</code> sequence will be rejected with a 400 response. When set
+      to <code>decode</code> request paths containing a <code>%2f</code>
+      sequence will have that sequence decoded to <code>/</code> at the same
+      time other <code>%nn</code> sequences are decoded. When set to
+      <code>passthrough</code> request paths containing a <code>%2f</code>
+      sequence will be processed with the <code>%2f</code> sequence unchanged.
+      If not specified the default value is <code>reject</code>. This default
+      may be modified if the deprecated <a href="systemprops.html">system
+      property</a>
+      <code>org.apache.tomcat.util.buf.UDecoder.ALLOW_ENCODED_SLASH</code> is
+      set.</p>
     </td></tr><tr><td><code class="attributeName">maxHeaderCount</code></td><td>
       <p>The maximum number of headers in a request that are allowed by the
       container. A request that contains more headers than the specified limit
@@ -211,10 +194,7 @@
       The default value is <code>false</code>.</p>
     </td></tr><tr><td><code class="attributeName">URIEncoding</code></td><td>
       <p>This specifies the character encoding used to decode the URI bytes,
-      after %xx decoding the URL. If not specified, UTF-8 will be used unless
-      the <code>org.apache.catalina.STRICT_SERVLET_COMPLIANCE</code>
-      <a href="systemprops.html">system property</a> is set to <code>true</code>
-      in which case ISO-8859-1 will be used.</p>
+      after %xx decoding the URL. The default value is <code>UTF-8</code>.</p>
     </td></tr><tr><td><code class="attributeName">useBodyEncodingForURI</code></td><td>
       <p>This specifies if the encoding specified in contentType should be used
       for URI query parameters, instead of using the URIEncoding. This
@@ -250,9 +230,11 @@
         </th><th style="width: 85%;">
           Description
         </th></tr><tr><td><code class="attributeName">acceptCount</code></td><td>
-      <p>The maximum queue length for incoming connection requests when
-      all possible request processing threads are in use.  Any requests
-      received when the queue is full will be refused.  The default
+      <p>The maximum length of the operating system provided queue for incoming
+      connection requests when <code>maxConnections</code> has been reached. The
+      operating system may ignore this setting and use a different size for the
+      queue. When this queue is full, the operating system may actively refuse
+      additional connections or those connections may time out. The default
       value is 100.</p>
     </td></tr><tr><td><code class="attributeName">acceptorThreadCount</code></td><td>
       <p>The number of threads to be used to accept connections. Increase this
@@ -267,9 +249,16 @@
       for the <code>java.lang.Thread</code> class for more details on what
       this priority means.</p>
     </td></tr><tr><td><code class="attributeName">address</code></td><td>
-      <p>For servers with more than one IP address, this attribute
-      specifies which address will be used for listening on the specified
-      port. By default, the loopback address will be used.</p>
+      <p>For servers with more than one IP address, this attribute specifies
+      which address will be used for listening on the specified port. By
+      default, the connector will listen on the loopback address. Unless the JVM
+      is configured otherwise using system properties, the Java based connectors
+      (NIO, NIO2) will listen on both IPv4 and IPv6 addresses when configured
+      with either <code>0.0.0.0</code> or <code>::</code>. The APR/native
+      connector will only listen on IPv4 addresses if configured with
+      <code>0.0.0.0</code> and will listen on IPv6 addresses (and optionally
+      IPv4 addresses depending on the setting of <strong>ipv6v6only</strong>) if
+      configured with <code>::</code>.</p>
     </td></tr><tr><td><code class="attributeName">allowedRequestAttributesPattern</code></td><td>
       <p>The AJP protocol passes some information from the reverse proxy to the
       AJP connector using request attributes. These attributes are:</p>
@@ -282,6 +271,15 @@
         <li>AJP_REMOTE_PORT</li>
         <li>AJP_SSL_PROTOCOL</li>
         <li>JK_LB_ACTIVATION</li>
+        <li>CERT_ISSUER (IIS only)</li>
+        <li>CERT_SUBJECT (IIS only)</li>
+        <li>CERT_COOKIE (IIS only)</li>
+        <li>HTTPS_SERVER_SUBJECT (IIS only)</li>
+        <li>CERT_FLAGS (IIS only)</li>
+        <li>HTTPS_SECRETKEYSIZE (IIS only)</li>
+        <li>CERT_SERIALNUMBER (IIS only)</li>
+        <li>HTTPS_SERVER_ISSUER (IIS only)</li>
+        <li>HTTPS_KEYSIZE (IIS only)</li>
       </ul>
       <p>The AJP protocol supports the passing of arbitrary request attributes.
       Requests containing arbitrary request attributes will be rejected with a
@@ -380,16 +378,22 @@
       expected concurrent requests (synchronous and asynchronous).</p>
     </td></tr><tr><td><code class="attributeName">secret</code></td><td>
       <p>Only requests from workers with this secret keyword will be accepted.
-      The default value is <code>null</code>. This attrbute must be specified
+      The default value is <code>null</code>. This attribute must be specified
       with a non-null, non-zero length value unless
       <strong>secretRequired</strong> is explicitly configured to be
-      <code>false</code>.</p>
+      <code>false</code>. If this attribute is configured with a non-null,
+      non-zero length value then the workers <strong>must</strong> provide a
+      matching value else the request will be rejected irrespective of the
+      setting of <strong>secretRequired</strong>.</p>
     </td></tr><tr><td><code class="attributeName">secretRequired</code></td><td>
       <p>If this attribute is <code>true</code>, the AJP Connector will only
       start if the <strong>secret</strong> attribute is configured with a
-      non-null, non-zero length value. The default value is <code>true</code>.
-      This attributue should only be set to <code>false</code> when the
-      Connector is used on a trusted network.</p>
+      non-null, non-zero length value. This attribute only controls whether
+      the <strong>secret</strong> attribute is required to be specified for the
+      AJP Connector to start. It <strong>does not</strong> control whether
+      workers are required to provide the secret. The default value is
+      <code>true</code>. This attribute should only be set to <code>false</code>
+      when the Connector is used on a trusted network.</p>
     </td></tr><tr><td><code class="attributeName">tcpNoDelay</code></td><td>
       <p>If set to <code>true</code>, the TCP_NO_DELAY option will be
       set on the server socket, which improves performance under most
@@ -414,9 +418,11 @@
     </td></tr><tr><td><code class="attributeName">tomcatAuthentication</code></td><td>
       <p>If set to <code>true</code>, the authentication will be done in Tomcat.
       Otherwise, the authenticated principal will be propagated from the native
-      webserver and used for authorization in Tomcat. Note that this principal
-      will have no roles associated with it.
-      The default value is <code>true</code>. If
+      webserver and used for authorization in Tomcat. </p>
+      <p>The web server must send the user principal (username) as a request
+      <i>attribute</i> named <code>REMOTE_USER</code>.</p>
+      <p>Note that this principal will have no roles associated with it.</p>
+      <p>The default value is <code>true</code>. If
       <code>tomcatAuthorization</code> is set to <code>true</code> this
       attribute has no effect.</p>
     </td></tr><tr><td><code class="attributeName">tomcatAuthorization</code></td><td>
@@ -563,25 +569,6 @@
         collection. The integer value specifies how many objects to keep in the
         cache at most. The default is <code>500</code>. Other values are
         <code>-1</code> for unlimited cache and <code>0</code> for no cache.</p>
-      </td></tr><tr><td><code class="attributeName">selectorPool.maxSelectors</code></td><td>
-        <p>(int)The max selectors to be used in the pool, to reduce selector
-        contention. Use this option when the command line
-        <code>org.apache.tomcat.util.net.NioSelectorShared</code> value is set
-        to false. Default value is <code>200</code>.</p>
-      </td></tr><tr><td><code class="attributeName">selectorPool.maxSpareSelectors</code></td><td>
-        <p>(int)The max spare selectors to be used in the pool, to reduce
-        selector contention. When a selector is returned to the pool, the system
-        can decide to keep it or let it be GC'd. Use this option when the
-        command line <code>org.apache.tomcat.util.net.NioSelectorShared</code>
-        value is set to false. Default value is <code>-1</code> (unlimited).</p>
-      </td></tr><tr><td><code class="attributeName">command-line-options</code></td><td>
-        <p>The following command line options are available for the NIO
-        connector:<br>
-        <code>-Dorg.apache.tomcat.util.net.NioSelectorShared=true|false</code>
-        - default is <code>true</code>. Set this value to <code>false</code> if you wish to
-        use a selector for each thread. When you set it to <code>false</code>, you can
-        control the size of the pool of selectors by using the
-        <strong>selectorPool.maxSelectors</strong> attribute.</p>
       </td></tr></table>
   </div></div>
 
@@ -644,7 +631,12 @@
           Attribute
         </th><th style="width: 85%;">
           Description
-        </th></tr><tr><td><code class="attributeName">pollTime</code></td><td>
+        </th></tr><tr><td><code class="attributeName">ipv6v6only</code></td><td>
+        <p>If listening on an IPv6 address on a dual stack system, should the
+        connector only listen on the IPv6 address? If not specified the default
+        is <code>false</code> and the connector will listen on the IPv6 address
+        and the equivalent IPv4 address if present.</p>
+      </td></tr><tr><td><code class="attributeName">pollTime</code></td><td>
         <p>Duration of a poll call in microseconds. Lowering this value will
         slightly decrease latency of connections being kept alive in some cases
         , but will use more CPU as more poll calls are being made. The default
@@ -746,18 +738,6 @@
 
   </div></div>
 
-</div><div class="noprint"><h3 id="comments_section">
-                  Comments
-                </h3><div class="text"><p class="notice"><strong>Notice:</strong> This comments section collects your suggestions
-                    on improving documentation for Apache Tomcat.<br><br>
-                    If you have trouble and need help, read
-                    <a href="https://tomcat.apache.org/findhelp.html">Find Help</a> page
-                    and ask your question on the tomcat-users
-                    <a href="https://tomcat.apache.org/lists.html">mailing list</a>.
-                    Do not ask such questions here. This is not a Q&amp;A section.<br><br>
-                    The Apache Comments System is explained <a href="../comments.html">here</a>.
-                    Comments may be removed by our moderators if they are either
-                    implemented or considered invalid/off-topic.
-                  </p><div id="comments_thread"></div></div></div></div></div></div></div><footer><div id="footer">
-    Copyright &copy; 1999-2020, The Apache Software Foundation
-  </div></footer></div></body></html>
+</div></div></div></div></div><footer><div id="footer">
+    Copyright &copy; 1999-2021, The Apache Software Foundation
+    </div></footer></div></body></html>

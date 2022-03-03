@@ -62,6 +62,10 @@ yukon.dialogConfirm = (function () {
             
             buttons.push({text: args.strings.cancel, click: _default._cancel_action});
             
+            if (args.strings.ok === yg.text.deleteButton) {
+                args.strings.okClasses += ' delete';
+            }
+            
             actionButton = {text: args.strings.ok, click: _default._ok_action, 'class': 'primary action ' + args.strings.okClasses};
             buttons.push(actionButton);
             
@@ -120,8 +124,10 @@ yukon.dialogConfirm = (function () {
                     var b = $(button);
                     b.addClass('js-disable-after-click');
                     b.attr('data-disable-group', args.disable_group);
-                    
                 });
+            }
+            if (args.strings.userMessage) {
+                _current_dialog.addMessage({message: args.strings.userMessage, messageClass: args.strings.userMessageClass});
             }
         },
         
@@ -168,7 +174,6 @@ yukon.dialogConfirm = (function () {
      */
     mod = {
         add : function (args) {
-
         //initialize the dialog if needed
         _init();
 
@@ -181,7 +186,8 @@ yukon.dialogConfirm = (function () {
                     'title': "UNDEFINED TITLE",
                     'message': "UNDEFINED MESSAGE",
                     'ok': 'UNDEFINED OK TEXT',
-                    'cancel': 'UNDEFINED CANCEL TEXT'}
+                    'cancel': 'UNDEFINED CANCEL TEXT',
+                    'userMessageClass' : 'info'}
             };
 
         $.extend(defaults, args);
@@ -190,7 +196,7 @@ yukon.dialogConfirm = (function () {
             //store the data on the element
             var element = $(defaults.on);
             element.data('args', defaults);
-
+            
             //remove the href redirect for buttons as applied in yukon.js for buttons with 
             //a data-href attribute since the binding is likely to be higher in the call
             //stack than the binding for this function.  Simply removing the data-href attribute

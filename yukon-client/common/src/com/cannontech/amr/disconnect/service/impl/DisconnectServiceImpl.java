@@ -105,7 +105,6 @@ public class DisconnectServiceImpl implements DisconnectService, CollectionActio
         
         if (!unsupportedDevices.isEmpty() || !notConfiguredDevices.isEmpty()) {
             log.debug("Updated result with unsupported and not configured devices:");
-            result.log();
         }
         
         DisconnectCallback callback = new DisconnectCallback() {

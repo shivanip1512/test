@@ -19,7 +19,7 @@ using namespace std;
 using namespace Cti::Test::CapControl;
 
 extern unsigned long _MAX_KVAR;
-extern unsigned long _SEND_TRIES;
+extern long _SEND_TRIES;
 extern unsigned long _RATE_OF_CHANGE_DEPTH;
 
 Cti::Test::use_in_unit_tests_only limiter;
@@ -352,10 +352,9 @@ BOOST_AUTO_TEST_CASE(test_analyze_feeder_for_verification)
 
     CtiTime currentDateTime;
     auto multiDispatchMsg = std::make_unique<CtiMultiMsg>();
-    auto multiPilMsg      = std::make_unique<CtiMultiMsg>();
     auto multiCapMsg      = std::make_unique<CtiMultiMsg>();
     CtiMultiMsg_vec& pointChanges = multiDispatchMsg->getData();
-    CtiMultiMsg_vec& pilMessages = multiPilMsg->getData();
+    Cti::CapControl::PorterRequests pilMessages;
     CtiMultiMsg_vec& capMessages = multiCapMsg->getData();
     Cti::CapControl::EventLogEntries ccEvents;
 

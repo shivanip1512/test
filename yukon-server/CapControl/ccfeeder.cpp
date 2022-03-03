@@ -9,9 +9,11 @@
 #include "msg_lmcontrolhistory.h"
 #include "tbl_pt_alarm.h"
 #include "Exceptions.h"
+#include "Requests.h"
 
 using Cti::CapControl::PointResponse;
-using Cti::CapControl::createPorterRequestMsg;
+using Cti::CapControl::PorterRequest;
+using Cti::CapControl::PorterRequests;
 using Cti::CapControl::createBankOpenRequest;
 using Cti::CapControl::createBankCloseRequest;
 using Cti::CapControl::createBankFlipRequest;
@@ -32,7 +34,7 @@ using std::map;
 
 extern unsigned long _CC_DEBUG;
 extern bool _IGNORE_NOT_NORMAL_FLAG;
-extern unsigned long _SEND_TRIES;
+extern long _SEND_TRIES;
 extern bool _USE_FLIP_FLAG;
 extern unsigned long _POINT_AGE;
 extern unsigned long _SCAN_WAIT_EXPIRE;
@@ -540,19 +542,19 @@ bool CtiCCFeeder::removeMaxKvar( long bankId )
     Creates a CtiRequestMsg to open the next cap bank to increase the
     var level for a strategy.
 ---------------------------------------------------------------------------*/
-CtiRequestMsg* CtiCCFeeder::createIncreaseVarRequest(CtiCCCapBank* capBank, CtiMultiMsg_vec& pointChanges, EventLogEntries &ccEvents,
-                                                     string textInfo, double kvarBefore, double varAValue, double varBValue, double varCValue)
+PorterRequest CtiCCFeeder::createIncreaseVarRequest(CtiCCCapBank* capBank, CtiMultiMsg_vec& pointChanges, EventLogEntries &ccEvents,
+                                                    string textInfo, double kvarBefore, double varAValue, double varBValue, double varCValue)
 {
     if( capBank == NULL )
     {
-        return 0;
+        return {};
     }
 
     //Determine if we are at max KVAR and don't create the request if we are.
     if( checkForMaxKvar(capBank->getPaoId(), capBank->getBankSize() ) == false )
     {
         CTILOG_INFO(dout, "Exceeded Max Kvar of "<< _MAX_KVAR<< ", not doing control on bank: "<< capBank->getPaoName() << ". " );
-        return 0;
+        return {};
     }
 
     setLastCapBankControlledDeviceId(capBank->getPaoId());
@@ -623,23 +625,23 @@ CtiRequestMsg* CtiCCFeeder::createIncreaseVarRequest(CtiCCCapBank* capBank, CtiM
         ((CtiPointDataMsg*)pointChanges[pointChanges.size()-1])->setSOE(4);
     }
 
-    std::unique_ptr<CtiRequestMsg> reqMsg = createBankOpenRequest(*capBank);
+    auto reqMsg = createBankOpenRequest(*capBank);
     reqMsg->setSOE(4);
 
-    return reqMsg.release();
+    return reqMsg;
 }
 
-CtiRequestMsg* CtiCCFeeder::createIncreaseVarVerificationRequest(CtiCCCapBank* capBank, CtiMultiMsg_vec& pointChanges, EventLogEntries &ccEvents,
-                                                                 string textInfo, int controlOp, double kvarBefore, double varAValue, double varBValue, double varCValue )
+PorterRequest CtiCCFeeder::createIncreaseVarVerificationRequest(CtiCCCapBank* capBank, CtiMultiMsg_vec& pointChanges, EventLogEntries &ccEvents,
+                                                                string textInfo, int controlOp, double kvarBefore, double varAValue, double varBValue, double varCValue )
 {
     if( capBank == NULL )
-        return 0;
+        return {};
 
     //Determine if we are at max KVAR and don't create the request if we are.
     if( checkForMaxKvar(capBank->getPaoId(), capBank->getBankSize() ) == false )
     {
         CTILOG_INFO(dout, "Exceeded Max Kvar of "<< _MAX_KVAR<< ", not doing control on bank: "<< capBank->getPaoName() << ". " );
-        return 0;
+        return {};
     }
 
     if (_CC_DEBUG & CC_DEBUG_VERIFICATION)
@@ -700,7 +702,7 @@ CtiRequestMsg* CtiCCFeeder::createIncreaseVarVerificationRequest(CtiCCCapBank* c
         ccEvents.push_back(EventLogEntry(0, capBank->getOperationAnalogPointId(), spAreaId, areaId, stationId, getParentId(), getPaoId(), capControlSetOperationCount, getEventSequence(), capBank->getTotalOperations(), "opCount adjustment", "cap control verification"));
     }
 
-    std::unique_ptr<CtiRequestMsg> reqMsg;
+    PorterRequest reqMsg;
 
     if  (stringContainsIgnoreCase(capBank->getControlDeviceType(),"CBC 701") && _USE_FLIP_FLAG )
     {
@@ -712,20 +714,20 @@ CtiRequestMsg* CtiCCFeeder::createIncreaseVarVerificationRequest(CtiCCCapBank* c
     }
     reqMsg->setSOE(4);
 
-    return reqMsg.release();
+    return reqMsg;
 }
 
-CtiRequestMsg* CtiCCFeeder::createDecreaseVarVerificationRequest(CtiCCCapBank* capBank, CtiMultiMsg_vec& pointChanges, EventLogEntries &ccEvents,
-                                                                 string textInfo, int controlOp, double kvarBefore, double varAValue, double varBValue, double varCValue )
+PorterRequest CtiCCFeeder::createDecreaseVarVerificationRequest(CtiCCCapBank* capBank, CtiMultiMsg_vec& pointChanges, EventLogEntries &ccEvents,
+                                                                string textInfo, int controlOp, double kvarBefore, double varAValue, double varBValue, double varCValue )
 {
     if( capBank == NULL )
-        return 0;
+        return {};
 
     //Determine if we are at max KVAR and don't create the request if we are.
     if( checkForMaxKvar(capBank->getPaoId(), capBank->getBankSize() ) == false )
     {
         CTILOG_INFO(dout, "Exceeded Max Kvar of "<< _MAX_KVAR<< ", not doing control on bank: "<< capBank->getPaoName() << ". " );
-        return 0;
+        return {};
     }
 
     if (_CC_DEBUG & CC_DEBUG_VERIFICATION)
@@ -786,7 +788,7 @@ CtiRequestMsg* CtiCCFeeder::createDecreaseVarVerificationRequest(CtiCCCapBank* c
         ccEvents.push_back(EventLogEntry(0, capBank->getOperationAnalogPointId(), spAreaId, areaId, stationId, getParentId(), getPaoId(), capControlSetOperationCount, getEventSequence(), capBank->getTotalOperations(), "opCount adjustment", "cap control verification"));
     }
 
-    std::unique_ptr<CtiRequestMsg> reqMsg;
+    PorterRequest reqMsg;
 
     if  (stringContainsIgnoreCase(capBank->getControlDeviceType(),"CBC 701") && _USE_FLIP_FLAG )
     {
@@ -798,7 +800,7 @@ CtiRequestMsg* CtiCCFeeder::createDecreaseVarVerificationRequest(CtiCCCapBank* c
     }
     reqMsg->setSOE(4);
 
-    return reqMsg.release();
+    return reqMsg;
 }
 
 
@@ -810,19 +812,19 @@ CtiRequestMsg* CtiCCFeeder::createDecreaseVarVerificationRequest(CtiCCCapBank* c
 ---------------------------------------------------------------------------*/
 
 
-CtiRequestMsg* CtiCCFeeder::createDecreaseVarRequest(CtiCCCapBank* capBank, CtiMultiMsg_vec& pointChanges, EventLogEntries &ccEvents,
-                                                     string textInfo, double kvarBefore, double varAValue, double varBValue, double varCValue)
+PorterRequest CtiCCFeeder::createDecreaseVarRequest(CtiCCCapBank* capBank, CtiMultiMsg_vec& pointChanges, EventLogEntries &ccEvents,
+                                                    string textInfo, double kvarBefore, double varAValue, double varBValue, double varCValue)
 {
     if( capBank == NULL )
     {
-        return 0;
+        return {};
     }
 
     //Determine if we are at max KVAR and don't create the request if we are.
     if( checkForMaxKvar(capBank->getPaoId(), capBank->getBankSize() ) == false )
     {
         CTILOG_INFO(dout, "Exceeded Max Kvar of "<< _MAX_KVAR<< ", not doing control on bank: "<< capBank->getPaoName() << ". " );
-        return 0;
+        return {};
     }
 
     setLastCapBankControlledDeviceId(capBank->getPaoId());
@@ -893,10 +895,10 @@ CtiRequestMsg* CtiCCFeeder::createDecreaseVarRequest(CtiCCCapBank* capBank, CtiM
         ((CtiPointDataMsg*)pointChanges[pointChanges.size()-1])->setSOE(4);
     }
 
-    std::unique_ptr<CtiRequestMsg> reqMsg = createBankCloseRequest(*capBank);
+    PorterRequest reqMsg = createBankCloseRequest(*capBank);
     reqMsg->setSOE(4);
 
-    return reqMsg.release();
+    return reqMsg;
 }
 
 /*---------------------------------------------------------------------------
@@ -905,18 +907,18 @@ CtiRequestMsg* CtiCCFeeder::createDecreaseVarRequest(CtiCCCapBank* capBank, CtiM
     Creates a CtiRequestMsg to close the next cap bank to decrease the
     var level for a strategy.
 ---------------------------------------------------------------------------*/
-CtiRequestMsg* CtiCCFeeder::createForcedVarRequest(CtiCCCapBank* capBank, CtiMultiMsg_vec& pointChanges, EventLogEntries &ccEvents, int action, string typeOfControl)
+PorterRequest CtiCCFeeder::createForcedVarRequest(CtiCCCapBank* capBank, CtiMultiMsg_vec& pointChanges, EventLogEntries &ccEvents, int action, string typeOfControl)
 {
     CtiCCSubstationBusStore* store = CtiCCSubstationBusStore::getInstance();
 
     if( capBank == NULL )
-        return 0;
+        return {};
 
     //Determine if we are at max KVAR and don't create the request if we are.
     if( checkForMaxKvar(capBank->getPaoId(), capBank->getBankSize() ) == false )
     {
         CTILOG_INFO(dout, "Exceeded Max Kvar of "<< _MAX_KVAR<< ", not doing control on bank: "<< capBank->getPaoName() << ". " );
-        return 0;
+        return {};
     }
 
     setLastCapBankControlledDeviceId(capBank->getPaoId());
@@ -996,7 +998,7 @@ CtiRequestMsg* CtiCCFeeder::createForcedVarRequest(CtiCCCapBank* capBank, CtiMul
         ((CtiPointDataMsg*)pointChanges[pointChanges.size()-1])->setSOE(4);
     }
 
-    std::unique_ptr<CtiRequestMsg> reqMsg;
+    PorterRequest reqMsg;
 
     if (capBank->getControlStatus() == CtiCCCapBank::Close )
     {
@@ -1009,7 +1011,7 @@ CtiRequestMsg* CtiCCFeeder::createForcedVarRequest(CtiCCCapBank* capBank, CtiMul
 
     reqMsg->setSOE(4);
 
-    return reqMsg.release();
+    return reqMsg;
 }
 
 void CtiCCFeeder::createForcedVarConfirmation(CtiCCCapBank* capBank, CtiMultiMsg_vec& pointChanges, EventLogEntries &ccEvents, string typeOfControl)
@@ -1285,7 +1287,7 @@ void CtiCCFeeder::figureAndSetTargetVarValue(const string& controlMethod, const 
 
 
 ---------------------------------------------------------------------------*/
-bool CtiCCFeeder::checkForAndProvideNeededIndividualControl(const CtiTime& currentDateTime, CtiMultiMsg_vec& pointChanges, EventLogEntries &ccEvents, CtiMultiMsg_vec& pilMessages, bool peakTimeFlag, long decimalPlaces, const string& controlUnits, bool dailyMaxOpsHitFlag)
+bool CtiCCFeeder::checkForAndProvideNeededIndividualControl(const CtiTime& currentDateTime, CtiMultiMsg_vec& pointChanges, EventLogEntries &ccEvents, PorterRequests& pilMessages, bool peakTimeFlag, long decimalPlaces, const string& controlUnits, bool dailyMaxOpsHitFlag)
 {
     bool returnBoolean = false;
     CtiCCSubstationBusStore* store = CtiCCSubstationBusStore::getInstance();
@@ -1340,7 +1342,7 @@ bool CtiCCFeeder::checkForAndProvideNeededIndividualControl(const CtiTime& curre
 
 
     //if current var load is outside of range defined by the set point plus/minus the bandwidths
-    CtiRequestMsg* request = NULL;
+    PorterRequest request;
 
     //checks max daily op count, feeder disable if maxOperationDisableFlag set.
     checkMaxDailyOpCountExceeded(pointChanges);
@@ -1467,7 +1469,7 @@ bool CtiCCFeeder::checkForAndProvideNeededIndividualControl(const CtiTime& curre
 
                     if( request != NULL )
                     {
-                        pilMessages.push_back(request);
+                        pilMessages.emplace_back(std::move(request));
                         setLastOperationTime(currentDateTime);
                         if( getEstimatedVarLoadPointId() > 0 )
                         {
@@ -1579,7 +1581,7 @@ bool CtiCCFeeder::checkForAndProvideNeededIndividualControl(const CtiTime& curre
             }
             if( request != NULL )
             {
-                pilMessages.push_back(request);
+                pilMessages.emplace_back(std::move(request));
                 setLastOperationTime(currentDateTime);
                 if( getEstimatedVarLoadPointId() > 0 )
                 {
@@ -2897,11 +2899,11 @@ bool CtiCCFeeder::capBankVerificationPerPhaseStatusUpdate(CtiMultiMsg_vec& point
 }
 
 
-bool CtiCCFeeder::startVerificationOnCapBank(const CtiTime& currentDateTime, CtiMultiMsg_vec& pointChanges, EventLogEntries &ccEvents, CtiMultiMsg_vec& pilMessages)
+bool CtiCCFeeder::startVerificationOnCapBank(const CtiTime& currentDateTime, CtiMultiMsg_vec& pointChanges, EventLogEntries &ccEvents, PorterRequests& pilMessages)
 {
     //get CapBank to perform verification on...subbus stores, currentCapBankToVerifyId
 
-    CtiRequestMsg* request = NULL;
+    PorterRequest request;
     bool retVal = true;
 
     for(long j=0;j<_cccapbanks.size();j++)
@@ -2927,7 +2929,7 @@ bool CtiCCFeeder::startVerificationOnCapBank(const CtiTime& currentDateTime, Cti
             }
             if( request != NULL )
             {
-                pilMessages.push_back(request);
+                pilMessages.emplace_back(std::move(request));
                 setLastOperationTime(currentDateTime);
 
                 setLastVerificationMsgSentSuccessfulFlag(true);
@@ -2958,11 +2960,11 @@ bool CtiCCFeeder::startVerificationOnCapBank(const CtiTime& currentDateTime, Cti
     return retVal;
 }
 
-CtiRequestMsg*  CtiCCFeeder::createCapBankVerificationControl(const CtiTime& currentDateTime, CtiMultiMsg_vec& pointChanges, EventLogEntries &ccEvents,
-                                      CtiMultiMsg_vec& pilMessages, CtiCCCapBank* currentCapBank, int control)
+PorterRequest CtiCCFeeder::createCapBankVerificationControl(const CtiTime& currentDateTime, CtiMultiMsg_vec& pointChanges, EventLogEntries &ccEvents,
+                                      PorterRequests& pilMessages, CtiCCCapBank* currentCapBank, int control)
 {
 
-    CtiRequestMsg* request = NULL;
+    PorterRequest request;
     if( control == CtiCCCapBank::Close && currentCapBank->getRecloseDelay() > 0 &&
         currentDateTime.seconds() < currentCapBank->getLastStatusChangeTime().seconds() + currentCapBank->getRecloseDelay() )
     {
@@ -3012,10 +3014,10 @@ CtiRequestMsg*  CtiCCFeeder::createCapBankVerificationControl(const CtiTime& cur
 
 
 
-bool CtiCCFeeder::sendNextCapBankVerificationControl(const CtiTime& currentDateTime, CtiMultiMsg_vec& pointChanges, EventLogEntries &ccEvents, CtiMultiMsg_vec& pilMessages)
+bool CtiCCFeeder::sendNextCapBankVerificationControl(const CtiTime& currentDateTime, CtiMultiMsg_vec& pointChanges, EventLogEntries &ccEvents, PorterRequests& pilMessages)
 {
     bool retVal = false;
-    CtiRequestMsg* request = NULL;
+    PorterRequest request;
     for(long j=0;j<_cccapbanks.size();j++)
     {
         CtiCCCapBank* currentCapBank = (CtiCCCapBank*)_cccapbanks[j];
@@ -3040,7 +3042,7 @@ bool CtiCCFeeder::sendNextCapBankVerificationControl(const CtiTime& currentDateT
             }
             else if (currentCapBank->getVCtrlIndex() == 5 || currentCapBank->getVCtrlIndex() == 0)
             {
-                request = NULL;
+                request = {};
                 currentCapBank->setVCtrlIndex(5);
                 setLastVerificationMsgSentSuccessfulFlag(true);
                 return true;
@@ -3049,7 +3051,7 @@ bool CtiCCFeeder::sendNextCapBankVerificationControl(const CtiTime& currentDateT
             if( request != NULL )
             {
                 retVal = true;
-                pilMessages.push_back(request);
+                pilMessages.emplace_back(std::move(request));
                 setLastCapBankControlledDeviceId( currentCapBank->getPaoId());
                 setLastOperationTime(currentDateTime);
                 setVarValueBeforeControl(getCurrentVarLoadPointValue());
@@ -3314,20 +3316,14 @@ bool CtiCCFeeder::isAlreadyControlled(long minConfirmPercent, long currentVarPoi
 ---------------------------------------------------------------------------*/
 bool CtiCCFeeder::isPastMaxConfirmTime(const CtiTime& currentDateTime, long maxConfirmTime, long feederRetries)
 {
-    bool returnBoolean = false;
-
     if (getStrategy()->getUnitType() != ControlStrategy::None && getStrategy()->getControlSendRetries() > feederRetries)
     {
         feederRetries = getStrategy()->getControlSendRetries();
     }
 
-    if( ((getLastOperationTime().seconds() + ((maxConfirmTime/_SEND_TRIES) * (_retryIndex + 1))) <= currentDateTime.seconds()) ||
-        ((getLastOperationTime().seconds() + ((maxConfirmTime/(feederRetries+1)) * (_retryIndex + 1))) <= currentDateTime.seconds()) )
-    {
-        returnBoolean = true;
-    }
+    long controlDuration = ( ( _retryIndex + 1 ) * maxConfirmTime ) / std::max( _SEND_TRIES, feederRetries + 1 );
 
-    return returnBoolean;
+    return currentDateTime >= ( getLastOperationTime() + controlDuration );
 }
 
 /*---------------------------------------------------------------------------
@@ -3480,7 +3476,7 @@ bool CtiCCFeeder::isVerificationAlreadyControlled(long minConfirmPercent, long q
 
     Returns a .
 ---------------------------------------------------------------------------*/
-bool CtiCCFeeder::attemptToResendControl(const CtiTime& currentDateTime, CtiMultiMsg_vec& pointChanges, EventLogEntries &ccEvents, CtiMultiMsg_vec& pilMessages, long maxConfirmTime)
+bool CtiCCFeeder::attemptToResendControl(const CtiTime& currentDateTime, CtiMultiMsg_vec& pointChanges, EventLogEntries &ccEvents, PorterRequests& pilMessages, long maxConfirmTime)
 {
     bool returnBoolean = false;
     CtiCCSubstationBusStore* store = CtiCCSubstationBusStore::getInstance();
@@ -3518,7 +3514,7 @@ bool CtiCCFeeder::attemptToResendControl(const CtiTime& currentDateTime, CtiMult
                         }
 
                         pilMessages.push_back(
-                           createBankOpenRequest(*currentCapBank).release());
+                           createBankOpenRequest(*currentCapBank));
 
                         if (_RETRY_ADJUST_LAST_OP_TIME)
                         {
@@ -3549,7 +3545,7 @@ bool CtiCCFeeder::attemptToResendControl(const CtiTime& currentDateTime, CtiMult
                         }
 
                         pilMessages.push_back(
-                           createBankCloseRequest(*currentCapBank).release());
+                           createBankCloseRequest(*currentCapBank));
 
                         if (_RETRY_ADJUST_LAST_OP_TIME)
                         {
@@ -3575,7 +3571,7 @@ bool CtiCCFeeder::attemptToResendControl(const CtiTime& currentDateTime, CtiMult
     return returnBoolean;
 }
 
-bool CtiCCFeeder::checkForAndPerformVerificationSendRetry(const CtiTime& currentDateTime, CtiMultiMsg_vec& pointChanges, EventLogEntries &ccEvents, CtiMultiMsg_vec& pilMessages, long maxConfirmTime, long sendRetries)
+bool CtiCCFeeder::checkForAndPerformVerificationSendRetry(const CtiTime& currentDateTime, CtiMultiMsg_vec& pointChanges, EventLogEntries &ccEvents, PorterRequests& pilMessages, long maxConfirmTime, long sendRetries)
 {
    bool returnBoolean = false;
    if (getVerificationFlag() && getPerformingVerificationFlag() &&
@@ -3727,12 +3723,12 @@ long CtiCCFeeder::getCurrentVerificationCapBankId() const
     return _currentVerificationCapBankId;
 }
 
-bool CtiCCFeeder::voltControlBankSelectProcess(const CtiCCMonitorPoint & point, CtiMultiMsg_vec &pointChanges, EventLogEntries &ccEvents, CtiMultiMsg_vec& pilMessages)
+bool CtiCCFeeder::voltControlBankSelectProcess(const CtiCCMonitorPoint & point, CtiMultiMsg_vec &pointChanges, EventLogEntries &ccEvents, PorterRequests& pilMessages)
 {
     bool retVal = false;
     CtiCCCapBank* bestBank = NULL;
 
-    CtiRequestMsg* request = NULL;
+    PorterRequest request;
    //Check for undervoltage condition first.
    try
    {
@@ -4028,7 +4024,7 @@ bool CtiCCFeeder::voltControlBankSelectProcess(const CtiCCMonitorPoint & point, 
 
         if( request != NULL )
         {
-            pilMessages.push_back(request);
+            pilMessages.emplace_back(std::move(request));
             setOperationSentWaitFlag(true);
             setLastCapBankControlledDeviceId( bestBank->getPaoId());
             setVarValueBeforeControl(getCurrentVarLoadPointValue());
@@ -4949,10 +4945,10 @@ CtiCCCapBank* CtiCCFeeder::getMonitorPointParentBank(const CtiCCMonitorPoint & p
 }
 
 bool CtiCCFeeder::checkForAndProvideNeededFallBackControl(const CtiTime& currentDateTime,
-                        CtiMultiMsg_vec& pointChanges, EventLogEntries &ccEvents, CtiMultiMsg_vec& pilMessages)
+                        CtiMultiMsg_vec& pointChanges, EventLogEntries &ccEvents, PorterRequests& pilMessages)
 {
     bool retVal = false;
-    CtiRequestMsg* request = NULL;
+    PorterRequest request;
 
     map <long, long> controlid_action_map;
     controlid_action_map.clear();
@@ -5003,7 +4999,7 @@ bool CtiCCFeeder::checkForAndProvideNeededFallBackControl(const CtiTime& current
                         createForcedVarConfirmation(bank, pointChanges, ccEvents, "LikeDay Control");
 
                         retVal = true;
-                        pilMessages.push_back(request);
+                        pilMessages.emplace_back(std::move(request));
                         setLastOperationTime(currentDateTime);
                         setCurrentDailyOperationsAndSendMsg(getCurrentDailyOperations() + 1, pointChanges);
                     }

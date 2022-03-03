@@ -50,7 +50,7 @@
             </bean>
         </constructor-arg>
     </bean>
-    
+
     <bean id="databaseVendorResolver" class="com.cannontech.database.vendor.MetaDataDatabaseVendorResolver"/>
     <bean id="vendorSpecificSqlBuilderFactory" class="com.cannontech.database.vendor.VendorSpecificSqlBuilderFactory"/>
 
@@ -90,6 +90,8 @@
     <bean class="com.cannontech.system.dao.GlobalSettingChangeHelper"/>
     <!--  This needs to be instantiated before YukonLoggingReloader so any migrated settings are available to the logger.  -->
     <bean class="com.cannontech.common.config.MasterConfigDeprecatedKeyMigrationHelper"/>
+    <bean class="com.cannontech.clientutils.logger.dao.impl.YukonLoggerDaoImpl"/>
+    <bean class="com.cannontech.clientutils.logger.service.impl.YukonLoggerServiceImpl"/>
     <bean class="com.cannontech.clientutils.YukonLoggingReloader"/>
 
     <bean id="globalTimer" class="java.util.Timer" destroy-method="cancel" lazy-init="true">
@@ -147,6 +149,7 @@
         <constructor-arg>
             <list>
                 <value>classpath:com/cannontech/yukon/api/deviceReading/deviceData</value>
+                <value>classpath:com/cannontech/yukon/api/error</value>
                 <value>classpath:com/cannontech/yukon/common/general</value>
                 <value>classpath:com/cannontech/yukon/common/reports</value>
                 <value>classpath:com/cannontech/yukon/common/dateFormatting</value>
@@ -265,11 +268,13 @@
                 <value>classpath:com/cannontech/yukon/web/modules/operator/inventory</value>
                 <value>classpath:com/cannontech/yukon/web/modules/operator/mapNetwork</value>
                 <value>classpath:com/cannontech/yukon/web/modules/operator/comprehensiveMap</value>
+                <value>classpath:com/cannontech/yukon/web/modules/operator/commChannel</value>
                 <value>classpath:com/cannontech/yukon/web/modules/operator/relay</value>
                 <value>classpath:com/cannontech/yukon/web/modules/operator/rtu</value>
                 <value>classpath:com/cannontech/yukon/web/modules/operator/scheduledDataImport</value>
                 <value>classpath:com/cannontech/yukon/web/modules/visualDisplays/visualDisplays</value>
                 <value>classpath:com/cannontech/yukon/web/modules/tools/root</value>
+                <value>classpath:com/cannontech/yukon/web/modules/tools/trends</value>
                 <value>classpath:com/cannontech/yukon/web/modules/tools/bulk</value>
                 <value>classpath:com/cannontech/yukon/web/modules/tools/collectionActions</value>
                 <value>classpath:com/cannontech/yukon/web/modules/tools/configs</value>
@@ -369,7 +374,8 @@
       </property>
     </bean>
     
-    <bean class="com.cannontech.common.util.jms.YukonJmsTemplate"/>
+    <bean class="com.cannontech.common.util.jms.YukonJmsTemplateFactory"/>
+    <bean class="com.cannontech.common.util.jms.YukonJmsTemplate" scope="prototype"/>
     
     <bean class="org.springframework.aop.framework.ProxyFactoryBean">
       <property name="targetSource">      
@@ -394,8 +400,8 @@
     <bean id="encryptedRouteDao" class="com.cannontech.encryption.impl.EncryptedRouteDaoImpl"/>
     <bean id="rsaKeyfileService" class="com.cannontech.encryption.impl.RSAKeyfileServiceImpl"/>
     <bean id="honeywellSecurityService" class="com.cannontech.encryption.impl.HoneywellSecurityServiceImpl"/>
-    <bean id="ecobeeSecurityService" class="com.cannontech.encryption.impl.EcobeeSecurityServiceImpl"/>
     <bean id="itronSecurityService" class="com.cannontech.encryption.impl.ItronSecurityServiceImpl"/>
+    <bean id="ecobeeZeusSecurityService" class="com.cannontech.encryption.impl.EcobeeZeusSecurityServiceImpl"/>
 
     <bean id="yukonTextMessageDao" class="com.cannontech.message.activemq.impl.YukonTextMessageDaoImpl"/>
 
@@ -408,9 +414,9 @@
     <bean class="com.cannontech.common.rfn.service.impl.RfnGatewayServiceImpl"/>
     <bean class="com.cannontech.common.rfn.service.impl.RfnGatewayDataCacheImpl"/>
     <bean class="com.cannontech.common.rfn.service.impl.RfnGatewayCertificateUpdateServiceImpl"/>
-    <bean class="com.cannontech.common.rfn.service.impl.RfnDeviceMetadataServiceImpl"/>
     <bean class="com.cannontech.common.rfn.service.impl.RfnGatewayFirmwareUpgradeServiceImpl"/>
     <bean class="com.cannontech.common.rfn.service.impl.RfnMetadataMultiServiceImpl"/>
+    <bean id="rfnDeviceDeletionMessageService" class="com.cannontech.common.rfn.service.impl.RfnDeviceDeletionMessageServiceImpl"/>
     
     <bean class="com.cannontech.common.rfn.dao.impl.GatewayCertificateUpdateDaoImpl"/>
     <bean class="com.cannontech.common.rfn.dao.impl.RfnGatewayFirmwareUpgradeDaoImpl"/>
@@ -421,6 +427,7 @@
     
     <bean class="com.cannontech.simulators.startup.service.impl.SimulatorStartupSettingsServiceImpl"/>
     <bean class="com.cannontech.simulators.dao.impl.YukonSimulatorSettingsDaoImpl"/>
+    <bean class="com.cannontech.common.rfn.simulation.service.impl.RfnDeviceDeletionSimulatorServiceImpl"/>
     <bean class="com.cannontech.common.rfn.simulation.service.impl.RfnGatewaySimulatorServiceImpl"/>
     <bean class="com.cannontech.common.rfn.simulation.service.impl.DataStreamingSimulatorServiceImpl"/>
     <bean class="com.cannontech.common.rfn.simulation.service.impl.NmNetworkSimulatorServiceImpl"/>
@@ -476,4 +483,7 @@
     <bean class="com.cannontech.infrastructure.simulation.service.impl.InfrastructureWarningsGeneratorServiceImpl"/>
     <bean class="com.cannontech.common.smartNotification.simulation.service.impl.SmartNotificationSimulatorServiceImpl"/>
     <bean id="rfnDataValidator" class="com.cannontech.amr.rfn.service.RfnDataValidatorImpl"/>
+    <bean class="com.cannontech.yukon.system.metrics.publisher.YukonMetricPublisher"/>
+    <bean class="com.cannontech.common.util.jmx.JmxConnectorHelper"/>
+    <bean class="com.cannontech.yukon.system.metrics.helper.YukonMetricHelper"/>
 </beans>

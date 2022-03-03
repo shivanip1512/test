@@ -1,0 +1,29 @@
+<beans
+  xmlns="http://www.springframework.org/schema/beans"
+  xmlns:jms="http://www.springframework.org/schema/jms"
+  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+  xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd
+  http://www.springframework.org/schema/jms http://www.springframework.org/schema/jms/spring-jms.xsd">
+
+    <bean id="zeusEcobeeAuthTokenListener" class="com.cannontech.services.ecobee.authToken.service.impl.EcobeeZeusAuthTokenServiceImpl">
+        <constructor-arg name="proxiedTemplate">
+            <bean class="org.springframework.web.client.RestTemplate">
+                <property name="messageConverters">
+                    <list>
+                        <ref bean="jacksonHttpMessageConverter"/>
+                    </list>
+                </property>
+                <property name="errorHandler">
+                    <bean class="com.cannontech.dr.ecobee.service.EcobeeZeusErrorHandler"/>
+                </property>
+            </bean>
+        </constructor-arg>
+    </bean>
+    <bean class="org.springframework.jms.listener.SimpleMessageListenerContainer">
+        <property name="destinationName" value="yukon.ecobee.auth.token.ZeusEcobeeAuthTokenRequest"/>
+        <property name="connectionFactory" ref="connectionFactory"/>
+        <property name="messageListener" ref="zeusEcobeeAuthTokenListener"/>
+    </bean>
+    
+    <bean class="com.cannontech.dr.ecobee.service.impl.EcobeeZeusSyncService"/> 
+</beans>

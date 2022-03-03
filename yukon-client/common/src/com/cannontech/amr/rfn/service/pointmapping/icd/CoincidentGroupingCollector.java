@@ -7,8 +7,6 @@ import java.util.function.BinaryOperator;
 import java.util.function.Function;
 import java.util.function.Supplier;
 import java.util.stream.Collector;
-import org.junit.Assert;
-
 import com.google.common.collect.ImmutableSet;
 import com.google.common.collect.Maps;
 
@@ -33,7 +31,7 @@ public class CoincidentGroupingCollector implements Collector<Named<? extends Po
             } else if (basePoint != null) {
                 map.put(new PointMapping(npd.getValue(), basePoint), new NameScale(npd.getName(), 0));
             } else {
-                Assert.fail("Base point is null for " + npd);
+                throw new RuntimeException("Base point is null for " + npd);
             }
         };
     }

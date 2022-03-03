@@ -47,6 +47,8 @@ DECLARE_COLLECTABLE( CtiLMEnergyExchangeCustomerReply );
     void restoreDynamicData(Cti::RowReader &rdr);
     void dumpDynamicData();
 
+    std::size_t getMemoryConsumption() const;
+
     CtiLMEnergyExchangeCustomerReply& operator=(const CtiLMEnergyExchangeCustomerReply& right);
 
     int operator==(const CtiLMEnergyExchangeCustomerReply& right) const;

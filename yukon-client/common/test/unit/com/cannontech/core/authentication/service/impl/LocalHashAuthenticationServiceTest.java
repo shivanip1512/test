@@ -1,14 +1,15 @@
 package com.cannontech.core.authentication.service.impl;
 
 import static org.easymock.EasyMock.createNiceMock;
-import static org.junit.Assert.*;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertNotSame;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import java.security.NoSuchAlgorithmException;
 
-import junit.framework.Assert;
-
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 import org.springframework.test.util.ReflectionTestUtils;
 
 import com.cannontech.common.events.loggers.SystemEventLogService;
@@ -27,7 +28,7 @@ public class LocalHashAuthenticationServiceTest {
     private LiteYukonUser someUser;
     private MockYukonUserPasswordDao singleUserPasswordDao;
 
-    @Before
+    @BeforeEach
     public void setUp() throws Exception {
         service = new LocalHashAuthenticationService();
         UsersEventLogService usersEventLogService = createNiceMock(UsersEventLogService.class);
@@ -40,17 +41,17 @@ public class LocalHashAuthenticationServiceTest {
     @Test
     public void testLogin() {
         boolean b = service.login(someUser, INITIAL_PASSWORD);
-        assertTrue("Login failed when it should have succeeded", b);
+        assertTrue(b, "Login failed when it should have succeeded");
 
         b = service.login(someUser, "not the right password");
-        assertFalse("Login succeeded when it should have failed", b);
+        assertFalse(b, "Login succeeded when it should have failed");
 
         // change password
         service.setPassword(someUser, "new pass", someUser);
         b = service.login(someUser, "not the right password");
-        assertFalse("Login succeeded when it should have failed", b);
+        assertFalse(b, "Login succeeded when it should have failed");
         b = service.login(someUser, "new pass");
-        assertTrue("Login failed when it should have succeeded", b);
+        assertTrue(b, "Login failed when it should have succeeded");
     }
 
     @Test
@@ -59,16 +60,16 @@ public class LocalHashAuthenticationServiceTest {
         // attempt change with correct password
         service.setPassword(someUser, "deadman", someUser);
         String after = singleUserPasswordDao.getDigest(null);
-        assertNotSame("Password didn't change", before, after);
+        assertNotSame(before, after, "Password didn't change");
 
         // check that password isn't stored as plain text
-        assertEquals("Password doesn't match computed hash", "34a8f998bb5b9b2f7b19465caafc4e98039447", after);
+        assertEquals("34a8f998bb5b9b2f7b19465caafc4e98039447", after, "Password doesn't match computed hash");
     }
 
     @Test
     public void testSHAPassword() throws NoSuchAlgorithmException {
         service.setPassword(someUser, "Algebra Geometry Banana", someUser);
         String hashed = singleUserPasswordDao.getDigest(null);
-        Assert.assertEquals("Hash doesn't match precomputed value", "fe6335916832f16b198396e8b27f743bd81ff", hashed);
+        assertEquals("fe6335916832f16b198396e8b27f743bd81ff", hashed, "Hash doesn't match precomputed value");
     }
 }

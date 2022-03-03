@@ -4,27 +4,18 @@ import java.io.Serializable;
 
 import com.cannontech.common.rfn.message.metadatamulti.RfnMetadataMultiQueryResultType;
 import com.cannontech.common.rfn.message.metadatamulti.RfnMetadataMultiResponseType;
-import com.cannontech.common.rfn.message.network.NeighborData;
-import com.cannontech.common.rfn.message.network.ParentData;
-import com.cannontech.common.rfn.message.network.RfnNeighborDataReplyType;
-import com.cannontech.common.rfn.message.network.RfnParentReplyType;
-import com.cannontech.common.rfn.message.network.RfnPrimaryRouteDataReplyType;
-import com.cannontech.common.rfn.message.network.RouteData;
+import com.cannontech.common.rfn.message.neighbor.NeighborData;
+import com.cannontech.common.rfn.message.route.RouteData;
 
 public class SimulatedNmMappingSettings implements Serializable {
     private static final long serialVersionUID = 1L;
 
     private NeighborData neighborData;
-    private ParentData parentData;
     private RouteData routeData;
-    private RfnParentReplyType parentReplyType;
-    private RfnNeighborDataReplyType neighborReplyType;
-    private RfnPrimaryRouteDataReplyType routeReplyType;
     private RfnMetadataMultiResponseType metadataResponseType;
     private RfnMetadataMultiQueryResultType metadataQueryResponseType;
     private String metadataResponseString;
     private Integer emptyNullPercent;
-    private Integer minHop;
     private Integer maxHop;
     private Integer nodesOneHop;
     private Integer numberOfDevicesPerGateway;
@@ -36,35 +27,11 @@ public class SimulatedNmMappingSettings implements Serializable {
     public void setNeighborData(NeighborData neighborData) {
         this.neighborData = neighborData;
     }
-    public ParentData getParentData() {
-        return parentData;
-    }
-    public void setParentData(ParentData parentData) {
-        this.parentData = parentData;
-    }
     public RouteData getRouteData() {
         return routeData;
     }
     public void setRouteData(RouteData routeData) {
         this.routeData = routeData;
-    }
-    public RfnParentReplyType getParentReplyType() {
-        return parentReplyType;
-    }
-    public void setParentReplyType(RfnParentReplyType parentReplyType) {
-        this.parentReplyType = parentReplyType;
-    }
-    public RfnNeighborDataReplyType getNeighborReplyType() {
-        return neighborReplyType;
-    }
-    public void setNeighborReplyType(RfnNeighborDataReplyType neighborReplyType) {
-        this.neighborReplyType = neighborReplyType;
-    }
-    public RfnPrimaryRouteDataReplyType getRouteReplyType() {
-        return routeReplyType;
-    }
-    public void setRouteReplyType(RfnPrimaryRouteDataReplyType routeReplyType) {
-        this.routeReplyType = routeReplyType;
     }
     public RfnMetadataMultiResponseType getMetadataResponseType() {
         return metadataResponseType;
@@ -89,12 +56,6 @@ public class SimulatedNmMappingSettings implements Serializable {
     }
     public void setEmptyNullPercent(Integer emptyNullPercent) {
         this.emptyNullPercent = emptyNullPercent;
-    }
-    public Integer getMinHop() {
-        return minHop;
-    }
-    public void setMinHop(Integer minHop) {
-        this.minHop = minHop;
     }
     public Integer getMaxHop() {
         return maxHop;

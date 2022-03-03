@@ -1,0 +1,82 @@
+token-generate:
+  post:
+      tags:
+        - Authentication
+      summary: Log in and generate token
+      description: API to Generate a token and set it for authorization.
+      requestBody:
+        description: |-
+          Send the users username and password to retrive an API token.
+        content:
+          application/json:
+            schema:
+              $ref: '../schemas/tokenSchema.yaml#/Token-Generate-Request'
+            examples:
+              Login: 
+                $ref: '../schemas/tokenSchema.yaml#/components/examples/Login'
+        required: true
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '../schemas/tokenSchema.yaml#/Token-Generate-Response'
+              examples:
+                Token: 
+                  $ref: '../schemas/tokenSchema.yaml#/components/examples/Token'
+
+refreshToken:
+  post:
+      tags:
+        - Authentication
+      summary: Generate Refresh and Access token
+      description: Use existing valid refresh token to generate a new set of access and refresh tokens to continue making API calls.
+      requestBody:
+        description: |-
+          Send the existing refresh token to generate an API access and refresh token.
+        content:
+          application/json:
+            schema:
+              $ref: '../schemas/tokenSchema.yaml#/Token-Refresh-Generate-Request'
+            examples:
+              RefreshToken: 
+                $ref: '../schemas/tokenSchema.yaml#/components/examples/RefreshToken'
+        required: true
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '../schemas/tokenSchema.yaml#/Token-Refresh-Generate-Response'
+              examples:
+                Token: 
+                  $ref: '../schemas/tokenSchema.yaml#/components/examples/Token'
+logout:
+  post:
+      tags:
+        - Authentication
+      summary: Log out and invalidate refresh token
+      description: Logout a User by invalidating refresh token.
+      requestBody:
+        description: |-
+          Send refresh token and logoutfromAllSystem to logout from system.
+        content:
+          application/json:
+            schema:
+              $ref: '../schemas/tokenSchema.yaml#/Token-logout-Request'
+            examples:
+              LogoutRequest: 
+                $ref: '../schemas/tokenSchema.yaml#/components/examples/logoutRequest'
+        required: true
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '../schemas/tokenSchema.yaml#/Token-logout-Response'
+              examples:
+                LogoutResponse: 
+                  $ref: '../schemas/tokenSchema.yaml#/components/examples/logoutResponse'

@@ -33,17 +33,17 @@
 	
     <c:set var="resizable" value=""/>
     <c:if test="${isResizable == false}">
-        <c:set var="resizable" value="resize: none;"/>
+        <c:set var="resizable" value="rn"/>
     </c:if>
     
     <c:choose>
         <c:when test="${autofocus == false}">
-            <form:textarea path="${path}" rows="${rows}" cols="${cols}" cssClass="${inputClass} ${classes}" id="${id}" 
-                   cssStyle="${resizable}" placeholder="${placeholder}" maxlength="${maxLength}" tabindex="-1"/>
+            <form:textarea path="${path}" rows="${rows}" cols="${cols}" cssClass="${inputClass} ${classes} ${resizable}" id="${id}" 
+                                       placeholder="${placeholder}" maxlength="${maxLength}" tabindex="-1"/>
         </c:when>
         <c:otherwise>
-            <form:textarea path="${path}" rows="${rows}" cols="${cols}" cssClass="${inputClass} ${classes}" id="${id}" 
-                   cssStyle="${resizable}" placeholder="${placeholder}" maxlength="${maxLength}"/>
+            <form:textarea path="${path}" rows="${rows}" cols="${cols}" cssClass="${inputClass} ${classes} ${resizable}" id="${id}" 
+                                       placeholder="${placeholder}" maxlength="${maxLength}"/>
         </c:otherwise>
     </c:choose>
 	

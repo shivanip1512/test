@@ -27,7 +27,8 @@
     <entry key="yukon.web.modules.adminSetup.config.testEmail.failure">An email could not be sent to {0} via SMTP host {1}</entry>
     <entry key="yukon.web.modules.adminSetup.config.testEmail.logSuccess">A test email was sent to {0} via SMTP host {1}</entry>
     <entry key="yukon.web.modules.adminSetup.config.testEmail.subject">[yukon] Yukon Test Email</entry>
-    <entry key="yukon.web.modules.adminSetup.config.testEmail.alert">A test email has been sent to {0}</entry>
+    <entry key="yukon.web.modules.adminSetup.config.testEmail.alert">A test email has been sent to notification server with email address {0}.</entry>
+    <entry key="yukon.web.modules.adminSetup.config.testEmail.tooltip">Test email will be sent only if the notification server is running.</entry>
     
     <entry key="yukon.web.modules.adminSetup.config.category.pageName">Yukon Configuration Settings</entry>
     <entry key="yukon.web.modules.adminSetup.config.category.contextualPageName">{0}</entry>
@@ -47,6 +48,7 @@
     <entry key="yukon.web.modules.adminSetup.config.error.invalidURL">Invalid URL</entry>
     <entry key="yukon.web.modules.adminSetup.config.error.invalidIPHostName">Invalid IP/Host Name</entry>
     <entry key="yukon.web.modules.adminSetup.config.error.invalidEmail">Invalid Email Address</entry>
+    <entry key="yukon.web.modules.adminSetup.config.error.invalidGuid">Invalid GUID Format</entry>
     
     <entry key="yukon.web.modules.adminSetup.config.themes.pageName">Themes</entry>
     <entry key="yukon.web.modules.adminSetup.config.themes.primaryColors">Primary Colors:</entry>
@@ -96,6 +98,7 @@
         ]]>
     </entry>
     <entry key="yukon.web.modules.adminSetup.config.showHideData">Show/Hide Data</entry>
+    <entry key="yukon.web.modules.adminSetup.config.clearData">Clear Data</entry>
     <entry key="yukon.common.imagePicker.title">Choose Image</entry>
     <entry key="yukon.common.imagePicker.name">Name</entry>
     <entry key="yukon.common.imagePicker.category">Category</entry>
@@ -156,20 +159,80 @@
     <entry key="yukon.web.modules.adminSetup.security.honeywellKeyBox.helpText"><![CDATA[Honeywell DR Encryption Keys allows a user to either import a 1024-bit private key or generate a new one.
     <br><br><b>Note:After generating a new key, you need to share it with Honeywell.  DR functionality in Yukon will only work after the key has been updated at their end.</b>
     ]]></entry>
-    <entry key="yukon.web.modules.adminSetup.security.ecobeeKeyBox.title">ecobee Encryption Keys</entry>
-    <entry key="yukon.web.modules.adminSetup.security.ecobeeKeyBox.helpText"><![CDATA[Encryption keys are used by ecobee to encrypt device data, and by Yukon to decrypt that device data. 
-    For Yukon to retrieve ecobee device data successfully, encryption keys must be generated and the public key must be provided to busidev@ecobee.com.
-    ]]></entry>
-    <entry key="yukon.web.modules.adminSetup.security.ecobeeKeyGenerated">ecobee Encryption Keys were generated:</entry>
-    <entry key="yukon.web.modules.adminSetup.security.ecobeeNoKeyGenerated">No ecobee Encryption Keys have been generated.</entry>
+
     <entry key="yukon.web.modules.adminSetup.security.downloadEcobeeKey.label">Download Public Key</entry>
     <entry key="yukon.web.modules.adminSetup.security.generateEcobeeKey.label">Generate New Key</entry>
-    <entry key="yukon.web.modules.adminSetup.security.confirmGenerateEcobeeKey.title">Confirm Generate ecobee Key</entry>
-    <entry key="yukon.web.modules.adminSetup.security.confirmGenerateEcobeeKey.message">Are you sure you want to generate new encryption keys? 
-    You will need to provide the new public key to busidev@ecobee.com in order for ecobee to properly encrypt any requested data. 
-    Yukon will not be able to unencrypt ecobee data until this process is complete.</entry>
+    <entry key="yukon.web.modules.adminSetup.security.ecobeeZeusKeyGenerated">ecobee Zeus Encryption Keys were generated:</entry>
+    <entry key="yukon.web.modules.adminSetup.security.ecobeeZeusNoKeyGenerated">No ecobee Zeus Encryption Keys have been generated.</entry>
+    <entry key="yukon.web.modules.adminSetup.security.ecobeeZeusURL">URL for incoming ecobee data:</entry>
+    <entry key="yukon.web.modules.adminSetup.security.ecobeeZeusURL.blank">Please configure the ecobee Reporting URL in Configuration settings.</entry>
     
+    <entry key="yukon.web.modules.adminSetup.security.ecobeeZeusKeyBox.title">ecobee Zeus Encryption Keys</entry>
+    <entry key="yukon.web.modules.adminSetup.security.ecobeeZeusKeyBox.helpText"><![CDATA[<b> ecobee Zeus Push API Configuration - </b>
+        Yukon sends Push API configuration to ecobee Zeus with a publicly accessible HTTPS endpoint and encoded private key.
+        <ul>
+            <li>
+                <span> <b> Reporting URL - </b> </span> User specified URL for incoming ecobee data.<br>
+                This value can be configured by going to the following menu option: (Admin -> Configuration -> Demand Response).
+            </li>
+            <li>
+                <span> <b> Key </b> </span> - Base64 encoded RSA key.
+            </li>
+        </ul>
+        The following options are available:
+        <ul>
+            <li>
+                <span> <b> Generate New Key - </b> </span> Generates a new key pair.
+            </li>
+            <li>
+                <span> <b> View Public Key - </b> </span> Displays the Public key.
+           </li>
+            <li>
+                <span> <b> Register Configuration - </b> </span> Yukon sends Push API configuration to ecobee Zeus.
+            </li>
+            <li>
+                <span> <b> Check Registration - </b> </span> Request Push data configuration from ecobee Zeus and check it against Yukon's stored configuration.
+            </li>
+        </ul>
+    ]]></entry>
+    <entry key="yukon.web.modules.adminSetup.security.confirmGenerateEcobeeZeusKey.title">Confirm Generate ecobee Zeus Key</entry>
+    <entry key="yukon.web.modules.adminSetup.security.confirmGenerateEcobeeZeusKey.message">Are you sure you want to generate new ecobee Zeus encryption keys?</entry>
+    <entry key="yukon.web.modules.adminSetup.security.confirmGenerateEcobeeZeusKey.warning">This will overwrite the existing Public/Private keys and will prevent Yukon from processing ecobee thermostat data until the new keys are registered with ecobee.</entry>
+    
+    <entry key="yukon.web.modules.adminSetup.security.viewEcobeeZeusKey.label">View Public Key</entry>
+    <entry key="yukon.web.modules.adminSetup.security.confirmViewEcobeeZeusKey.title">View ecobee Zeus Public Key</entry>
+    <entry key="yukon.web.modules.adminSetup.security.confirmViewEcobeeZeusKey.message">Current Public Key:</entry>
+
+    <entry key="yukon.web.modules.adminSetup.security.registerConfigurationEcobeeZeusKey.label">Register Configuration</entry>
+    <entry key="yukon.web.modules.adminSetup.security.confirmRegisterConfigurationEcobeeZeusKey.title">Confirm Register Configuration</entry>
+    <entry key="yukon.web.modules.adminSetup.security.confirmRegisterConfigurationEcobeeZeusKey.message">Are you sure you want to push registration to Zeus?</entry>
+    <entry key="yukon.web.modules.adminSetup.security.confirmRegisterConfigurationEcobeeZeusKey.warning">This will overwrite the existing configuration.</entry>
+    <entry key="yukon.web.modules.adminSetup.security.ecobeeZeusKeyNotRegistered">Last push data registration failed:</entry>
+    <entry key="yukon.web.modules.adminSetup.security.ecobeeZeusKeyRegistered">Last successful push data registration:</entry>
+    <entry key="yukon.web.modules.adminSetup.security.ecobeeZeusKeySuccessfullyRegistered">Successfully registered Push API configuration.</entry>
+    <entry key="yukon.web.modules.adminSetup.security.ecobeeZeusKeyFailedToRegister">Failed to register Push API configuration.</entry>
+    
+    <entry key="yukon.web.modules.adminSetup.security.checkRegistrationEcobeeZeusKey.label">Check Registration</entry>
+    <entry key="yukon.web.modules.adminSetup.security.checkRegistrationEcobeeZeusKey.success">ecobee Zeus API configuration verified successfully.</entry>
+    <entry key="yukon.web.modules.adminSetup.security.checkRegistrationEcobeeZeusPublicKey.error">Private key mismatch with existing configuration.</entry>
+    <entry key="yukon.web.modules.adminSetup.security.checkRegistrationEcobeeZeusURL.error">URL mismatch with existing configuration.</entry>
+    <entry key="yukon.web.modules.adminSetup.security.checkRegistrationEcobeeZeusURLAndPublicKey.error">URL and Private key mismatch with existing configuration.</entry>
+    <entry key="yukon.web.modules.adminSetup.security.checkRegistrationEcobeeZeusKey.failed">Error occurred checking ecobee Zeus registration. Check logs for more information.</entry>
+    
+    <entry key="yukon.web.modules.adminSetup.security.viewEcobeeZeusKey.failed">Error occurred retrieving the ecobee Zeus Private Key. Check logs for more information.</entry>
+    
+    <entry key="yukon.web.modules.adminSetup.security.ecobeeZeusKeyPair.generationFailed">Error occurred generating the ecobee Zeus Public and Private Key. Check logs for more information.</entry>
+    <entry key="yukon.web.modules.adminSetup.security.ecobeeZeusKeyRegisterBtn.label">Send</entry>
+
     <entry key="yukon.web.modules.adminSetup.security.routesBox.title">Encrypted Routes</entry>
+    
+    <entry key="yukon.web.modules.adminSetup.security.secretsBox.title">Brightlayer Utilities Suite Demand Response Secrets</entry>
+    <entry key="yukon.web.modules.adminSetup.security.secretsBox.secret1Expiration">Secret1 Expiration</entry>
+    <entry key="yukon.web.modules.adminSetup.security.secretsBox.secret2Expiration">Secret2 Expiration</entry>
+    <entry key="yukon.web.modules.adminSetup.security.secretsBox.secretRotationSuccess">Secret{0} was successfully refreshed.</entry>
+    <entry key="yukon.web.modules.adminSetup.security.secretsBox.secretRotationError">An error occurred trying to refresh secret{0}. {1}</entry>
+    <entry key="yukon.web.modules.adminSetup.security.secretsBox.secretExpirationRetrieveError">Unable to retrieve the Brightlayer Secret Expirations. {0}</entry>
+    <entry key="yukon.web.modules.adminSetup.security.secretsBox.secretNotFound">Secret not found.</entry>
     
     <entry key="yukon.web.modules.adminSetup.security.deleteKeyBtnTitle">Delete Key</entry>
     <entry key="yukon.web.modules.adminSetup.security.deleteKeyBtnDisabledTitle">Cannot delete key while key is in use</entry>
@@ -256,7 +319,6 @@
     <entry key="yukon.web.modules.adminSetup.security.confirmGenerate.message"><![CDATA[Are you sure you want to generate a new Honeywell key?
     <br><br><b>Note:After generating a new key, you need to share it with Honeywell.  DR functionality in Yukon will only work after the key has been updated at their end.</b>
     ]]></entry>
-    <entry key="yukon.web.modules.adminSetup.security.ecobeeKeyPair.generationFailed">Error occurred generating the PGP Public and Private Key. Check logs for more information.</entry>
     
     <entry key="yukon.web.modules.adminSetup.security.itronKeyBox.title">Itron Encryption Keys</entry>
     <entry key="yukon.web.modules.adminSetup.security.itronKeyBox.helpText"><![CDATA[Encryption keys are used by Itron to encrypt things]]></entry>
@@ -323,4 +385,56 @@
     <entry key="yukon.web.modules.adminSetup.substationToRouteMapping.removeRoutes">Routes cannot be deleted unless they are saved.</entry>
     
     <entry key="yukon.web.modules.adminSetup.config.dashboards.pageName">Dashboard Administration</entry>
+    
+    <entry key="yukon.web.modules.adminSetup.config.attributes.pageName">Attributes</entry>
+    <entry key="yukon.web.modules.adminSetup.config.attributes.attributeDefinitions.title">Attribute Definitions</entry>
+    <entry key="yukon.web.modules.adminSetup.config.attributes.attributeAssignments.title">Attribute Assignments</entry>
+    <entry key="yukon.web.modules.adminSetup.config.attributes.attributeName">Attribute Name</entry>
+    <entry key="yukon.web.modules.adminSetup.config.attributes.allAttributes">All Attributes</entry>
+    <entry key="yukon.web.modules.adminSetup.config.attributes.allDeviceTypes">All Device Types</entry>
+    <entry key="yukon.web.modules.adminSetup.config.attributes.deviceTypes">Device Type(s)</entry>
+    <entry key="yukon.web.modules.adminSetup.config.attributes.attributeAssignment">Attribute Assignment</entry>
+    <entry key="yukon.web.modules.adminSetup.config.attributes.customAttributes">Custom Attributes</entry>
+    
+    <entry key="yukon.web.modules.adminSetup.config.attributes.addAssignmentTitle">Add Attribute Assignment</entry>
+    <entry key="yukon.web.modules.adminSetup.config.attributes.editAssignmentTitle">Edit Attribute Assignment</entry>
+    
+    <entry key="yukon.web.modules.adminSetup.config.attributes.assignmentConfirmDelete.title">Confirm Delete</entry>
+    <entry key="yukon.web.modules.adminSetup.config.attributes.assignmentConfirmDelete.message">Are you sure you want to delete this assignment for attribute: {0}?</entry>
+    <entry key="yukon.web.modules.adminSetup.config.attributes.assignmentConfirmDelete.ok">Delete</entry>
+    
+    <entry key="yukon.web.modules.adminSetup.config.attributes.attributeAssignmentSuccess">Attribute: {0} has been successfully assigned to the following device types: {1}.</entry>
+    <entry key="yukon.web.modules.adminSetup.config.attributes.attributeAssignmentFailed">There was an error assigning Attribute: {0} to the following device types: {1}. Please see logs for more detail.</entry>
+    <entry key="yukon.web.modules.adminSetup.config.attributes.attributeAssignmentDeleteSuccess">Assignment for attribute: {0} has been successfully deleted.</entry>
+
+    <!-- Yukon Loggers -->
+    <entry key="yukon.web.modules.adminSetup.config.loggers.OFF">Off</entry>
+    <entry key="yukon.web.modules.adminSetup.config.loggers.FATAL">Fatal</entry>
+    <entry key="yukon.web.modules.adminSetup.config.loggers.ERROR">Error</entry>
+    <entry key="yukon.web.modules.adminSetup.config.loggers.WARN">Warn</entry>
+    <entry key="yukon.web.modules.adminSetup.config.loggers.INFO">Info</entry>
+    <entry key="yukon.web.modules.adminSetup.config.loggers.DEBUG">Debug</entry>
+    <entry key="yukon.web.modules.adminSetup.config.loggers.TRACE">Trace</entry>
+
+    <entry key="yukon.web.modules.adminSetup.config.loggers.pageName">Yukon Loggers</entry>
+    <entry key="yukon.web.modules.adminSetup.config.loggers.userLoggers.title">User Loggers</entry>
+    <entry key="yukon.web.modules.adminSetup.config.loggers.systemLoggers.title">System Loggers</entry>
+    <entry key="yukon.web.modules.adminSetup.config.loggers.allLoggerLevels">All Logger Levels</entry>
+    <entry key="yukon.web.modules.adminSetup.config.loggers.addLoggerTitle">Add User Logger</entry>
+
+    <entry key="yukon.web.modules.adminSetup.config.loggers.editUserLoggerTitle">Edit User Logger</entry>
+    <entry key="yukon.web.modules.adminSetup.config.loggers.editSystemLoggerTitle">Edit System Logger</entry>
+
+    <entry key="yukon.web.modules.adminSetup.config.loggers.loggerName">Logger Name</entry>
+    <entry key="yukon.web.modules.adminSetup.config.loggers.loggerLevel">Logger Level</entry>
+    <entry key="yukon.web.modules.adminSetup.config.loggers.loggerType">Logger Type</entry>
+    <entry key="yukon.web.modules.adminSetup.config.loggers.expirationDate">Expiration</entry>
+    <entry key="yukon.web.modules.adminSetup.config.loggers.notes">Notes</entry>
+
+    <entry key="yukon.web.modules.adminSetup.config.loggers.viewNote">View Note</entry>
+    <entry key="yukon.web.modules.adminSetup.config.loggers.noteText.placeHolder">Note Text (255 characters max)</entry>
+    <entry key="yukon.web.modules.adminSetup.config.loggers.loggersLabel">Logger(s)</entry>
+    <entry key="yukon.web.modules.adminSetup.config.loggers.invalidId">Invalid Logger Id</entry>
+    <entry key="yukon.web.modules.adminSetup.config.loggers.invalidDate">Expiration must have a valid date.</entry>
+
 </properties>

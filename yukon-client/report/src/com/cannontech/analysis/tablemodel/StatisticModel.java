@@ -577,7 +577,7 @@ public class StatisticModel extends ReportModelBase {
 		String html = "";
 		html += "<table align='center' width='90%' border='0'cellspacing='0' cellpadding='0' class='TableCell'>" + LINE_SEPARATOR;
 		html += "  <tr>" + LINE_SEPARATOR;
-		html += "    <td>" + LINE_SEPARATOR;
+		html += "    <td class='vat'>" + LINE_SEPARATOR;
 		html += "      <table width='100%' border='0' cellspacing='0' cellpadding='0' class='TableCell'>" + LINE_SEPARATOR;
 		html += "        <tr>" + LINE_SEPARATOR;
 		html += "          <td valign='top' class='title-header'>&nbsp;Statistic Type</td>" +LINE_SEPARATOR;
@@ -592,7 +592,7 @@ public class StatisticModel extends ReportModelBase {
 		}
 		html += "      </table>" + LINE_SEPARATOR;
 		html += "    </td>" + LINE_SEPARATOR;
-		html += "    <td valign='top'>" + LINE_SEPARATOR;
+		html += "    <td class='vat'>" + LINE_SEPARATOR;
 		html += "      <table width='100%' border='0' cellspacing='0' cellpadding='0' class='TableCell'>" + LINE_SEPARATOR;
 		html += "        <tr>" + LINE_SEPARATOR;
 		html += "          <td class='title-header'>&nbsp;Period</td>" +LINE_SEPARATOR;

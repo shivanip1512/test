@@ -32,7 +32,7 @@ import com.cannontech.common.rfn.model.RfnDevice;
 import com.cannontech.common.rfn.model.RfnGateway;
 import com.cannontech.common.rfn.service.RfnGatewayService;
 import com.cannontech.common.util.JsonUtils;
-import com.cannontech.core.roleproperties.YukonRole;
+import com.cannontech.core.roleproperties.HierarchyPermissionLevel;
 import com.cannontech.core.roleproperties.YukonRoleProperty;
 import com.cannontech.database.data.lite.LiteYukonPAObject;
 import com.cannontech.i18n.YukonMessageSourceResolvable;
@@ -46,12 +46,11 @@ import com.cannontech.web.amr.util.cronExpressionTag.CronException;
 import com.cannontech.web.amr.util.cronExpressionTag.CronExpressionTagService;
 import com.cannontech.web.amr.util.cronExpressionTag.CronExpressionTagState;
 import com.cannontech.web.common.flashScope.FlashScope;
-import com.cannontech.web.security.annotation.CheckRole;
-import com.cannontech.web.security.annotation.CheckRoleProperty;
+import com.cannontech.web.security.annotation.CheckPermissionLevel;
 import com.cannontech.web.stars.gateway.model.GatewaySettingsValidator;
 
 @Controller
-@CheckRole(YukonRole.DEVICE_MANAGEMENT)
+@CheckPermissionLevel(property = YukonRoleProperty.MANAGE_INFRASTRUCTURE, level = HierarchyPermissionLevel.VIEW)
 public class GatewaySettingsController {
     
     private static final Logger log = YukonLogManager.getLogger(GatewayListController.class);
@@ -64,12 +63,26 @@ public class GatewaySettingsController {
     @Autowired private RfnGatewayService rfnGatewayService;
     @Autowired private ServerDatabaseCache cache;
     @Autowired private YukonUserContextMessageSourceResolver messageResolver;
+    @Autowired private GatewayControllerHelper helper;
 
+    @CheckPermissionLevel(property = YukonRoleProperty.MANAGE_INFRASTRUCTURE, level = HierarchyPermissionLevel.CREATE)
     @RequestMapping("/gateways/create")
     public String createDialog(ModelMap model) {
         
         model.addAttribute("mode", PageEditMode.CREATE);
         GatewaySettings settings = new GatewaySettings();
+        
+        settings.setNmPort(RfnGatewayService.GATEWAY_DEFAULT_PORT);
+        
+        //get all NM IP Address/Port combos
+        model.addAttribute("nmIPAddressPorts", helper.getAllGatewayNMIPPorts());
+        
+        // prefill with the most used nm ip address and port
+        GatewayNMIPAddressPort mostUsedNMIPAddressPort = helper.getMostUsedGatewayNMIPPort();
+        if (mostUsedNMIPAddressPort != null) {
+        	settings.setNmIpAddress(mostUsedNMIPAddressPort.getNmIpAddress());
+        	settings.setNmPort(mostUsedNMIPAddressPort.getNmPort());
+        }
         
         settings.setUpdateServerUrl(globalSettingDao.getString(GlobalSettingType.RFN_FIRMWARE_UPDATE_SERVER));
 
@@ -91,7 +104,7 @@ public class GatewaySettingsController {
      * Create a gateway, return gateway settings popup when validation or creation fails, 
      * otherwise return success json payload. 
      */
-    @CheckRoleProperty(YukonRoleProperty.INFRASTRUCTURE_CREATE_AND_UPDATE)
+    @CheckPermissionLevel(property = YukonRoleProperty.MANAGE_INFRASTRUCTURE, level = HierarchyPermissionLevel.CREATE)
     @RequestMapping(value={"/gateways", "/gateways/"}, method=RequestMethod.POST)
     public String create(ModelMap model,
             YukonUserContext userContext,
@@ -99,6 +112,7 @@ public class GatewaySettingsController {
             @ModelAttribute("settings") GatewaySettings settings,
             BindingResult result) {
         
+        model.addAttribute("nmIPAddressPorts", helper.getAllGatewayNMIPPorts());
         validator.validate(settings, result);
         
         if (result.hasErrors()) {
@@ -159,7 +173,7 @@ public class GatewaySettingsController {
     
     /** Set schedule popup. 
      * @throws NmCommunicationException */
-    @CheckRoleProperty(YukonRoleProperty.INFRASTRUCTURE_ADMIN)
+    @CheckPermissionLevel(property = YukonRoleProperty.MANAGE_INFRASTRUCTURE, level = HierarchyPermissionLevel.CREATE)
     @RequestMapping("/gateways/{id}/schedule/options")
     public String schedule(ModelMap model, YukonUserContext userContext, @PathVariable int id) 
             throws NmCommunicationException {
@@ -175,7 +189,7 @@ public class GatewaySettingsController {
     
     /** Set schedule. 
      * @throws ServletRequestBindingException */ 
-    @CheckRoleProperty(YukonRoleProperty.INFRASTRUCTURE_ADMIN)
+    @CheckPermissionLevel(property = YukonRoleProperty.MANAGE_INFRASTRUCTURE, level = HierarchyPermissionLevel.CREATE)
     @RequestMapping("/gateways/{id}/schedule")
     public String schedule(HttpServletResponse resp, HttpServletRequest req, ModelMap model, FlashScope flash,
             YukonUserContext userContext, @PathVariable int id, String uid) throws ServletRequestBindingException {

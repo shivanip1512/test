@@ -1,6 +1,4 @@
 package com.cannontech.common.model;
-import static com.google.common.base.Preconditions.*;
-
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonProperty;
 
@@ -18,8 +16,6 @@ public final class PagingParameters {
      * @param page is 1-based (i.e. starts at 1, not 0)
      */
     private PagingParameters(int itemsPerPage, int page) {
-        checkArgument(itemsPerPage > 0);
-        checkArgument(page > 0);
 
         this.itemsPerPage = itemsPerPage;
         this.page = page;

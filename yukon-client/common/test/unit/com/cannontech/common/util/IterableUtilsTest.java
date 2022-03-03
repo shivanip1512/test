@@ -1,12 +1,11 @@
 package com.cannontech.common.util;
 
-import static org.junit.Assert.*;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import java.util.List;
 
-import junit.framework.Assert;
-
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.Iterables;
@@ -55,7 +54,7 @@ public class IterableUtilsTest {
         List<String> empty = ImmutableList.of();
         String result = IterableUtils.toString(empty, 99);
         
-        Assert.assertEquals("[]", result);
+        assertEquals("[]", result);
     }
     
     @Test 
@@ -63,7 +62,7 @@ public class IterableUtilsTest {
         List<String> list = ImmutableList.of("a");
         String result = IterableUtils.toString(list, 99);
         
-        Assert.assertEquals("[a]", result);
+        assertEquals("[a]", result);
     }
     
     @Test 
@@ -71,7 +70,7 @@ public class IterableUtilsTest {
         List<String> list = ImmutableList.of("a");
         String result = IterableUtils.toString(list, 1);
         
-        Assert.assertEquals("[a]", result);
+        assertEquals("[a]", result);
     }
     
     @Test 
@@ -79,7 +78,7 @@ public class IterableUtilsTest {
         List<String> list = ImmutableList.of("a", "b");
         String result = IterableUtils.toString(list, 99);
         
-        Assert.assertEquals("[a, b]", result);
+        assertEquals("[a, b]", result);
     }
     
     @Test 
@@ -87,7 +86,7 @@ public class IterableUtilsTest {
         List<String> list = ImmutableList.of("a", "b");
         String result = IterableUtils.toString(list, 2);
         
-        Assert.assertEquals("[a, b]", result);
+        assertEquals("[a, b]", result);
     }
     
     @Test 
@@ -95,7 +94,7 @@ public class IterableUtilsTest {
         List<String> list = ImmutableList.of("a", "b");
         String result = IterableUtils.toString(list, 1);
         
-        Assert.assertEquals("[a, ...]", result);
+        assertEquals("[a, ...]", result);
     }
     
     @Test 
@@ -103,7 +102,7 @@ public class IterableUtilsTest {
         List<String> list = ImmutableList.of("a", "b", "c");
         String result = IterableUtils.toString(list, 0);
         
-        Assert.assertEquals("[...]", result);
+        assertEquals("[...]", result);
     }
     
     @Test 
@@ -111,7 +110,7 @@ public class IterableUtilsTest {
         List<String> list = ImmutableList.of("a", "b", "c");
         String result = IterableUtils.toString(list, 99);
         
-        Assert.assertEquals("[a, b, c]", result);
+        assertEquals("[a, b, c]", result);
     }
     
     @Test 
@@ -119,7 +118,7 @@ public class IterableUtilsTest {
         List<String> list = ImmutableList.of("a", "b", "c");
         String result = IterableUtils.toString(list, 3);
         
-        Assert.assertEquals("[a, b, c]", result);
+        assertEquals("[a, b, c]", result);
     }
     
     @Test 
@@ -127,26 +126,26 @@ public class IterableUtilsTest {
         List<String> list = ImmutableList.of("a", "b", "c");
         String result = IterableUtils.toString(list, 2);
         
-        Assert.assertEquals("[a, b, ...]", result);
+        assertEquals("[a, b, ...]", result);
     }
     
     @Test 
     public void testToString_null() {
         String result = IterableUtils.toString(null, 99);
         
-        Assert.assertEquals("null", result);
+        assertEquals("null", result);
     }
     
     @Test
     public void testToStringFormatter_3_1() {
         String result = String.format("%.2s", IterableUtils.toFormattable(ImmutableList.of("a", "b", "c")));
-        Assert.assertEquals("[a, b, ...]", result);
+        assertEquals("[a, b, ...]", result);
     }
     
     @Test
     public void testToStringFormatter_3() {
         String result = String.format("%s", IterableUtils.toFormattable(ImmutableList.of("a", "b", "c")));
-        Assert.assertEquals("[a, b, c]", result);
+        assertEquals("[a, b, c]", result);
     }
     
 }

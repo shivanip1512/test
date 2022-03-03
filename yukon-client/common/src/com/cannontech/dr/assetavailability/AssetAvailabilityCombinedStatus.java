@@ -4,16 +4,16 @@ import com.cannontech.common.i18n.DisplayableEnum;
 import com.google.common.base.Joiner;
 import com.google.common.collect.ImmutableMap;
 import com.google.common.collect.ImmutableMap.Builder;
-
+import com.cannontech.common.YukonColorPalette;
 
 public enum AssetAvailabilityCombinedStatus implements DisplayableEnum {
-    ACTIVE(AssetAvailabilityStatus.ACTIVE, "#093"),
-    OPTED_OUT(null, "#4d90fe"),
-    INACTIVE(AssetAvailabilityStatus.INACTIVE, "#ec971f"),
-    UNAVAILABLE(AssetAvailabilityStatus.UNAVAILABLE, "#888");
+    ACTIVE(AssetAvailabilityStatus.ACTIVE, YukonColorPalette.GREEN),
+    OPTED_OUT(null, YukonColorPalette.BLUE),
+    INACTIVE(AssetAvailabilityStatus.INACTIVE, YukonColorPalette.ORANGE),
+    UNAVAILABLE(AssetAvailabilityStatus.UNAVAILABLE, YukonColorPalette.GRAY);
 
     private final AssetAvailabilityStatus backingStatus;
-    private String color;
+    private YukonColorPalette color;
 
     private final static ImmutableMap<AssetAvailabilityStatus, AssetAvailabilityCombinedStatus> byBackingStatus;
     static {
@@ -26,7 +26,7 @@ public enum AssetAvailabilityCombinedStatus implements DisplayableEnum {
         byBackingStatus = builder.build();
     }
 
-    private AssetAvailabilityCombinedStatus(AssetAvailabilityStatus backingStatus, String color) {
+    private AssetAvailabilityCombinedStatus(AssetAvailabilityStatus backingStatus, YukonColorPalette color) {
         this.backingStatus = backingStatus;
         this.color = color;
     }
@@ -35,9 +35,13 @@ public enum AssetAvailabilityCombinedStatus implements DisplayableEnum {
         return name();
     }
     
-    public String getColor() {
+    public YukonColorPalette getColor() {
         return color;
     }
+    
+    public String getHexColor() {
+        return color.getHexValue();
+    } 
     
     public AssetAvailabilityCombinedStatus getCombinedStatus() {
         return this;

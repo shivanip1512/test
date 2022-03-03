@@ -259,6 +259,9 @@ yukon.tools.point = (function () {
         var hiddenRows = $('[data-fdr-translation]').not(':visible');
         var newRow = hiddenRows.eq(0);
         var number = newRow.data('fdrTranslation');
+        //Reset the value of FDR interface type to ACS so that if user tires to add yet another translation after removing the last translation, 
+        //the value of the interface type drop-down is set to ACS instead of previously selected value.
+        newRow.find('.js-fdr-interface').val($(".js-acs-interface-type-enum-val").val());
         updateFdrInterface(number);
         newRow.removeClass('dn');
 
@@ -270,17 +273,20 @@ yukon.tools.point = (function () {
     };
 
     /**
-     * Hides the selected row and clears its tranlsation
+     * Hides the selected row and clears its translation
      * @param {event} Click event within the row
      */
     var removeFdr = function (event) {
         var buttonClicked = $(event.currentTarget);
         var row = buttonClicked.closest('[data-fdr-translation]');
         row.find('.js-fdr-translation').val('');
+        row.find("select,input").each(function (index, item) {
+            $(item).removeClass("error");
+        });
+        row.find("span.error").prev("br").remove();
+        row.find("span.error").remove();
         row.addClass('dn');
-
         $('.js-add-fdr').removeClass('dn');
-
         var visibleRows = $('[data-fdr-translation]').filter(':visible');
 
         if (visibleRows.length < 1) {
@@ -303,9 +309,8 @@ yukon.tools.point = (function () {
             newRow.find('.js-component-type').trigger("change");
             newRow.find('.js-function-options').on('change', changeFunctionType);
             newRow.find('.js-baseline-options').on('change', changeBaseLine);
+            newRow.find('.js-calc-point-comp').val(0);
             checkIfBaselineExists();
-            var pointPickerId = newRow.data("pointPickerId");
-            yukon.pickers[pointPickerId].removeEvent();
             newRow.removeClass('js-add-calc-row');
             yukon.ui.reindexInputs(calcTable);
         });
@@ -369,7 +374,9 @@ yukon.tools.point = (function () {
             var firstValue = row.find('.js-operation-options option:first').val();
             row.find('.js-operation-options').val(firstValue);
         }
-        
+        if (newValue === 'Constant') {
+            row.find("input[class='js-calc-point-comp']").val(0);
+        }
     };
 
      /**

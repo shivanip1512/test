@@ -3,8 +3,6 @@ package com.cannontech.amr.rfn.service;
 import java.util.Date;
 
 import javax.annotation.PostConstruct;
-import javax.jms.ConnectionFactory;
-
 import org.apache.logging.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.MessageSourceResolvable;
@@ -21,20 +19,28 @@ import com.cannontech.common.pao.attribute.model.BuiltInAttribute;
 import com.cannontech.common.pao.attribute.service.AttributeService;
 import com.cannontech.common.pao.attribute.service.IllegalUseOfAttribute;
 import com.cannontech.common.point.PointQuality;
+import com.cannontech.common.rfn.util.RfnFeature;
+import com.cannontech.common.rfn.util.RfnFeatureHelper;
 import com.cannontech.common.util.jms.JmsReplyReplyHandler;
 import com.cannontech.common.util.jms.RequestReplyReplyTemplate;
+import com.cannontech.common.util.jms.ThriftRequestReplyReplyTemplate;
+import com.cannontech.common.util.jms.YukonJmsTemplate;
+import com.cannontech.common.util.jms.YukonJmsTemplateFactory;
+import com.cannontech.common.util.jms.api.JmsApiDirectory;
 import com.cannontech.core.dynamic.AsyncDynamicDataSource;
 import com.cannontech.core.dynamic.PointValueQualityHolder;
 import com.cannontech.database.data.lite.LitePoint;
 import com.cannontech.database.db.point.stategroup.RfnDisconnectStatusState;
 import com.cannontech.i18n.YukonMessageSourceResolvable;
 import com.cannontech.message.dispatch.message.PointData;
+import com.cannontech.messaging.serialization.thrift.serializer.porter.RfnMeterDisconnectConfirmationReplySerializer;
+import com.cannontech.messaging.serialization.thrift.serializer.porter.RfnMeterDisconnectInitialReplySerializer;
+import com.cannontech.messaging.serialization.thrift.serializer.porter.RfnMeterDisconnectRequestSerializer;
 
 public class RfnMeterDisconnectService {
 
     private static final Logger log = YukonLogManager.getLogger(RfnMeterDisconnectService.class);
     
-    private static final String queue = "yukon.qr.obj.amr.rfn.MeterDisconnectRequest";
     private static final String cparm = "RFN_METER_DISCONNECT";
     
     private static final String firstReplyTimeout = "yukon.web.widgets.disconnectMeterWidget.rfn.sendCommand.firstReplyTimeout";
@@ -42,12 +48,13 @@ public class RfnMeterDisconnectService {
     private static final String error = "yukon.web.widgets.disconnectMeterWidget.rfn.sendCommand.error";
     private static final String confirmError = "yukon.web.widgets.disconnectMeterWidget.rfn.sendCommand.confirmError";
 
-    private RequestReplyReplyTemplate<RfnMeterDisconnectInitialReply, RfnMeterDisconnectConfirmationReply> rrrTemplate;
+    private RequestReplyReplyTemplate<RfnMeterDisconnectInitialReply, RfnMeterDisconnectConfirmationReply> legacyTemplate;
+    private ThriftRequestReplyReplyTemplate<RfnMeterDisconnectRequest, RfnMeterDisconnectInitialReply, RfnMeterDisconnectConfirmationReply> e2eTemplate;
     
-    @Autowired private ConnectionFactory connectionFactory;
     @Autowired private ConfigurationSource configurationSource;
     @Autowired private AttributeService attributeService;
     @Autowired private AsyncDynamicDataSource asyncDynamicDataSource;
+    @Autowired private YukonJmsTemplateFactory jmsTemplateFactory;
     
     /**
      * Attempts to send a disconnect request for a RFN meter.  Will use a separate thread to make the request.
@@ -75,8 +82,7 @@ public class RfnMeterDisconnectService {
                      final RfnMeterDisconnectCmdType action, 
                      final RfnMeterDisconnectCallback callback) {
         
-        JmsReplyReplyHandler<RfnMeterDisconnectInitialReply, RfnMeterDisconnectConfirmationReply> handler 
-                = new JmsReplyReplyHandler<RfnMeterDisconnectInitialReply, RfnMeterDisconnectConfirmationReply>() {
+        JmsReplyReplyHandler<RfnMeterDisconnectInitialReply, RfnMeterDisconnectConfirmationReply> handler = new JmsReplyReplyHandler<>() {
 
             @Override
             public void complete() {
@@ -108,10 +114,9 @@ public class RfnMeterDisconnectService {
                         YukonMessageSourceResolvable.createSingleCodeWithArguments(error, initialReply);
                     callback.receivedError(message, null, null);
                     return false;
-                } else {
-                    /* Request successful, wait for reply 2 */
-                    return true;
                 }
+                /* Request successful, wait for reply 2 */
+                return true;
             }
 
             @Override
@@ -148,7 +153,11 @@ public class RfnMeterDisconnectService {
             }
         };
         
-        rrrTemplate.send(new RfnMeterDisconnectRequest(meter.getRfnIdentifier(), action), handler);
+        if (RfnFeatureHelper.isSupported(RfnFeature.E2E_DISCONNECT, configurationSource)) {
+            e2eTemplate.send(new RfnMeterDisconnectRequest(meter.getRfnIdentifier(), action), handler);
+        } else {
+            legacyTemplate.send(new RfnMeterDisconnectRequest(meter.getRfnIdentifier(), action), handler);
+        }
     }
     
     private PointValueQualityHolder publishPointData(int rawState, RfnMeter meter) {
@@ -174,8 +183,14 @@ public class RfnMeterDisconnectService {
     
     @PostConstruct
     public void initialize() {
-        rrrTemplate = new RequestReplyReplyTemplate<>(
-                cparm, configurationSource, connectionFactory, queue, false);
+        YukonJmsTemplate e2eJmsTemplate = jmsTemplateFactory.createTemplate(JmsApiDirectory.RFN_METER_DISCONNECT);
+        e2eTemplate = new ThriftRequestReplyReplyTemplate<>(cparm, configurationSource, e2eJmsTemplate, false, 
+                new RfnMeterDisconnectRequestSerializer(), 
+                new RfnMeterDisconnectInitialReplySerializer(), 
+                new RfnMeterDisconnectConfirmationReplySerializer());
+
+        YukonJmsTemplate legacyJmsTemplate = jmsTemplateFactory.createTemplate(JmsApiDirectory.RFN_METER_DISCONNECT_LEGACY);
+        legacyTemplate = new RequestReplyReplyTemplate<>(cparm, configurationSource, legacyJmsTemplate);
     }
     
 }

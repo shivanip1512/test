@@ -29,6 +29,9 @@
             If present, the contents of the popup element will be replaced with the response of an ajax request to the url 
             before the popup is shown.
         </tags:nameValue>
+        <tags:nameValue name="data-help-text">
+            If present, a help icon will be added to the dialog title bar to the left of close button. This help text will be displayed after the help icon is clicked.
+        </tags:nameValue>
         <tags:nameValue name="data-load-event">
             If present, this event will be fired right before the popup is shown. If 
             <span class="label label-attr">data-url</span> is used, the event will be fired after the dialog is loaded with 
@@ -122,7 +125,8 @@
         <div class="dn" id="popup-2" 
                 data-title="Popup Example"
                 data-width="500"
-                data-height="300">This is a popup with initial width of 500 pixels and height of 300 pixels.</div>
+                data-height="300"
+                data-help-text="This is a sample help text.">This is a popup with initial width of 500 pixels and height of 300 pixels.</div>
         <cti:button label="Open Popup" data-popup="#popup-2"/>
     </div>
 </div>
@@ -131,6 +135,7 @@
 &lt;div class=&quot;dn&quot; id=&quot;popup-2&quot; 
         data-title=&quot;Popup Example&quot;
         data-width=&quot;500&quot;
+        data-help-text=&quot;This is a sample help text.&quot;
         data-height=&quot;300&quot;&gt;This is a popup with initial width of 500 pixels and height of 300 pixels.&lt;/div&gt;
 &lt;cti:button label=&quot;Open Popup&quot; data-popup=&quot;#popup-2&quot;/&gt;
 </pre>

@@ -28,7 +28,6 @@ request.setAttribute("tomcatExamplesUrl", "/examples/");
         <meta charset="UTF-8" />
         <title><%=request.getServletContext().getServerInfo() %></title>
         <link href="favicon.ico" rel="icon" type="image/x-icon" />
-        <link href="favicon.ico" rel="shortcut icon" type="image/x-icon" />
         <link href="tomcat.css" rel="stylesheet" type="text/css" />
     </head>
 
@@ -52,7 +51,7 @@ request.setAttribute("tomcatExamplesUrl", "/examples/");
                     <h2>If you're seeing this, you've successfully installed Tomcat. Congratulations!</h2>
                 </div>
                 <div id="notice">
-                    <img src="tomcat.png" alt="[tomcat logo]" />
+                    <img id="tomcat-logo" src="tomcat.svg" alt="[tomcat logo]" />
                     <div id="tasks">
                         <h3>Recommended Reading:</h3>
                         <h4><a href="${tomcatDocUrl}security-howto.html">Security Considerations How-To</a></h4>
@@ -128,7 +127,7 @@ request.setAttribute("tomcatExamplesUrl", "/examples/");
                         <ul>
                             <li><a href="https://tomcat.apache.org/bugreport.html">Tomcat 9.0 Bug Database</a></li>
                             <li><a href="${tomcatDocUrl}api/index.html">Tomcat 9.0 JavaDocs</a></li>
-                            <li><a href="https://github.com/apache/tomcat/tree/master">Tomcat 9.0 Git Repository at GitHub</a></li>
+                            <li><a href="https://github.com/apache/tomcat/tree/9.0.x">Tomcat 9.0 Git Repository at GitHub</a></li>
                         </ul>
                     </div>
                 </div>

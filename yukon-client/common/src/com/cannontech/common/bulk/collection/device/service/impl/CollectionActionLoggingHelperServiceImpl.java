@@ -217,13 +217,13 @@ public class CollectionActionLoggingHelperServiceImpl implements CollectionActio
     private void logSendConfig(CollectionActionResult result) {
         switch (result.getStatus()) {
         case STARTED:
-            log(deviceConfigEventLogService::sendConfigInitiated, result);
+            log(deviceConfigEventLogService::uploadConfigInitiated, result);
             break;
         case COMPLETE:
-            log(deviceConfigEventLogService::sendConfigCompleted, result);
+            log(deviceConfigEventLogService::uploadConfigCompleted, result);
             break;
         case CANCELLED:
-            log(deviceConfigEventLogService::sendConfigCancelled, result);
+            log(deviceConfigEventLogService::uploadConfigCancelled, result);
             break;
         }
     }
@@ -231,13 +231,13 @@ public class CollectionActionLoggingHelperServiceImpl implements CollectionActio
     private void logReadConfig(CollectionActionResult result) {
         switch (result.getStatus()) {
         case STARTED:
-            log(deviceConfigEventLogService::readConfigInitiated, result);
+            log(deviceConfigEventLogService::validateConfigInitiated, result);
             break;
         case COMPLETE:
-            log(deviceConfigEventLogService::readConfigCompleted, result);
+            log(deviceConfigEventLogService::validateConfigCompleted, result);
             break;
         case CANCELLED:
-            log(deviceConfigEventLogService::readConfigCancelled, result);
+            log(deviceConfigEventLogService::validateConfigCancelled, result);
             break;
         }
     }
@@ -343,10 +343,10 @@ public class CollectionActionLoggingHelperServiceImpl implements CollectionActio
     private void logAssignConfig(CollectionActionResult result) {
         switch (result.getStatus()) {
         case STARTED:
-            log(deviceConfigEventLogService::assignConfigInitiated, result);
+            log(deviceConfigEventLogService::changeConfigInitiated, result);
             break;
         case COMPLETE:
-            log(deviceConfigEventLogService::assignConfigCompleted, result);
+            log(deviceConfigEventLogService::changeConfigCompleted, result);
             break;
         }
     }
@@ -354,10 +354,10 @@ public class CollectionActionLoggingHelperServiceImpl implements CollectionActio
     private void logUnassignConfig(CollectionActionResult result) {
         switch (result.getStatus()) {
         case STARTED:
-            log(deviceConfigEventLogService::unassignConfigInitiated, result);
+            log(deviceConfigEventLogService::removeConfigInitiated, result);
             break;
         case COMPLETE:
-            log(deviceConfigEventLogService::unassignConfigCompleted, result);
+            log(deviceConfigEventLogService::removeConfigCompleted, result);
             break;
         }
     }

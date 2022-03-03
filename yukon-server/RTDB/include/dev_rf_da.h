@@ -2,22 +2,15 @@
 
 #include "dev_rfn.h"
 
-namespace Cti {
-namespace Devices {
+namespace Cti::Devices {
 
 class IM_EX_DEVDB RfDaDevice : public RfnDevice
 {
     typedef RfnDevice Inherited;
 
-    virtual YukonError_t executeGetConfig(CtiRequestMsg *pReq, CtiCommandParser &parse, ReturnMsgList &returnMsgs, RfnIndividualCommandList &rfnRequests);
+    YukonError_t executeGetConfig(CtiRequestMsg* pReq, CtiCommandParser& parse, ReturnMsgList& returnMsgs, RequestMsgList& requestMsgs, RfnIndividualCommandList& rfnRequests) override;
 
-    virtual void handleCommandResult(const Commands::RfDaReadDnpSlaveAddressCommand &);
-
-public:
-    RfDaDevice() {};
+    void handleCommandResult(const Commands::RfDaReadDnpSlaveAddressCommand &) override;
 };
 
 }
-}
-
-

@@ -5,11 +5,13 @@ import java.util.Optional;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.function.BiConsumer;
 import java.util.function.Predicate;
+
 import javax.annotation.PostConstruct;
 import javax.annotation.PreDestroy;
 
 import org.apache.logging.log4j.Level;
 import org.apache.logging.log4j.Logger;
+import org.joda.time.Instant;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.jmx.export.annotation.ManagedAttribute;
 import org.springframework.jmx.export.annotation.ManagedResource;
@@ -22,6 +24,9 @@ import com.cannontech.amr.rfn.model.RfnMeterPlusReadingData;
 import com.cannontech.amr.rfn.service.NmSyncService;
 import com.cannontech.clientutils.YukonLogManager;
 import com.cannontech.common.rfn.model.RfnDevice;
+import com.cannontech.common.util.jms.YukonJmsTemplate;
+import com.cannontech.common.util.jms.YukonJmsTemplateFactory;
+import com.cannontech.common.util.jms.api.JmsApiDirectory;
 import com.cannontech.message.dispatch.message.PointData;
 import com.cannontech.services.calculated.CalculatedPointDataProducer;
 import com.google.common.collect.ImmutableList;
@@ -34,13 +39,14 @@ public class MeterReadingArchiveRequestListener extends ArchiveRequestListenerBa
     
     @Autowired private CalculatedPointDataProducer calculatedProducer;
     @Autowired private NmSyncService nmSyncService;
+    @Autowired private YukonJmsTemplateFactory jmsTemplateFactory;
 
-    private static final String archiveResponseQueueName = "yukon.qr.obj.amr.rfn.MeterReadingArchiveResponse";
-    
+    private YukonJmsTemplate jmsTemplate;
     private List<Converter> converters; // Threads to convert channel data to point data
     private List<Calculator> calculators; // Threads to calculate point data based on converted channel data
     private AtomicInteger archivedReadings = new AtomicInteger();
-    
+    private static AtomicInteger pointDataCount = new AtomicInteger();
+    private static AtomicInteger archiveRequestsReceivedCount = new AtomicInteger();
     /**
      * Special thread class to handle archiving channel data converted point data.
      */
@@ -51,6 +57,8 @@ public class MeterReadingArchiveRequestListener extends ArchiveRequestListenerBa
         
         @Override
         public Optional<String> processData(RfnDevice device, RfnMeterReadingArchiveRequest request) {
+            incrementProcessedArchiveRequest();
+            archiveRequestsReceivedCount.getAndIncrement();
             RfnMeterPlusReadingData meterPlusReadingData = new RfnMeterPlusReadingData(device, request.getData());
             List<PointData> messagesToSend = Lists.newArrayListWithExpectedSize(5);
             List<CalculationData> toCalculate = pointDataProducer.convert(meterPlusReadingData, messagesToSend, request.getDataPointId());
@@ -59,9 +67,9 @@ public class MeterReadingArchiveRequestListener extends ArchiveRequestListenerBa
 
             asyncDynamicDataSource.putValues(messagesToSend);
             archivedReadings.addAndGet(messagesToSend.size());
+            pointDataCount.addAndGet(messagesToSend.size());
 
             sendAcknowledgement(request);
-            incrementProcessedArchiveRequest();
             if (log.isDebugEnabled()) {
                 log.debug(messagesToSend.size() + " PointDatas converted for RfnMeterReadingArchiveRequest, "
                         + toCalculate.size() + " calculations produced.");
@@ -105,6 +113,15 @@ public class MeterReadingArchiveRequestListener extends ArchiveRequestListenerBa
                             delimited(trackingInfo)));
             }
         }
+
+        @Override
+        protected Instant getDataTimestamp(RfnMeterReadingArchiveRequest request) {
+            try {
+                return new Instant(request.getData().getTimeStamp());
+            } catch (Exception e) {
+                return null;
+            }
+        }
     }
     
     /**
@@ -146,6 +163,7 @@ public class MeterReadingArchiveRequestListener extends ArchiveRequestListenerBa
         converters = converterBuilder.build();
         calculators = calculatorBuilder.build();
         nmSyncService.scheduleSyncRequest();
+        jmsTemplate = jmsTemplateFactory.createResponseTemplate(JmsApiDirectory.RFN_METER_READ_ARCHIVE);
     }
     
     @PreDestroy
@@ -174,12 +192,25 @@ public class MeterReadingArchiveRequestListener extends ArchiveRequestListenerBa
     }
 
     @Override
-    protected String getRfnArchiveResponseQueueName() {
-        return archiveResponseQueueName;
+    protected YukonJmsTemplate getJmsTemplate() {
+        return jmsTemplate;
     }
 
     @ManagedAttribute
     public int getArchivedReadings() {
         return archivedReadings.get();
+    }
+
+    // Return the point data count every 60 min to Yukon Metric Topic and resets again.
+    public static Integer getPointDataCount() {
+        Integer currentCount = pointDataCount.get();
+        pointDataCount = new AtomicInteger();
+        return currentCount;
+    }
+
+    public static Integer getArchiveRequestsReceivedCount() {
+        Integer count = archiveRequestsReceivedCount.get();
+        archiveRequestsReceivedCount = new AtomicInteger();
+        return count;
     }
 }

@@ -37,7 +37,7 @@
 <entry key="yukon.web.picker.controlAreaOrProgramOrScenarioPicker.dialogTitle">Select Control Area or Program or Scenario</entry>
 <entry key="yukon.web.picker.devicePicker.dialogTitle">Select Device</entry>
 <entry key="yukon.web.picker.meterPicker.dialogTitle">Select Meter</entry>
-<entry key="yukon.web.picker.meterAndRelayPicker.dialogTitle">Select Meter</entry>
+<entry key="yukon.web.picker.meterEventsDevicesPicker.dialogTitle">Select Device</entry>
 <entry key="yukon.web.picker.voltageRegulatorPicker.dialogTitle">Select Regulator</entry>
 <entry key="yukon.web.picker.twoWayLcrPicker.dialogTitle">Select Two Way Device</entry>
 <entry key="yukon.web.picker.availableMctPicker.dialogTitle">Select An MCT</entry>
@@ -59,6 +59,9 @@
 <entry key="yukon.web.picker.lmGroupPaoPermissionCheckingPicker.dialogTitle">Select Group</entry>
 <entry key="yukon.web.picker.lmControlAreaPaoPermissionCheckingPicker.dialogTitle">Select Control Area</entry>
 <entry key="yukon.web.picker.lmScenarioPaoPermissionCheckingPicker.dialogTitle">Select Scenario</entry>
+
+<entry key="yukon.web.picker.versacomGroupPicker.dialogTitle">Select VersaCom Group</entry>
+<entry key="yukon.web.picker.expresscomGroupPicker.dialogTitle">Select ExpressCom Group</entry>
 
 <entry key="yukon.web.picker.portPicker.dialogTitle">Select Comm Channels</entry>
 
@@ -226,5 +229,11 @@
 <entry key="yukon.web.picker.trendPicker.dialogTitle">Select Trend</entry>
 <entry key="yukon.web.picker.trendPicker.name">Name</entry>
 <entry key="yukon.web.picker.trendPicker.graphDefinitionId">Trend Id</entry>
+
+<!-- RF Gateway Picker -->
+<entry key="yukon.web.picker.rfGatewayLegacyPicker.dialogTitle">Gateways</entry>
+
+<!-- Gateway NM IP Address/Port Picker -->
+<entry key="yukon.web.picker.gatewayNmIpAddressPortPicker.dialogTitle">Select Gateway(s)</entry>
 
 </properties>

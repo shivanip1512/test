@@ -69,6 +69,26 @@ public:
         Inclusive
     };
 
+    enum class InstallOrientation
+    {
+        Forward,
+        Reverse
+    };
+
+    enum class TapPositionLimits
+    {
+        Minimum =  -16,
+        Maximum =   16
+    };
+
+    enum class TapInhibit
+    {
+        None,
+        NoTapUp,
+        NoTapDown,
+        NoTap
+    };
+
     static const std::string LoadTapChanger;
     static const std::string GangOperatedVoltageRegulator;
     static const std::string PhaseOperatedVoltageRegulator;
@@ -80,6 +100,8 @@ public:
     VoltageRegulator();
     VoltageRegulator(Cti::RowReader & rdr);
     VoltageRegulator(const VoltageRegulator & toCopy);
+
+    virtual ~VoltageRegulator() = default;
 
     void handlePointData( const CtiPointDataMsg & message ) override;
 
@@ -135,11 +157,18 @@ public:
     ControlMode getControlMode() const;
     std::string getHeartbeatMode() const;
 
+    InstallOrientation getInstallOrientation() const;
+
     double getVoltage();
 
     boost::optional<long> getTapPosition();
 
     PointValue getCompleteTapPosition();
+
+    long getMinTapPosition() const;
+    long getMaxTapPosition() const;
+
+    TapInhibit isTapInhibited();
 
     long getKeepAliveConfig();
     long getKeepAliveTimer();
@@ -154,6 +183,20 @@ public:
 
     double getSetPointValue() const;
     Policy::Action setSetPointValue( const double newSetPoint );
+
+    std::string detailedDescription();
+
+    enum class PowerFlowSituations
+    {
+        OK,
+        IndeterminateFlow,
+        ReverseInstallation,
+        ReverseFlow,
+        ReverseControlPowerFlow,
+        UnsupportedMode
+    };
+
+    PowerFlowSituations determinePowerFlowSituation();
 
 protected:
 
@@ -179,6 +222,8 @@ protected:
     CtiTime     _nextKeepAliveSendTime;
 
     CtiTime         _lastMissingAttributeComplainTime;
+
+    InstallOrientation  _installOrientation;
 
     void notifyControlOperation(const ControlOperation & operation, const CtiTime & timeStamp = CtiTime() );
 

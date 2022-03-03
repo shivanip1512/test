@@ -96,11 +96,14 @@ yukon.tools.tdc = (function () {
                     url = yukon.url('/meter/historicalReadings/trend'),
                     data = { pointId : pointId };
                 
-                $('#tdc-popup').load(url, data, function () {
+                $('.js-tdc-trend-container').load(url, data, function () {
                     $('#tdc-popup').dialog({
                         title : popupTitle,
-                        width : 700,
-                        autoOpen : true
+                        width: 780,
+                        height: 380,
+                        resizeStop: function(event, ui) {
+                            yukon.highChart.redrawTrendChart($(this), ui);
+                        }
                     });
                 });
             });
@@ -167,23 +170,7 @@ yukon.tools.tdc = (function () {
                 });
             });
 
-            $('.js-tdc-manual-control').click(function (ev) {
-                
-                var option = $(this),
-                    pointId = option.data('pointId'),
-                    deviceId = option.data('deviceId'),
-                    popupTitle = option.data('popupTitle'),
-                    url = yukon.url('/tools/data-viewer/manual-control'),
-                    data = { deviceId : deviceId, pointId : pointId };
-                
-                $('#tdc-popup').load(url, data, function () {
-                    $('#tdc-popup').dialog({
-                        title : popupTitle,
-                        width : 500,
-                        autoOpen : true
-                    });
-                });
-            });
+
             
             $('.js-tdc-alt-scan').click(function (ev) {
                 var option = $(this),
@@ -249,7 +236,6 @@ yukon.tools.tdc = (function () {
                 });
             });
             
-            
             $(document).on('click', '.js-tdc-enable-disable-send', function (ev) {
                 
                 $.ajax({
@@ -259,10 +245,6 @@ yukon.tools.tdc = (function () {
                 }).done(function (data, textStatus, jqXHR) {
                     $('#tdc-popup').dialog('close');
                 });
-            });
-            
-            $(document).on('click', '.js-tdc-manual-control-send', function (ev) {
-                submitFormViaAjax('tdc-popup', 'tdc-manual-control-form');
             });
             
             $(document).on('click', '.js-tdc-tags-save', function (ev) {
@@ -312,6 +294,7 @@ yukon.tools.tdc = (function () {
             $(document).ready(function() {
                 $('#date').attr('readonly', true);
                 $('#date').addClass('opacityOff');
+                Sortable.init();
             });
             
             $(document).on('change', '#date', function (ev) {

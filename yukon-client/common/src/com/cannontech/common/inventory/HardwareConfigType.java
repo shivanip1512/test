@@ -11,7 +11,7 @@ import com.google.common.collect.ImmutableSet;
 public enum HardwareConfigType implements DisplayableEnum {
     
     NOT_CONFIGURABLE(0, PaoTag.DIRECT_PROGRAM_ENROLLMENT, true),
-    EXPRESSCOM(1, PaoTag.DIRECT_PROGRAM_ENROLLMENT, true) {
+    EXPRESSCOM(1, PaoTag.DIRECT_PROGRAM_ENROLLMENT, true, 8) {
         /**
          * Must be a valid integer, fit in DeviceCarrierSettings.Address (varchar(18)) and be less than
          * 2147483647
@@ -31,16 +31,18 @@ public enum HardwareConfigType implements DisplayableEnum {
     SA305(4, PaoTag.DIRECT_PROGRAM_ENROLLMENT, true),
     SA_SIMPLE(5, PaoTag.DIRECT_PROGRAM_ENROLLMENT, true),
     SEP(6, PaoTag.SEP_PROGRAM_ENROLLMENT, false),
-    ECOBEE(7, PaoTag.ECOBEE_PROGRAM_ENROLLMENT, false),
-    HONEYWELL(8, PaoTag.HONEYWELL_PROGRAM_ENROLLMENT, false),
-    NEST(9, PaoTag.NEST_PROGRAM_ENROLLMENT, false),
-    ITRON(10, PaoTag.ITRON_PROGRAM_ENROLLMENT, false),
-    DISCONNECT_METER(11, PaoTag.METER_DISCONNECT_PROGRAM_ENROLLMENT, false)
+    ECOBEE(7, PaoTag.ECOBEE_PROGRAM_ENROLLMENT, false, 1),
+    HONEYWELL(8, PaoTag.HONEYWELL_PROGRAM_ENROLLMENT, false, 1),
+    NEST(9, PaoTag.NEST_PROGRAM_ENROLLMENT, false, 1),
+    ITRON(10, PaoTag.ITRON_PROGRAM_ENROLLMENT, false, 8),
+    DISCONNECT_METER(11, PaoTag.METER_DISCONNECT_PROGRAM_ENROLLMENT, false),
+    EATON_CLOUD(12, PaoTag.EATON_CLOUD_PROGRAM_ENROLLMENT, false)
     ;
     
     private int hardwareConfigTypeId;
     private PaoTag enrollmentTag;
     private boolean supportsVirtualEnrollment;
+    private int numRelays;
     private final static String keyPrefix = "yukon.web.dr.consumer.hardwareConfigType.";
     
     private final static ImmutableSet<HardwareConfigType> saTypes = ImmutableSet.of(SA_SIMPLE, SA205, SA305);
@@ -65,6 +67,14 @@ public enum HardwareConfigType implements DisplayableEnum {
         this.hardwareConfigTypeId = hardwareConfigTypeId;
         this.enrollmentTag = enrollmentTag;
         this.supportsVirtualEnrollment = supportsVirtualEnrollment;
+        this.numRelays = 4;
+    }
+    
+    private HardwareConfigType(int hardwareConfigTypeId, PaoTag enrollmentTag, boolean supportsVirtualEnrollment, int numRelays) {
+        this.hardwareConfigTypeId = hardwareConfigTypeId;
+        this.enrollmentTag = enrollmentTag;
+        this.supportsVirtualEnrollment = supportsVirtualEnrollment;
+        this.numRelays = numRelays;
     }
     
     /**
@@ -114,8 +124,7 @@ public enum HardwareConfigType implements DisplayableEnum {
     }
     
     public int getNumRelays() {
-        return this == ECOBEE || this == NEST || this == HONEYWELL ? 1 :
-               this == ITRON || this == EXPRESSCOM ? 8 : 4;
+        return this.numRelays;
     }
     
 }

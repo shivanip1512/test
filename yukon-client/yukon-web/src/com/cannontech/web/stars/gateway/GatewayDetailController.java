@@ -18,12 +18,15 @@ import com.cannontech.common.events.loggers.GatewayEventLogService;
 import com.cannontech.common.pao.PaoType;
 import com.cannontech.common.pao.attribute.model.BuiltInAttribute;
 import com.cannontech.common.pao.dao.PaoLocationDao;
+import com.cannontech.common.pao.definition.dao.PaoDefinitionDao;
+import com.cannontech.common.pao.definition.model.PaoTag;
 import com.cannontech.common.pao.model.PaoLocation;
 import com.cannontech.common.rfn.message.gateway.DataSequence;
 import com.cannontech.common.rfn.model.NmCommunicationException;
 import com.cannontech.common.rfn.model.RfnGateway;
 import com.cannontech.common.rfn.service.RfnGatewayService;
 import com.cannontech.core.dao.PointDao;
+import com.cannontech.core.roleproperties.HierarchyPermissionLevel;
 import com.cannontech.core.roleproperties.YukonRoleProperty;
 import com.cannontech.database.data.lite.LiteYukonPAObject;
 import com.cannontech.database.data.lite.LiteYukonUser;
@@ -33,17 +36,14 @@ import com.cannontech.i18n.YukonMessageSourceResolvable;
 import com.cannontech.mbean.ServerDatabaseCache;
 import com.cannontech.user.YukonUserContext;
 import com.cannontech.web.common.flashScope.FlashScope;
-import com.cannontech.web.security.annotation.CheckRoleProperty;
+import com.cannontech.web.security.annotation.CheckPermissionLevel;
 import com.cannontech.web.stars.mapNetwork.NearbyMiles;
 import com.cannontech.web.tools.mapping.Location;
 import com.cannontech.web.tools.mapping.service.PaoLocationService;
 import com.google.common.collect.Lists;
 
 @Controller
-@CheckRoleProperty({YukonRoleProperty.INFRASTRUCTURE_ADMIN, 
-    YukonRoleProperty.INFRASTRUCTURE_CREATE_AND_UPDATE, 
-    YukonRoleProperty.INFRASTRUCTURE_DELETE, 
-    YukonRoleProperty.INFRASTRUCTURE_VIEW})
+@CheckPermissionLevel(property = YukonRoleProperty.MANAGE_INFRASTRUCTURE, level = HierarchyPermissionLevel.VIEW)
 public class GatewayDetailController {
     
     private static final Logger log = YukonLogManager.getLogger(GatewayDetailController.class);
@@ -56,6 +56,7 @@ public class GatewayDetailController {
     @Autowired private GatewayEventLogService gatewayEventLogService;
     @Autowired private PaoLocationDao paoLocationDao;
     @Autowired private PointDao pointDao;
+    @Autowired private PaoDefinitionDao paoDefinitionDao;
     
     @RequestMapping("/gateways/{id}")
     public String detail(ModelMap model, YukonUserContext userContext, @PathVariable int id) {
@@ -70,7 +71,7 @@ public class GatewayDetailController {
             location.setLongitude(paoLocation.getLongitude());
         }
         model.addAttribute("coordinates", location);
-        helper.addText(model, userContext);
+        helper.addGatewayMessages(model, userContext);
         
         if (gateway.getLocation() != null) {
             FeatureCollection geojson = paoLocationService.getFeatureCollection(Lists.newArrayList(gateway.getLocation()));
@@ -91,15 +92,22 @@ public class GatewayDetailController {
         model.addAttribute("isGateway", true);
         model.addAttribute("displayNeighborsLayer", true);
         model.addAttribute("displayNearbyLayer", true);
-        model.addAttribute("numLayers", 1);
+        model.addAttribute("numLayers", 2);
         model.addAttribute("isVirtualGateway", gateway.getPaoIdentifier().getPaoType() == PaoType.VIRTUAL_GATEWAY);
+        
+        //Needed for mapping
+        model.addAttribute("gatewayPaoTypes", PaoType.getRfGatewayTypes());
+        model.addAttribute("relayPaoTypes", PaoType.getRfRelayTypes());
+        model.addAttribute("wifiPaoTypes", PaoType.getWifiTypes());
+        model.addAttribute("showEvents",
+                paoDefinitionDao.isTagSupported(gateway.getPaoIdentifier().getPaoType(), PaoTag.RFN_EVENTS));
         
         model.addAttribute("mileValues", NearbyMiles.values());
         
         return "gateways/detail.jsp";
     }
     
-    @CheckRoleProperty(YukonRoleProperty.INFRASTRUCTURE_DELETE)
+    @CheckPermissionLevel(property = YukonRoleProperty.MANAGE_INFRASTRUCTURE, level = HierarchyPermissionLevel.OWNER)
     @RequestMapping(value="/gateways/{id}", method=RequestMethod.DELETE)
     public String delete(FlashScope flash, LiteYukonUser user, ModelMap model, @PathVariable int id) {
         

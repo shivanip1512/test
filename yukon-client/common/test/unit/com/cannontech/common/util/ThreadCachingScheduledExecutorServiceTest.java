@@ -1,11 +1,12 @@
 package com.cannontech.common.util;
 
-import static org.junit.Assert.*;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import java.util.concurrent.TimeUnit;
 
-import org.junit.Ignore;
-import org.junit.Test;
+import org.junit.jupiter.api.Disabled;
+import org.junit.jupiter.api.Test;
 
 public class ThreadCachingScheduledExecutorServiceTest {
     private class ForeverTask implements Runnable {
@@ -49,7 +50,7 @@ public class ThreadCachingScheduledExecutorServiceTest {
      * Comment out @Ignore below to run.
      */
     @Test
-    @Ignore
+    @Disabled
     public void testScheduleRunnableLongTimeUnit() {
         ThreadCachingScheduledExecutorService service = new ThreadCachingScheduledExecutorService("test");
 
@@ -75,19 +76,19 @@ public class ThreadCachingScheduledExecutorServiceTest {
         // run these tests as part of the build anyway.
         int numRunningTasks = 4 + 9 + 10;
         sleep(500);
-        assertEquals("all tasks started", numRunningTasks, service.getActiveCount());
+        assertEquals(numRunningTasks, service.getActiveCount(), "all tasks started");
         sleep(1000); numRunningTasks -= 10;
-        assertEquals("1 second tasks all done", numRunningTasks, service.getActiveCount());
+        assertEquals(numRunningTasks, service.getActiveCount(), "1 second tasks all done");
         sleep(1000); numRunningTasks -= 3;
-        assertEquals("2 second tasks all done", numRunningTasks, service.getActiveCount());
+        assertEquals(numRunningTasks, service.getActiveCount(), "2 second tasks all done");
         sleep(1000); numRunningTasks -= 3;
-        assertEquals("3 second tasks all done", numRunningTasks, service.getActiveCount());
+        assertEquals(numRunningTasks, service.getActiveCount(), "3 second tasks all done");
         sleep(1000); numRunningTasks -= 3;
-        assertEquals("4 second tasks all done", numRunningTasks, service.getActiveCount());
-        assertEquals("double check final number of running tasks", 4, numRunningTasks);
-        assertTrue("pool size no greater than max threads running", service.getPoolSize() <= 4 + 9 + 10);
+        assertEquals(numRunningTasks, service.getActiveCount(), "4 second tasks all done");
+        assertEquals(4, numRunningTasks, "double check final number of running tasks");
+        assertTrue(service.getPoolSize() <= 4 + 9 + 10, "pool size no greater than max threads running");
         sleep(60 * 1000);
-        assertEquals("pool size reduced after timeout", 4, service.getPoolSize());
+        assertEquals(4, service.getPoolSize(), "pool size reduced after timeout");
     }
 
     private void log(String msg) {

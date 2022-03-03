@@ -270,7 +270,27 @@ public class ZoneDaoImpl implements ZoneDao {
             return null;
         }
     }
-    
+
+    @Override
+    public Zone findZoneByZoneName(String zoneName) {
+
+        SqlStatementBuilder sqlBuilder = new SqlStatementBuilder();
+        sqlBuilder.append("SELECT ZoneId, ZoneName, SubstationBusId, ParentId, GraphStartPosition, ZoneType");
+        sqlBuilder.append("FROM Zone");
+        sqlBuilder.append("WHERE UPPER(ZoneName)").eq(zoneName.toUpperCase());
+
+        try {
+            Zone zone = yukonJdbcTemplate.queryForObject(sqlBuilder, zoneRowMapper);
+            List<RegulatorToZoneMapping> regulatorToZoneList = getRegulatorToZoneMappingsByZoneId(zone.getId());
+            zone.setRegulators(regulatorToZoneList);
+
+            return zone;
+        } catch (EmptyResultDataAccessException e) {
+            //Eating the exception and returning null.
+            return null;
+        }
+    }
+
     @Override
     public void save(Zone zone) {
         zoneTemplate.save(zone);
@@ -516,11 +536,18 @@ public class ZoneDaoImpl implements ZoneDao {
     public List<CcEvent> getLatestCommStatusEvents(int subBusId, TimeRange range) {
         Duration hours = Duration.standardHours(range.getHours());
         Instant since = Instant.now().minus(hours);
+        List<CcEventType> ivvcEventTypes = Lists.newArrayList(new CcEventType[] { CcEventType.IvvcCommStatus,
+                                                                                  CcEventType.IvvcTapOperation,
+                                                                                  CcEventType.IvvcScanOperation,
+                                                                                  CcEventType.IvvcSetPointOperation,
+                                                                                  CcEventType.IvvcPowerFlowIndication,
+                                                                                  CcEventType.IvvcAnalysisSkipped,
+                                                                                  CcEventType.IvvcAnalysisState });
         SqlStatementBuilder sql = new SqlStatementBuilder();
         sql.append("SELECT EV.LogId, EV.Text, EV.DateTime, YP.PaoName, EV.Value, EV.UserName");
         sql.append("FROM CcEventLog EV");
         sql.append("JOIN YukonPAObject YP ON EV.SubID = YP.PAObjectID");
-        sql.append("WHERE EV.EventType").eq_k(CcEventType.IvvcCommStatus);
+        sql.append("WHERE EV.EventType").in(ivvcEventTypes);
         sql.append("AND EV.SubId").eq(subBusId);
         sql.append("AND EV.DateTime").gte(since);
 

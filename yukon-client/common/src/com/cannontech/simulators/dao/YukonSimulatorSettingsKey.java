@@ -45,6 +45,10 @@ public enum YukonSimulatorSettingsKey {
     //Run on startup for Gateway
     GATEWAY_SIMULATOR_RUN_ON_STARTUP(false, InputTypeFactory.booleanType(), SimulatorType.GATEWAY),
 
+    //RFN Device Deletion Settings (SimulatorSettings)
+    RFN_DEVICE_DELETION_SIMULATOR_INITIAL_REPLY("OK", InputTypeFactory.stringType(), SimulatorType.RFN_DEVICE_DELETE),
+    RFN_DEVICE_DELETION_SIMULATOR_CONFIRMATION_REPLY("SUCCESS", InputTypeFactory.stringType(), SimulatorType.RFN_DEVICE_DELETE),
+    
     //RFN LCR Simulator Settings (SimulatorSettings)
     RFN_LCR_SIMULATOR_6200_SERIAL_FROM(100000, InputTypeFactory.integerType(), SimulatorType.RFN_LCR),
     RFN_LCR_SIMULATOR_6200_SERIAL_TO(200000, InputTypeFactory.integerType(), SimulatorType.RFN_LCR),
@@ -91,13 +95,10 @@ public enum YukonSimulatorSettingsKey {
     RFN_NETWORK_SIMULATOR_NEIGHB_IGNORED_NEIGHB(true, InputTypeFactory.booleanType(), SimulatorType.RFN_NETWORK),
     RFN_NETWORK_SIMULATOR_NEIGHB_BATTERY_NEIGHB(true, InputTypeFactory.booleanType(), SimulatorType.RFN_NETWORK),
     RFN_NETWORK_SIMULATOR_SEC_SERV_GATEWAY(false, InputTypeFactory.booleanType(), SimulatorType.RFN_NETWORK),
-    RFN_NETWORK_SIMULATOR_NEIGHB_LINK_COST(3.0, InputTypeFactory.doubleType(), SimulatorType.RFN_NETWORK),
-    RFN_NETWORK_SIMULATOR_NEIGHB_NUM_SAMPLES(1, InputTypeFactory.integerType(), SimulatorType.RFN_NETWORK),
     RFN_NETWORK_SIMULATOR_NEIGHB_EXT_BAND(3, InputTypeFactory.integerType(), SimulatorType.RFN_NETWORK), //must cast this to short when adding it to settings
-    RFN_NETWORK_SIMULATOR_NEIGHB_LINK_RATE("4x", InputTypeFactory.stringType(), SimulatorType.RFN_NETWORK),
-    RFN_NETWORK_SIMULATOR_NEIGHB_LINK_POW("125 mWatt", InputTypeFactory.stringType(), SimulatorType.RFN_NETWORK),
-    RFN_NETWORK_SIMULATOR_NEIGHBOR_DATA_REPLY_TYPE("OK", InputTypeFactory.stringType(), SimulatorType.RFN_NETWORK),
-
+    RFN_NETWORK_SIMULATOR_NEIGHB_LINK_RATE("LINK_RATE_HALF_X", InputTypeFactory.stringType(), SimulatorType.RFN_NETWORK),
+    RFN_NETWORK_SIMULATOR_NEIGHB_LINK_POW("LINK_POWER_125_mW", InputTypeFactory.stringType(), SimulatorType.RFN_NETWORK),
+    
     //RouteData
     RFN_NETWORK_SIMULATOR_ROUTE_COST(2, InputTypeFactory.integerType(), SimulatorType.RFN_NETWORK), //must cast this to short when adding it to settings
     RFN_NETWORK_SIMULATOR_ROUTE_HOP_COUNT(1, InputTypeFactory.integerType(), SimulatorType.RFN_NETWORK), //must cast this to short when adding it to settings
@@ -110,16 +111,11 @@ public enum YukonSimulatorSettingsKey {
     RFN_NETWORK_SIMULATOR_PRIM_VALID_ROUTE(false, InputTypeFactory.booleanType(), SimulatorType.RFN_NETWORK),
     RFN_NETWORK_SIMULATOR_PRIM_TIMED_OUT(false, InputTypeFactory.booleanType(), SimulatorType.RFN_NETWORK),
     RFN_NETWORK_SIMULATOR_ROUTE_COLOR(1, InputTypeFactory.integerType(), SimulatorType.RFN_NETWORK), //must cast this to short when adding it to settings
-    RFN_NETWORK_SIMULATOR_PRIMARY_DATA_REPLY_TYPE("OK", InputTypeFactory.stringType(), SimulatorType.RFN_NETWORK),
 
-    //ParentData
-    RFN_NETWORK_SIMULATOR_PARENT_SN("123", InputTypeFactory.stringType(), SimulatorType.RFN_NETWORK),
-    RFN_NETWORK_SIMULATOR_PARENT_REPLY_TYPE("OK", InputTypeFactory.stringType(), SimulatorType.RFN_NETWORK),
     RFN_NETWORK_SIMULATOR_RUN_ON_STARTUP(false, InputTypeFactory.booleanType(), SimulatorType.RFN_NETWORK),
     
     //NetworkTree Settings
     RFN_NETWORK_SIM_TREE_PERCENT_NULL(0, InputTypeFactory.integerType(), SimulatorType.RFN_NETWORK),
-    RFN_NETWORK_SIM_TREE_MIN_HOP(2, InputTypeFactory.integerType(), SimulatorType.RFN_NETWORK),
     RFN_NETWORK_SIM_TREE_MAX_HOP(9, InputTypeFactory.integerType(), SimulatorType.RFN_NETWORK),
     RFN_NETWORK_SIM_TREE_NODES_ONE_HOP(350, InputTypeFactory.integerType(), SimulatorType.RFN_NETWORK),
     RFN_NETWORK_SIM_NUM_DEVICES_PER_GW(5000, InputTypeFactory.integerType(), SimulatorType.RFN_NETWORK),
@@ -137,8 +133,9 @@ public enum YukonSimulatorSettingsKey {
     
     //SmartNotificationSimulator
     SMART_NOTIFICATION_SIM_DAILY_DIGEST_HOUR(0, InputTypeFactory.integerType(), SimulatorType.SMART_NOTIFICATION),
-    SMART_NOTIFICATION_SIM_USER_GROUP_ID(-1, InputTypeFactory.integerType(), SimulatorType.SMART_NOTIFICATION),
-    SMART_NOTIFICATION_GENERATE_TEST_EMAIL(false, InputTypeFactory.booleanType(), SimulatorType.SMART_NOTIFICATION),
+    SMART_NOTIFICATION_SIM_ALL_EVENT_TYPES(true, InputTypeFactory.booleanType(), SimulatorType.SMART_NOTIFICATION),
+    SMART_NOTIFICATION_SIM_EVENT_TYPE("DEVICE_DATA_MONITOR", InputTypeFactory.stringType(), SimulatorType.SMART_NOTIFICATION),
+    SMART_NOTIFICATION_SIM_EVENT_PARAMETER("", InputTypeFactory.stringType(), SimulatorType.SMART_NOTIFICATION),
     SMART_NOTIFICATION_SIM_EVENTS_PER_TYPE(250, InputTypeFactory.integerType(), SimulatorType.SMART_NOTIFICATION),
     SMART_NOTIFICATION_SIM_EVENTS_PER_MESSAGE(5, InputTypeFactory.integerType(), SimulatorType.SMART_NOTIFICATION),
     SMART_NOTIFICATION_SIM_WAIT_TIME_SEC(3, InputTypeFactory.integerType(), SimulatorType.SMART_NOTIFICATION),
@@ -147,7 +144,11 @@ public enum YukonSimulatorSettingsKey {
     NEST_FILE_NAME("", InputTypeFactory.stringType(), SimulatorType.NEST),
     NEST_VERSION(1, InputTypeFactory.integerType(), SimulatorType.NEST),
    
-    DEMAND_RESET_STATUS_ARCHIVE("SUCCESS", InputTypeFactory.stringType(), SimulatorType.STATUS_ARCHIVE)
+    DEMAND_RESET_STATUS_ARCHIVE("SUCCESS", InputTypeFactory.stringType(), SimulatorType.STATUS_ARCHIVE),
+    
+    POINT_DATA_CACHE_CORRELATION_FREQUENCY_HOURS("4", InputTypeFactory.stringType(), SimulatorType.POINT_DATA_CACHE_CORRELATION),
+    POINT_DATA_CACHE_CORRELATION_NOTIFICATION_EMAIL("", InputTypeFactory.stringType(), SimulatorType.POINT_DATA_CACHE_CORRELATION),
+    POINT_DATA_CACHE_CORRELATION_GROUPS("/System/Meters/All Meters", InputTypeFactory.stringType(), SimulatorType.POINT_DATA_CACHE_CORRELATION)
     ;
     
     private final Object defaultValue;

@@ -111,6 +111,7 @@ public class WebServerWatcher extends ServiceStatusWatchdogImpl {
     //Returns the response of Web Server.
     private int getWebServerResponse(String webServerUrl, boolean useProxy) throws SocketTimeoutException, IOException{
         boolean isHttps = StringUtils.containsIgnoreCase(webServerUrl, "https");
+        webServerUrl = webServerUrl.concat("/common/runningStatus");
         URL url = new URL(webServerUrl);
 
         if (url.getPort() == -1) {

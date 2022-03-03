@@ -7,8 +7,8 @@ import org.apache.commons.lang3.Validate;
 import org.apache.logging.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
+import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestMethod;
 
 import com.cannontech.clientutils.YukonLogManager;
 import com.cannontech.message.notif.NotifCallEvent;
@@ -23,7 +23,7 @@ public class NotificationStatusController {
     /**
      * This method should be invoked after the call was dialed.
      */
-    @RequestMapping(method = RequestMethod.POST)
+    @PostMapping("callComplete")
     public void callComplete(String callToken, boolean success, Writer response) throws IOException {
         log.debug("received callComplete for " + callToken + " with success=" + success);
         try {
@@ -41,7 +41,7 @@ public class NotificationStatusController {
      * This method should be invoked once the line is clear and a Yukon can initiate a new
      * call.
      */
-    @RequestMapping(method = RequestMethod.POST)
+    @PostMapping("callEnd")
     public void callEnd(String callToken, boolean failure, Writer response) throws IOException {
         log.debug("received callEnd for " + callToken + " with failure=" + failure);
         try {
@@ -55,7 +55,7 @@ public class NotificationStatusController {
         response.write("success");
     }
     
-    @RequestMapping(method = RequestMethod.POST)
+    @PostMapping("callDisconnect")
     public void callDisconnect(String yukonCallToken, Writer response) throws IOException {
         log.debug("received callDisconnect for " + yukonCallToken);
         Validate.notNull(yukonCallToken);
@@ -63,7 +63,7 @@ public class NotificationStatusController {
         response.write("exitEvent\n");
     }
     
-    @RequestMapping(method = RequestMethod.POST)
+    @PostMapping("callFailed")
     public void callFailed(String yukonCallToken, Writer response) throws IOException {
         log.debug("received callFailed for " + yukonCallToken);
         Validate.notNull(yukonCallToken);

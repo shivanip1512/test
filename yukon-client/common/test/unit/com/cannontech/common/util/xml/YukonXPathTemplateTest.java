@@ -1,10 +1,14 @@
 package com.cannontech.common.util.xml;
 
-import static org.junit.Assert.*;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertNull;
+import static org.junit.jupiter.api.Assertions.fail;
 
 import org.jdom2.Element;
 import org.joda.time.LocalTime;
-import org.junit.Test;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.Test;
 import org.springframework.xml.xpath.XPathException;
 
 import com.cannontech.common.temperature.Temperature;
@@ -17,7 +21,7 @@ public class YukonXPathTemplateTest {
      *      <temperatureElement unit="F">abc</temperatureElement>
      * </testElement>
      */
-    @Test(expected=NumberFormatException.class)
+    @Test
     public void testEvaluateAsTemperature_unitF_withoutTemperature() {
         Element testElement = new Element("testElement");
 
@@ -27,7 +31,9 @@ public class YukonXPathTemplateTest {
         testElement.addContent(temperatureElement);
 
         YukonXPathTemplate yukonTemplate = YukonXml.getXPathTemplateForElement(testElement);
-        yukonTemplate.evaluateAsTemperature("/testElement/temperatureElement");
+        Assertions.assertThrows(NumberFormatException.class, () -> {
+            yukonTemplate.evaluateAsTemperature("/testElement/temperatureElement");
+        });
     }
     
     /**
@@ -145,12 +151,14 @@ public class YukonXPathTemplateTest {
      *      <enumElement>WeekDay_WeekEndddd<enumElement>
      * </testElement>
      */
-    @Test(expected=XPathException.class)
+    @Test
     public void testEvaluateAsEnum_badEnumElement() {
         Element testElement = createEnumElement(null, "WeekDay_WeekEndddd");
 
         YukonXPathTemplate yukonTemplate = YukonXml.getXPathTemplateForElement(testElement);
-        yukonTemplate.evaluateAsEnum("/testElement/enumElement", ThermostatScheduleMode.class);
+        Assertions.assertThrows(XPathException.class, () -> {
+            yukonTemplate.evaluateAsEnum("/testElement/enumElement", ThermostatScheduleMode.class);
+        });
     }
 
     /**
@@ -221,15 +229,16 @@ public class YukonXPathTemplateTest {
      *      <localTimeElement>42:4</localTimeElement>
      * </testElement>
      */
-    @Test(expected=XPathException.class)
+    @Test
     public void testEvaluateAsLocalTime_invalidDate() {
         Element testElement = createLocalTimeElement("42:4");
 
         YukonXPathTemplate yukonTemplate = YukonXml.getXPathTemplateForElement(testElement);
-        LocalTime localTime= yukonTemplate.evaluateAsLocalTime("/testElement/localTimeElement");
-        
-        assertNotNull(localTime);
-        assertEquals(new LocalTime(), localTime);
+        Assertions.assertThrows(XPathException.class, () -> {
+            LocalTime localTime= yukonTemplate.evaluateAsLocalTime("/testElement/localTimeElement");
+            assertNotNull(localTime);
+            assertEquals(new LocalTime(), localTime);
+        });
     }
 
     /**

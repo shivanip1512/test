@@ -7,6 +7,7 @@ import org.apache.commons.lang3.builder.CompareToBuilder;
 import com.cannontech.common.point.YukonPoint;
 import com.cannontech.database.data.lite.LitePoint;
 import com.cannontech.database.data.point.PointType;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 
 public final class PointIdentifier implements Comparable<PointIdentifier>, Serializable, YukonPoint {
 
@@ -30,6 +31,7 @@ public final class PointIdentifier implements Comparable<PointIdentifier>, Seria
      * @deprecated Use {@link #getPointType()}
      */
     @Deprecated
+    @JsonIgnore
     public int getType() {
         return type.getPointTypeId();
     }
@@ -85,6 +87,7 @@ public final class PointIdentifier implements Comparable<PointIdentifier>, Seria
     }
 
     @Override
+    @JsonIgnore
     public PointIdentifier getPointIdentifier() {
         return this;
     }

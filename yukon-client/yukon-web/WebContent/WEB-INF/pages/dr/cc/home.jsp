@@ -1,11 +1,12 @@
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core"%>
+<%@ taglib prefix="cm" tagdir="/WEB-INF/tags/contextualMenu" %>
 <%@ taglib prefix="cti" uri="http://cannontech.com/tags/cti"%>
 <%@ taglib prefix="i" tagdir="/WEB-INF/tags/i18n"%>
 <%@ taglib prefix="fn" uri="http://java.sun.com/jsp/jstl/functions"%>
 
 <cti:standardPage module="dr" page="cc.home">
 
-    <cti:tabs>
+    <cti:tabs id="curtailmentTabs">
 
         <%-- PROGRAMS TAB --%>
         <cti:msg2 var="programsName" key=".programs" />
@@ -88,7 +89,18 @@
 
         <%-- TRENDS TAB --%>
         <cti:msg2 var="trendName" key=".trends" />
-        <cti:tab title="${trendName}" selected="${showTrends}">
+        <cti:tab title="${trendName}" selected="${showTrends}" headerClasses="ccTrends">
+            <c:if test="${not empty trends}">
+                <div id="page-buttons">
+                    <%@ include file="../../common/trends/trendsAutoRefresh.jsp" %>
+                </div>
+                <div id="page-actions" class="dn">
+                    <cm:dropdownOption key="yukon.web.modules.tools.printTrend" icon="icon-printer" classes="js-print"/>
+                    <cm:dropdownOption key="yukon.web.modules.tools.downloadJpg" icon="icon-picture" classes="js-dl-jpg"/>
+                    <cm:dropdownOption key="yukon.web.modules.tools.downloadCsv" icon="icon-page-white-excel" classes="js-dl-csv" data-trend-id="${trendId}"/>
+                </div>
+            </c:if>
+
             <div id="label-json" class="dn">${fn:escapeXml(labels)}</div>
 
             <div class="column-7-17 clearfix">
@@ -123,7 +135,6 @@
     <cti:includeScript link="/resources/js/pages/yukon.dr.curtailment.js" />
     <cti:includeScript link="/resources/js/common/yukon.trends.js" />
     <cti:includeScript link="/resources/js/pages/yukon.tools.trends.js" />
-    <cti:includeScript link="HIGH_STOCK" />
-    <cti:includeScript link="HIGH_STOCK_NO_DATA" />
+    <cti:includeScript link="HIGH_STOCK_EXPORTING"/>
 
 </cti:standardPage>

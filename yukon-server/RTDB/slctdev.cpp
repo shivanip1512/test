@@ -91,6 +91,7 @@
 #include "rte_versacom.h"
 #include "rte_expresscom.h"
 #include "dev_rf_BatteryNode.h"
+#include "dev_rf_cellular_relay.h"
 
 #include "devicetypes.h"
 #include "rtdb.h"
@@ -254,12 +255,21 @@ const DeviceLookup deviceFactory {
     { TYPE_RFN430SL3,    MakeDeviceFunc(makeDevice<Rfn430sl3Device>) },
     { TYPE_RFN430SL4,    MakeDeviceFunc(makeDevice<Rfn430sl4Device>) },
     { TYPE_RFN510FL,     MakeDeviceFunc(makeDevice<Rfn510flDevice>) },
+    //  RFN-500 Focus AX (gen 1)
     { TYPE_RFN520FAX,    MakeDeviceFunc(makeDevice<Rfn520faxDevice>) },
     { TYPE_RFN520FRX,    MakeDeviceFunc(makeDevice<Rfn520frxDevice>) },
     { TYPE_RFN520FAXD,   MakeDeviceFunc(makeDevice<Rfn520faxdDevice>) },
     { TYPE_RFN520FRXD,   MakeDeviceFunc(makeDevice<Rfn520frxdDevice>) },
     { TYPE_RFN530FAX,    MakeDeviceFunc(makeDevice<Rfn530faxDevice>) },
     { TYPE_RFN530FRX,    MakeDeviceFunc(makeDevice<Rfn530frxDevice>) },
+    //  RFN-500 Focus AXe (gen 2)
+    { TYPE_RFN520FAXE,   MakeDeviceFunc(makeDevice<Rfn520faxeDevice>) },
+    { TYPE_RFN520FRXE,   MakeDeviceFunc(makeDevice<Rfn520frxeDevice>) },
+    { TYPE_RFN520FAXED,  MakeDeviceFunc(makeDevice<Rfn520faxedDevice>) },
+    { TYPE_RFN520FRXED,  MakeDeviceFunc(makeDevice<Rfn520frxedDevice>) },
+    { TYPE_RFN530FAXE,   MakeDeviceFunc(makeDevice<Rfn530faxeDevice>) },
+    { TYPE_RFN530FRXE,   MakeDeviceFunc(makeDevice<Rfn530frxeDevice>) },
+    //  RFN-500 S4
     { TYPE_RFN530S4X,    MakeDeviceFunc(makeDevice<Rfn530s4xDevice>) },
     { TYPE_RFN530S4EAX,  MakeDeviceFunc(makeDevice<Rfn530s4eaxDevice>) },
     { TYPE_RFN530S4EAXR, MakeDeviceFunc(makeDevice<Rfn530s4eaxrDevice>) },
@@ -272,6 +282,10 @@ const DeviceLookup deviceFactory {
     //  RF gas meters
     { TYPE_RFG201,       MakeDeviceFunc(makeDevice<Rfg201Device>) },
     { TYPE_RFG301,       MakeDeviceFunc(makeDevice<Rfg301Device>) },
+    { TYPE_RFG301A,      MakeDeviceFunc(makeDevice<Rfg301aDevice>) },
+    { TYPE_RFG301R,      MakeDeviceFunc(makeDevice<Rfg301rDevice>) },
+    //  RF Cellular IPLink Relays
+    { TYPE_CRLY856,      MakeDeviceFunc(makeDevice<RfCellularRelayDevice>) },
     //  Electronic meters
     { TYPE_FULCRUM,      MakeDeviceFunc(makeDevice<CtiDeviceFulcrum>) },
     { TYPE_QUANTUM,      MakeDeviceFunc(makeDevice<CtiDeviceQuantum>) },

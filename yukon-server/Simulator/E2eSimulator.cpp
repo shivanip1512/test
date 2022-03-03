@@ -10,7 +10,9 @@
 #include "RfnE2eDataRequestMsg.h"
 #include "RfnE2eDataConfirmMsg.h"
 #include "RfnE2eDataIndicationMsg.h"
+#include "RfnWaterNodeMessaging.h"
 #include "NetworkManagerRequest.h"
+#include "FieldSimulatorMsg.h"
 
 #include "prot_e2eDataTransfer.h"
 #include "coap_helper.h"
@@ -22,11 +24,16 @@
 #include "amq_constants.h"
 #include "amq_queues.h"
 #include "CParms.h"
+#include "utility.h"
+#include "database_reader.h"
+#include "sql_util.h"
 
 extern "C" {
 #include "coap/pdu.h"
 #include "coap/block.h"
 }
+
+#include <boost/algorithm/string/split.hpp>
 
 #include <random>
 #include <future>
@@ -35,8 +42,11 @@ extern "C" {
 using namespace Cti::Messaging::ActiveMQ;
 using namespace Cti::Messaging::Rfn;
 
+using Cti::Messaging::ActiveMQConnectionManager;
+
 using Cti::Messaging::Serialization::MessageFactory;
 using Cti::Messaging::Serialization::MessagePtr;
+using Cti::Messaging::Serialization::MessageSerializer;
 
 using Cti::Logging::Vector::Hex::operator<<;
 using Cti::Logging::Range::Hex::operator<<;
@@ -66,6 +76,27 @@ bool isRfDa(const Cti::RfnIdentifier rfnIdentifier)
     return rfDaManufacturerModels.count({ rfnIdentifier.manufacturer,
                                           rfnIdentifier.model });
 }
+
+namespace Settings {
+
+    std::string deviceGroup;
+    unsigned deviceConfigFailureRate = 0;
+
+    std::vector<std::string> getDeviceGroupSegments()
+    {
+        constexpr auto pathSeparator = '/';
+
+        std::vector<std::string> result;
+
+        if( ! deviceGroup.empty() && deviceGroup[0] == pathSeparator )
+        {
+            //  Exclude the root
+            boost::split(result, deviceGroup.substr(1), Cti::is_char{ pathSeparator });
+        }
+
+        return result;
+    }
+}
 }
 
 namespace Cti::Simulator {
@@ -81,29 +112,57 @@ E2eSimulator::E2eSimulator()
     consumerSession = conn->createSession();
     producerSession = conn->createSession();
 
-    requestConsumer    = createQueueConsumer(*consumerSession, Queues::OutboundQueue::NetworkManagerE2eDataRequest.name);
-    confirmProducer    = createQueueProducer(*producerSession, Queues::InboundQueue ::NetworkManagerE2eDataConfirm.name);
-    indicationProducer = createQueueProducer(*producerSession, Queues::InboundQueue ::NetworkManagerE2eDataIndication.name);
+    e2eRequestConsumer    = createQueueConsumer(*consumerSession, Queues::OutboundQueue::NetworkManagerE2eDataRequest.name);
+    e2eConfirmProducer    = createQueueProducer(*producerSession, Queues::InboundQueue ::NetworkManagerE2eDataConfirm.name);
+    e2eIndicationProducer = createQueueProducer(*producerSession, Queues::InboundQueue ::NetworkManagerE2eDataIndication.name);
 
-    requestListener = 
+    e2eRequestListener = 
             std::make_unique<MessageListener>(
                     [this](const cms::Message* msg) 
                     { 
                         handleE2eDtRequest(msg); 
                     });
 
-    requestConsumer->setMessageListener(requestListener.get());
+    e2eRequestConsumer->setMessageListener(e2eRequestListener.get());
+
+    batteryNodeGetRequestConsumer = createQueueConsumer(*consumerSession, Queues::OutboundQueue::GetBatteryNodeChannelConfigRequest.name);
+    batteryNodeSetRequestConsumer = createQueueConsumer(*consumerSession, Queues::OutboundQueue::SetBatteryNodeChannelConfigRequest.name);
+
+    batteryNodeGetRequestListener = std::make_unique<MessageListener>([this](const cms::Message* msg) {
+        handleBatteryNodeGetChannelConfigRequest(msg);
+    });
+    batteryNodeSetRequestListener = std::make_unique<MessageListener>([this](const cms::Message* msg){
+        handleBatteryNodeSetChannelConfigRequest(msg);
+    });
+
+    Messaging::ActiveMQConnectionManager::registerReplyHandler(
+        Queues::InboundQueue::FieldSimulatorStatusRequest,
+        [this](const Messaging::ActiveMQConnectionManager::MessageDescriptor& md) {
+            return handleStatusRequest(md);
+        });
+
+    Messaging::ActiveMQConnectionManager::registerReplyHandler(
+        Queues::InboundQueue::FieldSimulatorModifyConfiguration,
+        [this](const Messaging::ActiveMQConnectionManager::MessageDescriptor& md) {
+            return handleConfigurationRequest(md);
+        });
 
     CTILOG_INFO(dout, "E2EDT listener registered");
 }
 
 void E2eSimulator::stop()
 {
-    requestConsumer.reset();
-    requestListener.reset();
+    e2eRequestConsumer.reset();
+    e2eRequestListener.reset();
 
-    indicationProducer.reset();
-    confirmProducer.reset();
+    e2eIndicationProducer.reset();
+    e2eConfirmProducer.reset();
+
+    batteryNodeGetRequestConsumer.reset();
+    batteryNodeGetRequestListener.reset();
+
+    batteryNodeSetRequestConsumer.reset();
+    batteryNodeSetRequestListener.reset();
 
     producerSession.reset();
     consumerSession.reset();
@@ -114,6 +173,91 @@ void E2eSimulator::stop()
 
 std::mt19937_64 gen { static_cast<unsigned long long>(std::time(nullptr)) };
 std::uniform_real_distribution<double> dist{ 0.0, 1.0 };
+
+void E2eSimulator::handleBatteryNodeGetChannelConfigRequest(const cms::Message* msg)
+{
+    using Messaging::Serialization::MessageSerializer;
+    using namespace Messaging::Rfn;
+
+    CTILOG_INFO(dout, "Received message on RF Battery Node Get Channel Configuration queue");
+
+    if( const auto b = dynamic_cast<const cms::BytesMessage*>(msg) )
+    {
+        const auto buf = std::unique_ptr<unsigned char>{ b->getBodyBytes() };
+
+        Bytes payload{ buf.get(), buf.get() + b->getBodyLength() };
+
+        CTILOG_INFO(dout, "Received BytesMessage, attempting to decode as RfnGetChannelConfigRequestMessage");
+
+        if( auto getMsg = MessageSerializer<RfnGetChannelConfigRequestMessage>::deserialize(payload) )
+        {
+            CTILOG_INFO(dout, "Got new RfnGetChannelConfigRequestMessage for " << getMsg->rfnIdentifier);
+
+            RfnGetChannelConfigReplyMessage replyMsg;
+
+            replyMsg.rfnIdentifier = getMsg->rfnIdentifier;
+            RfnGetChannelConfigReplyMessage::ChannelInfo channel {
+                "gal",  //  UOM
+                {},     //  Modifiers
+                77,     //  Channel number
+                true    //  Enabled
+            };
+            replyMsg.channelInfo.insert(channel);
+            replyMsg.recordingInterval = 1800;
+            replyMsg.replyCode = RfnGetChannelConfigReplyMessage::SUCCESS;
+            replyMsg.reportingInterval = 86400;
+
+            if( auto serializedReply = Messaging::Serialization::serialize(replyMsg);
+                ! serializedReply.empty() )
+            {
+                auto tempQueueProducer = createDestinationProducer(*producerSession, msg->getCMSReplyTo());
+
+                std::unique_ptr<cms::BytesMessage> bytesMsg{ producerSession->createBytesMessage() };
+
+                bytesMsg->writeBytes(serializedReply);
+
+                tempQueueProducer->send(bytesMsg.get());
+            }
+        }
+    }
+}
+
+void E2eSimulator::handleBatteryNodeSetChannelConfigRequest(const cms::Message* msg)
+{
+    using Messaging::Serialization::MessageSerializer;
+    using namespace Messaging::Rfn;
+
+    CTILOG_INFO(dout, "Received message on RF Battery Node Set Channel Configuration queue");
+
+    if( const auto b = dynamic_cast<const cms::BytesMessage*>(msg) )
+    {
+        const auto buf = std::unique_ptr<unsigned char>{ b->getBodyBytes() };
+
+        Bytes payload{ buf.get(), buf.get() + b->getBodyLength() };
+
+        CTILOG_INFO(dout, "Received BytesMessage, attempting to decode as RfnSetChannelConfigRequestMessage");
+
+        if( auto setMsg = MessageSerializer<RfnSetChannelConfigRequestMessage>::deserialize(payload) )
+        {
+            CTILOG_INFO(dout, "Got new RfnSetChannelConfigRequestMessage for " << setMsg->rfnIdentifier);
+
+            RfnSetChannelConfigReplyMessage replyMsg { 0 };  //  Success
+
+            if( auto serializedReply = Messaging::Serialization::serialize(replyMsg);
+                ! serializedReply.empty() )
+            {
+                auto tempQueueProducer = createDestinationProducer(*producerSession, msg->getCMSReplyTo());
+
+                std::unique_ptr<cms::BytesMessage> bytesMsg{ producerSession->createBytesMessage() };
+
+                bytesMsg->writeBytes(serializedReply);
+
+                tempQueueProducer->send(bytesMsg.get());
+            }
+        }
+    }
+}
+
 
 void E2eSimulator::handleE2eDtRequest(const cms::Message* msg)
 {
@@ -183,16 +327,47 @@ void E2eSimulator::delayProcessing(float delay, const E2eDataRequestMsg requestM
     processE2eDtRequest(requestMsg);
 }
 
+
+double getDeviceFailureChance(RfnIdentifier rfnIdentifier)
+{
+    const auto groupSegments = Settings::getDeviceGroupSegments();
+
+    std::string sql = Database::getRfnAddressInDeviceGroupSql(groupSegments.size());
+
+    Cti::Database::DatabaseConnection connection;
+    Cti::Database::DatabaseReader rdr(connection, sql);
+
+    for( const auto& groupSegment : groupSegments )
+    {
+        rdr << groupSegment;
+    }
+
+    rdr << rfnIdentifier.manufacturer;
+    rdr << rfnIdentifier.model;
+    rdr << rfnIdentifier.serialNumber;
+
+    rdr.execute();
+
+    if( rdr() && rdr[0].as<int>() > 0 )
+    {
+        return Settings::deviceConfigFailureRate / 100.0;
+    }
+
+    return 0;
+}
+
+
+
 void E2eSimulator::processE2eDtRequest(const E2eDataRequestMsg requestMsg)
 {
-    const auto requestSender = [this](const E2eDataRequestMsg &requestMsg, const e2edt_request_packet& request) {
+    const auto requestSender = [this, &requestMsg](const e2edt_request_packet& request) {
         if( auto serializedE2eRequest = buildE2eDtRequest(request);
             ! serializedE2eRequest.empty() )
         {
             sendE2eDataIndication(requestMsg, serializedE2eRequest);
         }
     };
-    const auto replySender = [this](const E2eDataRequestMsg &requestMsg, const e2edt_reply_packet& reply) {
+    const auto replySender = [this, &requestMsg](const e2edt_reply_packet& reply) {
         if( auto serializedE2eReply = buildE2eDtReply(reply);
             ! serializedE2eReply.empty() )
         {
@@ -206,8 +381,11 @@ void E2eSimulator::processE2eDtRequest(const E2eDataRequestMsg requestMsg)
                         
         if( auto e2edtRequest = dynamic_cast<const e2edt_request_packet*>(msgPtr.get()) )
         {
+            auto failureChance = dist(gen);
+
             //  Request Unacceptable
-            if( dist(gen) < gConfigParms.getValueAsDouble("SIMULATOR_RFN_E2E_REQUEST_NOT_ACCEPTABLE_CHANCE") )
+            if( failureChance < gConfigParms.getValueAsDouble("SIMULATOR_RFN_E2E_REQUEST_NOT_ACCEPTABLE_CHANCE")
+                || failureChance < getDeviceFailureChance(requestMsg.rfnIdentifier) )
             {
                 CTILOG_INFO(dout, "Sending E2E Request Not Acceptable for " << requestMsg.rfnIdentifier);
 
@@ -228,11 +406,11 @@ void E2eSimulator::processE2eDtRequest(const E2eDataRequestMsg requestMsg)
 
             if( isRfDa(requestMsg.rfnIdentifier) )
             {
-                RfDa::processRequest({ replySender }, *e2edtRequest, requestMsg);
+                RfDa::processRequest({ replySender }, *e2edtRequest, requestMsg.rfnIdentifier, requestMsg.applicationServiceId);
             }
             else
             {
-                RfnMeter::processRequest({ requestSender }, { replySender }, *e2edtRequest, requestMsg);
+                RfnMeter::processRequest({ requestSender }, { replySender }, *e2edtRequest, requestMsg.rfnIdentifier, requestMsg.applicationServiceId);
             }
         }
         else if( auto e2edtReply = dynamic_cast<const e2edt_reply_packet*>(msgPtr.get()) )
@@ -243,7 +421,7 @@ void E2eSimulator::processE2eDtRequest(const E2eDataRequestMsg requestMsg)
             }
             else
             {
-                RfnMeter::processReply({ requestSender }, *e2edtReply, requestMsg);
+                RfnMeter::processReply({ requestSender }, *e2edtReply, requestMsg.rfnIdentifier, requestMsg.applicationServiceId);
             }
         }
         else
@@ -304,7 +482,7 @@ void E2eSimulator::sendE2eDataConfirm(const E2eDataRequestMsg& requestMsg)
 
     bytesMsg->writeBytes(confirmBytes);
 
-    confirmProducer->send(bytesMsg.get());
+    e2eConfirmProducer->send(bytesMsg.get());
 }
 
 
@@ -404,16 +582,27 @@ auto E2eSimulator::buildE2eDtRequest(const e2edt_request_packet& request) const 
     std::array<unsigned char, 1024> allOptions;
 
     size_t allOptionLength = allOptions.size();
-    
-    std::basic_string<unsigned char> path { request.path.cbegin(), request.path.cend() };
 
-    auto options = coap_split_path(path.data(), path.size(), allOptions.data(), &allOptionLength);
-
-    for( auto buf = allOptions.data(); options--; buf += coap_opt_size(buf) )
+    if( ! request.path.empty() )
     {
-        coap_add_option(request_pdu, COAP_OPTION_URI_PATH,
+        auto itr = request.path.cbegin();
+
+        if( *itr == '/' )
+        {
+            //  Trim off any leading slash - it's implicit
+            ++itr;
+        }
+    
+        const std::vector<unsigned char> path { itr, request.path.cend() };
+
+        auto options = coap_split_path(path.data(), path.size(), allOptions.data(), &allOptionLength);
+
+        for( auto buf = allOptions.data(); options--; buf += coap_opt_size(buf) )
+        {
+            coap_add_option(request_pdu, COAP_OPTION_URI_PATH,
                 coap_opt_length(buf),
                 coap_opt_value(buf));
+        }
     }
 
     if( request.block )
@@ -448,13 +637,64 @@ void E2eSimulator::sendE2eDataIndication(const E2eDataRequestMsg &requestMsg, co
 
     Bytes indicationBytes;
 
+    CTILOG_INFO(dout, "Sending E2eDataIndicationMsg to " << requestMsg.rfnIdentifier << "\n" << payload);
+
     e2eMessageFactory.serialize(indication, indicationBytes);
 
     std::unique_ptr<cms::BytesMessage> bytesMsg { producerSession->createBytesMessage() };
 
     bytesMsg->writeBytes(indicationBytes);
 
-    indicationProducer->send(bytesMsg.get());
+    e2eIndicationProducer->send(bytesMsg.get());
+}
+
+auto E2eSimulator::handleStatusRequest(const ActiveMQConnectionManager::MessageDescriptor& md)
+        -> std::unique_ptr<ActiveMQConnectionManager::SerializedMessage>
+{
+    CTILOG_INFO(dout, "Received message on Status queue, attempting to decode as FieldSimulatorStatusRequest");
+
+    auto request = MessageSerializer<Messaging::FieldSimulator::StatusRequestMsg>::deserialize(md.msg); 
+
+    if( ! request )
+    {
+        return nullptr;
+    }
+
+    Messaging::FieldSimulator::StatusResponseMsg response;
+
+    response.settings.deviceConfigFailureRate = 
+        Settings::deviceConfigFailureRate;
+    response.settings.deviceGroup = 
+        Settings::deviceGroup;
+
+    return std::make_unique<ActiveMQConnectionManager::SerializedMessage>(
+        Messaging::Serialization::serialize(response));
+}
+
+auto E2eSimulator::handleConfigurationRequest(const ActiveMQConnectionManager::MessageDescriptor& md)
+        -> std::unique_ptr<ActiveMQConnectionManager::SerializedMessage>
+{
+    CTILOG_INFO(dout, "Received message on Configuration queue");
+
+    auto request = MessageSerializer<Messaging::FieldSimulator::ModifyConfigurationRequestMsg>::deserialize(md.msg);
+
+    if( ! request )
+    {
+        return nullptr;
+    }
+
+    Settings::deviceConfigFailureRate = 
+        request->settings.deviceConfigFailureRate;
+    Settings::deviceGroup = 
+        request->settings.deviceGroup;
+    
+    Messaging::FieldSimulator::ModifyConfigurationResponseMsg response;
+
+    response.success = true;
+    response.settings = request->settings;
+
+    return std::make_unique<ActiveMQConnectionManager::SerializedMessage>(
+        Messaging::Serialization::serialize(response));
 }
 
 }

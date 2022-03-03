@@ -5,7 +5,7 @@
 <%@ taglib prefix="form" uri="http://www.springframework.org/tags/form"%>
 <%@ taglib prefix="dt" tagdir="/WEB-INF/tags/dateTime"%>
 
-<cti:standardPage module="dev" page="rfnTest">
+<cti:standardPage module="dev" page="rfnTest.viewMeterReadArchive">
 
 <script type="text/javascript">
     function enableByCheckbox(valueElement, checkbox) {
@@ -41,11 +41,11 @@
                 </tags:nameValue>
 
                 <tags:nameValue name="Manufacturer override">
-                    <form:input path="manufacturerOverride" size="7" cssClass="optional"/>
+                    <form:input path="manufacturerOverride" size="20" cssClass="optional"/>
                 </tags:nameValue>
 
                 <tags:nameValue name="Model override">
-                    <form:input path="modelOverride" size="7" cssClass="optional"/>
+                    <form:input path="modelOverride" size="20" cssClass="optional"/>
                 </tags:nameValue>
 
                 <tags:nameValue name="UoM">

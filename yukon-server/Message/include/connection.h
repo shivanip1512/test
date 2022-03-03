@@ -80,6 +80,16 @@ protected:
     std::atomic<size_t> _outQueueSizeWarning = 100;
     std::atomic<size_t> _inQueueSizeWarning = 100;
 
+    // we want to print the memory consumption of the _outQueue every N messages
+
+    size_t  _outQueueLogCountConfig;
+    std::atomic<size_t> _outQueueLogCount = 0;
+    bool shouldLogByCount( size_t queueSize );
+
+    std::chrono::seconds _outQueueLogInterval;
+    std::atomic<time_t> _nextOutQueueLogTime = 0;
+    bool shouldLogByTime();
+
     using Lock = Cti::readers_writer_lock_t;
     using ReaderGuard = Lock::reader_lock_guard_t;
     using WriterGuard = Lock::writer_lock_guard_t;
@@ -168,6 +178,8 @@ public:
     int  outQueueCount() const;
     bool isViable() const;
     bool valid() const;
+
+    void setOutQueueLogging( std::size_t messageCount, std::chrono::seconds period );
 
     const CtiTime& getLastReceiptTime() const;
 

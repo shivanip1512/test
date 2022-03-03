@@ -1,9 +1,10 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE properties SYSTEM "http://java.sun.com/dtd/properties.dtd">
 <properties>
-    <entry key="yukon.watchdog.notification.subject">[yukon] Required Yukon services are not running</entry>
+    <entry key="yukon.watchdog.notification.subject">[yukon] Required services are not running</entry>
     <entry key="yukon.watchdog.notification.text">Services required for Watchdog notifications are not running. Check status of the following services:</entry>
     <entry key="yukon.watchdog.notification.MESSAGEBROKER">Yukon Message Broker</entry>
     <entry key="yukon.watchdog.notification.SERVICEMANAGER">Yukon Service Manager</entry>
     <entry key="yukon.watchdog.notification.NOTIFICATIONSERVICE">Yukon Notification Server</entry>
+    <entry key="yukon.watchdog.notification.DATABASE">Database Connection</entry>
 </properties>

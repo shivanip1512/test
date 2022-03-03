@@ -73,6 +73,7 @@ public class ControllableDevicesRequestEndPoint {
     static final String parentLongitudeStr = "y:gps/y:longitude";
     static final String latitudeStr = "y:latitude";
     static final String longitudeStr = "y:longitude";
+    static final String guid = "y:guid";
 
     private static ControllableDeviceDTOMapper deviceElementMapper = new ControllableDeviceDTOMapper();
     private static RemoveControllableDeviceDTOMapper removeDeviceElementMapper = new RemoveControllableDeviceDTOMapper();
@@ -352,6 +353,7 @@ public class ControllableDevicesRequestEndPoint {
         device.setMacAddress(template.evaluateAsString(macAddressStr));
         device.setDeviceVendorUserId(template.evaluateAsInt(deviceVendorUserIdStr));
         device.setInventoryRoute(template.evaluateAsString(routeStr));
+        device.setGuid(template.evaluateAsString(guid));
         
         return device;
         

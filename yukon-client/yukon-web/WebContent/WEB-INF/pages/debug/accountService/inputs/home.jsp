@@ -14,13 +14,13 @@
             
             <c:forEach items="${errorReasons}" var="errorReason">
                 <tags:nameValue2 nameKey=".error">
-                    <div class="error">${errorReason}</div>
+                    <div class="error">${fn:escapeXml(errorReason)}</div>
                 </tags:nameValue2>
             </c:forEach>
             
             <c:forEach items="${results}" var="result">
                 <tags:nameValue2 nameKey=".result">
-                    <div class="success">${result}</div>
+                    <div class="success">${fn:escapeXml(result)}</div>
                 </tags:nameValue2>
             </c:forEach>
         
@@ -47,11 +47,11 @@
                     <cti:csrfToken/>
                     <tags:nameValueContainer2>
                         <tags:nameValue2 nameKey=".accountNumber" >
-                            <input type="text" name="delete_accountNumber" value="${delete_accountNumber}">
+                            <input type="text" name="delete_accountNumber" value="${fn:escapeXml(delete_accountNumber)}">
                         </tags:nameValue2>
                         
                         <tags:nameValue2 nameKey=".operator" >
-                            <input type="text" name="delete_user" value="${delete_user}">
+                            <input type="text" name="delete_user" value="${fn:escapeXml(delete_user)}">
                         </tags:nameValue2>
                         
                         <tags:nameValue2 nameKey=".run">
@@ -72,100 +72,100 @@
                     <cti:csrfToken/>
                     <tags:nameValueContainer2>
                         <tags:nameValue2 nameKey=".operator" >
-                            <input type="text" name="add_user" value="${add_user}">
+                            <input type="text" name="add_user" value="${fn:escapeXml(add_user)}">
                         </tags:nameValue2>
                         <tags:nameValue2 nameKey=".accountNumber" >
-                            <input type="text" name="add_accountNumber" value="${add_accountNumber}">
+                            <input type="text" name="add_accountNumber" value="${fn:escapeXml(add_accountNumber)}">
                         </tags:nameValue2>
                         <tags:nameValue2 nameKey=".lastName" >
-                            <input type="text" name="add_lastName" value="${add_lastName}">
+                            <input type="text" name="add_lastName" value="${fn:escapeXml(add_lastName)}">
                         </tags:nameValue2>
                         <tags:nameValue2 nameKey=".firstName" >
-                            <input type="text" name="add_firstName" value="${add_firstName}">
+                            <input type="text" name="add_firstName" value="${fn:escapeXml(add_firstName)}">
                         </tags:nameValue2>
                         <tags:nameValue2 nameKey=".homePhone" >
-                            <input type="text" name="add_homePhone" value="${add_homePhone}">
+                            <input type="text" name="add_homePhone" value="${fn:escapeXml(add_homePhone)}">
                         </tags:nameValue2>
                         <tags:nameValue2 nameKey=".workPhone" >
-                            <input type="text" name="add_workPhone" value="${add_workPhone}">
+                            <input type="text" name="add_workPhone" value="${fn:escapeXml(add_workPhone)}">
                         </tags:nameValue2>
                         <tags:nameValue2 nameKey=".emailAddress" >
-                            <input type="text" name="add_emailAddress" value="${add_emailAddress}">
+                            <input type="text" name="add_emailAddress" value="${fn:escapeXml(add_emailAddress)}">
                         </tags:nameValue2>
                         <tags:nameValue2 nameKey=".altTracking" >
-                            <input type="text" name="add_altTrackingNum" value="${add_altTrackingNum}">
+                            <input type="text" name="add_altTrackingNum" value="${fn:escapeXml(add_altTrackingNum)}">
                         </tags:nameValue2>
                         <tags:nameValue2 nameKey=".map" >
-                            <input type="text" name="add_mapNum" value="${add_mapNum}">
+                            <input type="text" name="add_mapNum" value="${fn:escapeXml(add_mapNum)}">
                         </tags:nameValue2>
                         <tags:nameValue2 nameKey=".commercial" >
-                            <input type="text" name="add_isCommercial" value="${add_isCommercial}">
+                            <input type="text" name="add_isCommercial" value="${fn:escapeXml(add_isCommercial)}">
                         </tags:nameValue2>
                         <tags:nameValue2 nameKey=".companyName" >
-                            <input type="text" name="add_companyName" value="${add_companyName}">
+                            <input type="text" name="add_companyName" value="${fn:escapeXml(add_companyName)}">
                         </tags:nameValue2>
                         <tags:nameValue2 nameKey=".address1" >
-                            <input type="text" name="add_streetAddress1" value="${add_streetAddress1}">
+                            <input type="text" name="add_streetAddress1" value="${fn:escapeXml(add_streetAddress1)}">
                         </tags:nameValue2>
                         <tags:nameValue2 nameKey=".address2" >
-                            <input type="text" name="add_streetAddress2" value="${add_streetAddress2}">
+                            <input type="text" name="add_streetAddress2" value="${fn:escapeXml(add_streetAddress2)}">
                         </tags:nameValue2>
                         <tags:nameValue2 nameKey=".city" >
-                            <input type="text" name="add_city" value="${add_city}">
+                            <input type="text" name="add_city" value="${fn:escapeXml(add_city)}">
                         </tags:nameValue2>
                         <tags:nameValue2 nameKey=".state" >
-                            <input type="text" name="add_state" value="${add_state}">
+                            <input type="text" name="add_state" value="${fn:escapeXml(add_state)}">
                         </tags:nameValue2>
                         <tags:nameValue2 nameKey=".zip" >
-                            <input type="text" name="add_zip" value="${add_zip}">
+                            <input type="text" name="add_zip" value="${fn:escapeXml(add_zip)}">
                         </tags:nameValue2>
                         <tags:nameValue2 nameKey=".county" >
-                            <input type="text" name="add_county" value="${add_county}">
+                            <input type="text" name="add_county" value="${fn:escapeXml(add_county)}">
                         </tags:nameValue2>
                         
                         <tags:nameValue2 nameKey=".billAddress1" >
-                            <input type="text" name="add_billingAddress1" value="${add_billingAddress1}">
+                            <input type="text" name="add_billingAddress1" value="${fn:escapeXml(add_billingAddress1)}">
                         </tags:nameValue2>
                         <tags:nameValue2 nameKey=".billAddress2" >
-                            <input type="text" name="add_billingAddress2" value="${add_billingAddress2}">
+                            <input type="text" name="add_billingAddress2" value="${fn:escapeXml(add_billingAddress2)}">
                         </tags:nameValue2>
                         <tags:nameValue2 nameKey=".billCity" >
-                            <input type="text" name="add_billingCity" value="${add_billingCity}">
+                            <input type="text" name="add_billingCity" value="${fn:escapeXml(add_billingCity)}">
                         </tags:nameValue2>
                         <tags:nameValue2 nameKey=".billState" >
-                            <input type="text" name="add_billingState" value="${add_billingState}">
+                            <input type="text" name="add_billingState" value="${fn:escapeXml(add_billingState)}">
                         </tags:nameValue2>
                         <tags:nameValue2 nameKey=".billZip" >
-                            <input type="text" name="add_billingZip" value="${add_billingZip}">
+                            <input type="text" name="add_billingZip" value="${fn:escapeXml(add_billingZip)}">
                         </tags:nameValue2>
                         <tags:nameValue2 nameKey=".billCounty" >
-                            <input type="text" name="add_billingCounty" value="${add_billingCounty}">
+                            <input type="text" name="add_billingCounty" value="${fn:escapeXml(add_billingCounty)}">
                         </tags:nameValue2>
                         
                         <tags:nameValue2 nameKey=".substationName" >
-                            <input type="text" name="add_substation" value="${add_substation}">
+                            <input type="text" name="add_substation" value="${fn:escapeXml(add_substation)}">
                         </tags:nameValue2>
                         <tags:nameValue2 nameKey=".feeder" >
-                            <input type="text" name="add_feeder" value="${add_feeder}">
+                            <input type="text" name="add_feeder" value="${fn:escapeXml(add_feeder)}">
                         </tags:nameValue2>
                         <tags:nameValue2 nameKey=".pole" >
-                            <input type="text" name="add_pole" value="${add_pole}">
+                            <input type="text" name="add_pole" value="${fn:escapeXml(add_pole)}">
                         </tags:nameValue2>
                         <tags:nameValue2 nameKey=".transformerSize" >
-                            <input type="text" name="add_transformerSize" value="${add_transformerSize}">
+                            <input type="text" name="add_transformerSize" value="${fn:escapeXml(add_transformerSize)}">
                         </tags:nameValue2>
                         <tags:nameValue2 nameKey=".serviceVoltage" >
-                            <input type="text" name="add_serviceVoltage" value="${add_serviceVoltage}">
+                            <input type="text" name="add_serviceVoltage" value="${fn:escapeXml(add_serviceVoltage)}">
                         </tags:nameValue2>
                         
                         <tags:nameValue2 nameKey=".username" >
-                            <input type="text" name="add_username" value="${add_username}">
+                            <input type="text" name="add_username" value="${fn:escapeXml(add_username)}">
                         </tags:nameValue2>
                         <tags:nameValue2 nameKey=".password" >
-                            <input type="text" name="add_password" value="${add_password}">
+                            <input type="text" name="add_password" value="${fn:escapeXml(add_password)}">
                         </tags:nameValue2>
                         <tags:nameValue2 nameKey=".userGroup" >
-                            <input type="text" name="add_loginGroup" value="${add_loginGroup}">
+                            <input type="text" name="add_loginGroup" value="${fn:escapeXml(add_loginGroup)}">
                         </tags:nameValue2>
                         
                         <tags:nameValue2 nameKey=".run">
@@ -186,100 +186,100 @@
                     <cti:csrfToken/>
                     <tags:nameValueContainer2>
                         <tags:nameValue2 nameKey=".operator" >
-                            <input type="text" name="update_user" value="${update_user}">
+                            <input type="text" name="update_user" value="${fn:escapeXml(update_user)}">
                         </tags:nameValue2>
                         <tags:nameValue2 nameKey=".accountNumber" >
-                            <input type="text" name="update_accountNumber" value="${update_accountNumber}">
+                            <input type="text" name="update_accountNumber" value="${fn:escapeXml(update_accountNumber)}">
                         </tags:nameValue2>
                         <tags:nameValue2 nameKey=".lastName" >
-                            <input type="text" name="update_lastName" value="${update_lastName}">
+                            <input type="text" name="update_lastName" value="${fn:escapeXml(update_lastName)}">
                         </tags:nameValue2>
                         <tags:nameValue2 nameKey=".firstName" >
-                            <input type="text" name="update_firstName" value="${update_firstName}">
+                            <input type="text" name="update_firstName" value="${fn:escapeXml(update_firstName)}">
                         </tags:nameValue2>
                         <tags:nameValue2 nameKey=".homePhone" >
-                            <input type="text" name="update_homePhone" value="${update_homePhone}">
+                            <input type="text" name="update_homePhone" value="${fn:escapeXml(update_homePhone)}">
                         </tags:nameValue2>
                         <tags:nameValue2 nameKey=".workPhone" >
-                            <input type="text" name="update_workPhone" value="${update_workPhone}">
+                            <input type="text" name="update_workPhone" value="${fn:escapeXml(update_workPhone)}">
                         </tags:nameValue2>
                         <tags:nameValue2 nameKey=".emailAddress" >
-                            <input type="text" name="update_emailAddress" value="${update_emailAddress}">
+                            <input type="text" name="update_emailAddress" value="${fn:escapeXml(update_emailAddress)}">
                         </tags:nameValue2>
                         <tags:nameValue2 nameKey=".altTracking" >
-                            <input type="text" name="update_altTrackingNum" value="${update_altTrackingNum}">
+                            <input type="text" name="update_altTrackingNum" value="${fn:escapeXml(update_altTrackingNum)}">
                         </tags:nameValue2>
                         <tags:nameValue2 nameKey=".map" >
-                            <input type="text" name="update_mapNum" value="${update_mapNum}">
+                            <input type="text" name="update_mapNum" value="${fn:escapeXml(update_mapNum)}">
                         </tags:nameValue2>
                         <tags:nameValue2 nameKey=".commercial" >
-                            <input type="text" name="update_isCommercial" value="${update_isCommercial}">
+                            <input type="text" name="update_isCommercial" value="${fn:escapeXml(update_isCommercial)}">
                         </tags:nameValue2>
                         <tags:nameValue2 nameKey=".companyName" >
-                            <input type="text" name="update_companyName" value="${update_companyName}">
+                            <input type="text" name="update_companyName" value="${fn:escapeXml(update_companyName)}">
                         </tags:nameValue2>
                         <tags:nameValue2 nameKey=".address1" >
-                            <input type="text" name="update_streetAddress1" value="${update_streetAddress1}">
+                            <input type="text" name="update_streetAddress1" value="${fn:escapeXml(update_streetAddress1)}">
                         </tags:nameValue2>
                         <tags:nameValue2 nameKey=".address2" >
-                            <input type="text" name="update_streetAddress2" value="${update_streetAddress2}">
+                            <input type="text" name="update_streetAddress2" value="${fn:escapeXml(update_streetAddress2)}">
                         </tags:nameValue2>
                         <tags:nameValue2 nameKey=".city" >
-                            <input type="text" name="update_city" value="${update_city}">
+                            <input type="text" name="update_city" value="${fn:escapeXml(update_city)}">
                         </tags:nameValue2>
                         <tags:nameValue2 nameKey=".state" >
-                            <input type="text" name="update_state" value="${update_state}">
+                            <input type="text" name="update_state" value="${fn:escapeXml(update_state)}">
                         </tags:nameValue2>
                         <tags:nameValue2 nameKey=".zip" >
-                            <input type="text" name="update_zip" value="${update_zip}">
+                            <input type="text" name="update_zip" value="${fn:escapeXml(update_zip)}">
                         </tags:nameValue2>
                         <tags:nameValue2 nameKey=".county" >
-                            <input type="text" name="update_county" value="${update_county}">
+                            <input type="text" name="update_county" value="${fn:escapeXml(update_county)}">
                         </tags:nameValue2>
                         
                         <tags:nameValue2 nameKey=".billAddress1" >
-                            <input type="text" name="update_billingAddress1" value="${update_billingAddress1}">
+                            <input type="text" name="update_billingAddress1" value="${fn:escapeXml(update_billingAddress1)}">
                         </tags:nameValue2>
                         <tags:nameValue2 nameKey=".billAddress2" >
-                            <input type="text" name="update_billingAddress2" value="${update_billingAddress2}">
+                            <input type="text" name="update_billingAddress2" value="${fn:escapeXml(update_billingAddress2)}">
                         </tags:nameValue2>
                         <tags:nameValue2 nameKey=".billCity" >
-                            <input type="text" name="update_billingCity" value="${update_billingCity}">
+                            <input type="text" name="update_billingCity" value="${fn:escapeXml(update_billingCity)}">
                         </tags:nameValue2>
                         <tags:nameValue2 nameKey=".billState" >
-                            <input type="text" name="update_billingState" value="${update_billingState}">
+                            <input type="text" name="update_billingState" value="${fn:escapeXml(update_billingState)}">
                         </tags:nameValue2>
                         <tags:nameValue2 nameKey=".billZip" >
-                            <input type="text" name="update_billingZip" value="${update_billingZip}">
+                            <input type="text" name="update_billingZip" value="${fn:escapeXml(update_billingZip)}">
                         </tags:nameValue2>
                         <tags:nameValue2 nameKey=".billCounty" >
-                            <input type="text" name="update_billingCounty" value="${update_billingCounty}">
+                            <input type="text" name="update_billingCounty" value="${fn:escapeXml(update_billingCounty)}">
                         </tags:nameValue2>
                         
                         <tags:nameValue2 nameKey=".substationName" >
-                            <input type="text" name="update_substation" value="${update_substation}">
+                            <input type="text" name="update_substation" value="${fn:escapeXml(update_substation)}">
                         </tags:nameValue2>
                         <tags:nameValue2 nameKey=".feeder" >
-                            <input type="text" name="update_feeder" value="${update_feeder}">
+                            <input type="text" name="update_feeder" value="${fn:escapeXml(update_feeder)}">
                         </tags:nameValue2>
                         <tags:nameValue2 nameKey=".pole" >
-                            <input type="text" name="update_pole" value="${update_pole}">
+                            <input type="text" name="update_pole" value="${fn:escapeXml(update_pole)}">
                         </tags:nameValue2>
                         <tags:nameValue2 nameKey=".transformerSize" >
-                            <input type="text" name="update_transformerSize" value="${update_transformerSize}">
+                            <input type="text" name="update_transformerSize" value="${fn:escapeXml(update_transformerSize)}">
                         </tags:nameValue2>
                         <tags:nameValue2 nameKey=".serviceVoltage" >
-                            <input type="text" name="update_serviceVoltage" value="${update_serviceVoltage}">
+                            <input type="text" name="update_serviceVoltage" value="${fn:escapeXml(update_serviceVoltage)}">
                         </tags:nameValue2>
                         
                         <tags:nameValue2 nameKey=".username" >
-                            <input type="text" name="update_username" value="${update_username}">
+                            <input type="text" name="update_username" value="${fn:escapeXml(update_username)}">
                         </tags:nameValue2>
                         <tags:nameValue2 nameKey=".password" >
-                            <input type="text" name="update_password" value="${update_password}">
+                            <input type="text" name="update_password" value="${fn:escapeXml(update_password)}">
                         </tags:nameValue2>
                         <tags:nameValue2 nameKey=".userGroup" >
-                            <input type="text" name="update_loginGroup" value="${update_loginGroup}">
+                            <input type="text" name="update_loginGroup" value="${fn:escapeXml(update_loginGroup)}">
                         </tags:nameValue2>
                         
                         <tags:nameValue2 nameKey=".run">

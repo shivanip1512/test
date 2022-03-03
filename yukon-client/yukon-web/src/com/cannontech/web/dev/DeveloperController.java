@@ -16,13 +16,11 @@ import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
-import java.util.Optional;
 import java.util.Set;
 import java.util.TreeMap;
 
 import javax.servlet.http.HttpServletResponse;
 
-import org.apache.commons.codec.DecoderException;
 import org.apache.commons.codec.binary.Hex;
 import org.apache.logging.log4j.Logger;
 import org.jdom2.JDOMException;
@@ -43,7 +41,6 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
-import org.springframework.web.servlet.ModelAndView;
 
 import com.cannontech.clientutils.YukonLogManager;
 import com.cannontech.common.config.ConfigurationSource;
@@ -61,11 +58,9 @@ import com.cannontech.common.util.jms.api.JmsApiCategory;
 import com.cannontech.common.util.jms.api.JmsApiDirectory;
 import com.cannontech.common.util.jms.api.JmsCommunicatingService;
 import com.cannontech.common.util.jms.api.JmsCommunicationPattern;
-import com.cannontech.core.dao.YukonListDao;
 import com.cannontech.core.service.DateFormattingService.DateFormatEnum;
 import com.cannontech.core.users.model.LiteUserGroup;
 import com.cannontech.database.YukonJdbcTemplate;
-import com.cannontech.database.db.security.EncryptionKey;
 import com.cannontech.database.vendor.VendorSpecificSqlBuilder;
 import com.cannontech.database.vendor.VendorSpecificSqlBuilderFactory;
 import com.cannontech.encryption.CryptoException;
@@ -114,7 +109,6 @@ public class DeveloperController {
     @Autowired private SelectionListService selectionListService;
     @Autowired private VendorSpecificSqlBuilderFactory vendorSpecificSqlBuilderFactory;
     @Autowired private YukonJdbcTemplate jdbcTemplate;
-    @Autowired private YukonListDao listDao;
     @Autowired private EncryptedRouteDao encryptedRouteDao;
     @Autowired private ItronSecurityService itronSecurityService;
 
@@ -296,38 +290,7 @@ public class DeveloperController {
     public String viewDeviceGroupSimulator() {
         return "deviceGroupSimulator.jsp";
     }
-    
-    @GetMapping("/getEcobeePGPKeyPair")
-    public ModelAndView ecobeePGPKeyPair(ModelMap model)
-            throws CryptoException, IOException, JDOMException, DecoderException {
-        Optional<EncryptionKey> encryptionKey = encryptedRouteDao.getEncryptionKey(EncryptionKeyType.Ecobee);
-        PGPKeyPair keypair = new PGPKeyPair();
-        if (encryptionKey.isPresent()) {
-            char[] password = CryptoUtils.getSharedPasskey();
-            AESPasswordBasedCrypto encrypter = new AESPasswordBasedCrypto(password);
-            String aesDecryptedPrivatekey = encrypter.decryptHexStr(encryptionKey.get().getPrivateKey());
-            String aesDecryptedPublickey = encrypter.decryptHexStr(encryptionKey.get().getPublicKey());
-            keypair.setPgpPrivateKey(aesDecryptedPrivatekey);
-            keypair.setPgpPublicKey(aesDecryptedPublickey);
-        }
-        ModelAndView ecobeePGPKeys = new ModelAndView("ecobeePGPKeyPair.jsp", "pgpKeyPair", keypair);
-        return ecobeePGPKeys;
-    }
 
-    @PostMapping(path = "/saveEcobeeKeyPair")
-    public String saveEcobeeKeyPair(@ModelAttribute("pgpKeyPair") PGPKeyPair pgpKeyPair,
-            FlashScope flash) throws CryptoException, IOException, JDOMException {
-        final String homeKey = "yukon.web.modules.dev.ecobeePGPKeyPair.";
-        Instant timestamp = Instant.now();
-        if (!pgpKeyPair.getPgpPublicKey().isBlank() && !pgpKeyPair.getPgpPrivateKey().isBlank()) {
-            saveEncryptionKey(pgpKeyPair.getPgpPublicKey(), pgpKeyPair.getPgpPrivateKey(), timestamp, EncryptionKeyType.Ecobee);
-            flash.setConfirm(new YukonMessageSourceResolvable(homeKey + "save.success"));
-            return "redirect:getEcobeePGPKeyPair";
-        }
-        flash.setError(new YukonMessageSourceResolvable(homeKey + "save.failed"));
-        return "ecobeePGPKeyPair.jsp";
-    }
-    
     @GetMapping("/getItronKeyPair")
     public String itronKeyPair(ModelMap model, FlashScope flash) {
         ItronSecurityKeyPair keyPair;

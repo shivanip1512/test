@@ -48,6 +48,7 @@
 #define LMGROUPNEST_ID                          643
 #define LMGROUPITRON_ID                         644
 #define LMGROUPMETERDISCONNECT_ID               645
+#define LMGROUPEATONCLOUD_ID                    646
 
 
 /* Various debug levels */
@@ -66,8 +67,6 @@
 
 #define LM_DEBUG_EXTENDED          0x10000000
 
-extern CtiTime gInvalidCtiTime;
-extern ULONG gInvalidCtiTimeSeconds;
+extern const CtiTime gInvalidCtiTime;
+extern const CtiTime gEndOfCtiTime;
 
-extern CtiTime gEndOfCtiTime;
-extern ULONG gEndOfCtiTimeSeconds;

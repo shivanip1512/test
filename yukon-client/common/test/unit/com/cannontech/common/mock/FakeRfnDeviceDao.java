@@ -1,9 +1,10 @@
 package com.cannontech.common.mock;
 
-import java.util.Collection;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+
+import org.joda.time.Instant;
 
 import com.cannontech.amr.rfn.dao.RfnDeviceDao;
 import com.cannontech.amr.rfn.dao.model.DynamicRfnDeviceData;
@@ -13,8 +14,10 @@ import com.cannontech.common.pao.YukonPao;
 import com.cannontech.common.rfn.message.RfnIdentifier;
 import com.cannontech.common.rfn.model.RfnDevice;
 import com.cannontech.common.rfn.model.RfnDeviceSearchCriteria;
+import com.cannontech.common.rfn.model.RfnModelChange;
 import com.cannontech.common.util.MethodNotImplementedException;
 import com.cannontech.core.dao.NotFoundException;
+import com.cannontech.services.systemDataPublisher.service.model.RfnDeviceDescendantCountData;
 
 public class FakeRfnDeviceDao implements RfnDeviceDao {
     @Override
@@ -41,7 +44,7 @@ public class FakeRfnDeviceDao implements RfnDeviceDao {
                 return new PaoIdentifier(1, PaoType.RFN_GATEWAY);
             }
         };
-        RfnIdentifier rfnId = new RfnIdentifier("10000", "CPS", "RF_GATEWAY");
+        RfnIdentifier rfnId = new RfnIdentifier("10000", "EATON", "RFGateway");
         return new RfnDevice("10000", pao, rfnId);
     }
 
@@ -101,7 +104,7 @@ public class FakeRfnDeviceDao implements RfnDeviceDao {
     }
 
     @Override
-    public Integer findDeviceBySensorSerialNumber(String sensorSerialNumber) {
+    public RfnDevice findDeviceBySensorSerialNumber(String sensorSerialNumber) {
         throw new MethodNotImplementedException();
     }
 
@@ -158,5 +161,25 @@ public class FakeRfnDeviceDao implements RfnDeviceDao {
     @Override
     public Set<RfnIdentifier> getDeviceRfnIdentifiersByGatewayIds(Iterable<Integer> gatewayIds) {
         throw new MethodNotImplementedException();
-    }  
+    }
+
+    @Override
+    public RfnDeviceDescendantCountData findDeviceDescendantCountDataForPaoTypes(Iterable<PaoType> paoType) {
+         throw new MethodNotImplementedException();
+    }
+
+    @Override
+    public List<RfnDevice> getPartiallyMatchedDevices(String serialNumber, String manufacturer) {
+        throw new MethodNotImplementedException();
+    }
+
+    @Override
+    public void updateRfnModelChange(RfnModelChange rfnModelChange) {
+        throw new MethodNotImplementedException();
+    }
+
+    @Override
+    public Instant findModelChangeDataTimestamp(int deviceId) {
+        throw new MethodNotImplementedException();
+    }
 }

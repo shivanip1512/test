@@ -9,7 +9,7 @@ class CalcWorkerThread : public WorkerThread
 {
 public:
 
-    CalcWorkerThread( const Function & function );
+    CalcWorkerThread( const FunctionImpl & function );
 
     virtual ~CalcWorkerThread();
 
@@ -19,9 +19,13 @@ public:
 
     size_t getPauseCount() const;
 
+    bool isWaiting() const { return _isWaiting; }
+
 private:
 
     void setPausedState( const bool isPaused );
+
+    bool                        _isWaiting;
 
     bool                        _isPaused;
     boost::mutex                _pauseMutex;

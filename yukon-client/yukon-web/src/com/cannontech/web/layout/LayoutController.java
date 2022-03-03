@@ -9,6 +9,7 @@ import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.stream.Collectors;
 
 import javax.annotation.PostConstruct;
 import javax.servlet.http.HttpServletRequest;
@@ -54,8 +55,11 @@ import com.cannontech.web.taglib.StandardPageInfo;
 import com.cannontech.web.taglib.StandardPageTag;
 import com.cannontech.web.user.service.UserPreferenceService;
 import com.cannontech.web.util.WebUtilityService;
+import com.google.common.base.Splitter;
+import com.google.common.base.Strings;
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.ImmutableList.Builder;
+import com.google.common.collect.Lists;
 
 @Controller
 public class LayoutController {
@@ -95,18 +99,13 @@ public class LayoutController {
         b.add(JsLibrary.JQUERY_CHECK_ALL.getPath(dev));
         b.add(JsLibrary.JQUERY_FORM.getPath(dev));
         b.add(JsLibrary.JQUERY_PLACEHOLDER.getPath(dev));
-        b.add(JsLibrary.JQUERY_TIPSY.getPath(dev));
         b.add(JsLibrary.JQUERY_SPECTRUM.getPath(dev));
         b.add(JsLibrary.JQUERY_CHOSEN.getPath(dev));
         b.add(JsLibrary.JQUERY_ACTUAL.getPath(dev));
         b.add(JsLibrary.JQUERY_SCROLLTO.getPath(dev));
         b.add(JsLibrary.JQUERY_COOKIE.getPath(dev));
-        b.add(JsLibrary.JQUERY_FLOTCHARTS.getPath(dev));
-        b.add(JsLibrary.JQUERY_FLOTCHARTS_SELECTION.getPath(dev));
-        b.add(JsLibrary.JQUERY_FLOTCHARTS_AXIS_LABEL.getPath(dev));
-        b.add(JsLibrary.JQUERY_FLOTCHARTS_RESIZE.getPath(dev));
-        b.add(JsLibrary.JQUERY_FLOTCHARTS_TIME.getPath(dev));
-        b.add(JsLibrary.JQUERY_SCROLL_TABLE_BODY.getPath(dev));
+        b.add(JsLibrary.HIGH_STOCK.getPath(dev));
+        b.add(JsLibrary.HIGH_STOCK_NO_DATA.getPath(dev));
         libraryScriptFiles = b.build();
         
         b = ImmutableList.builder();
@@ -124,27 +123,25 @@ public class LayoutController {
         b.add(JsLibrary.YUKON_TOOLTIP.getPath(dev));
         b.add(JsLibrary.YUKON_ANALYTICS.getPath(dev));
         b.add(JsLibrary.YUKON_FAVORITES.getPath(dev));
-        b.add(JsLibrary.YUKON_FLOTCHARTS.getPath(dev));
         b.add(JsLibrary.YUKON_SIMPLE_POPUPS.getPath(dev));
         b.add(JsLibrary.YUKON_PICKER.getPath(dev));
         b.add(JsLibrary.YUKON_DEVICE_GROUP_PICKER.getPath(dev));
         b.add(JsLibrary.YUKON_HISTORICAL_READINGS.getPath(dev));
+        b.add(JsLibrary.YUKON_HIGHCHART.getPath(dev));
         yukonScriptFiles = b.build();
         
         /** CSS ORDER MATTERS! **/
         b = ImmutableList.builder();
         b.add(CssLibrary.NORMALIZE.getPath());
-        b.add(CssLibrary.BOOTSTRAP.getPath());
+        b.add(dev ? CssLibrary.BOOTSTRAP.getPath() : CssLibrary.BOOTSTRAP_MIN.getPath());
         b.add(CssLibrary.ANIMATE.getPath());
         b.add(CssLibrary.LAYOUT.getPath());
         b.add(CssLibrary.YUKON.getPath());
         b.add(CssLibrary.BUTTONS.getPath());
         b.add(CssLibrary.ICONS.getPath());
         b.add(dev ? CssLibrary.JQUERY_UI.getPath() : CssLibrary.JQUERY_UI_MIN.getPath());
-        b.add(CssLibrary.TIPSY.getPath());
         b.add(CssLibrary.SPECTRUM.getPath());
         b.add(CssLibrary.CHOSEN.getPath());
-        b.add(CssLibrary.FLOTCHARTS.getPath());
         standardCssFiles = b.build();
     }
     
@@ -387,11 +384,23 @@ public class LayoutController {
     @ModelAttribute("buildInfo")
     public String getYukonBuild() {
         Map<String, String> buildInfo = VersionTools.getBuildInfo();
-        if (buildInfo.containsKey("JOB_NAME") && buildInfo.containsKey("YUKON_BUILD_NUMBER")) {
+        String buildKey = buildInfo.get("BUILD_KEY");
+        if (!Strings.isNullOrEmpty(buildKey) && buildKey.contains("-")) {
+            List<String> keys = Lists.newArrayList(Splitter.on("-").split(buildKey));
+            if (!keys.isEmpty() && keys.size() == 4) {
+                // Remove the second Element from buildKey to get the actual plan Key.
+                keys.remove(2);
+                String finalPlanKey = keys.stream()
+                                          .collect(Collectors.joining("-"));
+                return "<a href=\"http://loutcsvbamboop1.napa.ad.etn.com:8085/browse/" + finalPlanKey + "\">"
+                        + buildInfo.get("YUKON_BUILD_NUMBER") + "</a>";
+            } else {
+                return "undefined";
+            }
+        } else {
             return "<a href=\"http://swbuild.cooperpowereas.net/job/" + buildInfo.get("JOB_NAME") + "/"
-                + buildInfo.get("JENKINS_ID") + "\">" + buildInfo.get("YUKON_BUILD_NUMBER") + "</a>";
+                    + buildInfo.get("JENKINS_ID") + "\">" + buildInfo.get("YUKON_BUILD_NUMBER") + "</a>";
         }
-        return "undefined";
     }
     
     private Module getModuleBase(String moduleName) {

@@ -31,7 +31,7 @@
             </cti:checkRolesAndProperties>
             <!-- Delete -->
             <cti:checkRolesAndProperties value="DR_SETUP_PERMISSION" level="OWNER">
-                <cm:dropdownOption icon="icon-cross" key="yukon.web.components.button.delete.label" classes="js-hide-dropdown"
+                <cm:dropdownOption icon="icon-delete" key="yukon.web.components.button.delete.label" classes="js-hide-dropdown"
                                id="js-delete-option" data-ok-event="yukon:macro-load-group:delete"/>
             
                 <d:confirm on="#js-delete-option" nameKey="confirmDelete" argument="${macroLoadGroup.name}" />
@@ -116,25 +116,27 @@
         
         <cti:displayForPageEditModes modes="VIEW">
             <tags:sectionContainer2 nameKey="assignedLoadGroups" styleClass="select-box">
-                <table id="js-assigned-load-groups-table" class="compact-results-table dashed">
-                    <thead>
-                        <tr>
-                            <th><i:inline key="yukon.common.name"/></th>
-                            <th><i:inline key="yukon.common.type"/></th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        <c:forEach var="assignedLoadGroup" items="${macroLoadGroup.assignedLoadGroups}">
+                <div class="js-table-container scroll-lg">
+                    <table id="js-assigned-load-groups-table" class="compact-results-table dashed">
+                        <thead>
                             <tr>
-                                <td>
-                                    <cti:url var="viewUrl" value="/dr/setup/loadGroup/${assignedLoadGroup.id}"/>
-                                    <a href="${viewUrl}">${fn:escapeXml(assignedLoadGroup.name)}</a>
-                                </td>
-                                 <td><i:inline key="${assignedLoadGroup.type}"/></td>
+                                <th><i:inline key="yukon.common.name"/></th>
+                                <th><i:inline key="yukon.common.type"/></th>
                             </tr>
-                        </c:forEach>
-                    </tbody>
-                </table>
+                        </thead>
+                        <tbody>
+                            <c:forEach var="assignedLoadGroup" items="${macroLoadGroup.assignedLoadGroups}">
+                                <tr>
+                                    <td>
+                                        <cti:url var="viewUrl" value="/dr/setup/loadGroup/${assignedLoadGroup.id}"/>
+                                        <a href="${viewUrl}">${fn:escapeXml(assignedLoadGroup.name)}</a>
+                                    </td>
+                                    <td><i:inline key="${assignedLoadGroup.type}"/></td>
+                                </tr>
+                            </c:forEach>
+                        </tbody>
+                    </table>
+                </div>
             </tags:sectionContainer2>
         </cti:displayForPageEditModes>
         
@@ -155,5 +157,4 @@
         </div>
     </form:form>
     <cti:includeScript link="/resources/js/pages/yukon.dr.setup.macroloadGroup.js" />
-    <cti:includeScript link="JQUERY_SCROLL_TABLE_BODY"/>
 </cti:standardPage>

@@ -3,22 +3,51 @@
 <properties>
 
     <entry key="yukon.web.widgets.infrastructureWarnings.warningType.GATEWAY_CONNECTION_STATUS.LOW">Gateway communications interrupted since {0}.</entry>
+    <entry key="yukon.web.widgets.infrastructureWarnings.warningType.GATEWAY_CONNECTION_STATUS.CLEAR">Gateway communications restored.</entry>
     <entry key="yukon.web.widgets.infrastructureWarnings.warningType.GATEWAY_COLOR.LOW">Duplicate color {0} configured into gateway.</entry>
+    <entry key="yukon.web.widgets.infrastructureWarnings.warningType.GATEWAY_COLOR.CLEAR">Gateway color conflict resolved.</entry>
     <entry key="yukon.web.widgets.infrastructureWarnings.warningType.GATEWAY_FAILSAFE.LOW">Gateway is currently in failsafe mode.</entry>
+    <entry key="yukon.web.widgets.infrastructureWarnings.warningType.GATEWAY_FAILSAFE.CLEAR">Gateway is no longer in failsafe mode.</entry>
     <entry key="yukon.web.widgets.infrastructureWarnings.warningType.GATEWAY_CONNECTED_NODES.LOW">Gateway''s total connected node count {0} is higher than recommended.</entry>
     <entry key="yukon.web.widgets.infrastructureWarnings.warningType.GATEWAY_CONNECTED_NODES.HIGH">Gateway''s total connected node count {0} has reached the maximum limit.</entry>
+    <entry key="yukon.web.widgets.infrastructureWarnings.warningType.GATEWAY_CONNECTED_NODES.CLEAR">Gateway''s total connected node count is now below the recommended limit.</entry>
     <entry key="yukon.web.widgets.infrastructureWarnings.warningType.GATEWAY_DATA_STREAMING_LOAD.LOW">Data streaming capacity at {0}%.</entry>
     <entry key="yukon.web.widgets.infrastructureWarnings.warningType.GATEWAY_DATA_STREAMING_LOAD.HIGH">Data streaming capacity at {0}%.</entry>
+    <entry key="yukon.web.widgets.infrastructureWarnings.warningType.GATEWAY_DATA_STREAMING_LOAD.CLEAR">Data streaming capacity is now below warning threshold.</entry>
     <entry key="yukon.web.widgets.infrastructureWarnings.warningType.RELAY_OUTAGE.LOW">An outage notification has been received.</entry>
+    <entry key="yukon.web.widgets.infrastructureWarnings.warningType.RELAY_OUTAGE.CLEAR">An outage restoration has been received.</entry>
     <entry key="yukon.web.widgets.infrastructureWarnings.warningType.CCU_COMM_STATUS.LOW">Communication status is disconnected.</entry>
+    <entry key="yukon.web.widgets.infrastructureWarnings.warningType.CCU_COMM_STATUS.CLEAR">Communication status is connected.</entry>
     <entry key="yukon.web.widgets.infrastructureWarnings.warningType.REPEATER_COMM_STATUS.LOW">Communication status is disconnected.</entry>
+    <entry key="yukon.web.widgets.infrastructureWarnings.warningType.REPEATER_COMM_STATUS.CLEAR">Communication status is connected.</entry>
     <entry key="yukon.web.widgets.infrastructureWarnings.warningType.GATEWAY_READY_NODES.LOW">Gateway''s total ready node count ({0}) is lower than the warning threshold ({1}).</entry>
+    <entry key="yukon.web.widgets.infrastructureWarnings.warningType.GATEWAY_READY_NODES.CLEAR">Gateway''s total ready node count is back above the warning threshold.</entry>
     <entry key="yukon.web.widgets.infrastructureWarnings.warningType.GATEWAY_SECURITY_ALARM.LOW">Gateway security alarm, SSH service enabled.</entry>
+    <entry key="yukon.web.widgets.infrastructureWarnings.warningType.GATEWAY_SECURITY_ALARM.CLEAR">Gateway security alarm, SSH service is no longer enabled.</entry>
     <entry key="yukon.web.widgets.infrastructureWarnings.warningType.GATEWAY_POWER_FAILURE.LOW">Gateway detecting power loss event.</entry>
+    <entry key="yukon.web.widgets.infrastructureWarnings.warningType.GATEWAY_POWER_FAILURE.CLEAR">Gateway power loss event has ended.</entry>
     <entry key="yukon.web.widgets.infrastructureWarnings.warningType.GATEWAY_RADIO_FAILURE.LOW">Gateway radio connection lost. </entry>
+    <entry key="yukon.web.widgets.infrastructureWarnings.warningType.GATEWAY_RADIO_FAILURE.CLEAR">Gateway radio connection restored. </entry>
     <entry key="yukon.web.widgets.infrastructureWarnings.warningType.GATEWAY_TIME_SYNC_FAILED.LOW">Gateway unable to synchronize time.</entry>
+    <entry key="yukon.web.widgets.infrastructureWarnings.warningType.GATEWAY_TIME_SYNC_FAILED.CLEAR">Gateway was able to synchronize time again.</entry>
     <entry key="yukon.web.widgets.infrastructureWarnings.warningType.GATEWAY_DOOR_OPEN.LOW">Gateway detecting open door.</entry>
+    <entry key="yukon.web.widgets.infrastructureWarnings.warningType.GATEWAY_DOOR_OPEN.CLEAR">Gateway no longer detecting open door.</entry>
     <entry key="yukon.web.widgets.infrastructureWarnings.warningType.GATEWAY_NODE_COUNT_EXCEEDED.LOW">Gateway node count exceeding limit.</entry>
+    <entry key="yukon.web.widgets.infrastructureWarnings.warningType.GATEWAY_NODE_COUNT_EXCEEDED.CLEAR">Gateway node count is now below limit.</entry>
+    <entry key="yukon.web.widgets.infrastructureWarnings.warningType.GATEWAY_UPS_BATTERY_VOLTAGE_LOW.LOW">Gateway detecting low voltage on UPS battery.</entry>
+    <entry key="yukon.web.widgets.infrastructureWarnings.warningType.GATEWAY_UPS_BATTERY_VOLTAGE_LOW.CLEAR">Gateway no longer detecting low voltage on UPS battery.</entry>
+    <entry key="yukon.web.widgets.infrastructureWarnings.warningType.GATEWAY_CERT_EXPIRATION.LOW">Gateway detecting upcoming certificate expiration.</entry>
+    <entry key="yukon.web.widgets.infrastructureWarnings.warningType.GATEWAY_CERT_EXPIRATION.CLEAR">Gateway no longer detecting upcoming certificate expiration.</entry>
+    <entry key="yukon.web.widgets.infrastructureWarnings.warningType.GATEWAY_HIGH_DISK_USAGE.LOW">Gateway detecting disk usage exceeding 80% availability.</entry>
+    <entry key="yukon.web.widgets.infrastructureWarnings.warningType.GATEWAY_HIGH_DISK_USAGE.CLEAR">Gateway no longer detecting high disk usage.</entry>
+    <entry key="yukon.web.widgets.infrastructureWarnings.warningType.GATEWAY_RTC_BATTERY_FAILURE.LOW">Gateway detecting RTC battery failure.</entry>
+    <entry key="yukon.web.widgets.infrastructureWarnings.warningType.GATEWAY_RTC_BATTERY_FAILURE.CLEAR">Gateway no longer detecting RTC battery failure.</entry>
+    <entry key="yukon.web.widgets.infrastructureWarnings.warningType.GATEWAY_AC_POWER_FAILURE.LOW">Gateway detecting AC power failure.</entry>
+    <entry key="yukon.web.widgets.infrastructureWarnings.warningType.GATEWAY_AC_POWER_FAILURE.CLEAR">Gateway no longer detecting AC power failure.</entry>
+    <entry key="yukon.web.widgets.infrastructureWarnings.warningType.CELLULAR_RELAY_CONNECTION_STATUS.LOW">Cellular Relay communications interrupted since {0}.</entry>
+    <entry key="yukon.web.widgets.infrastructureWarnings.warningType.CELLULAR_RELAY_CONNECTION_STATUS.CLEAR">Cellular Relay communications restored.</entry>
+    <entry key="yukon.web.widgets.infrastructureWarnings.warningType.CELLULAR_RELAY_DESCENDANT_COUNT.LOW">Cellular Relay''s descendant count {0} is higher than recommended.</entry>
+    <entry key="yukon.web.widgets.infrastructureWarnings.warningType.CELLULAR_RELAY_DESCENDANT_COUNT.CLEAR">Cellular Relay''s descendant count is now below the recommended limit.</entry>
     
     <entry key="yukon.web.widgets.infrastructureWarnings.gateways">Gateways</entry>
     <entry key="yukon.web.widgets.infrastructureWarnings.relays">Relays</entry>
@@ -58,7 +87,7 @@
         A summary of the devices with and without warnings will be displayed in the top left corner of the page, along with an option to download all infrastructure warnings.
         <ul>
             <li>
-                <span class="fwb bg-color-pie-green txt-color-white">Devices without warnings (Green)</span> - 
+                <span class="fwb bg-color-green txt-color-white">Devices without warnings (Green)</span> - 
                 Number of devices without any of the below mentioned warning types.
             </li>
             <li>

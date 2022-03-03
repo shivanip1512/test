@@ -138,6 +138,10 @@
                 <link>/meter/water/home?deviceId=${deviceId}</link>
                 <labelArgument>${deviceName}</labelArgument>
               </page>
+              <page name="meterDetail.virtual" type="DETAIL">
+                <link>/meter/virtual/home?deviceId=${deviceId}</link>
+                <labelArgument>${deviceName}</labelArgument>
+              </page>
               <page name="meterDetail.gas" type="DETAIL">
                 <link>/meter/gas/home?deviceId=${deviceId}</link>
                 <labelArgument>${deviceName}</labelArgument>
@@ -190,9 +194,17 @@
         <link>/search</link>
       </page>
       <page name="commander" type="BASIC"/>
-      <page name="trends" type="BASIC"/>
-      <page name="trend" type="DETAIL">
-        <labelArgument>${trendName}</labelArgument>
+      <page name="trends" type="BASIC">
+        <link>/tools/trends</link>
+        <pages>
+            <page name="trend" type="DETAIL">
+                <labelArgument>${trendName}</labelArgument>
+             </page>
+             <page name="trend.CREATE" type="BASIC"/>
+             <page name="trend.EDIT" type="BASIC" hideFavorite="true">
+                 <labelArgument>${trendModel.name}</labelArgument>
+             </page>
+        </pages>
       </page>
       <page name="tdc.home" type="BASIC">
         <link>/tools/data-viewer</link>
@@ -320,6 +332,7 @@
                         <labelArgument>${formatName}</labelArgument>
                     </page>
                     <page name="bulk.archivedValueExporter.CREATE" type="BASIC" hideFavorite="true" />
+                    <page name="bulk.archivedValueExporter.VIEW" type="BASIC" hideFavorite="true" />
                     <page name="bulk.archivedValueExporter.selectDevices" type="BASIC">
                         <link>/amr/archivedValueExporter/selectDevices</link>
                     </page>
@@ -364,6 +377,9 @@
         </pages>
       </page>
       <page name="paoNotesSearch" type="BASIC"/>
+      <page name="aggregateIntervalReport" type="BASIC">
+        <link>/tools/aggregateIntervalReport/view</link>
+      </page>
     </pages>
   </module><!--  ENDS MODULE "tools" -->
 
@@ -900,6 +916,7 @@
               </page>
             </pages>
           </page>
+          <page name="systemPerformanceMetrics" type="BASIC" />
         </pages>
       </page>
       <page name="siteMap" type="BASIC">
@@ -964,6 +981,10 @@
                     <page name="config.weather" type="BLANK"/>
                     <page name="config.dashboards" type="BLANK"/>
                     <page name="security" type="BLANK" />
+                    <page name="config.attributes" type="BLANK">
+                        <requireRoleProperty value="ADMIN_MANAGE_ATTRIBUTES" level="OWNER"/>
+                    </page>
+                    <page name="config.loggers" type="BLANK" />
                 </pages>
             </page>
             
@@ -1279,6 +1300,19 @@
             <page name="comprehensiveMap" type="BASIC" hideSearch="true">
                 <link>/stars/comprehensiveMap/home</link>
             </page>
+            <page name="commChannel" type="BASIC" hideSearch="true">
+                <link>/stars/device/commChannel/list</link>
+                <pages>
+                    <page name="commChannelDetail" type="DETAIL">
+                        <link>/stars/device/commChannel/${id}</link>
+                        <labelArgument>${name}</labelArgument>
+                    </page>
+                    <page name="rfn1200Detail" type="DETAIL">
+                        <link>/stars/device/rfn1200/${id}</link>
+                        <labelArgument>${name}</labelArgument>
+                    </page>
+                </pages>
+            </page>
             <page name="gateways.list" type="BASIC" hideSearch="true">
                 <link>/stars/gateways</link>
                 <pages>
@@ -1287,7 +1321,14 @@
                         <labelArgument>${gateway.name}</labelArgument>
                         <pages>
                             <page name="wifiConnection" type="BASIC"/>
+                            <page name="cellConnection" type="BASIC"/>
                         </pages>
+                    </page>
+                    <page name="gateways.manageFirmware" type="BASIC">
+                        <link>/stars/gateways/manageFirmware</link>
+                    </page>
+                    <page name="gateways.manageCertificates" type="BASIC">
+                        <link>/stars/gateways/manageCertificates</link>
                     </page>
                 </pages>
             </page>
@@ -1311,6 +1352,15 @@
                         <labelArgument>${rtu.name}</labelArgument>
                     </page>
                     <page name="rtuDetail.CREATE" type="BASIC"/>
+                </pages>
+            </page>
+            <page name="virtualDevices.list" type="BASIC">
+                <link>/stars/virtualDevices</link>
+                <pages>
+                    <page name="virtualDevice.detail" type="DETAIL">
+                        <link>/stars/virtualDevice/${id}</link>
+                        <labelArgument>${name}</labelArgument>
+                    </page>
                 </pages>
             </page>
             <page name="scheduledDataImportList" type="BASIC" hideSearch="true">
@@ -1739,23 +1789,31 @@
           <page name="setupDatabase" type="BASIC"/>
           <page name="miscellaneousMethod" type="BASIC"/>
           <page name="deviceGroupSimulator" type="BASIC"/>
-          <page name="ecobeePGPKeyPair" type="BASIC"/>
           <page name="itronKeyPair" type="BASIC"/>
+          <page name="eatonCloudToken" type="BASIC"/>
           <page name="systemMetricsSimulator" type="BASIC"/>
           <page name="ivvc.ivvcSimulator" type="BASIC"/>
           <page name="sftp.sftpTest" type="BASIC"/>
           <page name="rfnTest" type="BASIC">
             <link>/dev/rfn/viewBase</link>
             <pages>
-              <page name="rfnTest.viewMeterReadArchive" type="DETAIL"/>
-              <page name="rfnTest.viewEventArchive" type="DETAIL"/>
-              <page name="rfnTest.viewAlarmArchive" type="DETAIL"/>
-              <page name="rfnTest.viewDataSimulator" type="BASIC"/>
+              <page name="rfnTest.viewMeterReadArchive" type="BASIC"/>
+              <page name="rfnTest.viewEventArchive" type="BASIC"/>
+              <page name="rfnTest.viewAlarmArchive" type="BASIC"/>
+              <page name="rfnTest.viewLcrDataSimulator" type="BASIC"/>
               <page name="rfnTest.viewGatewayDataSimulator" type="BASIC"/>
               <page name="rfnTest.viewDataStreamingSimulator" type="BASIC"/>
               <page name="rfnTest.viewMappingSimulator" type="BASIC"/>
               <page name="rfnTest.statusArchiveRequest" type="BASIC"/>
-            </pages>            
+              <page name="rfnTest.pointMappingDecipher" type="BASIC"/>
+              <page name="rfnTest.pointMappingIcd" type="BASIC"/>
+              <page name="rfnTest.lcrReadArchiveRequest" type="BASIC"/>
+              <page name="rfnTest.rfnDeviceDeleteSimulator" type="BASIC"/>
+              <page name="rfnTest.rfnMeterSimulator" type="BASIC"/>
+              <page name="rfnTest.deviceArchive" type="BASIC"/>
+              <page name="rfnTest.rfLocationArchiveRequest" type="BASIC"/>
+              <page name="rfnTest.rfnConfigNotification" type="BASIC"/>
+            </pages>
           </page>
           <page name="ecobee.mockTest" type="BASIC"/>
           <page name="i18nDemo" type="BASIC"/>
@@ -1763,8 +1821,9 @@
           <page name="jsTesting" type="BASIC"/>
           <page name="paoDefinitionTesting" type="BASIC"/>
           <page name="smartNotificationsSimulator" type="BASIC"/>
-          <page name="collectionActionsTesting" type="BASIC"/>
+          <page name="cacheManagement" type="BASIC"/>
           <page name="itronSimulator" type="BASIC"/>
+          <page name="eatonCloudSimulator" type="BASIC"/>
           <page name="jmsApis" type="BASIC"/>
           <page name="nest" type="BASIC">
           <link>/dev/nest/home</link>
@@ -1795,6 +1854,8 @@
               <page name="datePickers" type="BASIC"/>
               <page name="groupPickers" type="BASIC"/>
               <page name="deviceCollections" type="BASIC"/>
+              <page name="charts" type="BASIC"/>
+              <page name="dropDown" type="BASIC"/>
             </pages>
           </page>
         </pages>

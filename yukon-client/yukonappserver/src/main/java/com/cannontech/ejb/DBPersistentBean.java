@@ -91,7 +91,7 @@ public class DBPersistentBean implements IDBPersistent {
                         }
                         log.debug("Setting connection on object: " + getDbConnection());
                         object.setDbConnection( getDbConnection() );
-                        
+                        log.debug("Using objectSuppliedConnection:{} connecton:{}", objectSuppliedConnection, getDbConnection());
                         switch( operation )
                         {
                         case INSERT:
@@ -107,7 +107,9 @@ public class DBPersistentBean implements IDBPersistent {
                             break;
                             
                         case DELETE:
+                            log.debug("Deleting object:{} objectSuppliedConnection:{}", object, objectSuppliedConnection);
                             object.delete();
+                            log.debug("Deleted object:{} objectSuppliedConnection:{}", object, objectSuppliedConnection);
                             break;
                             
                         case DELETE_PARTIAL:

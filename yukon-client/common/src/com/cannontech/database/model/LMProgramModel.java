@@ -26,8 +26,8 @@ public class LMProgramModel extends AbstractDeviceTreeModel {
 
     @Override
     protected DBTreeNode getNewDeviceNode(LiteYukonPAObject pao) {
-        if (pao.getPaoType() == PaoType.LM_METER_DISCONNECT_PROGRAM) {
-            // Meter Disconnect programs can only be edited on the web 
+        if (pao.getPaoType() == PaoType.LM_METER_DISCONNECT_PROGRAM || pao.getPaoType() == PaoType.LM_EATON_CLOUD_PROGRAM) {
+            // Meter Disconnect and Eaton Cloud programs can only be edited on the web 
             DBTreeNode warningNode = new DBTreeNode(new WebOnlyEditWarning(pao));
             warningNode.setIsSystemReserved(true);
             return warningNode;

@@ -79,7 +79,7 @@ public interface PaoSelectionService {
      * @param responseFields List of optional fields to populate.  If you don't want any data,
      * use {@link #selectPaoIdentifiers(Node) instead.  Use null to populate PaoData with
      * only values used in the request.
-     * @return Map of PoaIdentifier -> PaoData with PaoData filled in with all fields listed
+     * @return Map of PaoIdentifier -> PaoData with PaoData filled in with all fields listed
      *         in responseFields.
      */
     public Map<PaoIdentifier, PaoData> selectPaoIdentifiersAndGetData(Node paoCollectionNode,

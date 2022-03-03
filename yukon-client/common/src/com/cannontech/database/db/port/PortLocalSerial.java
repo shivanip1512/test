@@ -8,35 +8,18 @@ package com.cannontech.database.db.port;
  
 public class PortLocalSerial extends DBPersistent {
 	
-	private String physicalPort = null;
+	private String physicalPort = "";
 	private Integer portID = null;
+	
 /**
- * SerialPortSettings constructor comment.
+ * SerialPortSettings constructor comment.public PortLocalSerial( 
+ * 
+ * 
  */
-public PortLocalSerial() {
-	super();
-	initialize( null, null );
-}
-/**
- * This method was created in VisualAge.
- * @param portNumber java.lang.Integer
- */
-public PortLocalSerial( Integer portNumber ) {
-	super();
-	initialize( portNumber, null );
-}
-/**
- * This method was created in VisualAge.
- * @param portNumber java.lang.Integer
- * @param physicalPort java.lang.String
- * @param baudRate java.lang.Integer
- * @param cdWait java.lang.Integer
- */
-public PortLocalSerial( Integer portNumber, String physicalPort ) {
-	super();
+    public PortLocalSerial() {
+        super();
+    }
 
-	initialize( portNumber, physicalPort );
-}
 /**
  * add method comment.
  */
@@ -67,18 +50,7 @@ public String getPhysicalPort() {
 public Integer getPortID() {
 	return portID;
 }
-/**
- * This method was created in VisualAge.
- * @param portNumber java.lang.Integer
- * @param physicalPort java.lang.String
- * @param baudRate java.lang.Integer
- * @param cdWait java.lang.Integer
- */
-public void initialize( Integer portID, String physicalPort ) {
 
-	setPortID( portID );
-	setPhysicalPort( physicalPort );
-}
 /**
  * retrieve method comment.
  */
@@ -91,7 +63,7 @@ public void retrieve() throws java.sql.SQLException {
 	Object results[] = retrieve( columnNames, "PortLocalSerial", constraintColumnNames, constraintColumnValues);
 	if( results.length == columnNames.length )
 	{
-		setPhysicalPort( (String) results[0] );
+	    setPhysicalPort( ((String) results[0]).trim() );
 	}
 	
 }

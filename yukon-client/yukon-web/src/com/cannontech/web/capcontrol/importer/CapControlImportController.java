@@ -15,8 +15,9 @@ import org.apache.logging.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.ModelMap;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.multipart.MultipartHttpServletRequest;
 
@@ -29,6 +30,7 @@ import com.cannontech.capcontrol.creation.model.HierarchyImportCompleteDataResul
 import com.cannontech.capcontrol.creation.model.HierarchyImportData;
 import com.cannontech.capcontrol.creation.model.HierarchyImportResult;
 import com.cannontech.capcontrol.creation.model.HierarchyImportResultType;
+import com.cannontech.capcontrol.creation.model.IvvcZoneImportResult;
 import com.cannontech.capcontrol.creation.service.CapControlImportService;
 import com.cannontech.capcontrol.creation.service.RegulatorImportService;
 import com.cannontech.capcontrol.creation.service.RegulatorPointMappingImportService;
@@ -90,7 +92,7 @@ public class CapControlImportController {
         }
     };
     
-    @RequestMapping("view")
+    @GetMapping("view")
     public String view(String cacheKey, ModelMap model, YukonUserContext userContext ) {
         
         List<ImportResult> results = Lists.newArrayList();
@@ -116,7 +118,7 @@ public class CapControlImportController {
         return "import/view.jsp";
     }
     
-    @RequestMapping(value="cbcFile", method=RequestMethod.POST)
+    @PostMapping("cbcFile")
     public String cbcFile(HttpServletRequest req, ModelMap model, FlashScope flash, YukonUserContext userContext) throws IOException {
         
         List<CbcImportResult> results = new ArrayList<CbcImportResult>();
@@ -174,7 +176,7 @@ public class CapControlImportController {
         return "redirect:view";
     }
     
-    @RequestMapping(value="regulatorFile", method=RequestMethod.POST)
+    @PostMapping("regulatorFile")
     public String regulatorFile(ModelMap model, HttpServletRequest req, FlashScope flash, YukonUserContext userContext)
             throws IOException {
         //Procure the import file
@@ -228,7 +230,7 @@ public class CapControlImportController {
         return "redirect:view";
     }
     
-    @RequestMapping(value="pointmappingFile", method=RequestMethod.POST)
+    @PostMapping("pointmappingFile")
     public String pointmappingFile(ModelMap model, HttpServletRequest req, FlashScope flash, YukonUserContext userContext) throws IOException {
         //Procure the import file
         if (!ServletFileUpload.isMultipartContent(req)) {
@@ -280,7 +282,7 @@ public class CapControlImportController {
         return "redirect:view";
     }
     
-    @RequestMapping(value="hierarchyFile", method=RequestMethod.POST)
+    @PostMapping("hierarchyFile")
     public String hierarchyFile(HttpServletRequest req, ModelMap model, FlashScope flash, YukonUserContext userContext) throws IOException {
         
         List<HierarchyImportResult> results = Lists.newArrayList();
@@ -330,6 +332,73 @@ public class CapControlImportController {
         flash.setConfirm(new YukonMessageSourceResolvable(key + "importHierarchyFileSuccess"));
         
         return "redirect:view";
+    }
+    
+    // Will be added back in as part of YUK-23010 in 9.1.0
+/*    @PostMapping("ivvczoneFile")
+    public String ivvcZoneFile(HttpServletRequest req, ModelMap model, FlashScope flash, YukonUserContext userContext) throws IOException {
+        
+        List<IvvcZoneImportResult> results = Lists.newArrayList();
+        
+        MultipartHttpServletRequest mRequest = (MultipartHttpServletRequest)req;
+        MultipartFile dataFile = mRequest.getFile("dataFile");
+        InputStream inputStream = dataFile.getInputStream();
+        
+        try {
+            FileUploadUtils.validateTabularDataUploadFileType(dataFile);
+            importStarted(ImportType.IVVC_ZONE.getFormatKey(), userContext, dataFile.getOriginalFilename());
+            //TODO: Create IVVC Zone replacements for these in YUK-22962
+            List<HierarchyImportData> hierarchyImportData =
+                fileImporterDao.getHierarchyImportData(inputStream, results);
+
+            processHierarchyImport(hierarchyImportData, results);
+        } catch (FileImportException e) {
+            log.error(e.getMessage());
+            flash.setError(new YukonMessageSourceResolvable(e.getMessage()));
+            return "redirect:view";
+        } catch (CapControlHierarchyFileImporterException e) {
+            log.error(e.getMessage());
+            flash.setError(new YukonMessageSourceResolvable(key + "missingRequiredColumn", e.getColumns()));
+            return "redirect:view";
+        } catch (IllegalArgumentException e) {
+            log.error("Invalid column name found in import file: " + e.getMessage());
+            flash.setError(new YukonMessageSourceResolvable(key + "invalidColumns", e.getMessage()));
+            return "redirect:view";
+        } finally {
+            inputStream.close();
+        }
+        
+        List<ImportResult> resolvables = getIvvcZoneResultResolvables(results);
+        
+        UUID randomUUID = UUID.randomUUID();
+        CapControlImportResult capControlImportResult =
+            new CapControlImportResult(resolvables, dataFile.getOriginalFilename(), ImportType.IVVC_ZONE.name());
+        resultsLookup.put(randomUUID.toString(), capControlImportResult);
+        
+        model.addAttribute("cacheKey", randomUUID.toString());
+        
+        for (IvvcZoneImportResult result : results) {
+            if (!result.getResultType().isSuccess()) {
+                flash.setWarning(new YukonMessageSourceResolvable(key + "processedWithErrors"));
+                return "redirect:view";
+            }
+        }
+        flash.setConfirm(new YukonMessageSourceResolvable(key + "importIvvcZoneFileSuccess"));
+        
+        return "redirect:view";
+    }*/
+    
+    private List<ImportResult> getIvvcZoneResultResolvables(List<IvvcZoneImportResult> results) {
+        
+        List<ImportResult> resolvables = Lists.newArrayList();
+        
+        for (IvvcZoneImportResult result : results) {
+            YukonMessageSourceResolvable message = result.getMessage();
+            ImportResolvable resolvable = new ImportResolvable(message, result.getResultType().isSuccess());
+            resolvables.add(resolvable);
+        }
+        
+        return resolvables;
     }
     
     private List<ImportResult> getHierarchyResultResolvables(List<HierarchyImportResult> results) {

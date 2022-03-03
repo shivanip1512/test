@@ -8,6 +8,8 @@
 #include "queues.h"
 #include "devicetypes.h"
 
+#include "boost_test_helpers.h"
+
 BOOST_AUTO_TEST_SUITE( test_utility )
 
 BOOST_AUTO_TEST_CASE( test_find_gcd )
@@ -231,9 +233,27 @@ BOOST_AUTO_TEST_CASE(test_isExpresscomGroup)
 
 BOOST_AUTO_TEST_CASE(test_nextScheduledTimeAlignedOnRate_specialValues)
 {
+    const auto tzOverride = Cti::Test::set_to_central_timezone();
+
     // Remeber ctidate is CtiDate(day, month, year)
     CtiTime originTime = CtiTime::CtiTime(CtiDate::CtiDate(1,1,2000), 1, 1, 0);
     BOOST_CHECK_EQUAL( CtiTime::CtiTime(CtiDate::CtiDate(1,1,2000), 2, 0, 0), nextScheduledTimeAlignedOnRate( originTime, 3600 )); //Aligned on hour
+    BOOST_CHECK_EQUAL( CtiTime::CtiTime(CtiDate::CtiDate(1,1,2000), 2, 0, 0), nextScheduledTimeAlignedOnRate( originTime, 7200 )); //Aligned on hour
+    BOOST_CHECK_EQUAL( CtiTime::CtiTime(CtiDate::CtiDate(1,1,2000), 3, 0, 0), nextScheduledTimeAlignedOnRate( originTime, 10800 )); //Aligned on hour
+    BOOST_CHECK_EQUAL( CtiTime::CtiTime(CtiDate::CtiDate(2,1,2000), 0, 0, 0), nextScheduledTimeAlignedOnRate( originTime, 86400 )); //Aligned on day
+    BOOST_CHECK_EQUAL( CtiTime::CtiTime(CtiDate::CtiDate(2,1,2000), 0, 0, 0), nextScheduledTimeAlignedOnRate( originTime, 604800 )); //Aligned on week = midnight Sunday
+    BOOST_CHECK_EQUAL( CtiTime::CtiTime(CtiDate::CtiDate(1,2,2000), 0, 0, 0), nextScheduledTimeAlignedOnRate( originTime, 2592000 )); //Aligned on month = midnight 1st
+}
+
+BOOST_AUTO_TEST_CASE(test_nextScheduledTimeAlignedOnRate_specialValues_india)
+{
+    const auto tzOverride = Cti::Test::set_to_india_timezone();
+
+    // Remeber ctidate is CtiDate(day, month, year)
+    CtiTime originTime = CtiTime::CtiTime(CtiDate::CtiDate(1,1,2000), 1, 1, 0);
+    BOOST_CHECK_EQUAL( CtiTime::CtiTime(CtiDate::CtiDate(1,1,2000), 2, 0, 0), nextScheduledTimeAlignedOnRate( originTime, 3600 )); //Aligned on hour
+    BOOST_CHECK_EQUAL( CtiTime::CtiTime(CtiDate::CtiDate(1,1,2000), 2, 0, 0), nextScheduledTimeAlignedOnRate( originTime, 7200 )); //Aligned on hour
+    BOOST_CHECK_EQUAL( CtiTime::CtiTime(CtiDate::CtiDate(1,1,2000), 3, 0, 0), nextScheduledTimeAlignedOnRate( originTime, 10800 )); //Aligned on hour
     BOOST_CHECK_EQUAL( CtiTime::CtiTime(CtiDate::CtiDate(2,1,2000), 0, 0, 0), nextScheduledTimeAlignedOnRate( originTime, 86400 )); //Aligned on day
     BOOST_CHECK_EQUAL( CtiTime::CtiTime(CtiDate::CtiDate(2,1,2000), 0, 0, 0), nextScheduledTimeAlignedOnRate( originTime, 604800 )); //Aligned on week = midnight Sunday
     BOOST_CHECK_EQUAL( CtiTime::CtiTime(CtiDate::CtiDate(1,2,2000), 0, 0, 0), nextScheduledTimeAlignedOnRate( originTime, 2592000 )); //Aligned on month = midnight 1st

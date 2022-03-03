@@ -22,4 +22,6 @@ public:
     virtual bool stopControl(CtiLMGroupPtr currentLMGroup);
     virtual unsigned long estimateOffTime(long controlSeconds);
     // End must implement functions
+
+    std::size_t getFixedSize() const override    { return sizeof( *this ); }
 };

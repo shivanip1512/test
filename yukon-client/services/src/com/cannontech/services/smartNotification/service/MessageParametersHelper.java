@@ -1,6 +1,7 @@
 package com.cannontech.services.smartNotification.service;
 
 import java.util.ArrayList;
+import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
@@ -11,6 +12,7 @@ import com.cannontech.common.smartNotification.model.SmartNotificationMedia;
 import com.cannontech.common.smartNotification.model.SmartNotificationMessageParameters;
 import com.cannontech.common.smartNotification.model.SmartNotificationSubscription;
 import com.cannontech.common.smartNotification.model.SmartNotificationVerbosity;
+import com.cannontech.common.smartNotification.model.SmartNotificationMessageParameters.ProcessingType;
 import com.google.common.collect.HashMultimap;
 import com.google.common.collect.SetMultimap;
 
@@ -20,7 +22,8 @@ public class MessageParametersHelper {
      * Creates smart notification parameters.
      */
     public static List<SmartNotificationMessageParameters> getMessageParameters(SmartNotificationEventType type,
-            SetMultimap<SmartNotificationSubscription, SmartNotificationEvent> subscriptionToEvent, int eventPeriodMinutes) {
+            SetMultimap<SmartNotificationSubscription, SmartNotificationEvent> subscriptionToEvent, int eventPeriodMinutes, 
+            ProcessingType processingType) {
         List<SmartNotificationMessageParameters> params = new ArrayList<>();
         if(subscriptionToEvent.isEmpty()){
             return params;
@@ -37,10 +40,11 @@ public class MessageParametersHelper {
             Set<SmartNotificationEvent> events = subscriptions.stream()
                     .map(subscriptionToEvent::get)
                     .flatMap(Set::stream)
-                    .collect(Collectors.toSet());
+                    .sorted((a1, a2) -> a1.getTimestamp().compareTo(a2.getTimestamp()))
+                    .collect(Collectors.toCollection(LinkedHashSet::new));
 
             SmartNotificationMessageParameters param = new SmartNotificationMessageParameters(type, mv.media,
-                mv.verbosity, recipients, new ArrayList<>(events), eventPeriodMinutes);
+                mv.verbosity, recipients, new ArrayList<>(events), processingType);
             params.add(param);
         }
         return params;

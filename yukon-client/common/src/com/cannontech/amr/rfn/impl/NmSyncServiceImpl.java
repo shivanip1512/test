@@ -4,11 +4,10 @@ import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;
 
-import javax.jms.ConnectionFactory;
+import javax.annotation.PostConstruct;
 
 import org.apache.logging.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.jms.core.JmsTemplate;
 
 import com.cannontech.amr.rfn.service.NmSyncService;
 import com.cannontech.clientutils.YukonLogManager;
@@ -16,6 +15,8 @@ import com.cannontech.common.rfn.message.RfnArchiveStartupNotification;
 import com.cannontech.common.rfn.message.gateway.GatewayEditRequest;
 import com.cannontech.common.rfn.message.gateway.GatewaySaveData;
 import com.cannontech.common.rfn.model.RfnDevice;
+import com.cannontech.common.util.jms.YukonJmsTemplate;
+import com.cannontech.common.util.jms.YukonJmsTemplateFactory;
 import com.cannontech.common.util.jms.api.JmsApiDirectory;
 import com.cannontech.message.dispatch.DispatchClientConnection;
 import com.cannontech.yukon.conns.ConnPool;
@@ -24,18 +25,26 @@ public class NmSyncServiceImpl implements NmSyncService {
     
  private static final int MINUTES_TO_WAIT_TO_SEND_STARTUP_REQUEST = 5;
     
-    private static final Logger log = YukonLogManager.getLogger(NmSyncServiceImpl.class);
+    private static final Logger log = YukonLogManager.getRfnLogger(NmSyncServiceImpl.class);
     
     @Autowired private ConnPool connPool;
-    protected JmsTemplate jmsTemplate;
-    
+    @Autowired private YukonJmsTemplateFactory jmsTemplateFactory;
+
+    private YukonJmsTemplate archiveStartupJmsTemplate;
+    private YukonJmsTemplate rfGatewayEditJmsTemplate;
     private final ScheduledExecutorService scheduledExecutorService = Executors.newSingleThreadScheduledExecutor();
-    
+
+    @PostConstruct
+    public void init() {
+        archiveStartupJmsTemplate = jmsTemplateFactory.createTemplate(JmsApiDirectory.ARCHIVE_STARTUP);
+        rfGatewayEditJmsTemplate = jmsTemplateFactory.createTemplate(JmsApiDirectory.RF_GATEWAY_EDIT);
+    }
+
     @Override
     public void sendSyncRequest() {
         RfnArchiveStartupNotification notif = new RfnArchiveStartupNotification();
-        jmsTemplate.convertAndSend(JmsApiDirectory.ARCHIVE_STARTUP.getQueue().getName(), notif);
-        log.info("Startup notification request has been sent to Network manager");
+        archiveStartupJmsTemplate.convertAndSend(notif);
+        log.info("Startup notification ({}) request has been sent to Network manager", notif.getClass());
     }
     
     @Override
@@ -84,13 +93,7 @@ public class NmSyncServiceImpl implements NmSyncService {
         editData.setName(rfnDevice.getName());
         request.setRfnIdentifier(rfnDevice.getRfnIdentifier());
         request.setData(editData);
-        jmsTemplate.convertAndSend(JmsApiDirectory.RF_GATEWAY_EDIT.getQueue().getName(), request);
+        rfGatewayEditJmsTemplate.convertAndSend(request);
     }
 
-    @Autowired
-    public void setConnectionFactory(ConnectionFactory connectionFactory) {
-        jmsTemplate = new JmsTemplate(connectionFactory);
-        jmsTemplate.setExplicitQosEnabled(true);
-        jmsTemplate.setDeliveryPersistent(false);
-    }
 }

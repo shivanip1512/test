@@ -17,14 +17,40 @@
     <cti:toJson id="module-config" object="${jsConfig}"/>
 
     <div id="create-format-dialog" title="<cti:msg2 key=".createNewFormat.title"/>" class="dn">
-        <h4 class="db stacked"><i:inline key=".selectFormatType"/></h4>
+        <div class="js-error-message-container"></div>
         <div class="stacked">
-            <div><label><input type="radio" name="newFormatType" checked="checked" value="FIXED_ATTRIBUTE"><i:inline key="${fixedAttribute}"/></label></div>
+            <div>
+                <label>
+                    <input type="radio" name="newFormatType" checked="checked" value="FIXED_ATTRIBUTE" class="js-create-format-option js-do-not-use-template">
+                    <i:inline key="${fixedAttribute}"/>
+                </label>
+            </div>
             <p class="detail" style="margin-left: 30px;"><i:inline key="${fixedAttribute.description}"/></p>
         </div>
         <div class="stacked">
-            <div><label><input type="radio" name="newFormatType" value="DYNAMIC_ATTRIBUTE"><i:inline key="${dynamicAttribute}"/></label></div>
+            <div>
+                <label>
+                    <input type="radio" name="newFormatType" value="DYNAMIC_ATTRIBUTE" class="js-create-format-option js-do-not-use-template">
+                    <i:inline key="${dynamicAttribute}"/>
+                </label>
+            </div>
             <p class="detail" style="margin-left: 30px;"><i:inline key="${dynamicAttribute.description}"/></p>
+        </div>
+        <div class="stacked">
+            <div>
+                <label>
+                    <input type="radio" name="useTemplate" value="true" class="js-create-format-option js-use-template"/>
+                    <i:inline key=".formatType.useTemplate"/>
+                </label>
+                
+            </div>
+            <p class="detail" style="margin-left: 30px;"><i:inline key=".formatType.useTemplate.description"/></p>
+            <div class="dn dib js-avaliable-template-formats" style="margin-left: 30px;">
+                <label><i:inline key=".template"/></label>:
+                <select class="js-template-formats-dropdown"></select>
+                &nbsp;&nbsp;
+                <a class="js-template-preview-link" href="#"><i:inline key=".preview.title"/></a>
+            </div>
         </div>
     </div>
 
@@ -58,7 +84,7 @@
                                 <c:if test="${not empty archivedValuesExporter.deviceCollection.deviceCount}">
                                     <span class="b-label fl"><i:inline key="${archivedValuesExporter.deviceCollection.description}" htmlEscape="true"/></span>
                                 </c:if>
-                                <i class="icon icon-folder-edit"></i>
+                                <cti:icon icon="icon-folder-edit"/>
                             </a>
                             <c:if test="${archivedValuesExporter.deviceCollection.deviceCount > 0}">
                                 <tags:selectedDevicesPopup deviceCollection="${deviceCollection}"/>
@@ -74,7 +100,8 @@
                             selectedAttributes="${archivedValuesExporter.attributes}"
                             name="attributes"
                             multipleSize="8"
-                            groupItems="true"/>
+                            groupItems="true"
+                            htmlEscape="true" />
                     </tags:nameValue2>
                 </tags:nameValueContainer2>
             </form:form>
@@ -97,7 +124,7 @@
 
         <c:if test="${not empty allFormats}">
             <h3><i:inline key=".preview.title"/></h3>
-            <pre><div><i:inline key=".preview.rulerNumbers"/></div><div><i:inline key=".preview.rulerMarks"/></div><div preview-header>${fn:escapeXml(preview.header)}</div><div preview-body><c:forEach items="${preview.body}" var="line">${fn:escapeXml(line)}<br></c:forEach></div><div preview-footer>${fn:escapeXml(preview.footer)}</div></pre>
+            <pre class="code"><div><i:inline key=".preview.rulerNumbers"/></div><div><i:inline key=".preview.rulerMarks"/></div><div preview-header>${fn:escapeXml(preview.header)}</div><div preview-body><c:forEach items="${preview.body}" var="line">${fn:escapeXml(line)}<br></c:forEach></div><div preview-footer>${fn:escapeXml(preview.footer)}</div></pre>
         </c:if>
 
         <%@ include file="scheduledJobsTable.jsp" %>
@@ -130,13 +157,23 @@
                     <form:input path="runDataRange.daysPrevious" size="4" maxlength="4"/>
                 </div>
 
-                 <div class="stacked js-dynamic">
+                <div class="stacked js-dynamic">
                     <hr>
                     <label class="form-control dib fl">
                         <form:checkbox path="runDataRange.timeSelected" cssClass="js-time-check"/>
                         <i:inline key=".time"/>&nbsp;<cti:msg2 key=".sinceLastChange" var="sinceLastChange"/>
                     </label>
                     <dt:time path="runDataRange.time" cssClass="js-time"/>
+                    <label class="form-control dib fl">
+                        <form:checkbox path="onInterval" cssClass="js-on-interval-check"/>
+                        <i:inline key=".onInterval"/>&nbsp;
+                        <form:select path="interval" cssClass="js-intervals">
+                            <c:forEach var="interval" items="${intervals}">
+                                <cti:msg2 var="intervalLabel" key=".intervals.${interval}"/>
+                                <form:option value="${interval}" label="${intervalLabel}"/>
+                            </c:forEach>
+                        </form:select>
+                    </label>
                 </div>
              </div>
          </form:form>
@@ -171,6 +208,16 @@
                         <i:inline key=".time"/>&nbsp;<cti:msg2 key=".sinceLastChange" var="sinceLastChange"/>
                     </label>
                     <dt:time path="scheduleDataRange.time" cssClass="js-time"/>
+                    <label class="form-control dib fl">
+                        <form:checkbox path="onInterval" cssClass="js-on-interval-check"/>
+                        <i:inline key=".onInterval"/>&nbsp;
+                        <form:select path="interval" cssClass="js-intervals">
+                            <c:forEach var="interval" items="${intervals}">
+                                <cti:msg2 var="intervalLabel" key=".intervals.${interval}"/>
+                                <form:option value="${interval}" label="${intervalLabel}"/>
+                            </c:forEach>
+                        </form:select>
+                    </label>
                 </div>
              </div>
          </form:form>

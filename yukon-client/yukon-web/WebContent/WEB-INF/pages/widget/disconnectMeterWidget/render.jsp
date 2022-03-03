@@ -42,7 +42,7 @@
                     <div style="float:right; width:250px;">
                         <cti:checkRolesAndProperties value="ENDPOINT_PERMISSION" level="UPDATE">
                             <cti:button classes="left" nameKey="edit" renderMode="buttonImage" icon="icon-pencil" data-popup="#disconnect-meter-popup"/>
-                            <cti:button nameKey="delete" icon="icon-cross" renderMode="buttonImage" id="delete-btn" 
+                            <cti:button nameKey="delete" icon="icon-delete" renderMode="buttonImage" id="delete-btn" 
                                 data-ok-event="yukon:widget:meter:disconnect:delete:addr"/>
                             <tags:widgetActionUpdate method="uploadConfig" nameKey="Upload" classes="M0" icon="icon-upload"
                                 container="${widgetParameters.widgetId}_results" renderMode="buttonImage" title="${uploadTitle}"/>
@@ -70,7 +70,8 @@
             <div class="scroll-md monospace">${configString}</div>
         </tags:hideReveal2>
     </c:if>
-    <c:if test="${fn:length(errors) > 0}">
+
+  	<c:if test="${fn:length(errors) > 0}">
         <div class="scroll-md">
             <c:forEach items="${errors}" var="error">
                 <tags:hideReveal title="${error.description} (${error.errorCode})" showInitially="false">
@@ -119,14 +120,16 @@
                 <c:if test="${supportsRead}">
                    <tags:widgetActionRefresh method="read" nameKey="read" icon="icon-read" classes="M0"/>
                 </c:if>
-                <c:if test="${supportsQuery}">
-                   <tags:widgetActionRefresh method="query" nameKey="query" icon="icon-read" classes="M0"/>
-                </c:if>
-                <cti:checkRolesAndProperties value="ALLOW_DISCONNECT_CONTROL">
+                <cti:checkRolesAndProperties value="ALLOW_DISCONNECT_CONTROL" level="INTERACT">
+	                <c:if test="${supportsQuery}">
+	                   <tags:widgetActionRefresh method="query" nameKey="query" icon="icon-read" classes="M0"/>
+	                </c:if>
                     <tags:widgetActionRefresh method="connect" nameKey="connect" showConfirm="true" classes="M0"/>
                     <c:if test="${supportsArm}">
                       <tags:widgetActionRefresh method="arm" nameKey="arm" showConfirm="true" classes="M0"/>
                     </c:if>
+                </cti:checkRolesAndProperties>
+                <cti:checkRolesAndProperties value="ALLOW_DISCONNECT_CONTROL" level="OWNER">
                     <tags:widgetActionRefresh method="disconnect" nameKey="disconnect" showConfirm="true"/>
                 </cti:checkRolesAndProperties>
             </div>

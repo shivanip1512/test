@@ -1,12 +1,14 @@
 package com.cannontech.stars.core.service;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+
 import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
 
-import org.junit.Assert;
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
 import com.cannontech.core.dynamic.impl.MockAsyncDynamicDataSourceImpl;
 import com.cannontech.message.dispatch.message.DbChangeCategory;
@@ -48,7 +50,7 @@ public class EnergyCompanyDaoTest {
         }
     };
 
-    @Before
+    @BeforeEach
     public void setup() {
         Builder ecBuilder = new EnergyCompany.Builder();
         ecBuilder.addEnergyCompany(0, "", null, 0, null);
@@ -66,14 +68,14 @@ public class EnergyCompanyDaoTest {
     @Test
     public void childEnergyCompaniesTest_NoChildren() {
         List<EnergyCompany> childEnergyCompanies = ecDao.getEnergyCompany(7).getDescendants(false);
-        Assert.assertTrue(childEnergyCompanies.isEmpty());
+        assertTrue(childEnergyCompanies.isEmpty());
     }
 
     @Test
     public void childEnergyCompaniesTest_OneChild() {
         List<EnergyCompany> childEnergyCompanies = ecDao.getEnergyCompany(6).getDescendants(false);
 
-        Assert.assertEquals(1, childEnergyCompanies.size());
+        assertEquals(1, childEnergyCompanies.size());
         testExpectedEnergyCompanyIdList(Arrays.asList(7), childEnergyCompanies);
     }
 
@@ -81,7 +83,7 @@ public class EnergyCompanyDaoTest {
     public void childEnergyCompaniesTest_MultipleChildren() {
         List<EnergyCompany> childEnergyCompanies = ecDao.getEnergyCompany(4).getDescendants(false);
 
-        Assert.assertEquals(3, childEnergyCompanies.size());
+        assertEquals(3, childEnergyCompanies.size());
         testExpectedEnergyCompanyIdList(Arrays.asList(5, 6, 7), childEnergyCompanies);
     }
 
@@ -89,7 +91,7 @@ public class EnergyCompanyDaoTest {
     public void childEnergyCompaniesTest_TopEnergyCompany() {
         List<EnergyCompany> childEnergyCompanies = ecDao.getEnergyCompany(0).getDescendants(false);
 
-        Assert.assertEquals(8, childEnergyCompanies.size());
+        assertEquals(8, childEnergyCompanies.size());
         testExpectedEnergyCompanyIdList(Arrays.asList(1, 2, 3, 4, 5, 6, 7, 8), childEnergyCompanies);
     }
 
@@ -99,7 +101,7 @@ public class EnergyCompanyDaoTest {
     private void testExpectedEnergyCompanyIdList(List<Integer> expectedEnergyCompanyIds,
                                                  List<EnergyCompany> actualEnergyCompanies) {
         List<Integer> actualEnergyCompanyIds = Lists.transform(actualEnergyCompanies, EnergyCompanyDao.TO_ID_FUNCTION);
-        Assert.assertTrue(actualEnergyCompanyIds.containsAll(expectedEnergyCompanyIds));
-        Assert.assertTrue(expectedEnergyCompanyIds.containsAll(actualEnergyCompanyIds));
+        assertTrue(actualEnergyCompanyIds.containsAll(expectedEnergyCompanyIds));
+        assertTrue(expectedEnergyCompanyIds.containsAll(actualEnergyCompanyIds));
     }
 }

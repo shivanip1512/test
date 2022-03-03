@@ -6,9 +6,11 @@ import java.util.Map;
 
 import org.apache.commons.codec.DecoderException;
 
+import com.cannontech.common.rfn.message.location.LocationResponse;
 import com.cannontech.common.rfn.model.RfnManufacturerModel;
 import com.cannontech.development.model.RfnTestEvent;
 import com.cannontech.development.model.RfnTestMeterReading;
+import com.cannontech.development.model.RfnTestOutageRestoreEvent;
 import com.cannontech.development.service.impl.DRReport;
 
 public interface RfnEventTestingService {
@@ -21,8 +23,7 @@ public interface RfnEventTestingService {
     public int sendLcrReadArchive(int serialFrom, int serialTo, int days, DRReport drReport) throws IOException, DecoderException;
     void calculationStressTest();
 
-    void sendLocationResponse(int serialFrom, int serialTo, String manufacturer, String model, double latitude,
-            double longitude);
+    void sendLocationResponse(int serialFrom, int serialTo, String manufacturer, String model, LocationResponse locationResponse);
     
     /**
      * Gets a RFN meter types, grouped by manufacturer and/or type.  
@@ -34,4 +35,9 @@ public interface RfnEventTestingService {
      */
     int sendConfigNotification(RfnTestMeterReading reading);
     
+    /**
+     * For each device in device group sends and Outage event, waits X milliseconds and sends Restore event
+     */
+    int sendOutageAndRestoreEvents(RfnTestOutageRestoreEvent event);
+    void sendGatewayLocationResponse(LocationResponse locationResponse);
 }

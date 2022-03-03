@@ -65,8 +65,13 @@ yukon.dr.curtailment = (function () {
             //move the row
             rowToMove.appendTo(moveTarget);
             //change icon
-            icon.removeClass(unassigning ? 'icon-delete' : 'icon-add');
-            icon.addClass(unassigning ? 'icon-add' : 'icon-delete');
+            icon.removeClass(unassigning ? 'icon-cross' : 'icon-add');
+            icon.addClass(unassigning ? 'icon-add' : 'icon-cross');
+            if (unassigning) {
+            	icon.html(yg.iconSvg.iconAdd);
+            } else {
+            	icon.html(yg.iconSvg.iconCross);
+            }
             //change input name
             input.attr('name', opts.operation);
             
@@ -87,9 +92,13 @@ yukon.dr.curtailment = (function () {
             }
             
             rowToMove.appendTo(moveTarget);
-            icon.removeClass(unassigning ? 'icon-delete' : 'icon-add');
-            icon.addClass(unassigning ? 'icon-add' : 'icon-delete');
-            
+            icon.removeClass(unassigning ? 'icon-cross' : 'icon-add');
+            icon.addClass(unassigning ? 'icon-add' : 'icon-cross');
+            if (unassigning) {
+            	icon.html(yg.iconSvg.iconAdd);
+            } else {
+            	icon.html(yg.iconSvg.iconCross);
+            }
             yukon.ui.reindexInputs($('table#active-programs'));
             yukon.ui.reindexInputs($('table#available-programs'));
             
@@ -116,15 +125,29 @@ yukon.dr.curtailment = (function () {
             }
             
             rowToMove.appendTo(moveTarget);
-            icon.removeClass(unassigning ? 'icon-delete' : 'icon-add');
-            icon.addClass(unassigning ? 'icon-add' : 'icon-delete');
-            
+            icon.removeClass(unassigning ? 'icon-cross' : 'icon-add');
+            icon.addClass(unassigning ? 'icon-add' : 'icon-cross');
+            if (unassigning) {
+            	icon.html(yg.iconSvg.iconAdd);
+            } else {
+            	icon.html(yg.iconSvg.iconCross);
+            }
             yukon.ui.reindexInputs($('table#assigned-customers'));
             yukon.ui.reindexInputs($('table#unassigned-customers'));
             
             debug.log('operation: ' + opts.operation + ' for customerId ' + customerId + ' successfully processed');
         },
         
+        _enableDisableActionsMenu = function() {
+            //Display the actions and auto-refresh if the current active tab is Trends
+            var isTrendsTabActive = $(".ui-tabs").find(".ui-tabs-active").hasClass('ccTrends');
+            if (isTrendsTabActive) {
+                $('.page-actions').css('display','block');
+            } else {
+                $('.page-actions').css('display','none');
+            }
+        },
+
         _swapNames = function(row, grepString, newString) {
             var inputs = row.find('input');
             inputs.each(function (index, input) {
@@ -226,8 +249,17 @@ yukon.dr.curtailment = (function () {
                 }
                 $('#program').submit();
             });
-            
+
+            $(document).on('click', '#curtailmentTabs', function () {
+                _enableDisableActionsMenu();
+            });
+
+            $(document).on("yukon:event:confirm", function () {
+                $('#confirm-form').submit();
+            });
+
             $(function () {
+                _enableDisableActionsMenu();
                 $(document).on('click', '#assigned-groups', function (ev) {
                     var button = $(ev.target).closest('button');
                     debug.log('moving assigned group to unassigned');

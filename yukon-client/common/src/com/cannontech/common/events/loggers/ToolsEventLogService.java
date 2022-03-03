@@ -2,6 +2,8 @@ package com.cannontech.common.events.loggers;
 
 import java.util.Date;
 
+import org.joda.time.DateTime;
+
 import com.cannontech.common.events.Arg;
 import com.cannontech.common.events.YukonEventLog;
 import com.cannontech.common.util.TransactionExecutor.ExecutorTransactionality;
@@ -113,5 +115,18 @@ public interface ToolsEventLogService {
     
     @YukonEventLog(transactionality = ExecutorTransactionality.TRANSACTIONAL, category = "system.tools.scheduledDataImport")
     public void scheduleImportError(@Arg(ArgEnum.scheduleName) String ScheduleName, @Arg(ArgEnum.type) String importType, @Arg(ArgEnum.error) String error);
+
+    @YukonEventLog(transactionality = ExecutorTransactionality.TRANSACTIONAL, category = "system.tools.trends")
+    public void trendCreated(@Arg(ArgEnum.name) String trendName, @Arg(ArgEnum.username) LiteYukonUser user);
+
+    @YukonEventLog(transactionality = ExecutorTransactionality.TRANSACTIONAL, category = "system.tools.trends")
+    public void trendUpdated(@Arg(ArgEnum.name) String trendName, @Arg(ArgEnum.username) LiteYukonUser user);
+
+    @YukonEventLog(transactionality = ExecutorTransactionality.TRANSACTIONAL, category = "system.tools.trends")
+    public void trendDeleted(@Arg(ArgEnum.name) String trendName, @Arg(ArgEnum.username) LiteYukonUser user);
+
+    @YukonEventLog(transactionality = ExecutorTransactionality.TRANSACTIONAL, category = "system.tools.trends")
+    public void resetPeak(@Arg(ArgEnum.name) String trendName, @Arg(ArgEnum.username) LiteYukonUser user,
+            @Arg(ArgEnum.startDate) DateTime startDate);
 
 }

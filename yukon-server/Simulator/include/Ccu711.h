@@ -270,7 +270,7 @@ private:
                 AlgSt_Suspended        = 3,  //  Intentionally duplicated, as per Section 2 EMETCON Protocols 4-37, pdf page 68.
                 AlgSt_StepCompleted    = 3   //
 
-            } alg_st[7];
+            } alg_st[8];
 
         } stats;
 

@@ -225,9 +225,8 @@ public class AreaController {
             }
         }
 
-        boolean hideReports = rolePropertyDao.getPropertyBooleanValue(YukonRoleProperty.HIDE_REPORTS, user);
         boolean hideGraphs = rolePropertyDao.getPropertyBooleanValue(YukonRoleProperty.HIDE_GRAPHS, user);
-        model.addAttribute("showAnalysis", !hideReports && !hideGraphs);
+        model.addAttribute("showAnalysis", !hideGraphs);
         
         if (log.isDebugEnabled()) {
             Duration d = new Duration(startPage, Instant.now());

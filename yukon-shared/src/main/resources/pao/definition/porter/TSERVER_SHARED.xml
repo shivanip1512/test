@@ -4,6 +4,9 @@
     <pointFiles>
         <pointFile>PORT.xml</pointFile>
     </pointFiles>
+    <tags>
+        <tag name="PORT_DETAIL_DISPLAYABLE"/>
+    </tags>
     <pointInfos>
         <pointInfo name="Port Queue Count" init="true" attributes="PORT_QUEUE_COUNT"/>
         <pointInfo name="Comm Status" attributes="COMM_STATUS"/>

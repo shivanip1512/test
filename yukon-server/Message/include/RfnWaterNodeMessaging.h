@@ -51,7 +51,7 @@ struct IM_EX_MSG RfnGetChannelConfigReplyMessage
         FAILURE,
     };
 
-    struct ChannelInfo
+    struct IM_EX_MSG ChannelInfo
     {
         std::string             UOM;
         std::set<std::string>   uomModifier;

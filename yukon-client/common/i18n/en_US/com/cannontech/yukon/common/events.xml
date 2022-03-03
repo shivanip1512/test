@@ -13,8 +13,12 @@
     <!-- Event Log Arg Annotation i18n keys -->
     <entry key="yukon.common.events.accountNumber">Account Number</entry>
     <entry key="yukon.common.events.action">Action</entry>
+    <entry key="yukon.common.events.apn">APN</entry>
     <entry key="yukon.common.events.applianceCategoryName">Appliance Category Name</entry>
     <entry key="yukon.common.events.applianceType">Appliance Type</entry>
+    <entry key="yukon.common.events.attributeId">Attribute Id</entry>
+    <entry key="yukon.common.events.attributeName">Attribute Name</entry>
+    <entry key="yukon.common.events.baudRate">Baud Rate</entry>
     <entry key="yukon.common.events.cancelTime">Cancel Time</entry>
     <entry key="yukon.common.events.cancelledCount">Cancelled</entry>
     <entry key="yukon.common.events.changeId">ChangeId</entry>
@@ -60,6 +64,7 @@
     <entry key="yukon.common.events.ipAddress">IP Address</entry>
     <entry key="yukon.common.events.jobId">Job Id</entry>
     <entry key="yukon.common.events.key">Key</entry>
+    <entry key="yukon.common.events.level">Level</entry>
     <entry key="yukon.common.events.loadGroupIds">Load Group Ids</entry>
     <entry key="yukon.common.events.loadGroupName">Load Group Name</entry>
     <entry key="yukon.common.events.loadProgramNames">Load Program Name(s)</entry>
@@ -266,14 +271,14 @@
     <entry key="yukon.common.events.amr.schedules.tryCompleted.8">Commands Count</entry>
     
     <entry key="yukon.common.events.amr.meters.meterCreated">Meter {1} created with meter number={2}, serial or address={3}, type={4} by {5}.</entry>
-    <entry key="yukon.common.events.amr.meters.meterEdited">Meter {1} with meter number={2} updated by {3}.</entry>
+    <entry key="yukon.common.events.amr.meters.meterEdited">Meter {1} with meter number={2} updated by {3}. Original: {4}, Updated: {5}.</entry>
     <entry key="yukon.common.events.amr.meters.meterDeleted">Meter {1} with meter number={2} deleted by {3}.</entry>
     
     <!-- RFN -->
     <entry key="yukon.common.events.system.rfn.createdNewDeviceAutomatically">New meter {3} created from {2} for {1}.</entry>
     <entry key="yukon.common.events.system.rfn.createdNewDeviceAutomatically.2">Template Name</entry>
         
-    <entry key="yukon.common.events.system.rfn.receivedDataForUnkownDeviceTemplate">Unable to create meter because template {1} does not exist.</entry>
+    <entry key="yukon.common.events.system.rfn.receivedDataForUnkownDeviceTemplate">Unable to create meter {2} because template {1} does not exist.</entry>
     <entry key="yukon.common.events.system.rfn.receivedDataForUnkownDeviceTemplate.1">Template Name</entry>
     
     <entry key="yukon.common.events.system.rfn.unableToCreateDeviceFromTemplate">Unable to create meter for template {1}: manufacturer={2}, model={3}, serial={4}</entry>
@@ -281,6 +286,35 @@
     <entry key="yukon.common.events.system.rfn.unableToCreateDeviceFromTemplate.2">Manufacturer</entry>
     <entry key="yukon.common.events.system.rfn.unableToCreateDeviceFromTemplate.3">Model</entry>
     <entry key="yukon.common.events.system.rfn.unableToCreateDeviceFromTemplate.4">Serial Number</entry>
+    
+    <entry key="yukon.common.events.system.rfn.rfn1200Created">New RFN-1200 created with name={2}, Identifier={1}, by user {3}</entry>
+    <entry key="yukon.common.events.system.rfn.rfn1200Deleted">RFN-1200 name={1} deleted by user {2}</entry>
+    
+    <entry key="yukon.common.events.system.rfn.rfn1200Updated">RFN-1200 updated by user {3}. Original: {1}. Updated: {2}</entry>
+    <entry key="yukon.common.events.system.rfn.rfn1200Updated.1">RFN-1200 Description</entry>
+    <entry key="yukon.common.events.system.rfn.rfn1200Updated.2">RFN-1200 Description</entry>
+    
+    <entry key="yukon.common.events.system.rfn.apnChanged">Device {1} {2} has new APN {3}</entry>
+    
+    <entry key="yukon.common.events.system.rfn.modelUpdated">Device {1} {2} had Model updated. Old Model: {3} New Model: {4}</entry>
+    <entry key="yukon.common.events.system.rfn.modelUpdated.3">Old Model</entry>
+    <entry key="yukon.common.events.system.rfn.modelUpdated.4">New Model</entry>
+    
+    <entry key="yukon.common.events.system.rfn.modelAndPaoTypeUpdated">Device {1} {2} had Model and PaoType updated. Old Model/Type: {3}/{4} New Model/Type: {5}/{6}</entry>
+    <entry key="yukon.common.events.system.rfn.modelAndPaoTypeUpdated.3">Old Model</entry>
+    <entry key="yukon.common.events.system.rfn.modelAndPaoTypeUpdated.5">New Model</entry>
+    <entry key="yukon.common.events.system.rfn.modelAndPaoTypeUpdated.4">Old Type</entry>
+    <entry key="yukon.common.events.system.rfn.modelAndPaoTypeUpdated.6">New Type</entry>
+        
+    <!-- Wanted to format date so millis displayed but was unable to get DateFormatEnum syntax to work with java MessageSource 
+         Default formatting of Dates in i18n is "MM/dd/yy, hh:mm a"
+         Wanted to do something like the following but couldn't get it to work : start={11,date,FILE_DATA_BOTH}
+         So instead, hardcoded it to something that closely matches default, but includes ss.SSS as well: start={11,date,MM/dd/yy, hh:mm:ss.SSS a} 
+    -->
+    <entry key="yukon.common.events.system.rfn.outageEventReceived">Received {2} with state {3} for meter {1}: start={11,date,MM/dd/yy, hh:mm:ss.SSS a} stop={12,date,MM/dd/yy, hh:mm:ss.SSS a}.</entry>
+    <entry key="yukon.common.events.system.rfn.outageEventReceived.1">Serial Number</entry>
+    <entry key="yukon.common.events.system.rfn.outageEventReceived.2">Event Type</entry>
+    <entry key="yukon.common.events.system.rfn.outageEventReceived.3">Event State</entry>
     
     <entry key="yukon.common.events.system.rfn.gateway.createdGateway">Gateway {2} created with Serial number={3}, IP Address={4}, Admin={5}, Super Admin={6} by {1}.</entry>
     <entry key="yukon.common.events.system.rfn.gateway.createdGateway.5">Admin Username</entry>
@@ -351,26 +385,37 @@
     <entry key="yukon.common.events.amr.disconnect.loadSideVoltageDetectedWhileDisconnected">Load side voltage detected on device {2} by {1}.</entry>
     
     <!--  Device Config -->
-    <entry key="yukon.common.events.device.configuration.assignConfigToDeviceInitiated">Assign device configuration {1} to {2} initiated by {3}.</entry>
-    <entry key="yukon.common.events.device.configuration.assignConfigToDeviceCompleted">Assign device configuration {1} to {2} by {3} {7,choice,0#failed|1#succeeded}.</entry>
-    <entry key="yukon.common.events.device.configuration.assignConfigToDeviceCompleted.7">Success(1)/Fail(0)</entry>
-    
-    <entry key="yukon.common.events.device.configuration.unassignConfigFromDeviceInitiated">Unassign device configuration from {1} initiated by {2}.</entry>
-    <entry key="yukon.common.events.device.configuration.unassignConfigFromDeviceCompleted">Unassign device configuration from {1} by {2} {7,choice,0#failed|1#succeeded}.</entry>
-    <entry key="yukon.common.events.device.configuration.unassignConfigFromDeviceCompleted.7">Success(1)/Fail(0)</entry>    
-    
-    <entry key="yukon.common.events.device.configuration.sendConfigToDeviceInitiated">Send device configuration to device {1} initiated by {2}.</entry>
-    <entry key="yukon.common.events.device.configuration.sendConfigToDeviceCompleted">Send device configuration to device {1} {7,choice,0#failed|1#succeeded}.</entry>
-    <entry key="yukon.common.events.device.configuration.sendConfigToDeviceCompleted.7">Success(1)/Fail(0)</entry>
-   
-    <entry key="yukon.common.events.device.configuration.readConfigFromDeviceInitiated">Read device configuration from device {1} initiated by {2}.</entry>
-    <entry key="yukon.common.events.device.configuration.readConfigFromDeviceCompleted">Read device configuration from device {1} {7,choice,0#failed|1#succeeded}.</entry>
-    <entry key="yukon.common.events.device.configuration.readConfigFromDeviceCompleted.7">Success(1)/Fail(0)</entry>
+    <entry key="yukon.common.events.device.configuration.changeConfigInitiated">Action: {1} {2} initiated on {7} device(s) by {3}. Key: {4}</entry>
+    <entry key="yukon.common.events.device.configuration.changeConfigCompleted">Action: {1} {2}. {3} Status: {4}. Key: {5}</entry>
+    <entry key="yukon.common.events.device.configuration.changeConfigOfDeviceCompleted">Change device configuration to {1} for {2} by {3} {7,choice,0#failed|1#succeeded}.</entry>
+    <entry key="yukon.common.events.device.configuration.changeConfigOfDeviceCompleted.7">Success(1)/Fail(0)</entry>
 
+    <entry key="yukon.common.events.device.configuration.removeConfigInitiated">Action: {1} {2} initiated on {7} device(s) by {3}. Key: {4}</entry>
+    <entry key="yukon.common.events.device.configuration.removeConfigCompleted">Action: {1} {2}. {3} Status: {4}. Key: {5}</entry>
+    <entry key="yukon.common.events.device.configuration.removeConfigFromDeviceCompleted">Remove device configuration from {1} by {2} {7,choice,0#failed|1#succeeded}.</entry>
+    <entry key="yukon.common.events.device.configuration.removeConfigFromDeviceCompleted.7">Success(1)/Fail(0)</entry>    
+
+    <entry key="yukon.common.events.device.configuration.uploadConfigInitiated">Action: {1} {2} initiated on {7} device(s) by {3}. Key: {4}</entry>
+    <entry key="yukon.common.events.device.configuration.uploadConfigCompleted">Action: {1} {2}. {3} Status: {4}. Key: {5}</entry>
+    <entry key="yukon.common.events.device.configuration.uploadConfigCancelled">Action: {1} {2}. Cancelled by {4}. {3} Key: {5}</entry>
+    <entry key="yukon.common.events.device.configuration.uploadConfigToDeviceInitiated">Upload device configuration to device {1} initiated by {2}.</entry>
+    <entry key="yukon.common.events.device.configuration.uploadConfigToDeviceCompleted">Upload device configuration to device {1} {7,choice,0#failed|1#succeeded}.</entry>
+    <entry key="yukon.common.events.device.configuration.uploadConfigToDeviceCompleted.7">Success(1)/Fail(0)</entry>
+
+    <entry key="yukon.common.events.device.configuration.validateConfigInitiated">Action: {1} {2} initiated on {7} device(s) by {3}. Key: {4}</entry>
+    <entry key="yukon.common.events.device.configuration.validateConfigCompleted">Action: {1} {2}. {3} Status: {4}. Key: {5}</entry>
+    <entry key="yukon.common.events.device.configuration.validateConfigCancelled">Action: {1} {2}. Cancelled by {4}. {3} Key: {5}</entry>
+    <entry key="yukon.common.events.device.configuration.validateConfigOnDeviceInitiated">Validate device configuration on device {1} initiated by {2}.</entry>
+    <entry key="yukon.common.events.device.configuration.validateConfigOnDeviceCompleted">Validate device configuration on device {1} {7,choice,0#failed|1#succeeded}.</entry>
+    <entry key="yukon.common.events.device.configuration.validateConfigOnDeviceCompleted.7">Success(1)/Fail(0)</entry>
+
+    <entry key="yukon.common.events.device.configuration.verifyConfigInitiated">Action: {1} {2} initiated on {7} device(s) by {3}. Key: {4}</entry>
+    <entry key="yukon.common.events.device.configuration.verifyConfigCompleted">Action: {1} {2}. {3} Status: {4}. Key: {5}</entry>
+    <entry key="yukon.common.events.device.configuration.verifyConfigCancelled">Action: {1} {2}. Cancelled by {4}. {3} Key: {5}</entry>
     <entry key="yukon.common.events.device.configuration.verifyConfigFromDeviceInitiated">Verify device configuration on device {1} initiated by {2}.</entry>
     <entry key="yukon.common.events.device.configuration.verifyConfigFromDeviceCompleted">Verify device configuration on device {1} {7,choice,0#failed|1#succeeded}.</entry>
     <entry key="yukon.common.events.device.configuration.verifyConfigFromDeviceCompleted.7">Success(1)/Fail(0)</entry>
-    
+
      <!--  Meter Programming -->
     <entry key="yukon.common.events.device.programming.initiateMeterProgramUploadInitiated">Meter program upload to device {1} initiated by {2}.</entry>
     <entry key="yukon.common.events.device.programming.initiateMeterProgramUploadCompleted">Meter program upload to device {1} {7,choice,0#failed|1#succeeded}. Initiated by {2}.</entry>
@@ -648,6 +693,11 @@
     <entry key="yukon.common.events.system.tools.scheduledDataImport.scheduleUpdated.3">Import Type</entry>
     <entry key="yukon.common.events.system.tools.scheduledDataImport.scheduleDeleted">Data import schedule {2} deleted by {1}.</entry>
     <entry key="yukon.common.events.system.tools.scheduledDataImport.scheduleImportError">Error occurred while processing files of Data import schedule {1} for type {2} due to I/O errors: {3}.</entry>
+    <entry key="yukon.common.events.system.tools.trends.trendCreated">Trend {1} created by {2}.</entry>
+    <entry key="yukon.common.events.system.tools.trends.trendUpdated">Trend {1} updated by {2}.</entry>
+    <entry key="yukon.common.events.system.tools.trends.trendDeleted">Trend {1} deleted by {2}.</entry>
+    <entry key="yukon.common.events.system.tools.trends.resetPeak">Start date reset to {11} for {1} by {2}.</entry>
+
     <!--  System Administration -->
     <!-- Maintenance -->
     <entry key="yukon.common.events.system.maintenance.rphDeleteDuplicates">Deleted {7} duplicate RawPointHistory rows from database. Start time: {11}. Finish time: {12}.</entry>
@@ -675,6 +725,11 @@
     <entry key="yukon.common.events.system.configuration.globalSettingChanged">Global Setting {2} changed to {3} by {1}.</entry>
     <entry key="yukon.common.events.system.configuration.sensitiveGlobalSettingChanged">Global Setting {2} changed by {1}.</entry>
     
+    <!-- Yukon Loggers -->
+    <entry key="yukon.common.events.system.configuration.loggerAdded">Logger {1} added by {3}. Logger level: {2}, Expiration : {11}.</entry>
+    <entry key="yukon.common.events.system.configuration.loggerUpdated">Logger {1} updated by {3}. Logger level: {2}, Expiration : {11}.</entry>
+    <entry key="yukon.common.events.system.configuration.loggerDeleted">Logger {1} deleted by {2}.</entry>
+    
     <!-- Honeywell Key Configuration -->
     <entry key="yukon.common.events.system.configuration.importedKeyFile">{2} Key file imported by {1}.</entry>
     <entry key="yukon.common.events.system.configuration.keyFileImportFailed">{2} Key file failed to import by {1}.</entry>
@@ -682,12 +737,20 @@
     <entry key="yukon.common.events.system.configuration.certificateGenerated">{2} certificate generated by {1}.</entry>
     <entry key="yukon.common.events.system.configuration.certificateGenerationFailed">{2} certificate generation initiated by {1} failed.</entry>
 
+    <!-- Attribute Creation and Assignment -->
+    <entry key="yukon.common.events.system.configuration.attributeCreated">Attribute {2} with id={7} created by {1}.</entry>
+    <entry key="yukon.common.events.system.configuration.attributeUpdated">Attribute {2} name changed to {3} by {1}.</entry>
+    <entry key="yukon.common.events.system.configuration.attributeUpdated.3">New Attribute Name</entry>
+    <entry key="yukon.common.events.system.configuration.attributeDeleted">Attribute {2} deleted by {1}.</entry>
+    <entry key="yukon.common.events.system.configuration.attributeAssigned">Attribute {2} assigned to device type {3} for point type {4} on point offset {7} by user {1}.</entry>
+    <entry key="yukon.common.events.system.configuration.attributeAssignmentDeleted">Attribute {2} unassigned from device type {3} for point type {4} on point offset {7} by user {1}.</entry>
+
 <!--  Monitors -->
     <!-- Status Point Monitor -->
-    <entry key="yukon.common.events.system.outageEvents.statusPointMonitor.statusPointMonitorCreated">Status Point Monitor created with ID={7} name={1} groupName={2} attribute={3} stateGroup={4} evaluatorStatus={5} by {6}.</entry>
-    <entry key="yukon.common.events.system.outageEvents.statusPointMonitor.statusPointMonitorUpdated">Status Point Monitor updated with ID={7} name={1} groupName={2} attribute={3} stateGroup={4} evaluatorStatus={5} by {6}.</entry>
-    <entry key="yukon.common.events.system.outageEvents.statusPointMonitor.statusPointMonitorDeleted">Status Point Monitor deleted with ID={7} name={1} groupName={2} attribute={3} stateGroup={4} evaluatorStatus={5} by {6}.</entry>
-    <entry key="yukon.common.events.system.outageEvents.statusPointMonitor.statusPointMonitorEnableDisable">Status Point Monitor with ID={7} set to {1} by {2}.</entry>
+    <entry key="yukon.common.events.system.outageEvents.statusPointMonitor.statusPointMonitorCreated">Outage Notification Monitor created with ID={7} name={1} groupName={2} attribute={3} stateGroup={4} evaluatorStatus={5} by {6}.</entry>
+    <entry key="yukon.common.events.system.outageEvents.statusPointMonitor.statusPointMonitorUpdated">Outage Notification Monitor updated with ID={7} name={1} groupName={2} attribute={3} stateGroup={4} evaluatorStatus={5} by {6}.</entry>
+    <entry key="yukon.common.events.system.outageEvents.statusPointMonitor.statusPointMonitorDeleted">Outage Notification Monitor deleted with ID={7} name={1} groupName={2} attribute={3} stateGroup={4} evaluatorStatus={5} by {6}.</entry>
+    <entry key="yukon.common.events.system.outageEvents.statusPointMonitor.statusPointMonitorEnableDisable">Outage Notification Monitor with ID={7} set to {1} by {2}.</entry>
     
     <!-- Porter Response Monitor -->
     <entry key="yukon.common.events.system.outageEvents.porterResponseMonitor.porterResponseMonitorCreated">Porter Response Monitor created with ID={7} name={1} attribute={2} stateGroup= {3} evaluatorStatus={4} by {5}.</entry>
@@ -695,7 +758,7 @@
     <entry key="yukon.common.events.system.outageEvents.porterResponseMonitor.porterResponseMonitorDeleted">Porter Response Monitor deleted with ID={7} name={1} attribute={2} stateGroup= {3} evaluatorStatus={4} by {5}.</entry>
     <entry key="yukon.common.events.system.outageEvents.porterResponseMonitor.porterResponseMonitorEnableDisable">Porter Response Monitor with ID={7} set to {1} by {2}.</entry>
 
-    <entry key="yukon.common.events.system.outageEvents.mspHandler.mspMessageSentToVendor">Status Point Monitor {1} sent OutageDetectionEvent with eventType={2} objectId={3} deviceType={4} to Multispeak vendor={5}.</entry>
+    <entry key="yukon.common.events.system.outageEvents.mspHandler.mspMessageSentToVendor">Outage Notification Monitor {1} sent OutageDetectionEvent with eventType={2} objectId={3} deviceType={4} to Multispeak vendor={5}.</entry>
     <entry key="yukon.common.events.system.outageEvents.outageEventGenerated">OutageDetectionEvent generated with eventType={1} eventTime={11} deviceType={2} and objectId = {3}.</entry>
     
     
@@ -718,9 +781,11 @@
     <entry key="yukon.common.events.hardware.config.zigbeeDeviceUnassigned">ZigBee device {1} unassigned from ZigBee gateway {2}.</entry>
     
     <!-- Ecobee Communication Service-->
-    <entry key="yukon.common.events.ecobee.syncIssueFixed">User {1} fixed an ecobee sync issue of type {2}.</entry>
-    <entry key="yukon.common.events.ecobee.allSyncIssuesFixed">User {1} fixed all ecobee sync issues.</entry>
-    <entry key="yukon.common.events.ecobee.dataDownloaded">User {1} attempted to download an ecobee data report with start: {11}, end: {12}, load group ids: {2}.</entry>
+    <entry key="yukon.common.events.ecobee.reconciliationCompleted">Ecobee reconciliation {7,choice,0#failed|1#succeeded|2#unmodified} for {1} of Type {2} by {3}. {7,choice,0#|1#|2#Issue must be fixed in ecobee.}</entry>
+    <entry key="yukon.common.events.ecobee.reconciliationCompleted.1">Sync Object</entry>
+    <entry key="yukon.common.events.ecobee.reconciliationCompleted.7">Success(1) / Fail(0) / Unmodified(2)</entry>
+    <entry key="yukon.common.events.ecobee.reconciliationStarted">Ecobee reconciliation started for {7} object(s) by {1}.</entry>
+    <entry key="yukon.common.events.ecobee.reconciliationResults">Ecobee reconciliation completed for {7} objects (Success:{8} Failed:{9} Unmodified:{10}).</entry>
 
     <!-- MultiSpeak log events -->
     <entry key="yukon.common.events.multispeak.methodInvoked">Received {1} from {2}.</entry>
@@ -785,6 +850,7 @@
     <entry key="yukon.common.events.multispeak.deviceTypeUpdated.1">Old Device Type</entry>
     <entry key="yukon.common.events.multispeak.enableDevice">Enabled meter {1}: {2}. {3} by {4}.</entry>
     <entry key="yukon.common.events.multispeak.disableDevice">Disabled meter {1}: {2}. {3} by {4}.</entry>
+    <entry key="yukon.common.events.multispeak.removeDevice">Removed meter {1}: {2}. {3} by {4}</entry>
 
     <entry key="yukon.common.events.multispeak.notificationResponse">{1} initiated for meter number {3}; TransactionId: {2}, Comments: {4}, Errors received: {7}, Url: {5}.</entry>
     <entry key="yukon.common.events.multispeak.notificationResponse.2">TransactionId</entry>
@@ -841,6 +907,10 @@
     
     <!-- Infrastructure Warnings -->
     <entry key="yukon.common.events.infrastructure.warning.warningGenerated">{3}-severity {2} warning generated for device: {1}. Message: {4}</entry>
+    <entry key="yukon.common.events.infrastructure.warning.warningGenerated.2">Warning Type</entry>
+    <entry key="yukon.common.events.infrastructure.warning.warningGenerated.3">Severity</entry>
+    <entry key="yukon.common.events.infrastructure.warning.warningCleared">{2} warning has been cleared for device: {1}</entry>
+    <entry key="yukon.common.events.infrastructure.warning.warningCleared.2">Warning Type</entry>
     
     <!-- Dashboard Actions -->
     <entry key="yukon.common.events.system.tools.dashboard.dashboardAssigned">Dashboard {2} assigned to {7} user(s) by {1}.</entry>
@@ -866,64 +936,55 @@
     <!-- Collection Actions -->
     <entry key="yukon.common.events.commander.groupCommandInitiated">Action: {1} {2} initiated on {7} device(s) by {3}. Key: {4}</entry>
     <entry key="yukon.common.events.commander.groupCommandCompleted">Action: {1} {2}. {3} Status: {4}. Key: {5}</entry>
-    <entry key="yukon.common.events.commander.groupCommandCancelled">Action: {1} {2}. cancelled by {4}. {3} Key: {5}</entry>
+    <entry key="yukon.common.events.commander.groupCommandCancelled">Action: {1} {2}. Cancelled by {4}. {3} Key: {5}</entry>
     <entry key="yukon.common.events.commander.attributeReadInitiated">Action: {1} {2} initiated on {7} device(s) by {3}. Key: {4}</entry>
     <entry key="yukon.common.events.commander.attributeReadCompleted">Action: {1} {2}. {3} Status: {4}. Key: {5}</entry>
-    <entry key="yukon.common.events.commander.attributeReadCancelled">Action: {1} {2}. cancelled by {4}. {3} Key: {5}</entry>
+    <entry key="yukon.common.events.commander.attributeReadCancelled">Action: {1} {2}. Cancelled by {4}. {3} Key: {5}</entry>
     <entry key="yukon.common.events.commander.locateRouteInitiated">Action: {1} {2} initiated on {7} device(s) by {3}. Key: {4}</entry>
     <entry key="yukon.common.events.commander.locateRouteCompleted">Action: {1} {2}. {3} Status: {4}. Key: {5}</entry>
-    <entry key="yukon.common.events.commander.locateRouteCancelled">Action: {1} {2}. cancelled by {4}. {3} Key: {5}</entry>
+    <entry key="yukon.common.events.commander.locateRouteCancelled">Action: {1} {2}. Cancelled by {4}. {3} Key: {5}</entry>
     
     <entry key="yukon.common.events.amr.group.disconnect.disconnectInitiated">Action: {1} {2} initiated on {7} device(s) by {3}. Key: {4}</entry>
     <entry key="yukon.common.events.amr.group.disconnect.disconnectCompleted">Action: {1} {2}. {3} Status: {4}. Key: {5}</entry>
-    <entry key="yukon.common.events.amr.group.disconnect.disconnectCancelled">Action: {1} {2}. cancelled by {4}. {3} Key: {5}</entry>
+    <entry key="yukon.common.events.amr.group.disconnect.disconnectCancelled">Action: {1} {2}. Cancelled by {4}. {3} Key: {5}</entry>
     
     <entry key="yukon.common.events.amr.demand.reset.demandResetInitiated">Action: {1} {2} initiated on {7} device(s) by {3}. Key: {4}</entry>
     <entry key="yukon.common.events.amr.demand.reset.demandResetCompleted">Action: {1} {2}. {3} Status: {4}. Key: {5}</entry>
-    <entry key="yukon.common.events.amr.demand.reset.demandResetCancelled">Action: {1} {2}. cancelled by {4}. {3} Key: {5}</entry>
-    
-    <entry key="yukon.common.events.device.configuration.sendConfigInitiated">Action: {1} {2} initiated on {7} device(s) by {3}. Key: {4}</entry>
-    <entry key="yukon.common.events.device.configuration.sendConfigCompleted">Action: {1} {2}. {3} Status: {4}. Key: {5}</entry>
-    <entry key="yukon.common.events.device.configuration.sendConfigCancelled">Action: {1} {2}. cancelled by {4}. {3} Key: {5}</entry>
-    <entry key="yukon.common.events.device.configuration.readConfigInitiated">Action: {1} {2} initiated on {7} device(s) by {3}. Key: {4}</entry>
-    <entry key="yukon.common.events.device.configuration.readConfigCompleted">Action: {1} {2}. {3} Status: {4}. Key: {5}</entry>
-    <entry key="yukon.common.events.device.configuration.readConfigCancelled">Action: {1} {2}. cancelled by {4}. {3} Key: {5}</entry>
-    <entry key="yukon.common.events.device.configuration.verifyConfigInitiated">Action: {1} {2} initiated on {7} device(s) by {3}. Key: {4}</entry>
-    <entry key="yukon.common.events.device.configuration.verifyConfigCompleted">Action: {1} {2}. {3} Status: {4}. Key: {5}</entry>
-    <entry key="yukon.common.events.device.configuration.verifyConfigCancelled">Action: {1} {2}. cancelled by {4}. {3} Key: {5}</entry>
-    
+    <entry key="yukon.common.events.amr.demand.reset.demandResetCancelled">Action: {1} {2}. Cancelled by {4}. {3} Key: {5}</entry>
+
     <entry key="yukon.common.events.endpoint.device.changeInitiated">Action: {1} {2} initiated on {7} device(s) by {3}. Key: {4}</entry>
     <entry key="yukon.common.events.endpoint.device.changeCompleted">Action: {1} {2}. {3} Status: {4}. Key: {5}</entry>
+    <entry key="yukon.common.events.endpoint.device.changeCancelled">Action: {1} {2}. Cancelled by {4}. {3} Key: {5}</entry>
     <entry key="yukon.common.events.endpoint.device.changeTypeInitiated">Action: {1} {2} initiated on {7} device(s) by {3}. Key: {4}</entry>
     <entry key="yukon.common.events.endpoint.device.changeTypeCompleted">Action: {1} {2}. {3} Status: {4}. Key: {5}</entry>
+    <entry key="yukon.common.events.endpoint.device.changeTypeCancelled">Action: {1} {2}. Cancelled by {4}. {3} Key: {5}</entry>
     <entry key="yukon.common.events.endpoint.device.deleteInitiated">Action: {1} {2} initiated on {7} device(s) by {3}. Key: {4}</entry>
     <entry key="yukon.common.events.endpoint.device.deleteCompleted">Action: {1} {2}. {3} Status: {4}. Key: {5}</entry>
+    <entry key="yukon.common.events.endpoint.device.deleteCancelled">Action: {1} {2}. Cancelled by {4}. {3} Key: {5}</entry>
     
     <entry key="yukon.common.events.endpoint.point.pointsCreateInitiated">Action: {1} {2} initiated on {7} device(s) by {3}. Key: {4}</entry>
     <entry key="yukon.common.events.endpoint.point.pointsCreateCompleted">Action: {1} {2}. {3} Status: {4}. Key: {5}</entry>
+    <entry key="yukon.common.events.endpoint.point.pointsCreateCancelled">Action: {1} {2}. Cancelled by {4}. {3} Key: {5}</entry>
     <entry key="yukon.common.events.endpoint.point.pointsUpdateInitiated">Action: {1} {2} initiated on {7} device(s) by {3}. Key: {4}</entry>
     <entry key="yukon.common.events.endpoint.point.pointsUpdateCompleted">Action: {1} {2}. {3} Status: {4}. Key: {5}</entry>
+    <entry key="yukon.common.events.endpoint.point.pointsUpdateCancelled">Action: {1} {2}. Cancelled by {4}. {3} Key: {5}</entry>
     <entry key="yukon.common.events.endpoint.point.pointsDeleteInitiated">Action: {1} {2} initiated on {7} device(s) by {3}. Key: {4}</entry>
     <entry key="yukon.common.events.endpoint.point.pointsDeleteCompleted">Action: {1} {2}. {3} Status: {4}. Key: {5}</entry>
+    <entry key="yukon.common.events.endpoint.point.pointsDeleteCancelled">Action: {1} {2}. Cancelled by {4}. {3} Key: {5}</entry>
 
-    <entry key="yukon.common.events.device.configuration.assignConfigInitiated">Action: {1} {2} initiated on {7} device(s) by {3}. Key: {4}</entry>
-    <entry key="yukon.common.events.device.configuration.assignConfigCompleted">Action: {1} {2}. {3} Status: {4}. Key: {5}</entry>
-    <entry key="yukon.common.events.device.configuration.unassignConfigInitiated">Action: {1} {2} initiated on {7} device(s) by {3}. Key: {4}</entry>
-    <entry key="yukon.common.events.device.configuration.unassignConfigCompleted">Action: {1} {2}. {3} Status: {4}. Key: {5}</entry>
-    
     <entry key="yukon.common.events.system.rfn.dataStreaming.configDataStreamingInitiated">Action: {1} {2} initiated on {7} device(s) by {3}. Key: {4}</entry>
     <entry key="yukon.common.events.system.rfn.dataStreaming.configDataStreamingCompleted">Action: {1} {2}. {3} Status: {4}. Key: {5}</entry>
-    <entry key="yukon.common.events.system.rfn.dataStreaming.configDataStreamingCancelled">Action: {1} {2}. cancelled by {4}. {3} Key: {5}</entry>
+    <entry key="yukon.common.events.system.rfn.dataStreaming.configDataStreamingCancelled">Action: {1} {2}. Cancelled by {4}. {3} Key: {5}</entry>
     <entry key="yukon.common.events.system.rfn.dataStreaming.removeDataStreamingInitiated">Action: {1} {2} initiated on {7} device(s) by {3}. Key: {4}</entry>
     <entry key="yukon.common.events.system.rfn.dataStreaming.removeDataStreamingCompleted">Action: {1} {2}. {3} Status: {4}. Key: {5}</entry>
-    <entry key="yukon.common.events.system.rfn.dataStreaming.removeDataStreamingCancelled">Action: {1} {2}. cancelled by {4}. {3} Key: {5}</entry>
+    <entry key="yukon.common.events.system.rfn.dataStreaming.removeDataStreamingCancelled">Action: {1} {2}. Cancelled by {4}. {3} Key: {5}</entry>
    
     <entry key="yukon.common.events.device.programming.meterProgramUploadInitiated">Action: {1} {2} initiated on {7} device(s) by {3}. Key: {4}</entry>
     <entry key="yukon.common.events.device.programming.meterProgramUploadCompleted">Action: {1} {2}. {3} Status: {4}. Key: {5}</entry>
-    <entry key="yukon.common.events.device.programming.meterProgramUploadCancelled">Action: {1} {2}. cancelled by {4}. {3} Key: {5}</entry>
+    <entry key="yukon.common.events.device.programming.meterProgramUploadCancelled">Action: {1} {2}. Cancelled by {4}. {3} Key: {5}</entry>
     <entry key="yukon.common.events.device.programming.meterProgramStatusReadInitiated">Action: {1} {2} initiated on {7} device(s) by {3}. Key: {4}</entry>
     <entry key="yukon.common.events.device.programming.meterProgramStatusReadCompleted">Action: {1} {2}. {3} Status: {4}. Key: {5}</entry>
-    <entry key="yukon.common.events.device.programming.meterProgramStatusReadCancelled">Action: {1} {2}. cancelled by {4}. {3} Key: {5}</entry>
+    <entry key="yukon.common.events.device.programming.meterProgramStatusReadCancelled">Action: {1} {2}. Cancelled by {4}. {3} Key: {5}</entry>
     
     <!-- Itron -->
     <entry key="yukon.common.events.dr.itron.addHANDevice">Device {1} addition request with mac address {2}.</entry>
@@ -935,7 +996,7 @@
     <entry key="yukon.common.events.dr.itron.addProgram">Program {1} with program ID {7} creation request sent.</entry>
     <entry key="yukon.common.events.dr.itron.addProgram.7">Program Id</entry>
     
-    <entry key="yukon.common.events.dr.itron.addMacAddressesToGroup">Mac Address: {1} has been added to group: {2}.</entry>
+    <entry key="yukon.common.events.dr.itron.addMacAddressToGroup">Mac Address: {1} has been added to group: {2}.</entry>
     <entry key="yukon.common.events.dr.itron.getGroupIdFromItron">Retrieving Itron Group Id from group: {1}.</entry>
     <entry key="yukon.common.events.dr.itron.optOut">Opt out for Load Group Id: {7} with Mac Address: {2} sent by Account Number: {1}.</entry>
     <entry key="yukon.common.events.dr.itron.sendEnrollmentRequest">Sending enrollment request for account: {1} for Itron Program Id: {7}.</entry>
@@ -969,6 +1030,49 @@
     <entry key="yukon.common.events.dr.nest.responseUpdateEnrollment">Update Enrollment Response: Customer: {1}, Group: {2}, Enrollment State: {3}.</entry>
     <entry key="yukon.common.events.dr.nest.sendRetrieveCustomers">Retrieving customers with State: {1}</entry>
     <entry key="yukon.common.events.dr.nest.responseRetrieveCustomers">{7} customers were found.</entry>
+    
+    <!-- Eaton Cloud -->
+    <entry key="yukon.common.events.dr.eatoncloud.sendRestore">Sending restore command to Eaton Cloud for Device: {1}, GUID: {2}, External Event Id: {3}, Relay: {7}</entry>
+    <entry key="yukon.common.events.dr.eatoncloud.sendRestore.2">GUID</entry>
+    <entry key="yukon.common.events.dr.eatoncloud.sendRestore.3">External Event Id</entry>
+    <entry key="yukon.common.events.dr.eatoncloud.sendRestore.7">Relay</entry>
+    
+    <entry key="yukon.common.events.dr.eatoncloud.sendRestoreFailed">Failed to send restore command to Eaton Cloud for Device: {1}, GUID: {2}, Relay: {7} External Event Id: {4}, Error: {3}</entry>
+    <entry key="yukon.common.events.dr.eatoncloud.sendRestoreFailed.2">GUID</entry>
+    <entry key="yukon.common.events.dr.eatoncloud.sendRestoreFailed.3">Error</entry>
+    <entry key="yukon.common.events.dr.eatoncloud.sendRestoreFailed.4">External Event Id</entry>
+    <entry key="yukon.common.events.dr.eatoncloud.sendRestoreFailed.7">Relay</entry>
+    
+    <entry key="yukon.common.events.dr.eatoncloud.sendShed">Eaton Cloud shed command was sent with the following settings: Device: {1}, GUID: {2}, Duty Cycle Percent: {7}, Duty Cycle Period: {8}, Criticality: {9}, Relay: {10}, External Event Id: {3}, Try: {4}</entry>
+    <entry key="yukon.common.events.dr.eatoncloud.sendShed.2">GUID</entry>
+    <entry key="yukon.common.events.dr.eatoncloud.sendShed.3">External Event Id</entry>
+    <entry key="yukon.common.events.dr.eatoncloud.sendShed.4">Try</entry>
+    <entry key="yukon.common.events.dr.eatoncloud.sendShed.7">Duty Cycle Percent</entry>
+    <entry key="yukon.common.events.dr.eatoncloud.sendShed.8">Duty Cycle Period</entry>
+    <entry key="yukon.common.events.dr.eatoncloud.sendShed.9">Criticality</entry>
+    <entry key="yukon.common.events.dr.eatoncloud.sendShed.10">Relay</entry>
+    
+    <entry key="yukon.common.events.dr.eatoncloud.sendShedFailed">Failed to send shed command with the following settings: Device: {1}, GUID: {2}, Duty Cycle Percent: {7}, Duty Cycle Period: {8}, Criticality: {9}, Relay: {10}, External Event Id: {4}, Try: {5}, Error: {3}</entry>
+    <entry key="yukon.common.events.dr.eatoncloud.sendShedFailed.2">GUID</entry>
+    <entry key="yukon.common.events.dr.eatoncloud.sendShedFailed.3">Error</entry>
+    <entry key="yukon.common.events.dr.eatoncloud.sendShedFailed.4">External Event Id</entry>
+    <entry key="yukon.common.events.dr.eatoncloud.sendShedFailed.5">Try</entry>
+    <entry key="yukon.common.events.dr.eatoncloud.sendShedFailed.7">Duty Cycle Percent</entry>
+    <entry key="yukon.common.events.dr.eatoncloud.sendShedFailed.8">Duty Cycle Period</entry>
+    <entry key="yukon.common.events.dr.eatoncloud.sendShedFailed.9">Criticality</entry>
+    <entry key="yukon.common.events.dr.eatoncloud.sendShedFailed.10">Relay</entry>
+    
+    <entry key="yukon.common.events.dr.eatoncloud.tokenRetrievalFailed">Brightlayer Credential Validation Failure. Failed to obtain token using {1} Error: {2} Try: {7}</entry>
+    <entry key="yukon.common.events.dr.eatoncloud.tokenRetrievalFailed.1">Secret</entry>
+    <entry key="yukon.common.events.dr.eatoncloud.tokenRetrievalFailed.2">Error</entry>
+    <entry key="yukon.common.events.dr.eatoncloud.tokenRetrievalFailed.7">Try</entry>
+    <entry key="yukon.common.events.dr.eatoncloud.secretRotationFailed">Brightlayer Credential Update Failed for {1} by {2}. {3}. Try: {7}</entry>
+    <entry key="yukon.common.events.dr.eatoncloud.secretRotationFailed.1">Secret</entry>
+    <entry key="yukon.common.events.dr.eatoncloud.secretRotationFailed.2">Error</entry>
+    <entry key="yukon.common.events.dr.eatoncloud.secretRotationFailed.7">Try</entry>
+    <entry key="yukon.common.events.dr.eatoncloud.secretRotationSuccess">Brightlayer Credential Update Success for {1} by {2}. Try: {7}</entry>
+    <entry key="yukon.common.events.dr.eatoncloud.secretRotationSuccess.1">Secret</entry>
+    <entry key="yukon.common.events.dr.eatoncloud.secretRotationSuccess.7">Try</entry>
     
     <!-- User, User Group, Role Group, Role Property Changes -->
     <entry key="yukon.common.events.system.usersAndGroups.user.userCreated">User {1} created with user group: {2}, energy company: {3}, status: {4} by {5}.</entry>
@@ -1027,6 +1131,14 @@
     <entry key="yukon.common.events.dr.setup.loadProgram.loadProgramDeleted">Load program {1} of type {2} deleted by {3}.</entry>
     <entry key="yukon.common.events.dr.setup.loadProgram.gearCreated">Gear {1} of type {2} assigned to load program={3} at order={7} created by {4}.</entry>
     <entry key="yukon.common.events.dr.setup.loadProgram.gearDeleted">Gear {1} of type {2} assigned to load program={3} at order={7} deleted by {4}.</entry>
+
+     <!-- Comm Channels -->
+     <entry key="yukon.common.events.device.commChannel.commChannelCreated">Comm Channel {1} of type {2} with baud rate: {3} created by {4}.</entry>
+     <entry key="yukon.common.events.device.commChannel.commChannelUpdated">Comm Channel {1} of type {2} with baud rate: {3} updated by {4}.</entry>
+     <entry key="yukon.common.events.device.commChannel.commChannelDeleted">Comm Channel {1} of type {2} with baud rate: {3} deleted by {4}.</entry>
+     
+     <!-- Decryption event logging -->
+     <entry key="yukon.common.events.system.configuration.decryptionFailed">Decryption failed for Yukon Service {1} with Server Identifier {2} and for value {3} at {11}.</entry>
 
 </properties>
 

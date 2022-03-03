@@ -1,5 +1,7 @@
 package com.cannontech.util;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
+
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.UnsupportedEncodingException;
@@ -24,20 +26,19 @@ import javax.servlet.http.HttpSession;
 import javax.servlet.http.HttpUpgradeHandler;
 import javax.servlet.http.Part;
 
-import org.junit.After;
-import org.junit.Assert;
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
 public class ServletUtilTest {
     private HttpServletRequest request;
 
-    @Before
+    @BeforeEach
     public void setUp() {
         request = createMockRequest();
     }
 
-    @After
+    @AfterEach
     public void tearDown() {
         request = null;
     }
@@ -51,7 +52,7 @@ public class ServletUtilTest {
 
         for (final String safeUrl : safeUrls) {
             String actual = ServletUtil.createSafeRedirectUrl(request, safeUrl);
-            Assert.assertEquals(safeUrl, actual);
+            assertEquals(safeUrl, actual);
         }
     }
 
@@ -68,7 +69,7 @@ public class ServletUtilTest {
         for (final String unSafeUrl : unSafeUrls) {
             String expected = "/evil.jsp";
             String actual = ServletUtil.createSafeRedirectUrl(request, unSafeUrl);
-            Assert.assertEquals(expected, actual);
+            assertEquals(expected, actual);
         }
 
         unSafeUrls = new String[] {
@@ -81,7 +82,7 @@ public class ServletUtilTest {
         for (final String unSafeUrl : unSafeUrls) {
             String expected = "/";
             String actual = ServletUtil.createSafeRedirectUrl(request, unSafeUrl);
-            Assert.assertEquals(expected, actual);
+            assertEquals(expected, actual);
         }
     }
 
@@ -98,7 +99,7 @@ public class ServletUtilTest {
         for (final String unSafeUrl : unSafeUrls) {
             String expected = "/evil.jsp";
             String actual = ServletUtil.createSafeRedirectUrl(request, unSafeUrl);
-            Assert.assertEquals(expected, actual);
+            assertEquals(expected, actual);
         }
 
         unSafeUrls = new String[] {
@@ -111,7 +112,7 @@ public class ServletUtilTest {
         for (final String unSafeUrl : unSafeUrls) {
             String expected = "/";
             String actual = ServletUtil.createSafeRedirectUrl(request, unSafeUrl);
-            Assert.assertEquals(expected, actual);
+            assertEquals(expected, actual);
         }
     }
 

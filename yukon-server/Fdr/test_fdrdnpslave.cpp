@@ -1336,6 +1336,7 @@ BOOST_AUTO_TEST_CASE( test_control_close_porter )
 
         BOOST_REQUIRE(dnpSlave.lastRequestMsg);
         BOOST_CHECK_EQUAL(dnpSlave.lastRequestMsg->CommandString(), "control close offset 17");
+        BOOST_CHECK_EQUAL(dnpSlave.lastRequestMsg->getMessagePriority(), 14);
         BOOST_CHECK_EQUAL(dnpSlave.lastRequestMsg->DeviceId(), 153);
     }
 
@@ -1412,6 +1413,7 @@ BOOST_AUTO_TEST_CASE( test_control_close_porter )
 
         BOOST_REQUIRE(dnpSlave.lastRequestMsg);
         BOOST_CHECK_EQUAL(dnpSlave.lastRequestMsg->CommandString(), "control close direct offset 17");
+        BOOST_CHECK_EQUAL(dnpSlave.lastRequestMsg->getMessagePriority(), 14);
         BOOST_CHECK_EQUAL(dnpSlave.lastRequestMsg->DeviceId(), 153);
     }
 
@@ -1467,6 +1469,7 @@ BOOST_AUTO_TEST_CASE( test_control_close_porter )
 
         BOOST_REQUIRE(dnpSlave.lastRequestMsg);
         BOOST_CHECK_EQUAL(dnpSlave.lastRequestMsg->CommandString(), "control close offset 17");
+        BOOST_CHECK_EQUAL(dnpSlave.lastRequestMsg->getMessagePriority(), 14);
         BOOST_CHECK_EQUAL(dnpSlave.lastRequestMsg->DeviceId(), 153);
     }
 }
@@ -1577,6 +1580,7 @@ BOOST_AUTO_TEST_CASE( test_control_close_sbo_porter )
 
         BOOST_REQUIRE(dnpSlave.lastRequestMsg);
         BOOST_CHECK_EQUAL(dnpSlave.lastRequestMsg->CommandString(), "control close offset 72 sbo_selectonly");
+        BOOST_CHECK_EQUAL(dnpSlave.lastRequestMsg->getMessagePriority(), 14);
         BOOST_CHECK_EQUAL(dnpSlave.lastRequestMsg->DeviceId(), 153);
     }
 
@@ -1607,6 +1611,7 @@ BOOST_AUTO_TEST_CASE( test_control_close_sbo_porter )
 
         BOOST_REQUIRE(dnpSlave.lastRequestMsg);
         BOOST_CHECK_EQUAL(dnpSlave.lastRequestMsg->CommandString(), "control close offset 72 sbo_operate");
+        BOOST_CHECK_EQUAL(dnpSlave.lastRequestMsg->getMessagePriority(), 14);
         BOOST_CHECK_EQUAL(dnpSlave.lastRequestMsg->DeviceId(), 153);
     }
 
@@ -1706,6 +1711,7 @@ BOOST_AUTO_TEST_CASE( test_control_close_sbo_porter )
 
         BOOST_REQUIRE(dnpSlave.lastRequestMsg);
         BOOST_CHECK_EQUAL(dnpSlave.lastRequestMsg->CommandString(), "control close offset 72 sbo_selectonly");
+        BOOST_CHECK_EQUAL(dnpSlave.lastRequestMsg->getMessagePriority(), 14);
         BOOST_CHECK_EQUAL(dnpSlave.lastRequestMsg->DeviceId(), 153);
     }
 
@@ -1732,6 +1738,7 @@ BOOST_AUTO_TEST_CASE( test_control_close_sbo_porter )
 
         BOOST_REQUIRE(dnpSlave.lastRequestMsg);
         BOOST_CHECK_EQUAL(dnpSlave.lastRequestMsg->CommandString(), "control close offset 72 sbo_operate");
+        BOOST_CHECK_EQUAL(dnpSlave.lastRequestMsg->getMessagePriority(), 14);
         BOOST_CHECK_EQUAL(dnpSlave.lastRequestMsg->DeviceId(), 153);
     }
 }
@@ -2192,6 +2199,7 @@ BOOST_AUTO_TEST_CASE( test_control_open_porter )
 
         BOOST_REQUIRE(dnpSlave.lastRequestMsg);
         BOOST_CHECK_EQUAL(dnpSlave.lastRequestMsg->CommandString(), "control open offset 19");
+        BOOST_CHECK_EQUAL(dnpSlave.lastRequestMsg->getMessagePriority(), 14);
         BOOST_CHECK_EQUAL(dnpSlave.lastRequestMsg->DeviceId(), 153);
     }
 
@@ -2293,6 +2301,7 @@ BOOST_AUTO_TEST_CASE( test_control_open_porter )
 
         BOOST_REQUIRE(dnpSlave.lastRequestMsg);
         BOOST_CHECK_EQUAL(dnpSlave.lastRequestMsg->CommandString(), "control open offset 19");
+        BOOST_CHECK_EQUAL(dnpSlave.lastRequestMsg->getMessagePriority(), 14);
         BOOST_CHECK_EQUAL(dnpSlave.lastRequestMsg->DeviceId(), 153);
     }
 }
@@ -2403,6 +2412,7 @@ BOOST_AUTO_TEST_CASE( test_control_open_sbo_porter )
 
         BOOST_REQUIRE(dnpSlave.lastRequestMsg);
         BOOST_CHECK_EQUAL(dnpSlave.lastRequestMsg->CommandString(), "control open offset 13 sbo_selectonly");
+        BOOST_CHECK_EQUAL(dnpSlave.lastRequestMsg->getMessagePriority(), 14);
         BOOST_CHECK_EQUAL(dnpSlave.lastRequestMsg->DeviceId(), 153);
     }
 
@@ -2433,6 +2443,7 @@ BOOST_AUTO_TEST_CASE( test_control_open_sbo_porter )
 
         BOOST_REQUIRE(dnpSlave.lastRequestMsg);
         BOOST_CHECK_EQUAL(dnpSlave.lastRequestMsg->CommandString(), "control open offset 13 sbo_operate");
+        BOOST_CHECK_EQUAL(dnpSlave.lastRequestMsg->getMessagePriority(), 14);
         BOOST_CHECK_EQUAL(dnpSlave.lastRequestMsg->DeviceId(), 153);
     }
 
@@ -2532,6 +2543,7 @@ BOOST_AUTO_TEST_CASE( test_control_open_sbo_porter )
 
         BOOST_REQUIRE(dnpSlave.lastRequestMsg);
         BOOST_CHECK_EQUAL(dnpSlave.lastRequestMsg->CommandString(), "control open offset 13 sbo_selectonly");
+        BOOST_CHECK_EQUAL(dnpSlave.lastRequestMsg->getMessagePriority(), 14);
         BOOST_CHECK_EQUAL(dnpSlave.lastRequestMsg->DeviceId(), 153);
     }
 
@@ -2558,6 +2570,7 @@ BOOST_AUTO_TEST_CASE( test_control_open_sbo_porter )
 
         BOOST_REQUIRE(dnpSlave.lastRequestMsg);
         BOOST_CHECK_EQUAL(dnpSlave.lastRequestMsg->CommandString(), "control open offset 13 sbo_operate");
+        BOOST_CHECK_EQUAL(dnpSlave.lastRequestMsg->getMessagePriority(), 14);
         BOOST_CHECK_EQUAL(dnpSlave.lastRequestMsg->DeviceId(), 153);
     }
 }
@@ -2992,7 +3005,11 @@ BOOST_AUTO_TEST_CASE( test_analog_output_receive )
     BOOST_REQUIRE_EQUAL(dnpSlave.dispatchMessages.size(), 0);
     BOOST_REQUIRE_EQUAL(dnpSlave.pointMessages.size(), 1);
 
-    auto msg = dynamic_cast<const CtiPointDataMsg *>(dnpSlave.pointMessages.front().get());
+    auto multi = dynamic_cast<const CtiMultiMsg *>(dnpSlave.pointMessages.front().get());
+
+    BOOST_REQUIRE_EQUAL(multi->getCount(), 1);
+
+    auto msg = (*multi)[0];
 
     BOOST_REQUIRE(msg);
 
@@ -3139,6 +3156,7 @@ BOOST_AUTO_TEST_CASE( test_analog_output_porter_controloffset )
         BOOST_CHECK_EQUAL_RANGES(expected, connection.messages.front());
 
         BOOST_CHECK_EQUAL(dnpSlave.lastRequestMsg->CommandString(), "putvalue analog value 67305985 select pointid 43");  //  aka 0x04030201
+        BOOST_CHECK_EQUAL(dnpSlave.lastRequestMsg->getMessagePriority(), 14);
     }
 
     //  Failure from device
@@ -3162,6 +3180,7 @@ BOOST_AUTO_TEST_CASE( test_analog_output_porter_controloffset )
         BOOST_CHECK_EQUAL_RANGES(expected, connection.messages.front());
 
         BOOST_CHECK_EQUAL(dnpSlave.lastRequestMsg->CommandString(), "putvalue analog value 67305985 select pointid 43");  //  aka 0x04030201
+        BOOST_CHECK_EQUAL(dnpSlave.lastRequestMsg->getMessagePriority(), 14);
     }
 }
 
@@ -3231,6 +3250,7 @@ BOOST_AUTO_TEST_CASE(test_analog_output_porter_analogoutput)
         BOOST_CHECK_EQUAL_RANGES(expected, connection.messages.front());
 
         BOOST_CHECK_EQUAL(dnpSlave.lastRequestMsg->CommandString(), "putvalue analog value 275954538 select pointid 43");  //  aka floor(0x04030201 * 4.1)
+        BOOST_CHECK_EQUAL(dnpSlave.lastRequestMsg->getMessagePriority(), 14);
     }
 
     //  Failure from device
@@ -3254,6 +3274,7 @@ BOOST_AUTO_TEST_CASE(test_analog_output_porter_analogoutput)
         BOOST_CHECK_EQUAL_RANGES(expected, connection.messages.front());
 
         BOOST_CHECK_EQUAL(dnpSlave.lastRequestMsg->CommandString(), "putvalue analog value 275954538 select pointid 43");  //  aka floor(0x04030201 * 4.1)
+        BOOST_CHECK_EQUAL(dnpSlave.lastRequestMsg->getMessagePriority(), 14);
     }
 }
 
@@ -3324,6 +3345,7 @@ BOOST_AUTO_TEST_CASE(test_analog_output_porter_analogoutput_double)
         BOOST_CHECK_EQUAL_RANGES(expected, connection.messages.front());
 
         BOOST_CHECK_EQUAL(dnpSlave.lastRequestMsg->CommandString(), "putvalue analog value 12.880530 select pointid 43");  //  aka 3.1415926 * 4.1, to 6 digits
+        BOOST_CHECK_EQUAL(dnpSlave.lastRequestMsg->getMessagePriority(), 14);
     }
 
     //  Failure from device
@@ -3348,6 +3370,7 @@ BOOST_AUTO_TEST_CASE(test_analog_output_porter_analogoutput_double)
         BOOST_CHECK_EQUAL_RANGES(expected, connection.messages.front());
 
         BOOST_CHECK_EQUAL(dnpSlave.lastRequestMsg->CommandString(), "putvalue analog value 12.880530 select pointid 43");  //  aka 3.1415926 * 4.1, to 6 digits
+        BOOST_CHECK_EQUAL(dnpSlave.lastRequestMsg->getMessagePriority(), 14);
     }
 }
 
@@ -3429,6 +3452,7 @@ BOOST_AUTO_TEST_CASE( test_control_open_or_close_sbo_porter_passthrough )
 
         BOOST_REQUIRE(dnpSlave.lastRequestMsg);
         BOOST_CHECK_EQUAL(dnpSlave.lastRequestMsg->CommandString(), "scan integrity");
+        BOOST_CHECK_EQUAL(dnpSlave.lastRequestMsg->getMessagePriority(), 11);
         BOOST_CHECK_EQUAL(dnpSlave.lastRequestMsg->DeviceId(), 153);
     }
 
@@ -3459,6 +3483,7 @@ BOOST_AUTO_TEST_CASE( test_control_open_or_close_sbo_porter_passthrough )
 
         BOOST_REQUIRE(dnpSlave.lastRequestMsg);
         BOOST_CHECK_EQUAL(dnpSlave.lastRequestMsg->CommandString(), "putconfig timesync");
+        BOOST_CHECK_EQUAL(dnpSlave.lastRequestMsg->getMessagePriority(), 12);
         BOOST_CHECK_EQUAL(dnpSlave.lastRequestMsg->DeviceId(), 153);
     }
 }

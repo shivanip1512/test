@@ -1,6 +1,7 @@
 package com.cannontech.util;
 
-import static org.junit.Assert.*;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.fail;
 
 import java.beans.BeanInfo;
 import java.beans.IntrospectionException;
@@ -16,10 +17,10 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
-import org.joda.time.LocalDate;
 import org.joda.time.Instant;
-import org.junit.Ignore;
-import org.junit.Test;
+import org.joda.time.LocalDate;
+import org.junit.jupiter.api.Disabled;
+import org.junit.jupiter.api.Test;
 
 import com.cannontech.common.pao.PaoIdentifier;
 import com.cannontech.common.pao.PaoType;
@@ -39,20 +40,7 @@ import com.cannontech.common.pao.model.CompleteTwoWayCbc;
 import com.cannontech.common.pao.model.CompleteYukonPao;
 import com.cannontech.common.pao.model.CompleteZbEndpoint;
 import com.cannontech.common.pao.model.CompleteZbGateway;
-import com.cannontech.dr.ecobee.message.AuthenticationRequest;
-import com.cannontech.dr.ecobee.message.BaseResponse;
-import com.cannontech.dr.ecobee.message.CreateSetRequest;
-import com.cannontech.dr.ecobee.message.DeleteSetRequest;
-import com.cannontech.dr.ecobee.message.DrResponse;
-import com.cannontech.dr.ecobee.message.DrRestoreRequest;
-import com.cannontech.dr.ecobee.message.DutyCycleDrRequest;
-import com.cannontech.dr.ecobee.message.HierarchyResponse;
-import com.cannontech.dr.ecobee.message.ListHierarchyRequest;
-import com.cannontech.dr.ecobee.message.MoveDeviceRequest;
-import com.cannontech.dr.ecobee.message.MoveSetRequest;
-import com.cannontech.dr.ecobee.message.RegisterDeviceRequest;
-import com.cannontech.dr.ecobee.message.RuntimeReportJobRequest;
-import com.cannontech.dr.ecobee.message.StandardResponse;
+import com.cannontech.dr.ecobee.message.ZeusAuthenticationRequest;
 import com.cannontech.stars.energyCompany.model.EnergyCompanySetting;
 import com.google.common.collect.ForwardingList;
 import com.google.common.collect.ForwardingMap;
@@ -76,73 +64,8 @@ public class SimpleEqualsTest {
     }
     
     @Test
-    public void test_RegisterDeviceRequest() {
-        testEqualsAndHashCode(RegisterDeviceRequest.class, true);
-    }
-
-    @Test
-    public void test_AuthenticationRequest() {
-        testEqualsAndHashCode(AuthenticationRequest.class, true);
-    }
-
-    @Test
-    public void test_StandardResponse() {
-        testEqualsAndHashCode(StandardResponse.class, true);
-    }
-
-    @Test
-    public void test_MoveDeviceRequest() {
-        testEqualsAndHashCode(MoveDeviceRequest.class, true);
-    }
-
-    @Test
-    public void test_RuntimeReportJobRequest() {
-        testEqualsAndHashCode(RuntimeReportJobRequest.class, true);
-    }
-
-    @Test
-    public void test_CreateSetRequest() {
-        testEqualsAndHashCode(CreateSetRequest.class, true);
-    }
-
-    @Test
-    public void test_DeleteSetRequest() {
-        testEqualsAndHashCode(DeleteSetRequest.class, true);
-    }
-
-    @Test
-    public void test_MoveSetRequest() {
-        testEqualsAndHashCode(MoveSetRequest.class, true);
-    }
-
-    @Test
-    public void test_DutyCycleDrRequest() {
-        testEqualsAndHashCode(DutyCycleDrRequest.class, true);
-    }
-
-    @Test
-    public void test_DrResponse() {
-        testEqualsAndHashCode(DrResponse.class, true);
-    }
-
-    @Test
-    public void test_DrRestoreRequest() {
-        testEqualsAndHashCode(DrRestoreRequest.class, true);
-    }
-
-    @Test
-    public void test_BaseResponse() {
-        testEqualsAndHashCode(BaseResponse.class, true);
-    }
-
-    @Test
-    public void test_ListHierarchyRequest() {
-        testEqualsAndHashCode(ListHierarchyRequest.class, true);
-    }
-
-    @Test
-    public void test_HierarchyResponse() {
-        testEqualsAndHashCode(HierarchyResponse.class, true);
+    public void test_ZeusAuthenticationRequest() {
+        testEqualsAndHashCode(ZeusAuthenticationRequest.class, true);
     }
 
     @Test
@@ -201,7 +124,7 @@ public class SimpleEqualsTest {
     }
 
     @Test
-    @Ignore("test causes NPE because of the way CompleteTwoWayCbc is setup")
+    @Disabled("test causes NPE because of the way CompleteTwoWayCbc is setup")
     public void test_CompleteTwoWayCbc() {
         testEqualsAndHashCode(CompleteTwoWayCbc.class, false);
     }
@@ -313,9 +236,9 @@ public class SimpleEqualsTest {
     private void testEqualsAndHashCode(Class<?> aClass, boolean immutable) {
         try {
             ObjectPermutations objs = getPopulatedObjects(aClass, immutable);
-            assertEquals(aClass.getSimpleName() + ".equals() failed test. ", objs.getObjectA(), objs.getObjectB());
-            assertEquals(aClass.getSimpleName() + ".hashCode() failed test. ", 
-                objs.getObjectA().hashCode(), objs.getObjectB().hashCode());
+            assertEquals(objs.getObjectA(), objs.getObjectB(), aClass.getSimpleName() + ".equals() failed test. ");
+            assertEquals(objs.getObjectA().hashCode(), objs.getObjectB().hashCode(),
+                    aClass.getSimpleName() + ".hashCode() failed test. ");
 
             for (ModifiedObject obj : objs.getInequalPermuations()) {
                 String propertyDesc = obj.getPropertyType().getSimpleName() + " " + obj.getPropertyName();

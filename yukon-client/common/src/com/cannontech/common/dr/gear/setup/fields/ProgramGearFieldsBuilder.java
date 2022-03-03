@@ -2,21 +2,23 @@ package com.cannontech.common.dr.gear.setup.fields;
 
 import org.springframework.beans.factory.annotation.Autowired;
 
-import com.cannontech.common.dr.gear.setup.Setpoint;
 import com.cannontech.common.dr.gear.setup.BtpLedIndicator;
 import com.cannontech.common.dr.gear.setup.ControlStartState;
 import com.cannontech.common.dr.gear.setup.CycleCountSendType;
 import com.cannontech.common.dr.gear.setup.GroupSelectionMethod;
 import com.cannontech.common.dr.gear.setup.HowToStopControl;
 import com.cannontech.common.dr.gear.setup.Mode;
+import com.cannontech.common.dr.gear.setup.Setpoint;
 import com.cannontech.common.dr.gear.setup.StopOrder;
 import com.cannontech.common.dr.gear.setup.TemperatureMeasureUnit;
 import com.cannontech.common.dr.gear.setup.WhenToChange;
 import com.cannontech.common.dr.setup.LMModelFactory;
 import com.cannontech.common.util.CtiUtilities;
 import com.cannontech.core.dao.LMGearDao;
+import com.cannontech.database.data.device.lm.HeatCool;
 import com.cannontech.database.db.device.lm.GearControlMethod;
 import com.cannontech.database.db.device.lm.IlmDefines;
+import com.cannontech.dr.eatonCloud.model.EatonCloudCycleType;
 import com.cannontech.dr.itron.model.ItronCycleType;
 import com.cannontech.dr.nest.model.v3.LoadShapingOptions;
 import com.cannontech.loadcontrol.data.LMProgramDirectGear;
@@ -45,6 +47,9 @@ public class ProgramGearFieldsBuilder {
                 break;
             case EcobeeSetpoint:
                 gearFields = getEcobeeSetpointGearFields(directGear);
+                break;
+            case EcobeePlus:
+                gearFields = getEcobeePlusGearFields(directGear);
                 break;
             case HoneywellCycle:
                 gearFields = getHoneywellCycleGearFields(directGear);
@@ -91,6 +96,9 @@ public class ProgramGearFieldsBuilder {
                 gearFields = getNoControlGearFields(directGear);
                 break;
             case MeterDisconnect:
+                break;
+            case EatonCloudCycle:
+                gearFields = getEatonCloudCycleGearFields(directGear);
                 break;
         }
 
@@ -430,10 +438,9 @@ public class ProgramGearFieldsBuilder {
         gearFields.setHowToStopControl(HowToStopControl.valueOf(directGear.getMethodStopType()));
         gearFields.setCapacityReduction(directGear.getPercentReduction());
         gearFields.setControlPercent(directGear.getMethodRate());
-        gearFields.setRampIn(IlmDefines.RAMP_RANDOM.equals(directGear.getFrontRampOption()));
         gearFields.setMandatory(IlmDefines.OPTION_MANDATORY.equalsIgnoreCase(directGear.getMethodOptionType()));
-        gearFields.setRampOut(IlmDefines.RAMP_RANDOM.equals(directGear.getBackRampOption()));
-
+        gearFields.setRampInOut(IlmDefines.RAMP_RANDOM.equals(directGear.getFrontRampOption()));
+        
         WhenToChangeFields changeFields = getWhenToChangeFields(directGear);
         gearFields.setWhenToChangeFields(changeFields);
         return gearFields;
@@ -461,6 +468,34 @@ public class ProgramGearFieldsBuilder {
         return gearFields;
 
     }
+    
+    /**
+     * Build Ecobee Plus Cycle gear fields.
+     */
+
+    private ProgramGearFields getEcobeePlusGearFields(LMProgramDirectGear directGear) {
+        EcobeePlusGearFields gearFields = new EcobeePlusGearFields();
+
+        HeatCool heatCool = gearDao.getHeatingEvent(directGear.getGearId());
+
+        if (directGear.getMethodRate() > 0) {
+            gearFields.setRampInOut(true);
+        } else {
+            gearFields.setRampInOut(false);
+        }
+        if (heatCool == HeatCool.HEAT) {
+            gearFields.setHeatingEvent(true);
+        } else {
+            gearFields.setHeatingEvent(false);
+        }
+        gearFields.setHowToStopControl(HowToStopControl.valueOf(directGear.getMethodStopType()));
+        gearFields.setCapacityReduction(directGear.getPercentReduction());
+        WhenToChangeFields changeFields = getWhenToChangeFields(directGear);
+        gearFields.setWhenToChangeFields(changeFields);
+
+        return gearFields;
+    }
+
 
     /**
      * Build Honeywell Cycle gear fields.
@@ -514,6 +549,30 @@ public class ProgramGearFieldsBuilder {
         gearFields.setCriticality(Integer.parseInt(methodOptionType));
         gearFields.setDutyCyclePeriodInMinutes(directGear.getMethodPeriod() / 60);
         ItronCycleType cycleType = gearDao.getItronCycleType(directGear.getGearId());
+        gearFields.setDutyCycleType(cycleType);
+
+        WhenToChangeFields changeFields = getWhenToChangeFields(directGear);
+        gearFields.setWhenToChangeFields(changeFields);
+        return gearFields;
+
+    }
+    
+    /**
+     * Build Eaton Cloud Cycle gear fields.
+     */
+
+    private ProgramGearFields getEatonCloudCycleGearFields(LMProgramDirectGear directGear) {
+        EatonCloudCycleGearFields gearFields = new EatonCloudCycleGearFields();
+
+        gearFields.setHowToStopControl(HowToStopControl.valueOf(directGear.getMethodStopType()));
+        gearFields.setCapacityReduction(directGear.getPercentReduction());
+        gearFields.setDutyCyclePercent(directGear.getMethodRate());
+        gearFields.setRampIn(IlmDefines.RAMP_RANDOM.equals(directGear.getFrontRampOption()));
+        gearFields.setRampOut(IlmDefines.RAMP_RANDOM.equals(directGear.getBackRampOption()));
+        String methodOptionType = directGear.getMethodOptionType();
+        gearFields.setCriticality(Integer.parseInt(methodOptionType));
+        gearFields.setDutyCyclePeriodInMinutes(directGear.getMethodPeriod() / 60);
+        EatonCloudCycleType cycleType = gearDao.getEatonCloudCycleType(directGear.getGearId());
         gearFields.setDutyCycleType(cycleType);
 
         WhenToChangeFields changeFields = getWhenToChangeFields(directGear);

@@ -46,6 +46,8 @@ DECLARE_COLLECTABLE( CtiLMCurtailCustomer );
 
     CtiLMCurtailCustomer& operator=(const CtiLMCurtailCustomer& right);
 
+    std::size_t getMemoryConsumption() const override;
+
     // Static Members
 
     // Possible acknowledge statuses

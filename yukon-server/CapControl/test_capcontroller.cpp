@@ -43,7 +43,7 @@ struct overrideGlobals
         initialize_feeder(store, feeder, bus, 1);
         initialize_capbank(store, bank, feeder, 1);
 
-        bank->createCbc(6, "cbc-3010");
+        bank->createCbc(6, "cbc 7010");
 
         store->addCapBankToCBCMap(bank);
     }

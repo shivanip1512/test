@@ -15,9 +15,10 @@ public interface EventLogUIService {
     /**
      * This method converts an event log search result from a byType into a data grid (List<List<String>>),
      * which is used to display the results to the web page and the csv file.
-     * 
+     * argumentIndexes shall contain the index of expected/applicable arguments in the searchResult.resultList.
      */
-    public List<List<String>> getDataGridRowByType(SearchResults<EventLog> searchResult, 
+    public List<List<String>> getDataGridRowByType(SearchResults<EventLog> searchResult,
+                                                   List<Integer> argumentIndexes,
                                                    YukonUserContext userContext) ;
 
     /**

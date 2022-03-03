@@ -25,6 +25,23 @@ yukon.assets.gateway.shared = (function () {
             
             _text = yukon.fromJson('#gateway-text');
             
+            $(document).on('change', '.js-nmipaddressport', function (ev) {
+                var selectedOption = $(this).find(':selected'),
+                	nmIpAddress = selectedOption.data('nmipaddress'),
+                	nmPort = selectedOption.data('nmport'),
+                	isNewSelected = nmIpAddress === 'NEW';
+                $('.js-new-nmipaddressport').toggleClass('dn', !isNewSelected);
+                if (isNewSelected) {
+                	//show text boxes and clear out values
+                	$('.js-nmipaddress').val('').focus();
+                    $('.js-nmport').val('');
+                } else {
+                	//set hidden values
+                	$('.js-nmipaddress').val(nmIpAddress);
+                    $('.js-nmport').val(nmPort);
+                }
+            });
+            
             /** User clicked the connect option, send connect request. */
             $(document).on('click', '.js-gw-connect', function (ev) {
                 
@@ -74,6 +91,7 @@ yukon.assets.gateway.shared = (function () {
                     popup.dialog({
                         title: _text['collect.data.title'].replace('{0}', name),
                         width: 550,
+                        modal: true,
                         buttons: yukon.ui.buttons({ event: 'yukon:assets:gateway:collect:data', target: target })
                     });
                 });

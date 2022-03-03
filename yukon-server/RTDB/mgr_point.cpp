@@ -26,6 +26,7 @@
 
 #include <boost/range/algorithm/find_if.hpp>
 #include <boost/range/algorithm/set_algorithm.hpp>
+#include <boost/bind/bind.hpp>
 
 using namespace std;
 
@@ -1183,6 +1184,8 @@ void CtiPointManager::removePoint(ptr_type pTempCtiPoint)
 
 void CtiPointManager::erasePao(long paoId)
 {
+    using namespace boost::placeholders;
+
     // we use a seperate vector because the multimap will have items removed
     std::vector<long> point_ids;
 

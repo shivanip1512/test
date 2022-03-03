@@ -38,9 +38,19 @@
                                 <c:set var="displaySubcategory" value="true"/>
                             </c:when>
                             <c:otherwise>
-                                <cti:checkRolesAndProperties value="${subcategory.first.roleProperty}">
-                                    <c:set var="displaySubcategory" value="true"/>
-                                </cti:checkRolesAndProperties>
+                                <c:choose>
+                                    <c:when test="${subcategory.first.level != null}">
+                                        <cti:checkRolesAndProperties value="${subcategory.first.roleProperty}" level="${subcategory.first.level}">
+                                            <c:set var="displaySubcategory" value="true"/>
+                                        </cti:checkRolesAndProperties>
+                                    </c:when>
+                                    <c:otherwise>
+                                        <cti:checkRolesAndProperties value="${subcategory.first.roleProperty}">
+                                            <c:set var="displaySubcategory" value="true"/>
+                                        </cti:checkRolesAndProperties>
+                                    </c:otherwise>
+                                </c:choose>
+
                             </c:otherwise>
                         </c:choose>
                         <c:if test="${displaySubcategory}">

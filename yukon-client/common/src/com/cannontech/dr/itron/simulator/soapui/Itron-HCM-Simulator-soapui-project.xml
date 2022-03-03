@@ -5025,15 +5025,15 @@
          </urn:MessageProgramEvent>\r
       </urn:AddMessageProgramEventRequest>\r
    </soapenv:Body>\r
-</soapenv:Envelope>]]></con:request><con:wsaConfig mustUnderstand="NONE" version="200508" action="urn:com:ssn:dr:xmlschema:service:v1.6:ProgramEventManager/ProgramEventManagerPortType/addMessageProgramEventRequest"/></con:call></con:operation><con:operation id="dc9cb67e-44a2-4247-84a2-51bdf1b81185" isOneWay="false" action="" name="cancelAllHANLoadControlProgramEventOnDevices" bindingOperationName="cancelAllHANLoadControlProgramEventOnDevices" type="Request-Response" inputName="" receivesAttachments="false" sendsAttachments="false" anonymous="optional"><con:settings/><con:call id="9be32fd6-9e50-42a8-89ca-2c2e2a4c6355" name="Request 1"><con:settings/><con:encoding>UTF-8</con:encoding><con:endpoint>http://localhost:8083/ProgramEventManagerPort</con:endpoint><con:request><![CDATA[<soapenv:Envelope xmlns:soapenv="http://schemas.xmlsoap.org/soap/envelope/" xmlns:urn="urn:com:ssn:dr:xmlschema:service:v1.6:ProgramEventManager.xsd">\r
+</soapenv:Envelope>]]></con:request><con:wsaConfig mustUnderstand="NONE" version="200508" action="urn:com:ssn:dr:xmlschema:service:v1.6:ProgramEventManager/ProgramEventManagerPortType/addMessageProgramEventRequest"/></con:call></con:operation><con:operation id="dc9cb67e-44a2-4247-84a2-51bdf1b81185" isOneWay="false" action="" name="cancelAllHANLoadControlProgramEventOnDevices" bindingOperationName="cancelAllHANLoadControlProgramEventOnDevices" type="Request-Response" inputName="" receivesAttachments="false" sendsAttachments="false" anonymous="optional"><con:settings/><con:call id="9be32fd6-9e50-42a8-89ca-2c2e2a4c6355" name="Request 1"><con:settings><con:setting id="com.eviware.soapui.impl.wsdl.WsdlRequest@request-headers">&lt;xml-fragment/></con:setting></con:settings><con:encoding>UTF-8</con:encoding><con:endpoint>http://localhost:8083/ProgramEventManagerPort</con:endpoint><con:request><![CDATA[<soapenv:Envelope xmlns:soapenv="http://schemas.xmlsoap.org/soap/envelope/" xmlns:urn="urn:com:ssn:dr:xmlschema:service:v1.6:ProgramEventManager.xsd">\r
    <soapenv:Header/>\r
    <soapenv:Body>\r
       <urn:CancelAllHANLoadControlProgramEventOnDevicesRequest>\r
-         <urn:EnableDRLCRandomization>?</urn:EnableDRLCRandomization>\r
+         <urn:EnableDRLCRandomization>false</urn:EnableDRLCRandomization>\r
          <!--Zero or more repetitions:-->\r
-         <urn:DeviceGroupID>?</urn:DeviceGroupID>\r
+         <urn:DeviceGroupID>3955</urn:DeviceGroupID>\r
          <!--Zero or more repetitions:-->\r
-         <urn:NicMacID>?</urn:NicMacID>\r
+         <urn:NicMacID>11:11:11:11:11:11</urn:NicMacID>\r
       </urn:CancelAllHANLoadControlProgramEventOnDevicesRequest>\r
    </soapenv:Body>\r
 </soapenv:Envelope>]]></con:request><con:credentials><con:authType>No Authorization</con:authType></con:credentials><con:jmsConfig JMSDeliveryMode="PERSISTENT"/><con:jmsPropertyConfig/><con:wsaConfig mustUnderstand="NONE" version="200508" action="urn:com:ssn:dr:xmlschema:service:v1.6:ProgramEventManager/ProgramEventManagerPortType/cancelAllHANLoadControlProgramEventOnDevicesRequest"/><con:wsrmConfig version="1.2"/></con:call></con:operation><con:operation id="8aed4d1d-e58e-460c-9e2c-cf357f93c4c5" isOneWay="false" action="" name="cancelCriticalPeakPriceProgramEvent" bindingOperationName="cancelCriticalPeakPriceProgramEvent" type="Request-Response" inputName="" receivesAttachments="false" sendsAttachments="false" anonymous="optional"><con:settings/><con:call id="8c7559e9-18e6-43f4-ba6c-9a6d5214abae" name="Request 1"><con:settings/><con:encoding>UTF-8</con:encoding><con:endpoint>http://localhost:8083/ProgramEventManagerPort</con:endpoint><con:request><![CDATA[<soapenv:Envelope xmlns:soapenv="http://schemas.xmlsoap.org/soap/envelope/" xmlns:urn="urn:com:ssn:dr:xmlschema:service:v1.6:ProgramEventManager.xsd">\r
@@ -7009,7 +7009,36 @@ requestContext.randJobId = random.nextInt(10000)</con:script><con:responseConten
       </detail>
     </soapenv:Fault>
   </soapenv:Body>
-</soapenv:Envelope>]]></con:responseContent><con:wsaConfig mustUnderstand="NONE" version="200508" action="urn:com:ssn:dr:xmlschema:service:v1.6:ProgramEventManager/ProgramEventManagerPortType/cancelHANLoadControlProgramEventOnDevicesResponse"/></con:response><con:dispatchConfig/></con:mockOperation></con:mockService><con:mockService id="67e0bfa6-89bd-40b1-b191-b67fe033b782" port="8083" path="/ProgramManagerPort" host="USPLYWHP6035863" name="ProgramManagerSoapBinding MockService"><con:settings><con:setting id="com.eviware.soapui.impl.wsdl.mock.WsdlMockService@require-soap-action">false</con:setting></con:settings><con:properties/><con:onRequestScript>import com.eviware.soapui.support.types.StringToStringsMap;
+</soapenv:Envelope>]]></con:responseContent><con:wsaConfig mustUnderstand="NONE" version="200508" action="urn:com:ssn:dr:xmlschema:service:v1.6:ProgramEventManager/ProgramEventManagerPortType/cancelHANLoadControlProgramEventOnDevicesResponse"/></con:response><con:dispatchConfig/></con:mockOperation><con:mockOperation name="cancelAllHANLoadControlProgramEventOnDevices" id="11b8126e-259e-4532-a0d1-17898ffec322" interface="ProgramEventManagerSoapBinding" operation="cancelAllHANLoadControlProgramEventOnDevices"><con:settings/><con:defaultResponse>Response 1</con:defaultResponse><con:dispatchStyle>SCRIPT</con:dispatchStyle><con:dispatchPath>return "Mock Success Response";
+//return "Mock SoapFault Response";</con:dispatchPath><con:response name="Mock Success Response" id="b4aa268e-01bc-4e4e-9ad8-01682f02c558" httpResponseStatus="200" encoding="UTF-8"><con:settings/><con:script>Random random = new Random()
+requestContext.randJobId = random.nextInt(10000)</con:script><con:responseContent><![CDATA[<soapenv:Envelope xmlns:soapenv="http://schemas.xmlsoap.org/soap/envelope/" xmlns:urn="urn:com:ssn:dr:xmlschema:service:v1.6:ProgramEventManager.xsd">
+   <soapenv:Header/>
+   <soapenv:Body>
+      <urn:CancelAllHANLoadControlProgramEventOnDevicesResponse>
+         <urn:JobID>${randJobId}</urn:JobID>
+      </urn:CancelAllHANLoadControlProgramEventOnDevicesResponse>
+   </soapenv:Body>
+</soapenv:Envelope>]]></con:responseContent><con:wsaConfig mustUnderstand="NONE" version="200508" action="urn:com:ssn:dr:xmlschema:service:v1.6:ProgramEventManager/ProgramEventManagerPortType/cancelAllHANLoadControlProgramEventOnDevicesResponse"/></con:response><con:response name="Mock SoapFault Response" id="3f516296-a57d-44b3-befc-fad004fa0843" httpResponseStatus="500" encoding="UTF-8"><con:settings/><con:responseContent><![CDATA[<soapenv:Envelope xmlns:soapenv="http://schemas.xmlsoap.org/soap/envelope/" xmlns:urn="urn:com:ssn:dr:xmlschema:service:v1.1:BasicTypes.xsd">
+  <soapenv:Body>
+    <soapenv:Fault>
+      <faultcode>SOAP-ENV:Server</faultcode>
+      <faultstring>The Event has already been completed</faultstring>
+      <!--Optional:-->
+      <faultactor>http://localhost:8083/DeviceManagerPort</faultactor>
+      <!--Optional:-->
+      <detail>
+        <urn:ErrorFault>
+          <!--1 or more repetitions:-->
+          <urn:Error>
+            <urn:ErrorCode>Done.programEventID</urn:ErrorCode>
+            <urn:ErrorMessage>The Event with ID 000 has already been completed.</urn:ErrorMessage>
+          </urn:Error>
+        </urn:ErrorFault>
+        <!--You may enter ANY elements at this point-->
+      </detail>
+    </soapenv:Fault>
+  </soapenv:Body>
+</soapenv:Envelope>]]></con:responseContent><con:wsaConfig mustUnderstand="NONE" version="200508" action="urn:com:ssn:dr:xmlschema:service:v1.6:ProgramEventManager/ProgramEventManagerPortType/cancelAllHANLoadControlProgramEventOnDevicesResponse"/></con:response><con:dispatchConfig/></con:mockOperation></con:mockService><con:mockService id="67e0bfa6-89bd-40b1-b191-b67fe033b782" port="8083" path="/ProgramManagerPort" host="USPLYWHP6035863" name="ProgramManagerSoapBinding MockService"><con:settings><con:setting id="com.eviware.soapui.impl.wsdl.mock.WsdlMockService@require-soap-action">false</con:setting></con:settings><con:properties/><con:onRequestScript>import com.eviware.soapui.support.types.StringToStringsMap;
 
 // Package the Username and Password into variables
 

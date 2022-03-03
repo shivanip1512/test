@@ -33,8 +33,7 @@
             <span class="empty-list"><i:inline key=".noNotes"/></span>
         </c:when>
         <c:otherwise>
-            <c:set var="borderClass" value="${hideTableBorders ? '' : 'bordered-div'}"/>
-            <table class="row-highlighting ${borderClass} striped wrbw" style="width:100%; table-layout:fixed;">
+            <table class="compact-results-table no-stripes wrbw" style="width:100%; table-layout:fixed;">
                 <c:forEach var="recentNote" items="${recentNotes}" varStatus="status">
                     <c:set var="noteId" value="${recentNote.paoNote.noteId}"/>
                     <tr>
@@ -56,13 +55,13 @@
                                     </div>
                                 </div>
                                 <div id="js-edit-note-${noteId}" class="dn">
-                                    <textarea id="js-edit-note-textarea-${noteId}" rows="3" style="resize: none;" 
+                                    <textarea id="js-edit-note-textarea-${noteId}" rows="3"
                                               maxlength="${noteTextAreaMaxLength}" value="${recentNote.paoNote.noteText}"
-                                              placeholder="${noteTextPlaceholder}" class="tadw"></textarea>
+                                              placeholder="${noteTextPlaceholder}" class="tadw rn"></textarea>
                                 </div>
                             </div>
                             <div class="column two nogutter js-note-actions cv" style="right: 0;">
-                                <cti:msg2 var="cancelText" key=".cancel.hoverText"/>
+                                <cti:msg2 var="cancelText" key="yukon.common.cancelChanges"/>
                                 <cti:msg2 var="deleteText" key=".delete.hoverText"/>
                                 <cti:msg2 var="editText" key=".edit.hoverText"/>
                                 <cti:msg2 var="saveText" key="yukon.common.save"/>
@@ -70,7 +69,7 @@
                                     <c:if test="${recentNote.modifiable}">
                                         <cti:button id="js-edit-note-btn-${noteId}" renderMode="buttonImage" icon="icon-pencil" 
                                             data-note-id="${noteId}" title="${editText}"/>
-                                        <cti:button id="js-delete-note-btn-${noteId}" renderMode="buttonImage" icon="icon-cross" 
+                                        <cti:button id="js-delete-note-btn-${noteId}" renderMode="buttonImage" icon="icon-delete" 
                                             data-note-id="${noteId}" data-ok-event="yukon:note:delete" title="${deleteText}"/>
                                         <d:confirm on="#js-delete-note-btn-${noteId}"  nameKey="confirmDelete"/>
                                     </c:if>

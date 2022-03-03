@@ -580,8 +580,12 @@ public class DevCapControlCreationServiceImpl extends DevObjectCreationBase impl
             Sets.newHashSet(PaoType.PHASE_OPERATED, PaoType.GANG_OPERATED, PaoType.LOAD_TAP_CHANGER));
         List<DeviceConfigCategoryItem> categoryItems = new ArrayList<>();
         DeviceConfigCategoryItem controlModeCategoryItem = new DeviceConfigCategoryItem(null, "voltageControlMode", "SET_POINT");
+        DeviceConfigCategoryItem minTapPositionCategoryItem = new DeviceConfigCategoryItem(null, "minTapPosition", "-16");
+        DeviceConfigCategoryItem maxTapPositionCategoryItem = new DeviceConfigCategoryItem(null, "maxTapPosition", "16");
         DeviceConfigCategoryItem tapCategoryItem = new DeviceConfigCategoryItem(null, "voltageChangePerTap", ".75");
         categoryItems.add(controlModeCategoryItem);
+        categoryItems.add(minTapPositionCategoryItem);
+        categoryItems.add(maxTapPositionCategoryItem);
         categoryItems.add(tapCategoryItem);
         DeviceConfigCategory configCategory = new DeviceConfigCategory(null, CategoryType.REGULATOR_CATEGORY.value(),
             "Sim Regulator category" + devCapControl.getOffset(), StringUtils.EMPTY, categoryItems);

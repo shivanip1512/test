@@ -74,37 +74,37 @@ $(function () {
     </tags:sectionContainer>
 
     <%-- Event Log Results --%>
-    <cti:msg var="eventsTitle" key="yukon.common.events.title"/>
-    <tags:sectionContainer title="${eventsTitle}">
-        <c:choose>
-            <c:when test="${empty searchResult.resultList}">
-                <span class="empty-list"><i:inline key="yukon.common.events.noResults"/></span>
-            </c:when>
-            <c:otherwise>
-                <div id="events-container" data-url="${url}" data-static>
-                    <table class="compact-results-table">
-                        <thead>
-                            <tr>
-                                <th><i:inline key="yukon.common.events.columnHeader.event"/></th>
-                                <th><i:inline key="yukon.common.events.columnHeader.dateAndTime"/></th>
-                                <th><i:inline key="yukon.common.events.columnHeader.message"/></th>
-                            </tr>
-                        </thead>
-                        <tfoot></tfoot>
-                        <tbody>
-                            <c:forEach items="${searchResult.resultList}" var="event">
-                                <tr>
-                                    <td>${fn:escapeXml(event.eventType)}</td>
-                                    <td><cti:formatDate type="BOTH" value="${event.dateTime}" /></td>
-                                    <td><i:inline key="${event.messageSourceResolvable}" htmlEscape="true"/></td>
-                                </tr>
-                            </c:forEach>
-                        </tbody>
-                    </table>
-                    <tags:pagingResultsControls result="${searchResult}" adjustPageCount="true" hundreds="true"/>
-                </div>
-            </c:otherwise>
-        </c:choose>
-    </tags:sectionContainer>
+	<cti:msg var="eventsTitle" key="yukon.common.events.title" />
+	<tags:sectionContainer title="${eventsTitle}">
+		<div id="events-container" data-url="${url}" data-static>
+			<c:choose>
+				<c:when test="${empty searchResult.resultList}">
+					<span class="empty-list"><i:inline key="yukon.common.events.noResults" /></span>
+				</c:when>
+				<c:otherwise>
+					<table class="compact-results-table">
+						<thead>
+							<tr>
+								<th><i:inline key="yukon.common.events.columnHeader.event" /></th>
+								<th><i:inline key="yukon.common.events.columnHeader.dateAndTime" /></th>
+								<th><i:inline key="yukon.common.events.columnHeader.message" /></th>
+							</tr>
+						</thead>
+						<tfoot></tfoot>
+						<tbody>
+							<c:forEach items="${searchResult.resultList}" var="event">
+								<tr>
+									<td>${fn:escapeXml(event.eventType)}</td>
+									<td><cti:formatDate type="BOTH" value="${event.dateTime}" /></td>
+									<td class="wbba"><i:inline key="${event.messageSourceResolvable}" htmlEscape="true" /></td>
+								</tr>
+							</c:forEach>
+						</tbody>
+					</table>
+				</c:otherwise>
+			</c:choose>
+			<tags:pagingResultsControls result="${searchResult}" adjustPageCount="true" hundreds="true" />
+		</div>
+	</tags:sectionContainer>
 
 </cti:standardPage>

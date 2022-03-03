@@ -1,18 +1,18 @@
 package com.cannontech.services.smartNotification.service.impl.email;
 
-import static org.hamcrest.CoreMatchers.equalTo;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertThat;
-import static org.junit.Assert.assertTrue;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
 import org.joda.time.Instant;
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 import org.springframework.test.util.ReflectionTestUtils;
+
 import com.cannontech.common.smartNotification.model.SmartNotificationEvent;
 import com.cannontech.common.smartNotification.model.SmartNotificationVerbosity;
 import com.cannontech.services.smartNotification.service.WatchdogEmailFormatHandler;
@@ -27,7 +27,7 @@ public class WatchdogEmailBuilderTest {
     private Map<Watchdogs, WatchdogEmailFormatHandler> emailBuilderHandler = Maps.newHashMap();
 
 
-    @Before
+    @BeforeEach
     public void setUp() throws Exception {
         ServiceStatusWatchdogEmailFormatHandler handler = new ServiceStatusWatchdogEmailFormatHandler();
         List<WatchdogEmailFormatHandler> watchTypeEmailHandlers = Lists.newArrayList();
@@ -48,7 +48,7 @@ public class WatchdogEmailBuilderTest {
         event.add(smartNotificationEvent);
         Object[] subjectArguments = ReflectionTestUtils.invokeMethod(watchdogEmailBuilder, "getSubjectArguments",
             event, SmartNotificationVerbosity.SUMMARY);
-        assertThat(subjectArguments.length, equalTo(1));
+        assertEquals(subjectArguments.length, 1);
     }
 
     @Test
@@ -62,7 +62,7 @@ public class WatchdogEmailBuilderTest {
         event.add(smartNotificationEvent);
         Object[] subjectArguments = ReflectionTestUtils.invokeMethod(watchdogEmailBuilder, "getSubjectArguments",
             event, SmartNotificationVerbosity.SUMMARY);
-        assertThat(subjectArguments[0], equalTo("Yukon Load Management Service"));
+        assertEquals(subjectArguments[0], "Yukon Load Management Service");
     }
 
     @Test
@@ -82,7 +82,7 @@ public class WatchdogEmailBuilderTest {
         events.add(smartNotificationEvent2);
         Object[] subjectArguments = ReflectionTestUtils.invokeMethod(watchdogEmailBuilder, "getSubjectArguments",
             events, SmartNotificationVerbosity.SUMMARY);
-        assertThat(subjectArguments[0], equalTo(2));
+        assertEquals(subjectArguments[0], 2);
     }
 
     @Test

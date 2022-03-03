@@ -3,7 +3,7 @@
     <div class="column one js-formula-name">${fn:escapeXml(assignments[assignmentId].gearName)}</div>
     <div class="column two js-formula-control-method"><i:inline key="${assignments[assignmentId].controlMethod}"/></div>
     <div class="column three nogutter">
-        <span class="js-formula-program">${fn:escapeXml(gearPrograms[assignments[assignmentId].deviceId].paoName)}</span>
+        <span class="js-formula-program">${fn:escapeXml(gearPrograms[assignments[assignmentId].programId].paoName)}</span>
         <cti:displayForPageEditModes modes="EDIT">
            <cti:button data-assign-id="${assignmentId}"
                 nameKey="remove"

@@ -49,6 +49,7 @@ import com.cannontech.core.dao.AddressDao;
 import com.cannontech.core.dao.ContactDao;
 import com.cannontech.core.dao.NotFoundException;
 import com.cannontech.core.dao.PaoDao;
+import com.cannontech.core.dao.PaoDao.InfoKey;
 import com.cannontech.core.dao.PersistenceException;
 import com.cannontech.core.dao.PointDao;
 import com.cannontech.core.dao.ServiceCompanyDao;
@@ -377,7 +378,11 @@ public class OperatorHardwareController {
             int deviceId = inventoryDao.getDeviceId(inventoryId);
             model.addAttribute("deviceId", deviceId);
             model.addAttribute("showMapNetwork", true);
+        } else if (hardware.getHardwareType().isEatonCloud()) {
+            model.addAttribute("IMEI", paoDao.findPaoInfoValue(hardware.getDeviceId(), InfoKey.IMEI));
+            model.addAttribute("ICCID", paoDao.findPaoInfoValue(hardware.getDeviceId(), InfoKey.ICCID));
         }
+
         return "operator/hardware/hardware.jsp";
     }
 
@@ -735,14 +740,20 @@ public class OperatorHardwareController {
         HardwareClass clazz = type.getHardwareClass();
         model.addAttribute("displayTypeKey", ".displayType." + clazz);
 
+        model.addAttribute("showGuid", type.isSupportsGuid());
         model.addAttribute("showMacAddress", type.isSupportsMacAddress());
         model.addAttribute("showSecondaryMacAddress", type.isItron());
+        
+        if (type.isEatonCloud()) {
+            model.addAttribute("showFirmwareVersion", true);
+        }
         
         if (type.isZigbee()) {
             if (!type.isGateway()) {
                 model.addAttribute("showInstallCode", true);
             } else {
                 model.addAttribute("showFirmwareVersion", true);
+                model.addAttribute("firmwareVersionEditable", true);
             }
         } else if (type.isHoneywell()) {
             model.addAttribute("showDeviceVendorUserId", true);
@@ -781,6 +792,8 @@ public class OperatorHardwareController {
         if (type.isZigbee() || type.isItron()) {
             model.addAttribute("macAddressEditable", true);
         }
+        
+        model.addAttribute("showGuid", type.isSupportsGuid());
     }
 
     private void setupHardwareViewEditModel(AccountInfoFragment accountInfoFragment, Hardware hardware, ModelMap model,
@@ -803,6 +816,7 @@ public class OperatorHardwareController {
 
         //  Add Pao Specifics
         Integer deviceId = hardware.getDeviceId();
+        
         if (deviceId != null && deviceId > 0 && !type.isZigbee()) {  // points for ZigBee device have their own special box
             List<LitePoint> points = pointDao.getLitePointsByPaObjectId(deviceId);
             if (!points.isEmpty()) {
@@ -859,7 +873,7 @@ public class OperatorHardwareController {
         case SWITCH:
             model.addAttribute("showSwitchAndTstatConfigAction", true);
             if (allowAccountEditing) {
-                if (inventoryChecking) {
+                if (inventoryChecking && !type.isEatonCloud()) {
                     model.addAttribute("showSwitchChangeoutAction", true);
                 }
             }

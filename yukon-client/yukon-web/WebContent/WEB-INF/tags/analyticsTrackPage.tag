@@ -11,7 +11,9 @@
 <%-- **IMPORTANT** : New Ids need to be generated for every general release of Yukon --%>
 <%-- See Confluence: http://cipt0534.nam.ci.root:8090/display/EEST/Google+Analytics --%>
 <c:set var="cooperDev" value="UA-30935838-8"/>
-<c:set var="cooperProd" value="UA-30935838-15"/>
+<c:set var="cooperGA4Dev" value="G-TWQV742YGD"/>
+<c:set var="cooperProd" value="UA-30935838-19"/>
+<c:set var="cooperGA4Prod" value="G-JTNYMB32NE"/>
 
 <cti:globalSetting var="enabled" globalSettingType="GOOGLE_ANALYTICS_ENABLED"/>
 <cti:globalSetting var="additionalTrackingIds" globalSettingType="GOOGLE_ANALYTICS_TRACKING_IDS"/>
@@ -38,11 +40,14 @@
     </cti:checkYukonVersionUndefined>
 
     <c:set var="cooperTrackingId" value="${devMode ? cooperDev : cooperProd}"/>
+    <c:set var="cooperGA4TrackingId" value="${devMode ? cooperGA4Dev : cooperGA4Prod}"/>
 
     <%-- Only add GA if we have tracking Id(s) --%>
     <c:if test="${fn:length(cooperTrackingId) != 0 || fn:length(additionalTrackingIds) != 0}">
+        <script async src="https://www.googletagmanager.com/gtag/js?id=${cooperTrackingId}"></script>
         <script>
             yukon.analytics.setTrackingIds({cooper_tracking_id: '${cooperTrackingId}',
+                cooper_ga4_tracking_id: '${cooperGA4TrackingId}',
                 additional_tracking_ids: '${additionalTrackingIds}'});
         </script>
     </c:if>

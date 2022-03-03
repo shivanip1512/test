@@ -12,14 +12,17 @@ import java.util.stream.Collectors;
 
 import javax.servlet.http.HttpServletResponse;
 
+import org.apache.logging.log4j.Logger;
 import org.joda.time.Instant;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.ModelMap;
+import org.springframework.util.StringUtils;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.ResponseBody;
 
+import com.cannontech.clientutils.YukonLogManager;
 import com.cannontech.common.bulk.collection.device.model.CollectionActionUrl;
 import com.cannontech.common.device.groups.editor.dao.DeviceGroupMemberEditorDao;
 import com.cannontech.common.device.groups.editor.model.StoredDeviceGroup;
@@ -65,6 +68,7 @@ public class InfrastructureWarningsController {
     private final static String baseKey = "yukon.web.widgets.infrastructureWarnings.";
     private final static String widgetKey = "yukon.web.widgets.";
     private static final Instant epoch1990 = new Instant(CtiUtilities.get1990GregCalendar().getTime());
+    private static final Logger log = YukonLogManager.getLogger(InfrastructureWarningsController.class);
 
     @GetMapping("forceUpdate")
     public @ResponseBody Map<String, Object> forceUpdate() {
@@ -75,11 +79,22 @@ public class InfrastructureWarningsController {
     }
     
     @GetMapping("updateWidget")
-    public String updateWidget(ModelMap model, YukonUserContext userContext) {
+    public String updateWidget(ModelMap model, YukonUserContext userContext, String infrastructureWarningDeviceCategory) {
         MessageSourceAccessor accessor = messageSourceResolver.getMessageSourceAccessor(userContext);
         InfrastructureWarningSummary summary = widgetService.getWarningsSummary();
-        model.addAttribute("summary", summary);
         List<InfrastructureWarning> warnings = widgetService.getWarnings();
+        boolean showAllDeviceInfrastructureWarnings = true;
+        if (!StringUtils.isEmpty(infrastructureWarningDeviceCategory)) {
+            try {
+                InfrastructureWarningDeviceCategory deviceCategory = InfrastructureWarningDeviceCategory
+                        .valueOf(infrastructureWarningDeviceCategory);
+                warnings = infrastructureWarningsDao.getWarnings(deviceCategory);
+                showAllDeviceInfrastructureWarnings = false;
+            } catch (IllegalArgumentException e) {
+                log.error(e.getMessage());
+            }
+        }
+        model.addAttribute("summary", summary);
         Comparator<InfrastructureWarning> comparator = (o1, o2) -> o1.getSeverity().name().compareTo(o2.getSeverity().name());
         Collections.sort(warnings, comparator);
         if (warnings.size() > 10) {
@@ -97,12 +112,56 @@ public class InfrastructureWarningsController {
             model.addAttribute("isRefreshPossible", true);
             model.addAttribute("refreshTooltip", accessor.getMessage(widgetKey + "forceUpdate"));
         }
-        
         model.addAttribute("epoch1990", epoch1990);
-
+        if (!StringUtils.isEmpty(infrastructureWarningDeviceCategory) && !showAllDeviceInfrastructureWarnings) {
+            model.addAttribute("infrastructureWarningDeviceCategory", infrastructureWarningDeviceCategory);
+            setDeviceCountForDeviceCategory(model,
+                    InfrastructureWarningDeviceCategory.valueOf(infrastructureWarningDeviceCategory), accessor,
+                    summary);
+            return "infrastructureWarnings/deviceTypeInfrastructureWarningsWidget.jsp";
+        }
         return "infrastructureWarnings/widgetView.jsp";
     }
-    
+
+    /*
+     * Set the model attributes corresponding to infrastructure warning device category
+     */
+    private void setDeviceCountForDeviceCategory(ModelMap model,
+            InfrastructureWarningDeviceCategory infrastructureWarningDeviceCategory,
+            MessageSourceAccessor accessor, InfrastructureWarningSummary summary) {
+        String deviceLabel = null;
+        switch (infrastructureWarningDeviceCategory) {
+        case RELAY:
+            model.addAttribute("deviceTotalCount", summary.getTotalRelays());
+            model.addAttribute("deviceWarningsCount", summary.getWarningRelays());
+            deviceLabel = accessor.getMessage(baseKey + "relays");
+            model.addAttribute("deviceLabel", deviceLabel);
+            model.addAttribute("deviceType", InfrastructureWarningDeviceCategory.RELAY);
+            break;
+        case CCU:
+            model.addAttribute("deviceTotalCount", summary.getTotalCcus());
+            model.addAttribute("deviceWarningsCount", summary.getWarningCcus());
+            deviceLabel = accessor.getMessage(baseKey + "CCUs");
+            model.addAttribute("deviceLabel", deviceLabel);
+            model.addAttribute("deviceType", InfrastructureWarningDeviceCategory.CCU);
+            break;
+        case REPEATER:
+            model.addAttribute("deviceTotalCount", summary.getTotalRepeaters());
+            model.addAttribute("deviceWarningsCount", summary.getWarningRepeaters());
+            deviceLabel = accessor.getMessage(baseKey + "repeaters");
+            model.addAttribute("deviceLabel", deviceLabel);
+            model.addAttribute("deviceType", InfrastructureWarningDeviceCategory.REPEATER);
+            break;
+        default:
+            model.addAttribute("deviceTotalCount", summary.getTotalGateways());
+            model.addAttribute("deviceWarningsCount", summary.getWarningGateways());
+            deviceLabel = accessor.getMessage(baseKey + "gateways");
+            model.addAttribute("deviceLabel", deviceLabel);
+            model.addAttribute("deviceType", InfrastructureWarningDeviceCategory.GATEWAY);
+            break;
+        }
+    }
+
     private InfrastructureWarningDeviceCategory[] getTypesInSystem() {
         InfrastructureWarningSummary summary = widgetService.getWarningsSummary();
         return Arrays.stream(InfrastructureWarningDeviceCategory.values())

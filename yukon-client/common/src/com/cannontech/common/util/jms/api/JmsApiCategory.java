@@ -15,8 +15,10 @@ public enum JmsApiCategory {
     RF_GATEWAY("RF Gateway"),
     RF_MISC("RF Misc."), //use for misc single apis that are RF-related
     RF_NETWORK("RF Network"),
+    SIMULATOR_MANAGEMENT("Simulator Management"),
     SMART_NOTIFICATION("Smart Notification"),
     WIDGET_REFRESH("Widget Refresh"),
+    SIMULATOR("Simulator"),
     ;
     
     private final String niceString;

@@ -7,6 +7,7 @@ import com.cannontech.spring.YukonSpringHook;
 
 public final class PortFactory {
 
+    @SuppressWarnings("deprecation")
     public static DirectPort createPort(PaoType portType) {
         DirectPort port;
 
@@ -24,6 +25,7 @@ public final class PortFactory {
             lsp.getPortTiming().setPostTxWait(new Integer(0));
             lsp.getPortTiming().setReceiveDataWait(new Integer(0));
             lsp.getPortTiming().setExtraTimeOut(new Integer(0));
+            lsp.getPortTiming().setPostCommWait(new Integer(0));
 
             port = lsp;
             break;
@@ -85,6 +87,7 @@ public final class PortFactory {
             tsp.getPortTiming().setPostTxWait(new Integer(0));
             tsp.getPortTiming().setReceiveDataWait(new Integer(0));
             tsp.getPortTiming().setExtraTimeOut(new Integer(0));
+            tsp.getPortTiming().setPostCommWait(new Integer(0));
             port = tsp;
             break;
         case UDPPORT:
@@ -95,6 +98,7 @@ public final class PortFactory {
             udpPort.getPortTiming().setPostTxWait(new Integer(0));
             udpPort.getPortTiming().setReceiveDataWait(new Integer(0));
             udpPort.getPortTiming().setExtraTimeOut(new Integer(0));
+            udpPort.getPortTiming().setPostCommWait(new Integer(0));
             port = udpPort;
             break;
 
@@ -133,6 +137,7 @@ public final class PortFactory {
             tcp.getPortTiming().setPostTxWait(new Integer(0));
             tcp.getPortTiming().setReceiveDataWait(new Integer(0));
             tcp.getPortTiming().setExtraTimeOut(new Integer(0));
+            tcp.getPortTiming().setPostCommWait(new Integer(0));
             port = tcp;
             break;
         default:

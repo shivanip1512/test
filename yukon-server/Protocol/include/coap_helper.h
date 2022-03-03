@@ -3,6 +3,7 @@
 #include "dlldefs.h"
 
 #include "e2e_messaging.h"
+#include "streamBuffer.h"
 
 extern "C" {
 #include "coap/pdu.h"
@@ -63,5 +64,7 @@ enum class ResponseCode {
     Forbidden     = COAP_RESPONSE_CODE(403),
     NotAcceptable = COAP_RESPONSE_CODE(406),
 };
+
+IM_EX_PROT StreamBufferSink& operator<<(StreamBufferSink& s, const ResponseCode r);
 
 }

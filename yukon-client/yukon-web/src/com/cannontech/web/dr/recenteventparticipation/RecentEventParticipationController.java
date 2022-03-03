@@ -6,6 +6,7 @@ import java.util.List;
 
 import javax.servlet.http.HttpServletResponse;
 
+import org.joda.time.DateTime;
 import org.joda.time.Duration;
 import org.joda.time.Instant;
 import org.joda.time.format.DateTimeFormatter;
@@ -42,8 +43,8 @@ import com.google.common.collect.Lists;
 @Controller
 @CheckRole(YukonRole.DEMAND_RESPONSE)
 public class RecentEventParticipationController {
-    @Autowired protected YukonUserContextMessageSourceResolver messageSourceResolver;
-    @Autowired RecentEventParticipationService recentEventParticipationService;
+    @Autowired private YukonUserContextMessageSourceResolver messageSourceResolver;
+    @Autowired private RecentEventParticipationService recentEventParticipationService;
     @Autowired private DatePropertyEditorFactory datePropertyEditorFactory;
     @Autowired private DateFormattingService dateFormattingService;
 
@@ -59,6 +60,11 @@ public class RecentEventParticipationController {
     @RequestMapping(value = "/recenteventparticipation/details", method = RequestMethod.GET)
     public String details(ModelMap model, @RequestParam(required = false) Instant from,
             @RequestParam(required = false) Instant to, PagingParameters paging) {
+        if (from == null && to == null) {
+            DateTime todaysDate = DateTime.now();
+            to = todaysDate.toInstant();
+            from = todaysDate.minusMonths(1).toInstant();
+        }
         setUpModel(model, from, to, paging);
         return "dr/recenteventparticipation/details.jsp";
     }
@@ -131,7 +137,7 @@ public class RecentEventParticipationController {
     private List<String> getColumnNames(YukonUserContext userContext) {
         List<String> columnNames = Lists.newArrayList();
         MessageSourceAccessor accessor = messageSourceResolver.getMessageSourceAccessor(userContext);
-        columnNames.add(accessor.getMessage("yukon.web.modules.dr.recentEventParticipation.details.eventID"));
+        columnNames.add(accessor.getMessage("yukon.web.modules.dr.recentEventParticipation.details.externalEventID"));
         columnNames.add(accessor.getMessage("yukon.web.modules.dr.recentEventParticipation.details.program"));
         columnNames.add(accessor.getMessage("yukon.web.modules.dr.recentEventParticipation.details.group"));
         columnNames.add(accessor.getMessage("yukon.web.modules.dr.recentEventParticipation.details.startTime"));
@@ -142,6 +148,8 @@ public class RecentEventParticipationController {
         columnNames.add(accessor.getMessage("yukon.web.modules.dr.recentEventParticipation.details.participationState"));
         columnNames.add(accessor.getMessage("yukon.web.modules.dr.recentEventParticipation.details.serialNumber"));
         columnNames.add(accessor.getMessage("yukon.web.modules.dr.recentEventParticipation.details.optOutStatus"));
+        columnNames.add(accessor.getMessage("yukon.web.modules.dr.recentEventParticipation.details.failReason"));
+        columnNames.add(accessor.getMessage("yukon.web.modules.dr.recentEventParticipation.details.retryTime"));
         return columnNames;
     }
 
@@ -151,7 +159,7 @@ public class RecentEventParticipationController {
         for (RecentEventParticipationDetail recentEventParticipationDetail : recentEventParticipationDetails) {
             for (ControlDeviceDetail controlDeviceDetail : recentEventParticipationDetail.getDeviceDetails()) {
                 List<String> row = new ArrayList<>();
-                row.add(new Integer(recentEventParticipationDetail.getControlEventId()).toString());
+                row.add(recentEventParticipationDetail.getExternalEventId());
                 row.add(recentEventParticipationDetail.getProgramName());
                 row.add(recentEventParticipationDetail.getGroupName());
                 row.add(recentEventParticipationDetail.getStartTime().toString(formatter));
@@ -162,6 +170,10 @@ public class RecentEventParticipationController {
                 row.add(controlDeviceDetail.getParticipationState());
                 row.add(controlDeviceDetail.getSerialNumber());
                 row.add(controlDeviceDetail.getOptOutStatus().name());
+                row.add(controlDeviceDetail.getFailReason());
+                if(controlDeviceDetail.getRetryTime() != null) {
+                    row.add(controlDeviceDetail.getRetryTime().toString(formatter));
+                }
                 lists.add(row);
             }
         }

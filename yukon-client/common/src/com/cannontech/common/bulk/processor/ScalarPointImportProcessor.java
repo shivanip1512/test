@@ -80,4 +80,20 @@ public abstract class ScalarPointImportProcessor extends PointImportProcessor {
         int decimalPlaces = Integer.valueOf(row.getValue(DECIMAL_PLACES.NAME));
         builder.setDecimalPlaces(decimalPlaces);
     }
+    
+    /**
+     * Helper method to set pointOffset
+     */
+    protected void setPointOffset(ScalarPointBuilder builder, ImportRow row, int paoId, String deviceName) {
+        if (row.hasValue(POINT_OFFSET.NAME)) {
+            int pointOffset = Integer.valueOf(row.getValue(POINT_OFFSET.NAME));
+            if (pointOffset > 0) {
+                if(pointDao.deviceHasPoint(paoId, pointOffset, getPointType(row))) {
+                    String error = messageSourceAccessor.getMessage("yukon.exception.processingException.pointOffsetInUse", pointOffset, deviceName);
+                    throw new ProcessingException(error, "pointOffsetInUse");
+                }
+            }
+            builder.setPointOffset(pointOffset);
+        }
+    }
 }

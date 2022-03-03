@@ -14,8 +14,10 @@ import com.cannontech.common.smartNotification.model.SmartNotificationEvent;
 import com.cannontech.common.smartNotification.model.SmartNotificationEventData;
 import com.cannontech.common.smartNotification.model.SmartNotificationEventType;
 import com.cannontech.common.smartNotification.model.SmartNotificationFrequency;
+import com.cannontech.common.smartNotification.model.SmartNotificationMessageParameters;
 import com.cannontech.common.stars.scheduledDataImport.AssetImportResultType;
 import com.cannontech.common.util.Range;
+import com.google.common.collect.Multimap;
 
 /**
  * This dao handles saving and loading Smart Notification events.
@@ -51,12 +53,7 @@ public interface SmartNotificationEventDao {
     void save(SmartNotificationEventType type, List<SmartNotificationEvent> event);
     
     /**
-     * Returns events for type that have not been processed.
-     */
-    List<SmartNotificationEvent> getUnprocessedEvents(SmartNotificationEventType type);
-
-    /**
-     * Deletes all events. Used by simulator.
+     * Deletes all events and email history. Used ONLY by simulator.
      */
     void deleteAllEvents();
 
@@ -81,7 +78,15 @@ public interface SmartNotificationEventDao {
     SearchResults<SmartNotificationEventData> getDeviceDataMonitorEventData(DateTimeZone timeZone, PagingParameters paging, SortBy sortBy, Direction direction, Range<DateTime> dateRange,
                                                                             int monitorId);
 
+    /**
+     * Returns events by event type and date range
+     */
     List<SmartNotificationEvent> getEventsByTypeAndDate(SmartNotificationEventType eventType, Range<Instant> range);
+    
+    /**
+     * Returns events by monitor id and date range
+     */
+    List<SmartNotificationEvent> getEventsByMonitorIdAndDate(Integer monitorId, Range<Instant> range);
 
     /**
      * Returns watchdog event data to be displayed on UI.
@@ -107,4 +112,24 @@ public interface SmartNotificationEventDao {
      * Returns asset import event count based on selected from and to time range.
      */
     int getAssetImportEventCount(DateTime from, DateTime to, AssetImportResultType assetImportResultType);
+
+    /**
+     * Returns events that have not been processed for frequency.
+     */
+    Multimap<SmartNotificationEventType, SmartNotificationEvent> getUnprocessedEvents(SmartNotificationFrequency frequency);
+
+    /**
+     * Returns events that have not been processed by event type.
+     */
+    List<SmartNotificationEvent> getUnprocessedGroupedEvents(SmartNotificationEventType type);
+
+    /**
+     * Returns events that have not been processed by event type and event params.
+     */
+    List<SmartNotificationEvent> getUnprocessedGroupedEvents(SmartNotificationEventType type, String name, String value);
+    
+    /**
+     * Creates history to track the number of emails sent
+     */
+    void createHistory(SmartNotificationMessageParameters parameters, int intervalMinutes);
 }

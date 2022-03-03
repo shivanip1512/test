@@ -17,17 +17,21 @@
 
 using std::string;
 using namespace std;
-using namespace boost::assign;
 
 const int SECONDS_PER_MINUTE = 60;
 const int MINUTES_PER_HOUR = 60;
 
 const int HOURS_PER_DAY = 24;
 
+namespace {
+    extern std::unique_ptr<Cti::Time::TimezoneHelper> tzHelper;  //  Forward declaration, defined below
+}
+
 namespace Cti::Time {
     namespace {  //  internal linkage
         TIME_ZONE_INFORMATION GetTZI();
     }
+    extern std::function<CtiTime()> MakeNowTime;  //  Forward declaration, defined below
 }
 
 typedef boost::date_time::us_dst_rules<boost::gregorian::date, boost::posix_time::time_duration> us_dst_rules;
@@ -66,7 +70,7 @@ ctitime_t CtiTime::maketm(const CtiDate& d, unsigned hh, unsigned mm, unsigned s
     ctm.tm_mon = d.month() - 1;     /* months since January - [0,11] */
     ctm.tm_year = d.year() - 1900;    /* years since 1900 */
     ctm.tm_isdst = -1;   /* daylight savings time flag */
-    return mktime(&ctm);
+    return tzHelper->mktime(&ctm);
 }
 
 CtiTime::CtiTime() :
@@ -121,7 +125,7 @@ CtiTime::CtiTime(unsigned long s)
 CtiTime::CtiTime(struct tm* ctm) :
   _seconds(0)
 {
-    time_t tt = mktime(ctm);
+    time_t tt = tzHelper->mktime(ctm);
     if (tt > 0) {
         _seconds = tt;
     }
@@ -216,7 +220,7 @@ CtiDate CtiTime::date() const
     CtiDate cd(CtiDate::not_a_date);
     if(!is_special()){
         struct tm ctm;
-        ctm = *localtime(&_seconds);
+        ctm = tzHelper->localtime(&_seconds);
         cd = CtiDate( ctm.tm_mday, ctm.tm_mon+1, ctm.tm_year+1900);
         //cd = CtiDate( this);
     } else if(is_neg_infinity()) {
@@ -232,7 +236,7 @@ CtiDate CtiTime::dateGMT() const
     CtiDate cd(CtiDate::not_a_date);
     if(!is_special()){
         struct tm ctm;
-        ctm = *gmtime(&_seconds);
+        ctm = tzHelper->gmtime(&_seconds);
         cd = CtiDate( ctm.tm_mday, ctm.tm_mon+1, ctm.tm_year+1900);
         //cd = CtiDate( this);
     } else if(is_neg_infinity()) {
@@ -247,7 +251,7 @@ int CtiTime::day() const
 {
     if(!is_special()){
         struct tm ctm;
-        ctm = *localtime(&_seconds);
+        ctm = tzHelper->localtime(&_seconds);
         return ctm.tm_mday;
     }
     return -1;
@@ -257,7 +261,7 @@ int CtiTime::dayGMT() const
 {
     if(!is_special()){
         struct tm ctm;
-        ctm = *gmtime(&_seconds);
+        ctm = tzHelper->gmtime(&_seconds);
         return ctm.tm_mday;
     }
     return -1;
@@ -267,7 +271,7 @@ int CtiTime::second()  const
 {
     if(!is_special()){
         struct tm ctm;
-        ctm = *localtime(&_seconds);
+        ctm = tzHelper->localtime(&_seconds);
         return ctm.tm_sec;
     }
     return -1;
@@ -277,7 +281,7 @@ int CtiTime::secondGMT()  const
 {
     if(!is_special()){
         struct tm ctm;
-        ctm = *gmtime(&_seconds);
+        ctm = tzHelper->gmtime(&_seconds);
         return ctm.tm_sec;
     }
     return -1;
@@ -287,7 +291,7 @@ int CtiTime::minute()  const
 {
     if(!is_special()){
         struct tm ctm;
-        ctm = *localtime(&_seconds);
+        ctm = tzHelper->localtime(&_seconds);
         return ctm.tm_min;
     }
     return -1;
@@ -297,7 +301,7 @@ int CtiTime::minuteGMT()  const
 {
     if(!is_special()){
         struct tm ctm;
-        ctm = *gmtime(&_seconds);
+        ctm = tzHelper->gmtime(&_seconds);
         return ctm.tm_min;
     }
     return -1;
@@ -307,7 +311,7 @@ int CtiTime::hour()  const
 {
     if(!is_special()){
         struct tm ctm;
-        ctm = *localtime(&_seconds);
+        ctm = tzHelper->localtime(&_seconds);
         return ctm.tm_hour;
     }
     return -1;
@@ -317,7 +321,7 @@ int CtiTime::hourGMT()  const
 {
     if(!is_special()){
         struct tm ctm;
-        ctm = *gmtime(&_seconds);
+        ctm = tzHelper->gmtime(&_seconds);
         return ctm.tm_hour;
     }
     return -1;
@@ -357,7 +361,7 @@ CtiTime CtiTime::fromLocalSeconds(const unsigned long local_seconds)
     ctitime_t gmt_seconds = local_seconds + (tzinfo.Bias + tzinfo.StandardBias) * SECONDS_PER_MINUTE;
 
     //  need to determine if we were in DST or not
-    tm ctm = *localtime(&gmt_seconds);
+    tm ctm = tzHelper->localtime(&gmt_seconds);
 
     int minutes_offset = tzinfo.Bias + (ctm.tm_isdst ? tzinfo.DaylightBias : tzinfo.StandardBias);
 
@@ -401,18 +405,16 @@ bool CtiTime::isDST() const
     }
 
     struct tm ctm;
-    ctm = *localtime(&_seconds);
+    ctm = tzHelper->localtime(&_seconds);
     return ctm.tm_isdst;
 }
 
 // tm is for local
 void CtiTime::extract(struct tm* ctm) const
 {
-    struct tm *extracted;
-
-    if( isValid() && (extracted = localtime(&_seconds)) )
+    if( isValid() )
     {
-        *ctm = *extracted;
+        *ctm = tzHelper->localtime(&_seconds);
     }
     else
     {
@@ -437,28 +439,31 @@ static const std::map<std::wstring, std::string> timeZoneAbbrevMap {
     { L"US Mountain Standard Time", "MST-AZ" }, //Used only for 'UTC-07:00 Arizona'
     { L"Mountain Standard Time", "MST" },
     { L"Mountain Daylight Time", "MDT" },
-    { L"Mountain Standard Time {Mexico},", "MST-MEX" },
-    { L"Mountain Daylight Time {Mexico},", "MDT-MEX" },
+    { L"Mountain Standard Time (Mexico)", "MST-MEX" },
+    { L"Mountain Daylight Time (Mexico)", "MDT-MEX" },
     { L"Central Standard Time", "CST" },
     { L"Central Daylight Time", "CDT" },
-    { L"Central Standard Time {Mexico},", "CST-MEX" },
-    { L"Central Daylight Time {Mexico},", "CDT-MEX" },
+    { L"Central Standard Time (Mexico)", "CST-MEX" },
+    { L"Central Daylight Time (Mexico)", "CDT-MEX" },
     { L"Canada Central Standard Time", "CST-CAN" },
     { L"Canada Central Daylight Time", "CDT-CAN" },
     { L"Eastern Standard Time", "EST" },
     { L"Eastern Daylight Time", "EDT" },
-    { L"US Eastern Standard Time", "EST-IN" }, //Used only for 'UTC-05:00 Indiana {East},'
-    { L"US Eastern Daylight Time", "EDT-IN" }, //Used only for 'UTC-05:00 Indiana {East},'
+    { L"US Eastern Standard Time", "EST-IN" }, //Used only for 'UTC-05:00 Indiana (East)'
+    { L"US Eastern Daylight Time", "EDT-IN" }, //Used only for 'UTC-05:00 Indiana (East)'
     { L"Atlantic Standard Time", "AST-CAN" },
     { L"Atlantic Daylight Time", "ADT-CAN" },
     { L"Newfoundland Standard Time", "NT-CAN" },
     { L"Newfoundland Daylight Time", "NDT-CAN" },
     { L"E. South America Standard Time", "BRT-BRA" },
-    { L"E. South America Daylight Time", "BRST-BRA" },
+    { L"E. South America Daylight Time", "BRST-BRA" },  //  Brasilia Summer Time
     { L"Argentina Standard Time", "ART-ARG" },
     { L"GMT Standard Time", "GMT" },
     { L"Coordinated Universal Time", "GMT" },
-    { L"Greenwich Standard Time", "GMT-GBR" }
+    { L"Greenwich Standard Time", "GMT-GBR" },
+    { L"India Standard Time", "IST-IND" },
+    { L"Nepal Standard Time", "NPT-NPL" },
+    //  use the 'tzutil' utility or HKEY_LOCAL_MACHINE\Software\Microsoft\Windows NT\CurrentVersion\Time Zones to detemine others
 };
 
 /**
@@ -475,7 +480,7 @@ string CtiTime::getTZ() const
 
     tm timeDescriptor;
 
-    localtime_s(&timeDescriptor, &display_seconds);
+    timeDescriptor = tzHelper->localtime(&display_seconds);
 
     std::wstring wideTimeZoneName;
     std::string timeZoneName;
@@ -517,7 +522,7 @@ string CtiTime::asString(DisplayOffset offset, DisplayTimezone timezone) const
     {
         case Local:
         {
-            localtime_s(&timeDescriptor, &display_seconds);
+            timeDescriptor = tzHelper->localtime(&display_seconds);
             break;
         }
         case LocalNoDst:
@@ -528,7 +533,7 @@ string CtiTime::asString(DisplayOffset offset, DisplayTimezone timezone) const
         }
         case Gmt:
         {
-            gmtime_s(&timeDescriptor, &display_seconds);
+            timeDescriptor = tzHelper->gmtime(&display_seconds);
         }
     }
 
@@ -609,39 +614,72 @@ struct tm* CtiTime::localtime_r(const time_t *tod){
     return tm_value->ctm;
 }
 
-const TIME_ZONE_INFORMATION *overrideTzi = nullptr;
+namespace {
+
+struct WindowsTimezoneHelper : Cti::Time::TimezoneHelper
+{
+    tm localtime(const ctitime_t* seconds) const override
+    {
+        tm result;
+        ::localtime_s(&result, seconds);
+        return result;
+    }
+
+    tm gmtime(const ctitime_t* seconds) const override
+    {
+        tm result;
+        ::gmtime_s(&result, seconds);
+        return result;
+    }
+
+    ctitime_t mktime(tm* descriptor) const override
+    {
+        return ::mktime(descriptor);
+    }
+
+    TIME_ZONE_INFORMATION GetTZI() const override
+    {
+        TIME_ZONE_INFORMATION tzi;
+
+        if( ::GetTimeZoneInformation(&tzi) == TIME_ZONE_ID_INVALID )
+        {
+            throw std::invalid_argument("Invalid time zone information");
+        }
+
+        return tzi;
+    }
+};
+
+std::unique_ptr<Cti::Time::TimezoneHelper> tzHelper = std::make_unique<WindowsTimezoneHelper>();
 
 CtiTime makeNowTime()
 {
     return CtiTime();
 }
 
+}
+
 namespace Cti::Time {
 
-IM_EX_CTIBASE std::function<CtiTime()> MakeNowTime = makeNowTime;
+std::function<CtiTime()> MakeNowTime = makeNowTime;
 
-IM_EX_CTIBASE void overrideTimeZoneInformation(const TIME_ZONE_INFORMATION* tzi, Cti::Test::use_in_unit_tests_only&)
+auto exchangeTimezoneHelper(std::unique_ptr<TimezoneHelper> newHelper, Test::use_in_unit_tests_only&)
+    -> std::unique_ptr<TimezoneHelper>
 {
-    overrideTzi = tzi;
+    return std::exchange(std::move(tzHelper), std::move(newHelper));
+}
+
+auto exchangeMakeNow(std::function<CtiTime()> newMakeNow, Test::use_in_unit_tests_only&)
+    -> std::function<CtiTime()>
+{
+    return std::exchange(Cti::Time::MakeNowTime, newMakeNow);
 }
 
 namespace {  //  internal linkage
 
 TIME_ZONE_INFORMATION GetTZI()
 {
-    if( overrideTzi )
-    {
-        return *overrideTzi;
-    }
-
-    TIME_ZONE_INFORMATION tzinfo;
-
-    if( GetTimeZoneInformation(&tzinfo) == TIME_ZONE_ID_INVALID )
-    {
-        throw std::invalid_argument("Invalid time zone information");
-    }
-
-    return tzinfo;
+    return tzHelper->GetTZI();
 }
 
 }
@@ -704,6 +742,16 @@ CtiTime operator - (const CtiTime& t, const unsigned long s)
     _t.addSeconds(-1*s);
     return _t;
 }
+
+CtiTime operator + (const CtiTime& t, const std::chrono::seconds s)
+{
+    return CtiTime{ t }.addSeconds(s.count());
+}
+CtiTime operator - (const CtiTime& t, const std::chrono::seconds s)
+{
+    return CtiTime{ t }.addSeconds(-1 * s.count());
+}
+
 std::ostream& operator<< (std::ostream& s, const CtiTime& t)
 {
     s << t.asString();
@@ -731,7 +779,7 @@ ctitime_t CtiTime::getLocalTimeSeconds() const
 */
 long CtiTime::secondOffsetToGMT() const
 {
-    tm ctm = *localtime(&_seconds);
+    tm ctm = tzHelper->localtime(&_seconds);
 
     auto tzinfo = Cti::Time::GetTZI();
 

@@ -1,5 +1,10 @@
 package com.cannontech.encryption;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertNull;
+import static org.junit.jupiter.api.Assertions.fail;
+
 import java.io.File;
 import java.io.IOException;
 import java.net.URISyntaxException;
@@ -8,9 +13,8 @@ import java.util.List;
 import java.util.Random;
 
 import org.jdom2.JDOMException;
-import org.junit.Assert;
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
 import com.cannontech.common.util.BootstrapUtils;
 
@@ -22,7 +26,7 @@ public class KeyfileTest {
     private File testFileBad; // Set before tests run
     private static final String testFilePassKeyStr = "1r[cP7.=ui=u$Z}5ct2TC-:siZ1niLA3";
 
-    @Before
+    @BeforeEach
     public void setup() {
         try {
             testFileGood = new File(getClass().getResource("testKeyfileGood.dat").toURI());
@@ -51,7 +55,7 @@ public class KeyfileTest {
         for (int i=0;i<testIterations;i++) {
             generatedStr = new String(CryptoUtils.generateRandomPasskey(passkeySize));
             for(String testStr : generatedKeys) {
-                Assert.assertEquals(false, generatedStr.equals(testStr));
+                assertEquals(false, generatedStr.equals(testStr));
             }
             generatedKeys.add(generatedStr);
         }
@@ -66,10 +70,10 @@ public class KeyfileTest {
 
         for (int i=0;i<testIterations;i++) {
             generatedPasskey = CryptoUtils.generateRandomPasskey(passkeyLength);
-            Assert.assertNotNull(generatedPasskey);
-            Assert.assertEquals(passkeyLength,generatedPasskey.length);
+            assertNotNull(generatedPasskey);
+            assertEquals(passkeyLength,generatedPasskey.length);
             generatedPasskeyStr = new String(generatedPasskey);
-            Assert.assertEquals(false,generatedPasskeyStr.equals(""));
+            assertEquals(false,generatedPasskeyStr.equals(""));
         }
 
     }
@@ -81,10 +85,10 @@ public class KeyfileTest {
         int passkeyLength = 0;
 
         generatedPasskey = CryptoUtils.generateRandomPasskey(passkeyLength);
-        Assert.assertNotNull(generatedPasskey);
-        Assert.assertEquals(passkeyLength,generatedPasskey.length);
+        assertNotNull(generatedPasskey);
+        assertEquals(passkeyLength,generatedPasskey.length);
         generatedPasskeyStr = new String(generatedPasskey);
-        Assert.assertEquals(true,generatedPasskeyStr.equals(""));
+        assertEquals(true,generatedPasskeyStr.equals(""));
     }
 
     @Test
@@ -98,10 +102,10 @@ public class KeyfileTest {
         for (int i=0;i<testIterations;i++) {
             passkeyLength = rand.nextInt(255)+1;
             generatedPasskey = CryptoUtils.generateRandomPasskey(passkeyLength);
-            Assert.assertNotNull(generatedPasskey);
-            Assert.assertEquals(passkeyLength,generatedPasskey.length);
+            assertNotNull(generatedPasskey);
+            assertEquals(passkeyLength,generatedPasskey.length);
             generatedPasskeyStr = new String(generatedPasskey);
-            Assert.assertEquals(false,generatedPasskeyStr.equals(""));
+            assertEquals(false,generatedPasskeyStr.equals(""));
         }
     }
 
@@ -109,9 +113,9 @@ public class KeyfileTest {
     public void test_MasterConfgCryptoFile() {
         try {
             char[] passkey = CryptoUtils.getPasskeyFromCryptoFile(masterCfgCryptoFile);
-            Assert.assertNotNull(passkey);
+            assertNotNull(passkey);
         } catch (Exception e) {
-            Assert.fail();
+            fail();
         } 
     }
     
@@ -120,13 +124,13 @@ public class KeyfileTest {
         char[] passkey = null;
         try {
             passkey = CryptoUtils.getPasskeyFromCryptoFile(testFileGood);
-            Assert.assertNotNull(passkey);
+            assertNotNull(passkey);
             String passkeyStr = new String(passkey);
-            Assert.assertEquals(passkeyStr, testFilePassKeyStr);
+            assertEquals(passkeyStr, testFilePassKeyStr);
         } catch (Exception e) {
-            Assert.fail();
+            fail();
         } 
-        Assert.assertNotNull(passkey);
+        assertNotNull(passkey);
     }
 
     @Test
@@ -134,10 +138,16 @@ public class KeyfileTest {
         char[] passkey = null;
         try {
             passkey = CryptoUtils.getPasskeyFromCryptoFile(testFileBad);
-            Assert.fail();
+            fail();
         } catch (CryptoException e) {
             /* Test Pass. */
         }
-        Assert.assertNull(passkey);
+        assertNull(passkey);
+    }
+
+    @Test
+    public void test_Passkey_with_null_File() throws IOException, JDOMException {
+        char[] passkey = CryptoUtils.getPasskeyFromCryptoFile(null);
+        assertNull(passkey);
     }
 }

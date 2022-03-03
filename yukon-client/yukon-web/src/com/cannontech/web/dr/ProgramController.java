@@ -61,6 +61,8 @@ import com.cannontech.common.pao.DisplayablePao;
 import com.cannontech.common.pao.DisplayablePaoComparator;
 import com.cannontech.common.pao.attribute.model.BuiltInAttribute;
 import com.cannontech.common.pao.attribute.service.AttributeService;
+import com.cannontech.common.pao.definition.dao.PaoDefinitionDao;
+import com.cannontech.common.pao.definition.model.PaoTag;
 import com.cannontech.common.program.widget.model.ProgramData;
 import com.cannontech.common.search.result.SearchResults;
 import com.cannontech.common.smartNotification.service.SmartNotificationEventCreationService;
@@ -131,6 +133,7 @@ public class ProgramController extends ProgramControllerBase {
     @Autowired private PointFormattingService pointFormattingService;
     @Autowired private MeterDao meterDao;
     @Autowired private DisconnectService disconnectService;
+    @Autowired private PaoDefinitionDao paoDefinitionDao;
     @Autowired private ProgramWidgetService programWidgetService;
     @Autowired private DisconnectStatusService disconnectStatusService;
     @Autowired protected YukonUserContextMessageSourceResolver messageSourceResolver;
@@ -209,6 +212,8 @@ public class ProgramController extends ProgramControllerBase {
         if(rolePropertyDao.checkProperty(YukonRoleProperty.SHOW_ASSET_AVAILABILITY, userContext.getYukonUser())) {
             getAssetAvailabilityInfo(program, model, userContext);
         }
+        boolean allowPing = paoDefinitionDao.isTagSupported(program.getPaoIdentifier().getPaoType(), PaoTag.SUPPORTS_PING);
+        model.addAttribute("allowPing", allowPing);
         return "dr/assetAvailability.jsp";
     }
     
@@ -375,12 +380,15 @@ public class ProgramController extends ProgramControllerBase {
         if (StringUtils.isNotEmpty(result.getProcessingException())) {
             json.put("errors", result.getProcessingException());
         }
-        
+
+        log.debug("Adding Disconnect Status Result: {} to model.", result);
         json.put("success", result.isSuccess());
         json.put("status", accessor.getMessage(result.getState().getFormatKey()));
-        json.put("time", result.getDisconnectTime().getMillis());
+        if (result.getDisconnectTime() != null) {
+            json.put("time", result.getDisconnectTime().getMillis());
+        }
     }
-    
+  
     public enum DisconnectSortBy implements DisplayableEnum {
 
         device,

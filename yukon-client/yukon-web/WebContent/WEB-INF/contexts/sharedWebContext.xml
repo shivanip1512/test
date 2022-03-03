@@ -96,6 +96,8 @@
               <bean class="com.cannontech.web.dr.setup.LoadGroupBaseConverter"/>
               <bean class="com.cannontech.web.dr.setup.LMCopyConverter"/>
               <bean class="com.cannontech.web.dr.setup.LoadProgramGearConverter"/>
+              <bean class="com.cannontech.web.stars.commChannel.CommChannelBaseConverter"/>
+              <bean class="com.cannontech.web.stars.virtualDevice.VirtualDeviceBaseConverter"/>
            </set>
        </property>
     </bean>
@@ -114,6 +116,7 @@
         </mvc:argument-resolvers>
         <mvc:message-converters>
              <ref bean="jacksonHttpMsgConverter"/>
+             <ref bean="protobufMsgConverter"/>
         </mvc:message-converters>
         <mvc:path-matching suffix-pattern="false" trailing-slash="false" />
     </mvc:annotation-driven>
@@ -128,6 +131,7 @@
     <bean id="accountInfoArgumentResolver" class="com.cannontech.web.stars.dr.operator.general.AccountInfoFragmentArgumentResolver"/>
     <bean id="energyCompanyInfoArgumentResolver" class="com.cannontech.web.admin.energyCompany.general.EnergyCompanyInfoFragmentArgumentResolver"/>
     <bean id="jacksonHttpMsgConverter" class="com.cannontech.spring.JacksonHttpMessageConverter"/>
+    <bean id="protobufMsgConverter" class="org.springframework.http.converter.protobuf.ProtobufHttpMessageConverter"/>
             
     <tx:annotation-driven transaction-manager="transactionManager"/>
 </beans>

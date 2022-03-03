@@ -64,8 +64,8 @@
 <entry key="yukon.web.widgets.configWidget">Device Configuration</entry>
 <entry key="yukon.web.widgets.configWidget.helpText">
 <![CDATA[The Device Configuration widget allows for the configuration of devices, data streaming, and meter programming.
-<br><br><b>Device Configuration</b> – If the device is configured, the current configuration will be displayed along with options to Unassign, Send, Read, and Verify. 
-There is also an option to Assign a different configuration to the device.
+<br><br><b>Device Configuration</b> – If the device is configured, the assigned configuration will be displayed along with options to Upload, Validate, or Remove the configuration. 
+There is also an option to Change the configuration for the device.
 <br><br><b>Data Streaming</b> – If Data Streaming is enabled on the system, a section will display showing the current data streaming configuration, along with the options to Configure or Remove.
 <br><br><b>Meter Programming</b> – If Meter Programming is enabled on the system and the device supports Meter Programming, a section will display showing the current Program. If the device is not programmed, an option will display to Configure the programming.
 ]]></entry>
@@ -75,8 +75,9 @@ There is also an option to Assign a different configuration to the device.
 <entry key="yukon.web.widgets.rfnDeviceMetadataWidget">Network Information</entry>
 <entry key="yukon.web.widgets.rfnDeviceMetadataWidget.helpText">
     <![CDATA[The Network Information widget provides networking information for a device including the following:
-    <br><br><b>Primary Forward</b> – Primary Forward is determined by the node and is the gateway the node has chosen to provide its data every reporting interval.  This and the Reverse Lookup are generally the same for a node. In instances where they are different, it is likely a node has switched gateways or is in the process of settling on a primary forward and the new routing data has not been received or processed by the Yukon software. 
-    <br><br><b>Reverse Lookup</b> –Reverse Lookup is determined by the software as the most likely gateway to successfully process an on demand function to the selected device.  This and the Primary Forward are generally the same for a node.  In instances where they are different, it is likely a node has switched gateways and the new routing data has not been received or processed by the Yukon software.
+    <br><br><b>Primary Forward</b> – Primary Forward is determined by the node and is the gateway the node has chosen to provide its data every reporting interval. 
+    <br><br><b>Reverse Lookup</b> – Reverse Lookup is determined by the software as the most likely gateway to successfully process an on demand function to the selected device.  
+    <br><br>The Primary Forward and Reverse Lookup are generally the same for a node.  In instances where they are different, it is likely a node has switched gateways and the new routing data has not been received or processed by the Yukon software. If this is the case, the Comm Status will be Unknown until the new routing data has been received and the gateways match again.
     ]]>
 </entry>
 <entry key="yukon.web.widgets.meterOutagesWidget">Outages</entry>
@@ -95,7 +96,7 @@ There is also an option to Assign a different configuration to the device.
 <entry key="yukon.web.widgets.peakReportWidget">Peak Summary Report</entry>
 <entry key="yukon.web.widgets.outageMonitorsWidget">Outage Monitors</entry>
 <entry key="yukon.web.widgets.tamperFlagMonitorsWidget">Tamper Flag Monitors</entry>
-<entry key="yukon.web.widgets.statusPointMonitorsWidget">Status Point Monitors</entry>
+<entry key="yukon.web.widgets.statusPointMonitorsWidget">Outage Notification Monitors</entry>
 <entry key="yukon.web.widgets.deviceDataMonitorsWidget">Device Data Monitor</entry>
 <entry key="yukon.web.widgets.allMonitorsWidget">Monitors</entry>
 <entry key="yukon.web.widgets.allMonitorsWidget.create">Create Monitor</entry>
@@ -136,7 +137,7 @@ There is also an option to Assign a different configuration to the device.
 <entry key="yukon.web.widgets.peakReportWidget.widgetIdentity">Peak Summary Report {0}</entry>
 <entry key="yukon.web.widgets.outageMonitorsWidget.widgetIdentity">Outage Monitors {0}</entry>
 <entry key="yukon.web.widgets.tamperFlagMonitorsWidget.widgetIdentity">Tamper Flag Monitors {0}</entry>
-<entry key="yukon.web.widgets.statusPointMonitorsWidget.widgetIdentity">Status Point Monitors {0}</entry>
+<entry key="yukon.web.widgets.statusPointMonitorsWidget.widgetIdentity">Outage Notification Monitors {0}</entry>
 <entry key="yukon.web.widgets.porterResponseMonitorsWidget.widgetIdentity">Porter Response Monitor {0}</entry>
 <entry key="yukon.web.widgets.deviceReconfigMonitorsWidget.widgetIdentity">Configuration Tasks {0}</entry>
 <entry key="yukon.web.widgets.commandScheduleWidget.widgetIdentity">Command Schedules {0}</entry>
@@ -148,7 +149,7 @@ There is also an option to Assign a different configuration to the device.
 <entry key="yukon.web.widgets.csrTrendWidget.helpText"><![CDATA[ ]]></entry>
 
 <entry key="yukon.web.widgets.outageMonitorsWidget.exception.notFound">Outage Monitor Does Not Exist.</entry>
-<entry key="yukon.web.widgets.statusPointMonitorsWidget.exception.notFound">Status Point Monitor not found.</entry>
+<entry key="yukon.web.widgets.statusPointMonitorsWidget.exception.notFound">Outage Notification Monitor not found.</entry>
 
 <!-- keys specific to the widget class, not the implementation! -->
 <entry key="yukon.web.widgetClasses.TrendWidget.hasPeriod">Previous {0}''s {1} {2}</entry>
@@ -180,9 +181,9 @@ There is also an option to Assign a different configuration to the device.
         <br><br>
         Data Availability Status:
         <ul>
-            <li><span class="fwb bg-color-pie-green txt-color-white">Available (Green)</span> - 
+            <li><span class="fwb bg-color-green txt-color-white">Available (Green)</span> - 
             Data has been received for these devices within the desired number of days.</li>
-            <li><span class="fwb bg-color-pie-blue txt-color-white">Expected (Blue)</span> - 
+            <li><span class="fwb bg-color-blue txt-color-white">Expected (Blue)</span> - 
             Data has been received for these devices within 7 days.</li>
             <li><span class="fwb bg-color-orange txt-color-white">Outdated (Orange)</span> - 
             Data has been received for these devices within 14 days.</li>
@@ -203,9 +204,9 @@ There is also an option to Assign a different configuration to the device.
         <br><br>
         Asset Availability Status:
         <ul>
-            <li><span class="fwb bg-color-pie-green txt-color-white">Active (Green)</span> - 
+            <li><span class="fwb bg-color-green txt-color-white">Active (Green)</span> - 
                 Devices have returned a positive value for appliance run time at some point in the previous {0}{1}.</li>
-            <li><span class="fwb bg-color-pie-blue txt-color-white">Opted Out (Blue)</span> - 
+            <li><span class="fwb bg-color-blue txt-color-white">Opted Out (Blue)</span> - 
                 Devices have been taken out of service and are no longer responding to events.</li>
             <li><span class="fwb bg-color-orange txt-color-white">Inactive (Orange)</span> - 
                 Devices have returned the value zero for every appliance run time interval in the previous {0}{1}.</li>
@@ -229,7 +230,7 @@ There is also an option to Assign a different configuration to the device.
         A summary of the devices with and without warnings will be displayed near the top of the widget with the device type being a link to more detail.
         <ul>
             <li>
-                <span class="fwb bg-color-pie-green txt-color-white">Devices without warnings (Green)</span> - 
+                <span class="fwb bg-color-green txt-color-white">Devices without warnings (Green)</span> - 
                 Number of devices without any of the below mentioned warning types.
             </li>
             <li>
@@ -322,5 +323,41 @@ The Comm Channel Queue Counts details are updated every 6 seconds. The Refresh b
 
     <!-- Wifi Connection Widget -->
     <entry key="yukon.web.widgets.wifiConnectionWidget">Wi-Fi Connection</entry>
+    
+    <!-- Cellular Connection Widget -->
+    <entry key="yukon.web.widgets.cellularConnectionWidget">Cellular Connection</entry>
+
+    <!-- Comm Channel Information Widget -->
+    <entry key="yukon.web.widgets.commChannelInfoWidget">Comm Channel Information</entry>
+    
+    <!-- Comm Channel linked devices Widget -->
+    <entry key="yukon.web.widgets.commChannelLinkedDeviceWidget">Linked Devices</entry>
+    
+    <!-- RFN 1200 Information Widget -->
+    <entry key="yukon.web.widgets.rfn1200InfoWidget">Comm Channel Information</entry>
+    
+    <!-- Virtual Device Information Widget -->
+    <entry key="yukon.web.widgets.virtualDeviceInfoWidget">Virtual Device Information</entry>
+    
+    <!-- Device Points Widget -->
+    <entry key="yukon.web.widgets.devicePointsWidget">Device Points</entry>
+
+    <!-- Firmware And Certificate Information Widget -->
+    <entry key="yukon.web.widgets.firmwareInformationWidget">Firmware Information</entry>
+    <entry key="yukon.web.widgets.firmwareInformationWidget.helpText"><![CDATA[
+        The Firmware Updates section displays the current firmware version(s) for all gateways and the latest firmware version available on the upgrade server.
+    ]]></entry>
+
+    <!-- Gateway List Widget -->
+    <entry key="yukon.web.widgets.gatewayListWidget">Gateway Information</entry>
+    
+    <!-- Firmware Details Widget -->
+    <entry key="yukon.web.widgets.firmwareDetailsWidget">Firmware Details</entry>
+    
+    <!-- Certificate Details Widget -->
+    <entry key="yukon.web.widgets.certificateDetailsWidget">Certificate Details</entry>
+
+    <!-- If any widget fails to load -->
+    <entry key="yukon.web.widgets.errorWithinWidget">There was a problem loading this widget. Check your widget configuration or system logs for more information.</entry>
 
 </properties>

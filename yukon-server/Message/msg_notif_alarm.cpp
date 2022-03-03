@@ -151,3 +151,10 @@ std::string CtiNotifAlarmMsg::toString() const
 
     return (Inherited::toString() += itemList.toString());
 }
+
+std::size_t CtiNotifAlarmMsg::getVariableSize() const
+{
+    return  Inherited::getVariableSize()
+        +   _notif_group_ids.capacity() * sizeof( int );
+}
+

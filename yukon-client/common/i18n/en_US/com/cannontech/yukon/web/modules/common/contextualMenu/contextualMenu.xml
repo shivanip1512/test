@@ -23,7 +23,7 @@
     <entry key="yukon.web.modules.common.contextualMenu.menuItemGroupMeterRead">Read Attribute</entry>
     <entry key="yukon.web.modules.common.contextualMenu.menuItemMeterDetail">View Details</entry>
     <entry key="yukon.web.modules.common.contextualMenu.menuItemRelayDetail">View Details</entry>
-
+    <entry key="yukon.web.modules.common.contextualMenu.menuItemGatewayDetail">View Details</entry>
     <!-- Text for dropdown container's (instead of the cog); see dropdown.tag  -->
     <entry key="yukon.web.modules.common.contextualMenu.actions">Actions</entry>
 

@@ -1,30 +1,27 @@
 package com.cannontech.common.util.jms;
 
 import javax.jms.BytesMessage;
-import javax.jms.ConnectionFactory;
+import javax.jms.Destination;
 import javax.jms.JMSException;
 import javax.jms.MessageProducer;
 import javax.jms.Session;
 import org.apache.logging.log4j.Logger;
-import org.springframework.jms.core.JmsTemplate;
+import org.springframework.jms.support.destination.DynamicDestinationResolver;
+
 import com.cannontech.clientutils.YukonLogManager;
 import com.cannontech.common.util.ExceptionHelper;
 import com.cannontech.messaging.serialization.thrift.ThriftByteSerializer;
 
 public class ThriftRequestTemplate<Q> {
-    
+
     private static final Logger log = YukonLogManager.getLogger(ThriftRequestTemplate.class);
 
-    private JmsTemplate jmsTemplate;
-    private String requestQueueName;
-    
+    private YukonJmsTemplate jmsTemplate;
+
     private ThriftByteSerializer<Q> requestSerializer;
     
-    public ThriftRequestTemplate(ConnectionFactory connectionFactory, String requestQueueName, ThriftByteSerializer<Q> requestSerializer) {
-        this.jmsTemplate = new JmsTemplate(connectionFactory);
-        this.jmsTemplate.setExplicitQosEnabled(true);
-        this.jmsTemplate.setDeliveryPersistent(false);
-        this.requestQueueName = requestQueueName;
+    public ThriftRequestTemplate(YukonJmsTemplate jmsTemplate, ThriftByteSerializer<Q> requestSerializer) {
+        this.jmsTemplate = jmsTemplate;
         this.requestSerializer = requestSerializer;
     }
     
@@ -42,16 +39,21 @@ public class ThriftRequestTemplate<Q> {
     }
     
     public String getRequestQueueName() {
-        return requestQueueName;
+        return jmsTemplate.getDefaultDestinationName();
     }
 
     private void doJmsWork(Session session, final Q requestPayload) throws JMSException {
 
-        MessageProducer producer = session.createProducer(session.createQueue(requestQueueName));
-        BytesMessage requestMessage = session.createBytesMessage();
-        
-        requestMessage.writeBytes(requestSerializer.toBytes(requestPayload));
-        
-        producer.send(requestMessage);
+        var resolver = new DynamicDestinationResolver();
+        Destination destination = resolver.resolveDestinationName(session, jmsTemplate.getDefaultDestinationName(), jmsTemplate.isPubSubDomain()); 
+        try (
+            MessageProducer producer = session.createProducer(destination);
+        ) {
+            BytesMessage requestMessage = session.createBytesMessage();
+            
+            requestMessage.writeBytes(requestSerializer.toBytes(requestPayload));
+            
+            producer.send(requestMessage);
+        }
     }
 }

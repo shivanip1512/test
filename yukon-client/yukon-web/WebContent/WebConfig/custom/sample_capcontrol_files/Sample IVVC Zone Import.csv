@@ -1,0 +1,26 @@
+TYPE,ACTION,ZONE NAME,ZONE TYPE,PARENT ZONE,SUBSTATION BUS,GRAPH START POSITION,POSITION,DISTANCE,VOLTAGE POINT NAME,DEVICE NAME,PHASE,IGNORE,COMMENTS
+ZONE,ADD,RootZone,SINGLE PHASE,ROOT,Sub-1,1,,,,,,,Create root zone on Substation Bus Sub-1
+REGULATOR,ADD,RootZone,,,,,,,,Regulator0,,,Assign Regulator0 to RootZone
+ZONE,ADD ,ChildZone1,SINGLE PHASE,RootZone,,1,,,,,,,Create zone ChildZone1 with parent RootZone
+REGULATOR,ADD,ChildZone1,,,,,,,,Regulator1,,,Assign Regulator1 to ChildZone1
+ZONE,ADD,ChildZone2,SINGLE PHASE,ChildZone1,,1,,,,,,,Create zone ChildZone2 with parent ChildZone1
+REGULATOR,ADD,ChildZone2,,,,,,,,Regulator2,,,Assign Regulator2 to ChildZone2
+ZONE,ADD,ChildZone3,SINGLE PHASE,ChildZone2,,1,,,,,,,Create zone ChildZone3 with parent ChildZone2
+REGULATOR,ADD,ChildZone3,,,,,,,,Regulator3,,,Assign Regulator3 to ChildZone3
+CAP BANK,ADD,RootZone,,,,,2,20,,CapBank1,,N,Assign CapBank1 to RootZone at position 2 and distance 20
+CAP BANK,ADD,RootZone,,,,,3,30,,CapBank2,,N,Assign CapBank2 to RootZone at position 3 and distance 30
+VOLTAGE POINT,ADD,RootZone,,,,,4,40,Avg Voltage,CustomerDevice1,,,Assign Voltage Point Avg Voltage from Device CustomerDevice1 to RootZone at graph position 4 and distance 40
+CAP BANK,ADD,ChildZone1,,,,,2,20,,CapBank3,,N,Assign CapBank3 to ChildZone1 at graph position 2 and distance 20
+VOLTAGE POINT,ADD,ChildZone2,,,,,2,20,Avg Voltage,CustomerDevice2,,,Assign Voltage Point Avg Voltage from Device CustomerDevice2 to RootZone at graph position 2 and distance 20
+CAP BANK,ADD,ChildZone3,,,,,2,20,,CapBank4,,N,Assign CapBank4 to ChildZone3 at graph position 2 and distance 20
+REGULATOR,REMOVE,,,,,,,,,Regulator1,,,Remove Regulator1 from ChildZone1
+REGULATOR,UPDATE,ChildZone1,,,,,,,,Regulator0,,,Reassign Regulator0 from RootZone to ChildZone1
+REGULATOR,ADD,RootZone,,,,,,,,Regulator1,,,Assign Regulator1 to RootZone
+CAP BANK,UPDATE,ChildZone1,,,,,3,30,,CapBank2,,,Reassign CapBank2 from RootZone to ChildZone1 at position 3 and distance 30
+VOLTAGE POINT,UPDATE,ChildZone3,,,,,3,30,Avg Voltage,CustomerDevice1,,,Reassign voltage point Avg Voltage from device CustomerDevice1 to ChildZone3 at position 3 and distance 30
+VOLTAGE POINT,REMOVE,,,,,,,,Avg Voltage,CustomerDevice1,,,Remove assignment of votage point Avg Voltage on CustomerDevice1
+ZONE,REMOVE,ChildZone3,,,,,,,,,,,Remove ChildZone3
+ZONE,REMOVE,ChildZone2,,,,,,,,,,,RemoveChildZone2
+CAP BANK,REMOVE,,,,,,,,,CapBank3,,,Remove CapBank3 from ChildZone1
+ZONE,ADD,RootZone2,SINGLE PHASE,ROOT,Sub-2,,,,,,,,Create root zone on Substation Bus Sub-2
+ZONE,UPDATE,ChildZone1,,RootZone2,,,,,,,,,Reparent ChildZone1 to RootZone2

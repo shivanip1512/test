@@ -14,4 +14,7 @@ public:
     virtual bool attemptControl(CtiLMGroupPtr currentLMGroup, long controlSeconds, DOUBLE &expectedLoadReduced) = 0;
     virtual bool stopControl(CtiLMGroupPtr currentLMGroup) = 0;
     virtual unsigned long estimateOffTime(long controlSeconds) = 0;
+
+    virtual bool performsControl() const    { return true; }
 };
+

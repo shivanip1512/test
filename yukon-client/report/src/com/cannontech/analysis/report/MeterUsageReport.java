@@ -3,7 +3,7 @@ package com.cannontech.analysis.report;
 import java.util.Arrays;
 import java.util.List;
 
-import org.jfree.report.ElementAlignment;
+import org.pentaho.reporting.engine.classic.core.ElementAlignment;
 
 import com.cannontech.analysis.function.AggregateFooterFieldFactory;
 import com.cannontech.analysis.function.ExpressionFieldFactory;

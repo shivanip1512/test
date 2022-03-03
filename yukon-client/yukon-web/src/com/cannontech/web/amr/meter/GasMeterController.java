@@ -46,41 +46,42 @@ public class GasMeterController {
     throws ServletException {
         
         ModelAndView mav = new ModelAndView("gasMeterHome.jsp");
-        
-        int deviceId = ServletRequestUtils.getIntParameter(request, "deviceId");
-        
-        SimpleDevice device = deviceDao.getYukonDevice(deviceId);
-        mav.addObject("deviceId", deviceId);
-        mav.addObject("deviceName",  paoLoadingService.getDisplayablePao(device).getName());
-        
-        // do some hinting to speed loading
-        List<LitePoint> litePoints = pointDao.getLitePointsByPaObjectId(deviceId);
-        cachingPointFormattingService.addLitePointsToCache(litePoints);
-        
-        CisDetailRolePropertyEnum cisDetail = globalSettingDao.getEnum(GlobalSettingType.CIS_DETAIL_TYPE, CisDetailRolePropertyEnum.class);
-        mav.addObject("cisInfoWidgetName", cisDetail.getWidgetName());
-        
-        PaoType deviceType = device.getDeviceType();
-        boolean isRfMesh = deviceType.getPaoClass() == PaoClass.RFMESH;
-        mav.addObject("showMapNetwork", isRfMesh);
-        if (isRfMesh) {
-            mav.addObject("isRFMesh", true);
-            mav.addObject("showRfMetadata", true);
+
+        Integer deviceId = ServletRequestUtils.getIntParameter(request, "deviceId");
+        if (deviceId != null) {
+            SimpleDevice device = deviceDao.getYukonDevice(deviceId);
+            mav.addObject("deviceId", deviceId);
+            mav.addObject("deviceName", paoLoadingService.getDisplayablePao(device).getName());
+
+            // do some hinting to speed loading
+            List<LitePoint> litePoints = pointDao.getLitePointsByPaObjectId(deviceId);
+            cachingPointFormattingService.addLitePointsToCache(litePoints);
+
+            CisDetailRolePropertyEnum cisDetail = globalSettingDao.getEnum(GlobalSettingType.CIS_DETAIL_TYPE,
+                    CisDetailRolePropertyEnum.class);
+            mav.addObject("cisInfoWidgetName", cisDetail.getWidgetName());
+
+            PaoType deviceType = device.getDeviceType();
+            boolean isRfMesh = deviceType.getPaoClass() == PaoClass.RFMESH;
+            mav.addObject("showMapNetwork", isRfMesh);
+            if (isRfMesh) {
+                mav.addObject("isRFMesh", true);
+                mav.addObject("showRfMetadata", true);
+            }
+
+            if (paoDefinitionDao.isTagSupported(device.getDeviceType(), PaoTag.PORTER_COMMAND_REQUESTS)) {
+                mav.addObject("porterCommandRequestsSupported", true);
+            }
+
+            if (paoDefinitionDao.isTagSupported(device.getDeviceType(), PaoTag.RFN_EVENTS)) {
+                mav.addObject("showEvents", true);
+            }
+
+            if (deviceType.isGasMeter()) {
+                mav.addObject("deviceConfigSupported", true);
+                mav.addObject("configurableDevice", true);
+            }
         }
-        
-        if (paoDefinitionDao.isTagSupported(device.getDeviceType(), PaoTag.PORTER_COMMAND_REQUESTS)) {
-            mav.addObject("porterCommandRequestsSupported", true);
-        }
-        
-        if (paoDefinitionDao.isTagSupported(device.getDeviceType(), PaoTag.RFN_EVENTS)) {
-            mav.addObject("showEvents", true);
-        }
-        
-        if (deviceType == PaoType.RFG201) {
-        	mav.addObject("deviceConfigSupported", true);
-        	mav.addObject("configurableDevice", true);
-        }
-        
         return mav;
     }
 }

@@ -13,6 +13,7 @@
         <tag name="RFN_DEMAND_RESET"/>
         <tag name="RFN_EVENTS"/>
         <tag name="RFN_POINT_CALCULATION"/>
+        <tag name="SUPPORTS_ATTRIBUTE_ASSIGNMENT"/>
         <tag name="TOU"/>
         <tag name="USES_METER_NUMBER_FOR_MSP"/>
         <tag name="VOLTAGE_PROFILE"/>
@@ -21,6 +22,7 @@
         <category type="rfnDemand" optional="true"/>
         <category type="demandFreeze"/>
         <category type="rfnChannelConfiguration"/>
+        <category type="rfnMetrologyConfiguration" optional="true"/>
         <category type="rfnTempAlarm"/>
         <category type="rfnVoltage"/>
         <category type="tou"/>
@@ -32,8 +34,8 @@
         <pointInfo name="Blink Restore Count" init="true" attributes="RFN_BLINK_RESTORE_COUNT"/>
         <pointInfo name="Clock Error" attributes="CLOCK_ERROR"/>
         <pointInfo name="Current" attributes="CURRENT,CURRENT_PHASE_A"/>
-        <pointInfo name="Daily Max Volts" init="true" attributes="MAXIMUM_VOLTAGE_DAILY,MAXIMUM_VOLTAGE"/>
-        <pointInfo name="Daily Min Volts" init="true" attributes="MINIMUM_VOLTAGE_DAILY,MINIMUM_VOLTAGE"/>
+        <pointInfo name="Daily Max Volts" init="true" attributes="MAXIMUM_VOLTAGE_DAILY"/>
+        <pointInfo name="Daily Min Volts" init="true" attributes="MINIMUM_VOLTAGE_DAILY"/>
         <pointInfo name="Delivered kW" init="true" attributes="DELIVERED_DEMAND,DEMAND"/>
         <pointInfo name="Delivered kW Load Profile" attributes="LOAD_PROFILE,DELIVERED_KW_LOAD_PROFILE"/>
         <pointInfo name="Delivered kWh" init="true" attributes="USAGE,DELIVERED_KWH"/>
@@ -44,9 +46,9 @@
         <pointInfo name="Failed Upgrade Signature Verification" attributes="FAILED_UPGRADE_SIGNATURE_VERIF"/>
         <pointInfo name="Invalid Service" attributes="INVALID_SERVICE"/>
         <pointInfo name="Low Battery Warning" attributes="LOW_BATTERY_WARNING"/>
-        <pointInfo name="Max Voltage"/>
+        <pointInfo name="Max Voltage" attributes="MAXIMUM_VOLTAGE_PHASE_A"/>
         <pointInfo name="Measurement Error" attributes="MEASUREMENT_ERROR"/>
-        <pointInfo name="Min Voltage"/>
+        <pointInfo name="Min Voltage" attributes="MINIMUM_VOLTAGE_PHASE_A"/>
         <pointInfo name="Net kW Load Profile" attributes="NET_KW_LOAD_PROFILE"/>
         <pointInfo name="Net kWh" attributes="NET_KWH"/>
         <pointInfo name="Net kWh (Rate A kWh)" attributes="NET_KWH_RATE_A"/>
@@ -106,6 +108,7 @@
         <pointInfo name="Time Adjustment" attributes="TIME_ADJUSTMENT"/>
         <pointInfo name="Total Outage Count" init="true" attributes="BLINK_COUNT"/>
         <pointInfo name="TOU Schedule Change" attributes="TOU_SCHEDULE_CHANGE"/>
+        <pointInfo name="Ultra Capacitor Bad" attributes="ULTRA_CAPACITOR_BAD"/>
         <pointInfo name="Unconfigured" attributes="UNCONFIGURED"/>
         <pointInfo name="Under Voltage" attributes="UNDER_VOLTAGE"/>
         <pointInfo name="Unprogrammed" attributes="UNPROGRAMMED"/>
@@ -118,5 +121,11 @@
         <pointInfo name="Voltage Phase B Out" attributes="VOLTAGE_PHASE_B_OUT"/>
         <pointInfo name="Voltage Phase C Out" attributes="VOLTAGE_PHASE_C_OUT"/>
         <pointInfo name="Voltage Phase Error" attributes="VOLTAGE_PHASE_ERROR"/>
+        <pointInfo name="Received kW" attributes="RECEIVED_DEMAND"/>
+        <pointInfo name="Received Peak kW" attributes="RECEIVED_PEAK_DEMAND"/>
+        <pointInfo name="Received Peak kW (Rate A kW)" attributes="RECEIVED_PEAK_DEMAND_RATE_A"/>
+        <pointInfo name="Received Peak kW (Rate B kW)" attributes="RECEIVED_PEAK_DEMAND_RATE_B"/>
+        <pointInfo name="Received Peak kW (Rate C kW)" attributes="RECEIVED_PEAK_DEMAND_RATE_C"/>
+        <pointInfo name="Received Peak kW (Rate D kW)" attributes="RECEIVED_PEAK_DEMAND_RATE_D"/>
     </pointInfos>
 </pao>

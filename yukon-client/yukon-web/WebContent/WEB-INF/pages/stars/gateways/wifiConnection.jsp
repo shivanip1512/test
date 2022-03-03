@@ -7,15 +7,16 @@
 
 <cti:standardPage module="operator" page="wifiConnection">
 
-    <tags:alertBox type="success" key=".refreshMsg" classes="js-refresh-msg dn"></tags:alertBox>
+    <tags:alertBox type="success" key=".queryMsg" classes="js-refresh-msg dn" includeCloseButton="true"></tags:alertBox>
     <input type="hidden" id="gatewayId" value="${gateway.id}"/>
     <input type="hidden" id="deviceIds" value="${deviceIds}"/>
     <input type="hidden" id="connectedStatusValue" value="${connectedStatusValue}"/>
+    <input type="hidden" id="baseUrl" value="/stars/wifiConnection"/>
 
     <div>
         <hr/>
         <i:inline key="yukon.common.filterBy"/>&nbsp;
-        <cti:msg2 var="allStatuses" key=".allStatuses"/>
+        <cti:msg2 var="allStatuses" key="yukon.web.modules.operator.connectedDevices.allStatuses"/>
         <select id="commStatusFilter" multiple="multiple" data-placeholder="${allStatuses}">
             <c:forEach var="status" items="${commStatusValues}">
                 <option value="${status.liteID}">${status.stateText}</option>
@@ -36,8 +37,8 @@
                 </cti:url>
                 <cm:dropdownOption key="yukon.common.collectionActions" icon="icon-cog-go" href="${collectionActionsUrl}" newTab="true" classes="js-collection-actions"/>
                 <cm:dropdownOption key="yukon.common.download" icon="icon-csv" classes="js-download"/>
-                <cm:dropdownOption key="yukon.common.mapDevices" icon="icon-map-sat" classes="js-map"/>
-                <cm:dropdownOption key=".refreshAll" icon="icon-arrow-refresh" classes="js-refresh-all"/>
+                <cm:dropdownOption key="yukon.common.mapDevices" icon="icon-map" classes="js-map"/>
+                <cm:dropdownOption key="yukon.web.modules.operator.connectedDevices.queryAll" icon="icon-read" classes="js-refresh-all"/>
             </cm:dropdown>
         </span>
     </c:if>
@@ -54,7 +55,7 @@
                     <i class="icon icon=blank"/>
                 </th>
                 <th data-sorted="false">
-                    <i:inline key=".statusLastUpdated"/>
+                    <i:inline key="yukon.web.modules.operator.connectedDevices.statusLastUpdated"/>
                     <i class="icon icon=blank"/>
                 </th>
                 <th data-sorted="false">
@@ -62,10 +63,10 @@
                     <i class="icon icon=blank"/>
                 </th>
                 <th data-sorted="false">
-                    <i:inline key=".rssiLastUpdated"/>
+                    <i:inline key="yukon.web.modules.operator.connectedDevices.rssiLastUpdated"/>
                     <i class="icon icon=blank"/>
                 </th>
-                <th class="action-column"><cti:icon icon="icon-arrow-refresh" classes="M0"/></th>
+                <th class="action-column"><cti:icon icon="icon-read" classes="M0"/></th>
             </tr>
         </thead>
         <tfoot></tfoot>
@@ -90,9 +91,9 @@
                         <tags:historicalValue pao="${data.device}" pointId="${data.rssiPoint.pointID}" format="DATE_QUALITY"/>
                     </td>
                     <td class="PL0">
-                        <cti:msg2 var="refreshTitle" key=".refreshStatus"/>
-                        <cti:button renderMode="image" icon="icon-arrow-refresh" classes="js-refresh-wifi show-on-hover" 
-                            data-device-id="${data.device.paoIdentifier.paoId}" title="${refreshTitle}"/>
+                        <cti:msg2 var="queryTitle" key="yukon.web.modules.operator.connectedDevices.queryStatus"/>
+                        <cti:button renderMode="image" icon="icon-read" classes="js-refresh-status show-on-hover" 
+                            data-device-id="${data.device.paoIdentifier.paoId}" title="${queryTitle}"/>
                     </td>
                 </tr>
             </c:forEach>
@@ -101,6 +102,6 @@
 
     <cti:includeScript link="/resources/js/lib/sortable/sortable.js"/>
     <cti:includeCss link="/resources/js/lib/sortable/sortable.css"/>
-    <cti:includeScript link="/resources/js/pages/yukon.assets.wifi.connection.js"/>
+    <cti:includeScript link="/resources/js/pages/yukon.assets.gateway.connectedDevices.js"/>
 
 </cti:standardPage>

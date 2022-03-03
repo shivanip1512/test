@@ -4,16 +4,16 @@ import static org.easymock.EasyMock.createNiceMock;
 import static org.easymock.EasyMock.expectLastCall;
 import static org.easymock.EasyMock.getCurrentArguments;
 import static org.easymock.EasyMock.replay;
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertTrue;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import org.easymock.EasyMock;
 import org.joda.time.DateTime;
 import org.joda.time.Duration;
 import org.joda.time.Instant;
 import org.joda.time.Interval;
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 import org.springframework.test.util.ReflectionTestUtils;
 
 import com.cannontech.system.GlobalSettingType;
@@ -25,7 +25,7 @@ public class MaintenanceHelperTest {
     private MaintenanceHelper mh;
     private Duration minimumRunWindow = new Duration(1800000); // 30 minutes
 
-    @Before
+    @BeforeEach
     public void setUp() {
         mh = new MaintenanceHelper();
     }
@@ -37,7 +37,7 @@ public class MaintenanceHelperTest {
         Interval nextRunTime = mh.getNextAvailableRunTime(startTime, minimumRunWindow);
         Interval expectedInterval = new Interval(new DateTime(startTime), new DateTime(startTime).plusDays(1));
         boolean isExpected = nextRunTime.equals(expectedInterval);
-        assertTrue("NextRunTime", isExpected);
+        assertTrue(isExpected, "NextRunTime");
     }
 
    @Test
@@ -49,7 +49,7 @@ public class MaintenanceHelperTest {
         if (nextRunTime == null) {
             isExpected = true;
         }
-        assertTrue("NextRunTime", isExpected);
+        assertTrue(isExpected, "NextRunTime");
     }
 
    @Test

@@ -1,9 +1,11 @@
 package com.cannontech.common.rfn.model;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
+
 import java.util.Map;
 
-import org.junit.Assert;
-import org.junit.Test;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.Test;
 
 import com.cannontech.common.pao.PaoType;
 import com.cannontech.common.rfn.message.RfnIdentifier;
@@ -21,24 +23,24 @@ public class RfnManufacturerModelTest {
     
     @Test
     public void testGetForType() {
-    	Assert.assertEquals(
+    	assertEquals(
     			RfnManufacturerModel.getForType(PaoType.RFN410CL), 
     			ImmutableList.of(RfnManufacturerModel.RFN_410CL));
     	
-    	Assert.assertEquals(
+    	assertEquals(
     			RfnManufacturerModel.getForType(PaoType.RFN530S4ERXR), 
     			ImmutableList.of(
     					RfnManufacturerModel.RFN_530S4RT,
     					RfnManufacturerModel.RFN_530S4RR));
 
-        Assert.assertEquals(
+        assertEquals(
                 RfnManufacturerModel.getForType(PaoType.RFN530FAX), 
                 ImmutableList.of(
                          RfnManufacturerModel.RFN_530FAXD,
                          RfnManufacturerModel.RFN_530FAXT,
                          RfnManufacturerModel.RFN_530FAXR));
 
-        Assert.assertEquals(
+        assertEquals(
                 RfnManufacturerModel.getForType(PaoType.RFN530FRX), 
                 ImmutableList.of(
                          RfnManufacturerModel.RFN_530FRXD,
@@ -46,9 +48,11 @@ public class RfnManufacturerModelTest {
                          RfnManufacturerModel.RFN_530FRXR));
     }
     
-    @Test(expected=IllegalArgumentException.class)
+    @Test
     public void testGetInvalidType() {
-		RfnManufacturerModel.getForType(PaoType.MCT410CL);
+        Assertions.assertThrows(IllegalArgumentException.class, () -> {
+            RfnManufacturerModel.getForType(PaoType.MCT410CL);
+        });
     }
     
     @Test
@@ -58,29 +62,29 @@ public class RfnManufacturerModelTest {
         
         //  Manual good example
         rfnId = new RfnIdentifier("123456", "EE", "A3D");
-        Assert.assertEquals(RfnManufacturerModel.RFN_430A3D, RfnManufacturerModel.of(rfnId));
+        assertEquals(RfnManufacturerModel.RFN_430A3D, RfnManufacturerModel.of(rfnId));
         
         rfnId = new RfnIdentifier("", "EE", "A3D");
-        Assert.assertEquals(RfnManufacturerModel.RFN_430A3D, RfnManufacturerModel.of(rfnId));
+        assertEquals(RfnManufacturerModel.RFN_430A3D, RfnManufacturerModel.of(rfnId));
 
         rfnId = new RfnIdentifier(null, "EE", "A3D");
-        Assert.assertEquals(RfnManufacturerModel.RFN_430A3D, RfnManufacturerModel.of(rfnId));
+        assertEquals(RfnManufacturerModel.RFN_430A3D, RfnManufacturerModel.of(rfnId));
         
         //  Manual bad examples
         rfnId = new RfnIdentifier("123456", "Larry", "CableGuy");
-        Assert.assertEquals(null, RfnManufacturerModel.of(rfnId));
+        assertEquals(null, RfnManufacturerModel.of(rfnId));
         
         rfnId = new RfnIdentifier("123456", "", "CableGuy");
-        Assert.assertEquals(null, RfnManufacturerModel.of(rfnId));
+        assertEquals(null, RfnManufacturerModel.of(rfnId));
         
         rfnId = new RfnIdentifier("123456", "Larry", "");
-        Assert.assertEquals(null, RfnManufacturerModel.of(rfnId));
+        assertEquals(null, RfnManufacturerModel.of(rfnId));
         
         rfnId = new RfnIdentifier("", "", "");
-        Assert.assertEquals(null, RfnManufacturerModel.of(rfnId));
+        assertEquals(null, RfnManufacturerModel.of(rfnId));
         
         rfnId = new RfnIdentifier(null, null, null);
-        Assert.assertEquals(null, RfnManufacturerModel.of(rfnId));
+        assertEquals(null, RfnManufacturerModel.of(rfnId));
         
         //  Run through all of them by enum
         for (RfnManufacturerModel original : RfnManufacturerModel.values()) {
@@ -90,10 +94,10 @@ public class RfnManufacturerModelTest {
                 RfnManufacturerModel override = overriddenModels.get(original);
 
                 //  If this model is deprecated/overridden, the reconstituted RfnManufacturerModel should match the override
-                Assert.assertEquals(override, RfnManufacturerModel.of(rfnId));
+                assertEquals(override, RfnManufacturerModel.of(rfnId));
             } else {
                 //  Otherwise, the reconstituted RfnManufacturerModel should match the original
-                Assert.assertEquals(original, RfnManufacturerModel.of(rfnId));
+                assertEquals(original, RfnManufacturerModel.of(rfnId));
             }
         }
     }

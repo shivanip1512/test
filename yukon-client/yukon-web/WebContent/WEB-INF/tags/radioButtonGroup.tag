@@ -24,7 +24,7 @@
                 <c:set var="css" value="middle yes"/>
             </c:otherwise>
         </c:choose>
-        <tags:radio path="${path}" value="${item}" classes="${css}" key=".${item}" inputClass="${inputCssClass}"/>
+        <tags:radio path="${path}" value="${item}" classes="${css}" key="${item}" inputClass="${inputCssClass}"/>
     </c:forEach>
 </cti:displayForPageEditModes>
 <cti:displayForPageEditModes modes="VIEW">

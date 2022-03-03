@@ -4,11 +4,15 @@ import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 import java.util.concurrent.ExecutionException;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 import javax.annotation.PostConstruct;
 import javax.servlet.http.HttpServletRequest;
 
+import org.joda.time.format.DateTimeFormat;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.MessageSourceResolvable;
 import org.springframework.stereotype.Controller;
@@ -23,12 +27,14 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import com.cannontech.common.i18n.MessageSourceAccessor;
 import com.cannontech.common.util.Pair;
 import com.cannontech.common.validator.YukonValidationUtils;
+import com.cannontech.core.dynamic.AsyncDynamicDataSource;
 import com.cannontech.core.roleproperties.YukonRoleProperty;
 import com.cannontech.i18n.YukonMessageSourceResolvable;
 import com.cannontech.i18n.YukonUserContextMessageSourceResolver;
 import com.cannontech.system.GlobalSettingCategory;
 import com.cannontech.system.GlobalSettingSubCategory;
 import com.cannontech.system.GlobalSettingType;
+import com.cannontech.system.dao.GlobalSettingDao;
 import com.cannontech.system.dao.GlobalSettingEditorDao;
 import com.cannontech.system.dao.GlobalSettingUpdateDao;
 import com.cannontech.system.model.GlobalSetting;
@@ -55,7 +61,9 @@ public class YukonConfigurationController {
     
     @Autowired private GlobalSettingEditorDao globalSettingEditorDao;
     @Autowired private GlobalSettingUpdateDao globalSettingUpdateDao;
+    @Autowired private GlobalSettingDao globalSettingDao;
     @Autowired private YukonUserContextMessageSourceResolver resolver;
+    @Autowired private AsyncDynamicDataSource asyncDynamicDataSource;
     
     private GlobalSettingValidator globalSettingValidator = new GlobalSettingValidator();
     
@@ -63,6 +71,15 @@ public class YukonConfigurationController {
     private Map<GlobalSettingSubCategory, String> iconMap;
     
     @PostConstruct
+    public void init() {
+        setupHelperLookup();
+        asyncDynamicDataSource.addDatabaseChangeEventListener(event -> {
+            if (globalSettingDao.isDbChangeForSetting(event)) {
+                setupHelperLookup();
+            } 
+        });
+    }
+    
     public void setupHelperLookup() {
         helperLookup = CacheBuilder.newBuilder().concurrencyLevel(1).build(new CacheLoader<GlobalSettingSubCategory, MappedPropertiesHelper<GlobalSetting>>() {
             @Override
@@ -75,6 +92,7 @@ public class YukonConfigurationController {
         b.put(GlobalSettingSubCategory.AMI, "icon-32-meter1");
         b.put(GlobalSettingSubCategory.AUTHENTICATION, "icon-app icon-app-32-lock");
         b.put(GlobalSettingSubCategory.DR, "icon-app icon-app-32-lightbulb");
+        b.put(GlobalSettingSubCategory.YUKON_LOGGERS, "icon-app icon-app-32-loggers");
         b.put(GlobalSettingSubCategory.YUKON_SERVICES, "icon-app icon-app-32-widgets");
         b.put(GlobalSettingSubCategory.WEB_SERVER, "icon-app icon-app-32-world");
         b.put(GlobalSettingSubCategory.DATA_IMPORT_EXPORT, "icon-app icon-app-32-list");
@@ -88,6 +106,7 @@ public class YukonConfigurationController {
         b.put(GlobalSettingSubCategory.SECURITY, "icon-app icon-app-32-key");
         b.put(GlobalSettingSubCategory.DASHBOARD_ADMIN, "icon-app icon-app-32-home");
         b.put(GlobalSettingSubCategory.DASHBOARD_WIDGET, "icon-app icon-app-32-application-windows");
+        b.put(GlobalSettingSubCategory.ATTRIBUTES, "icon-app icon-app-32-attributes");
         iconMap = b.build();
     }
     
@@ -125,9 +144,11 @@ public class YukonConfigurationController {
         systemSetup.add(Pair.of(GlobalSettingSubCategory.AUTHENTICATION, iconMap.get(GlobalSettingSubCategory.AUTHENTICATION)));
         systemSetup.add(Pair.of(GlobalSettingSubCategory.DASHBOARD_ADMIN,  iconMap.get(GlobalSettingSubCategory.DASHBOARD_ADMIN)));
         systemSetup.add(Pair.of(GlobalSettingSubCategory.DR, iconMap.get(GlobalSettingSubCategory.DR)));
+        systemSetup.add(Pair.of(GlobalSettingSubCategory.YUKON_LOGGERS, iconMap.get(GlobalSettingSubCategory.YUKON_LOGGERS)));
         systemSetup.add(Pair.of(GlobalSettingSubCategory.YUKON_SERVICES, iconMap.get(GlobalSettingSubCategory.YUKON_SERVICES)));
         systemSetup.add(Pair.of(GlobalSettingSubCategory.WEB_SERVER, iconMap.get(GlobalSettingSubCategory.WEB_SERVER)));
         systemSetup.add(Pair.of(GlobalSettingSubCategory.THEMES, iconMap.get(GlobalSettingSubCategory.THEMES)));
+        systemSetup.add(Pair.of(GlobalSettingSubCategory.ATTRIBUTES, iconMap.get(GlobalSettingSubCategory.ATTRIBUTES)));
         Collections.sort(systemSetup, sorter);
         
         List<Pair<GlobalSettingSubCategory, String>> application = Lists.newArrayList();
@@ -170,32 +191,27 @@ public class YukonConfigurationController {
             return "redirect:/admin/config/security/view";
         } else if (category == GlobalSettingSubCategory.DASHBOARD_ADMIN) {
             return "redirect:/dashboards/admin";
+        } else if (category == GlobalSettingSubCategory.ATTRIBUTES) {
+            return "redirect:/admin/config/attributes";
+        } else if (category == GlobalSettingSubCategory.YUKON_LOGGERS) {
+            return "redirect:/admin/config/loggers/allLoggers";
         }
+        
         
         MessageSourceAccessor accessor = resolver.getMessageSourceAccessor(context);
         
         model.addAttribute("category", category);
         model.addAttribute("categoryName", accessor.getMessage(category));
-        
-        Map<GlobalSettingType, Pair<Object, String>> settings = globalSettingEditorDao.getValuesAndCommentsForCategory(category);
-        
+        Map<GlobalSettingType, GlobalSetting> settings = globalSettingEditorDao.getSettingsForCategory(category);
+
         GlobalSettingsEditorBean command = new GlobalSettingsEditorBean();
         command.setCategory(category);
-        command.setValues(Maps.transformValues(settings, new Function<Pair<Object, String>, Object>() {
-            @Override
-            public Object apply(Pair<Object, String> input) {
-                return input.getFirst();
-            }
-        }));
-        command.setComments(Maps.transformValues(settings, new Function<Pair<Object, String>, String>() {
-            @Override
-            public String apply(Pair<Object, String> input) {
-                return input.getSecond();
-            }
-        }));
-        
+        command.setValues(Maps.transformValues(settings, setting -> setting.getValue()));
+        command.setComments(Maps.transformValues(settings, setting -> setting.getComments()));
+        command.setDecryptValueFails(Maps.transformValues(settings, setting -> setting.getDecryptValueFailed()));
+        updateDecryptFailedValues(command);
         model.addAttribute("command", command);
-        
+
         setupModelMap(context, model, category);
         
         return "config/category.jsp";
@@ -228,6 +244,24 @@ public class YukonConfigurationController {
                        YukonUserContext context, 
                        ModelMap map, 
                        FlashScope flashScope) throws Exception {
+    	
+    	//change masked values back before validation/saving
+        Set<GlobalSettingType> globalSettingTypes = GlobalSettingType.getSettingsForCategory(command.getCategory());
+        Map<GlobalSettingType, Object> values = command.getValues();
+
+		for (GlobalSettingType globalSettingType : globalSettingTypes) {
+			if (globalSettingType.isNonViewableSensitiveInformation()) {
+				Object value = values.get(globalSettingType);
+				Pattern pattern = Pattern.compile("^[*]*$");
+				if (value != null) {
+					Matcher m = pattern.matcher(value.toString());
+					if (m.matches()) {
+						GlobalSetting currentSetting = globalSettingDao.getSetting(globalSettingType);
+						values.put(globalSettingType, currentSetting.getValue());
+					}
+				}
+			}
+		}
         
         globalSettingValidator.doValidation(command, result);
         GlobalSettingSubCategory category = command.getCategory();
@@ -249,7 +283,19 @@ public class YukonConfigurationController {
         setupModelMap(context, map, category);
         return "redirect:/admin/config/view";
     }
-    
+
+    /**
+     * Update decryptValueFailed values in cache.
+     */
+    private void updateDecryptFailedValues(final GlobalSettingsEditorBean command) throws ExecutionException {
+        MappedPropertiesHelper<GlobalSetting> helper = helperLookup.get(command.getCategory());
+        List<MappedPropertiesHelper.MappableProperty<GlobalSetting, ?>> mappableProperties = helper.getMappableProperties();
+        for (MappableProperty<GlobalSetting, ?> mappableProperty : mappableProperties) {
+            GlobalSetting setting = mappableProperty.getExtra();
+            setting.setDecryptValueFailed(command.getDecryptValueFails().get(setting.getType()));
+        }
+    }
+
     private List<GlobalSetting> adjustSettings(final GlobalSettingsEditorBean command ) throws ExecutionException {
         MappedPropertiesHelper<GlobalSetting> helper = helperLookup.get(command.getCategory());
         List<GlobalSetting> settings = Lists.transform(helper.getMappableProperties(), new Function<MappableProperty<GlobalSetting, ?>, GlobalSetting>() {
@@ -258,6 +304,7 @@ public class YukonConfigurationController {
                 GlobalSetting setting = input.getExtra();
                 setting.setValue(command.getValues().get(setting.getType()));
                 setting.setComments(command.getComments().get(setting.getType()));
+                setting.setDecryptValueFailed(command.getDecryptValueFails().get(setting.getType()));
                 return setting;
             }
         });
@@ -271,6 +318,7 @@ public class YukonConfigurationController {
         
         private Map<GlobalSettingType, Object> values = Maps.newLinkedHashMap();
         private Map<GlobalSettingType, String> comments = Maps.newLinkedHashMap();
+        private Map<GlobalSettingType, Boolean> decryptValueFails = Maps.newLinkedHashMap();
         
         public Map<GlobalSettingType, Object> getValues() {
             return values;
@@ -294,6 +342,14 @@ public class YukonConfigurationController {
         
         public void setCategory(GlobalSettingSubCategory category) {
             this.category = category;
+        }
+
+        public Map<GlobalSettingType, Boolean> getDecryptValueFails() {
+            return decryptValueFails;
+        }
+
+        public void setDecryptValueFails(Map<GlobalSettingType, Boolean> decryptValueFails) {
+            this.decryptValueFails = decryptValueFails;
         }
     }
     

@@ -49,6 +49,8 @@
     <entry key="yukon.web.modules.operator.comprehensiveMap.hopCount.HIGH">17 - 20</entry>
     <entry key="yukon.web.modules.operator.comprehensiveMap.hopCount.REALLY_HIGH">&gt; 20</entry>
     
+    <entry key="yukon.web.modules.operator.comprehensiveMap.nextHop">Next Hop</entry>
+    
     <entry key="yukon.web.modules.operator.comprehensiveMap.unknown">Unknown</entry>
         
     <entry key="yukon.web.modules.operator.comprehensiveMap.infrastructure">Infrastructure</entry>
@@ -64,6 +66,7 @@
     <entry key="yukon.web.modules.operator.comprehensiveMap.missingLocations">There are devices on the primary route that do not have location coordinates. A dashed line represents a device without location data exists in the route path but is not displayed.</entry>
     <entry key="yukon.web.modules.operator.comprehensiveMap.routeUpdateRequestSent.successMsg">Request to update the primary route sent. It may take several minutes for the routes on the map to be updated.</entry>
     <entry key="yukon.web.modules.operator.comprehensiveMap.routeUpdateRequestSent.errorMsg">Request to update the primary route could not be sent. Please try again later.</entry>
+    <entry key="yukon.web.modules.operator.comprehensiveMap.descendants.noDevicesReturned">No descendants were found for this device.</entry>
+    <entry key="yukon.web.modules.operator.comprehensiveMap.descendants.missingLocations">There are descendants that do not have location coordinates. This may cause the descendant count to be higher than what is shown on the map.</entry>
     
-
 </properties>

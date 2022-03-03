@@ -45,8 +45,6 @@
         
         <tags:sectionContainer2 nameKey="defineLayout">
             
-            <tags:hidden id="pattern" path="pattern"/>
-            
             <tags:nameValueContainer2 tableClass="with-form-controls">
                 <c:set var="classes" value="${exportField.value ? '' : 'dn'}"/>
                 <tags:nameValue2 rowId="rounding-mode" nameKey=".roundingMode" rowClass="${classes}">
@@ -58,41 +56,46 @@
                     <cti:icon icon="icon-help" data-popup="#rounding-help" classes="cp fn"/>
                 </tags:nameValue2>
                 
-                <c:set var="classes" value="${exportField.value ? '' : 'dn'}"/>
-                <tags:nameValue2 rowId="reading-pattern" nameKey=".readingPattern" rowClass="${classes}">
-                    <form:select id="reading-pattern-select" path="readingPattern">
-                        <c:forEach items="${readingPatterns}" var="readingPattern">
-                            <form:option value="${readingPattern}" data-pattern="${readingPattern.pattern}">
-                                <cti:msg2 key="${readingPattern}"/>
-                            </form:option>
-                        </c:forEach>
-                    </form:select>&nbsp;
-                    <c:set var="classes" value="${exportField.readingPattern.custom ? '' : 'dn'}"/>
-                    <c:if test="${not empty readingPatternError}"><c:set var="classes">${classes} error</c:set></c:if>
-                    <c:set var="patternValue" value="${exportField.readingPattern.custom ? exportField.pattern : ''}"/>
-                    <input id="reading-pattern-input" type="text" size="10" maxlength="30" class="${classes}" value="${patternValue}">
-                    <c:if test="${not empty readingPatternError}"><span class="error">${fn:escapeXml(readingPatternError)}</span></c:if>
-                    <cti:icon icon="icon-help" data-popup="#value-help" classes="cp fn"/>
-                </tags:nameValue2>
-                
-                <c:set var="classes" value="${exportField.timestamp ? '' : 'dn'}"/>
+                <c:set var="classes" value="${exportField.value ? '' : 'dn'}" />
+				<tags:nameValue2 rowId="reading-pattern" nameKey=".readingPattern" rowClass="${classes}">
+					<input type="hidden" id="customPatternValue"
+						value="${exportField.pattern}">
+					<c:if test="${customSelected}">
+						<input type="hidden" id="isCustomSelected" value="true">
+					</c:if>
+					<tags:selectWithItems path="pattern" items="${readingPatterns}"
+						itemValue="pattern" inputClass="reading-pattern-select" hideErrors= "${customSelected}"/>
+					<tags:input id="reading-pattern-input" size="10" maxlength="30"
+						inputClass="dn" path="pattern" />
+					<c:if test="${not empty readingPatternError}">
+					 <input type="hidden" id="readingPatternErrors" value="true">
+					</c:if>
+					<cti:icon icon="icon-help" data-popup="#value-help" classes="cp fn" />
+				</tags:nameValue2>
+
+                <c:set var="classes" value="${exportField.timestamp ? '' : 'dn'}" />
                 <tags:nameValue2 rowId="timestamp-pattern" nameKey=".timestampPattern" rowClass="${classes}">
-                    <form:select id="timestamp-pattern-select" path="timestampPattern">
-                        <c:forEach items="${timestampPatterns}" var="timestampPattern">
-                            <form:option value="${timestampPattern}" data-pattern="${timestampPattern.pattern}">
-                                <cti:msg2 key="${timestampPattern}"/>
-                            </form:option>
+					<tags:selectWithItems path="pattern" items="${timestampPatterns}"
+						itemValue="pattern" inputClass="timestamp-pattern-select" hideErrors= "${customSelected}" />
+					<tags:input id="timestamp-pattern-input" size="10" maxlength="30"
+						inputClass="dn" path="pattern" />
+					<c:if test="${not empty timestampPatternError}">
+					  <input type="hidden" id="timestampPatternErrors" value="true">
+					</c:if>
+					<cti:icon icon="icon-help" data-popup="#value-help" classes="cp fn" />
+				</tags:nameValue2>
+				<c:set var="classes" value="${exportField.field.attributeName ? '' : 'dn'}"/>
+                <tags:nameValue2 rowId="field-value" nameKey=".fieldValue" rowClass="${classes}">
+                    <form:select id="field-value-pattern-select" path="pattern">
+                        <c:forEach var="fieldValue" items="${fieldValues}">
+                            <form:option value="${fieldValue}">
+                            <cti:msg2 key="${fieldValue}"/></form:option>
                         </c:forEach>
                     </form:select>&nbsp;
-                    <c:set var="classes" value="${exportField.timestampPattern.custom ? '' : 'dn'}"/>
-                    <c:if test="${not empty timestampPatternError}"><c:set var="classes">${classes} error</c:set></c:if>
-                    <c:set var="patternValue" value="${exportField.timestampPattern.custom ? exportField.pattern : ''}"/>
-                    <input id="timestamp-pattern-input" type="text" size="10" maxlength="30" class="${classes}" value="${patternValue}">
-                    <c:if test="${not empty timestampPatternError}"><span class="error">${fn:escapeXml(timestampPatternError)}</span></c:if>
-                    <cti:icon icon="icon-help" data-popup="#timestamp-help" classes="cp fn"/>
                 </tags:nameValue2>
                 
-                <tags:nameValue2 rowId="field-size" nameKey=".fieldSize">
+                <c:set var="classes" value="${exportField.field.plainTextType ? 'dn' : ''}"/>
+                <tags:nameValue2 rowId="field-size" nameKey=".fieldSize" rowClass="${classes}">
                     <cti:msg2 var="fieldSizeMsg" key=".fieldSizeMax"/>
                     <tags:input id="max-length" path="maxLength" size="5" maxlength="5" units="${fieldSizeMsg}"/>
                 </tags:nameValue2>
@@ -120,18 +123,18 @@
                 </tags:nameValue2>
                 
                 <c:set var="classes" value="${exportField.field.plainTextType ? '' : 'dn'}"/>
-                <c:set var="patternValue" value="${exportField.field.plainTextType ? exportField.pattern : ''}"/>
                 <tags:nameValue2 rowId="plain-text" nameKey=".plainTextInput" rowClass="${classes}">
-                    <input id="plain-text-input" type="text" size="25" maxlength="50" value="${patternValue}">
+                <tags:input id="plain-text-input" size="25" maxlength="50" path="pattern" />
                 </tags:nameValue2>
                 
             </tags:nameValueContainer2>
             
         </tags:sectionContainer2>
         
-        <c:set var="classes" value="${exportField.field.plainTextType ? 'dn' : ''}"/>
-        <c:set var="classes" value="${exportField.field.deviceType ? 'dn' : ''}"/>
-        <c:set var="classes" value="${exportField.field.runtimeType ? 'dn' : ''}"/>
+        <c:set var="classes" value=""/>
+        <c:if test="${exportField.field.plainTextType}"><c:set var="classes" value="dn"/></c:if>
+        <c:if test="${exportField.field.deviceType}"><c:set var="classes" value="dn"/></c:if>
+        <c:if test="${exportField.field.runtimeType}"><c:set var="classes" value="dn"/></c:if>
         <tags:sectionContainer2 id="other-options" nameKey="otherOptions" styleClass="${classes}">
         
             <tags:nameValueContainer2 tableClass="with-form-controls">

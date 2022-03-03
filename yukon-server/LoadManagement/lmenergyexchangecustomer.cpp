@@ -117,6 +117,26 @@ void CtiLMEnergyExchangeCustomer::restore(Cti::RowReader &rdr)
     CtiLMCICustomerBase::restore(rdr);
 }
 
+std::size_t CtiLMEnergyExchangeCustomer::getMemoryConsumption() const
+{
+    // the fixed object size
+    std::size_t sz = sizeof( *this );
+
+    // the dynamic size of the base
+    sz  += CtiLMCICustomerBase::getMemoryConsumption();
+
+    // the local dynamic size
+
+    sz += _lmenergyexchangecustomerreplies.capacity() * sizeof( CtiLMEnergyExchangeCustomerReply* );
+    for ( const auto & reply : _lmenergyexchangecustomerreplies )
+    {
+        sz += reply->getMemoryConsumption();
+    }
+
+    return sz;
+}
+
+
 // Static Members
 
 // Possible

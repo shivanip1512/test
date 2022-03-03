@@ -11,12 +11,15 @@ import java.util.Map.Entry;
 import java.util.Set;
 
 import org.apache.commons.lang3.StringUtils;
+import org.joda.time.Instant;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.dao.IncorrectResultSizeDataAccessException;
 import org.springframework.jdbc.core.RowCallbackHandler;
 import org.springframework.jdbc.core.RowMapper;
 
+import com.cannontech.common.config.ConfigurationSource;
+import com.cannontech.common.config.MasterConfigString;
 import com.cannontech.common.device.groups.model.DeviceGroup;
 import com.cannontech.common.device.groups.service.DeviceGroupService;
 import com.cannontech.common.device.model.DisplayableDevice;
@@ -36,12 +39,15 @@ import com.cannontech.common.util.SqlStatementBuilder;
 import com.cannontech.core.dao.AuthDao;
 import com.cannontech.core.dao.NotFoundException;
 import com.cannontech.core.dao.PaoDao;
+import com.cannontech.core.dao.PointDao;
 import com.cannontech.core.service.impl.PaoLoader;
+import com.cannontech.database.SqlParameterSink;
 import com.cannontech.database.TypeRowMapper;
 import com.cannontech.database.YNBoolean;
 import com.cannontech.database.YukonJdbcTemplate;
 import com.cannontech.database.YukonResultSet;
 import com.cannontech.database.YukonRowMapper;
+import com.cannontech.database.data.lite.LitePoint;
 import com.cannontech.database.data.lite.LiteYukonPAObject;
 import com.cannontech.database.data.lite.LiteYukonUser;
 import com.cannontech.database.db.device.Device;
@@ -71,6 +77,8 @@ public final class PaoDaoImpl implements PaoDao {
     @Autowired private AuthDao authDao;
     @Autowired private DeviceGroupService deviceGroupService;
     @Autowired private PaoDefinitionDao paoDefinitionDao;
+    @Autowired private ConfigurationSource configurationSource;
+    @Autowired private PointDao pointDao;
 
     @Override
     public YukonPao getYukonPao(int paoId) {
@@ -630,12 +638,29 @@ public final class PaoDaoImpl implements PaoDao {
     
     @Override
     public int getPaoCount(Set<PaoType> paoTypes) {
+        SqlStatementBuilder sql = getPaoCountSql(paoTypes);
+        return jdbcTemplate.queryForInt(sql);
+    }
+
+    @Override
+    public int getEnabledPaoCount(Set<PaoType> paoTypes) {
+        String templatePrefix = configurationSource.getString(MasterConfigString.RFN_METER_TEMPLATE_PREFIX, "*RfnTemplate_");
+        SqlStatementBuilder sql = getPaoCountSql(paoTypes);
+        sql.append("AND DisableFlag").eq_k(YNBoolean.NO);
+        sql.append("AND PaoName NOT").startsWith(templatePrefix);
+
+        return jdbcTemplate.queryForInt(sql);
+    }
+
+    /*
+     * Returns SQL for getting count of pao's for passed paoTypes.
+     */
+    private SqlStatementBuilder getPaoCountSql(Set<PaoType> paoTypes) {
         SqlStatementBuilder sql = new SqlStatementBuilder();
         sql.append("SELECT COUNT(PAObjectID)");
         sql.append("FROM YukonPAObject");
         sql.append("WHERE Type").in(paoTypes);
-        
-        return jdbcTemplate.queryForInt(sql);
+        return sql;
     }
 
     @Override
@@ -648,4 +673,71 @@ public final class PaoDaoImpl implements PaoDao {
         }
     }
 
+    @Override
+    public LiteYukonPAObject getLiteYukonPaoByPointId(int pointId) {
+        LitePoint litePoint = pointDao.getLitePoint(pointId);
+        LiteYukonPAObject yukonPao = databaseCache.getAllPaosMap().get(litePoint.getPaobjectID());
+        return yukonPao;
+    }
+
+    @Override
+    public String findPaoInfoValue(int paoId, InfoKey key) {
+        try {
+            SqlStatementBuilder sql = new SqlStatementBuilder();
+            sql.append("SELECT Value");
+            sql.append("FROM DynamicPAOInfo");
+            sql.append("WHERE PAObjectID").eq(paoId);
+            sql.append("AND InfoKey").eq_k(key);
+            return jdbcTemplate.queryForString(sql);
+        } catch (EmptyResultDataAccessException e) {
+            return null;
+        }
+    }
+
+    @Override
+    public void savePaoInfo(int paoId, InfoKey key, String value, Instant time, LiteYukonUser user) {
+        SqlStatementBuilder sql = new SqlStatementBuilder();
+        if(findPaoInfoValue(paoId, key) == null) {
+            SqlParameterSink params = sql.insertInto("DynamicPAOInfo");
+            params.addValue("PAObjectID", paoId);
+            params.addValue("Owner", user.getUsername());
+            params.addValue("InfoKey", key);
+            params.addValue("Value", value);
+            params.addValue("UpdateTime", time);
+        } else {
+            SqlParameterSink params = sql.update("DynamicPAOInfo");
+            params.addValue("Owner", user.getUsername());
+            params.addValue("Value", value);
+            params.addValue("UpdateTime", time);
+            sql.append("WHERE PAObjectID").eq(paoId);
+            sql.append("AND InfoKey").eq_k(key);
+        }
+        jdbcTemplate.update(sql);
+    }
+    
+    private final YukonRowMapper<DynamicPaoInfo> dynamicPaoInfoRowMapper = rs -> {
+
+        DynamicPaoInfo dynamicPaoInfo = new DynamicPaoInfo();
+        dynamicPaoInfo.setInfoKey(rs.getEnum("InfoKey", InfoKey.class));
+        dynamicPaoInfo.setOwner(rs.getString("Owner"));
+        dynamicPaoInfo.setPaoId(rs.getInt("PAObjectID"));
+        dynamicPaoInfo.setValue(rs.getString("Value"));
+        dynamicPaoInfo.setTimestamp(rs.getInstant("UpdateTime"));
+        return dynamicPaoInfo;
+    };
+
+    @Override
+    public DynamicPaoInfo getDynamicPaoInfo(InfoKey key) {
+        DynamicPaoInfo dynamicPaoInfo = null;
+        try {
+            SqlStatementBuilder sql = new SqlStatementBuilder();
+            sql.append("SELECT PAObjectID, Owner, InfoKey, Value , UpdateTime");
+            sql.append("FROM DynamicPAOInfo ");
+            sql.append("WHERE InfoKey").eq_k(key);
+            dynamicPaoInfo = jdbcTemplate.queryForObject(sql, dynamicPaoInfoRowMapper);
+        } catch (EmptyResultDataAccessException ex) {
+
+        }
+        return dynamicPaoInfo;
+    }
 }

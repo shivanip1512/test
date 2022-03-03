@@ -2,20 +2,25 @@ package com.cannontech.web.input.type;
 
 import java.beans.PropertyEditor;
 import java.beans.PropertyEditorSupport;
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Set;
 
 import org.apache.commons.lang3.StringUtils;
+import org.springframework.beans.factory.annotation.Autowired;
 
 import com.cannontech.common.pao.attribute.model.Attribute;
-import com.cannontech.common.pao.attribute.model.BuiltInAttribute;
+import com.cannontech.common.pao.attribute.service.AttributeService;
 
 /**
- * Implementation of input type which represents an integer input type
+ * Implementation of input type which represents an Attribute Set input type
  */
 @SuppressWarnings("unchecked")
 public class AttributeSetType extends DefaultValidatedType<Set> {
+    
+    @Autowired private AttributeService attributeService;
 
     private String renderer = null;
 
@@ -45,15 +50,17 @@ public class AttributeSetType extends DefaultValidatedType<Set> {
                 Set<Attribute> result = new HashSet<Attribute>();
                 for (int i = 0; i < split.length; ++i) {
                     
-                    Attribute attribute = BuiltInAttribute.valueOf(split[i]);
+                    Attribute attribute = attributeService.resolveAttributeName(split[i]);
                     result.add(attribute);
                 }
                 setValue(result);
             }
             @Override
             public String getAsText() {
-                Collection value2 = (Collection) getValue();
-                return StringUtils.join(value2, ",");
+                Collection<Attribute> atts = (Collection<Attribute>) getValue();
+                List<String> result = new ArrayList<>();
+                atts.stream().forEach(att -> result.add(att.getKey()));
+                return StringUtils.join(result, ",");
             }
         };
         return intPropEditor;

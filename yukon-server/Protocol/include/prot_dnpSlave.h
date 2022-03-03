@@ -43,7 +43,7 @@ public:
     std::pair<Commands, DNP::ObjectBlockPtr> identifyRequest(const char* data, unsigned int size);
     void setScanCommand( std::vector<DnpSlave::output_point> outputPoints );
     void setControlCommand( const DnpSlave::control_request &control );
-    void setAnalogOutputCommand( const DnpSlave::analog_output_request &analog );
+    void setAnalogOutputCommand( const std::vector<DnpSlave::analog_output_request> & analogs );
     void setDelayMeasurementCommand( const std::chrono::milliseconds delay );
     void setWriteTimeCommand();
     void setUnsupportedCommand();

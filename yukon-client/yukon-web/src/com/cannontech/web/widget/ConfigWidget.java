@@ -1,33 +1,34 @@
 package com.cannontech.web.widget;
 
+import java.util.HashMap;
 import java.util.List;
-
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
+import java.util.Map;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Controller;
-import org.springframework.web.bind.ServletRequestBindingException;
-import org.springframework.web.bind.ServletRequestUtils;
+import org.springframework.ui.ModelMap;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestMethod;
-import org.springframework.web.servlet.ModelAndView;
+import org.springframework.web.bind.annotation.ResponseBody;
 
 import com.cannontech.amr.rfn.dataStreaming.model.DataStreamingConfig;
 import com.cannontech.amr.rfn.dataStreaming.model.DiscrepancyResult;
 import com.cannontech.amr.rfn.dataStreaming.service.DataStreamingService;
 import com.cannontech.common.config.ConfigurationSource;
-import com.cannontech.common.config.MasterConfigBoolean;
 import com.cannontech.common.config.MasterConfigLicenseKey;
-import com.cannontech.common.device.commands.CommandResultHolder;
 import com.cannontech.common.device.config.dao.DeviceConfigurationDao;
+import com.cannontech.common.device.config.dao.DeviceConfigurationDao.ConfigState;
+import com.cannontech.common.device.config.dao.DeviceConfigurationDao.LastActionStatus;
 import com.cannontech.common.device.config.dao.InvalidDeviceTypeException;
+import com.cannontech.common.device.config.model.DeviceConfigState;
 import com.cannontech.common.device.config.model.DeviceConfiguration;
 import com.cannontech.common.device.config.model.LightDeviceConfiguration;
-import com.cannontech.common.device.config.model.VerifyResult;
 import com.cannontech.common.device.config.service.DeviceConfigService;
-import com.cannontech.common.device.config.service.DeviceConfigurationService;
+import com.cannontech.common.device.model.SimpleDevice;
 import com.cannontech.common.i18n.MessageSourceAccessor;
 import com.cannontech.common.pao.YukonDevice;
 import com.cannontech.common.pao.definition.dao.PaoDefinitionDao;
@@ -38,32 +39,40 @@ import com.cannontech.core.authorization.service.RoleAndPropertyDescriptionServi
 import com.cannontech.core.dao.DeviceDao;
 import com.cannontech.core.dao.NotFoundException;
 import com.cannontech.core.roleproperties.YukonRole;
+import com.cannontech.core.roleproperties.YukonRoleProperty;
+import com.cannontech.core.roleproperties.dao.RolePropertyDao;
+import com.cannontech.database.data.lite.LiteYukonPAObject;
 import com.cannontech.i18n.YukonUserContextMessageSourceResolver;
-import com.cannontech.servlet.YukonUserContextUtils;
 import com.cannontech.user.YukonUserContext;
+import com.cannontech.web.bulk.service.DeviceConfigAssignService;
+import com.cannontech.web.security.annotation.CheckRoleProperty;
 import com.cannontech.web.tools.device.programming.dao.MeterProgrammingSummaryDao;
-import com.cannontech.web.tools.device.programming.model.MeterProgramWidgetDisplay;
+import com.cannontech.web.tools.device.programming.model.MeterProgramSummaryDetail;
+import com.cannontech.web.widget.support.AdvancedWidgetControllerBase;
 import com.cannontech.web.widget.support.SimpleWidgetInput;
-import com.cannontech.web.widget.support.WidgetControllerBase;
-import com.cannontech.web.widget.support.WidgetParameterHelper;
 import com.cannontech.yukon.IDatabaseCache;
 
 @Controller
 @RequestMapping("/configWidget/*")
-public class ConfigWidget extends WidgetControllerBase {
+public class ConfigWidget extends AdvancedWidgetControllerBase {
 
     @Autowired private DeviceDao deviceDao;
     @Autowired private DeviceConfigurationDao deviceConfigurationDao;
     @Autowired private DeviceConfigService deviceConfigService;
-    @Autowired private DeviceConfigurationService deviceConfigurationService;
     @Autowired private DataStreamingService dataStreamingService;
     @Autowired private ConfigurationSource configurationSource;
     @Autowired private DataStreamingAttributeHelper dataStreamingAttributeHelper;
     @Autowired private MeterProgrammingSummaryDao meterProgrammingSummaryDao;
     @Autowired private PaoDefinitionDao paoDefinitionDao;
+    @Autowired private RolePropertyDao rolePropertyDao;
+    @Autowired private DeviceConfigAssignService deviceConfigAssignService;
+
+    private ExecutorService executor = Executors.newCachedThreadPool();
 
     @Autowired protected YukonUserContextMessageSourceResolver messageSourceResolver;
     @Autowired private IDatabaseCache dbCache;
+    
+    private final static String baseKey = "yukon.web.widgets.configWidget.";
 
     @Autowired
     public ConfigWidget(@Qualifier("widgetInput.deviceId") SimpleWidgetInput simpleWidgetInput,
@@ -74,132 +83,196 @@ public class ConfigWidget extends WidgetControllerBase {
         setRoleAndPropertiesChecker(roleAndPropertyDescriptionService.compile(checkRole));
     }
     
-    @Override
-    @RequestMapping("render")
-    public ModelAndView render(HttpServletRequest request, HttpServletResponse response) throws ServletRequestBindingException {
-        ModelAndView mav = getConfigModelAndView(request);
-        
-        return mav;
+    @GetMapping("render")
+    public String render(ModelMap model, int deviceId, YukonUserContext userContext) {
+        getConfigModelAndView(model, deviceId, userContext);
+        return "configWidget/render.jsp";
     }
 
-    private ModelAndView getConfigModelAndView(HttpServletRequest request) throws ServletRequestBindingException {
-        ModelAndView mav = new ModelAndView("configWidget/render.jsp");
-        YukonDevice device = getYukonDevice(request);
-        int deviceId = device.getPaoIdentifier().getPaoId();
-        mav.addObject("deviceId", deviceId);
+    private void getConfigModelAndView(ModelMap model, int deviceId, YukonUserContext userContext) {
+        YukonDevice device = deviceDao.getYukonDevice(deviceId);
+        model.addAttribute("deviceId", deviceId);
         
         List<LightDeviceConfiguration> existingConfigs = 
             deviceConfigurationDao.getAllConfigurationsByType(device.getPaoIdentifier().getPaoType());
         
-        mav.addObject("existingConfigs", existingConfigs);
+        model.addAttribute("existingConfigs", existingConfigs);
         
         LightDeviceConfiguration config = deviceConfigurationDao.findConfigurationForDevice(device);
         
-        mav.addObject("currentConfigId", config != null ? config.getConfigurationId() : null);
-        mav.addObject("currentConfigName", config != null ? config.getName() : CtiUtilities.STRING_NONE);
+        model.addAttribute("currentConfigId", config != null ? config.getConfigurationId() : null);
+        model.addAttribute("currentConfigName", config != null ? config.getName() : CtiUtilities.STRING_NONE);
         
+         
         //check for data streaming config
-        YukonUserContext userContext = YukonUserContextUtils.getYukonUserContext(request);
         MessageSourceAccessor accessor = messageSourceResolver.getMessageSourceAccessor(userContext);
         DataStreamingConfig dsConfig = dataStreamingService.findDataStreamingConfigurationForDevice(deviceId);
         if (dsConfig != null) {
             dsConfig.setAccessor(accessor);
         }
-        mav.addObject("dataStreamingConfig", dsConfig);
+        model.addAttribute("dataStreamingConfig", dsConfig);
         
         DiscrepancyResult discrepancy = dataStreamingService.findDiscrepancy(deviceId);
-        mav.addObject("dataStreamingDiscrepancy", discrepancy);
+        model.addAttribute("dataStreamingDiscrepancy", discrepancy);
 
         boolean configurableDevice = !existingConfigs.isEmpty();
         boolean dataStreamingEnabled =
-            configurationSource.getBoolean(MasterConfigBoolean.RF_DATA_STREAMING_ENABLED, false);
+            configurationSource.isLicenseEnabled(MasterConfigLicenseKey.RF_DATA_STREAMING_ENABLED);
         boolean streamableDevice =
             dataStreamingEnabled
                 && !dataStreamingAttributeHelper.getSupportedAttributes(device.getPaoIdentifier().getPaoType()).isEmpty();
-        mav.addObject("configurableDevice", configurableDevice);
-        mav.addObject("streamableDevice", streamableDevice);
+        model.addAttribute("configurableDevice", configurableDevice);
+        model.addAttribute("streamableDevice", streamableDevice);
         
         //check for meter programming
         boolean enableMeterProgramming = configurationSource.isLicenseEnabled(MasterConfigLicenseKey.METER_PROGRAMMING_ENABLED);
         if (enableMeterProgramming) {
             boolean deviceSupported = paoDefinitionDao.isTagSupported(device.getPaoIdentifier().getPaoType(), PaoTag.METER_PROGRAMMING);
             if (deviceSupported) {
-                mav.addObject("showMeterProgramming", true);
+                model.addAttribute("showMeterProgramming", true);
                 try {
-                    MeterProgramWidgetDisplay program = meterProgrammingSummaryDao.getProgramConfigurationByDeviceId(deviceId, userContext);
-                    mav.addObject("meterProgram", program);
+                    MeterProgramSummaryDetail program = meterProgrammingSummaryDao.getProgramConfigurationByDeviceId(deviceId, userContext);
+                    model.addAttribute("isInsufficentFirmware", program.getProgramInfo().getSource().isOldFirmware());
+                    model.addAttribute("meterProgram", program);
                 } catch (NotFoundException e) {
                     //not programmed yet
                 }
             }
         }
-
-        return mav;
-    }
-
-    private YukonDevice getYukonDevice(HttpServletRequest request) throws ServletRequestBindingException {
-        int deviceId = WidgetParameterHelper.getRequiredIntParameter(request, "deviceId");
-        return deviceDao.getYukonDevice(deviceId);
     }
     
-    @RequestMapping(value = "assignConfig", method = RequestMethod.POST)
-    public ModelAndView assignConfig(HttpServletRequest request, HttpServletResponse response) throws ServletRequestBindingException, InvalidDeviceTypeException {
-        YukonDevice device = getYukonDevice(request);
-        YukonUserContext userContext = YukonUserContextUtils.getYukonUserContext(request);
-        final int configId = ServletRequestUtils.getRequiredIntParameter(request, "configuration");
-        String deviceName = dbCache.getAllPaosMap().get(device.getPaoIdentifier().getPaoId()).getPaoName();
-        if (configId > -1) {
-            DeviceConfiguration configuration = deviceConfigurationDao.getDeviceConfiguration(configId);
-            deviceConfigurationService.assignConfigToDevice(configuration, device, userContext.getYukonUser(), deviceName);
-        } else {
-            deviceConfigurationService.unassignConfig(device, userContext.getYukonUser(), deviceName);
+    @GetMapping("getStatus")
+    @ResponseBody
+    public Map<String, Object> getStatus(ModelMap model, int deviceId, YukonUserContext userContext) {
+        Map<String, Object> jsonResponse = new HashMap<>();
+        MessageSourceAccessor accessor = messageSourceResolver.getMessageSourceAccessor(userContext);
+        DeviceConfigState configState = deviceConfigurationDao.getDeviceConfigStateByDeviceId(deviceId); 
+        boolean isInProgress = false;
+        boolean isInSync = false;
+        boolean notConfigured = false;
+        boolean isOutOfSync = false;
+  
+        String statusText = null;
+                        
+        if (configState == null
+                || (configState.getCurrentState() == ConfigState.UNASSIGNED || configState.getCurrentState() == ConfigState.UNKNOWN)) {
+            // "Current Configuration: None" should display. No Status row, no Actions row, but with the Change Configuration row
+            // still below.
+            notConfigured = true;
+        } else if (configState.getLastActionStatus() == LastActionStatus.IN_PROGRESS) {
+            statusText = accessor.getMessage(configState.getLastActionStatus());
+            isInProgress = true;
+            // disable buttons
+            // display status "In Progress" -  we can end up in this state for a short while
+        } else if (configState.getCurrentState() == ConfigState.IN_SYNC) {
+            // display status "in sync"
+            statusText = accessor.getMessage(configState.getCurrentState());
+            isInSync = true;
+        } else if (configState.getCurrentState() == ConfigState.OUT_OF_SYNC || configState.getCurrentState() == ConfigState.UNREAD) {
+            // display status "needs upload"
+            statusText = accessor.getMessage(configState.getCurrentState());
+            isOutOfSync = true;
+        } else if (configState.getCurrentState() == ConfigState.UNCONFIRMED) {
+            // display status "needs validation"
+            statusText = accessor.getMessage(configState.getCurrentState());
         }
         
-        ModelAndView mav = getConfigModelAndView(request);
-        mav.addObject("configurableDevice", true);
-        return mav;
-    }
-    
-    @RequestMapping(value = "unassignConfig", method = RequestMethod.POST)
-    public ModelAndView unassignConfig(HttpServletRequest request, HttpServletResponse response) throws Exception {
-        YukonDevice device = getYukonDevice(request);
-        YukonUserContext userContext = YukonUserContextUtils.getYukonUserContext(request);
-        String deviceName = dbCache.getAllPaosMap().get(device.getPaoIdentifier().getPaoId()).getPaoName();
-        deviceConfigurationService.unassignConfig(device, userContext.getYukonUser(), deviceName);
+        jsonResponse.put("statusText", statusText);
+        jsonResponse.put("notConfigured", notConfigured);
+        jsonResponse.put("isInProgress", isInProgress);
+        jsonResponse.put("isInSync", isInSync);
+        jsonResponse.put("isOutOfSync", isOutOfSync);
         
-        ModelAndView mav = getConfigModelAndView(request);
-        return mav;
+        if (configState != null && configState.getLastActionStatus() == LastActionStatus.FAILURE
+                && configState.getCreId() != null) {
+            Integer errorCode = deviceConfigurationDao.getErrorCodeByDeviceId(deviceId);
+            jsonResponse.put("errorCode", errorCode);
+        }
+        return jsonResponse;
+
     }
     
-    @RequestMapping(value = "sendConfig", method = RequestMethod.POST)
-    public ModelAndView sendConfig(HttpServletRequest request, HttpServletResponse response) throws Exception {
-        YukonUserContext userContext = YukonUserContextUtils.getYukonUserContext(request);
-        ModelAndView mav = new ModelAndView("configWidget/configWidgetResult.jsp");
-        YukonDevice device = getYukonDevice(request);
-        CommandResultHolder resultHolder = deviceConfigService.sendConfig(device, userContext.getYukonUser());
-        
-        mav.addObject("sendResult", resultHolder);
-        return mav;
+    @PostMapping("changeConfig")
+    @CheckRoleProperty(YukonRoleProperty.ASSIGN_CONFIG)
+    @ResponseBody
+    public Map<String, Object> changeConfig(ModelMap model, int deviceId, int configuration, YukonUserContext userContext) throws InvalidDeviceTypeException {
+        Map<String, Object> jsonResponse = new HashMap<>();
+        SimpleDevice device = deviceDao.getYukonDevice(deviceId);
+        MessageSourceAccessor accessor = messageSourceResolver.getMessageSourceAccessor(userContext);
+        DeviceConfigState currentConfigState = deviceConfigurationDao.getDeviceConfigStateByDeviceId(deviceId);
+        if (currentConfigState != null && currentConfigState.getLastActionStatus() == LastActionStatus.IN_PROGRESS) {
+            jsonResponse.put("errorMessage", accessor.getMessage(baseKey + "actionInProgress"));
+        } else {
+            if (configuration > -1) {
+                DeviceConfiguration deviceConfig = deviceConfigurationDao.getDeviceConfiguration(configuration);
+                deviceConfigAssignService.assign(configuration, device, userContext);
+                DeviceConfigState configState = deviceConfigurationDao.getDeviceConfigStateByDeviceId(deviceId);
+                
+                if (configState != null && 
+                        (configState.getCurrentState() == ConfigState.OUT_OF_SYNC || configState.getCurrentState() == ConfigState.UNREAD)) {
+                    //check for upload permission
+                    if (rolePropertyDao.checkProperty(YukonRoleProperty.SEND_READ_CONFIG, userContext.getYukonUser())) {
+                        LiteYukonPAObject pao = dbCache.getAllPaosMap().get(device.getDeviceId());
+                        // display popup suggesting upload
+                        jsonResponse.put("displayUploadPopup", true);
+                        jsonResponse.put("popupMessage", accessor.getMessage(baseKey + "uploadPopup.message", deviceConfig.getName(), pao.getPaoName()));
+                    }
+                }
+            } else {
+                deviceConfigAssignService.unassign(device, userContext);
+            }
+        }
+
+        return jsonResponse;
+
     }
     
-    @RequestMapping(value = "readConfig", method = RequestMethod.POST)
-    public ModelAndView readConfig(HttpServletRequest request, HttpServletResponse response) throws Exception {
-        YukonUserContext userContext = YukonUserContextUtils.getYukonUserContext(request);
-        ModelAndView mav = new ModelAndView("configWidget/configWidgetResult.jsp");
-        YukonDevice device = getYukonDevice(request);
-        CommandResultHolder resultHolder = deviceConfigService.readConfig(device, userContext.getYukonUser());
-        mav.addObject("readResult", resultHolder);
-        return mav;
+    @PostMapping("removeConfig")
+    @CheckRoleProperty(YukonRoleProperty.ASSIGN_CONFIG)
+    public String removeConfig(ModelMap model, int deviceId, YukonUserContext userContext) throws InvalidDeviceTypeException {
+        SimpleDevice device = deviceDao.getYukonDevice(deviceId);
+        DeviceConfigState configState = deviceConfigurationDao.getDeviceConfigStateByDeviceId(deviceId);
+        if (configState != null && configState.getLastActionStatus() == LastActionStatus.IN_PROGRESS) {
+            MessageSourceAccessor accessor = messageSourceResolver.getMessageSourceAccessor(userContext);
+            model.addAttribute("errorMessage", accessor.getMessage(baseKey + "actionInProgress"));
+        } else {
+            deviceConfigAssignService.unassign(device, userContext);
+        }
+        getConfigModelAndView(model, deviceId, userContext);
+        return "configWidget/render.jsp";
     }
     
-    @RequestMapping(value = "verifyConfig", method = RequestMethod.POST)
-    public ModelAndView verifyConfig(HttpServletRequest request, HttpServletResponse response) throws Exception {
-        YukonUserContext userContext = YukonUserContextUtils.getYukonUserContext(request);
-        ModelAndView mav = new ModelAndView("configWidget/configWidgetResult.jsp");
-        YukonDevice device = getYukonDevice(request);
-        VerifyResult verifyResult = deviceConfigService.verifyConfig(device, userContext.getYukonUser());
-        mav.addObject("verifyResult", verifyResult);
-        return mav;
+    @PostMapping("uploadConfig")
+    @CheckRoleProperty(YukonRoleProperty.SEND_READ_CONFIG)
+    public String uploadConfig(ModelMap model, int deviceId, YukonUserContext userContext) {
+        SimpleDevice device = deviceDao.getYukonDevice(deviceId);
+        MessageSourceAccessor accessor = messageSourceResolver.getMessageSourceAccessor(userContext);
+        DeviceConfigState configState = deviceConfigurationDao.getDeviceConfigStateByDeviceId(deviceId);
+        if (configState != null && configState.getLastActionStatus() == LastActionStatus.IN_PROGRESS) {
+            model.addAttribute("errorMessage", accessor.getMessage(baseKey + "actionInProgress"));
+        } else {
+            executor.submit(() -> deviceConfigService.sendConfig(device, userContext.getYukonUser()));
+            model.addAttribute("userMessage", accessor.getMessage(baseKey + "uploadSent"));
+        }
+        getConfigModelAndView(model, deviceId, userContext);
+        return "configWidget/render.jsp";
     }
+
+    @PostMapping("validateConfig")
+    @CheckRoleProperty(YukonRoleProperty.SEND_READ_CONFIG)
+    public String validateConfig(ModelMap model, int deviceId, YukonUserContext userContext) {
+        SimpleDevice device = deviceDao.getYukonDevice(deviceId);
+        MessageSourceAccessor accessor = messageSourceResolver.getMessageSourceAccessor(userContext);
+        DeviceConfigState configState = deviceConfigurationDao.getDeviceConfigStateByDeviceId(deviceId);
+        if (configState != null && configState.getLastActionStatus() == LastActionStatus.IN_PROGRESS) {
+            model.addAttribute("errorMessage", accessor.getMessage(baseKey + "actionInProgress"));
+        } else {
+            executor.submit(() -> deviceConfigService.readConfig(device, userContext.getYukonUser()));
+            model.addAttribute("userMessage", accessor.getMessage(baseKey + "validateSent"));
+        }
+        getConfigModelAndView(model, deviceId, userContext);
+        return "configWidget/render.jsp";
+    }
+    
 }
 

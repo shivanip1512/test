@@ -1,6 +1,6 @@
 package com.cannontech.services.infrastructure.service.impl;
 
-import static org.joda.time.Instant.*;
+import static org.joda.time.Instant.now;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -10,14 +10,12 @@ import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.stream.Collectors;
 
 import javax.annotation.PostConstruct;
-import javax.jms.ConnectionFactory;
 
 import org.apache.logging.log4j.Logger;
 import org.joda.time.DateTime;
 import org.joda.time.Instant;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
-import org.springframework.jms.core.JmsTemplate;
 
 import com.cannontech.clientutils.YukonLogManager;
 import com.cannontech.common.config.ConfigurationSource;
@@ -30,12 +28,15 @@ import com.cannontech.common.smartNotification.model.SmartNotificationEvent;
 import com.cannontech.common.smartNotification.model.SmartNotificationEventType;
 import com.cannontech.common.smartNotification.service.SmartNotificationEventCreationService;
 import com.cannontech.common.util.ScheduledExecutor;
+import com.cannontech.common.util.jms.YukonJmsTemplate;
+import com.cannontech.common.util.jms.YukonJmsTemplateFactory;
 import com.cannontech.common.util.jms.api.JmsApiDirectory;
 import com.cannontech.core.dao.PersistedSystemValueDao;
 import com.cannontech.core.dao.PersistedSystemValueKey;
 import com.cannontech.i18n.YukonUserContextMessageSourceResolver;
 import com.cannontech.infrastructure.dao.InfrastructureWarningsDao;
 import com.cannontech.infrastructure.model.InfrastructureWarning;
+import com.cannontech.infrastructure.model.InfrastructureWarningSeverity;
 import com.cannontech.infrastructure.model.InfrastructureWarningsRefreshRequest;
 import com.cannontech.services.infrastructure.service.InfrastructureWarningEvaluator;
 import com.cannontech.services.infrastructure.service.InfrastructureWarningsService;
@@ -65,7 +66,9 @@ public class InfrastructureWarningsServiceImpl implements InfrastructureWarnings
     @Autowired private IDatabaseCache serverDatabaseCache;
     @Autowired private SmartNotificationEventCreationService smartNotificationEventCreationService;
     @Autowired private ConfigurationSource configurationSource;
-    private JmsTemplate jmsTemplate;
+    @Autowired private YukonJmsTemplateFactory jmsTemplateFactory;
+
+    private YukonJmsTemplate jmsTemplate;
     
     /**
      * The thread where the calculation is done.
@@ -86,6 +89,7 @@ public class InfrastructureWarningsServiceImpl implements InfrastructureWarnings
             + " minute(s) after the server is started and run every " + runFrequencyMinutes
             + " minute(s) with force refresh possible every " + minimumTimeBetweenRuns + " minute(s).");
         executor.scheduleAtFixedRate(calculationThread, minimumTimeBetweenRuns, runFrequencyMinutes, TimeUnit.MINUTES);
+        jmsTemplate = jmsTemplateFactory.createTemplate(JmsApiDirectory.INFRASTRUCTURE_WARNINGS_CACHE_REFRESH);
     }
     
     /**
@@ -125,7 +129,7 @@ public class InfrastructureWarningsServiceImpl implements InfrastructureWarnings
                 List<InfrastructureWarning> eventLogWarnings = getAndLogEventLogWarnings(oldWarnings, warnings);
                 
                 // Used for smart notifications. Warning arguments NOT checked for equality.
-                List<InfrastructureWarning> smartNotificationWarnings = getSmartNotificationWarnings(oldWarnings, eventLogWarnings);
+                List<InfrastructureWarning> smartNotificationWarnings = getSmartNotifications(oldWarnings, eventLogWarnings);
                 
                 // Get the old warnings and non-repeated warnings that we want to put in the Infrastructure
                 // Warnings table, then insert warnings into DB (overwriting previous warnings in the table).
@@ -133,9 +137,26 @@ public class InfrastructureWarningsServiceImpl implements InfrastructureWarnings
                 List<InfrastructureWarning> infrastructureWarnings = getInfrastructureWarnings(oldWarnings, warnings);
                 infrastructureWarningsDao.insert(infrastructureWarnings);
 
+
+                // Used for sending follow up messages for the end of an infrastructure warning
+                List<InfrastructureWarning> expiredWarningSmartNotifications = getSmartNotifications(infrastructureWarnings, oldWarnings);
+
                 log.info("Infrastructure warnings calculation complete");
-                
+
                 sendSmartNotifications(smartNotificationWarnings);
+
+                List<InfrastructureWarning> clearedWarnings = new ArrayList<InfrastructureWarning>();
+                for (InfrastructureWarning warning : expiredWarningSmartNotifications) {
+                    clearedWarnings.add(new InfrastructureWarning(warning.getPaoIdentifier(),
+                                                                     warning.getWarningType(),
+                                                                     InfrastructureWarningSeverity.CLEAR,
+                                                                     warning.getTimestamp(),
+                                                                     warning.getArguments()));
+                    infrastructureEventLogService.warningCleared(serverDatabaseCache.getAllPaosMap().get(warning.getPaoIdentifier().getPaoId()).getPaoName(),
+                                                                     warning.getWarningType().toString());
+                }
+                sendSmartNotifications(clearedWarnings);
+                
                 sendCacheRefreshRequest(lastRun);
                 
                 isRunning.set(false);
@@ -175,7 +196,7 @@ public class InfrastructureWarningsServiceImpl implements InfrastructureWarnings
         refreshRequest.setLastRunTime(lastRun);
         //nextRun - time the warning calculation ended + minimumTimeBetweenRuns
         refreshRequest.setNextRunTime(new DateTime().plusMinutes(minimumTimeBetweenRuns).toInstant());
-        jmsTemplate.convertAndSend(JmsApiDirectory.INFRASTRUCTURE_WARNINGS_CACHE_REFRESH.getQueue().getName(), refreshRequest);
+        jmsTemplate.convertAndSend(refreshRequest);
     }
     
     /**
@@ -204,9 +225,9 @@ public class InfrastructureWarningsServiceImpl implements InfrastructureWarnings
     }
     
     /**
-     * Get the list of warnings that are not repeats from the previous calculation (without comparing arguments)
+     * Get the list of warnings that are in the second list but not in the first list (without comparing arguments)
      */
-    private List<InfrastructureWarning> getSmartNotificationWarnings(List<InfrastructureWarning> oldWarnings, List<InfrastructureWarning> newWarnings) {
+    private List<InfrastructureWarning> getSmartNotifications(List<InfrastructureWarning> oldWarnings, List<InfrastructureWarning> newWarnings) {
         return newWarnings.stream()
                           .filter(warning -> !oldWarnings.contains(warning))
                           .collect(Collectors.toList());
@@ -229,12 +250,5 @@ public class InfrastructureWarningsServiceImpl implements InfrastructureWarnings
                           })
                           .collect(Collectors.toList());
     }
-    
-    @Autowired
-    public void setConnectionFactory(ConnectionFactory connectionFactory) {
-        jmsTemplate = new JmsTemplate(connectionFactory);
-        jmsTemplate.setExplicitQosEnabled(true);
-        jmsTemplate.setDeliveryPersistent(true);
-        jmsTemplate.setPubSubDomain(false);
-    }
+
 }

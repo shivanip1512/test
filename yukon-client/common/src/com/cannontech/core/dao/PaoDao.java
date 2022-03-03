@@ -1,8 +1,11 @@
 package com.cannontech.core.dao;
 
+import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+
+import org.joda.time.Instant;
 
 import com.cannontech.common.device.groups.model.DeviceGroup;
 import com.cannontech.common.pao.DisplayablePao;
@@ -12,8 +15,11 @@ import com.cannontech.common.pao.PaoIdentifier;
 import com.cannontech.common.pao.PaoType;
 import com.cannontech.common.pao.YukonPao;
 import com.cannontech.common.pao.definition.model.PaoTag;
+import com.cannontech.core.dao.impl.DynamicPaoInfo;
 import com.cannontech.core.service.impl.PaoLoader;
 import com.cannontech.database.data.lite.LiteYukonPAObject;
+import com.cannontech.database.data.lite.LiteYukonUser;
+import com.cannontech.dr.eatonCloud.model.EatonCloudChannel;
 
 public interface PaoDao {
 
@@ -178,6 +184,11 @@ public interface PaoDao {
      * Returns count of Pao's of particular paoTypes
      */
     int getPaoCount(Set<PaoType> paoTypes);
+    
+    /**
+     * Returns count of enabled and non template Pao's of particular paoTypes
+     */
+    int getEnabledPaoCount(Set<PaoType> paoTypes);
 
     /**
      * Checks for existence of a port with the given name .
@@ -188,4 +199,60 @@ public interface PaoDao {
      * doesn't exist.
      */
     YukonPao findPort(String paoName);
+    
+    /**
+     * This method returns LiteYukonPAObject for the pointId passed as a parameter.
+     * */
+    LiteYukonPAObject getLiteYukonPaoByPointId(int pointId);
+
+    enum InfoKey {
+        FIRMWARE_VERSION(EatonCloudChannel.VERSION),
+        IMEI(EatonCloudChannel.IMEI),
+        ICCID(EatonCloudChannel.ICCID),
+        ECOBEEZEUS("Push API Configuration")
+        ;
+        private EatonCloudChannel channel;
+        InfoKey(EatonCloudChannel channel){
+            this.channel = channel;
+        }
+        
+        private String value;
+        InfoKey(String value){
+            this.value = value;
+        }
+        public static InfoKey getKey(EatonCloudChannel channel) {
+            return Arrays.stream(values())
+                    .filter(infoKey  -> infoKey.channel == channel)
+                    .findAny()
+                    .orElse(null);
+        }
+        
+        public static boolean hasKey(EatonCloudChannel channel) {
+            return getKey(channel) != null; 
+        }
+        
+        public String getValue() {
+            return value;
+        }
+
+    }
+
+    /**
+     * Returns pao info value for key and device id. Returns null if value doesn't exist.
+     */
+    String findPaoInfoValue(int paoId, InfoKey key);
+    
+
+    /**
+     * If pao info value doesn't exits inserts new entry otherwise updates the table.
+     */
+    void savePaoInfo(int paoId, InfoKey key, String value, Instant time, LiteYukonUser user);
+
+    /**
+     * Returns DynamicPaoInfo values based on infoKey.  
+     * This is used only for values where we expect a single entry.
+     */
+    DynamicPaoInfo getDynamicPaoInfo(InfoKey key);
+    
+    
 }

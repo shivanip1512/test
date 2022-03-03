@@ -9,7 +9,7 @@
 #include "honeywellCycleGear.h"
 #include "honeywellSetpointGear.h"
 
-extern CtiTime gInvalidCtiTime;
+extern const CtiTime gInvalidCtiTime;
 
 
 BOOST_AUTO_TEST_SUITE( test_lmobjects_honeywell )

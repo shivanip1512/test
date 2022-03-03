@@ -51,6 +51,7 @@ import org.jfree.ui.RectangleAnchor;
 import org.jfree.ui.TextAnchor;
 
 import com.cannontech.clientutils.CTILogger;
+import com.cannontech.common.trend.model.GraphColors;
 import com.cannontech.common.util.CtiUtilities;
 import com.cannontech.common.util.Pair;
 import com.cannontech.common.util.TimeUtil;
@@ -64,7 +65,6 @@ import com.cannontech.database.db.graph.GDSTypesFuncs;
 import com.cannontech.database.db.graph.GraphDataSeries;
 import com.cannontech.database.db.graph.GraphRenderers;
 import com.cannontech.database.db.point.PeakPointHistory;
-import com.cannontech.graph.GraphColors;
 import com.cannontech.graph.GraphDefines;
 import com.cannontech.jfreechart.chart.Dataset_MinMaxValues;
 import com.cannontech.jfreechart.chart.HorizontalSkipLabelsCategoryAxis;
@@ -104,9 +104,9 @@ public class TrendModel implements GraphDefines {
     private Integer primaryGDSPointID = null;
 
     // Multiple axis setup - default 2 dimension (0 = left, 1 = right)
-    private Character[] autoScale = new Character[] { new Character('Y'), new Character('Y') };
-    private Double[] scaleMin = new Double[] { new Double(0.0), new Double(0.0) };
-    private Double[] scaleMax = new Double[] { new Double(100.0), new Double(100.0) };
+    private Character[] autoScale = new Character[] { Character.valueOf('Y'), Character.valueOf('Y') };
+    private Double[] scaleMin = new Double[] { Double.valueOf(0.0), Double.valueOf(0.0) };
+    private Double[] scaleMax = new Double[] { Double.valueOf(100.0), Double.valueOf(100.0) };
 
     private int numberOfEvents = 20;
 
@@ -181,17 +181,15 @@ public class TrendModel implements GraphDefines {
         setStopDate(newStopDate);
         setChartName(newChartName);
 
-        GraphColors colors = new GraphColors();
-
         // Inititialize series properties
         TrendSerie[] tempArray = new TrendSerie[litePoints.length];
         for (int i = 0; i < litePoints.length; i++) {
             TrendSerie tempSerie = new TrendSerie();
-            tempSerie.setPointId(new Integer(litePoints[i].getPointID()));
+            tempSerie.setPointId(Integer.valueOf(litePoints[i].getPointID()));
             tempSerie.setLabel(litePoints[i].getPointName());
 
             // Use valid graph Colors, reuses colors when all have been used
-            tempSerie.setColor(colors.getNextLineColor());
+            tempSerie.setColor(GraphColors.getNextDefaultColor(i).getYukonColor());
             tempArray[i] = tempSerie;
         }
         setTrendSeries(tempArray);
@@ -212,16 +210,15 @@ public class TrendModel implements GraphDefines {
         setStopDate(newStopDate);
         setChartName(newChartName);
 
-        GraphColors colors = new GraphColors();
         // Inititialize series properties
         TrendSerie[] tempArray = new TrendSerie[ptID_.length];
         for (int i = 0; i < ptID_.length; i++) {
             TrendSerie tempSerie = new TrendSerie();
-            tempSerie.setPointId(new Integer(ptID_[i]));
+            tempSerie.setPointId(Integer.valueOf(ptID_[i]));
             tempSerie.setTypeMask(GDSTypes.BASIC_GRAPH_TYPE);
             tempSerie.setLabel(ptNames_[i]);
             // Use valid graph Colors, reuses colors when all have been used
-            tempSerie.setColor(colors.getNextLineColor());
+            tempSerie.setColor(GraphColors.getNextDefaultColor(i).getYukonColor());
 
             tempArray[i] = tempSerie;
         }
@@ -434,7 +431,7 @@ public class TrendModel implements GraphDefines {
             rset = pstmt.executeQuery();
             while (rset.next()) {
                 java.sql.Timestamp ts = rset.getTimestamp(1);
-                Double val = new Double(rset.getDouble(2));
+                Double val = Double.valueOf(rset.getDouble(2));
                 short millis = rset.getShort(3);
                 GregorianCalendar tempCal = new GregorianCalendar();
                 tempCal.setTimeInMillis(ts.getTime());
@@ -458,7 +455,6 @@ public class TrendModel implements GraphDefines {
      * @return com.cannontech.graph.model.TrendSerie[]
      */
     private void hitDatabase_Basic() {
-        java.util.Date timerStart = new java.util.Date();
         GregorianCalendar tempCal = null;
 
         if (getTrendSeries() == null)
@@ -603,7 +599,7 @@ public class TrendModel implements GraphDefines {
                         // init everything, a new freechartmodel will be created
                         // with the change of pointid.
                         java.sql.Timestamp ts = rset.getTimestamp(2);
-                        Double val = new Double(rset.getDouble(3));
+                        Double val = Double.valueOf(rset.getDouble(3));
                         short millis = rset.getShort(4);
 
                         tempCal = new GregorianCalendar();
@@ -614,7 +610,7 @@ public class TrendModel implements GraphDefines {
                                                                    // to current
                                                                    // start/stop
                                                                    // range.
-                        Long time = new Long(tempCal.getTimeInMillis());
+                        Long time = Long.valueOf(tempCal.getTimeInMillis());
                         if (GDSTypesFuncs.isUsageType(getTrendSeries()[s].getTypeMask())) {
                             java.util.Date tsDate = new java.util.Date(ts.getTime());
 
@@ -677,7 +673,7 @@ public class TrendModel implements GraphDefines {
                           // whole day (or current value). Use the "Value" of the most recently collected
                           // timeAndValue Pair
                             Double mostRecentValue = timeAndValue.getSecond();
-                            timeAndValue = new Pair<>(new Long(stopTS), mostRecentValue);
+                            timeAndValue = new Pair<>(Long.valueOf(stopTS), mostRecentValue);
                             timeAndValueVector.add(timeAndValue);
                             lastPointId = getTrendSeries()[s].getPointId().intValue();
                         }
@@ -699,7 +695,6 @@ public class TrendModel implements GraphDefines {
             e.printStackTrace();
         } finally {
             SqlUtils.close(rset, pstmt, conn);
-            java.util.Date timerStop = new java.util.Date();
         }
     }
 
@@ -715,9 +710,6 @@ public class TrendModel implements GraphDefines {
                 " FROM RAWPOINTHISTORY WHERE POINTID = ? " + 
                 " AND (TIMESTAMP > ? AND TIMESTAMP <= ? ) ORDER BY POINTID, TIMESTAMP");
 
-        if (sql == null) {
-            return;
-        }
         java.sql.Connection conn = null;
         java.sql.PreparedStatement pstmt = null;
         java.sql.ResultSet rset = null;
@@ -737,22 +729,26 @@ public class TrendModel implements GraphDefines {
 
             if (GDSTypesFuncs.isPeakType(seriesTypeMask)) {
                 if (GDSTypesFuncs.isPeakType(getTrendSeries()[serieIndex].getTypeMask())) {
-                    day = retrievePeakIntervalTranslateDays(serieIndex);
-                    if (day == -1)
-                        return;
+                    try {
+                        day = retrievePeakIntervalTranslateDays(serieIndex);
+                    } catch (IllegalArgumentException e) {
+                        CTILogger.info("No peak forund for serie index " + serieIndex);
+                    }
                 }
             } else if (GDSTypesFuncs.isDateType(seriesTypeMask)) {
                 if (GDSTypesFuncs.isDateType(getTrendSeries()[serieIndex].getTypeMask())) {
                     Date tempDate = new Date(Long.valueOf(getTrendSeries()[serieIndex].getMoreData()).longValue());
-                    day = TimeUtil.differenceInDays(getStartDate(), tempDate);
+                    day = TimeUtil.differenceInDays(toBeginingOfDay(getStartDate()), tempDate);
                 }
             }
 
             tempCal.setTime(getStartDate());
+            tempCal = toBeginingOfDay(tempCal);
             tempCal.add(Calendar.DATE, -day);
             startTS = tempCal.getTimeInMillis();
 
             tempCal.setTime(getStartDate());
+            tempCal = toBeginingOfDay(tempCal);
             tempCal.add(Calendar.DATE, -day + 1);
             stopTS = tempCal.getTimeInMillis();
             getTrendSeries()[serieIndex].setLabel(getSerieLabel(getTrendSeries()[serieIndex].getLabel(), new Date(startTS)));
@@ -769,13 +765,10 @@ public class TrendModel implements GraphDefines {
             Vector<Pair<Long, Double>> timeAndValueVector = new Vector<>();
             int lastPointId = -1;
 
-            boolean addNext = true;
-            boolean firstOne = true;
             java.util.Date start = getStartDate();
 
             tempCal.setTime((Date) start.clone());
             tempCal.add(Calendar.DATE, 1);
-            java.util.Date stop = tempCal.getTime();
 
             while (rset.next()) {
                 int pointID = rset.getInt(1);
@@ -800,7 +793,7 @@ public class TrendModel implements GraphDefines {
                 // init everything, a new freechartmodel will be created
                 // with the change of pointid.
                 java.sql.Timestamp ts = rset.getTimestamp(2);
-                Double val = new Double(rset.getDouble(3));
+                Double val = Double.valueOf(rset.getDouble(3));
                 short millis = rset.getShort(4);
 
                 tempCal = new GregorianCalendar();
@@ -809,7 +802,7 @@ public class TrendModel implements GraphDefines {
                 tempCal.add(Calendar.DATE, day); // map timestamps to
                                                  // current start/stop
                                                  // range.
-                Long time = new Long(tempCal.getTimeInMillis());
+                Long time = Long.valueOf(tempCal.getTimeInMillis());
 
                 timeAndValue = new Pair<Long, Double>(time, val);
                 timeAndValueVector.add(timeAndValue);
@@ -854,6 +847,12 @@ public class TrendModel implements GraphDefines {
         }
     }
 
+    /*
+     * Gets the number of days prior to the query window start date that the peak date occurred.
+     * This method assumes that dates are always at midnight and will provide inconsistent results if they are not.
+     * Negative numbers show that the peak occurred after the query window start, while positive
+     * numbers indicate that the peak occurred before the query window.
+     */
     private int retrievePeakIntervalTranslateDays(int serieIndex) {
         int translateDays = 0;
 
@@ -863,11 +862,12 @@ public class TrendModel implements GraphDefines {
             while (iter.hasNext()) {
                 PeakPointHistory pph = iter.next();
                 java.util.GregorianCalendar cal = new java.util.GregorianCalendar();
-                cal.setTime(pph.getTimeStamp().getTime());
+                cal.setTime(pph.getTimeStamp().getTime()); // Get the timestamp of the peak point value
                 String time = TRANSLATE_DATE.format(cal.getTime());
 
+                // If the peak point value was recorded at midnight exactly
                 if (Integer.valueOf(time).intValue() == 0) {
-                    // must have Day+1 00:00:00 instead of Day 00:00:01+
+                    // Count that point as having happened the PREVIOUS day
                     cal.add(Calendar.DATE, -1);
                 } else {
                     cal.set(java.util.Calendar.HOUR_OF_DAY, 0);
@@ -875,12 +875,15 @@ public class TrendModel implements GraphDefines {
                     cal.set(java.util.Calendar.SECOND, 0);
                     cal.set(java.util.Calendar.MILLISECOND, 0);
                 }
-                translateDays = TimeUtil.differenceInDays(startDate, cal.getTime());
+                // This next call uses floating point divsion to calculate the number of days past, then rounds
+                // the result. If either start date or cal are not on an even day interval this may give inconsistent
+                // results
+                translateDays = TimeUtil.differenceInDays(toBeginingOfDay(startDate), cal.getTime());
                 CTILogger.info(" PEAK POINT TS/VALUE = " + pph.getPointID() + " | " + pph.getTimeStamp().getTime() + " | " + pph.getValue());
                 break;
             }
         } else {
-            return -1; // no peak found
+            throw new IllegalArgumentException("No peak value was found in the database for the given series.");
         }
 
         return translateDays;
@@ -923,8 +926,8 @@ public class TrendModel implements GraphDefines {
             rset = pstmt.executeQuery();
 
             while (rset.next()) {
-                Integer pointID = new Integer(rset.getInt(1));
-                Double value = new Double(rset.getDouble(2));
+                Integer pointID = Integer.valueOf(rset.getInt(1));
+                Double value = Double.valueOf(rset.getDouble(2));
                 Timestamp ts = rset.getTimestamp(3);
                 java.util.GregorianCalendar cal = new java.util.GregorianCalendar();
                 cal.setTime(new Date(ts.getTime()));
@@ -1453,6 +1456,22 @@ public class TrendModel implements GraphDefines {
             }
         }
 
+    }
+
+    private Date toBeginingOfDay(Date date) {
+        GregorianCalendar gCalendar = new GregorianCalendar();
+        gCalendar.setTime(date);
+        gCalendar = toBeginingOfDay(gCalendar);
+        return gCalendar.getTime();
+    }
+
+    private GregorianCalendar toBeginingOfDay(GregorianCalendar gcDate) {
+        GregorianCalendar gcTemp = (GregorianCalendar) gcDate.clone();
+        gcTemp.set(Calendar.HOUR_OF_DAY, 0);
+        gcTemp.set(Calendar.MINUTE, 0);
+        gcTemp.set(Calendar.SECOND, 0);
+        gcTemp.set(Calendar.MILLISECOND, 0);
+        return gcTemp;
     }
 
     /**

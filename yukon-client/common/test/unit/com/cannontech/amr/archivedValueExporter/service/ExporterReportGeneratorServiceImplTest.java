@@ -8,6 +8,8 @@ import static com.cannontech.amr.archivedValueExporter.model.YukonRoundingMode.*
 import static com.cannontech.common.pao.attribute.model.BuiltInAttribute.*;
 import static com.cannontech.common.point.PointQuality.*;
 import static com.cannontech.database.data.point.PointType.*;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.fail;
 
 import java.io.BufferedWriter;
 import java.io.ByteArrayOutputStream;
@@ -23,8 +25,7 @@ import org.joda.time.DateTimeZone;
 import org.joda.time.Instant;
 import org.joda.time.format.DateTimeFormat;
 import org.joda.time.format.DateTimeFormatter;
-import org.junit.Assert;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 import org.springframework.context.support.StaticMessageSource;
 import org.springframework.test.util.ReflectionTestUtils;
 
@@ -34,6 +35,7 @@ import com.cannontech.amr.archivedValueExporter.model.ExportField;
 import com.cannontech.amr.archivedValueExporter.model.ExportFormat;
 import com.cannontech.amr.archivedValueExporter.model.Field;
 import com.cannontech.amr.archivedValueExporter.model.FieldType;
+import com.cannontech.amr.archivedValueExporter.model.FieldValue;
 import com.cannontech.amr.archivedValueExporter.model.Preview;
 import com.cannontech.amr.archivedValueExporter.model.dataRange.ChangeIdRange;
 import com.cannontech.amr.archivedValueExporter.model.dataRange.DataRange;
@@ -54,12 +56,11 @@ import com.cannontech.common.pao.service.PaoSelectionService;
 import com.cannontech.common.pao.service.impl.MockPaoSelectionServiceImpl;
 import com.cannontech.common.util.TimeZoneFormat;
 import com.cannontech.core.dao.MockRawPointHistoryDaoImpl;
-import com.cannontech.core.dao.MockUnitMeasureDaoImpl;
 import com.cannontech.core.dao.RawPointHistoryDao;
 import com.cannontech.core.dynamic.PointValueBuilder;
 import com.cannontech.core.dynamic.PointValueQualityHolder;
-import com.cannontech.database.data.lite.LiteUnitMeasure;
 import com.cannontech.database.data.point.PointType;
+import com.cannontech.database.data.point.UnitOfMeasure;
 import com.cannontech.i18n.YukonUserContextMessageSourceResolverMock;
 import com.cannontech.user.SimpleYukonUserContext;
 import com.cannontech.user.YukonUserContext;
@@ -104,7 +105,6 @@ public class ExporterReportGeneratorServiceImplTest {
         ReflectionTestUtils.setField(exporterReportGeneratorService, "paoSelectionService", paoSelectionService);
         ReflectionTestUtils.setField(exporterReportGeneratorService, "messageSourceResolver", messageSourceResolver);
         ReflectionTestUtils.setField(exporterReportGeneratorService, "rawPointHistoryDao", rawPointHistoryDao);
-        ReflectionTestUtils.setField(exporterReportGeneratorService, "unitMeasureDao", new MockUnitMeasureDaoImpl());
     }
 
     private final static DateTimeZone centralTimeZone = DateTimeZone.forOffsetHoursMinutes(-5, 0);
@@ -158,6 +158,7 @@ public class ExporterReportGeneratorServiceImplTest {
         ExportField deviceNameExportField = getExportField(0, DEVICE_NAME);
         ExportField routeExportField = getExportField(1, ROUTE);
         ExportField attributeNameExportField = getExportField(2, ATTRIBUTE_NAME, earliestUsageAttribute);
+        attributeNameExportField.setPattern(FieldValue.DEFAULT.name());
         ExportField pointValueExportField = getExportField(3, POINT_VALUE, "####");
         ExportField pointTimestampExportField = getExportField(4, POINT_TIMESTAMP, "MM/dd/yyyy");
         ExportField plainTextExportField = getExportField(5, PLAIN_TEXT, "Plain Text");
@@ -179,29 +180,28 @@ public class ExporterReportGeneratorServiceImplTest {
         ExportField exportFieldPointValue = getExportField(0, FieldType.POINT_VALUE, earliestUsageAttribute, AttributeField.VALUE, "#####");
         String pointValue = exporterReportGeneratorService.getValue(exportFieldPointValue, null, null, null, pointValueQualityHolder, userContextOne, tzFormat, null, now);
         
-        Assert.assertEquals(pointValue, "600");
+        assertEquals(pointValue, "600");
 
         // Timestamp Test
         ExportField exportFieldTimestamp = getExportField(0, FieldType.POINT_TIMESTAMP, earliestUsageAttribute, AttributeField.TIMESTAMP, "MM/dd/yyyy");
         String timestampValue = exporterReportGeneratorService.getValue(exportFieldTimestamp, null, null, null, pointValueQualityHolder, userContextOne, tzFormat, null, now);
         
-        Assert.assertEquals(timestampValue, "07/12/2012");
+        assertEquals(timestampValue, "07/12/2012");
 
         // Unit of Measure Test 
         YukonMeter meter = meterDao.getForMeterNumber("Meter Number 1");
-        Table<Integer, PointIdentifier, LiteUnitMeasure>  unitMeasureLookup = HashBasedTable.create();
-        unitMeasureLookup.put(meter.getPaoIdentifier().getPaoId(), new PointIdentifier(PointType.Analog, 0),
-            new LiteUnitMeasure(0, "kWH", 1, "kWH"));
+        Table<Integer, PointIdentifier, UnitOfMeasure>  unitMeasureLookup = HashBasedTable.create();
+        unitMeasureLookup.put(meter.getPaoIdentifier().getPaoId(), new PointIdentifier(PointType.Analog, 0), UnitOfMeasure.KWH);
         ExportField exportFieldUnitOfMeasure = getExportField(0, FieldType.UNIT_OF_MEASURE, earliestUsageAttribute, AttributeField.UNIT_OF_MEASURE, null);
         String unitOfMeasureValue = exporterReportGeneratorService.getValue(exportFieldUnitOfMeasure, meter, null, USAGE, pointValueQualityHolder, userContextOne, tzFormat, unitMeasureLookup, now);
         
-        Assert.assertEquals(unitOfMeasureValue, "kWH");
+        assertEquals(unitOfMeasureValue, "kWH");
         
         // Quality Test 
         ExportField exportFieldQuality= getExportField(0, FieldType.POINT_QUALITY, earliestUsageAttribute, AttributeField.QUALITY, null);
         String qualityValue = exporterReportGeneratorService.getValue(exportFieldQuality, null, null, null, pointValueQualityHolder, userContextOne, tzFormat, null, now);
         
-        Assert.assertEquals(qualityValue, "Manual");
+        assertEquals(qualityValue, "Manual");
     }
 
     private PaoData makePaoDataFromMeter(YukonMeter meter) {
@@ -226,28 +226,28 @@ public class ExporterReportGeneratorServiceImplTest {
         ExportField meterExportFieldMeterNumber = getExportField(0, METER_NUMBER);
         String meterNumberValue = exporterReportGeneratorService.getValue(meterExportFieldMeterNumber, meter, paoData, null, pointValueQualityHolder, userContextOne, tzFormat, null, now);
 
-        Assert.assertEquals(meterNumberValue, "Meter Number 1");
+        assertEquals(meterNumberValue, "Meter Number 1");
         
         ExportField meterExportFieldDeviceName = getExportField(0, DEVICE_NAME);
         String deviceNameValue = exporterReportGeneratorService.getValue(meterExportFieldDeviceName, meter, paoData, null, pointValueQualityHolder, userContextOne, tzFormat, null, now);
 
-        Assert.assertEquals(deviceNameValue, "MCT410FL 1");
+        assertEquals(deviceNameValue, "MCT410FL 1");
         
         ExportField meterExportFieldAddress = getExportField(0, ADDRESS);
         String addressValue = exporterReportGeneratorService.getValue(meterExportFieldAddress, meter, paoData, null, pointValueQualityHolder, userContextOne, tzFormat, null, now);
 
-        Assert.assertEquals(addressValue, "Address A");
+        assertEquals(addressValue, "Address A");
 
         YukonMeter rfnMeter = meterDao.getForMeterNumber("Meter Number 3");
         PaoData rfnPaoData = makePaoDataFromMeter(rfnMeter);
         String rfnSerialNumberValue = exporterReportGeneratorService.getValue(meterExportFieldAddress, rfnMeter, rfnPaoData, null, pointValueQualityHolder, userContextOne, tzFormat,null, now);
 
-        Assert.assertEquals("410987654", rfnSerialNumberValue);
+        assertEquals("410987654", rfnSerialNumberValue);
         
         ExportField meterExportFieldRoute = getExportField(0, ROUTE);
         String routeValue = exporterReportGeneratorService.getValue(meterExportFieldRoute, meter, paoData, null, pointValueQualityHolder, userContextOne, tzFormat, null, now);
 
-        Assert.assertEquals(routeValue, "Route A");
+        assertEquals(routeValue, "Route A");
     }
 
     @Test
@@ -260,12 +260,12 @@ public class ExporterReportGeneratorServiceImplTest {
         ExportField meterExportFieldAddress = getExportField(0, ADDRESS);
         String addressValue = exporterReportGeneratorService.getValue(meterExportFieldAddress, meter, paoData, null, pointValueQualityHolder, userContextOne, tzFormat, null, now);
 
-        Assert.assertEquals("", addressValue);
+        assertEquals("", addressValue);
         
         ExportField meterExportFieldRoute = getExportField(0, ROUTE);
         String routeValue = exporterReportGeneratorService.getValue(meterExportFieldRoute, meter, paoData, null, pointValueQualityHolder, userContextOne, tzFormat, null, now);
 
-        Assert.assertEquals( "", routeValue);
+        assertEquals( "", routeValue);
     }
 
     @Test
@@ -273,7 +273,7 @@ public class ExporterReportGeneratorServiceImplTest {
         ExportField exportField = getExportField(0, PLAIN_TEXT, "This is plain text");
         String plainTextValue = exporterReportGeneratorService.getValue(exportField, null, null, null, pointValueQualityHolder, userContextOne, tzFormat, null, Instant.now());
         
-        Assert.assertEquals(plainTextValue, "This is plain text");
+        assertEquals(plainTextValue, "This is plain text");
     }
     
     @Test
@@ -282,25 +282,25 @@ public class ExporterReportGeneratorServiceImplTest {
         ExportField exportField = getExportField(1, RUNTIME, "MM/dd/yyyy HH:mm:ss");
         String nowValue = exporterReportGeneratorService.getValue(exportField, null, null, null, pointValueQualityHolder, userContextOne, tzFormat, null, date01092019175000cdt);
         
-        Assert.assertEquals(nowValue, "01/09/2019 17:50:00");
+        assertEquals(nowValue, "01/09/2019 17:50:00");
     }
     
     @Test
     public void generateFixedFormatPreview_Test() {
         Preview preview = exporterReportGeneratorService.generatePreview(basicFixedFormatExport, userContextOne);
 
-        Assert.assertEquals("Device Name, Meter Number, Earliest Usage Value, Earliest Timestamp, Max Peak Demand Value, Plain Text", preview.getHeader());
-        Assert.assertEquals("Meter Name,Meter Number,1234546," + dateTimeFormatter.print(Instant.now()) + ",1234546,Plain Text", preview.getBody().get(0));
-        Assert.assertEquals("End File", preview.getFooter());
+        assertEquals("Device Name, Meter Number, Earliest Usage Value, Earliest Timestamp, Max Peak Demand Value, Plain Text", preview.getHeader());
+        assertEquals("Meter Name,Meter Number,1234546," + dateTimeFormatter.print(Instant.now()) + ",1234546,Plain Text", preview.getBody().get(0));
+        assertEquals("End File", preview.getFooter());
     }
 
     @Test
     public void generateDyanamicFormatPreview_Test() {
         Preview preview = exporterReportGeneratorService.generatePreview(basicDyanamicFormatExport, userContextOne);
 
-        Assert.assertEquals("Device Name, Meter Route, Attribute Name, Point Value, Point Timestamp, Plain Text", preview.getHeader());
-        Assert.assertEquals("Meter Name,Meter Route,Usage,1234546," + dateTimeFormatter.print(Instant.now()) + ",Plain Text", preview.getBody().get(0));
-        Assert.assertEquals("End File", preview.getFooter());
+        assertEquals("Device Name, Meter Route, Attribute Name, Point Value, Point Timestamp, Plain Text", preview.getHeader());
+        assertEquals("Meter Name,Meter Route,Delivered kWh,1234546," + dateTimeFormatter.print(Instant.now()) + ",Plain Text", preview.getBody().get(0));
+        assertEquals("End File", preview.getFooter());
     }
 
     @Test
@@ -313,13 +313,15 @@ public class ExporterReportGeneratorServiceImplTest {
         dataRange.setDataRangeType(DataRangeType.END_DATE);
         dataRange.setEndDate(dateTimeFormatter.parseLocalDate("07/16/2012"));
         CustomListWriter writer = new CustomListWriter(new ByteArrayOutputStream());
-        exporterReportGeneratorService.generateReport(meters, basicFixedFormatExport, dataRange, userContextOne, new Attribute[] {}, writer);
+        //TODO: pass in actual isOnInterval & interval parameters
+        exporterReportGeneratorService.generateReport(meters, basicFixedFormatExport, dataRange, userContextOne, 
+                                                      new Attribute[] {}, writer, false, null);
         List<String> previewReportRows = writer.getList();
 
-        Assert.assertEquals("Device Name, Meter Number, Earliest Usage Value, Earliest Timestamp, Max Peak Demand Value, Plain Text", previewReportRows.get(0));
-        Assert.assertEquals("MCT410FL 1,Meter Number 1,600,07/12/2012,25,Plain Text", previewReportRows.get(1));
-        Assert.assertEquals("MCT410IL 2,Meter Number 2,600,07/12/2012,25,Plain Text", previewReportRows.get(2));
-        Assert.assertEquals("End File", previewReportRows.get(3));
+        assertEquals("Device Name, Meter Number, Earliest Usage Value, Earliest Timestamp, Max Peak Demand Value, Plain Text", previewReportRows.get(0));
+        assertEquals("MCT410FL 1,Meter Number 1,600,07/12/2012,25,Plain Text", previewReportRows.get(1));
+        assertEquals("MCT410IL 2,Meter Number 2,600,07/12/2012,25,Plain Text", previewReportRows.get(2));
+        assertEquals("End File", previewReportRows.get(3));
     }
 
     @Test
@@ -336,12 +338,13 @@ public class ExporterReportGeneratorServiceImplTest {
         dataRange.setLocalDateRange(localDateRange);
         
         CustomListWriter writer = new CustomListWriter(new ByteArrayOutputStream());
+        //TODO: pass in actual isOnInterval & interval parameters
         exporterReportGeneratorService.generateReport(meters, basicDyanamicFormatExport, dataRange, userContextOne,
-            new Attribute[] {}, writer);
+            new Attribute[] {}, writer, false, null);
         List<String> previewReportRows = writer.getList();
 
-        Assert.assertEquals("Device Name, Meter Route, Attribute Name, Point Value, Point Timestamp, Plain Text", previewReportRows.get(0));
-        Assert.assertEquals("End File", previewReportRows.get(1));
+        assertEquals("Device Name, Meter Route, Attribute Name, Point Value, Point Timestamp, Plain Text", previewReportRows.get(0));
+        assertEquals("End File", previewReportRows.get(1));
     }
     
     @Test
@@ -358,24 +361,25 @@ public class ExporterReportGeneratorServiceImplTest {
         dataRange.setLocalDateRange(localDateRange);
         
         CustomListWriter writer = new CustomListWriter(new ByteArrayOutputStream());
+      //TODO: pass in actual isOnInterval & interval parameters
         exporterReportGeneratorService.generateReport(meters, basicDyanamicFormatExport, dataRange, userContextOne,
-            new Attribute[] { USAGE, DEMAND }, writer);
+            new Attribute[] { USAGE, DEMAND }, writer, false, null);
         List<String> previewReportRows = writer.getList();
 
-        Assert.assertEquals("Device Name, Meter Route, Attribute Name, Point Value, Point Timestamp, Plain Text", previewReportRows.get(0));
-        Assert.assertEquals("MCT410FL 1,Route A,Usage,661,07/15/2012,Plain Text", previewReportRows.get(1));
-        Assert.assertEquals("MCT410FL 1,Route A,Usage,670,07/16/2012,Plain Text", previewReportRows.get(2));
-        Assert.assertEquals("MCT410FL 1,Route A,Usage,675,07/17/2012,Plain Text", previewReportRows.get(3));
-        Assert.assertEquals("MCT410IL 2,Route A,Usage,661,07/15/2012,Plain Text", previewReportRows.get(4));
-        Assert.assertEquals("MCT410IL 2,Route A,Usage,670,07/16/2012,Plain Text", previewReportRows.get(5));
-        Assert.assertEquals("MCT410IL 2,Route A,Usage,675,07/17/2012,Plain Text" , previewReportRows.get(6));
-        Assert.assertEquals("MCT410FL 1,Route A,Demand,15,07/15/2012,Plain Text", previewReportRows.get(7));
-        Assert.assertEquals("MCT410FL 1,Route A,Demand,10,07/16/2012,Plain Text", previewReportRows.get(8));
-        Assert.assertEquals("MCT410FL 1,Route A,Demand,5,07/17/2012,Plain Text", previewReportRows.get(9));
-        Assert.assertEquals("MCT410IL 2,Route A,Demand,15,07/15/2012,Plain Text", previewReportRows.get(10));
-        Assert.assertEquals("MCT410IL 2,Route A,Demand,10,07/16/2012,Plain Text", previewReportRows.get(11));
-        Assert.assertEquals("MCT410IL 2,Route A,Demand,5,07/17/2012,Plain Text", previewReportRows.get(12));
-        Assert.assertEquals("End File", previewReportRows.get(13));
+        assertEquals("Device Name, Meter Route, Attribute Name, Point Value, Point Timestamp, Plain Text", previewReportRows.get(0));
+        assertEquals("MCT410FL 1,Route A,Usage,661,07/15/2012,Plain Text", previewReportRows.get(1));
+        assertEquals("MCT410FL 1,Route A,Usage,670,07/16/2012,Plain Text", previewReportRows.get(2));
+        assertEquals("MCT410FL 1,Route A,Usage,675,07/17/2012,Plain Text", previewReportRows.get(3));
+        assertEquals("MCT410IL 2,Route A,Usage,661,07/15/2012,Plain Text", previewReportRows.get(4));
+        assertEquals("MCT410IL 2,Route A,Usage,670,07/16/2012,Plain Text", previewReportRows.get(5));
+        assertEquals("MCT410IL 2,Route A,Usage,675,07/17/2012,Plain Text" , previewReportRows.get(6));
+        assertEquals("MCT410FL 1,Route A,Demand,15,07/15/2012,Plain Text", previewReportRows.get(7));
+        assertEquals("MCT410FL 1,Route A,Demand,10,07/16/2012,Plain Text", previewReportRows.get(8));
+        assertEquals("MCT410FL 1,Route A,Demand,5,07/17/2012,Plain Text", previewReportRows.get(9));
+        assertEquals("MCT410IL 2,Route A,Demand,15,07/15/2012,Plain Text", previewReportRows.get(10));
+        assertEquals("MCT410IL 2,Route A,Demand,10,07/16/2012,Plain Text", previewReportRows.get(11));
+        assertEquals("MCT410IL 2,Route A,Demand,5,07/17/2012,Plain Text", previewReportRows.get(12));
+        assertEquals("End File", previewReportRows.get(13));
     }
 
     
@@ -393,24 +397,25 @@ public class ExporterReportGeneratorServiceImplTest {
         dataRange.setChangeIdRange(changeIdRange);
         
         CustomListWriter writer = new CustomListWriter(new ByteArrayOutputStream());
+        //TODO: pass in actual isOnInterval & interval parameters
         exporterReportGeneratorService.generateReport(meters, basicDyanamicFormatExport, dataRange, userContextOne,
-            new Attribute[] { USAGE, DEMAND }, writer);
+            new Attribute[] { USAGE, DEMAND }, writer, false, null);
         List<String> previewReportRows = writer.getList();
 
-        Assert.assertEquals("Device Name, Meter Route, Attribute Name, Point Value, Point Timestamp, Plain Text", previewReportRows.get(0));
-        Assert.assertEquals("MCT410FL 1,Route A,Demand,20,07/12/2012,Plain Text", previewReportRows.get(1));
-        Assert.assertEquals("MCT410FL 1,Route A,Demand,20,07/13/2012,Plain Text", previewReportRows.get(2));
-        Assert.assertEquals("MCT410FL 1,Route A,Demand,25,07/14/2012,Plain Text", previewReportRows.get(3));
-        Assert.assertEquals("MCT410FL 1,Route A,Demand,15,07/15/2012,Plain Text", previewReportRows.get(4));
-        Assert.assertEquals("MCT410FL 1,Route A,Demand,10,07/16/2012,Plain Text", previewReportRows.get(5));
-        Assert.assertEquals("MCT410FL 1,Route A,Demand,5,07/17/2012,Plain Text", previewReportRows.get(6));
-        Assert.assertEquals("MCT410IL 2,Route A,Demand,20,07/12/2012,Plain Text", previewReportRows.get(7));
-        Assert.assertEquals("MCT410IL 2,Route A,Demand,20,07/13/2012,Plain Text", previewReportRows.get(8));
-        Assert.assertEquals("MCT410IL 2,Route A,Demand,25,07/14/2012,Plain Text" , previewReportRows.get(9));
-        Assert.assertEquals("MCT410IL 2,Route A,Demand,15,07/15/2012,Plain Text", previewReportRows.get(10));
-        Assert.assertEquals("MCT410IL 2,Route A,Demand,10,07/16/2012,Plain Text", previewReportRows.get(11));
-        Assert.assertEquals("MCT410IL 2,Route A,Demand,5,07/17/2012,Plain Text", previewReportRows.get(12));
-        Assert.assertEquals("End File", previewReportRows.get(13));
+        assertEquals("Device Name, Meter Route, Attribute Name, Point Value, Point Timestamp, Plain Text", previewReportRows.get(0));
+        assertEquals("MCT410FL 1,Route A,Demand,20,07/12/2012,Plain Text", previewReportRows.get(1));
+        assertEquals("MCT410FL 1,Route A,Demand,20,07/13/2012,Plain Text", previewReportRows.get(2));
+        assertEquals("MCT410FL 1,Route A,Demand,25,07/14/2012,Plain Text", previewReportRows.get(3));
+        assertEquals("MCT410FL 1,Route A,Demand,15,07/15/2012,Plain Text", previewReportRows.get(4));
+        assertEquals("MCT410FL 1,Route A,Demand,10,07/16/2012,Plain Text", previewReportRows.get(5));
+        assertEquals("MCT410FL 1,Route A,Demand,5,07/17/2012,Plain Text", previewReportRows.get(6));
+        assertEquals("MCT410IL 2,Route A,Demand,20,07/12/2012,Plain Text", previewReportRows.get(7));
+        assertEquals("MCT410IL 2,Route A,Demand,20,07/13/2012,Plain Text", previewReportRows.get(8));
+        assertEquals("MCT410IL 2,Route A,Demand,25,07/14/2012,Plain Text" , previewReportRows.get(9));
+        assertEquals("MCT410IL 2,Route A,Demand,15,07/15/2012,Plain Text", previewReportRows.get(10));
+        assertEquals("MCT410IL 2,Route A,Demand,10,07/16/2012,Plain Text", previewReportRows.get(11));
+        assertEquals("MCT410IL 2,Route A,Demand,5,07/17/2012,Plain Text", previewReportRows.get(12));
+        assertEquals("End File", previewReportRows.get(13));
     }
 
     @Test
@@ -423,24 +428,25 @@ public class ExporterReportGeneratorServiceImplTest {
         dataRange.setDaysPrevious(36500);  // This isn't the greatest way to test it, but it should at least do some rough testing for 100 years.
         
         CustomListWriter writer = new CustomListWriter(new ByteArrayOutputStream());
+        //TODO: pass in actual isOnInterval & interval parameters
         exporterReportGeneratorService.generateReport(meters, basicDyanamicFormatExport, dataRange, userContextOne,
-            new Attribute[] { USAGE, DEMAND }, writer);
+            new Attribute[] { USAGE, DEMAND }, writer, false, null);
         List<String> previewReportRows = writer.getList();
 
-        Assert.assertEquals("Device Name, Meter Route, Attribute Name, Point Value, Point Timestamp, Plain Text", previewReportRows.get(0));
-        Assert.assertEquals("MCT410FL 1,Route A,Usage,600,07/12/2012,Plain Text", previewReportRows.get(1));
-        Assert.assertEquals("MCT410FL 1,Route A,Usage,620,07/13/2012,Plain Text", previewReportRows.get(2));
-        Assert.assertEquals("MCT410FL 1,Route A,Usage,646,07/14/2012,Plain Text", previewReportRows.get(3));
-        Assert.assertEquals("MCT410FL 1,Route A,Usage,661,07/15/2012,Plain Text", previewReportRows.get(4));
-        Assert.assertEquals("MCT410FL 1,Route A,Usage,670,07/16/2012,Plain Text", previewReportRows.get(5));
-        Assert.assertEquals("MCT410FL 1,Route A,Usage,675,07/17/2012,Plain Text" , previewReportRows.get(6));
-        Assert.assertEquals("MCT410FL 1,Route A,Demand,20,07/12/2012,Plain Text", previewReportRows.get(7));
-        Assert.assertEquals("MCT410FL 1,Route A,Demand,20,07/13/2012,Plain Text", previewReportRows.get(8));
-        Assert.assertEquals("MCT410FL 1,Route A,Demand,25,07/14/2012,Plain Text", previewReportRows.get(9));
-        Assert.assertEquals("MCT410FL 1,Route A,Demand,15,07/15/2012,Plain Text", previewReportRows.get(10));
-        Assert.assertEquals("MCT410FL 1,Route A,Demand,10,07/16/2012,Plain Text", previewReportRows.get(11));
-        Assert.assertEquals("MCT410FL 1,Route A,Demand,5,07/17/2012,Plain Text", previewReportRows.get(12));
-        Assert.assertEquals("End File", previewReportRows.get(13));
+        assertEquals("Device Name, Meter Route, Attribute Name, Point Value, Point Timestamp, Plain Text", previewReportRows.get(0));
+        assertEquals("MCT410FL 1,Route A,Usage,600,07/12/2012,Plain Text", previewReportRows.get(1));
+        assertEquals("MCT410FL 1,Route A,Usage,620,07/13/2012,Plain Text", previewReportRows.get(2));
+        assertEquals("MCT410FL 1,Route A,Usage,646,07/14/2012,Plain Text", previewReportRows.get(3));
+        assertEquals("MCT410FL 1,Route A,Usage,661,07/15/2012,Plain Text", previewReportRows.get(4));
+        assertEquals("MCT410FL 1,Route A,Usage,670,07/16/2012,Plain Text", previewReportRows.get(5));
+        assertEquals("MCT410FL 1,Route A,Usage,675,07/17/2012,Plain Text" , previewReportRows.get(6));
+        assertEquals("MCT410FL 1,Route A,Demand,20,07/12/2012,Plain Text", previewReportRows.get(7));
+        assertEquals("MCT410FL 1,Route A,Demand,20,07/13/2012,Plain Text", previewReportRows.get(8));
+        assertEquals("MCT410FL 1,Route A,Demand,25,07/14/2012,Plain Text", previewReportRows.get(9));
+        assertEquals("MCT410FL 1,Route A,Demand,15,07/15/2012,Plain Text", previewReportRows.get(10));
+        assertEquals("MCT410FL 1,Route A,Demand,10,07/16/2012,Plain Text", previewReportRows.get(11));
+        assertEquals("MCT410FL 1,Route A,Demand,5,07/17/2012,Plain Text", previewReportRows.get(12));
+        assertEquals("End File", previewReportRows.get(13));
     }
 
     /**
@@ -520,7 +526,7 @@ public class ExporterReportGeneratorServiceImplTest {
             try {
                 super.flush();
             } catch (IOException e) {
-                Assert.fail("CustomListWriter writer threw unexpected exception. " + e.getMessage());
+                fail("CustomListWriter writer threw unexpected exception. " + e.getMessage());
             }
             return Lists.newArrayList(stream.toString().split(java.lang.System.lineSeparator()));
         }

@@ -3,9 +3,9 @@ package com.cannontech.web.common.chart.service.impl;
 import com.cannontech.common.chart.model.ChartColorsEnum;
 import com.cannontech.common.chart.model.ChartInterval;
 import com.cannontech.common.chart.model.ConverterType;
-import com.cannontech.common.chart.model.FlotBarOptions;
-import com.cannontech.common.chart.model.FlotLineOptions;
-import com.cannontech.common.chart.model.FlotPointOptions;
+import com.cannontech.common.chart.model.ChartBarOptions;
+import com.cannontech.common.chart.model.ChartLineOptions;
+import com.cannontech.common.chart.model.ChartPointOptions;
 
 public class GraphDetail {
     private int pointId;
@@ -16,12 +16,13 @@ public class GraphDetail {
     private boolean isMin;
     private ChartColorsEnum chartColors;
     private Double yMin;
-    private FlotBarOptions bars;
-    private FlotLineOptions lines;
-    private FlotPointOptions points;
+    private ChartBarOptions bars;
+    private ChartLineOptions lines;
+    private ChartPointOptions points;
     private ChartInterval interval;
+    private String seriesName;
 
-    public GraphDetail(int pointId, String yLabelUnits, int axisIndex, String yAxisPosition, boolean isMax, ChartColorsEnum chartColors, ChartInterval interval) {
+    public GraphDetail(int pointId, String yLabelUnits, int axisIndex, String yAxisPosition, boolean isMax, ChartColorsEnum chartColors, ChartInterval interval, String seriesName) {
         super();
         this.pointId = pointId;
         this.yLabelUnits = yLabelUnits;
@@ -30,6 +31,7 @@ public class GraphDetail {
         this.isMin = isMax;
         this.chartColors = chartColors;
         this.interval = interval;
+        this.seriesName = seriesName;
     }
 
     public ChartInterval getInterval() {
@@ -88,27 +90,27 @@ public class GraphDetail {
         this.yLabelUnits = yLabelUnits;
     }
     
-    public FlotBarOptions getBars() {
+    public ChartBarOptions getBars() {
         return bars;
     }
 
-    public void setBars(FlotBarOptions bars) {
+    public void setBars(ChartBarOptions bars) {
         this.bars = bars;
     }
 
-    public FlotLineOptions getLines() {
+    public ChartLineOptions getLines() {
         return lines;
     }
 
-    public void setLines(FlotLineOptions lines) {
+    public void setLines(ChartLineOptions lines) {
         this.lines = lines;
     }
 
-    public FlotPointOptions getPoints() {
+    public ChartPointOptions getPoints() {
         return points;
     }
 
-    public void setPoints(FlotPointOptions points) {
+    public void setPoints(ChartPointOptions points) {
         this.points = points;
     }
 
@@ -126,6 +128,14 @@ public class GraphDetail {
     
     public void setAxisIndex(int axisIndex) {
         this.axisIndex = axisIndex;
+    }
+
+    public String getSeriesName() {
+        return seriesName;
+    }
+
+    public void setSeriesName(String seriesName) {
+        this.seriesName = seriesName;
     }
 
 }

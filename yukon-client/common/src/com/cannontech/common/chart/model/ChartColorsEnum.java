@@ -1,23 +1,25 @@
 package com.cannontech.common.chart.model;
 
+import com.cannontech.common.YukonColorPalette;
+
 public enum ChartColorsEnum {
 
-	GREEN("#009933"), 
-    BLUE("#0000FF"), 
-    LIGHT_BLUE("#6587AA"), 
-    RED("#FF0000"), 
-    LIGHT_RED("#B95D5D"), 
-    YELLOW("#CC9900"),
-    GREEN_FILL("#97D5AC")
+    EMERALD(YukonColorPalette.EMERALD),
+    LIGHT_BLUE(YukonColorPalette.BLUE_LIGHT),
+    LIGHT_RED(YukonColorPalette.RED_LIGHT),
     ;
     
-    private String rgb;
+    private YukonColorPalette color;
 
-    ChartColorsEnum(String rgb) {
-        this.rgb = rgb;
+    ChartColorsEnum(YukonColorPalette color) {
+        this.color = color;
     }
     
-    public String getRgb() {
-        return this.rgb;
+    public YukonColorPalette getColor() {
+        return this.color;
+    }
+    
+    public String getColorHex() {
+        return this.color.getHexValue();
     }
 }

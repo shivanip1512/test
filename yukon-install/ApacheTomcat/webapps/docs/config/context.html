@@ -1,37 +1,7 @@
 <!DOCTYPE html SYSTEM "about:legacy-compat">
-<html lang="en"><head><META http-equiv="Content-Type" content="text/html; charset=UTF-8"><link href="../images/docs-stylesheet.css" rel="stylesheet" type="text/css"><title>Apache Tomcat 9 Configuration Reference (9.0.31) - The Context Container</title><meta name="author" content="Craig R. McClanahan"><script type="application/javascript" data-comments-identifier="tomcat-9.0-doc/config/context">
-    "use strict"; // Enable strict mode
-
-    (function() {
-      var thisScript = document.currentScript;
-      if (!thisScript) { // Workaround for IE <= 11
-        var scripts = document.getElementsByTagName("script");
-        thisScript = scripts[scripts.length - 1];
-      }
-      document.addEventListener("DOMContentLoaded", (function() {
-        var commentsDiv = document.getElementById("comments_thread");
-        var commentsShortname = "tomcat";
-        var commentsIdentifier = "https://tomcat.apache.org/" +
-          thisScript.getAttribute("data-comments-identifier") + ".html";
-
-        (function(w, d) {
-          if (w.location.hostname.toLowerCase() == "tomcat.apache.org") {
-            var s = d.createElement("script");
-            s.type = "application/javascript";
-            s.async = true;
-            s.src = "https://comments.apache.org/show_comments.lua?site=" +
-              encodeURIComponent(commentsShortname) +
-              "&page=" + encodeURIComponent(commentsIdentifier);
-            d.head.appendChild(s);
-          } else {
-            commentsDiv.appendChild(d.createTextNode("Comments are disabled for this page at the moment."));
-          }
-        })(window, document);
-      }), false);
-    })();
-  </script></head><body><div id="wrapper"><header><div id="header"><div><div><div class="logo noPrint"><a href="https://tomcat.apache.org/"><img alt="Tomcat Home" src="../images/tomcat.png"></a></div><div style="height: 1px;"></div><div class="asfLogo noPrint"><a href="https://www.apache.org/" target="_blank"><img src="../images/asf-logo.svg" alt="The Apache Software Foundation" style="width: 266px; height: 83px;"></a></div><h1>Apache Tomcat 9 Configuration Reference</h1><div class="versionInfo">
-          Version 9.0.31,
-          <time datetime="2020-02-05">Feb 5 2020</time></div><div style="height: 1px;"></div><div style="clear: left;"></div></div></div></div></header><div id="middle"><div><div id="mainLeft" class="noprint"><div><nav><div><h2>Links</h2><ul><li><a href="../index.html">Docs Home</a></li><li><a href="index.html">Config Ref. Home</a></li><li><a href="https://wiki.apache.org/tomcat/FAQ">FAQ</a></li><li><a href="#comments_section">User Comments</a></li></ul></div><div><h2>Top Level Elements</h2><ul><li><a href="server.html">Server</a></li><li><a href="service.html">Service</a></li></ul></div><div><h2>Executors</h2><ul><li><a href="executor.html">Executor</a></li></ul></div><div><h2>Connectors</h2><ul><li><a href="http.html">HTTP/1.1</a></li><li><a href="http2.html">HTTP/2</a></li><li><a href="ajp.html">AJP</a></li></ul></div><div><h2>Containers</h2><ul><li><a href="context.html">Context</a></li><li><a href="engine.html">Engine</a></li><li><a href="host.html">Host</a></li><li><a href="cluster.html">Cluster</a></li></ul></div><div><h2>Nested Components</h2><ul><li><a href="cookie-processor.html">CookieProcessor</a></li><li><a href="credentialhandler.html">CredentialHandler</a></li><li><a href="globalresources.html">Global Resources</a></li><li><a href="jar-scanner.html">JarScanner</a></li><li><a href="jar-scan-filter.html">JarScanFilter</a></li><li><a href="listeners.html">Listeners</a></li><li><a href="loader.html">Loader</a></li><li><a href="manager.html">Manager</a></li><li><a href="realm.html">Realm</a></li><li><a href="resources.html">Resources</a></li><li><a href="sessionidgenerator.html">SessionIdGenerator</a></li><li><a href="valve.html">Valve</a></li></ul></div><div><h2>Cluster Elements</h2><ul><li><a href="cluster.html">Cluster</a></li><li><a href="cluster-manager.html">Manager</a></li><li><a href="cluster-channel.html">Channel</a></li><li><a href="cluster-membership.html">Channel/Membership</a></li><li><a href="cluster-sender.html">Channel/Sender</a></li><li><a href="cluster-receiver.html">Channel/Receiver</a></li><li><a href="cluster-interceptor.html">Channel/Interceptor</a></li><li><a href="cluster-valve.html">Valve</a></li><li><a href="cluster-deployer.html">Deployer</a></li><li><a href="cluster-listener.html">ClusterListener</a></li></ul></div><div><h2>web.xml</h2><ul><li><a href="filter.html">Filter</a></li></ul></div><div><h2>Other</h2><ul><li><a href="systemprops.html">System properties</a></li><li><a href="jaspic.html">JASPIC</a></li></ul></div></nav></div></div><div id="mainRight"><div id="content"><h2>The Context Container</h2><h3 id="Table_of_Contents">Table of Contents</h3><div class="text">
+<html lang="en"><head><META http-equiv="Content-Type" content="text/html; charset=UTF-8"><link href="../images/docs-stylesheet.css" rel="stylesheet" type="text/css"><title>Apache Tomcat 9 Configuration Reference (9.0.56) - The Context Container</title><meta name="author" content="Craig R. McClanahan"></head><body><div id="wrapper"><header><div id="header"><div><div><div class="logo noPrint"><a href="https://tomcat.apache.org/"><img alt="Tomcat Home" src="../images/tomcat.png"></a></div><div style="height: 1px;"></div><div class="asfLogo noPrint"><a href="https://www.apache.org/" target="_blank"><img src="../images/asf-logo.svg" alt="The Apache Software Foundation" style="width: 266px; height: 83px;"></a></div><h1>Apache Tomcat 9 Configuration Reference</h1><div class="versionInfo">
+            Version 9.0.56,
+            <time datetime="2021-12-02">Dec 2 2021</time></div><div style="height: 1px;"></div><div style="clear: left;"></div></div></div></div></header><div id="middle"><div><div id="mainLeft" class="noprint"><div><nav><div><h2>Links</h2><ul><li><a href="../index.html">Docs Home</a></li><li><a href="index.html">Config Ref. Home</a></li><li><a href="https://wiki.apache.org/tomcat/FAQ">FAQ</a></li><li><a href="#comments_section">User Comments</a></li></ul></div><div><h2>Top Level Elements</h2><ul><li><a href="server.html">Server</a></li><li><a href="service.html">Service</a></li></ul></div><div><h2>Executors</h2><ul><li><a href="executor.html">Executor</a></li></ul></div><div><h2>Connectors</h2><ul><li><a href="http.html">HTTP/1.1</a></li><li><a href="http2.html">HTTP/2</a></li><li><a href="ajp.html">AJP</a></li></ul></div><div><h2>Containers</h2><ul><li><a href="context.html">Context</a></li><li><a href="engine.html">Engine</a></li><li><a href="host.html">Host</a></li><li><a href="cluster.html">Cluster</a></li></ul></div><div><h2>Nested Components</h2><ul><li><a href="cookie-processor.html">CookieProcessor</a></li><li><a href="credentialhandler.html">CredentialHandler</a></li><li><a href="globalresources.html">Global Resources</a></li><li><a href="jar-scanner.html">JarScanner</a></li><li><a href="jar-scan-filter.html">JarScanFilter</a></li><li><a href="listeners.html">Listeners</a></li><li><a href="loader.html">Loader</a></li><li><a href="manager.html">Manager</a></li><li><a href="realm.html">Realm</a></li><li><a href="resources.html">Resources</a></li><li><a href="sessionidgenerator.html">SessionIdGenerator</a></li><li><a href="valve.html">Valve</a></li></ul></div><div><h2>Cluster Elements</h2><ul><li><a href="cluster.html">Cluster</a></li><li><a href="cluster-manager.html">Manager</a></li><li><a href="cluster-channel.html">Channel</a></li><li><a href="cluster-membership.html">Channel/Membership</a></li><li><a href="cluster-sender.html">Channel/Sender</a></li><li><a href="cluster-receiver.html">Channel/Receiver</a></li><li><a href="cluster-interceptor.html">Channel/Interceptor</a></li><li><a href="cluster-valve.html">Valve</a></li><li><a href="cluster-deployer.html">Deployer</a></li><li><a href="cluster-listener.html">ClusterListener</a></li></ul></div><div><h2>web.xml</h2><ul><li><a href="filter.html">Filter</a></li></ul></div><div><h2>Other</h2><ul><li><a href="systemprops.html">System properties</a></li><li><a href="jaspic.html">JASPIC</a></li></ul></div></nav></div></div><div id="mainRight"><div id="content"><h2>The Context Container</h2><h3 id="Table_of_Contents">Table of Contents</h3><div class="text">
 <ul><li><a href="#Introduction">Introduction</a><ol><li><a href="#Parallel_deployment">Parallel deployment</a></li><li><a href="#Naming">Naming</a></li><li><a href="#Defining_a_context">Defining a context</a></li></ol></li><li><a href="#Attributes">Attributes</a><ol><li><a href="#Common_Attributes">Common Attributes</a></li><li><a href="#Standard_Implementation">Standard Implementation</a></li></ol></li><li><a href="#Nested_Components">Nested Components</a></li><li><a href="#Special_Features">Special Features</a><ol><li><a href="#Logging">Logging</a></li><li><a href="#Access_Logs">Access Logs</a></li><li><a href="#Automatic_Context_Configuration">Automatic Context Configuration</a></li><li><a href="#Context_Parameters">Context Parameters</a></li><li><a href="#Environment_Entries">Environment Entries</a></li><li><a href="#Lifecycle_Listeners">Lifecycle Listeners</a></li><li><a href="#Request_Filters">Request Filters</a></li><li><a href="#Resource_Definitions">Resource Definitions</a></li><li><a href="#Resource_Links">Resource Links</a></li><li><a href="#Transaction">Transaction</a></li></ol></li></ul>
 </div><h3 id="Introduction">Introduction</h3><div class="text">
 
@@ -183,8 +153,9 @@
   <ul>
   <li>Disable autoDeploy and deployOnStartup and define all
   <strong>Context</strong>s in server.xml</li>
-  <li>Locate the WAR and/or directory outside of the Host's appBase and use
-      a context.xml file with a docBase attribute to define it.</li>
+  <li>Locate the WAR and/or directory outside of the Host's
+      <code>appBase</code> and use a context.xml file with a
+      <code>docBase</code> attribute to define it.</li>
   </ul>
   </div></div>
 
@@ -262,17 +233,17 @@
         </th><th style="width: 85%;">
           Description
         </th></tr><tr><td><code class="attributeName">allowCasualMultipartParsing</code></td><td>
-        <p>Set to true if Tomcat should automatically parse
+        <p>Set to <code>true</code> if Tomcat should automatically parse
         multipart/form-data request bodies when HttpServletRequest.getPart*
         or HttpServletRequest.getParameter* is called, even when the
         target servlet isn't marked with the @MultipartConfig annotation
         (See Servlet Specification 3.0, Section 3.2 for details).
         Note that any setting other than <code>false</code> causes Tomcat
         to behave in a way that is not technically spec-compliant.
-        The default is <code>false</code></p>
+        The default is <code>false</code>.</p>
       </td></tr><tr><td><code class="attributeName">allowMultipleLeadingForwardSlashInPath</code></td><td>
         <p>Tomcat normalises sequences of multiple <code>/</code> characters in
-        a URI to a single <code>/</code>. This is for consistencuy with the
+        a URI to a single <code>/</code>. This is for consistency with the
         behaviour of file systems as URIs are often translated to file system
         paths. As a result, the return value of
         <code>HttpServletRequest#getContextPath()</code> is expected to start
@@ -344,8 +315,8 @@
         <p>The value of this field must not be set unless the Context element is
         defined in server.xml or the <code>docBase</code> is not located under
         the <a href="host.html">Host</a>'s <code>appBase</code>.</p>
-        <p>If a symbolic link is used for docBase then changes to the
-        symbolic link will only be effective after a Tomcat restart or
+        <p>If a symbolic link is used for <code>docBase</code> then changes to
+        the symbolic link will only be effective after a Tomcat restart or
         by undeploying and redeploying the context. A context reload is not
         sufficient.</p>
       </td></tr><tr><td><code class="attributeName">dispatchersUseEncodedPaths</code></td><td>
@@ -353,7 +324,8 @@
         ares expected to be encoded. This affects both how Tomcat handles calls
         to obtain a request dispatcher as well as how Tomcat generates paths
         used to obtain request dispatchers internally. If not specified, the
-        default value of <code>true</code> is used.</p>
+        default value of <code>true</code> is used. When encoding/decoding paths
+        for a request dispatcher, UTF-8 is always used.</p>
       </td></tr><tr><td><code class="attributeName">failCtxIfServletStartFails</code></td><td>
         <p>Set to <code>true</code> to have the context fail its startup if any
         servlet that has load-on-startup &gt;=0 fails its own startup.</p>
@@ -391,6 +363,12 @@
         or <a href="host.html">Host</a> default contexts.  By default, settings
         from a default context will be used but may be overridden by a setting
         the same attribute explicitly for the Context.</p>
+      </td></tr><tr><td><code class="attributeName">parallelAnnotationScanning</code></td><td>
+        <p>When set to <code>true</code> annotation scanning will be performed
+        using the utility executor. It will allow processing scanning in
+        parallel which may improve deployment type at the expense of higher
+        server load. If not specified, the default of <code>false</code> is
+        used.</p>
       </td></tr><tr><td><code class="attributeName">path</code></td><td>
         <p>The <em>context path</em> of this web application, which is
         matched against the beginning of each request URI to select the
@@ -401,13 +379,15 @@
         will process all requests not assigned to other Contexts.</p>
         <p>This attribute must only be used when statically defining a Context
         in server.xml. In all other circumstances, the path will be inferred
-        from the filenames used for either the .xml context file or the docBase.
+        from the filenames used for either the .xml context file or the
+        <code>docBase</code>.
         </p>
         <p>Even when statically defining a Context in server.xml, this attribute
-        must not be set unless either the docBase is not located under the
-        <a href="host.html">Host</a>'s <code>appBase</code> or both
-        <code>deployOnStartup</code> and <code>autoDeploy</code> are false. If
-        this rule is not followed, double deployment is likely to result.</p>
+        must not be set unless either the <code>docBase</code> is not located
+        under the <a href="host.html">Host</a>'s <code>appBase</code> or
+        both <code>deployOnStartup</code> and <code>autoDeploy</code> are
+        <code>false</code>. If this rule is not followed, double deployment is
+        likely to result.</p>
       </td></tr><tr><td><code class="attributeName">preemptiveAuthentication</code></td><td>
         <p>When set to <code>true</code> and the user presents credentials for a
         resource that is not protected by a security constraint, if the
@@ -500,9 +480,9 @@
         <code>false</code> to disable this feature. The default value for this
         attribute is <code>false</code>.</p>
       </td></tr><tr><td><code class="attributeName">swallowAbortedUploads</code></td><td>
-        <p>Set to false if Tomcat should <b>not</b> read any additional request
-        body data for aborted uploads and instead abort the client connection.
-        This setting is used in the following situations:
+        <p>Set to <code>false</code> if Tomcat should <b>not</b> read any
+        additional request body data for aborted uploads and instead abort the
+        client connection. This setting is used in the following situations:
         </p>
         <ul>
         <li>the size of the request body is larger than the
@@ -535,6 +515,12 @@
         <code>true</code>, else the default value will be <code>false</code>.
         Setting this attribute to <code>true</code> will incur a performance
         penalty.</p>
+      </td></tr><tr><td><code class="attributeName">useBloomFilterForArchives</code></td><td>
+        <p>If this is <code>true</code> then a bloom filter will be used to
+        speed up archive lookups. This can be beneficial to the deployment
+        speed to web applications that contain very large amount of JARs.</p>
+        <p>If not specified, the default value of <code>false</code> will be
+        used.</p>
       </td></tr><tr><td><code class="attributeName">useHttpOnly</code></td><td>
        <p>Should the HttpOnly flag be set on session cookies to prevent client
           side script from accessing the session ID? Defaults to
@@ -635,7 +621,7 @@
         default. To enable this feature, set the attribute to <code>true</code>.
         </p>
       </td></tr><tr><td><code class="attributeName">antiResourceLocking</code></td><td>
-        <p>If true, Tomcat will prevent any file locking.
+        <p>If <code>true</code>, Tomcat will prevent any file locking.
         This will significantly impact startup time of applications,
         but allows full webapp hot deploy and undeploy on platforms
         or configurations where file locking can occur.
@@ -646,12 +632,12 @@
         see <a href="https://bz.apache.org/bugzilla/show_bug.cgi?id=37668">
         Bugzilla 37668</a>.</p>
 
-        <p>Please note that setting this flag to true in applications that are
-        outside the appBase for the Host (the <code>webapps</code> directory
-        by default) will cause the application to be <strong>deleted</strong> on
-        Tomcat shutdown.  You probably don't want to do this, so think twice
-        before setting antiResourceLocking=true on a webapp that's outside the
-        appBase for its Host.</p>
+        <p>Please note that setting this flag to <code>true</code> in
+        applications that are outside the <code>appBase</code> for the Host (the
+        <code>webapps</code> directory by default) will cause the application to
+        be <strong>deleted</strong> on Tomcat shutdown.  You probably don't want
+        to do this, so think twice before setting antiResourceLocking=true on a
+        webapp that's outside the <code>appBase</code> for its Host.</p>
       </td></tr><tr><td><code class="attributeName">clearReferencesHttpClientKeepAliveThread</code></td><td>
         <p>If <code>true</code> and an <code>sun.net.www.http.HttpClient</code>
         keep-alive timer thread has been started by this web application and is
@@ -709,7 +695,7 @@
         is deployed. On subsequent starts, the copied context XML descriptor
         will be used in preference to any context XML descriptor embedded inside
         the application even if the descriptor embedded inside the application
-        is more recent. The flag's value defaults to <code>false</code>. Note if
+        is more recent. The default is <code>false</code>. Note if
         the <strong>deployXML</strong> attribute of the owning
         <a href="host.html">Host</a> is <code>false</code> or if the
         <strong>copyXML</strong> attribute of the owning
@@ -721,11 +707,11 @@
         createSubContext(), destroySubContext() or close() will trigger a
         <code>javax.naming.OperationNotSupportedException</code> as required by
         section EE.5.3.4 of the Java EE specification. This exception can be
-        disabled by setting this attribute to false in which case any calls to
-        modify the JNDI context will return <b>without</b> making any changes
-        and methods that return values will return <code>null</code>. If not
-        specified, the specification compliant default of <code>true</code> will
-        be used.</p>
+        disabled by setting this attribute to <code>false</code> in which case
+        any calls to modify the JNDI context will return <b>without</b> making
+        any changes and methods that return values will return
+        <code>null</code>. If not specified, the specification compliant default
+        of <code>true</code> will be used.</p>
       </td></tr><tr><td><code class="attributeName">renewThreadsWhenStoppingContext</code></td><td>
         <p>If <code>true</code>, when this context is stopped, Tomcat renews all
         the threads from the thread pool that was used to serve this context.
@@ -1094,7 +1080,7 @@
         it is no longer required. This is intended to speed up clean-up of
         resources that would otherwise happen as part of garbage collection.
         This attribute is ignored if the <code>singleton</code> attribute is
-        false.</p>
+        <code>false</code>.</p>
         <p>For <code>javax.sql.DataSource</code> and
         <code>javax.sql.XADataSource</code> resources that implement
         <code>AutoCloseable</code> such as Apache Commons DBCP 2 and the default
@@ -1260,18 +1246,6 @@ for details.</p>
 
   </div></div>
 
-</div><div class="noprint"><h3 id="comments_section">
-                  Comments
-                </h3><div class="text"><p class="notice"><strong>Notice:</strong> This comments section collects your suggestions
-                    on improving documentation for Apache Tomcat.<br><br>
-                    If you have trouble and need help, read
-                    <a href="https://tomcat.apache.org/findhelp.html">Find Help</a> page
-                    and ask your question on the tomcat-users
-                    <a href="https://tomcat.apache.org/lists.html">mailing list</a>.
-                    Do not ask such questions here. This is not a Q&amp;A section.<br><br>
-                    The Apache Comments System is explained <a href="../comments.html">here</a>.
-                    Comments may be removed by our moderators if they are either
-                    implemented or considered invalid/off-topic.
-                  </p><div id="comments_thread"></div></div></div></div></div></div></div><footer><div id="footer">
-    Copyright &copy; 1999-2020, The Apache Software Foundation
-  </div></footer></div></body></html>
+</div></div></div></div></div><footer><div id="footer">
+    Copyright &copy; 1999-2021, The Apache Software Foundation
+    </div></footer></div></body></html>

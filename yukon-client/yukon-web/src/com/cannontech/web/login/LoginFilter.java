@@ -78,10 +78,12 @@ public class LoginFilter implements Filter {
                          "/**/*.jpg",
                          "/**/*.html",
                          "/common/images/*",
+                         "/common/runningStatus",
                          "/resources/favicon.ico",
                          "/dev/mockecobee/**",
                          "/dev/nestApi/**",
                          "/dev/itron/**",
+                         "/dev/eatonCloud/**",
                          "/**/api/**");
 
     private final static ImmutableList<String> excludedRedirectedPaths =
@@ -89,8 +91,6 @@ public class LoginFilter implements Filter {
                          "/common/config/deviceDefinition",
                          "/common/config/rfn",
                          "/remote/MasterConfig",
-                         // URL to get remote logging configuration.
-                         "/servlet/LoggingServlet",
                          // URL to actually do remote logging.
                          "/remote/remoteLogin");
     

@@ -11,8 +11,9 @@
         <thead>
             <tr>
                 <tags:sort column="${program}" width="40%"/>
-                <tags:sort column="${numberOfDevices}"/>
+                <tags:sort column="${numberSuccessful}"/>
                 <tags:sort column="${numberInProgress}"/>
+                <tags:sort column="${numberFailed}"/>
                 <th class="action-column"><cti:icon icon="icon-cog" classes="M0"/></th>
             </tr>
         </thead>
@@ -48,9 +49,18 @@
                         </c:choose>
                     </td>
                     <td>
+                        <c:choose>
+                            <c:when test="${program.failureTotal > 0}">
+                                <a href="${programUrl}&statuses=FAILURE">${program.failureTotal}</a>
+                            </c:when>
+                            <c:otherwise>
+                                ${program.failureTotal}
+                            </c:otherwise>
+                        </c:choose>
+                    <td>
                         <c:if test="${program.isUnused()}">
                             <cm:dropdown icon="icon-cog">
-                                <cm:dropdownOption id="deleteProgram-${program.programInfo.guid}" icon="icon-cross" key="yukon.web.components.button.delete.label"
+                                <cm:dropdownOption id="deleteProgram-${program.programInfo.guid}" icon="icon-delete" key="yukon.web.components.button.delete.label"
                                     data-program-guid="${program.programInfo.guid}" data-ok-event="yukon:program:delete"/>
                                 <d:confirm on="#deleteProgram-${program.programInfo.guid}" nameKey="confirmDelete" argument="${program.programInfo.name}"/>
                             </cm:dropdown>

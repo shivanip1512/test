@@ -4,6 +4,8 @@ import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.apache.commons.io.FilenameUtils;
+import org.apache.commons.lang3.StringUtils;
 import org.apache.logging.log4j.Logger;
 import org.joda.time.Instant;
 import org.joda.time.ReadableInstant;
@@ -25,7 +27,9 @@ public class SupportBundleDateRangeFileWriter extends AbstractSupportBundleWrite
         if (dir.isDirectory()) {
             List<File> logFiles = listFilesByDateModified(dir, start, stop);
             for (File file : logFiles) {
-                zipWriter.writeFile(file, zipDirectory);
+                if (!StringUtils.equals("lck", FilenameUtils.getExtension(file.getName()))) {
+                    zipWriter.writeFile(file, zipDirectory);
+                }
             }
         } else {
             log.warn("Cannot add files in directory '" + dir.getAbsoluteFile() 

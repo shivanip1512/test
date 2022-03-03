@@ -131,3 +131,16 @@ void CtiMultiMsg::insert(CtiMessage* a)
 const CtiMultiMsg_vec& CtiMultiMsg::getData() const     { return _bag; }
 CtiMultiMsg_vec& CtiMultiMsg::getData()                 { return _bag; }
 
+std::size_t CtiMultiMsg::getVariableSize() const
+{
+    std::size_t sz =  Inherited::getVariableSize()
+        +   _bag.capacity() * sizeof( CtiMessage* );
+
+    for (  const auto & msg : _bag )
+    {
+        sz += calculateMemoryConsumption( msg );
+    }
+
+    return sz;
+}
+

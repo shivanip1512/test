@@ -100,13 +100,13 @@ BOOST_AUTO_TEST_CASE(test_getSetPointAttribute_getBandwidthAttribute)
         {  0.0, { ControlPolicy::LockedForward        , { fwd_sp, fwd_bw }, { fwd_sp, fwd_bw } } },
         {  1.0, { ControlPolicy::LockedReverse        , { rev_sp, rev_bw }, { rev_sp, rev_bw } } },
         {  2.0, { ControlPolicy::ReverseIdle          , { fwd_sp, fwd_bw }, { fwd_sp, fwd_bw } } },
-        {  3.0, { ControlPolicy::Bidirectional        , { fwd_sp, fwd_bw }, { fwd_sp, fwd_bw } } },
+        {  3.0, { ControlPolicy::Bidirectional        , { fwd_sp, fwd_bw }, { rev_sp, rev_bw } } },
         {  4.0, { ControlPolicy::NeutralIdle          , { fwd_sp, fwd_bw }, { fwd_sp, fwd_bw } } },
         {  5.0, { ControlPolicy::Cogeneration         , { fwd_sp, fwd_bw }, { rev_sp, rev_bw } } },
         {  6.0, { ControlPolicy::ReactiveBidirectional, { fwd_sp, fwd_bw }, { fwd_sp, fwd_bw } } },
-        {  7.0, { ControlPolicy::BiasBidirectional    , { fwd_sp, fwd_bw }, { fwd_sp, fwd_bw } } },
+        {  7.0, { ControlPolicy::BiasBidirectional    , { fwd_sp, fwd_bw }, { rev_sp, rev_bw } } },
         {  8.0, { ControlPolicy::BiasCogeneration     , { fwd_sp, fwd_bw }, { fwd_sp, fwd_bw } } },
-        {  9.0, { ControlPolicy::ReverseCogeneration  , { fwd_sp, fwd_bw }, { fwd_sp, fwd_bw } } },
+        {  9.0, { ControlPolicy::ReverseCogeneration  , { fwd_sp, fwd_bw }, { rev_sp, rev_bw } } },
         { 10.0, { ControlPolicy::LockedForward        , { fwd_sp, fwd_bw }, { fwd_sp, fwd_bw } } }
     };
 

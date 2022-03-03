@@ -8,8 +8,8 @@ import org.jdom2.Element;
 import org.jdom2.Namespace;
 import org.joda.time.DateTime;
 import org.joda.time.Instant;
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 import org.springframework.core.io.ClassPathResource;
 import org.springframework.core.io.Resource;
 import org.springframework.dao.DataAccessException;
@@ -89,7 +89,7 @@ public class OverrideRequestEndpointTest {
         }
     }
     
-    @Before
+    @BeforeEach
     public void setUp() throws Exception {
         impl = new OverrideRequestEndpoint();
         

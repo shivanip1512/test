@@ -24,8 +24,11 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.ResponseBody;
 
 import com.cannontech.clientutils.YukonLogManager;
-import com.cannontech.common.gui.util.Colors;
+import com.cannontech.common.YukonColorPalette;
 import com.cannontech.common.i18n.MessageSourceAccessor;
+import com.cannontech.common.trend.model.RenderType;
+import com.cannontech.common.trend.model.TrendType;
+import com.cannontech.common.trend.model.TrendType.GraphType;
 import com.cannontech.core.dao.GraphDao;
 import com.cannontech.core.dao.RawPointHistoryDao;
 import com.cannontech.core.dynamic.PointValueHolder;
@@ -43,9 +46,6 @@ import com.cannontech.system.GlobalSettingType;
 import com.cannontech.system.dao.GlobalSettingDao;
 import com.cannontech.user.YukonUserContext;
 import com.cannontech.web.security.annotation.CheckRole;
-import com.cannontech.web.tools.trends.data.RenderType;
-import com.cannontech.web.tools.trends.data.TrendType;
-import com.cannontech.web.tools.trends.data.TrendType.GraphType;
 import com.cannontech.web.tools.trends.data.error.GraphDataError;
 import com.cannontech.web.tools.trends.service.TrendDataService;
 import com.cannontech.web.user.service.UserPreferenceService;
@@ -158,7 +158,7 @@ public class TrendDataController {
             case MARKER_TYPE:
                 seriesProperties.put("threshold-value", seriesItem.getMultiplier());
                 Map<String, Object> plotLineProperties = new HashMap<>();
-                plotLineProperties.put("color", Colors.colorPaletteToWeb(seriesItem.getColor()));
+                plotLineProperties.put("color", YukonColorPalette.getColor(seriesItem.getColor()).getHexValue());
                 plotLineProperties.put("width", 2);
                 plotLineProperties.put("value", seriesItem.getMultiplier());
                 plotLines.add(plotLineProperties);
@@ -210,7 +210,7 @@ public class TrendDataController {
             
             seriesProperties.put("name", seriesItem.getLabel() + " " + graphTypeLabel(seriesItem.getType(), userContext));
             log.debug("color from series:" + seriesItem.getColor());
-            seriesProperties.put("color", Colors.colorPaletteToWeb(seriesItem.getColor()));
+            seriesProperties.put("color", YukonColorPalette.getColor(seriesItem.getColor()).getHexValue());
             seriesList.add(seriesProperties);
         }
         
@@ -251,7 +251,7 @@ public class TrendDataController {
             }
             String reportDate = dateFormattingService.format(specificDate, DateFormatEnum.DATE, userContext);
             seriesProperties.put("name", seriesItem.getLabel() + " " + graphTypeLabel(seriesItem.getType(), userContext) +" " + reportDate);
-            seriesProperties.put("color", Colors.colorPaletteToWeb(seriesItem.getColor()));
+            seriesProperties.put("color", YukonColorPalette.getColor(seriesItem.getColor()).getHexValue());
             seriesList.add(seriesProperties);
         }
         Map<String, Object> json = new HashMap<>();
@@ -264,7 +264,7 @@ public class TrendDataController {
         }
 
         List<Map<String, Object>> yAxis = new ArrayList<>();
-        ImmutableMap<String, ImmutableMap<String, String>> labels = ImmutableMap.of("style", ImmutableMap.of("color", "#555"));
+        ImmutableMap<String, ImmutableMap<String, String>> labels = ImmutableMap.of("style", ImmutableMap.of("color", YukonColorPalette.GRAY.getHexValue()));
         yAxisProperties.put("labels", labels);
         yAxisProperties.put("opposite", false);
         yAxis.add(yAxisProperties);
@@ -335,6 +335,12 @@ public class TrendDataController {
     public void updateZoom(LiteYukonUser user, HttpServletRequest request, HttpServletResponse resp) {
         PreferenceTrendZoomOption trendZoom = PreferenceTrendZoomOption.valueOf(request.getParameter("value"));
         userPreferenceService.updatePreferenceZoomType(trendZoom, user);
+        resp.setStatus(HttpStatus.NO_CONTENT.value());
+    }
+    
+    @PostMapping("/trends/setAutoUpdate/{isSelected}")
+    public void setAutoUpdate(@PathVariable boolean isSelected, LiteYukonUser user, HttpServletResponse resp) {
+        userPreferenceService.updateTrendAutoUpdateSelection(user, isSelected);
         resp.setStatus(HttpStatus.NO_CONTENT.value());
     }
 

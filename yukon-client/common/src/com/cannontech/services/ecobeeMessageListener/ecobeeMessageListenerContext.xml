@@ -8,9 +8,13 @@
   http://www.springframework.org/schema/jms http://www.springframework.org/schema/jms/spring-jms.xsd">
 
     <context:annotation-config/>
-
+    <bean class="com.cannontech.dr.ecobee.service.impl.EcobeeZeusRuntimeCalcServiceImpl"/>
     <bean id="ecobeeMessageListener" class="com.cannontech.dr.ecobee.EcobeeMessageListener"/>
-
+    <bean class="com.cannontech.messaging.serialization.thrift.serializer.loadcontrol.LMEcobeeCycleControlCommandSerializer"/>
+    <bean class="com.cannontech.messaging.serialization.thrift.serializer.loadcontrol.LMEcobeeSetpointControlCommandSerializer"/>
+    <bean class="com.cannontech.messaging.serialization.thrift.serializer.loadcontrol.LMEcobeeRestoreCommandSerializer"/>
+    <bean class="com.cannontech.messaging.serialization.thrift.serializer.loadcontrol.LMEcobeePlusControlCommandSerializer"/>
+    
     <jms:listener-container 
         connection-factory="connectionFactory" 
         destination-type="queue"
@@ -19,6 +23,7 @@
         container-class="com.cannontech.services.jms.ContextLoggingMessageListenerContainer">
         <jms:listener destination="yukon.notif.stream.dr.EcobeeCyclingControlMessage" ref="ecobeeMessageListener" method="handleCyclingControlMessage"/>
         <jms:listener destination="yukon.notif.stream.dr.EcobeeSetpointControlMessage" ref="ecobeeMessageListener" method="handleSetpointControlMessage"/>
+        <jms:listener destination="yukon.notif.stream.dr.EcobeePlusControlMessage" ref="ecobeeMessageListener" method="handleEcoPlusControlMessage"/>
         <jms:listener destination="yukon.notif.stream.dr.EcobeeRestoreMessage" ref="ecobeeMessageListener" method="handleRestoreMessage"/>
     </jms:listener-container>
 

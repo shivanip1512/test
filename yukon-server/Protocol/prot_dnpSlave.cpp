@@ -395,30 +395,29 @@ void DnpSlaveProtocol::setControlCommand( const DnpSlave::control_request &contr
 }
 
 
-void DnpSlaveProtocol::setAnalogOutputCommand( const DnpSlave::analog_output_request &analog )
+void DnpSlaveProtocol::setAnalogOutputCommand( const std::vector<DnpSlave::analog_output_request> & analogs )
 {
     _command = Commands::SetAnalogOut_Direct;
 
-    auto aoc = std::make_unique<AnalogOutput>(analog.type);
+    std::vector<std::pair<unsigned, ObjectPtr>> objs;
 
-    aoc->setControl(analog.value);
-    aoc->setStatus(analog.status);
+    for ( const auto & analog : analogs )
+    {
+        auto aoc = std::make_unique<AnalogOutput>( analog.type );
 
-    const auto BlockFactoryFunc =
-            analog.isLongIndexed
-                ? ObjectBlock::makeLongIndexedBlock
-                : ObjectBlock::makeIndexedBlock;
+        aoc->setControl( analog.value );
+        aoc->setStatus( analog.status );
+
+        objs.emplace_back( analog.offset, std::move(aoc) );
+    }
 
     _application.setCommand(
             ApplicationLayer::ResponseResponse,
-            BlockFactoryFunc(
-                    std::move(aoc),
-                    analog.offset));
+            ObjectBlock::makeLongIndexedBlockForObjects( std::move(objs) ) );
 
     //  finalize the request
     _application.initForSlaveOutput();
 }
-
 
 void DnpSlaveProtocol::setDelayMeasurementCommand( const std::chrono::milliseconds delay )
 {

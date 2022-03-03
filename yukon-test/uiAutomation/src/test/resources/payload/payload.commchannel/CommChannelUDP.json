@@ -1,0 +1,21 @@
+{
+  "name" : "UDP Test",
+  "enable" : true,
+  "baudRate" : "BAUD_2400",
+  "type" : "UDPPORT",
+  "portNumber" : 5832,
+  "carrierDetectWaitInMilliseconds" : 544,
+  "protocolWrap" : "IDLC",
+  "timing" : {
+    "preTxWait" : 87,
+    "rtsToTxWait" : 823,
+    "postTxWait" : 89,
+    "receiveDataWait" : 76,
+    "extraTimeOut" : 98
+  },
+  "sharing" : {
+    "sharedPortType" : "ACS",
+    "sharedSocketNumber" : 100
+  },
+  "keyInHex" : "00112233445566778899aabbccddeeff"
+}

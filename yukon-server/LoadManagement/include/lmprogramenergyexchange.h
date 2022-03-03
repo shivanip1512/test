@@ -55,6 +55,8 @@ DECLARE_COLLECTABLE( CtiLMProgramEnergyExchange );
     int operator==(const CtiLMProgramEnergyExchange& right) const;
     int operator!=(const CtiLMProgramEnergyExchange& right) const;
 
+    std::size_t getMemoryConsumption() const override;
+
     // Static Members
 
     // Possible

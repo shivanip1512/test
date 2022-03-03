@@ -9,7 +9,7 @@
 
 using std::endl;
 
-CtiPointStoreElement *CtiPointStore::insert( long pointNum, long dependentId, enum PointUpdateType updateType )
+CtiPointStoreElement *CtiPointStore::insert( long pointNum, long dependentId, CalcUpdateType updateType )
 {
     try
     {
@@ -19,7 +19,10 @@ CtiPointStoreElement *CtiPointStore::insert( long pointNum, long dependentId, en
             boost::tie(itr, boost::tuples::ignore) = instance()._store.insert(pointNum, new CtiPointStoreElement(pointNum));
 
             //  we append the pointID of the calc point that is dependent on it...
-            if( (updateType == allUpdate || updateType == anyUpdate || updateType == periodicPlusUpdate || dependentId == 0) 
+            if( (updateType == CalcUpdateType::AllUpdate 
+                    || updateType == CalcUpdateType::AnyUpdate 
+                    || updateType == CalcUpdateType::PeriodicPlusUpdate 
+                    || dependentId == 0) 
                 && dependentId >= 0 )
             {
                 itr->second->appendDependent(dependentId);
@@ -55,7 +58,7 @@ std::set<long> CtiPointStore::getPointIds()
 {
     std::set<long> results;
 
-    for each( IdToElementPtrMap::value_type &element in instance()._store )
+    for( auto& element : instance()._store )
     {
         results.insert(element.second->getPointNum());
     }

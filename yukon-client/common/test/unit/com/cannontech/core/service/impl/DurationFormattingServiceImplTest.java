@@ -1,17 +1,18 @@
 package com.cannontech.core.service.impl;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.fail;
+
 import java.util.Locale;
 import java.util.Set;
 import java.util.concurrent.TimeUnit;
 
-import junit.framework.Assert;
-
 import org.joda.time.DateTime;
 import org.joda.time.DateTimeZone;
 import org.joda.time.DurationFieldType;
-import org.junit.After;
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 import org.springframework.context.support.StaticMessageSource;
 
 import com.cannontech.core.service.DurationFormattingService;
@@ -28,7 +29,7 @@ public class DurationFormattingServiceImplTest {
     private DurationFormattingService service;
     private YukonUserContext userContext;
     
-    @Before
+    @BeforeEach
     public void setUp() {
     	
         StaticMessageSource messageSource = new StaticMessageSource();
@@ -106,7 +107,7 @@ public class DurationFormattingServiceImplTest {
         userContext = new SystemUserContext();
     }
     
-    @After
+    @AfterEach
     public void tearDown() {
         service = null;
     }
@@ -128,7 +129,7 @@ public class DurationFormattingServiceImplTest {
         // the service rejects imprecise fields when using a duration and this should throw an exception.
         try {
         	service.formatDuration(millis, TimeUnit.MILLISECONDS, DurationFormat.YMODHMS, userContext);
-        	Assert.fail("Service should not have accepted imprecise duration fields.");
+        	fail("Service should not have accepted imprecise duration fields.");
         } catch (IllegalArgumentException e) {
         	// expected, pass
         }
@@ -138,115 +139,115 @@ public class DurationFormattingServiceImplTest {
     public void test_format_DHMS() {
         String expected = "1 day 0 hours 0 minutes 0 seconds";
         String result = service.formatDuration(86400, TimeUnit.SECONDS, DurationFormat.DHMS, userContext);
-        Assert.assertEquals(expected, result);
+        assertEquals(expected, result);
         
         expected = "1 day 1 hour 1 minute 1 second";
         result = service.formatDuration(90061, TimeUnit.SECONDS, DurationFormat.DHMS, userContext);
-        Assert.assertEquals(expected, result);
+        assertEquals(expected, result);
         
         expected = "1 day 1 hour 1 minute 1 second";
         result = service.formatDuration(90061000, TimeUnit.MILLISECONDS, DurationFormat.DHMS, userContext);
-        Assert.assertEquals(expected, result);
+        assertEquals(expected, result);
         
         expected = "1 day 1 hour 1 minute 2 seconds";
         result = service.formatDuration(90061500, TimeUnit.MILLISECONDS, DurationFormat.DHMS, userContext);
-        Assert.assertEquals(expected, result);
+        assertEquals(expected, result);
         
         expected = "0 days 15 hours 25 minutes 0 seconds";
         result = service.formatDuration(55500, TimeUnit.SECONDS, DurationFormat.DHMS, userContext);
-        Assert.assertEquals(expected, result);
+        assertEquals(expected, result);
     }
     
     @Test
     public void test_format_HMS() {
         String expected = "0 hours 5 minutes 59 seconds";
         String result = service.formatDuration(359, TimeUnit.SECONDS, DurationFormat.HMS, userContext);
-        Assert.assertEquals(expected, result);
+        assertEquals(expected, result);
         
         expected = "2 hours 59 minutes 59 seconds";
         result = service.formatDuration(10799, TimeUnit.SECONDS, DurationFormat.HMS, userContext);
-        Assert.assertEquals(expected, result);
+        assertEquals(expected, result);
         
         expected = "25 hours 0 minutes 5 seconds";
         result = service.formatDuration(90005, TimeUnit.SECONDS, DurationFormat.HMS, userContext);
-        Assert.assertEquals(expected, result);
+        assertEquals(expected, result);
 
         expected = "0 hours 0 minutes 0 seconds";
         result = service.formatDuration(499, TimeUnit.MILLISECONDS, DurationFormat.HMS, userContext);
-        Assert.assertEquals(expected, result);
+        assertEquals(expected, result);
         
         expected = "0 hours 0 minutes 1 second";
         result = service.formatDuration(500, TimeUnit.MILLISECONDS, DurationFormat.HMS, userContext);
-        Assert.assertEquals(expected, result);
+        assertEquals(expected, result);
 
         expected = "0 hours 0 minutes 1 second";
         result = service.formatDuration(500, TimeUnit.MILLISECONDS, DurationFormat.HMS, userContext);
-        Assert.assertEquals(expected, result);
+        assertEquals(expected, result);
     }
     
     @Test
     public void test_format_HM() {
         String expected = "0 hours 0 minutes";
         String result = service.formatDuration(0, TimeUnit.SECONDS, DurationFormat.HM, userContext);
-        Assert.assertEquals(expected, result);
+        assertEquals(expected, result);
         
         result = service.formatDuration(29, TimeUnit.SECONDS, DurationFormat.HM, userContext);
-        Assert.assertEquals(expected, result);
+        assertEquals(expected, result);
         
         expected = "1 hour 1 minute";
         result = service.formatDuration(3630, TimeUnit.SECONDS, DurationFormat.HM, userContext);
-        Assert.assertEquals(expected, result);
+        assertEquals(expected, result);
 
         expected = "0 hours 1 minute";
         result = service.formatDuration(30, TimeUnit.SECONDS, DurationFormat.HM, userContext);
-        Assert.assertEquals(expected, result);
+        assertEquals(expected, result);
 
         expected = "0 hours 59 minutes";
         result = service.formatDuration(3540, TimeUnit.SECONDS, DurationFormat.HM, userContext);
-        Assert.assertEquals(expected, result);
+        assertEquals(expected, result);
         
         expected = "1 hour 1 minute";
         result = service.formatDuration(3660, TimeUnit.SECONDS, DurationFormat.HM, userContext);
-        Assert.assertEquals(expected, result);
+        assertEquals(expected, result);
     }
     
     @Test
     public void test_format_H() {
         String expected = "0 hours";
         String result = service.formatDuration(1799, TimeUnit.SECONDS, DurationFormat.H, userContext);
-        Assert.assertEquals(expected, result);
+        assertEquals(expected, result);
 
         expected = "1 hour";
         result = service.formatDuration(1800, TimeUnit.SECONDS, DurationFormat.H, userContext);
-        Assert.assertEquals(expected, result);
+        assertEquals(expected, result);
 
         result = service.formatDuration(3540, TimeUnit.SECONDS, DurationFormat.H, userContext);
-        Assert.assertEquals(expected, result);
+        assertEquals(expected, result);
 
         result = service.formatDuration(3600, TimeUnit.SECONDS, DurationFormat.H, userContext);
-        Assert.assertEquals(expected, result);
+        assertEquals(expected, result);
     }
     
     @Test
     public void test_format_M() {
         String expected = "0 minutes";
         String result = service.formatDuration(0, TimeUnit.SECONDS, DurationFormat.M, userContext);
-        Assert.assertEquals(expected, result);
+        assertEquals(expected, result);
 
         result = service.formatDuration(29, TimeUnit.SECONDS, DurationFormat.M, userContext);
-        Assert.assertEquals(expected, result);
+        assertEquals(expected, result);
 
         expected = "800 minutes";
         result = service.formatDuration(48000, TimeUnit.SECONDS, DurationFormat.M, userContext);
-        Assert.assertEquals(expected, result);
+        assertEquals(expected, result);
 
         expected = "1 minute";
         result = service.formatDuration(30, TimeUnit.SECONDS, DurationFormat.M, userContext);
-        Assert.assertEquals(expected, result);
+        assertEquals(expected, result);
         
         expected = "1 minute";
         result = service.formatDuration(60, TimeUnit.SECONDS, DurationFormat.M, userContext);
-        Assert.assertEquals(expected, result);
+        assertEquals(expected, result);
     }
     
     @Test
@@ -254,15 +255,15 @@ public class DurationFormattingServiceImplTest {
     	
         String expected = "01:30";
         String result = service.formatDuration(90, TimeUnit.MINUTES, DurationFormat.HM_SHORT, userContext);
-        Assert.assertEquals(expected, result);
+        assertEquals(expected, result);
 
         expected = "01:29";
         result = service.formatDuration(5371, TimeUnit.SECONDS, DurationFormat.HM_SHORT, userContext);
-        Assert.assertEquals(expected, result);
+        assertEquals(expected, result);
         
         expected = "01:30";
         result = service.formatDuration(3600 + 1800, TimeUnit.SECONDS, DurationFormat.HM_SHORT, userContext);
-        Assert.assertEquals(expected, result);
+        assertEquals(expected, result);
     }
     
     @Test
@@ -270,11 +271,11 @@ public class DurationFormattingServiceImplTest {
     	
         String expected = "0 days 1 hour";
         String result = service.formatDuration(60, TimeUnit.MINUTES, DurationFormat.DH, userContext);
-        Assert.assertEquals(expected, result);
+        assertEquals(expected, result);
         
         expected = "0 days 2 hours";
         result = service.formatDuration(90, TimeUnit.MINUTES, DurationFormat.DH, userContext);
-        Assert.assertEquals(expected, result);
+        assertEquals(expected, result);
     }
     
     @Test
@@ -282,11 +283,11 @@ public class DurationFormattingServiceImplTest {
     	
         String expected = "1d 12h";
         String result = service.formatDuration(36, TimeUnit.HOURS, DurationFormat.DH_ABBR, userContext);
-        Assert.assertEquals(expected, result);
+        assertEquals(expected, result);
         
         expected = "0d 2h";
         result = service.formatDuration(90, TimeUnit.MINUTES, DurationFormat.DH_ABBR, userContext);
-        Assert.assertEquals(expected, result);
+        assertEquals(expected, result);
     }
     
     @Test
@@ -294,26 +295,26 @@ public class DurationFormattingServiceImplTest {
     	
         String expected = "0h 0m";
         String result = service.formatDuration(0, TimeUnit.SECONDS, DurationFormat.HM_ABBR, userContext);
-        Assert.assertEquals(expected, result);
+        assertEquals(expected, result);
         
         result = service.formatDuration(29, TimeUnit.SECONDS, DurationFormat.HM_ABBR, userContext);
-        Assert.assertEquals(expected, result);
+        assertEquals(expected, result);
         
         expected = "1h 1m";
         result = service.formatDuration(3630, TimeUnit.SECONDS, DurationFormat.HM_ABBR, userContext);
-        Assert.assertEquals(expected, result);
+        assertEquals(expected, result);
 
         expected = "0h 1m";
         result = service.formatDuration(30, TimeUnit.SECONDS, DurationFormat.HM_ABBR, userContext);
-        Assert.assertEquals(expected, result);
+        assertEquals(expected, result);
 
         expected = "0h 59m";
         result = service.formatDuration(3540, TimeUnit.SECONDS, DurationFormat.HM_ABBR, userContext);
-        Assert.assertEquals(expected, result);
+        assertEquals(expected, result);
         
         expected = "1h 1m";
         result = service.formatDuration(3660, TimeUnit.SECONDS, DurationFormat.HM_ABBR, userContext);
-        Assert.assertEquals(expected, result);
+        assertEquals(expected, result);
     }
     
     @Test
@@ -323,13 +324,13 @@ public class DurationFormattingServiceImplTest {
         DateTime stopDateTime = new DateTime(2010, 1, 1, 11, 20, 0, 0, userContext.getJodaTimeZone());
         String expected = "2h 20m";
         String result = service.formatDuration(startDateTime.toDate(), stopDateTime.toDate(), DurationFormat.HM_ABBR, userContext);
-        Assert.assertEquals(expected, result);
+        assertEquals(expected, result);
         
         startDateTime = new DateTime(2010, 1, 1, 10, 0, 0, 0, userContext.getJodaTimeZone());
         stopDateTime = new DateTime(2010, 1, 6, 11, 0, 59, 500, userContext.getJodaTimeZone());
         expected = "5 days 1 hour 1 minute 0 seconds";
         result = service.formatDuration(startDateTime.toDate(), stopDateTime.toDate(), DurationFormat.DHMS, userContext);
-        Assert.assertEquals(expected, result);
+        assertEquals(expected, result);
     }
     
     @Test
@@ -340,14 +341,14 @@ public class DurationFormattingServiceImplTest {
     	DateTime stopDateTime = new DateTime(2010, 3, 14, 3, 0, 0, 0, userContext.getJodaTimeZone());
     	String expected = "10 days 3 hours 0 minutes 0 seconds";
     	String result = service.formatDuration(startDateTime.toDate(), stopDateTime.toDate(), DurationFormat.DHMS, userContext);
-        Assert.assertEquals(expected, result);
+        assertEquals(expected, result);
         
         // ends after DST day
         startDateTime = new DateTime(2010, 3, 3, 23, 0, 0, 0, userContext.getJodaTimeZone());
         stopDateTime = new DateTime(2010, 3, 15, 3, 0, 0, 0, userContext.getJodaTimeZone());
         expected = "11 days 4 hours 0 minutes 0 seconds";
         result = service.formatDuration(startDateTime.toDate(), stopDateTime.toDate(), DurationFormat.DHMS, userContext);
-        Assert.assertEquals(expected, result);
+        assertEquals(expected, result);
     }
     
     @Test
@@ -364,12 +365,12 @@ public class DurationFormattingServiceImplTest {
         // user in same TZ as system
         String expected = "11 days 4 hours 20 minutes 19 seconds";
         String result = service.formatDuration(startDateTime.toDate(), stopDateTime.toDate(), DurationFormat.DHMS, userContext);
-        Assert.assertEquals(expected, result);
+        assertEquals(expected, result);
         
         // user in different TZ than system
         expected = "11 days 3 hours 20 minutes 19 seconds";
         result = service.formatDuration(startDateTime.toDate(), stopDateTime.toDate(), DurationFormat.DHMS, userContext_gmt);
-        Assert.assertEquals(expected, result);
+        assertEquals(expected, result);
     }
     
     @Test
@@ -378,7 +379,7 @@ public class DurationFormattingServiceImplTest {
         DateTime start = new DateTime(2010, 11, 6, 7, 50, 0, 0, DateTimeZone.forID("America/Chicago"));
         DateTime end =   new DateTime(2010, 11, 7, 8, 0,  0, 0, DateTimeZone.forID("America/Chicago"));
         String result = service.formatDuration(start, end, DurationFormat.DH, userContext);
-        Assert.assertEquals(expected, result);
+        assertEquals(expected, result);
     }
     
     @Test
@@ -387,7 +388,7 @@ public class DurationFormattingServiceImplTest {
         DateTime start = new DateTime(2010, 11, 6, 7, 10, 0, 0, DateTimeZone.forID("America/Chicago"));
         DateTime end =   new DateTime(2010, 11, 7, 8, 0,  0, 0, DateTimeZone.forID("America/Chicago"));
         String result = service.formatDuration(start, end, DurationFormat.DH, userContext);
-        Assert.assertEquals(expected, result);
+        assertEquals(expected, result);
     }
     
     @Test
@@ -396,7 +397,7 @@ public class DurationFormattingServiceImplTest {
         DateTime start = new DateTime(2010, 11, 6, 8, 50, 0, 0, DateTimeZone.forID("America/Chicago"));
         DateTime end =   new DateTime(2010, 11, 7, 8, 0,  0, 0, DateTimeZone.forID("America/Chicago"));
         String result = service.formatDuration(start, end, DurationFormat.DH, userContext);
-        Assert.assertEquals(expected, result);
+        assertEquals(expected, result);
     }
     
     @Test
@@ -405,7 +406,7 @@ public class DurationFormattingServiceImplTest {
         DateTime start = new DateTime(2010, 11, 13, 8, 10, 0, 0, DateTimeZone.forID("America/Chicago"));
         DateTime end =   new DateTime(2010, 11, 14, 8, 0,  0, 0, DateTimeZone.forID("America/Chicago"));
         String result = service.formatDuration(start, end, DurationFormat.DH, userContext);
-        Assert.assertEquals(expected, result);
+        assertEquals(expected, result);
     }
     
     @Test
@@ -414,7 +415,7 @@ public class DurationFormattingServiceImplTest {
         DateTime start = new DateTime(2010, 3, 13, 7, 50, 0, 0, DateTimeZone.forID("America/Chicago"));
         DateTime end =   new DateTime(2010, 3, 14, 8, 0,  0, 0, DateTimeZone.forID("America/Chicago"));
         String result = service.formatDuration(start, end, DurationFormat.DH, userContext);
-        Assert.assertEquals(expected, result);
+        assertEquals(expected, result);
     }
     
     @Test
@@ -423,7 +424,7 @@ public class DurationFormattingServiceImplTest {
         DateTime start = new DateTime(2010, 3, 13, 7, 10, 0, 0, DateTimeZone.forID("America/Chicago"));
         DateTime end =   new DateTime(2010, 3, 14, 8, 0,  0, 0, DateTimeZone.forID("America/Chicago"));
         String result = service.formatDuration(start, end, DurationFormat.DH, userContext);
-        Assert.assertEquals(expected, result);
+        assertEquals(expected, result);
     }
     
     @Test
@@ -432,7 +433,7 @@ public class DurationFormattingServiceImplTest {
         DateTime start = new DateTime(2010, 3, 13, 8, 50, 0, 0, DateTimeZone.forID("America/Chicago"));
         DateTime end =   new DateTime(2010, 3, 14, 8, 0,  0, 0, DateTimeZone.forID("America/Chicago"));
         String result = service.formatDuration(start, end, DurationFormat.DH, userContext);
-        Assert.assertEquals(expected, result);
+        assertEquals(expected, result);
     }
     
     @Test
@@ -441,7 +442,7 @@ public class DurationFormattingServiceImplTest {
         DateTime start = new DateTime(2010, 3, 13, 8, 10, 0, 0, DateTimeZone.forID("America/Chicago"));
         DateTime end =   new DateTime(2010, 3, 14, 8, 0,  0, 0, DateTimeZone.forID("America/Chicago"));
         String result = service.formatDuration(start, end, DurationFormat.DH, userContext);
-        Assert.assertEquals(expected, result);
+        assertEquals(expected, result);
     }
     
     @Test
@@ -450,7 +451,7 @@ public class DurationFormattingServiceImplTest {
         DateTime start = new DateTime(2010, 11, 6, 7, 40, 0, 0, DateTimeZone.forID("America/Chicago"));
         DateTime end =   new DateTime(2010, 11, 7, 8, 20,  0, 0, DateTimeZone.forID("America/Chicago"));
         String result = service.formatDuration(start, end, DurationFormat.DH, userContext);
-        Assert.assertEquals(expected, result);
+        assertEquals(expected, result);
     }
     
     @Test
@@ -459,7 +460,7 @@ public class DurationFormattingServiceImplTest {
         DateTime start = new DateTime(2010, 11, 6, 7, 20, 0, 0, DateTimeZone.forID("America/Chicago"));
         DateTime end =   new DateTime(2010, 11, 7, 8, 20,  0, 0, DateTimeZone.forID("America/Chicago"));
         String result = service.formatDuration(start, end, DurationFormat.DH, userContext);
-        Assert.assertEquals(expected, result);
+        assertEquals(expected, result);
     }
     
     @Test
@@ -468,7 +469,7 @@ public class DurationFormattingServiceImplTest {
         DateTime start = new DateTime(2010, 11, 6, 8, 40, 0, 0, DateTimeZone.forID("America/Chicago"));
         DateTime end =   new DateTime(2010, 11, 7, 8, 20,  0, 0, DateTimeZone.forID("America/Chicago"));
         String result = service.formatDuration(start, end, DurationFormat.DH, userContext);
-        Assert.assertEquals(expected, result);
+        assertEquals(expected, result);
     }
     
     @Test
@@ -477,7 +478,7 @@ public class DurationFormattingServiceImplTest {
         DateTime start = new DateTime(2010, 11, 13, 8, 20, 0, 0, DateTimeZone.forID("America/Chicago"));
         DateTime end =   new DateTime(2010, 11, 14, 8, 20,  0, 0, DateTimeZone.forID("America/Chicago"));
         String result = service.formatDuration(start, end, DurationFormat.DH, userContext);
-        Assert.assertEquals(expected, result);
+        assertEquals(expected, result);
     }
     
     @Test
@@ -486,7 +487,7 @@ public class DurationFormattingServiceImplTest {
         DateTime start = new DateTime(2010, 3, 13, 7, 40, 0, 0, DateTimeZone.forID("America/Chicago"));
         DateTime end =   new DateTime(2010, 3, 14, 8, 20,  0, 0, DateTimeZone.forID("America/Chicago"));
         String result = service.formatDuration(start, end, DurationFormat.DH, userContext);
-        Assert.assertEquals(expected, result);
+        assertEquals(expected, result);
     }
     
     @Test
@@ -495,7 +496,7 @@ public class DurationFormattingServiceImplTest {
         DateTime start = new DateTime(2010, 3, 13, 7, 20, 0, 0, DateTimeZone.forID("America/Chicago"));
         DateTime end =   new DateTime(2010, 3, 14, 8, 20,  0, 0, DateTimeZone.forID("America/Chicago"));
         String result = service.formatDuration(start, end, DurationFormat.DH, userContext);
-        Assert.assertEquals(expected, result);
+        assertEquals(expected, result);
     }
     
     @Test
@@ -504,7 +505,7 @@ public class DurationFormattingServiceImplTest {
         DateTime start = new DateTime(2010, 3, 13, 8, 40, 0, 0, DateTimeZone.forID("America/Chicago"));
         DateTime end =   new DateTime(2010, 3, 14, 8, 20,  0, 0, DateTimeZone.forID("America/Chicago"));
         String result = service.formatDuration(start, end, DurationFormat.DH, userContext);
-        Assert.assertEquals(expected, result);
+        assertEquals(expected, result);
     }
     
     @Test
@@ -513,7 +514,7 @@ public class DurationFormattingServiceImplTest {
         DateTime start = new DateTime(2010, 3, 13, 8, 20, 0, 0, DateTimeZone.forID("America/Chicago"));
         DateTime end =   new DateTime(2010, 3, 14, 8, 20,  0, 0, DateTimeZone.forID("America/Chicago"));
         String result = service.formatDuration(start, end, DurationFormat.DH, userContext);
-        Assert.assertEquals(expected, result);
+        assertEquals(expected, result);
     }
     
     @Test
@@ -522,7 +523,7 @@ public class DurationFormattingServiceImplTest {
         DateTime start = new DateTime(2010, 6, 1, 8, 10, 0, 100, DateTimeZone.forID("America/Chicago"));
         DateTime end =   new DateTime(2010, 6, 3, 9, 12,  0, 900, DateTimeZone.forID("America/Chicago"));
         String result = service.formatDuration(start, end, DurationFormat.DHMS, userContext);
-        Assert.assertEquals(expected, result);
+        assertEquals(expected, result);
     }
     
     @Test
@@ -533,7 +534,7 @@ public class DurationFormattingServiceImplTest {
         DateTime start = new DateTime(2010, 6, 1, 8, 10, 0, 400, DateTimeZone.forID("America/Chicago"));
         DateTime end =   new DateTime(2010, 6, 2, 9, 11,  0, 600, DateTimeZone.forID("America/Chicago"));
         String result = service.formatDuration(start, end, DurationFormat.DHMS, userContext);
-        Assert.assertEquals(expected, result);
+        assertEquals(expected, result);
     }
     
     @Test
@@ -544,79 +545,79 @@ public class DurationFormattingServiceImplTest {
         
     	expected = "0 seconds";
     	result = service.formatDuration(PointArchiveInterval.ZERO.getSeconds(), TimeUnit.SECONDS, DurationFormat.S, userContext);
-        Assert.assertEquals(expected, result);
+        assertEquals(expected, result);
         
         expected = "1 second";
     	result = service.formatDuration(PointArchiveInterval.ONE_SECOND.getSeconds(), TimeUnit.SECONDS, DurationFormat.S, userContext);
-        Assert.assertEquals(expected, result);
+        assertEquals(expected, result);
         
         expected = "2 seconds";
     	result = service.formatDuration(PointArchiveInterval.TWO_SECOND.getSeconds(), TimeUnit.SECONDS, DurationFormat.S, userContext);
-        Assert.assertEquals(expected, result);
+        assertEquals(expected, result);
         
         expected = "5 seconds";
     	result = service.formatDuration(PointArchiveInterval.FIVE_SECOND.getSeconds(), TimeUnit.SECONDS, DurationFormat.S, userContext);
-        Assert.assertEquals(expected, result);
+        assertEquals(expected, result);
         
         expected = "10 seconds";
     	result = service.formatDuration(PointArchiveInterval.TEN_SECOND.getSeconds(), TimeUnit.SECONDS, DurationFormat.S, userContext);
-        Assert.assertEquals(expected, result);
+        assertEquals(expected, result);
         
         expected = "15 seconds";
     	result = service.formatDuration(PointArchiveInterval.FIFTEEN_SECOND.getSeconds(), TimeUnit.SECONDS, DurationFormat.S, userContext);
-        Assert.assertEquals(expected, result);
+        assertEquals(expected, result);
         
         expected = "30 seconds";
         result = service.formatDuration(PointArchiveInterval.THIRTY_SECOND.getSeconds(), TimeUnit.SECONDS, DurationFormat.S, userContext);
-        Assert.assertEquals(expected, result);
+        assertEquals(expected, result);
         
         expected = "1 minute";
         result = service.formatDuration(PointArchiveInterval.ONE_MINUTE.getSeconds(), TimeUnit.SECONDS, DurationFormat.M, userContext);
-        Assert.assertEquals(expected, result);
+        assertEquals(expected, result);
         
         expected = "2 minutes";
         result = service.formatDuration(PointArchiveInterval.TWO_MINUTE.getSeconds(), TimeUnit.SECONDS, DurationFormat.M, userContext);
-        Assert.assertEquals(expected, result);
+        assertEquals(expected, result);
         
         expected = "3 minutes";
         result = service.formatDuration(PointArchiveInterval.THREE_MINUTE.getSeconds(), TimeUnit.SECONDS, DurationFormat.M, userContext);
-        Assert.assertEquals(expected, result);
+        assertEquals(expected, result);
         
         expected = "5 minutes";
         result = service.formatDuration(PointArchiveInterval.FIVE_MINUTE.getSeconds(), TimeUnit.SECONDS, DurationFormat.M, userContext);
-        Assert.assertEquals(expected, result);
+        assertEquals(expected, result);
         
         expected = "10 minutes";
         result = service.formatDuration(PointArchiveInterval.TEN_MINUTE.getSeconds(), TimeUnit.SECONDS, DurationFormat.M, userContext);
-        Assert.assertEquals(expected, result);
+        assertEquals(expected, result);
         
         expected = "15 minutes";
         result = service.formatDuration(PointArchiveInterval.FIFTEEN_MINUTE.getSeconds(), TimeUnit.SECONDS, DurationFormat.M, userContext);
-        Assert.assertEquals(expected, result);
+        assertEquals(expected, result);
         
         expected = "30 minutes";
         result = service.formatDuration(PointArchiveInterval.THIRTY_MINUTE.getSeconds(), TimeUnit.SECONDS, DurationFormat.M, userContext);
-        Assert.assertEquals(expected, result);
+        assertEquals(expected, result);
 
         expected = "1 hour";
         result = service.formatDuration(PointArchiveInterval.ONE_HOUR.getSeconds(), TimeUnit.SECONDS, DurationFormat.H, userContext);
-        Assert.assertEquals(expected, result);
+        assertEquals(expected, result);
         
         expected = "2 hours";
         result = service.formatDuration(PointArchiveInterval.TWO_HOUR.getSeconds(), TimeUnit.SECONDS, DurationFormat.H, userContext);
-        Assert.assertEquals(expected, result);
+        assertEquals(expected, result);
         
         expected = "6 hours";
         result = service.formatDuration(PointArchiveInterval.SIX_HOUR.getSeconds(), TimeUnit.SECONDS, DurationFormat.H, userContext);
-        Assert.assertEquals(expected, result);
+        assertEquals(expected, result);
 
         expected = "12 hours";
         result = service.formatDuration(PointArchiveInterval.TWELVE_HOUR.getSeconds(), TimeUnit.SECONDS, DurationFormat.H, userContext);
-        Assert.assertEquals(expected, result);
+        assertEquals(expected, result);
 
         expected = "12 hours";
         result = service.formatDuration(PointArchiveInterval.TWELVE_HOUR.getSeconds(), TimeUnit.SECONDS, DurationFormat.H, userContext);
-        Assert.assertEquals(expected, result);
+        assertEquals(expected, result);
     }
     
 }

@@ -25,6 +25,7 @@ import com.cannontech.core.dao.NotFoundException;
 import com.cannontech.core.dao.PaoDao;
 import com.cannontech.database.data.lite.LiteYukonPAObject;
 import com.cannontech.database.data.lite.LiteYukonUser;
+import com.cannontech.dr.eatonCloud.dao.EatonCloudDao;
 import com.cannontech.dr.itron.dao.ItronDao;
 import com.cannontech.i18n.YukonMessageSourceResolvable;
 import com.cannontech.loadcontrol.loadgroup.dao.LoadGroupDao;
@@ -93,6 +94,7 @@ public class EnrollmentHelperServiceImpl implements EnrollmentHelperService {
     @Autowired private ItronDao itronDao;
     @Autowired private DisconnectService disconnectService;
     @Autowired private DeviceDao deviceDao;
+    @Autowired private EatonCloudDao eatonCloudDao;
 
     @Override
     public void updateProgramEnrollments(List<ProgramEnrollment> programEnrollments, 
@@ -234,7 +236,7 @@ public class EnrollmentHelperServiceImpl implements EnrollmentHelperService {
     }
 
     @Override
-    public void doEnrollment(EnrollmentHelperHolder enrollmentHelperHolder, EnrollmentEnum enrollmentEnum, LiteYukonUser user){
+    public synchronized void doEnrollment(EnrollmentHelperHolder enrollmentHelperHolder, EnrollmentEnum enrollmentEnum, LiteYukonUser user){
 
         CustomerAccount customerAccount = enrollmentHelperHolder.getCustomerAccount();
         EnrollmentHelper enrollmentHelper = enrollmentHelperHolder.getEnrollmentHelper();
@@ -310,10 +312,17 @@ public class EnrollmentHelperServiceImpl implements EnrollmentHelperService {
     private void verifyRelay(LoadGroup loadGroup, ProgramEnrollment enrollment) {
         if (loadGroup != null) {
             int enrollmentRelay = enrollment.getRelay();
-            //For Itron, the relay should match the relay specified in the Group
-            if (loadGroup.getPaoIdentifier().getPaoType() == PaoType.LM_GROUP_ITRON) {
-                int relayFromGroup = itronDao.getVirtualRelayId(loadGroup.getLoadGroupId());
-                //if no relay was provided, set it to the relay specified in the Itron group
+            PaoType loadGroupPaoType = loadGroup.getPaoIdentifier().getPaoType();
+            // For Itron, the relay should match the relay specified in the Group
+            if (loadGroupPaoType == PaoType.LM_GROUP_ITRON || loadGroupPaoType == PaoType.LM_GROUP_EATON_CLOUD) {
+                int relayFromGroup = 0;
+                if (loadGroupPaoType == PaoType.LM_GROUP_ITRON) {
+                    relayFromGroup = itronDao.getVirtualRelayId(loadGroup.getLoadGroupId());
+                }
+                if (loadGroupPaoType == PaoType.LM_GROUP_EATON_CLOUD) {
+                    relayFromGroup = eatonCloudDao.getVirtualRelayId(loadGroup.getLoadGroupId());
+                }
+                // if no relay was provided, set it to the relay specified in the Itron or Eaton Cloud group
                 if (enrollmentRelay == 0) {
                     enrollment.setRelay(relayFromGroup);
                     return;

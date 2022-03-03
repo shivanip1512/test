@@ -4,6 +4,7 @@ import java.io.Serializable;
 
 import org.apache.commons.lang3.builder.ToStringBuilder;
 import org.apache.commons.lang3.builder.ToStringStyle;
+import org.joda.time.Instant;
 
 import com.cannontech.amr.errors.dao.DeviceError;
 import com.cannontech.common.device.programming.model.ProgrammingStatus;
@@ -30,7 +31,7 @@ public class MeterProgramStatusArchiveRequest implements Serializable {
     private String configurationId;
     private ProgrammingStatus status;
     private DeviceError error;
-    private long timeStamp;
+    private Instant timestamp;
     private Source source;
 
     public RfnIdentifier getRfnIdentifier() {
@@ -49,12 +50,12 @@ public class MeterProgramStatusArchiveRequest implements Serializable {
         this.status = status;
     }
 
-    public long getTimeStamp() {
-        return timeStamp;
+    public Instant getTimestamp() {
+        return timestamp;
     }
 
-    public void setTimeStamp(long timeStamp) {
-        this.timeStamp = timeStamp;
+    public void setTimestamp(Instant instant) {
+        this.timestamp = instant;
     }
 
     public DeviceError getError() {
@@ -90,7 +91,7 @@ public class MeterProgramStatusArchiveRequest implements Serializable {
         result = prime * result + ((rfnIdentifier == null) ? 0 : rfnIdentifier.hashCode());
         result = prime * result + ((source == null) ? 0 : source.hashCode());
         result = prime * result + ((status == null) ? 0 : status.hashCode());
-        result = prime * result + (int) (timeStamp ^ (timeStamp >>> 32));
+        result = prime * result + ((timestamp == null) ? 0 : timestamp.hashCode());
         return result;
     }
 
@@ -119,7 +120,10 @@ public class MeterProgramStatusArchiveRequest implements Serializable {
             return false;
         if (status != other.status)
             return false;
-        if (timeStamp != other.timeStamp)
+        if (timestamp == null) {
+            if (other.timestamp != null)
+                return false;
+        } else if (!timestamp.equals(other.timestamp))
             return false;
         return true;
     }

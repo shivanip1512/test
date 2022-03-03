@@ -292,8 +292,8 @@
                         <div class="column-8-16 clearfix">
                             <div class="column one">
                                 <c:set var="successWidth" value="${injectionStatus.numComplete / injectionStatus.numTotal * 100}"/>
-                                <div class="progress active progress-striped" style="width: 100px;float:left;">
-                                    <div id="injection-status-progress-bar" class="progress-bar progress-bar-success"
+                                <div class="progress" style="width: 100px;float:left;">
+                                    <div id="injection-status-progress-bar" class="progress-bar progress-bar-success progress-bar-animated progress-bar-striped"
                                         role="progressbar" aria-valuemin="0" aria-valuemax="100" style="width: ${successWidth}%">
                                         </div>
                                 </div>

@@ -61,19 +61,14 @@ import com.cannontech.common.validator.YukonValidationUtils;
 import com.cannontech.core.dao.DuplicateException;
 import com.cannontech.core.dao.PaoDao;
 import com.cannontech.core.dao.PointDao;
-import com.cannontech.core.dao.StateGroupDao;
 import com.cannontech.core.dao.TagDao;
 import com.cannontech.core.dynamic.AsyncDynamicDataSource;
-import com.cannontech.core.dynamic.PointValueQualityHolder;
 import com.cannontech.core.roleproperties.YukonRole;
 import com.cannontech.core.service.DateFormattingService;
 import com.cannontech.core.service.DateFormattingService.DateFormatEnum;
 import com.cannontech.database.data.lite.LitePoint;
-import com.cannontech.database.data.lite.LiteState;
-import com.cannontech.database.data.lite.LiteStateGroup;
 import com.cannontech.database.data.lite.LiteTag;
 import com.cannontech.database.data.lite.LiteYukonPAObject;
-import com.cannontech.database.data.point.PointType;
 import com.cannontech.i18n.YukonMessageSourceResolvable;
 import com.cannontech.i18n.YukonUserContextMessageSourceResolver;
 import com.cannontech.mbean.ServerDatabaseCache;
@@ -103,7 +98,6 @@ public class TdcDisplayController {
     @Autowired private TdcService tdcService;
     @Autowired private PointDao pointDao;
     @Autowired private PaoDao paoDao;
-    @Autowired private StateGroupDao stateGroupDao;
     @Autowired private YukonUserContextMessageSourceResolver messageSourceResolver;
     @Autowired private AsyncDynamicDataSource asyncDynamicDataSource;
     @Autowired private CommandService commandService;
@@ -123,7 +117,7 @@ public class TdcDisplayController {
                 YukonValidationUtils.checkIsValidDouble(errors, "value", bean.getValue());
             }
             else if (bean.getDisplayName() != null) {
-                YukonValidationUtils.checkIsBlankOrExceedsMaxLength(errors, "displayName", bean.getDisplayName(), false, 30);
+                YukonValidationUtils.checkIsBlankOrExceedsMaxLengthOrBlacklistedChars(errors, "displayName", bean.getDisplayName(), false, 30);
                 Display display = displayDao.findDisplayByName(bean.getDisplayName());
                 if (display != null) {
                     errors.rejectValue("displayName", "yukon.web.error.nameConflict");
@@ -413,78 +407,6 @@ public class TdcDisplayController {
         YukonMessageSourceResolvable successMsg =
             new YukonMessageSourceResolvable("yukon.web.modules.tools.tdc.ack.success", alarms);
         return getJSONSuccess(successMsg, userContext);
-    }
-
-    @RequestMapping(value = "data-viewer/manual-control", method = RequestMethod.POST)
-    public String manualControl(ModelMap model, int pointId, int deviceId) {
-        
-        DisplayBackingBean backingBean = new DisplayBackingBean();
-        backingBean.setPointId(pointId);
-        backingBean.setDeviceId(deviceId);
-        LitePoint litePoint = pointDao.getLitePoint(pointId);
-        if (litePoint.getPointTypeEnum() == PointType.Analog) {
-            PointValueQualityHolder pointValue = asyncDynamicDataSource.getPointValue(pointId);
-            backingBean.setValue(pointValue.getValue());
-        } else if (litePoint.getPointTypeEnum() == PointType.Status) {
-            LiteStateGroup group = stateGroupDao.getStateGroup(litePoint.getStateGroupID());
-            List<LiteState> stateList = new ArrayList<>(group.getStatesList());
-            
-            if (litePoint.getPointTypeEnum() == PointType.Status) {
-                long tags = asyncDynamicDataSource.getTags(litePoint.getLiteID());
-                boolean controllable = TagUtils.isControllablePoint(tags) && TagUtils.isControlEnabled(tags);
-                if (controllable) {
-                    stateList.removeIf(state -> state.getLiteID() < 0 || state.getLiteID() > 1);
-                }
-            }
-            model.put("stateList", stateList);
-        }
-        LiteYukonPAObject liteYukonPAO = paoDao.getLiteYukonPAO(litePoint.getPaobjectID());
-        model.put("deviceName", liteYukonPAO.getPaoName());
-        model.put("pointName", litePoint.getPointName());
-        model.addAttribute("backingBean", backingBean);
-        return "data-viewer/manualControlPopup.jsp";
-    }
-    
-    @RequestMapping(value = "data-viewer/manualControlSend", method = RequestMethod.POST)
-    public String manualControlSend(HttpServletResponse response, YukonUserContext userContext,
-                                    @ModelAttribute("backingBean") DisplayBackingBean backingBean,
-                                    BindingResult bindingResult, ModelMap model,
-                                    FlashScope flashScope) throws IOException {
-        
-        LitePoint litePoint = pointDao.getLitePoint(backingBean.getPointId());
-        if (litePoint.getPointTypeEnum() == PointType.Analog) {
-            validator.validate(backingBean, bindingResult);
-            if (bindingResult.hasErrors()) {
-                LiteYukonPAObject liteYukonPAO = paoDao.getLiteYukonPAO(litePoint.getPaobjectID());
-                model.put("deviceName", liteYukonPAO.getPaoName());
-                model.put("pointName", litePoint.getPointName());
-                model.addAttribute("backingBean", backingBean);
-                List<MessageSourceResolvable> messages =
-                    YukonValidationUtils.errorsForBindingResult(bindingResult);
-                flashScope.setError(messages);
-                return "manualControlPopup.jsp";
-            }
-            commandService.sendAnalogOutputRequest(backingBean.getPointId(),
-                                               backingBean.getValue(),
-                                               userContext.getYukonUser());
-
-        } else if (litePoint.getPointTypeEnum() == PointType.Status) {
-            if (backingBean.getStateId() == 0) {
-                commandService.toggleControlRequest(backingBean.getDeviceId(),
-                                                backingBean.getPointId(),
-                                                false,
-                                                userContext.getYukonUser());
-            } else if (backingBean.getStateId() == 1) {
-                commandService.toggleControlRequest(backingBean.getDeviceId(),
-                                                backingBean.getPointId(),
-                                                true,
-                                                userContext.getYukonUser());
-            }
-        }
-
-        response.setContentType("application/json");
-        response.getWriter().write(JsonUtils.toJson(Collections.singletonMap("action", "close")));
-        return null;
     }
 
     @RequestMapping("data-viewer/alt-scan-rate")

@@ -6,20 +6,21 @@ import static org.easymock.EasyMock.createStrictMock;
 import static org.easymock.EasyMock.eq;
 import static org.easymock.EasyMock.expect;
 import static org.easymock.EasyMock.replay;
-import static org.hamcrest.CoreMatchers.equalTo;
-import static org.hamcrest.CoreMatchers.hasItem;
-import static org.junit.Assert.assertThat;
+import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.Matchers.equalTo;
+import static org.hamcrest.Matchers.hasItems;
 
 import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
 import java.util.Set;
+
 import org.easymock.EasyMock;
 import org.joda.time.DateTime;
 import org.joda.time.Duration;
 import org.joda.time.Instant;
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 import org.springframework.test.util.ReflectionTestUtils;
 
 import com.cannontech.common.pao.PaoCategory;
@@ -51,6 +52,8 @@ import com.cannontech.database.data.point.UnitOfMeasure;
 import com.cannontech.dr.assetavailability.AssetAvailabilityPointDataTimes;
 import com.cannontech.dr.assetavailability.dao.DynamicLcrCommunicationsDao;
 import com.cannontech.dr.itron.ItronDataEventType;
+import com.cannontech.dr.itron.model.ItronRelayDataLogs;
+import com.cannontech.dr.itron.service.ItronRuntimeCalcService;
 import com.cannontech.dr.service.impl.DatedRuntimeStatus;
 import com.cannontech.dr.service.impl.RuntimeCalcServiceImpl;
 import com.cannontech.message.dispatch.message.PointData;
@@ -60,11 +63,13 @@ import com.google.common.collect.Lists;
 import com.google.common.collect.Sets;
 
 public class ItronRuntimeCalcServiceImplTest {
-    private ItronRuntimeCalcServiceImpl itronRuntimeCalcService = new ItronRuntimeCalcServiceImpl();
+    private ItronRuntimeCalcService itronRuntimeCalcService = new ItronRuntimeCalcService();
     
+    private static final int lcr6200sId = 24;
     private static final int lcr6600sId = 17;
     private static final int lcr6601sId = 79;
     
+    private LiteYukonPAObject lcr6200s;
     private LiteYukonPAObject lcr6600s;
     private LiteYukonPAObject lcr6601s;
     private List<YukonPao> allDevices;
@@ -81,8 +86,9 @@ public class ItronRuntimeCalcServiceImplTest {
     private static final DateTime date1 = DateTime.parse("2019-03-20T11:13:27");
     private static final DateTime date2 = date1.plus(Duration.standardHours(8));
     
-    @Before
+    @BeforeEach
     public void initEach() {
+        lcr6200s = new LiteYukonPAObject(lcr6200sId, "LCR-6200S", PaoCategory.DEVICE, PaoClass.ITRON, PaoType.LCR6200S, "description", "F");
         lcr6600s = new LiteYukonPAObject(lcr6600sId, "LCR-6600S", PaoCategory.DEVICE, PaoClass.ITRON, PaoType.LCR6600S, "description", "F");
         lcr6601s = new LiteYukonPAObject(lcr6601sId, "LCR-6601S", PaoCategory.DEVICE, PaoClass.ITRON, PaoType.LCR6601S, "description", "F");
 
@@ -91,7 +97,7 @@ public class ItronRuntimeCalcServiceImplTest {
         lcr6600s_radioLinkQuality = 
                 new LitePoint(178, "Radio Link Quality", PointType.Analog.getPointTypeId(), lcr6600sId, 56, -1);
         lcr6600s_relay1_relayState = 
-                new LitePoint(179, "Relay 1 Relay State", PointType.Status.getPointTypeId(), lcr6600sId, 3, -1);
+                new LitePoint(179, "Relay 1 Load State", PointType.Status.getPointTypeId(), lcr6600sId, 3, -1);
         lcr6600s_relay1_runtimeLog_15m = 
                 new LitePoint(180, "Relay 1 Run Time Data Log 15 Minutes", PointType.Analog.getPointTypeId(), lcr6600sId, 12, -1);
         lcr6600s_relay1_runtimeLog_60m = 
@@ -117,6 +123,8 @@ public class ItronRuntimeCalcServiceImplTest {
         
         PaoDao mockPaoDao = createNiceMock(PaoDao.class);
         
+        expect(mockPaoDao.getLiteYukonPAObjectByType(PaoType.LCR6200S))
+            .andReturn(Lists.newArrayList(lcr6200s));
         expect(mockPaoDao.getLiteYukonPAObjectByType(PaoType.LCR6600S))
             .andReturn(Lists.newArrayList(lcr6600s));
         expect(mockPaoDao.getLiteYukonPAObjectByType(PaoType.LCR6601S))
@@ -127,9 +135,10 @@ public class ItronRuntimeCalcServiceImplTest {
         
         List<YukonPao> devices = ReflectionTestUtils.invokeMethod(itronRuntimeCalcService, "getAllDevices");
         
-        assertThat("device list contains lcr6600s", devices, hasItem(lcr6600s));
-        assertThat("device list contains lcr6601s", devices, hasItem(lcr6601s));
-        assertThat("device list size", devices.size(), equalTo(2));
+        assertThat("device list contains lcr6200s", devices, hasItems(lcr6200s));
+        assertThat("device list contains lcr6600s", devices, hasItems(lcr6600s));
+        assertThat("device list contains lcr6601s", devices, hasItems(lcr6601s));
+        assertThat("device list size", devices.size(), equalTo(3));
     }
     
     @Test
@@ -155,7 +164,7 @@ public class ItronRuntimeCalcServiceImplTest {
     @Test
     public void test_addBoundaryValues_valuesWithinRange() {
         
-        ItronRuntimeCalcServiceImpl itronRuntimeCalcService = EasyMock.createMockBuilder(ItronRuntimeCalcServiceImpl.class)
+        ItronRuntimeCalcService itronRuntimeCalcService = EasyMock.createMockBuilder(ItronRuntimeCalcService.class)
                 .addMockedMethod("getPrecedingArchivedValue", PointValueHolder.class)
                 .createMock();
         
@@ -193,7 +202,7 @@ public class ItronRuntimeCalcServiceImplTest {
     @Test
     public void test_addBoundaryValues_recentValueOutsideRange() {
         
-        ItronRuntimeCalcServiceImpl itronRuntimeCalcService = EasyMock.createMockBuilder(ItronRuntimeCalcServiceImpl.class)
+        ItronRuntimeCalcService itronRuntimeCalcService = EasyMock.createMockBuilder(ItronRuntimeCalcService.class)
                 .addMockedMethod("getPrecedingArchivedValue", PointValueHolder.class)
                 .createMock();
         
@@ -223,7 +232,7 @@ public class ItronRuntimeCalcServiceImplTest {
     @Test
     public void test_addBoundaryValues_valueAtRangeEnd() {
         
-        ItronRuntimeCalcServiceImpl itronRuntimeCalcService = EasyMock.createMockBuilder(ItronRuntimeCalcServiceImpl.class)
+        ItronRuntimeCalcService itronRuntimeCalcService = EasyMock.createMockBuilder(ItronRuntimeCalcService.class)
                 .addMockedMethod("getPrecedingArchivedValue", PointValueHolder.class)
                 .createMock();
         
@@ -261,7 +270,7 @@ public class ItronRuntimeCalcServiceImplTest {
     @Test
     public void test_addBoundaryValues_valueAtRangeStart() {
         
-        ItronRuntimeCalcServiceImpl itronRuntimeCalcService = EasyMock.createMockBuilder(ItronRuntimeCalcServiceImpl.class)
+        ItronRuntimeCalcService itronRuntimeCalcService = EasyMock.createMockBuilder(ItronRuntimeCalcService.class)
                 .addMockedMethod("getPrecedingArchivedValue", PointValueHolder.class)
                 .createMock();
         
@@ -299,7 +308,7 @@ public class ItronRuntimeCalcServiceImplTest {
     @Test
     public void test_addBoundaryValues_noRangeStart() {
         
-        ItronRuntimeCalcServiceImpl itronRuntimeCalcService = EasyMock.createMockBuilder(ItronRuntimeCalcServiceImpl.class)
+        ItronRuntimeCalcService itronRuntimeCalcService = EasyMock.createMockBuilder(ItronRuntimeCalcService.class)
                 .addMockedMethod("getPrecedingArchivedValue", PointValueHolder.class)
                 .createMock();
         
@@ -343,6 +352,8 @@ public class ItronRuntimeCalcServiceImplTest {
         expect(mockPaoDao.getLiteYukonPAObjectByType(PaoType.LCR6600S))
             .andReturn(Lists.newArrayList(lcr6600s));
         expect(mockPaoDao.getLiteYukonPAObjectByType(PaoType.LCR6601S))
+            .andReturn(Collections.emptyList());
+        expect(mockPaoDao.getLiteYukonPAObjectByType(PaoType.LCR6200S))
             .andReturn(Collections.emptyList());
         replay(mockPaoDao);
         
@@ -436,9 +447,9 @@ public class ItronRuntimeCalcServiceImplTest {
         expect(mockPaoDefinitionDao.findAttributeLookup(eq(lcr6600s.getPaoType()), anyObject(BuiltInAttribute.class)))
             .andReturn(Optional.empty())
             .times(2);
-        expect(mockPaoDefinitionDao.findAttributeLookup(lcr6600s.getPaoType(), BuiltInAttribute.RELAY_1_RELAY_STATE))
-            .andReturn(Optional.of(new AttributeDefinition(BuiltInAttribute.RELAY_1_RELAY_STATE, 
-                                                           new PointTemplate("Relay 1 Relay State",
+        expect(mockPaoDefinitionDao.findAttributeLookup(lcr6600s.getPaoType(), BuiltInAttribute.RELAY_1_LOAD_STATE))
+            .andReturn(Optional.of(new AttributeDefinition(BuiltInAttribute.RELAY_1_LOAD_STATE, 
+                                                           new PointTemplate("Relay 1 Load State",
                                                                              PointType.Status,
                                                                              3, 1, -1, -1, 0),
                                                            null)));
@@ -463,7 +474,7 @@ public class ItronRuntimeCalcServiceImplTest {
 
         ReflectionTestUtils.setField(itronRuntimeCalcService, "dynamicLcrCommunicationsDao", mockDynamicLcrCommunicationsDao);
         
-        itronRuntimeCalcService.calculateDataLogs();
+        ReflectionTestUtils.invokeMethod(itronRuntimeCalcService, "calculateDataLogs");
     }
     
     @Test
@@ -476,6 +487,8 @@ public class ItronRuntimeCalcServiceImplTest {
         expect(mockPaoDao.getLiteYukonPAObjectByType(PaoType.LCR6600S))
             .andReturn(Lists.newArrayList(lcr6600s));
         expect(mockPaoDao.getLiteYukonPAObjectByType(PaoType.LCR6601S))
+            .andReturn(Collections.emptyList());
+        expect(mockPaoDao.getLiteYukonPAObjectByType(PaoType.LCR6200S))
             .andReturn(Collections.emptyList());
         replay(mockPaoDao);
         
@@ -551,9 +564,9 @@ public class ItronRuntimeCalcServiceImplTest {
         expect(mockPaoDefinitionDao.findAttributeLookup(eq(lcr6600s.getPaoType()), anyObject(BuiltInAttribute.class)))
             .andReturn(Optional.empty())
             .times(2);
-        expect(mockPaoDefinitionDao.findAttributeLookup(lcr6600s.getPaoType(), BuiltInAttribute.RELAY_1_RELAY_STATE))
-            .andReturn(Optional.of(new AttributeDefinition(BuiltInAttribute.RELAY_1_RELAY_STATE, 
-                                                           new PointTemplate("Relay 1 Relay State",
+        expect(mockPaoDefinitionDao.findAttributeLookup(lcr6600s.getPaoType(), BuiltInAttribute.RELAY_1_LOAD_STATE))
+            .andReturn(Optional.of(new AttributeDefinition(BuiltInAttribute.RELAY_1_LOAD_STATE, 
+                                                           new PointTemplate("Relay 1 Load State",
                                                                              PointType.Status,
                                                                              3, 1, -1, -1, 0),
                                                            null)));
@@ -578,7 +591,7 @@ public class ItronRuntimeCalcServiceImplTest {
 
         ReflectionTestUtils.setField(itronRuntimeCalcService, "dynamicLcrCommunicationsDao", mockDynamicLcrCommunicationsDao);
         
-        itronRuntimeCalcService.calculateDataLogs();
+        ReflectionTestUtils.invokeMethod(itronRuntimeCalcService, "calculateDataLogs");
     }
     
     private PointData buildPointData(LitePoint point, DateTime timestamp, Double value) {

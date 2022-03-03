@@ -20,6 +20,8 @@ public class PaoData {
          * A field which will be the address for PLC devices or the serial number for RFN devices.
          */
         ADDRESS_OR_SERIAL_NUMBER,
+        LATITUDE,
+        LONGITUDE,
         ;
 
         public final static Set<OptionalField> SET_OF_ALL = ImmutableSet.copyOf(values());
@@ -35,6 +37,8 @@ public class PaoData {
     private Integer carrierAddress;
     private String routeName;
     private String addressOrSerialNumber;
+    private String latitude;
+    private String longitude;
 
     /**
      * Create an instance of this class which will have at a minimum the fields specified by
@@ -129,5 +133,27 @@ public class PaoData {
 
     public void setAddressOrSerialNumber(String addressOrSerialNumber) {
         this.addressOrSerialNumber = addressOrSerialNumber;
+    }
+
+    public String getLatitude() {
+        if (responseFields.contains(OptionalField.LATITUDE)) {
+            return latitude;
+        }
+        throw new UnsupportedOperationException("latitude not populated for this object");
+    }
+
+    public void setLatitude(String latitude) {
+        this.latitude = latitude;
+    }
+
+    public String getLongitude() {
+        if (responseFields.contains(OptionalField.LONGITUDE)) {
+            return longitude;
+        }
+        throw new UnsupportedOperationException("longitude not populated for this object");
+    }
+
+    public void setLongitude(String longitude) {
+        this.longitude = longitude;
     }
 }

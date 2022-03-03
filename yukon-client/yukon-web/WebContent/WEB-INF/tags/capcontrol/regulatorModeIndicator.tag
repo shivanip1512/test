@@ -1,6 +1,8 @@
+<%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
 <%@ taglib prefix="cti" uri="http://cannontech.com/tags/cti" %>
 
 <%@ attribute name="paoId" required="true" %>
+<%@ attribute name="showBlankIcon" required="false" description="Boolean whether to show blank space for the normal mode." %>
 
 <cti:msgScope paths="modules.capcontrol.ivvc">
 
@@ -16,7 +18,9 @@
 
 <%-- Regulator is in Remote Mode and ready for control. --%>
 <span class="dn" data-pao-id="${paoId}" data-regulator-mode="normal">
-    <cti:icon icon="icon-blank"/>
+    <c:if test="${showBlankIcon}">
+        <cti:icon icon="icon-blank"/>
+    </c:if>
 </span>
 
 <cti:dataUpdaterCallback function="yukon.da.updaters.regulatorMode" initialize="true" value="VOLTAGE_REGULATOR/${paoId}/MODE"/>

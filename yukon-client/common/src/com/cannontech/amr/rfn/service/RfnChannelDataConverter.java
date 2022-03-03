@@ -1,8 +1,11 @@
 package com.cannontech.amr.rfn.service;
 
+import java.util.HashMap;
 import java.util.List;
 import java.util.Objects;
+import java.util.Optional;
 import java.util.Set;
+import java.util.concurrent.TimeUnit;
 import java.util.stream.Collectors;
 
 import javax.annotation.PostConstruct;
@@ -32,9 +35,14 @@ import com.cannontech.common.point.PointQuality;
 import com.cannontech.common.rfn.model.RfnDevice;
 import com.cannontech.core.dao.NotFoundException;
 import com.cannontech.core.dao.PointDao;
+import com.cannontech.core.dynamic.AsyncDynamicDataSource;
 import com.cannontech.core.dynamic.PointValueQualityHolder;
 import com.cannontech.database.data.lite.LitePoint;
+import com.cannontech.message.dispatch.message.DBChangeMsg;
+import com.cannontech.message.dispatch.message.DbChangeType;
 import com.cannontech.message.dispatch.message.PointData;
+import com.google.common.cache.Cache;
+import com.google.common.cache.CacheBuilder;
 import com.google.common.collect.ImmutableSet;
 import com.google.common.collect.Lists;
 
@@ -54,10 +62,13 @@ public class RfnChannelDataConverter {
     @Autowired private PointDao pointDao;
     @Autowired private PaoDefinitionDao paoDefinitionDao;
     @Autowired private RfnDataValidator rfnDataValidator;
+    @Autowired private AsyncDynamicDataSource asyncDynamicDataSource;
     
     private ImmutableSet<PaoTypePointIdentifier> calculationContributors;
     private static final Logger log = YukonLogManager.getLogger(RfnChannelDataConverter.class);
-    
+    private Cache <PaoPointIdentifier, LitePoint> cache = CacheBuilder.newBuilder()
+            .expireAfterWrite(5, TimeUnit.MINUTES).build();
+
     public List<CalculationData> convert(RfnMeterPlusReadingData reading, List<? super PointData> toArchive, Long dataPointId) {
         
         List<ChannelData> nonDatedChannelData = reading.getRfnMeterReadingData().getChannelDataList();
@@ -149,16 +160,20 @@ public class RfnChannelDataConverter {
         }
         
         PaoPointIdentifier ppi = pointValueHandler.getPaoPointIdentifier();
-        LitePoint point;
-        try {
-            point = pointDao.getLitePoint(ppi);
-        } catch (NotFoundException e) {
-            if (log.isDebugEnabled()) {
-                log.debug("Unable to find point for channelData: " + channelData);
+        LitePoint point = cache.getIfPresent(ppi);
+        if (point == null) {
+            try {
+                point = pointDao.getLitePoint(ppi);
+                cache.put(ppi, point);
+                log.debug("Cached point {} for {} {}", point, ppi, channelData);
+            } catch (NotFoundException e) {
+                log.debug("Unable to find point for {} {}", ppi, channelData);
+                return null;
             }
-            return null;
+        } else {
+            log.debug("Found cached point {} for {} {}", point, ppi, channelData);
         }
-        
+
         PointData pointData = new PointData();
         pointData.setId(point.getPointID());
         pointData.setPointQuality(PointQuality.Normal);
@@ -188,7 +203,7 @@ public class RfnChannelDataConverter {
             log.debug("PointData converted: " + pointData);
         }
         
-        if( rfnDataValidator.isTimestampRecent(readingInstant, Instant.now()) ) {
+        if(!rfnDataValidator.isTimestampRecent(readingInstant, Instant.now()) ) {
             log.warn("Discarding invalid or old pointdata for device " + rfnDevice + " : " + pointData);
             return null;
         }
@@ -199,14 +214,10 @@ public class RfnChannelDataConverter {
     @PostConstruct
     private void setCalculationContributors() {
         Set<PaoType> types = paoDefinitionDao.getPaoTypesThatSupportTag(PaoTag.RFN_POINT_CALCULATION);
-        ImmutableSet<BuiltInAttribute> attributes = ImmutableSet.of(BuiltInAttribute.SUM_KWH, BuiltInAttribute.DELIVERED_KWH, BuiltInAttribute.RECEIVED_KWH,
-                                                                    BuiltInAttribute.NET_KWH, BuiltInAttribute.SUM_KVARH, BuiltInAttribute.SUM_KVAH,
-                                                                    BuiltInAttribute.KVARH, BuiltInAttribute.USAGE_WATER, BuiltInAttribute.KVAH,
-                                                                    BuiltInAttribute.USAGE_GAS);
         
         ImmutableSet.Builder<PaoTypePointIdentifier> b = ImmutableSet.builder();
         for (PaoType type : types) {
-            for (BuiltInAttribute attribute : attributes) {
+            for (BuiltInAttribute attribute : BuiltInAttribute.getCalculableAttributes()) {
                 try {
                     PaoTypePointIdentifier ptpi = attributeService.getPaoTypePointIdentifierForAttribute(type, attribute);
                     b.add(ptpi);
@@ -218,6 +229,25 @@ public class RfnChannelDataConverter {
             }
         }
         calculationContributors = b.build();
+        asyncDynamicDataSource.addDBChangeListener(dbChange -> {        
+            Optional.of(dbChange)
+                    .filter(dbc -> dbc.getDatabase() == DBChangeMsg.CHANGE_POINT_DB)
+                    .filter(dbc -> dbc.getDbChangeType() == DbChangeType.DELETE || dbc.getDbChangeType() == DbChangeType.UPDATE)
+                    .map(DBChangeMsg::getId)
+                    .ifPresent(pointId -> {
+                        new HashMap<>(cache.asMap()).entrySet().stream()
+                                .filter(entry -> entry.getValue().getPointID() == pointId)
+                                .findFirst()
+                                .ifPresent(entry -> {
+                                    try {
+                                        cache.invalidate(entry.getKey());
+                                        log.debug("Removed point from cache {} {}", entry.getKey(), entry.getValue());
+                                    } catch (Exception e) {
+                                        log.error("Unable to remove point from cache {} {}", entry.getKey(), entry.getValue(), e);
+                                    }
+                                });
+                    });
+
+        });
     }
-    
 }

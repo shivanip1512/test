@@ -26,6 +26,7 @@
     <bean id="voiceDataRequestMessageHandler" class="com.cannontech.notif.handler.VoiceDataRequestMessageHandler"/>
     <bean id="curtailmentEventMessageHandler" class="com.cannontech.notif.handler.CurtailmentEventMessageHandler"/>
     <bean id="curtailmentEventDeleteMessageHandler" class="com.cannontech.notif.handler.CurtailmentEventDeleteMessageHandler"/>
+    <bean id="economicEventDeleteMessageHandler" class="com.cannontech.notif.handler.EconomicEventDeleteMessageHandler"/>
     <bean id="economicEventMessageHandler" class="com.cannontech.notif.handler.EconomicEventMessageHandler" />
     <bean id="notifEmailMessageHandler" class="com.cannontech.notif.handler.NotifEmailMessageHandler" autowire="byType"/>
     <bean id="customerEmailMessageHandler" class="com.cannontech.notif.handler.CustomerEmailMessageHandler"/>

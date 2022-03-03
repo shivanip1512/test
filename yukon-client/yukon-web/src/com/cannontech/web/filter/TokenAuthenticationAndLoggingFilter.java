@@ -14,7 +14,6 @@ import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.logging.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.HttpStatus;
 import org.springframework.web.context.support.SpringBeanAutowiringSupport;
 import org.springframework.web.filter.OncePerRequestFilter;
 import org.springframework.web.util.ContentCachingRequestWrapper;
@@ -28,8 +27,8 @@ import com.cannontech.common.util.JsonUtils;
 import com.cannontech.core.dao.YukonUserDao;
 import com.cannontech.database.data.lite.LiteYukonUser;
 import com.cannontech.util.ServletUtil;
+import com.cannontech.web.api.dr.ecobee.EcobeeZeusJwtTokenAuthService;
 import com.cannontech.web.api.errorHandler.ApiExceptionHandler;
-import com.cannontech.web.api.errorHandler.model.ApiError;
 import com.cannontech.web.api.token.AuthenticationException;
 import com.cannontech.web.api.token.TokenHelper;
 import com.google.common.collect.Lists;
@@ -42,12 +41,13 @@ public class TokenAuthenticationAndLoggingFilter extends OncePerRequestFilter {
     private final Logger apiLog = YukonLogManager.getApiLogger();
 
     @Autowired private YukonUserDao userDao;
+    @Autowired private EcobeeZeusJwtTokenAuthService ecobeeZeusJwtTokenAuthService;
 
     @Override
     public void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain chain)
             throws IOException, ServletException {
 
-        boolean apiLoginRequest = ServletUtil.isPathMatch(request, Lists.newArrayList("/api/token"));
+        boolean apiLoginRequest = ServletUtil.isPathMatch(request, Lists.newArrayList("/api/token","/api/refreshToken", "/api/logout"));
         long before = System.currentTimeMillis();
         ContentCachingRequestWrapper requestWrapper = new ContentCachingRequestWrapper(request);
         ContentCachingResponseWrapper responseWrapper = new ContentCachingResponseWrapper(response);
@@ -56,8 +56,10 @@ public class TokenAuthenticationAndLoggingFilter extends OncePerRequestFilter {
         if (!apiLoginRequest) {
             try {
                 String authToken = TokenHelper.resolveToken(request);
+                //TODO Replace with Global settings (Runtime data Url)
+                boolean isEcobeeRuntimeApi = ServletUtil.isPathMatch(request, Lists.newArrayList("/api/ecobee/runtimeData"));
 
-                if (authToken != null) {
+                if (authToken != null && !isEcobeeRuntimeApi) {
                     String userId = TokenHelper.getUserId(authToken); // validate token and get userId from
                                                                       // claim
                     apiLog.debug("Received API request for " + request.getHeader("Host") + request.getContextPath()
@@ -71,9 +73,15 @@ public class TokenAuthenticationAndLoggingFilter extends OncePerRequestFilter {
                         ApiRequestContext.getContext().setLiteYukonUser(user);
                     }
 
+                } else {
+                    if (isEcobeeRuntimeApi) {
+                        ecobeeZeusJwtTokenAuthService.validateEcobeeJwtToken(authToken);
+                        // TODO Please discuss User info
+                    }
                 }
+                
             } catch (Exception e) {
-                buildApiError(response, e);
+                buildApiError(request, response, e);
                 return;
             }
 
@@ -128,11 +136,10 @@ public class TokenAuthenticationAndLoggingFilter extends OncePerRequestFilter {
     /**
      *  Build API error to show Authentication message.
      */
-    private void buildApiError(HttpServletResponse response, Exception e) throws IOException {
+    private void buildApiError(HttpServletRequest request, HttpServletResponse response, Exception e) throws IOException {
         String uniqueKey = CtiUtilities.getYKUniqueKey();
         apiLog.error(uniqueKey + " Expired or invalid token", e);
-        final ApiError apiError = new ApiError(HttpStatus.UNAUTHORIZED.value(), "Authentication Required", uniqueKey);
-        ApiExceptionHandler.parseToJson(response, apiError, HttpStatus.UNAUTHORIZED);
+        ApiExceptionHandler.authorizationRequired(request, response, uniqueKey);
     }
 
     @Override

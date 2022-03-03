@@ -1,38 +1,8 @@
 <!DOCTYPE html SYSTEM "about:legacy-compat">
-<html lang="en"><head><META http-equiv="Content-Type" content="text/html; charset=UTF-8"><link href="./images/docs-stylesheet.css" rel="stylesheet" type="text/css"><title>Apache Tomcat 9 (9.0.31) - Realm Configuration How-To</title><meta name="author" content="Craig R. McClanahan"><meta name="author" content="Yoav Shapira"><meta name="author" content="Andrew R. Jaquith"><script type="application/javascript" data-comments-identifier="tomcat-9.0-doc/realm-howto">
-    "use strict"; // Enable strict mode
-
-    (function() {
-      var thisScript = document.currentScript;
-      if (!thisScript) { // Workaround for IE <= 11
-        var scripts = document.getElementsByTagName("script");
-        thisScript = scripts[scripts.length - 1];
-      }
-      document.addEventListener("DOMContentLoaded", (function() {
-        var commentsDiv = document.getElementById("comments_thread");
-        var commentsShortname = "tomcat";
-        var commentsIdentifier = "https://tomcat.apache.org/" +
-          thisScript.getAttribute("data-comments-identifier") + ".html";
-
-        (function(w, d) {
-          if (w.location.hostname.toLowerCase() == "tomcat.apache.org") {
-            var s = d.createElement("script");
-            s.type = "application/javascript";
-            s.async = true;
-            s.src = "https://comments.apache.org/show_comments.lua?site=" +
-              encodeURIComponent(commentsShortname) +
-              "&page=" + encodeURIComponent(commentsIdentifier);
-            d.head.appendChild(s);
-          } else {
-            commentsDiv.appendChild(d.createTextNode("Comments are disabled for this page at the moment."));
-          }
-        })(window, document);
-      }), false);
-    })();
-  </script></head><body><div id="wrapper"><header><div id="header"><div><div><div class="logo noPrint"><a href="https://tomcat.apache.org/"><img alt="Tomcat Home" src="./images/tomcat.png"></a></div><div style="height: 1px;"></div><div class="asfLogo noPrint"><a href="https://www.apache.org/" target="_blank"><img src="./images/asf-logo.svg" alt="The Apache Software Foundation" style="width: 266px; height: 83px;"></a></div><h1>Apache Tomcat 9</h1><div class="versionInfo">
-          Version 9.0.31,
-          <time datetime="2020-02-05">Feb 5 2020</time></div><div style="height: 1px;"></div><div style="clear: left;"></div></div></div></div></header><div id="middle"><div><div id="mainLeft" class="noprint"><div><nav><div><h2>Links</h2><ul><li><a href="index.html">Docs Home</a></li><li><a href="https://wiki.apache.org/tomcat/FAQ">FAQ</a></li><li><a href="#comments_section">User Comments</a></li></ul></div><div><h2>User Guide</h2><ul><li><a href="introduction.html">1) Introduction</a></li><li><a href="setup.html">2) Setup</a></li><li><a href="appdev/index.html">3) First webapp</a></li><li><a href="deployer-howto.html">4) Deployer</a></li><li><a href="manager-howto.html">5) Manager</a></li><li><a href="host-manager-howto.html">6) Host Manager</a></li><li><a href="realm-howto.html">7) Realms and AAA</a></li><li><a href="security-manager-howto.html">8) Security Manager</a></li><li><a href="jndi-resources-howto.html">9) JNDI Resources</a></li><li><a href="jndi-datasource-examples-howto.html">10) JDBC DataSources</a></li><li><a href="class-loader-howto.html">11) Classloading</a></li><li><a href="jasper-howto.html">12) JSPs</a></li><li><a href="ssl-howto.html">13) SSL/TLS</a></li><li><a href="ssi-howto.html">14) SSI</a></li><li><a href="cgi-howto.html">15) CGI</a></li><li><a href="proxy-howto.html">16) Proxy Support</a></li><li><a href="mbeans-descriptors-howto.html">17) MBeans Descriptors</a></li><li><a href="default-servlet.html">18) Default Servlet</a></li><li><a href="cluster-howto.html">19) Clustering</a></li><li><a href="balancer-howto.html">20) Load Balancer</a></li><li><a href="connectors.html">21) Connectors</a></li><li><a href="monitoring.html">22) Monitoring and Management</a></li><li><a href="logging.html">23) Logging</a></li><li><a href="apr.html">24) APR/Native</a></li><li><a href="virtual-hosting-howto.html">25) Virtual Hosting</a></li><li><a href="aio.html">26) Advanced IO</a></li><li><a href="maven-jars.html">27) Mavenized</a></li><li><a href="security-howto.html">28) Security Considerations</a></li><li><a href="windows-service-howto.html">29) Windows Service</a></li><li><a href="windows-auth-howto.html">30) Windows Authentication</a></li><li><a href="jdbc-pool.html">31) Tomcat's JDBC Pool</a></li><li><a href="web-socket-howto.html">32) WebSocket</a></li><li><a href="rewrite.html">33) Rewrite</a></li><li><a href="cdi.html">34) CDI 2 and JAX-RS</a></li><li><a href="graal.html">35) GraalVM Support</a></li></ul></div><div><h2>Reference</h2><ul><li><a href="RELEASE-NOTES.txt">Release Notes</a></li><li><a href="config/index.html">Configuration</a></li><li><a href="api/index.html">Tomcat Javadocs</a></li><li><a href="servletapi/index.html">Servlet 4.0 Javadocs</a></li><li><a href="jspapi/index.html">JSP 2.3 Javadocs</a></li><li><a href="elapi/index.html">EL 3.0 Javadocs</a></li><li><a href="websocketapi/index.html">WebSocket 1.1 Javadocs</a></li><li><a href="jaspicapi/index.html">JASPIC 1.1 Javadocs</a></li><li><a href="annotationapi/index.html">Common Annotations 1.3 Javadocs</a></li><li><a href="https://tomcat.apache.org/connectors-doc/">JK 1.2 Documentation</a></li></ul></div><div><h2>Apache Tomcat Development</h2><ul><li><a href="building.html">Building</a></li><li><a href="changelog.html">Changelog</a></li><li><a href="https://wiki.apache.org/tomcat/TomcatVersions">Status</a></li><li><a href="developers.html">Developers</a></li><li><a href="architecture/index.html">Architecture</a></li><li><a href="funcspecs/index.html">Functional Specs.</a></li><li><a href="tribes/introduction.html">Tribes</a></li></ul></div></nav></div></div><div id="mainRight"><div id="content"><h2>Realm Configuration How-To</h2><h3 id="Table_of_Contents">Table of Contents</h3><div class="text">
-<ul><li><a href="#Quick_Start">Quick Start</a></li><li><a href="#Overview">Overview</a><ol><li><a href="#What_is_a_Realm?">What is a Realm?</a></li><li><a href="#Configuring_a_Realm">Configuring a Realm</a></li></ol></li><li><a href="#Common_Features">Common Features</a><ol><li><a href="#Digested_Passwords">Digested Passwords</a></li><li><a href="#Example_Application">Example Application</a></li><li><a href="#Manager_Application">Manager Application</a></li><li><a href="#Realm_Logging">Realm Logging</a></li></ol></li><li><a href="#Standard_Realm_Implementations">Standard Realm Implementations</a><ol><li><a href="#JDBCRealm">JDBCRealm</a></li><li><a href="#DataSourceRealm">DataSourceRealm</a></li><li><a href="#JNDIRealm">JNDIRealm</a></li><li><a href="#UserDatabaseRealm">UserDatabaseRealm</a></li><li><a href="#MemoryRealm">MemoryRealm</a></li><li><a href="#JAASRealm">JAASRealm</a></li><li><a href="#CombinedRealm">CombinedRealm</a></li><li><a href="#LockOutRealm">LockOutRealm</a></li></ol></li></ul>
+<html lang="en"><head><META http-equiv="Content-Type" content="text/html; charset=UTF-8"><link href="./images/docs-stylesheet.css" rel="stylesheet" type="text/css"><title>Apache Tomcat 9 (9.0.56) - Realm Configuration How-To</title><meta name="author" content="Craig R. McClanahan"><meta name="author" content="Yoav Shapira"><meta name="author" content="Andrew R. Jaquith"></head><body><div id="wrapper"><header><div id="header"><div><div><div class="logo noPrint"><a href="https://tomcat.apache.org/"><img alt="Tomcat Home" src="./images/tomcat.png"></a></div><div style="height: 1px;"></div><div class="asfLogo noPrint"><a href="https://www.apache.org/" target="_blank"><img src="./images/asf-logo.svg" alt="The Apache Software Foundation" style="width: 266px; height: 83px;"></a></div><h1>Apache Tomcat 9</h1><div class="versionInfo">
+            Version 9.0.56,
+            <time datetime="2021-12-02">Dec 2 2021</time></div><div style="height: 1px;"></div><div style="clear: left;"></div></div></div></div></header><div id="middle"><div><div id="mainLeft" class="noprint"><div><nav><div><h2>Links</h2><ul><li><a href="index.html">Docs Home</a></li><li><a href="https://wiki.apache.org/tomcat/FAQ">FAQ</a></li><li><a href="#comments_section">User Comments</a></li></ul></div><div><h2>User Guide</h2><ul><li><a href="introduction.html">1) Introduction</a></li><li><a href="setup.html">2) Setup</a></li><li><a href="appdev/index.html">3) First webapp</a></li><li><a href="deployer-howto.html">4) Deployer</a></li><li><a href="manager-howto.html">5) Manager</a></li><li><a href="host-manager-howto.html">6) Host Manager</a></li><li><a href="realm-howto.html">7) Realms and AAA</a></li><li><a href="security-manager-howto.html">8) Security Manager</a></li><li><a href="jndi-resources-howto.html">9) JNDI Resources</a></li><li><a href="jndi-datasource-examples-howto.html">10) JDBC DataSources</a></li><li><a href="class-loader-howto.html">11) Classloading</a></li><li><a href="jasper-howto.html">12) JSPs</a></li><li><a href="ssl-howto.html">13) SSL/TLS</a></li><li><a href="ssi-howto.html">14) SSI</a></li><li><a href="cgi-howto.html">15) CGI</a></li><li><a href="proxy-howto.html">16) Proxy Support</a></li><li><a href="mbeans-descriptors-howto.html">17) MBeans Descriptors</a></li><li><a href="default-servlet.html">18) Default Servlet</a></li><li><a href="cluster-howto.html">19) Clustering</a></li><li><a href="balancer-howto.html">20) Load Balancer</a></li><li><a href="connectors.html">21) Connectors</a></li><li><a href="monitoring.html">22) Monitoring and Management</a></li><li><a href="logging.html">23) Logging</a></li><li><a href="apr.html">24) APR/Native</a></li><li><a href="virtual-hosting-howto.html">25) Virtual Hosting</a></li><li><a href="aio.html">26) Advanced IO</a></li><li><a href="maven-jars.html">27) Mavenized</a></li><li><a href="security-howto.html">28) Security Considerations</a></li><li><a href="windows-service-howto.html">29) Windows Service</a></li><li><a href="windows-auth-howto.html">30) Windows Authentication</a></li><li><a href="jdbc-pool.html">31) Tomcat's JDBC Pool</a></li><li><a href="web-socket-howto.html">32) WebSocket</a></li><li><a href="rewrite.html">33) Rewrite</a></li><li><a href="cdi.html">34) CDI 2 and JAX-RS</a></li><li><a href="graal.html">35) AOT/GraalVM Support</a></li></ul></div><div><h2>Reference</h2><ul><li><a href="RELEASE-NOTES.txt">Release Notes</a></li><li><a href="config/index.html">Configuration</a></li><li><a href="api/index.html">Tomcat Javadocs</a></li><li><a href="servletapi/index.html">Servlet 4.0 Javadocs</a></li><li><a href="jspapi/index.html">JSP 2.3 Javadocs</a></li><li><a href="elapi/index.html">EL 3.0 Javadocs</a></li><li><a href="websocketapi/index.html">WebSocket 1.1 Javadocs</a></li><li><a href="jaspicapi/index.html">JASPIC 1.1 Javadocs</a></li><li><a href="annotationapi/index.html">Common Annotations 1.3 Javadocs</a></li><li><a href="https://tomcat.apache.org/connectors-doc/">JK 1.2 Documentation</a></li></ul></div><div><h2>Apache Tomcat Development</h2><ul><li><a href="building.html">Building</a></li><li><a href="changelog.html">Changelog</a></li><li><a href="https://wiki.apache.org/tomcat/TomcatVersions">Status</a></li><li><a href="developers.html">Developers</a></li><li><a href="architecture/index.html">Architecture</a></li><li><a href="tribes/introduction.html">Tribes</a></li></ul></div></nav></div></div><div id="mainRight"><div id="content"><h2>Realm Configuration How-To</h2><h3 id="Table_of_Contents">Table of Contents</h3><div class="text">
+<ul><li><a href="#Quick_Start">Quick Start</a></li><li><a href="#Overview">Overview</a><ol><li><a href="#What_is_a_Realm?">What is a Realm?</a></li><li><a href="#Configuring_a_Realm">Configuring a Realm</a></li></ol></li><li><a href="#Common_Features">Common Features</a><ol><li><a href="#Digested_Passwords">Digested Passwords</a></li><li><a href="#Example_Application">Example Application</a></li><li><a href="#Manager_Application">Manager Application</a></li><li><a href="#Realm_Logging">Realm Logging</a></li></ol></li><li><a href="#Standard_Realm_Implementations">Standard Realm Implementations</a><ol><li><a href="#DataSourceRealm">DataSourceRealm</a></li><li><a href="#JNDIRealm">JNDIRealm</a></li><li><a href="#UserDatabaseRealm">UserDatabaseRealm</a></li><li><a href="#MemoryRealm">MemoryRealm</a></li><li><a href="#JAASRealm">JAASRealm</a></li><li><a href="#CombinedRealm">CombinedRealm</a></li><li><a href="#LockOutRealm">LockOutRealm</a></li><li><a href="#JDBCRealm">JDBCRealm</a></li></ol></li></ul>
 </div><h3 id="Quick_Start">Quick Start</h3><div class="text">
 
 <p>This document describes how to configure Tomcat to support <em>container
@@ -289,115 +259,6 @@ users.</p>
 
 </div><h3 id="Standard_Realm_Implementations">Standard Realm Implementations</h3><div class="text">
 
-<div class="subsection"><h4 id="JDBCRealm">JDBCRealm</h4><div class="text">
-
-<h5>Introduction</h5>
-
-<p><strong>JDBCRealm</strong> is an implementation of the Tomcat
-<code>Realm</code> interface that looks up users in a relational database
-accessed via a JDBC driver.  There is substantial configuration flexibility
-that lets you adapt to existing table and column names, as long as your
-database structure conforms to the following requirements:</p>
-<ul>
-<li>There must be a table, referenced below as the <em>users</em> table,
-    that contains one row for every valid user that this <code>Realm</code>
-    should recognize.</li>
-<li>The <em>users</em> table must contain at least two columns (it may
-    contain more if your existing applications required it):
-    <ul>
-    <li>Username to be recognized by Tomcat when the user logs in.</li>
-    <li>Password to be recognized by Tomcat when the user logs in.
-        This value may in cleartext or digested - see below for more
-        information.</li>
-    </ul></li>
-<li>There must be a table, referenced below as the <em>user roles</em> table,
-    that contains one row for every valid role that is assigned to a
-    particular user.  It is legal for a user to have zero, one, or more than
-    one valid role.</li>
-<li>The <em>user roles</em> table must contain at least two columns (it may
-    contain more if your existing applications required it):
-    <ul>
-    <li>Username to be recognized by Tomcat (same value as is specified
-        in the <em>users</em> table).</li>
-    <li>Role name of a valid role associated with this user.</li>
-    </ul></li>
-</ul>
-
-<h5>Quick Start</h5>
-
-<p>To set up Tomcat to use JDBCRealm, you will need to follow these steps:</p>
-<ol>
-<li>If you have not yet done so, create tables and columns in your database
-    that conform to the requirements described above.</li>
-<li>Configure a database username and password for use by Tomcat, that has
-    at least read only access to the tables described above.  (Tomcat will
-    never attempt to write to these tables.)</li>
-<li>Place a copy of the JDBC driver you will be using inside the
-    <code>$CATALINA_HOME/lib</code> directory.
-    Note that <strong>only</strong> JAR files are recognized!</li>
-<li>Set up a <code>&lt;Realm&gt;</code> element, as described below, in your
-    <code>$CATALINA_BASE/conf/server.xml</code> file.</li>
-<li>Restart Tomcat if it is already running.</li>
-</ol>
-
-<h5>Realm Element Attributes</h5>
-
-<p>To configure JDBCRealm, you will create a <code>&lt;Realm&gt;</code>
-element and nest it in your <code>$CATALINA_BASE/conf/server.xml</code> file,
-as described <a href="#Configuring_a_Realm">above</a>. The attributes for the
-JDBCRealm are defined in the <a href="config/realm.html">Realm</a> configuration
-documentation.</p>
-
-<h5>Example</h5>
-
-<p>An example SQL script to create the needed tables might look something
-like this (adapt the syntax as required for your particular database):</p>
-<div class="codeBox"><pre><code>create table users (
-  user_name         varchar(15) not null primary key,
-  user_pass         varchar(15) not null
-);
-
-create table user_roles (
-  user_name         varchar(15) not null,
-  role_name         varchar(15) not null,
-  primary key (user_name, role_name)
-);</code></pre></div>
-
-<p>Example <code>Realm</code> elements are included (commented out) in the
-default <code>$CATALINA_BASE/conf/server.xml</code> file.  Here's an example
-for using a MySQL database called "authority", configured with the tables
-described above, and accessed with username "dbuser" and password "dbpass":</p>
-<div class="codeBox"><pre><code>&lt;Realm className="org.apache.catalina.realm.JDBCRealm"
-      driverName="org.gjt.mm.mysql.Driver"
-   connectionURL="jdbc:mysql://localhost/authority?user=dbuser&amp;amp;password=dbpass"
-       userTable="users" userNameCol="user_name" userCredCol="user_pass"
-   userRoleTable="user_roles" roleNameCol="role_name"/&gt;</code></pre></div>
-
-<h5>Additional Notes</h5>
-
-<p>JDBCRealm operates according to the following rules:</p>
-<ul>
-<li>When a user attempts to access a protected resource for the first time,
-    Tomcat will call the <code>authenticate()</code> method of this
-    <code>Realm</code>.  Thus, any changes you have made to the database
-    directly (new users, changed passwords or roles, etc.) will be immediately
-    reflected.</li>
-<li>Once a user has been authenticated, the user (and his or her associated
-    roles) are cached within Tomcat for the duration of the user's login.
-    (For FORM-based authentication, that means until the session times out or
-    is invalidated; for BASIC authentication, that means until the user
-    closes their browser).  The cached user is <strong>not</strong> saved and
-    restored across sessions serialisations. Any changes to the database
-    information for an already authenticated user will <strong>not</strong> be
-    reflected until the next time that user logs on again.</li>
-<li>Administering the information in the <em>users</em> and <em>user roles</em>
-    table is the responsibility of your own applications.  Tomcat does not
-    provide any built-in capabilities to maintain users and roles.</li>
-</ul>
-
-</div></div>
-
-
 <div class="subsection"><h4 id="DataSourceRealm">DataSourceRealm</h4><div class="text">
 
 <h5>Introduction</h5>
@@ -492,7 +353,7 @@ name "java:/comp/env/jdbc/authority".</p>
     <code>Realm</code>.  Thus, any changes you have made to the database
     directly (new users, changed passwords or roles, etc.) will be immediately
     reflected.</li>
-<li>Once a user has been authenticated, the user (and his or her associated
+<li>Once a user has been authenticated, the user (and their associated
     roles) are cached within Tomcat for the duration of the user's login.
     (For FORM-based authentication, that means until the session times out or
     is invalidated; for BASIC authentication, that means until the user
@@ -836,10 +697,10 @@ userPassword: janet</code></pre></div>
 searches the directory for a unique entry with that value as its mail
 attribute and attempts to bind to the directory as
 <code>uid=jjones,ou=people,dc=mycompany,dc=com</code> with the given
-password. If authentication succeeds, she is assigned three roles:
-"role2" and "role3", the values of the "memberOf" attribute in her
+password. If authentication succeeds, they are assigned three roles:
+"role2" and "role3", the values of the "memberOf" attribute in their
 directory entry, and "tomcat", the value of the "cn" attribute in the
-only group entry of which she is a member.</p>
+only group entry of which they are a member.</p>
 
 <p>Finally, to authenticate the user by retrieving
 the password from the directory and making a local comparison in the
@@ -868,7 +729,7 @@ authentication is usually to be preferred.</p>
     <code>Realm</code>.  Thus, any changes you have made to the directory
     (new users, changed passwords or roles, etc.) will be immediately
     reflected.</li>
-<li>Once a user has been authenticated, the user (and his or her associated
+<li>Once a user has been authenticated, the user (and their associated
     roles) are cached within Tomcat for the duration of the user's login.
     (For FORM-based authentication, that means until the session times out or
     is invalidated; for BASIC authentication, that means until the user
@@ -908,8 +769,8 @@ configuration documentation.</p>
 
 <h5>User File Format</h5>
 
-<p>The users file uses the same format as the
-<a href="#MemoryRealm">MemoryRealm</a>.</p>
+<p>For the XML file based <code>UserDatabase</code>, the users file uses the
+same format as the <a href="#MemoryRealm">MemoryRealm</a>.</p>
 
 <h5>Example</h5>
 
@@ -935,12 +796,20 @@ to all virtual hosts and web applications.  The default contents of the
 <li>When a user attempts to access a protected resource for the first time,
     Tomcat will call the <code>authenticate()</code> method of this
     <code>Realm</code>.</li>
-<li>Once a user has been authenticated, the user (and his or her associated
-    roles) are cached within Tomcat for the duration of the user's login.
+<li>Once a user has been authenticated, the user becomes associated within
+    Tomcat for the duration of the user's login.
     (For FORM-based authentication, that means until the session times out or
     is invalidated; for BASIC authentication, that means until the user
-    closes their browser).  The cached user is <strong>not</strong> saved and
-    restored across sessions serialisations.</li>
+    closes their browser). However, the user roles will still reflect the
+    <code>UserDatabase</code> contents, unlike for the other realms. If a user
+    is removed from the database, it will be considered to have no roles.
+    The <code>useStaticPrincipal</code> attribute of the
+    <code>UserDatabaseRealm</code> can be used to instead cache the user along
+    with all its roles. The cached user is <strong>not</strong> saved and
+    restored across sessions serialisations. When the user's principal object
+    is serialized for any reason, it will also be replaced by a static
+    equivalent object with roles that will no longer reflect the databse
+    contents.</li>
 </ul>
 
 
@@ -993,7 +862,7 @@ valid user, consisting of the following attributes:</p>
 <li>When a user attempts to access a protected resource for the first time,
     Tomcat will call the <code>authenticate()</code> method of this
     <code>Realm</code>.</li>
-<li>Once a user has been authenticated, the user (and his or her associated
+<li>Once a user has been authenticated, the user (and their associated
     roles) are cached within Tomcat for the duration of the user's login.
     (For FORM-based authentication, that means until the session times out or
     is invalidated; for BASIC authentication, that means until the user
@@ -1102,8 +971,8 @@ and restarting the server, without any code changes to your application.</li>
               method of this <code>Realm</code>.  Thus, any changes you have made in
               the security mechanism directly (new users, changed passwords or
               roles, etc.) will be immediately reflected.</li>
-          <li>Once a user has been authenticated, the user (and his or
-              her associated roles) are cached within Tomcat for the duration of
+          <li>Once a user has been authenticated, the user (and their
+              associated roles) are cached within Tomcat for the duration of
               the user's login.  For FORM-based authentication, that means until
               the session times out or is invalidated; for BASIC authentication,
               that means until the user closes their browser.  Any changes to the
@@ -1206,18 +1075,117 @@ functionality to a UserDatabase Realm.</p>
 
 </div></div>
 
-</div><div class="noprint"><h3 id="comments_section">
-                  Comments
-                </h3><div class="text"><p class="notice"><strong>Notice:</strong> This comments section collects your suggestions
-                    on improving documentation for Apache Tomcat.<br><br>
-                    If you have trouble and need help, read
-                    <a href="https://tomcat.apache.org/findhelp.html">Find Help</a> page
-                    and ask your question on the tomcat-users
-                    <a href="https://tomcat.apache.org/lists.html">mailing list</a>.
-                    Do not ask such questions here. This is not a Q&amp;A section.<br><br>
-                    The Apache Comments System is explained <a href="./comments.html">here</a>.
-                    Comments may be removed by our moderators if they are either
-                    implemented or considered invalid/off-topic.
-                  </p><div id="comments_thread"></div></div></div></div></div></div></div><footer><div id="footer">
-    Copyright &copy; 1999-2020, The Apache Software Foundation
-  </div></footer></div></body></html>
+<div class="subsection"><h4 id="JDBCRealm">JDBCRealm</h4><div class="text">
+
+<h5>Introduction</h5>
+
+<p><strong>The JDBC Database Realm has been deprecated and will be removed
+in Tomcat 10 onwards. Use the DataSourceRealm instead.</strong></p>
+
+<p><strong>JDBCRealm</strong> is an implementation of the Tomcat
+<code>Realm</code> interface that looks up users in a relational database
+accessed via a JDBC driver.  There is substantial configuration flexibility
+that lets you adapt to existing table and column names, as long as your
+database structure conforms to the following requirements:</p>
+<ul>
+<li>There must be a table, referenced below as the <em>users</em> table,
+    that contains one row for every valid user that this <code>Realm</code>
+    should recognize.</li>
+<li>The <em>users</em> table must contain at least two columns (it may
+    contain more if your existing applications required it):
+    <ul>
+    <li>Username to be recognized by Tomcat when the user logs in.</li>
+    <li>Password to be recognized by Tomcat when the user logs in.
+        This value may in cleartext or digested - see below for more
+        information.</li>
+    </ul></li>
+<li>There must be a table, referenced below as the <em>user roles</em> table,
+    that contains one row for every valid role that is assigned to a
+    particular user.  It is legal for a user to have zero, one, or more than
+    one valid role.</li>
+<li>The <em>user roles</em> table must contain at least two columns (it may
+    contain more if your existing applications required it):
+    <ul>
+    <li>Username to be recognized by Tomcat (same value as is specified
+        in the <em>users</em> table).</li>
+    <li>Role name of a valid role associated with this user.</li>
+    </ul></li>
+</ul>
+
+<h5>Quick Start</h5>
+
+<p>To set up Tomcat to use JDBCRealm, you will need to follow these steps:</p>
+<ol>
+<li>If you have not yet done so, create tables and columns in your database
+    that conform to the requirements described above.</li>
+<li>Configure a database username and password for use by Tomcat, that has
+    at least read only access to the tables described above.  (Tomcat will
+    never attempt to write to these tables.)</li>
+<li>Place a copy of the JDBC driver you will be using inside the
+    <code>$CATALINA_HOME/lib</code> directory.
+    Note that <strong>only</strong> JAR files are recognized!</li>
+<li>Set up a <code>&lt;Realm&gt;</code> element, as described below, in your
+    <code>$CATALINA_BASE/conf/server.xml</code> file.</li>
+<li>Restart Tomcat if it is already running.</li>
+</ol>
+
+<h5>Realm Element Attributes</h5>
+
+<p>To configure JDBCRealm, you will create a <code>&lt;Realm&gt;</code>
+element and nest it in your <code>$CATALINA_BASE/conf/server.xml</code> file,
+as described <a href="#Configuring_a_Realm">above</a>. The attributes for the
+JDBCRealm are defined in the <a href="config/realm.html">Realm</a> configuration
+documentation.</p>
+
+<h5>Example</h5>
+
+<p>An example SQL script to create the needed tables might look something
+like this (adapt the syntax as required for your particular database):</p>
+<div class="codeBox"><pre><code>create table users (
+  user_name         varchar(15) not null primary key,
+  user_pass         varchar(15) not null
+);
+
+create table user_roles (
+  user_name         varchar(15) not null,
+  role_name         varchar(15) not null,
+  primary key (user_name, role_name)
+);</code></pre></div>
+
+<p>Example <code>Realm</code> elements are included (commented out) in the
+default <code>$CATALINA_BASE/conf/server.xml</code> file.  Here's an example
+for using a MySQL database called "authority", configured with the tables
+described above, and accessed with username "dbuser" and password "dbpass":</p>
+<div class="codeBox"><pre><code>&lt;Realm className="org.apache.catalina.realm.JDBCRealm"
+      driverName="org.gjt.mm.mysql.Driver"
+   connectionURL="jdbc:mysql://localhost/authority?user=dbuser&amp;amp;password=dbpass"
+       userTable="users" userNameCol="user_name" userCredCol="user_pass"
+   userRoleTable="user_roles" roleNameCol="role_name"/&gt;</code></pre></div>
+
+<h5>Additional Notes</h5>
+
+<p>JDBCRealm operates according to the following rules:</p>
+<ul>
+<li>When a user attempts to access a protected resource for the first time,
+    Tomcat will call the <code>authenticate()</code> method of this
+    <code>Realm</code>.  Thus, any changes you have made to the database
+    directly (new users, changed passwords or roles, etc.) will be immediately
+    reflected.</li>
+<li>Once a user has been authenticated, the user (and his or her associated
+    roles) are cached within Tomcat for the duration of the user's login.
+    (For FORM-based authentication, that means until the session times out or
+    is invalidated; for BASIC authentication, that means until the user
+    closes their browser).  The cached user is <strong>not</strong> saved and
+    restored across sessions serialisations. Any changes to the database
+    information for an already authenticated user will <strong>not</strong> be
+    reflected until the next time that user logs on again.</li>
+<li>Administering the information in the <em>users</em> and <em>user roles</em>
+    table is the responsibility of your own applications.  Tomcat does not
+    provide any built-in capabilities to maintain users and roles.</li>
+</ul>
+
+</div></div>
+
+</div></div></div></div></div><footer><div id="footer">
+    Copyright &copy; 1999-2021, The Apache Software Foundation
+    </div></footer></div></body></html>

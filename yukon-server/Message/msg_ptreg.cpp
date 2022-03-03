@@ -75,3 +75,10 @@ bool CtiPointRegistrationMsg::isRequestingAllPoints() const  {  return RegFlags 
 bool CtiPointRegistrationMsg::isAddingPoints()        const  {  return RegFlags & REG_ADD_POINTS;     }
 bool CtiPointRegistrationMsg::isRemovingPoints()      const  {  return RegFlags & REG_REMOVE_POINTS;  }
 bool CtiPointRegistrationMsg::isRequestingUploadTag() const  {  return RegFlags & REG_TAG_UPLOAD;     }
+
+std::size_t CtiPointRegistrationMsg::getVariableSize() const
+{
+    return  Inherited::getVariableSize()
+        +   PointList.capacity() * sizeof( LONG );
+}
+

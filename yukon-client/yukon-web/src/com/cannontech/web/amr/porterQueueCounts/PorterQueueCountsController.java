@@ -15,8 +15,9 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 
-import com.cannontech.common.gui.util.Colors;
+import com.cannontech.common.YukonColorPalette;
 import com.cannontech.common.i18n.MessageSourceAccessor;
+import com.cannontech.common.trend.model.GraphColors;
 import com.cannontech.core.dynamic.PointValueHolder;
 import com.cannontech.core.users.model.PreferencePorterQueueCountsZoomOption;
 import com.cannontech.database.data.lite.LiteYukonPAObject;
@@ -26,7 +27,6 @@ import com.cannontech.system.GlobalSettingType;
 import com.cannontech.user.YukonUserContext;
 import com.cannontech.web.common.widgets.service.PorterQueueCountsWidgetService;
 import com.cannontech.web.tools.trends.TrendUtils;
-import com.cannontech.web.tools.trends.data.TrendType.GraphType;
 import com.cannontech.web.tools.trends.data.error.GraphDataError;
 import com.cannontech.web.user.service.UserPreferenceService;
 import com.google.common.collect.ImmutableMap;
@@ -86,19 +86,16 @@ public class PorterQueueCountsController {
                 }
             }
             seriesProperties.put("name", pointIdToPaoMap.get(pointId).getPaoName());
-            String color = Colors.colorPaletteToWeb(colorInt++);
-            if (color == "#FFFFFF") { //avoid white points on the graph
-                color = Colors.colorPaletteToWeb(colorInt++);
-            }
-            seriesProperties.put("color", color);
-            seriesProperties.put("lineColor", color);
+            String colorHexValue = GraphColors.getNextDefaultColor(colorInt++).getHexValue();
+            seriesProperties.put("color", colorHexValue);
+            seriesProperties.put("lineColor", colorHexValue);
             seriesList.add(seriesProperties);
         }
         Map<String, Object> json = new HashMap<>();
         json.put("name", "Queue Counts");
         json.put("series", seriesList);
         List<Map<String, Object>> yAxis = new ArrayList<>();
-        ImmutableMap<String, ImmutableMap<String, String>> labels = ImmutableMap.of("style", ImmutableMap.of("color", "#555"));
+        ImmutableMap<String, ImmutableMap<String, String>> labels = ImmutableMap.of("style", ImmutableMap.of("color", YukonColorPalette.GRAY.getHexValue()));
         yAxisProperties.put("labels", labels);
         yAxisProperties.put("opposite", false);
         yAxisProperties.put("softMin", 0);

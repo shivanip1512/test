@@ -19,7 +19,7 @@ namespace {
 
 }
 
-    using MpsMsg = Pil::MeterProgramStatusArchiveRequestMsg;
+    using MpsMsg = Rfn::MeterProgramStatusArchiveRequestMsg;
 
     MessagePtr<Thrift::MeterProgramming::MeterProgramStatusArchiveRequest>::type populateThrift(const MpsMsg & imsg)
     {
@@ -39,17 +39,17 @@ namespace {
         //  Hardcoded to Porter
         omsg->__set_source(Thrift::MeterProgramming::Source::PORTER);
 
-        using PPS = Pil::ProgrammingStatus;
+        using RPS = Rfn::ProgrammingStatus;
         using TPS = Thrift::MeterProgramming::ProgrammingStatus::type;
 
-        static const std::map<PPS, TPS> sourceMapping{
-            { PPS::Canceled,   TPS::CANCELED },
-            { PPS::Confirming, TPS::CONFIRMING },
-            { PPS::Failed,     TPS::FAILED },
-            { PPS::Idle,       TPS::IDLE },
-            { PPS::Initiating, TPS::INITIATING },
-            { PPS::Mismatched, TPS::MISMATCHED },
-            { PPS::Uploading,  TPS::UPLOADING }
+        static const std::map<RPS, TPS> sourceMapping {
+            { RPS::Canceled,   TPS::CANCELED },
+            { RPS::Confirming, TPS::CONFIRMING },
+            { RPS::Failed,     TPS::FAILED },
+            { RPS::Idle,       TPS::IDLE },
+            { RPS::Initiating, TPS::INITIATING },
+            { RPS::Mismatched, TPS::MISMATCHED },
+            { RPS::Uploading,  TPS::UPLOADING }
         };
 
         if( auto thriftStatus = mapFind(sourceMapping, imsg.status) )
@@ -85,8 +85,7 @@ namespace {
     }
 }
 
-namespace Pil {
-    //  In Pil namespace as this message should only be sent by Porter.
+namespace Rfn {
 
     IM_EX_MSG void sendMeterProgramStatusUpdate(const MeterProgramStatusArchiveRequestMsg & msg)
     {

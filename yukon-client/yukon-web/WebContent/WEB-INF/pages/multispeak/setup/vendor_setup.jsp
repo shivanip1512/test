@@ -1,12 +1,13 @@
 <%@ page import="com.cannontech.multispeak.client.*"%>
-<%@ taglib uri="http://www.springframework.org/tags" prefix="spring"%>
-<%@ taglib uri="http://cannontech.com/tags/cti" prefix="cti"%>
-<%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c"%>
-<%@ taglib uri="http://java.sun.com/jsp/jstl/functions" prefix="fn"%>
-<%@ taglib prefix="tags" tagdir="/WEB-INF/tags"%>
-<%@ taglib prefix="i" tagdir="/WEB-INF/tags/i18n"%>
-<%@ taglib prefix="form" uri="http://www.springframework.org/tags/form"%>
+<%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
+<%@ taglib prefix="cti" uri="http://cannontech.com/tags/cti" %>
 <%@ taglib prefix="d" tagdir="/WEB-INF/tags/dialog"%>
+<%@ taglib prefix="fn" uri="http://java.sun.com/jsp/jstl/functions" %>
+<%@ taglib prefix="form" uri="http://www.springframework.org/tags/form"%>
+<%@ taglib prefix="i" tagdir="/WEB-INF/tags/i18n"%>
+<%@ taglib prefix="spring" uri="http://www.springframework.org/tags" %>
+<%@ taglib prefix="tags" tagdir="/WEB-INF/tags"%>
+
 <cti:standardPage module="adminSetup" page="vendor.${mode}" >
     <tags:setFormEditMode mode="${mode}" />
     <cti:msg2 var="pingTitle" key=".ping" />
@@ -48,6 +49,7 @@
         <form:hidden id="actionService" path="service" />
         <form:hidden id="vendorID" path="mspVendor.vendorID" />
         <form:hidden id="endpointURL" path="endpointURL" />
+        <input type="hidden" class="js-vendor-id" value="${mspVendor.vendorID}"/>
         <tags:sectionContainer2 nameKey="vendorSetup" styleClass="stacked-lg">
             <c:if test="${!noVendorsExist || createMode}">
                 <div class="column-12-12 clearfix">
@@ -128,9 +130,11 @@
                             <tags:nameValue2 nameKey=".validateCertificate">
                                 <cti:displayForPageEditModes modes="EDIT,CREATE">
                                     <tags:switch path="mspVendor.validateCertificate" classes="toggle-sm"/>
+                                    <input type="hidden" class="js-create-or-edit-mode">
                                 </cti:displayForPageEditModes>
                                 <cti:displayForPageEditModes modes="VIEW">
                                     <tags:switch path="mspVendor.validateCertificate" classes="toggle-sm" disabled="true"/>
+                                    <input type="hidden" class="js-view-mode">
                                 </cti:displayForPageEditModes>
                             </tags:nameValue2>
                         </tags:nameValueContainer2>
@@ -144,7 +148,7 @@
                     <div class="column-16-8 clearfix">
                         <div class="column one">
                             <!-- Interfaces -->
-                            <table class="compact-results-table row-highlighting full-width">
+                            <table class="compact-results-table no-stripes full-width">
                                 <thead>
                                     <tr>
                                         <th><i:inline key=".interface" /></th>
@@ -179,7 +183,7 @@
                                                     </c:if>
                                                 </c:otherwise>
                                             </c:choose>
-                                            <tr>
+                                            <tr data-id="${indexValue}">
                                                 <td class="wsnw">
                                                     <tags:checkbox
                                                         path="mspInterfaceList[${indexValue}].interfaceEnabled"
@@ -210,7 +214,7 @@
                                                         disabled="${!currentInterface.interfaceEnabled}"
                                                         items="${versionOptions}" inputClass="with-option-hiding" />
                                                 </td>
-                                                <td style="width: 90px;">
+                                                <td style="width: 120px;">
                                                     <div class="button-group fr wsnw oh">
                                                         <cti:button icon="icon-ping"
                                                             id="ping${currentInterface.mspInterface}" name="pingURL"
@@ -223,6 +227,21 @@
                                                             title="${getMethods}"
                                                             disabled="${!currentInterface.interfaceEnabled}"
                                                             onclick="yukon.admin.multispeak.executeRequest('${currentInterface.mspInterface}',this.name,'${currentInterface.version}');" />
+                                                        <tags:hidden path="mspInterfaceList[${indexValue}].useVendorAuth" id="js-msp-uservendorauth-${indexValue}"/>
+                                                        <tags:hidden path="mspInterfaceList[${indexValue}].inUserName" id="js-msp-inusername-${indexValue}"/>
+                                                        <tags:hidden path="mspInterfaceList[${indexValue}].inPassword" id="js-msp-inpassword-${indexValue}"/>
+                                                        <tags:hidden path="mspInterfaceList[${indexValue}].outUserName" id="js-msp-outusername-${indexValue}"/>
+                                                        <tags:hidden path="mspInterfaceList[${indexValue}].outPassword" id="js-msp-outpassword-${indexValue}"/>
+                                                        <tags:hidden path="mspInterfaceList[${indexValue}].validateCertificate" id="js-msp-validatecertificate-${indexValue}"/>
+                                                        <input type="hidden" id="js-page-mode" value="${mode}"/>
+                                                        <cti:msg2 var="interfaceAuthTitle" key=".interfaceAuthPopupTitle" />
+                                                        <cti:button icon="icon-lock" 
+                                                                    renderMode="buttonImage" 
+                                                                    classes="js-endpoint-auth-btn"
+                                                                    name="interfaceAuth" 
+                                                                    data-title="${interfaceAuthTitle}"
+                                                                    disabled="${!currentInterface.interfaceEnabled}"
+                                                                    id="interfaceAuth${currentInterface.mspInterface}"/>
                                                     </div>
                                                 </td>
                                             </tr>
@@ -243,7 +262,7 @@
                                         <c:set var="interfaceListLength"
                                             value="${fn:length(multispeak.mspInterfaceList)/2}" />
                                         <td rowspan='${interfaceListLength+3}'><textarea cols="40"
-                                                rows="${interfaceListLength*2+3}" name="Results" id="results" readonly
+                                                rows="${interfaceListLength*3+1}" name="Results" id="results" readonly
                                                 wrap="VIRTUAL" style='color:<c:out value="${resultColor}"/>'>${MSP_RESULT_MSG}</textarea>
                                         </td>
                                     </tr>

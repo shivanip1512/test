@@ -95,20 +95,16 @@
     <bean class="com.cannontech.common.weather.impl.WeatherDataServiceImpl"/>
     <bean class="com.cannontech.common.weather.impl.NoaaWeatherDataServiceImpl"/>
     
-    <bean class="com.cannontech.dr.ecobee.service.impl.EcobeeReconciliationServiceImpl"/>
-    <bean class="com.cannontech.dr.ecobee.dao.impl.EcobeeReconciliationReportDaoImpl"/>
+    <bean class="com.cannontech.dr.ecobee.service.impl.EcobeeZeusReconciliationServiceImpl"/>
+    <bean class="com.cannontech.dr.ecobee.dao.impl.EcobeeZeusReconciliationReportDaoImpl"/>
     <bean class="com.cannontech.dr.ecobee.dao.impl.EcobeeGroupDeviceMappingDaoImpl"/>
-    <bean class="com.cannontech.dr.ecobee.dao.impl.EcobeeQueryCountDaoImpl"/>
+    <bean class="com.cannontech.dr.ecobee.dao.impl.EcobeeZeusGroupDaoImpl"/>
 
-    <bean class="com.cannontech.dr.ecobee.service.impl.EcobeeCommunicationServiceImpl"/>
-    <bean class="com.cannontech.dr.ecobee.service.impl.EcobeeCommunicationServiceHelper"/>
-    <bean class="com.cannontech.dr.ecobee.service.impl.EcobeePointUpdateServiceImpl"/>
-
-    <bean class="com.cannontech.dr.recenteventparticipation.dao.impl.RecentEventParticipationDaoImpl"/>
-    <bean class="com.cannontech.dr.recenteventparticipation.service.impl.RecentEventParticipationServiceImpl"/>
-
-    <bean id="ecobeeRestProxyFactory" class="com.cannontech.dr.ecobee.service.impl.EcobeeRestProxyFactory">
-        <constructor-arg name="proxiedTemplate">
+    <bean class="com.cannontech.dr.ecobee.service.impl.EcobeeZeusCommunicationServiceImpl"/>
+    <bean class="com.cannontech.dr.ecobee.service.impl.EcobeeZeusPointUpdateServiceImpl"/>
+    <bean class="com.cannontech.dr.ecobee.service.impl.EcobeeZeusGroupServiceImpl"/>
+    <bean class="com.cannontech.dr.ecobee.service.helper.EcobeeZeusRequestHelper">
+            <constructor-arg name="restTemplate">
             <bean class="org.springframework.web.client.RestTemplate">
                 <property name="messageConverters">
                     <list>
@@ -116,20 +112,17 @@
                     </list>
                 </property>
                 <property name="errorHandler">
-                    <bean class="com.cannontech.dr.ecobee.service.EcobeeErrorHandler"/>
+                    <bean class="com.cannontech.dr.ecobee.service.EcobeeZeusErrorHandler"/>
                 </property>
             </bean>
         </constructor-arg>
     </bean>
 
-    <bean class="com.cannontech.dr.ecobee.service.impl.EcobeeRestProxyFactory"
-            factory-bean="ecobeeRestProxyFactory"
-            factory-method="createInstance">
-        <qualifier value="ecobee"/>
-    </bean>
-    
+    <bean class="com.cannontech.dr.recenteventparticipation.dao.impl.RecentEventParticipationDaoImpl"/>
+    <bean class="com.cannontech.dr.recenteventparticipation.service.impl.RecentEventParticipationServiceImpl"/>
+
     <bean class="com.cannontech.dr.service.impl.RuntimeCalcServiceImpl" />
-    
+    <bean class="com.cannontech.dr.service.impl.RuntimeCalcServiceHelper" />
     <!-- Honeywell Wifi -->
     <bean class="com.cannontech.dr.honeywell.service.impl.HoneywellCommunicationServiceImpl"/>
 
@@ -159,10 +152,13 @@
     <bean class="com.cannontech.dr.nest.service.impl.NestServiceImpl"/>
     <bean class="com.cannontech.dr.nest.dao.impl.NestDaoImpl"/>
 
-    <bean class="com.cannontech.dr.pxwhite.service.impl.PxWhiteCommunicationServiceImpl"/>
+    <bean class="com.cannontech.dr.eatonCloud.service.impl.v1.EatonCloudCommunicationServiceImplV1"/>
+    <bean class="com.cannontech.dr.eatonCloud.dao.impl.EatonCloudDaoImpl"/>
     
     <bean class="com.cannontech.dr.itron.dao.impl.ItronDaoImpl"/>
 
     <bean class="com.cannontech.dr.meterDisconnect.dao.impl.DrMeterDisconnectStatusDaoImpl"/>
     <bean class="com.cannontech.dr.meterDisconnect.service.impl.DrMeterDisconnectStatusServiceImpl"/>
+
+    <bean class="com.cannontech.common.events.helper.EventLogHelper"/>
 </beans>

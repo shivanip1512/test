@@ -1,37 +1,7 @@
 <!DOCTYPE html SYSTEM "about:legacy-compat">
-<html lang="en"><head><META http-equiv="Content-Type" content="text/html; charset=UTF-8"><link href="../images/docs-stylesheet.css" rel="stylesheet" type="text/css"><title>Apache Tomcat 9 Configuration Reference (9.0.31) - The Manager Component</title><meta name="author" content="Craig R. McClanahan"><meta name="author" content="Yoav Shapira"><script type="application/javascript" data-comments-identifier="tomcat-9.0-doc/config/manager">
-    "use strict"; // Enable strict mode
-
-    (function() {
-      var thisScript = document.currentScript;
-      if (!thisScript) { // Workaround for IE <= 11
-        var scripts = document.getElementsByTagName("script");
-        thisScript = scripts[scripts.length - 1];
-      }
-      document.addEventListener("DOMContentLoaded", (function() {
-        var commentsDiv = document.getElementById("comments_thread");
-        var commentsShortname = "tomcat";
-        var commentsIdentifier = "https://tomcat.apache.org/" +
-          thisScript.getAttribute("data-comments-identifier") + ".html";
-
-        (function(w, d) {
-          if (w.location.hostname.toLowerCase() == "tomcat.apache.org") {
-            var s = d.createElement("script");
-            s.type = "application/javascript";
-            s.async = true;
-            s.src = "https://comments.apache.org/show_comments.lua?site=" +
-              encodeURIComponent(commentsShortname) +
-              "&page=" + encodeURIComponent(commentsIdentifier);
-            d.head.appendChild(s);
-          } else {
-            commentsDiv.appendChild(d.createTextNode("Comments are disabled for this page at the moment."));
-          }
-        })(window, document);
-      }), false);
-    })();
-  </script></head><body><div id="wrapper"><header><div id="header"><div><div><div class="logo noPrint"><a href="https://tomcat.apache.org/"><img alt="Tomcat Home" src="../images/tomcat.png"></a></div><div style="height: 1px;"></div><div class="asfLogo noPrint"><a href="https://www.apache.org/" target="_blank"><img src="../images/asf-logo.svg" alt="The Apache Software Foundation" style="width: 266px; height: 83px;"></a></div><h1>Apache Tomcat 9 Configuration Reference</h1><div class="versionInfo">
-          Version 9.0.31,
-          <time datetime="2020-02-05">Feb 5 2020</time></div><div style="height: 1px;"></div><div style="clear: left;"></div></div></div></div></header><div id="middle"><div><div id="mainLeft" class="noprint"><div><nav><div><h2>Links</h2><ul><li><a href="../index.html">Docs Home</a></li><li><a href="index.html">Config Ref. Home</a></li><li><a href="https://wiki.apache.org/tomcat/FAQ">FAQ</a></li><li><a href="#comments_section">User Comments</a></li></ul></div><div><h2>Top Level Elements</h2><ul><li><a href="server.html">Server</a></li><li><a href="service.html">Service</a></li></ul></div><div><h2>Executors</h2><ul><li><a href="executor.html">Executor</a></li></ul></div><div><h2>Connectors</h2><ul><li><a href="http.html">HTTP/1.1</a></li><li><a href="http2.html">HTTP/2</a></li><li><a href="ajp.html">AJP</a></li></ul></div><div><h2>Containers</h2><ul><li><a href="context.html">Context</a></li><li><a href="engine.html">Engine</a></li><li><a href="host.html">Host</a></li><li><a href="cluster.html">Cluster</a></li></ul></div><div><h2>Nested Components</h2><ul><li><a href="cookie-processor.html">CookieProcessor</a></li><li><a href="credentialhandler.html">CredentialHandler</a></li><li><a href="globalresources.html">Global Resources</a></li><li><a href="jar-scanner.html">JarScanner</a></li><li><a href="jar-scan-filter.html">JarScanFilter</a></li><li><a href="listeners.html">Listeners</a></li><li><a href="loader.html">Loader</a></li><li><a href="manager.html">Manager</a></li><li><a href="realm.html">Realm</a></li><li><a href="resources.html">Resources</a></li><li><a href="sessionidgenerator.html">SessionIdGenerator</a></li><li><a href="valve.html">Valve</a></li></ul></div><div><h2>Cluster Elements</h2><ul><li><a href="cluster.html">Cluster</a></li><li><a href="cluster-manager.html">Manager</a></li><li><a href="cluster-channel.html">Channel</a></li><li><a href="cluster-membership.html">Channel/Membership</a></li><li><a href="cluster-sender.html">Channel/Sender</a></li><li><a href="cluster-receiver.html">Channel/Receiver</a></li><li><a href="cluster-interceptor.html">Channel/Interceptor</a></li><li><a href="cluster-valve.html">Valve</a></li><li><a href="cluster-deployer.html">Deployer</a></li><li><a href="cluster-listener.html">ClusterListener</a></li></ul></div><div><h2>web.xml</h2><ul><li><a href="filter.html">Filter</a></li></ul></div><div><h2>Other</h2><ul><li><a href="systemprops.html">System properties</a></li><li><a href="jaspic.html">JASPIC</a></li></ul></div></nav></div></div><div id="mainRight"><div id="content"><h2>The Manager Component</h2><h3 id="Table_of_Contents">Table of Contents</h3><div class="text">
+<html lang="en"><head><META http-equiv="Content-Type" content="text/html; charset=UTF-8"><link href="../images/docs-stylesheet.css" rel="stylesheet" type="text/css"><title>Apache Tomcat 9 Configuration Reference (9.0.56) - The Manager Component</title><meta name="author" content="Craig R. McClanahan"><meta name="author" content="Yoav Shapira"></head><body><div id="wrapper"><header><div id="header"><div><div><div class="logo noPrint"><a href="https://tomcat.apache.org/"><img alt="Tomcat Home" src="../images/tomcat.png"></a></div><div style="height: 1px;"></div><div class="asfLogo noPrint"><a href="https://www.apache.org/" target="_blank"><img src="../images/asf-logo.svg" alt="The Apache Software Foundation" style="width: 266px; height: 83px;"></a></div><h1>Apache Tomcat 9 Configuration Reference</h1><div class="versionInfo">
+            Version 9.0.56,
+            <time datetime="2021-12-02">Dec 2 2021</time></div><div style="height: 1px;"></div><div style="clear: left;"></div></div></div></div></header><div id="middle"><div><div id="mainLeft" class="noprint"><div><nav><div><h2>Links</h2><ul><li><a href="../index.html">Docs Home</a></li><li><a href="index.html">Config Ref. Home</a></li><li><a href="https://wiki.apache.org/tomcat/FAQ">FAQ</a></li><li><a href="#comments_section">User Comments</a></li></ul></div><div><h2>Top Level Elements</h2><ul><li><a href="server.html">Server</a></li><li><a href="service.html">Service</a></li></ul></div><div><h2>Executors</h2><ul><li><a href="executor.html">Executor</a></li></ul></div><div><h2>Connectors</h2><ul><li><a href="http.html">HTTP/1.1</a></li><li><a href="http2.html">HTTP/2</a></li><li><a href="ajp.html">AJP</a></li></ul></div><div><h2>Containers</h2><ul><li><a href="context.html">Context</a></li><li><a href="engine.html">Engine</a></li><li><a href="host.html">Host</a></li><li><a href="cluster.html">Cluster</a></li></ul></div><div><h2>Nested Components</h2><ul><li><a href="cookie-processor.html">CookieProcessor</a></li><li><a href="credentialhandler.html">CredentialHandler</a></li><li><a href="globalresources.html">Global Resources</a></li><li><a href="jar-scanner.html">JarScanner</a></li><li><a href="jar-scan-filter.html">JarScanFilter</a></li><li><a href="listeners.html">Listeners</a></li><li><a href="loader.html">Loader</a></li><li><a href="manager.html">Manager</a></li><li><a href="realm.html">Realm</a></li><li><a href="resources.html">Resources</a></li><li><a href="sessionidgenerator.html">SessionIdGenerator</a></li><li><a href="valve.html">Valve</a></li></ul></div><div><h2>Cluster Elements</h2><ul><li><a href="cluster.html">Cluster</a></li><li><a href="cluster-manager.html">Manager</a></li><li><a href="cluster-channel.html">Channel</a></li><li><a href="cluster-membership.html">Channel/Membership</a></li><li><a href="cluster-sender.html">Channel/Sender</a></li><li><a href="cluster-receiver.html">Channel/Receiver</a></li><li><a href="cluster-interceptor.html">Channel/Interceptor</a></li><li><a href="cluster-valve.html">Valve</a></li><li><a href="cluster-deployer.html">Deployer</a></li><li><a href="cluster-listener.html">ClusterListener</a></li></ul></div><div><h2>web.xml</h2><ul><li><a href="filter.html">Filter</a></li></ul></div><div><h2>Other</h2><ul><li><a href="systemprops.html">System properties</a></li><li><a href="jaspic.html">JASPIC</a></li></ul></div></nav></div></div><div id="mainRight"><div id="content"><h2>The Manager Component</h2><h3 id="Table_of_Contents">Table of Contents</h3><div class="text">
 <ul><li><a href="#Introduction">Introduction</a></li><li><a href="#Attributes">Attributes</a><ol><li><a href="#Common_Attributes">Common Attributes</a></li><li><a href="#Standard_Implementation">Standard Implementation</a></li></ol></li><li><a href="#Nested_Components">Nested Components</a></li><li><a href="#Special_Features">Special Features</a><ol><li><a href="#Persistence_Across_Restarts">Persistence Across Restarts</a></li><li><a href="#Disable_Session_Persistence">Disable Session Persistence</a></li></ol></li></ul>
 </div><h3 id="Introduction">Introduction</h3><div class="text">
 
@@ -112,6 +82,21 @@
         <a href="#Persistence_Across_Restarts">Persistence Across Restarts</a>
         for more information. This persistence may be
         disabled by setting this attribute to an empty string.</p>
+      </td></tr><tr><td><code class="attributeName">persistAuthentication</code></td><td>
+        <p>Should authentication information be included when session state is
+        preserved across application restarts? If <code>true</code>, the session's
+        authentication is preserved so that the session remains authenticated
+        after the application has been restarted. If not specified, the default
+        value of <code>false</code> will be used.<br>See
+        <a href="#Persistence_Across_Restarts">Persistence Across Restarts</a>
+        for more information.</p>
+
+        <p>Please note that the session's <code>Principal</code> class as well
+        as its descendant classes are all subject to the
+        <strong>sessionAttributeValueClassNameFilter</strong>. If such a filter
+        is specified or a <code>SecurityManager</code> is enabled, the names of
+        the <code>Principal</code> class and descendant classes must match that
+        filter pattern in order to be restored.</p>
       </td></tr><tr><td><code class="attributeName">processExpiresFrequency</code></td><td>
         <p>Frequency of the session expiration, and related manager operations.
         Manager operations will be done once for the specified amount of
@@ -158,7 +143,7 @@
         must fully match the pattern. If not specified, the default value of
         <code>null</code> will be used unless a <code>SecurityManager</code> is
         enabled in which case the default will be
-        <code>java\\.lang\\.(?:Boolean|Integer|Long|Number|String)</code>.</p>
+        <code>java\\.lang\\.(?:Boolean|Integer|Long|Number|String)|org\\.apache\\.catalina\\.realm\\.GenericPrincipal\\$SerializablePrincipal|\\[Ljava.lang.String;</code>.</p>
       </td></tr><tr><td><code class="attributeName">warnOnSessionAttributeFilterFailure</code></td><td>
         <p>If <strong>sessionAttributeNameFilter</strong> or
         <strong>sessionAttributeValueClassNameFilter</strong> blocks an
@@ -220,6 +205,19 @@
         swapped out to keep the active session count down. If specified, this
         value should be less than that specified by <code>maxIdleSwap</code>.
         By default, this value is set to <code>-1</code>.</p>
+      </td></tr><tr><td><code class="attributeName">persistAuthentication</code></td><td>
+        <p>Should authentication information be included when sessions are
+        swapped out to persistent storage? If <code>true</code>, the session's
+        authentication is preserved so that the session remains authenticated
+        after being reloaded (swapped in) from persistent storage. If not
+        specified, the default value of <code>false</code> will be used.</p>
+
+        <p>Please note that the session's <code>Principal</code> class as well
+        as its descendant classes are all subject to the
+        <strong>sessionAttributeValueClassNameFilter</strong>. If such a filter
+        is specified or a <code>SecurityManager</code> is enabled, the names of
+        the <code>Principal</code> class and descendant classes must match that
+        filter pattern in order to be restored.</p>
       </td></tr><tr><td><code class="attributeName">processExpiresFrequency</code></td><td>
         <p>It is the same as described above for the
         <code>org.apache.catalina.session.StandardManager</code> class.
@@ -259,7 +257,7 @@
         must fully match the pattern. If not specified, the default value of
         <code>null</code> will be used unless a <code>SecurityManager</code> is
         enabled in which case the default will be
-        <code>java\\.lang\\.(?:Boolean|Integer|Long|Number|String)</code>.</p>
+        <code>java\\.lang\\.(?:Boolean|Integer|Long|Number|String)|org\\.apache\\.catalina\\.realm\\.GenericPrincipal\\$SerializablePrincipal|\\[Ljava.lang.String;</code>.</p>
       </td></tr><tr><td><code class="attributeName">warnOnSessionAttributeFilterFailure</code></td><td>
         <p>If <strong>sessionAttributeNameFilter</strong> or
         <strong>sessionAttributeValueClassNameFilter</strong> blocks an
@@ -336,11 +334,11 @@
     </td></tr></table>
 
 
-  <h5>JDBC Based Store</h5>
+  <h5>Data source Based Store</h5>
 
-  <p>The <em>JDBC Based Store</em> implementation saves swapped out
+  <p>The <em>Data source Based Store</em> implementation saves swapped out
   sessions in individual rows of a preconfigured table in a database
-  that is accessed via a JDBC driver.  With large numbers of swapped out
+  that is accessed via a data sourcer.  With large numbers of swapped out
   sessions, this implementation will exhibit improved performance over
   the File Based Store described above.</p>
 
@@ -356,29 +354,14 @@
       <p>Java class name of the implementation to use.  This class must
       implement the <code>org.apache.catalina.Store</code> interface.  You
       <strong>must</strong> specify
-      <code>org.apache.catalina.session.JDBCStore</code>
+      <code>org.apache.catalina.session.DataSourceStore</code>
       to use this implementation.</p>
-    </td></tr><tr><td><strong><code class="attributeName">connectionName</code></strong></td><td>
-      <p>The user name that will be handed to the configured JDBC driver to
-      establish a connection to the database containing the session table.</p>
-    </td></tr><tr><td><strong><code class="attributeName">connectionPassword</code></strong></td><td>
-      <p>The password that will be handed to the configured JDBC driver to
-      establish a connection to the database containing the session table.</p>
-    </td></tr><tr><td><strong><code class="attributeName">connectionURL</code></strong></td><td>
-      <p>The connection URL that will be handed to the configured JDBC
-      driver to establish a connection to the database containing our
-      session table.</p>
     </td></tr><tr><td><code class="attributeName">dataSourceName</code></td><td>
-      <p>Name of the JNDI resource for a JDBC DataSource-factory. If this option
-      is given and a valid JDBC resource can be found, it will be used and any
-      direct configuration of a JDBC connection via <code>connectionURL</code>,
-      <code>connectionName</code>, <code>connectionPassword</code> and
-      <code>driverName</code> will be ignored. Since this code uses prepared
-      statements, you might want to configure pooled prepared statements as
-      shown in <a href="../jndi-resources-howto.html">the JNDI resources
+      <p>Name of the JNDI resource for a JDBC DataSource-factory. Since this
+      code uses prepared statements, you might want to configure pooled
+      prepared statements as shown in
+       <a href="../jndi-resources-howto.html">the JNDI resources
       How-To</a>.</p>
-    </td></tr><tr><td><strong><code class="attributeName">driverName</code></strong></td><td>
-      <p>Java class name of the JDBC driver to be used.</p>
     </td></tr><tr><td><code class="attributeName">localDataSource</code></td><td>
       <p>This allows the Store to use a DataSource defined for the Context
       rather than a global DataSource. If not specified, the default is
@@ -424,7 +407,7 @@
       specified the default value of <code>valid</code> will be used.</p>
     </td></tr></table>
 
-  <p>Before attempting to use the JDBC Based Store for the first time,
+  <p>Before attempting to use the data source Store for the first time,
   you must create the table that will be used to store swapped out sessions.
   Detailed SQL commands vary depending on the database you are using, but
   a script like this will generally be required:</p>
@@ -440,14 +423,8 @@
 );</code></pre></div>
 
   <p>Note: The SQL command above does not use the default names for either the
-  table or the columns so the JDBC Store would need to be configured to reflect
-  this.</p>
-
-  <p>In order for the JDBC Based Store to successfully connect to your
-  database, the JDBC driver you configure must be visible to Tomcat's
-  internal class loader.  Generally, that means you must place the JAR
-  file containing this driver into the <code>$CATALINA_HOME/lib</code>
-  directory.</p>
+  table or the columns so the data source Store would need to be configured
+  to reflect this.</p>
 
 </div><h3 id="Special_Features">Special Features</h3><div class="text">
 
@@ -466,6 +443,15 @@
     interface.  You MAY cause the Manager to enforce this restriction by
     including the <code>&lt;distributable&gt;</code> element in your web
     application deployment descriptor (<code>/WEB-INF/web.xml</code>).</p>
+
+    <p>Note that, if <strong>persistAuthentication</strong> is also set to
+    <code>true</code>, the <code>Principal</code> class present in the session
+    MUST also implement the <code>java.io.Serializable</code> interface in order
+    to make authentication persistence work properly. The actual type of that
+    <code>Principal</code> class is determined by the <a href="realm.html">
+    Realm</a> implementation used with the application. Tomcat's standard
+    <code>Principal</code> class instantiated by most of the Realms (except
+    <code>JAASRealm</code>) implements <code>java.io.Serializable</code>.</p>
 
     <p>The persistence across restarts provided by the
     <strong>StandardManager</strong> is a simpler implementation than that
@@ -487,18 +473,6 @@
     <div class="codeBox"><pre><code>&lt;Manager pathname="" /&gt;</code></pre></div>
   </div></div>
 
-</div><div class="noprint"><h3 id="comments_section">
-                  Comments
-                </h3><div class="text"><p class="notice"><strong>Notice:</strong> This comments section collects your suggestions
-                    on improving documentation for Apache Tomcat.<br><br>
-                    If you have trouble and need help, read
-                    <a href="https://tomcat.apache.org/findhelp.html">Find Help</a> page
-                    and ask your question on the tomcat-users
-                    <a href="https://tomcat.apache.org/lists.html">mailing list</a>.
-                    Do not ask such questions here. This is not a Q&amp;A section.<br><br>
-                    The Apache Comments System is explained <a href="../comments.html">here</a>.
-                    Comments may be removed by our moderators if they are either
-                    implemented or considered invalid/off-topic.
-                  </p><div id="comments_thread"></div></div></div></div></div></div></div><footer><div id="footer">
-    Copyright &copy; 1999-2020, The Apache Software Foundation
-  </div></footer></div></body></html>
+</div></div></div></div></div><footer><div id="footer">
+    Copyright &copy; 1999-2021, The Apache Software Foundation
+    </div></footer></div></body></html>

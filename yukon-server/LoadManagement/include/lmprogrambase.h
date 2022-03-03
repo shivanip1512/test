@@ -62,6 +62,8 @@ public:
     BOOL getManualControlReceivedFlag() const;
     std::vector<CtiLMProgramControlWindow*>& getLMProgramControlWindows();
     const std::vector<CtiLMProgramControlWindow*>& getLMProgramControlWindows() const;
+    bool controlNotAllowedToSpanMidnight() const;
+    bool isEcobeeProgram() const;
 
     CtiLMProgramBase& setPAOId(LONG id);
     CtiLMProgramBase& setPAOCategory(const std::string& category);
@@ -128,6 +130,8 @@ public:
 
     int operator==(const CtiLMProgramBase& right) const;
     int operator!=(const CtiLMProgramBase& right) const;
+
+    virtual std::size_t getMemoryConsumption() const;
 
     // Static Members
 

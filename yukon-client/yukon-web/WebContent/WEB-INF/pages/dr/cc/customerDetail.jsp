@@ -29,7 +29,7 @@
                 </div>
                 
                 <h3><i:inline key=".attachedPoints"/></h3>
-                <table class="compact-results-table">
+                <table class="compact-results-table no-stripes">
                     <c:forEach var="pointType" items="${customerModel.pointTypes}">
                         <c:set var="pointValue" value="${customerModel.pointValues[pointType]}"/>
                         <c:choose>
@@ -63,7 +63,7 @@
                         <c:forEach var="activeProgram" items="${customerModel.activePrograms}" varStatus="status">
                             <tr>
                                 <td>
-                                    <cti:button renderMode="buttonImage" icon="icon-delete" data-program-id="${activeProgram.paoId}"/>
+                                    <cti:button renderMode="buttonImage" icon="icon-cross" data-program-id="${activeProgram.paoId}"/>
                                     <form:hidden path="activePrograms[${status.index}].paoId"/>
                                     <form:hidden path="activePrograms[${status.index}].paoName"/>
                                     ${fn:escapeXml(activeProgram.paoName)}

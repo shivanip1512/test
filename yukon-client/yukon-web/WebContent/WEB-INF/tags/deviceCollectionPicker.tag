@@ -191,7 +191,7 @@
                 </tags:nameValue2>
                 <tags:nameValue2 nameKey=".selectDataFile">
                     <tags:file name="fileUpload.dataFile"/>
-                    <div class="progress dib dn" style="width: 120px;">
+                    <div class="progress dif dn" style="width: 120px;">
                         <div class="progress-bar" style="width: 0%"></div>
                     </div>
                 </tags:nameValue2>

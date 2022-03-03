@@ -1,5 +1,6 @@
 package com.cannontech.database.db.state;
 
+import com.cannontech.common.YukonColorPalette;
 import com.cannontech.database.data.state.GroupState;
 
 /**
@@ -35,6 +36,10 @@ public final class StateGroupUtils {
     public static final int STATEGROUP_LASTCONTROL_STATE = -17;
 
     public static final int STATEGROUP_IGNORED_CONTROL = -20;
+    
+    public static final int STATEGROUP_BECKWITH_REGULATOR_CONTROL_MODE = -32;
+    
+    public static final int STATEGROUP_EATON_REGULATOR_CONTROL_MODE = -31;
 
 
     //Default State of point
@@ -55,108 +60,27 @@ public final class StateGroupUtils {
     }
 
     public static GroupState buildAnalogStateGroup(GroupState gs) {
-        com.cannontech.database.data.state.State tempStateData = new com.cannontech.database.data.state.State();
+        
+        String[] stateText = new String[] {
+                "Normal",
+                "Non-updated",
+                "Rate of Change",
+                "Limit Set 1",
+                "Limit Set 2",
+                "High Resonability",
+                "Low Reasonability",
+                "Low Limit 1",
+                "Low Limit 2",
+                "High Limit 1",
+                "High Limit 2",
+        };
 
-        tempStateData = new com.cannontech.database.data.state.State();
-
-        tempStateData.setState(new com.cannontech.database.db.state.State(gs
-                .getStateGroup().getStateGroupID(), new Integer(0), "Normal",
-                new Integer(0), new Integer(
-                        com.cannontech.common.gui.util.Colors.BLACK_ID)));
-
-        gs.getStatesVector().add(tempStateData);
-
-        tempStateData = new com.cannontech.database.data.state.State();
-
-        tempStateData.setState(new com.cannontech.database.db.state.State(gs
-                .getStateGroup().getStateGroupID(), new Integer(1),
-                "Non-updated", new Integer(1), new Integer(
-                        com.cannontech.common.gui.util.Colors.BLACK_ID)));
-
-        gs.getStatesVector().add(tempStateData);
-
-        tempStateData = new com.cannontech.database.data.state.State();
-
-        tempStateData.setState(new com.cannontech.database.db.state.State(gs
-                .getStateGroup().getStateGroupID(), new Integer(2),
-                "Rate of Change", new Integer(2), new Integer(
-                        com.cannontech.common.gui.util.Colors.BLACK_ID)));
-
-        gs.getStatesVector().add(tempStateData);
-
-        tempStateData = new com.cannontech.database.data.state.State();
-
-        tempStateData.setState(new com.cannontech.database.db.state.State(gs
-                .getStateGroup().getStateGroupID(), new Integer(3),
-                "Limit Set 1", new Integer(3), new Integer(
-                        com.cannontech.common.gui.util.Colors.BLACK_ID)));
-
-        gs.getStatesVector().add(tempStateData);
-
-        tempStateData = new com.cannontech.database.data.state.State();
-
-        tempStateData.setState(new com.cannontech.database.db.state.State(gs
-                .getStateGroup().getStateGroupID(), new Integer(4),
-                "Limit Set 2", new Integer(4), new Integer(
-                        com.cannontech.common.gui.util.Colors.BLACK_ID)));
-
-        gs.getStatesVector().add(tempStateData);
-
-        tempStateData = new com.cannontech.database.data.state.State();
-
-        tempStateData.setState(new com.cannontech.database.db.state.State(gs
-                .getStateGroup().getStateGroupID(), new Integer(5),
-                "High Resonability", new Integer(5), new Integer(
-                        com.cannontech.common.gui.util.Colors.BLACK_ID)));
-
-        gs.getStatesVector().add(tempStateData);
-
-        tempStateData = new com.cannontech.database.data.state.State();
-
-        tempStateData.setState(new com.cannontech.database.db.state.State(gs
-                .getStateGroup().getStateGroupID(), new Integer(6),
-                "Low Reasonability", new Integer(6), new Integer(
-                        com.cannontech.common.gui.util.Colors.BLACK_ID)));
-
-        gs.getStatesVector().add(tempStateData);
-
-        tempStateData = new com.cannontech.database.data.state.State();
-
-        tempStateData.setState(new com.cannontech.database.db.state.State(gs
-                .getStateGroup().getStateGroupID(), new Integer(7),
-                "Low Limit 1", new Integer(7), new Integer(
-                        com.cannontech.common.gui.util.Colors.BLACK_ID)));
-
-        gs.getStatesVector().add(tempStateData);
-
-        tempStateData = new com.cannontech.database.data.state.State();
-
-        tempStateData.setState(new com.cannontech.database.db.state.State(gs
-                .getStateGroup().getStateGroupID(), new Integer(8),
-                "Low Limit 2", new Integer(8), new Integer(
-                        com.cannontech.common.gui.util.Colors.BLACK_ID)));
-
-        gs.getStatesVector().add(tempStateData);
-
-        tempStateData = new com.cannontech.database.data.state.State();
-
-        tempStateData.setState(new com.cannontech.database.db.state.State(gs
-                .getStateGroup().getStateGroupID(), new Integer(9),
-                "High Limit 1", new Integer(9), new Integer(
-                        com.cannontech.common.gui.util.Colors.BLACK_ID)));
-
-        gs.getStatesVector().add(tempStateData);
-
-        tempStateData = new com.cannontech.database.data.state.State();
-
-        tempStateData.setState(new com.cannontech.database.db.state.State(gs
-                .getStateGroup().getStateGroupID(), new Integer(10),
-                "High Limit 2", new Integer(10), new Integer(
-                        com.cannontech.common.gui.util.Colors.BLACK_ID)));
-
-        gs.getStatesVector().add(tempStateData);
-
+        for (int i = 0; i < stateText.length; i++) {
+            com.cannontech.database.data.state.State tempStateData = new com.cannontech.database.data.state.State();
+            tempStateData.setState(new State(gs.getStateGroup().getStateGroupID(), Integer.valueOf(i), stateText[i],
+                                             YukonColorPalette.getColor(i).getColorId(), YukonColorPalette.BLACK.getColorId()));
+            gs.getStatesVector().add(tempStateData);
+        }
         return gs;
     }
-
 }

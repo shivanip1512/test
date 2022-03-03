@@ -36,6 +36,7 @@ import javax.swing.event.PopupMenuListener;
 import javax.swing.filechooser.FileFilter;
 
 import com.cannontech.clientutils.CTILogger;
+import com.cannontech.clientutils.YukonLogManager;
 import com.cannontech.clientutils.popup.PopUpMenuShower;
 import com.cannontech.common.gui.util.TitleBorder;
 import com.cannontech.common.util.ApplicationId;
@@ -61,6 +62,7 @@ class DBToolsFrame extends JFrame implements IMessageFrame, ActionListener, Popu
 
     static {
         CtiUtilities.setClientAppName(ApplicationId.DB_TOOLS_FRAME);
+        YukonLogManager.initialize();
     }
     private static final String DEF_PATH =
         System.getProperty("user.dir") + IRunnableDBTool.FS;
@@ -895,6 +897,9 @@ class DBToolsFrame extends JFrame implements IMessageFrame, ActionListener, Popu
 
             aConverterFrame.setVisible(true);
         } catch (Throwable exception) {
+            JFrame frame = new JFrame("Error");
+            frame.setAlwaysOnTop(true);
+            JOptionPane.showMessageDialog(frame, "Error while starting DBToolsFrame : "+ exception.getMessage(), "Error", JOptionPane.ERROR_MESSAGE);
             System.err.println("Exception occurred in main() of DBToolsFrame");
             CTILogger.error(exception.getMessage(), exception);
         }

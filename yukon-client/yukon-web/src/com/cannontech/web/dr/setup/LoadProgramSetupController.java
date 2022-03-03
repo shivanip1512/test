@@ -38,6 +38,8 @@ import org.springframework.web.client.RestClientException;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import com.cannontech.clientutils.YukonLogManager;
+import com.cannontech.common.config.ConfigurationSource;
+import com.cannontech.common.config.MasterConfigBoolean;
 import com.cannontech.common.dr.gear.setup.OperationalState;
 import com.cannontech.common.dr.gear.setup.model.ProgramGear;
 import com.cannontech.common.dr.program.setup.model.LoadProgram;
@@ -72,7 +74,8 @@ import com.google.common.collect.Lists;
 @CheckPermissionLevel(property = YukonRoleProperty.DR_SETUP_PERMISSION, level = HierarchyPermissionLevel.VIEW)
 @RequestMapping("/setup/loadProgram")
 public class LoadProgramSetupController {
-
+    
+    @Autowired private ConfigurationSource configurationSource;
     private static final String baseKey = "yukon.web.modules.dr.setup.";
     private static final String communicationKey = "yukon.exception.apiCommunicationException.communicationError";
     private static final String setupRedirectLink = "/dr/setup/filter?filterByType=" + LmSetupFilterType.LOAD_PROGRAM;
@@ -126,7 +129,7 @@ public class LoadProgramSetupController {
     public String view(ModelMap model, YukonUserContext userContext, @PathVariable int id, FlashScope flash,
             HttpServletRequest request) {
         try {
-            String url = helper.findWebServerUrl(request, userContext, ApiURL.drLoadProgramRetrieveUrl + id);
+            String url = helper.findWebServerUrl(request, userContext, ApiURL.drLoadProgramUrl + "/" + id);
             model.addAttribute("mode", PageEditMode.VIEW);
             LoadProgram loadProgram = retrieveProgram(userContext, request, id, url);
             if (loadProgram == null) {
@@ -153,7 +156,7 @@ public class LoadProgramSetupController {
     public String edit(ModelMap model, YukonUserContext userContext, @PathVariable int id, FlashScope flash,
             HttpServletRequest request) {
         try {
-            String url = helper.findWebServerUrl(request, userContext, ApiURL.drLoadProgramRetrieveUrl + id);
+            String url = helper.findWebServerUrl(request, userContext, ApiURL.drLoadProgramUrl + "/" + id);
             model.addAttribute("mode", PageEditMode.EDIT);
             LoadProgram loadProgram = retrieveProgram(userContext, request, id, url);
 
@@ -210,13 +213,16 @@ public class LoadProgramSetupController {
 
         try {
             String url;
+            ResponseEntity<? extends Object> response;
             if (loadProgram.getProgramId() == null) {
-                url = helper.findWebServerUrl(request, userContext, ApiURL.drLoadProgramSaveUrl);
+                url = helper.findWebServerUrl(request, userContext, ApiURL.drLoadProgramUrl);
+                response = saveProgram(userContext, request, url, loadProgram, HttpMethod.POST);
             } else {
                 url = helper.findWebServerUrl(request, userContext,
-                    ApiURL.drLoadProgramUpdateUrl + loadProgram.getProgramId());
+                    ApiURL.drLoadProgramUrl + "/" + loadProgram.getProgramId());
+                response = saveProgram(userContext, request, url, loadProgram, HttpMethod.PUT);
             }
-            ResponseEntity<? extends Object> response = saveProgram(userContext, request, url, loadProgram, HttpMethod.POST);
+            
             if (response.getStatusCode() == HttpStatus.UNPROCESSABLE_ENTITY) {
                 BindException error = new BindException(loadProgram, "loadProgram");
                 result = helper.populateBindingError(result, error, response);
@@ -236,10 +242,10 @@ public class LoadProgramSetupController {
                 return bindAndForward(loadProgram, selectedGearsIds, result, redirectAttributes);
             }
 
-            if (response.getStatusCode() == HttpStatus.OK) {
+            if (response.getStatusCode() == HttpStatus.OK || response.getStatusCode() == HttpStatus.CREATED) {
                 HashMap<String, Integer> programIdMap = (HashMap<String, Integer>) response.getBody();
                 int programId = programIdMap.get("programId");
-                flash.setConfirm(new YukonMessageSourceResolvable(baseKey + "save.success", loadProgram.getName()));
+                flash.setConfirm(new YukonMessageSourceResolvable("yukon.common.save.success", loadProgram.getName()));
                 gearCache.invalidateAll(selectedGearsIds);
                 gearErrorCache.invalidateAll(selectedGearsIds);
                 return "redirect:/dr/setup/loadProgram/" + programId;
@@ -250,8 +256,8 @@ public class LoadProgramSetupController {
             flash.setError(new YukonMessageSourceResolvable(communicationKey));
             return "redirect:" + setupRedirectLink;
         } catch (RestClientException ex) {
-            log.error("Error creating load program: " + ex.getMessage());
-            flash.setError(new YukonMessageSourceResolvable(baseKey + "save.error", loadProgram.getName()));
+            log.error("Error creating load program: {}. Error: {}", loadProgram.getName(), ex.getMessage());
+            flash.setError(new YukonMessageSourceResolvable("yukon.web.api.save.error", loadProgram.getName(), ex.getMessage()));
             return "redirect:" + setupRedirectLink;
         }
         return null;
@@ -263,11 +269,11 @@ public class LoadProgramSetupController {
             FlashScope flash, HttpServletRequest request) {
 
         try {
-            String url = helper.findWebServerUrl(request, userContext, ApiURL.drLoadProgramDeleteUrl + id);
+            String url = helper.findWebServerUrl(request, userContext, ApiURL.drLoadProgramUrl + "/" + id);
             ResponseEntity<? extends Object> response = deleteProgram(userContext, request, url, lmDelete);
 
             if (response.getStatusCode() == HttpStatus.OK) {
-                flash.setConfirm(new YukonMessageSourceResolvable(baseKey + "delete.success", lmDelete.getName()));
+                flash.setConfirm(new YukonMessageSourceResolvable("yukon.common.delete.success", lmDelete.getName()));
                 return "redirect:" + setupRedirectLink;
             }
         } catch (ApiCommunicationException e) {
@@ -275,8 +281,8 @@ public class LoadProgramSetupController {
             flash.setError(new YukonMessageSourceResolvable(communicationKey));
             return "redirect:" + setupRedirectLink;
         } catch (RestClientException ex) {
-            log.error("Error deleting load program: " + ex.getMessage());
-            flash.setError(new YukonMessageSourceResolvable(baseKey + "delete.error.exception.message", ex.getMessage()));
+            log.error("Error deleting load program: {}. Error: {}", lmDelete.getName(), ex.getMessage());
+            flash.setError(new YukonMessageSourceResolvable("yukon.web.api.delete.error", lmDelete.getName(), ex.getMessage()));
             return "redirect:" + setupRedirectLink;
         }
         return "redirect:" + setupRedirectLink;
@@ -289,7 +295,7 @@ public class LoadProgramSetupController {
             HttpServletResponse servletResponse) throws IOException {
         Map<String, String> json = new HashMap<>();
         try {
-            String url = helper.findWebServerUrl(request, userContext, ApiURL.drLoadProgramCopyUrl + id);
+            String url = helper.findWebServerUrl(request, userContext, ApiURL.drLoadProgramUrl + "/" + id + "/copy");
             ResponseEntity<? extends Object> response = copyProgram(userContext, request, url, programCopy, HttpMethod.POST);
 
             if (response.getStatusCode() == HttpStatus.UNPROCESSABLE_ENTITY) {
@@ -313,8 +319,8 @@ public class LoadProgramSetupController {
             JsonUtils.getWriter().writeValue(servletResponse.getOutputStream(), json);
             return null;
         } catch (RestClientException ex) {
-            log.error("Error while copying load program: " + ex.getMessage());
-            flash.setError(new YukonMessageSourceResolvable(baseKey + "copy.error", programCopy.getName()));
+            log.error("Error copying load program: {}. Error: {}", programCopy.getName(), ex.getMessage());
+            flash.setError(new YukonMessageSourceResolvable(baseKey + "copy.error", programCopy.getName(), ex.getMessage()));
             json.put("redirectUrl", setupRedirectLink);
         }
 
@@ -554,7 +560,12 @@ public class LoadProgramSetupController {
         model.addAttribute("programGear", programGear);
         model.addAttribute("showGearTypeOptions", true);
         model.addAttribute("programType", programType);
-        model.addAttribute("gearTypes", GearControlMethod.getGearTypesByProgramType(programType));
+
+        if (programType == PaoType.LM_ECOBEE_PROGRAM && !isEcobeeLegacyGearEnabled()) {
+            model.addAttribute("gearTypes", List.of(GearControlMethod.EcobeePlus));
+        } else {
+            model.addAttribute("gearTypes", GearControlMethod.getGearTypesByProgramType(programType));
+        }
 
         return "dr/setup/programGear/view.jsp";
     }
@@ -579,7 +590,11 @@ public class LoadProgramSetupController {
         }
         model.addAttribute("programGear", programGear);
         model.addAttribute("programType", programType);
-        model.addAttribute("gearTypes", GearControlMethod.getGearTypesByProgramType(programType));
+        if (programType == PaoType.LM_ECOBEE_PROGRAM && !isEcobeeLegacyGearEnabled()) {
+            model.addAttribute("gearTypes", List.of(GearControlMethod.EcobeePlus));
+        } else {
+            model.addAttribute("gearTypes", GearControlMethod.getGearTypesByProgramType(programType));
+        }
         model.addAttribute("selectedGearType", programGear.getControlMethod());
         controllerHelper.buildGearModelMap(programGear.getControlMethod(), model, request, userContext);
         return "dr/setup/programGear/view.jsp";
@@ -635,7 +650,7 @@ public class LoadProgramSetupController {
     @GetMapping("/programGear/{id}")
     public String programGear(ModelMap model, @PathVariable String id, YukonUserContext userContext,
             HttpServletRequest request) {
-        String url = helper.findWebServerUrl(request, userContext, ApiURL.drGearRetrieveUrl + id);
+        String url = helper.findWebServerUrl(request, userContext, ApiURL.drGearRetrieveUrl + "/"+ id);
 
         ResponseEntity<? extends Object> response = apiRequestHelper.callAPIForObject(userContext,
                                                                                       request,
@@ -654,6 +669,10 @@ public class LoadProgramSetupController {
 
         controllerHelper.populateDefaultValuesForDependentFields(programGear);
         return "dr/setup/programGear/view.jsp";
+    }
+    
+    private boolean isEcobeeLegacyGearEnabled() {
+        return configurationSource.getBoolean(MasterConfigBoolean.ECOBEE_LEGACY_GEAR);
     }
 
 }

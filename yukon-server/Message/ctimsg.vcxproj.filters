@@ -186,6 +186,12 @@
     <ClCompile Include="MeterProgramStatusArchiveRequestMsg.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="LMEatonCloudMessages.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="amq_topics.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="include\amq_connection.h">
@@ -402,6 +408,18 @@
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="include\MeterProgramStatusArchiveRequestMsg.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="include\LMEatonCloudMessages.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="include\RfnMeterReadMsg.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="include\RfnMeterDisconnectMsg.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="include\amq_topics.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>

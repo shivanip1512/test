@@ -18,6 +18,9 @@ yukon.analytics = (function() {
     /** @type {string} - Cooper google analytics tracking ID. */
     _cooper_tracking_id = null,
     
+    /** @type {string} - Cooper GA4 google analytics tracking ID. */
+    _cooper_ga4_tracking_id = null,
+    
     /** @type Array.<string> - array containing tracking ID's. */
     _additional_tracking_ids = [],
     
@@ -30,21 +33,21 @@ yukon.analytics = (function() {
         '/search/autocomplete.json': 1, 
         '/picker/build': 1, 
         '/picker/idSearch': 1, 
-        '/picker/search': 1
+        '/picker/search': 1,
+        '/amr/dataCollection/updateChart': 1,
+        '/stars/infrastructureWarnings/updateWidget': 1,
+        '/widget/configWidget/getStatus': 1,
     },
-
+    
+    _gtag = function() {
+        dataLayer.push(arguments);
+    },
+    
     _init = function() {
         if(_initialized) return;
-        if (typeof _gaq === "undefined" || _gaq === null) {
-            _gaq = [];
-        }
-
-        (function(d) {
-            var g=d.createElement("script");
-            var s=d.getElementsByTagName("body")[0];
-            g.src=("https:"==location.protocol?"//ssl":"//www")+".google-analytics.com/ga.js";
-            s.appendChild(g); // append to bottom of <body> to prevent blocking (as opposed to <head>)
-        }(document));
+        
+        window.dataLayer = window.dataLayer || [];
+        _gtag('js', new Date());
 
         _initialized = true;
     },
@@ -55,13 +58,18 @@ yukon.analytics = (function() {
      * @param {string} [args.url] - url of page to be tracked.
      */
     _setAdditionalTrackingIds = function(args) {
-        var trackPageview = ['a._trackPageview'];
-        if (typeof args !== 'undefined' && typeof args.url === "string" && args.url !== "") {
-            trackPageview.push(args.url);
-        }
         for (var i=0 ; i < _additional_tracking_ids.length ; i++) {
             if (typeof _additional_tracking_ids[i] !== 'undefined' && _additional_tracking_ids[i] !== '') {
-                _gaq.push(['a._setAccount', _additional_tracking_ids[i]], trackPageview);
+                if (typeof args !== 'undefined' && typeof args.url === "string" && args.url !== "") {
+                    _gtag('event', 'page_view', {
+                        page_title: settings.url,
+                        page_location: settings.url,
+                        page_page: settings.url,
+                        send_to: _additional_tracking_ids[i]
+                    });
+                } else {
+                    _gtag('config', _additional_tracking_ids[i]);
+                }
             }
         }
     },
@@ -78,7 +86,11 @@ yukon.analytics = (function() {
             _init();
             if (typeof args.cooper_tracking_id === "string" && args.cooper_tracking_id !== "") {
                 _cooper_tracking_id = args.cooper_tracking_id;
-                _gaq=[["_setAccount", _cooper_tracking_id], ["_trackPageview"]];
+                _gtag('config', _cooper_tracking_id);
+            }
+            if (typeof args.cooper_ga4_tracking_id === "string" && args.cooper_ga4_tracking_id !== "") {
+                _cooper_ga4_tracking_id = args.cooper_ga4_tracking_id;
+                _gtag('config', _cooper_ga4_tracking_id);
             }
             if (typeof args.additional_tracking_ids === "string" && args.additional_tracking_ids !== "") {
                 _additional_tracking_ids = args.additional_tracking_ids.replace(/\s/g,'').split(","); //remove all whitespace then split it into our array
@@ -92,8 +104,22 @@ yukon.analytics = (function() {
                 if (indexOfQueryParams != -1) {
                     urlPath = urlPath.substring(0, indexOfQueryParams);
                 }
-                if (!_skipped_urls[urlPath] && typeof _gaq !== "undefined" && _gaq !== null) {
-                    _gaq.push(["_setAccount", _cooper_tracking_id], ['_trackPageview', settings.url]);
+                if (yg.app_context_path != null) {
+                    urlPath = urlPath.replace(yg.app_context_path, '');
+                }
+                if (!_skipped_urls[urlPath]) {
+                    _gtag('event', 'page_view', {
+                        page_title: settings.url,
+                        page_location: settings.url,
+                        page_page: settings.url,
+                        send_to: args.cooper_tracking_id
+                    });
+                    _gtag('event', 'page_view', {
+                        page_title: settings.url,
+                        page_location: settings.url,
+                        page_page: settings.url,
+                        send_to: args.cooper_ga4_tracking_id
+                    });
                     if (_additional_tracking_ids.length > 0) {
                         _setAdditionalTrackingIds({url: settings.url});
                     }

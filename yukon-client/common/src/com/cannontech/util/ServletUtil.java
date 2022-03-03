@@ -1,6 +1,5 @@
 package com.cannontech.util;
 
-import java.awt.Color;
 import java.io.PrintWriter;
 import java.io.StringWriter;
 import java.io.UnsupportedEncodingException;
@@ -161,11 +160,11 @@ public class ServletUtil {
                     Object o;
 
                     if (thisColumn == Integer.class) {
-                        o = new Integer(resultSet.getInt(i));
+                        o = Integer.valueOf(resultSet.getInt(i));
                     } else if (thisColumn == Double.class) {
-                        o = new Double(resultSet.getDouble(i));
+                        o = Double.valueOf(resultSet.getDouble(i));
                     } else if (thisColumn == Float.class) {
-                        o = new Float(resultSet.getFloat(i));
+                        o = Float.valueOf(resultSet.getFloat(i));
                     } else if (thisColumn == java.util.Date.class) {
                         java.sql.Timestamp t = resultSet.getTimestamp(i);
 
@@ -266,20 +265,6 @@ public class ServletUtil {
         cal.add(Calendar.DAY_OF_YEAR, numDays);
 
         return cal.getTime();
-    }
-
-    /**
-     * Returns the HTML string definition for a Java Color object.
-     * 
-     * @return String
-     * @param Color
-     */
-    public static synchronized String getHTMLColor(Color c) {
-        String r = Integer.toHexString(c.getRed());
-        String g = Integer.toHexString(c.getGreen());
-        String b = Integer.toHexString(c.getBlue());
-
-        return (r.length() <= 1 ? "0" + r : r) + (g.length() <= 1 ? "0" + g : g) + (b.length() <= 1 ? "0" + b : b);
     }
 
     public static java.util.Date getStartingDateOfInterval(Date startingDate, String period) {

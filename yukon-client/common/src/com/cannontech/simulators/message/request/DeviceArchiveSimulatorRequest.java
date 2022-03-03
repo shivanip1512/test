@@ -41,4 +41,10 @@ public class DeviceArchiveSimulatorRequest implements SimulatorRequest {
     public SimulatorType getRequestType() {
         return SimulatorType.DEVICE_ARCHIVE;
     }
+
+    @Override
+    public String toString() {
+        return String.format("DeviceArchiveSimulatorRequest [serialFrom=%s, serialTo=%s, manufacturer=%s, model=%s]",
+                             serialFrom, serialTo, manufacturer, model);
+    }
 }

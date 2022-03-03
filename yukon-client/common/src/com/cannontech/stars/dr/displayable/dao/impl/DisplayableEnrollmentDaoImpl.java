@@ -211,19 +211,19 @@ public class DisplayableEnrollmentDaoImpl extends AbstractDisplayableDao impleme
             if (hardware.getHardwareType().isZigbee()) {
                 inService = EnrollmentInService.NA;
             } else if (hardware.getHardwareType().isEcobee() || hardware.getHardwareType().isHoneywell() ||
-                    hardware.getHardwareType().isItron() || hardware.getHardwareType().isMeter()) {
+                    hardware.getHardwareType().isItron() || hardware.getHardwareType().isMeter() || hardware.getHardwareType().isEatonCloud() ) {
                 inService = EnrollmentInService.INSERVICE;
             } else {
-	            boolean isInService = enrollmentDao.isInService(inventoryId);
-	            inService = EnrollmentInService.determineInService(isInService);
-	        }
-		}
+                boolean isInService = enrollmentDao.isInService(inventoryId);
+                inService = EnrollmentInService.determineInService(isInService);
+            }
+        }
 
         int numRelays = hardware.getNumRelays();
         return new DisplayableEnrollmentInventory(inventoryId,
-                                                  hardware.getDisplayName(),
-                                                  enrolled, inService, loadGroupId,
-                                                  relay, numRelays);
+                hardware.getDisplayName(),
+                enrolled, inService, loadGroupId,
+                relay, numRelays);
 		
     }
 }

@@ -16,7 +16,7 @@ public:
 
     typedef CtiMessage Inherited;
 
-    enum NotificationType { STARTING = 1, STARTING_NEVER_STOP, UPDATING, FINISHING, SCHEDULING };
+    enum NotificationType { STARTING = 1, STARTING_NEVER_STOP, UPDATING, FINISHING, SCHEDULING, CANCELATION };
     
     CtiNotifLMControlMsg();
     CtiNotifLMControlMsg(const std::vector<int>& group_ids, int notif_type, int program_id, const CtiTime& start_time, const CtiTime& stop_time);
@@ -36,6 +36,9 @@ public:
     CtiNotifLMControlMsg& setStopTime(const CtiTime& stop_time);
 
     virtual CtiMessage* replicateMessage() const;
+
+    std::size_t getFixedSize() const override    { return sizeof( *this ); }
+    std::size_t getVariableSize() const override;
 
 public:
     std::vector<int> _notif_group_ids;

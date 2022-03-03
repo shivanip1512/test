@@ -7,10 +7,10 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
-
 import javax.annotation.PostConstruct;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.jdbc.core.RowMapper;
 
@@ -34,10 +34,12 @@ import com.cannontech.common.util.SqlFragmentSource;
 import com.cannontech.common.util.SqlStatementBuilder;
 import com.cannontech.core.dao.DBPersistentDao;
 import com.cannontech.core.dao.DeviceDao;
+import com.cannontech.core.dao.DuplicateException;
 import com.cannontech.core.dao.NotFoundException;
 import com.cannontech.core.service.impl.PaoLoader;
 import com.cannontech.database.SqlParameterSink;
 import com.cannontech.database.TransactionType;
+import com.cannontech.database.TypeRowMapper;
 import com.cannontech.database.YNBoolean;
 import com.cannontech.database.YukonJdbcTemplate;
 import com.cannontech.database.YukonResultSet;
@@ -48,10 +50,9 @@ import com.cannontech.database.data.lite.LiteYukonPAObject;
 import com.cannontech.database.db.DBPersistent;
 import com.cannontech.message.DbChangeManager;
 import com.cannontech.message.dispatch.message.DbChangeType;
-import com.cannontech.stars.util.StarsInvalidArgumentException;
-import com.cannontech.util.Validator;
 import com.cannontech.yukon.IDatabaseCache;
 import com.google.common.base.Function;
+import com.google.common.base.Functions;
 import com.google.common.collect.ImmutableSet;
 import com.google.common.collect.Maps;
 
@@ -73,10 +74,19 @@ public final class DeviceDaoImpl implements DeviceDao {
         }
     };
 
+    public static final YukonRowMapper<DisplayableDevice> DISPLAYABLE_DEVICE_MAPPER = rs ->
+        new DisplayableDevice(rs.getPaoIdentifier("PAObjectID", "Type"), rs.getString("PAOName"));
+
     public static final YukonRowMapper<PaoMacAddress> PAO_MAC_ROW_MAPPER = (YukonResultSet rs) -> {
         PaoIdentifier paoIdentifier = rs.getPaoIdentifier("DeviceId", "Type");
         String macAddress = rs.getString("MacAddress");
         return new PaoMacAddress(paoIdentifier, macAddress);
+    };
+    
+    public static final YukonRowMapper<Entry<Integer, String>> DEVICEID_GUID_ROW_MAPPER = (YukonResultSet rs) -> {
+        Integer deviceId = rs.getInt("DeviceId");
+        String guid = rs.getString("Guid");
+        return Maps.immutableEntry(deviceId, guid);
     };
     
     @PostConstruct
@@ -173,18 +183,19 @@ public final class DeviceDaoImpl implements DeviceDao {
     
     @Override
     public Map<Integer, String> getDeviceMacAddresses(Collection<Integer> deviceIds) {
-        ChunkingSqlTemplate chunkingSqlTemplate = new ChunkingSqlTemplate(jdbcTemplate);
-        SqlStatementBuilder sql = new SqlStatementBuilder();
-        SqlFragmentGenerator<Integer> sqlFragmentGenerator = (generator) -> {
+        
+        SqlFragmentGenerator<Integer> sqlFragmentGenerator = (List<Integer> subList) -> {
+            SqlStatementBuilder sql = new SqlStatementBuilder();
             sql.append("SELECT DeviceId, MacAddress");
             sql.append("FROM DeviceMacAddress");
-            sql.append("WHERE DeviceId").in(deviceIds);
+            sql.append("WHERE DeviceId").in(subList);
             return sql;
         };
+        
         Map<Integer, String> result = new HashMap<>();
-        chunkingSqlTemplate.query(sqlFragmentGenerator, deviceIds, (YukonResultSet rs) -> { {
-                result.put(rs.getInt("DeviceId"), rs.getString("macAddress"));
-            }
+        ChunkingSqlTemplate chunkingSqlTemplate = new ChunkingSqlTemplate(jdbcTemplate);
+        chunkingSqlTemplate.query(sqlFragmentGenerator, deviceIds, (YukonResultSet rs) -> {
+            result.put(rs.getInt("DeviceId"), rs.getString("macAddress"));
         });
         return result;
     }
@@ -262,6 +273,25 @@ public final class DeviceDaoImpl implements DeviceDao {
     }
     
     @Override
+    public List<SimpleDevice> getDisabledDevices(Iterable<Integer> ids) {
+        ChunkingSqlTemplate template = new ChunkingSqlTemplate(jdbcTemplate);
+
+        SqlFragmentGenerator<Integer> sqlGenerator = new SqlFragmentGenerator<>() {
+            @Override
+            public SqlFragmentSource generate(List<Integer> subList) {
+                SqlStatementBuilder sql = new SqlStatementBuilder();
+                sql.append("SELECT ypo.PAObjectID, ypo.Type");
+                sql.append("FROM YukonPaObject ypo");
+                sql.append("WHERE ypo.PAObjectID").in(subList);
+                sql.append("AND disableFlag").eq_k(YNBoolean.YES);
+                return sql;
+            }
+        };
+
+        return template.query(sqlGenerator, ids, SIMPLE_DEVICE_MAPPER);
+    }
+    
+    @Override
     public List<SimpleDevice> getDevicesForPaoTypes(Iterable<PaoType> types) {
         ChunkingSqlTemplate template = new ChunkingSqlTemplate(jdbcTemplate);
 
@@ -284,7 +314,7 @@ public final class DeviceDaoImpl implements DeviceDao {
     @Override
     public SimpleDevice getYukonDeviceObjectByName(String name) {
         ImmutableSet<PaoClass> allowedClasses =
-            ImmutableSet.of(PaoClass.CARRIER, PaoClass.METER, PaoClass.IED, PaoClass.RFMESH, PaoClass.THERMOSTAT);
+            ImmutableSet.of(PaoClass.CARRIER, PaoClass.METER, PaoClass.IED, PaoClass.RFMESH, PaoClass.THERMOSTAT, PaoClass.VIRTUAL);
 
         SqlStatementBuilder sql = new SqlStatementBuilder();
         sql.append("SELECT PAO.PAObjectId, PAO.Type");
@@ -390,11 +420,7 @@ public final class DeviceDaoImpl implements DeviceDao {
         sqlBuilder.append("   JOIN DeviceParent DP ON Y.PaObjectId = DP.DeviceId");
         sqlBuilder.append("WHERE DP.ParentId").eq(parentId);
 
-        List<DisplayableDevice> paos = jdbcTemplate.query(sqlBuilder, (YukonRowMapper<DisplayableDevice>) rs -> {
-            return new DisplayableDevice(rs.getPaoIdentifier("PAObjectID", "Type"), rs.getString("PAOName"));
-        });
-
-        return paos;
+        return jdbcTemplate.query(sqlBuilder, DISPLAYABLE_DEVICE_MAPPER);
     }
 
     @Override
@@ -429,15 +455,19 @@ public final class DeviceDaoImpl implements DeviceDao {
     }
     
     @Override
-    public List<Integer> getDevicesByPort(int portId) {
-        List<Integer> devices = cache.getDevicesByCommPort(portId);
-        return devices;
-    }
-
-    @Override
-    public List<Integer> getDevicesByDeviceAddress(Integer masterAddress, Integer slaveAddress) {
-        List<Integer> devicesByAddress = cache.getDevicesByDeviceAddress(masterAddress, slaveAddress);
-        return devicesByAddress;
+    public List<DisplayableDevice> getDevicesByPortAndDeviceAddress(int portId, int masterAddress, int slaveAddress) {
+        var sql = new SqlStatementBuilder();
+        
+        sql.append("SELECT");
+        sql.append(    "yp.PAObjectID, yp.Type, yp.PAOName");
+        sql.append("FROM YukonPAObject yp");
+        sql.append(    "JOIN DeviceDirectCommSettings ddcs ON yp.PAObjectId = ddcs.DeviceId");
+        sql.append(    "JOIN DeviceAddress da ON yp.PAObjectId = da.DeviceId");
+        sql.append("WHERE ddcs.PortId").eq(portId);
+        sql.append(    "AND da.MasterAddress").eq(masterAddress);
+        sql.append(    "AND da.SlaveAddress").eq(slaveAddress);
+        
+        return jdbcTemplate.query(sql, DISPLAYABLE_DEVICE_MAPPER);
     }
 
     @Override
@@ -580,5 +610,99 @@ public final class DeviceDaoImpl implements DeviceDao {
         SimpleDevice device = new SimpleDevice(paoIdentifier);
 
         return device;
+    }
+    
+    @Override
+    public boolean isGuidExists(String guid) {
+        SqlStatementBuilder sql = new SqlStatementBuilder();
+        sql.append("SELECT Guid");
+        sql.append("FROM DeviceGuid");
+        sql.append("WHERE Guid").eq(guid);
+        try {
+            jdbcTemplate.queryForString(sql);
+            return true;
+        } catch (EmptyResultDataAccessException e) {
+            return false;
+        }
+    }
+
+    @Override
+    public void insertGuid(int deviceId, String guid) {
+        try {
+            SqlStatementBuilder createSql = new SqlStatementBuilder();
+            SqlParameterSink params = createSql.insertInto("DeviceGuid");
+            params.addValue("DeviceId", deviceId);
+            params.addValue("Guid", guid);
+            jdbcTemplate.update(createSql);
+        } catch (DataIntegrityViolationException e) {
+            throw new DuplicateException("Unable to add guid. Guid may already exist.", e);
+        }
+    }
+
+    @Override
+    public void updateGuid(int deviceId, String guid) {
+        try {
+            SqlStatementBuilder updateSql = new SqlStatementBuilder();
+            SqlParameterSink params = updateSql.update("DeviceGuid");
+            params.addValue("Guid", guid);
+            updateSql.append("WHERE DeviceId").eq(deviceId);
+            jdbcTemplate.update(updateSql);
+        } catch (DataIntegrityViolationException e) {
+            throw new DuplicateException("Unable to add guid. Guid may already exist.", e);
+        }
+    }
+
+    @Override
+    public String getGuid(int deviceId) throws NotFoundException {
+        SqlStatementBuilder sql = new SqlStatementBuilder();
+        sql.append("SELECT Guid");
+        sql.append("FROM DeviceGuid");
+        sql.append("WHERE DeviceId").eq(deviceId);
+        try {
+            return jdbcTemplate.queryForString(sql);
+        } catch (EmptyResultDataAccessException e) {
+            throw new NotFoundException("Guid is not found for device id " + deviceId, e);
+        }
+    }
+
+    @Override
+    public Map<Integer, String> getGuids(Iterable<Integer> deviceIds) {
+        ChunkingMappedSqlTemplate template = new ChunkingMappedSqlTemplate(jdbcTemplate);
+        SqlFragmentGenerator<Integer> sqlGenerator = (List<Integer> subList) -> {
+            SqlStatementBuilder sql = new SqlStatementBuilder();
+            sql.append("SELECT DeviceId, Guid");
+            sql.append("FROM DeviceGuid");
+            sql.append("WHERE DeviceId").in(subList);
+            return sql;
+        };
+
+        return template.mappedQuery(sqlGenerator,
+                                    deviceIds, 
+                                    DEVICEID_GUID_ROW_MAPPER,
+                                    Functions.identity());
+    }
+
+    @Override
+    public List<String> getGuids(){
+        SqlStatementBuilder sql = new SqlStatementBuilder();
+        sql.append("SELECT Guid");
+        sql.append("FROM DeviceGuid");
+        try {
+            return jdbcTemplate.query(sql, TypeRowMapper.STRING);
+        } catch (EmptyResultDataAccessException e) {
+            throw new NotFoundException("No Guid's found ", e);
+        }
+    }
+    
+    @Override
+    public List<Integer> getDeviceIdsWithGuids(){
+        SqlStatementBuilder sql = new SqlStatementBuilder();
+        sql.append("SELECT DeviceId");
+        sql.append("FROM DeviceGuid");
+        try {
+            return jdbcTemplate.query(sql, TypeRowMapper.INTEGER);
+        } catch (EmptyResultDataAccessException e) {
+            throw new NotFoundException("No device ids found ", e);
+        }
     }
 }

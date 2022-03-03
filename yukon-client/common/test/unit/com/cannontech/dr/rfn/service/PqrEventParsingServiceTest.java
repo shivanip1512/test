@@ -1,5 +1,7 @@
 package com.cannontech.dr.rfn.service;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
+
 import java.math.BigDecimal;
 import java.nio.ByteBuffer;
 import java.util.ArrayList;
@@ -7,8 +9,7 @@ import java.util.List;
 
 import org.joda.time.DateTime;
 import org.joda.time.Instant;
-import org.junit.Assert;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 import com.cannontech.common.util.ByteUtil;
 import com.cannontech.dr.rfn.model.PqrEvent;
@@ -57,16 +58,16 @@ public class PqrEventParsingServiceTest {
      * specified event parameters.
      */
     private void assertOnEvent(PqrEvent event, int index, PqrEventType eventType, PqrResponseType responseType, Instant timestamp, double value) {
-        Assert.assertEquals("Mismatched inventoryId for event " + index, INV_ID, event.getInventoryId());
-        Assert.assertEquals("Mismatched event type for event " + index, eventType, event.getEventType());
-        Assert.assertEquals("Mismatched response type for event " + index, responseType, event.getResponseType());
-        Assert.assertEquals("Mismatched timestamp for event " + index, timestamp, event.getTimestamp());
+        assertEquals(INV_ID, event.getInventoryId(), "Mismatched inventoryId for event " + index);
+        assertEquals(eventType, event.getEventType(), "Mismatched event type for event " + index);
+        assertEquals(responseType, event.getResponseType(), "Mismatched response type for event " + index);
+        assertEquals(timestamp, event.getTimestamp(), "Mismatched timestamp for event " + index);
         
         // Expect that the value in the parsed event has the multiplier applied
         double originalValueMultiplied = BigDecimal.valueOf(value)
                                                    .multiply(BigDecimal.valueOf(responseType.getMultiplier()))
                                                    .doubleValue();
-        Assert.assertEquals("Mismatched value for event " + index, originalValueMultiplied, event.getValue(), DOUBLE_DELTA);
+        assertEquals(originalValueMultiplied, event.getValue(), DOUBLE_DELTA, "Mismatched value for event " + index);
     }
     
     /**

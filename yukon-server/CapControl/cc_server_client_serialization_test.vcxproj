@@ -146,6 +146,7 @@
       <DebugInformationFormat>ProgramDatabase</DebugInformationFormat>
       <ForcedIncludeFiles>precompiled.h;%(ForcedIncludeFiles)</ForcedIncludeFiles>
       <MultiProcessorCompilation>true</MultiProcessorCompilation>
+      <DisableSpecificWarnings>4103</DisableSpecificWarnings>
     </ClCompile>
     <ResourceCompile>
       <PreprocessorDefinitions>_DEBUG;BOOST_ALL_DYN_LINK;BOOST_ENABLE_ASSERT_HANDLER;NOMINMAX;WIN32;WINDOWS;_CONSOLE;_DEBUG;_REENTRANT;_WINDOWS;_X86_=1;__DLL__;%(PreprocessorDefinitions)</PreprocessorDefinitions>
@@ -155,7 +156,7 @@
     <Link>
       <SubSystem>Console</SubSystem>
       <GenerateDebugInformation>true</GenerateDebugInformation>
-      <AdditionalDependencies>$(THRIFT)\$(CONFIGURATION)\lib\libthrift.lib;..\lib-debug\ctithriftmsg.lib;..\lib-debug\ctidbsrc.lib;..\lib-debug\cticonfig.lib;..\lib-debug\ctidevdb.lib;..\lib-debug\ctiholidaydb.lib;..\lib-debug\ctiseasondb.lib;..\lib-debug\ctimsg.lib;..\lib-debug\service.lib;advapi32.lib;$(BOOST)\lib\boost_unit_test_framework-vc141-mt-gd-x32-1_67.lib;$(BOOST)\lib\boost_system-vc141-mt-gd-x32-1_67.lib;$(BOOST)\lib\boost_filesystem-vc141-mt-gd-x32-1_67.lib;$(BOOST)\lib\boost_regex-vc141-mt-gd-x32-1_67.lib;$(BOOST)\lib\boost_thread-vc141-mt-gd-x32-1_67.lib;$(BOOST)\lib\boost_date_time-vc141-mt-gd-x32-1_67.lib;$(BOOST)\lib\boost_chrono-vc141-mt-gd-x32-1_67.lib;..\lib-debug\ctibase.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>$(THRIFT)\$(CONFIGURATION)\lib\libthrift.lib;..\lib-debug\ctithriftmsg.lib;..\lib-debug\ctidbsrc.lib;..\lib-debug\cticonfig.lib;..\lib-debug\ctidevdb.lib;..\lib-debug\ctiholidaydb.lib;..\lib-debug\ctiseasondb.lib;..\lib-debug\ctimsg.lib;..\lib-debug\service.lib;advapi32.lib;$(BOOST)\lib\boost_unit_test_framework-$(BOOST_VERSION).lib;$(BOOST)\lib\boost_system-$(BOOST_VERSION).lib;$(BOOST)\lib\boost_filesystem-$(BOOST_VERSION).lib;$(BOOST)\lib\boost_regex-$(BOOST_VERSION).lib;$(BOOST)\lib\boost_thread-$(BOOST_VERSION).lib;$(BOOST)\lib\boost_date_time-$(BOOST_VERSION).lib;$(BOOST)\lib\boost_chrono-$(BOOST_VERSION).lib;..\lib-debug\ctibase.lib;%(AdditionalDependencies)</AdditionalDependencies>
       <AdditionalLibraryDirectories>.;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
       <ProgramDatabaseFile>$(SolutionDir)pdb-debug\$(TargetName).pdb</ProgramDatabaseFile>
       <ImageHasSafeExceptionHandlers>false</ImageHasSafeExceptionHandlers>
@@ -196,6 +197,7 @@
       <DebugInformationFormat>ProgramDatabase</DebugInformationFormat>
       <ForcedIncludeFiles>precompiled.h;%(ForcedIncludeFiles)</ForcedIncludeFiles>
       <MultiProcessorCompilation>true</MultiProcessorCompilation>
+      <DisableSpecificWarnings>4103</DisableSpecificWarnings>
     </ClCompile>
     <ResourceCompile>
       <PreprocessorDefinitions>NDEBUG;BOOST_ALL_DYN_LINK;BOOST_ENABLE_ASSERT_HANDLER;NOMINMAX;WIN32;WINDOWS;_CONSOLE;_REENTRANT;_WINDOWS;_X86_=1;__DLL__;%(PreprocessorDefinitions)</PreprocessorDefinitions>
@@ -205,7 +207,7 @@
     <Link>
       <SubSystem>Console</SubSystem>
       <GenerateDebugInformation>true</GenerateDebugInformation>
-      <AdditionalDependencies>$(THRIFT)\$(CONFIGURATION)\lib\libthrift.lib;..\lib\ctithriftmsg.lib;..\lib\ctidbsrc.lib;..\lib\cticonfig.lib;..\lib\ctidevdb.lib;..\lib\ctiholidaydb.lib;..\lib\ctiseasondb.lib;..\lib\ctimsg.lib;..\lib\service.lib;advapi32.lib;$(BOOST)\lib\boost_unit_test_framework-vc141-mt-x32-1_67.lib;$(BOOST)\lib\boost_system-vc141-mt-x32-1_67.lib;$(BOOST)\lib\boost_filesystem-vc141-mt-x32-1_67.lib;$(BOOST)\lib\boost_regex-vc141-mt-x32-1_67.lib;$(BOOST)\lib\boost_thread-vc141-mt-x32-1_67.lib;$(BOOST)\lib\boost_date_time-vc141-mt-x32-1_67.lib;$(BOOST)\lib\boost_chrono-vc141-mt-x32-1_67.lib;..\lib\ctibase.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>$(THRIFT)\$(CONFIGURATION)\lib\libthrift.lib;..\lib\ctithriftmsg.lib;..\lib\ctidbsrc.lib;..\lib\cticonfig.lib;..\lib\ctidevdb.lib;..\lib\ctiholidaydb.lib;..\lib\ctiseasondb.lib;..\lib\ctimsg.lib;..\lib\service.lib;advapi32.lib;$(BOOST)\lib\boost_unit_test_framework-$(BOOST_VERSION).lib;$(BOOST)\lib\boost_system-$(BOOST_VERSION).lib;$(BOOST)\lib\boost_filesystem-$(BOOST_VERSION).lib;$(BOOST)\lib\boost_regex-$(BOOST_VERSION).lib;$(BOOST)\lib\boost_thread-$(BOOST_VERSION).lib;$(BOOST)\lib\boost_date_time-$(BOOST_VERSION).lib;$(BOOST)\lib\boost_chrono-$(BOOST_VERSION).lib;..\lib\ctibase.lib;%(AdditionalDependencies)</AdditionalDependencies>
       <AdditionalLibraryDirectories>.;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
       <OptimizeReferences>true</OptimizeReferences>
       <EnableCOMDATFolding>true</EnableCOMDATFolding>
@@ -213,7 +215,7 @@
       <LargeAddressAware>true</LargeAddressAware>
       <ProgramDatabaseFile>$(SolutionDir)pdb\$(TargetName).pdb</ProgramDatabaseFile>
       <ImportLibrary>$(SolutionDir)lib\$(TargetName).lib</ImportLibrary>
-      <LinkTimeCodeGeneration>UseLinkTimeCodeGeneration</LinkTimeCodeGeneration>
+      <LinkTimeCodeGeneration>Default</LinkTimeCodeGeneration>
     </Link>
     <PostBuildEvent>
       <Command>
@@ -259,7 +261,7 @@
     <Link>
       <SubSystem>Console</SubSystem>
       <GenerateDebugInformation>true</GenerateDebugInformation>
-      <AdditionalDependencies>$(THRIFT)\$(CONFIGURATION)\lib\libthrift.lib;..\lib-debug\ctithriftmsg.lib;..\lib-debug\ctidbsrc.lib;..\lib-debug\cticonfig.lib;..\lib-debug\ctidevdb.lib;..\lib-debug\ctiholidaydb.lib;..\lib-debug\ctimsg.lib;..\lib-debug\service.lib;advapi32.lib;$(BOOST)\lib\boost_unit_test_framework-vc141-mt-gd-x32-1_67.lib;$(BOOST)\lib\boost_system-vc141-mt-gd-x32-1_67.lib;$(BOOST)\lib\boost_filesystem-vc141-mt-gd-x32-1_67.lib;$(BOOST)\lib\boost_regex-vc141-mt-gd-x32-1_67.lib;$(BOOST)\lib\boost_thread-vc141-mt-gd-x32-1_67.lib;$(BOOST)\lib\boost_date_time-vc141-mt-gd-x32-1_67.lib;$(BOOST)\lib\boost_chrono-vc141-mt-gd-x32-1_67.lib;..\lib-debug\ctibase.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>$(THRIFT)\$(CONFIGURATION)\lib\libthrift.lib;..\lib-debug\ctithriftmsg.lib;..\lib-debug\ctidbsrc.lib;..\lib-debug\cticonfig.lib;..\lib-debug\ctidevdb.lib;..\lib-debug\ctiholidaydb.lib;..\lib-debug\ctimsg.lib;..\lib-debug\service.lib;advapi32.lib;$(BOOST)\lib\boost_unit_test_framework-$(BOOST_VERSION).lib;$(BOOST)\lib\boost_system-$(BOOST_VERSION).lib;$(BOOST)\lib\boost_filesystem-$(BOOST_VERSION).lib;$(BOOST)\lib\boost_regex-$(BOOST_VERSION).lib;$(BOOST)\lib\boost_thread-$(BOOST_VERSION).lib;$(BOOST)\lib\boost_date_time-$(BOOST_VERSION).lib;$(BOOST)\lib\boost_chrono-$(BOOST_VERSION).lib;..\lib-debug\ctibase.lib;%(AdditionalDependencies)</AdditionalDependencies>
       <AdditionalLibraryDirectories>.;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
       <ProgramDatabaseFile>
       </ProgramDatabaseFile>
@@ -318,7 +320,7 @@ if exist $(OutDir)$(TargetName).pdb xcopy /d/y/f $(OutDir)$(TargetName).pdb $(So
     <Link>
       <SubSystem>Console</SubSystem>
       <GenerateDebugInformation>true</GenerateDebugInformation>
-      <AdditionalDependencies>$(THRIFT)\$(CONFIGURATION)\lib\libthrift.lib;..\lib\ctithriftmsg.lib;..\lib\ctidbsrc.lib;..\lib\cticonfig.lib;..\lib\ctidevdb.lib;..\lib\ctiholidaydb.lib;..\lib\ctimsg.lib;..\lib\service.lib;advapi32.lib;$(BOOST)\lib\boost_unit_test_framework-vc141-mt-x32-1_67.lib;$(BOOST)\lib\boost_system-vc141-mt-x32-1_67.lib;$(BOOST)\lib\boost_filesystem-vc141-mt-x32-1_67.lib;$(BOOST)\lib\boost_regex-vc141-mt-x32-1_67.lib;$(BOOST)\lib\boost_thread-vc141-mt-x32-1_67.lib;$(BOOST)\lib\boost_date_time-vc141-mt-x32-1_67.lib;$(BOOST)\lib\boost_chrono-vc141-mt-x32-1_67.lib;..\lib\ctibase.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>$(THRIFT)\$(CONFIGURATION)\lib\libthrift.lib;..\lib\ctithriftmsg.lib;..\lib\ctidbsrc.lib;..\lib\cticonfig.lib;..\lib\ctidevdb.lib;..\lib\ctiholidaydb.lib;..\lib\ctimsg.lib;..\lib\service.lib;advapi32.lib;$(BOOST)\lib\boost_unit_test_framework-$(BOOST_VERSION).lib;$(BOOST)\lib\boost_system-$(BOOST_VERSION).lib;$(BOOST)\lib\boost_filesystem-$(BOOST_VERSION).lib;$(BOOST)\lib\boost_regex-$(BOOST_VERSION).lib;$(BOOST)\lib\boost_thread-$(BOOST_VERSION).lib;$(BOOST)\lib\boost_date_time-$(BOOST_VERSION).lib;$(BOOST)\lib\boost_chrono-$(BOOST_VERSION).lib;..\lib\ctibase.lib;%(AdditionalDependencies)</AdditionalDependencies>
       <AdditionalLibraryDirectories>.;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
       <OptimizeReferences>true</OptimizeReferences>
       <EnableCOMDATFolding>true</EnableCOMDATFolding>
@@ -346,199 +348,21 @@ if exist $(OutDir)$(TargetName).pdb xcopy /d/y/f $(OutDir)$(TargetName).pdb $(So
 -->
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ProjectReference Include="capcontrol-common.vcxproj">
+      <Project>{a5301b79-bc9b-4024-b617-3e0e773204d2}</Project>
+    </ProjectReference>
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="..\COMMON\boost_assert.cpp" />
     <ClCompile Include="..\precompiled.cpp">
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Create</PrecompiledHeader>
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">Create</PrecompiledHeader>
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">Create</PrecompiledHeader>
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|x64'">Create</PrecompiledHeader>
     </ClCompile>
-    <ClCompile Include="CapControlCParms.cpp">
-    </ClCompile>
-    <ClCompile Include="CapControlDispatchConnection.cpp">
-    </ClCompile>
-    <ClCompile Include="capcontroller.cpp">
-    </ClCompile>
-    <ClCompile Include="CapControlPao.cpp">
-    </ClCompile>
-    <ClCompile Include="CapControlPointDatahandler.cpp">
-    </ClCompile>
-    <ClCompile Include="cbcHeartbeatPolicy.cpp" />
-    <ClCompile Include="cc_message_serialization.cpp">
-    </ClCompile>
+    <ClCompile Include="cc_message_serialization.cpp" />
     <ClCompile Include="cc_server_client_serialization_test.cpp">
     </ClCompile>
-    <ClCompile Include="ccarea.cpp">
-    </ClCompile>
-    <ClCompile Include="ccareabase.cpp">
-    </ClCompile>
-    <ClCompile Include="cccapbank.cpp">
-    </ClCompile>
-    <ClCompile Include="ccclientconn.cpp">
-    </ClCompile>
-    <ClCompile Include="ccclientlistener.cpp">
-    </ClCompile>
-    <ClCompile Include="ccconfirmationstats.cpp">
-    </ClCompile>
-    <ClCompile Include="ccexecutor.cpp">
-    </ClCompile>
-    <ClCompile Include="ccfeeder.cpp">
-    </ClCompile>
-    <ClCompile Include="ccmonitorpoint.cpp">
-    </ClCompile>
-    <ClCompile Include="ccoperationstats.cpp">
-    </ClCompile>
-    <ClCompile Include="ccoriginalparent.cpp">
-    </ClCompile>
     <ClCompile Include="ccservice.cpp">
-    </ClCompile>
-    <ClCompile Include="ccsparea.cpp">
-    </ClCompile>
-    <ClCompile Include="ccstate.cpp">
-    </ClCompile>
-    <ClCompile Include="ccstatsobject.cpp">
-    </ClCompile>
-    <ClCompile Include="ccsubstation.cpp">
-    </ClCompile>
-    <ClCompile Include="ccsubstationbus.cpp">
-    </ClCompile>
-    <ClCompile Include="ccsubstationbusstore.cpp">
-    </ClCompile>
-    <ClCompile Include="cctwowaycbcpoints.cpp">
-    </ClCompile>
-    <ClCompile Include="ccutil.cpp">
-    </ClCompile>
-    <ClCompile Include="Conductor.cpp" />
-    <ClCompile Include="Controllable.cpp">
-    </ClCompile>
-    <ClCompile Include="ControlPolicy.cpp" />
-    <ClCompile Include="ControlStrategy.cpp">
-    </ClCompile>
-    <ClCompile Include="CountdownKeepAlivePolicy.cpp">
-    </ClCompile>
-    <ClCompile Include="DispatchPointRegistry.cpp" />
-    <ClCompile Include="DynamicCommand.cpp">
-    </ClCompile>
-    <ClCompile Include="DynamicCommandExecutor.cpp">
-    </ClCompile>
-    <ClCompile Include="DynamicData.cpp" />
-    <ClCompile Include="ExecChangeOpState.cpp">
-    </ClCompile>
-    <ClCompile Include="ExecutorFactory.cpp">
-    </ClCompile>
-    <ClCompile Include="ExecVerification.cpp">
-    </ClCompile>
-    <ClCompile Include="IgnoredControlReason.cpp" />
-    <ClCompile Include="IncrementingKeepAlivePolicy.cpp">
-    </ClCompile>
-    <ClCompile Include="IVVCAlgorithm.cpp">
-    </ClCompile>
-    <ClCompile Include="IVVCState.cpp">
-    </ClCompile>
-    <ClCompile Include="IVVCStrategy.cpp">
-    </ClCompile>
-    <ClCompile Include="KeepAlivePolicy.cpp">
-    </ClCompile>
-    <ClCompile Include="KVarStrategy.cpp">
-    </ClCompile>
-    <ClCompile Include="LastControlReason.cpp">
-    </ClCompile>
-    <ClCompile Include="LoadOnlyScanPolicy.cpp">
-    </ClCompile>
-    <ClCompile Include="mgr_paosched.cpp">
-    </ClCompile>
-    <ClCompile Include="MsgAreas.cpp">
-    </ClCompile>
-    <ClCompile Include="MsgBankMove.cpp">
-    </ClCompile>
-    <ClCompile Include="MsgCapBankStates.cpp">
-    </ClCompile>
-    <ClCompile Include="MsgCapControlCommand.cpp">
-    </ClCompile>
-    <ClCompile Include="MsgCapControlMessage.cpp">
-    </ClCompile>
-    <ClCompile Include="MsgCapControlServerResponse.cpp">
-    </ClCompile>
-    <ClCompile Include="MsgCapControlShutdown.cpp">
-    </ClCompile>
-    <ClCompile Include="MsgChangeOpState.cpp">
-    </ClCompile>
-    <ClCompile Include="MsgDeleteItem.cpp">
-    </ClCompile>
-    <ClCompile Include="MsgItemCommand.cpp">
-    </ClCompile>
-    <ClCompile Include="MsgObjectMove.cpp">
-    </ClCompile>
-    <ClCompile Include="MsgSpecialAreas.cpp">
-    </ClCompile>
-    <ClCompile Include="MsgSubstationBus.cpp">
-    </ClCompile>
-    <ClCompile Include="MsgSubstations.cpp">
-    </ClCompile>
-    <ClCompile Include="MsgSystemStatus.cpp">
-    </ClCompile>
-    <ClCompile Include="MsgTriggerDmvTest.cpp" />
-    <ClCompile Include="MsgVerifyBanks.cpp">
-    </ClCompile>
-    <ClCompile Include="MsgVerifyInactiveBanks.cpp">
-    </ClCompile>
-    <ClCompile Include="MsgVerifySelectedBank.cpp">
-    </ClCompile>
-    <ClCompile Include="MsgVoltageRegulator.cpp">
-    </ClCompile>
-    <ClCompile Include="MultiVoltStrategy.cpp">
-    </ClCompile>
-    <ClCompile Include="MultiVoltVarStrategy.cpp">
-    </ClCompile>
-    <ClCompile Include="NoKeepAlivePolicy.cpp">
-    </ClCompile>
-    <ClCompile Include="NoStrategy.cpp">
-    </ClCompile>
-    <ClCompile Include="pao_event.cpp">
-    </ClCompile>
-    <ClCompile Include="pao_schedule.cpp">
-    </ClCompile>
-    <ClCompile Include="PFactorKWKVarStrategy.cpp">
-    </ClCompile>
-    <ClCompile Include="PointResponse.cpp">
-    </ClCompile>
-    <ClCompile Include="PointResponseDatabaseDao.cpp">
-    </ClCompile>
-    <ClCompile Include="PointResponseManager.cpp">
-    </ClCompile>
-    <ClCompile Include="PointValueHolder.cpp">
-    </ClCompile>
-    <ClCompile Include="Policy.cpp">
-    </ClCompile>
-    <ClCompile Include="RegulatorEvents.cpp">
-    </ClCompile>
-    <ClCompile Include="ScanPolicy.cpp">
-    </ClCompile>
-    <ClCompile Include="StandardControlPolicy.cpp">
-    </ClCompile>
-    <ClCompile Include="StandardScanPolicy.cpp">
-    </ClCompile>
-    <ClCompile Include="StrategyLoader.cpp">
-    </ClCompile>
-    <ClCompile Include="StrategyManager.cpp">
-    </ClCompile>
-    <ClCompile Include="TimeOfDayStrategy.cpp">
-    </ClCompile>
-    <ClCompile Include="VoltageRegulator.cpp">
-    </ClCompile>
-    <ClCompile Include="VoltageRegulatorLoader.cpp">
-    </ClCompile>
-    <ClCompile Include="VoltageRegulatorManager.cpp">
-    </ClCompile>
-    <ClCompile Include="VoltStrategy.cpp">
-    </ClCompile>
-    <ClCompile Include="Zone.cpp">
-    </ClCompile>
-    <ClCompile Include="ZoneLoader.cpp">
-    </ClCompile>
-    <ClCompile Include="ZoneManager.cpp">
     </ClCompile>
   </ItemGroup>
   <ItemGroup>

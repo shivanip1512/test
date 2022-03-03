@@ -2,31 +2,27 @@ package com.cannontech.services.rfn.endpoint;
 
 import java.util.Map;
 
-import javax.jms.ConnectionFactory;
+import javax.annotation.PostConstruct;
 
 import org.apache.logging.log4j.Level;
 import org.apache.logging.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.jms.core.JmsTemplate;
 import org.springframework.jmx.export.annotation.ManagedResource;
 
 import com.cannontech.clientutils.YukonLogManager;
 import com.cannontech.common.config.ConfigurationSource;
 import com.cannontech.common.config.MasterConfigBoolean;
-import com.cannontech.common.device.creation.BadTemplateDeviceCreationException;
-import com.cannontech.common.device.creation.DeviceCreationException;
 import com.cannontech.common.rfn.Acknowledgeable;
-import com.cannontech.common.rfn.endpoint.IgnoredTemplateException;
 import com.cannontech.common.rfn.message.RfnIdentifier;
 import com.cannontech.common.rfn.message.archive.RfnDeviceArchiveRequest;
 import com.cannontech.common.rfn.message.archive.RfnDeviceArchiveResponse;
-import com.cannontech.common.rfn.model.RfnDevice;
 import com.cannontech.common.rfn.model.RfnManufacturerModel;
 import com.cannontech.common.rfn.service.RfDaCreationService;
 import com.cannontech.common.rfn.service.RfnDeviceCreationService;
 import com.cannontech.common.rfn.service.RfnDeviceLookupService;
+import com.cannontech.common.util.jms.YukonJmsTemplate;
+import com.cannontech.common.util.jms.YukonJmsTemplateFactory;
 import com.cannontech.common.util.jms.api.JmsApiDirectory;
-import com.cannontech.core.dao.NotFoundException;
 import com.cannontech.services.rfn.RfnArchiveProcessor;
 import com.cannontech.services.rfn.RfnArchiveQueueHandler;
 import com.google.common.collect.Sets;
@@ -39,8 +35,15 @@ public class RfnDeviceArchiveRequestListener implements RfnArchiveProcessor {
     @Autowired private RfnDeviceLookupService rfnDeviceLookupService;
     @Autowired private RfDaCreationService rfdaCreationService;
     @Autowired private RfnArchiveQueueHandler queueHandler;
-    private JmsTemplate jmsTemplate;
+    @Autowired private YukonJmsTemplateFactory jmsTemplateFactory;
+
+    private YukonJmsTemplate jmsTemplate;
     private Logger rfnCommsLog = YukonLogManager.getRfnLogger();
+
+    @PostConstruct
+    public void init() {
+        jmsTemplate = jmsTemplateFactory.createResponseTemplate(JmsApiDirectory.RFN_DEVICE_ARCHIVE);
+    }
 
     @Override
     public void process(Object obj, String processor) {
@@ -65,10 +68,7 @@ public class RfnDeviceArchiveRequestListener implements RfnArchiveProcessor {
             try {
                 lookupAndAcknowledge(entry, processor);
             } catch (Exception e) {
-                log.debug("LookupAndAcknowledge failed for entry " + entry.toString()
-                          + ". Using processor " + processor + ".",
-                          e);
-                log.debug("Attempting createAndAcknowledge");
+                log.debug("LookupAndAcknowledge failed for entry {} Using processor {}", entry.toString());
                 createAndAcknowledge(entry, processor);
             }
         } else {
@@ -80,7 +80,6 @@ public class RfnDeviceArchiveRequestListener implements RfnArchiveProcessor {
      * If attempt to look up device by RfnIdentifier is successful, sends acknowledgement to NM
      */
     private void lookupAndAcknowledge(Map.Entry<Long, RfnIdentifier> entry, String processor) {
-        rfnDeviceCreationService.incrementDeviceLookupAttempt();
         rfnDeviceLookupService.getDevice(entry.getValue());
         sendAcknowledgement(entry, processor);
     }
@@ -111,40 +110,10 @@ public class RfnDeviceArchiveRequestListener implements RfnArchiveProcessor {
      * Attempts to create device
      */
     private void create(RfnIdentifier identifier, String processor) {
-        try {
-            RfnDevice device = null;
-            if (RfnManufacturerModel.is1200(identifier)) {
-                device = rfdaCreationService.create(identifier);
-                rfdaCreationService.incrementNewDeviceCreated(); 
-            } else {
-                device = rfnDeviceCreationService.create(identifier);
-                rfnDeviceCreationService.incrementNewDeviceCreated();
-            }
-            if (log.isDebugEnabled()) {
-                log.debug("{} created device {} ", processor, device);
-            }
-        } catch (IgnoredTemplateException e) {
-            throw new RuntimeException("Unable to create device for " + identifier + " because template is ignored", e);
-        } catch (BadTemplateDeviceCreationException e) {
-            log.warn("Creation failed for " + identifier + ". Manufacturer, Model and Serial Number combination do "
-                + "not match any templates.", e);
-            throw new RuntimeException("Creation failed for " + identifier, e);
-        } catch (DeviceCreationException e) {
-            log.warn("Creation failed for " + identifier + ", checking cache for any new entries.");
-            //  Try another lookup in case someone else beat us to it
-            try {
-                rfnDeviceLookupService.getDevice(identifier);
-            } catch (NotFoundException e1) {
-                throw new RuntimeException("Creation failed for " + identifier, e);
-            }
-        } catch (Exception e) {
-            if (log.isTraceEnabled()) {
-                // Only log full exception when trace is on so lots of failed creations don't kill performance.
-                log.warn("Creation failed for "+ identifier, e);
-            } else {
-                log.warn("Creation failed for " + identifier +":" + e);
-            }
-            throw new RuntimeException("Creation failed for " + identifier, e);
+        if (RfnManufacturerModel.is1200(identifier)) {
+            rfdaCreationService.create(identifier);
+        } else {
+            rfnDeviceCreationService.getOrCreate(identifier);
         }
     }
 
@@ -160,13 +129,7 @@ public class RfnDeviceArchiveRequestListener implements RfnArchiveProcessor {
         } else {
             log.debug("{} acknowledged referenceId={}", processor, entry.getKey());
         }
-        jmsTemplate.convertAndSend(JmsApiDirectory.RFN_DEVICE_ARCHIVE.getResponseQueue().get().getName(), response);
+        jmsTemplate.convertAndSend(response);
     }
-    
-    @Autowired
-    public void setConnectionFactory(ConnectionFactory connectionFactory) {
-        jmsTemplate = new JmsTemplate(connectionFactory);
-        jmsTemplate.setExplicitQosEnabled(true);
-        jmsTemplate.setDeliveryPersistent(false);
-    }
+
 }

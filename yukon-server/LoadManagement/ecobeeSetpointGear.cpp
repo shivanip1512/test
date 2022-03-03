@@ -34,7 +34,8 @@ bool EcobeeSetpointGear::attemptControl( CtiLMGroupPtr currentLMGroup,
 
         expectedLoadReduced += ( currentLMGroup->getKWCapacity() * loadScalar );
 
-        return controllableGroup->sendSetpointControl( controlSeconds,
+        return controllableGroup->sendSetpointControl( getProgramPAOId(),
+                                                       controlSeconds,
                                                        isHeatControl(),
                                                        isMandatory(),
                                                        getSetpointOffset() );

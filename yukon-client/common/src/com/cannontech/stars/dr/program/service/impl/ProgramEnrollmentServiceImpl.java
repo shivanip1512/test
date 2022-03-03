@@ -109,7 +109,6 @@ public class ProgramEnrollmentServiceImpl implements ProgramEnrollmentService {
     @Autowired private StarsCustAccountInformationDao starsCustAccountInformationDao;
     @Autowired private YukonListDao listDao;
     @Autowired private DrJmsMessagingService drJmsMessagingService;
-
     private final Map<Integer, Object> accountIdMutex = Collections.synchronizedMap(new HashMap<Integer, Object>());
     
     @Override
@@ -174,47 +173,49 @@ public class ProgramEnrollmentServiceImpl implements ProgramEnrollmentService {
                     YukonListEntry typeEntry = listDao.getYukonListEntry(liteHw.getLmHardwareTypeID());
                     HardwareType hardwareType = HardwareType.valueOf(typeEntry.getYukonDefID());
                     
-                    if(hardwareType.isNest()) {
-                        //we do not send any messages to Nest on enrollment
+                    if (hardwareType.isNest() || hardwareType.isEatonCloud()) {
+                        //do not send any messages on enrollment
                         continue;
                     }
 
                     if (toConfig) {
                         // Send the re-enable command if hardware status is unavailable.
                         // Whether to send the config command is controlled by the AUTOMATIC_CONFIGURATION energy
-                        // company setting.
-                        if (autoConfig) {
-                            if (!trackAddressing || hardwareType.isZigbee() || hardwareType.isEcobee()
-                                || hardwareType.isHoneywell() || hardwareType.isItron()) {
+                        // company setting for the devices except Ecobee, Honeywell and Itron.
+                        if (autoConfig && !(hardwareType.isEcobee() || hardwareType.isHoneywell() || hardwareType.isItron())) {
+                            if (!trackAddressing || hardwareType.isZigbee()) {
      
                                 LmHardwareCommand command = new LmHardwareCommand();
                                 command.setDevice(liteHw);
                                 command.setType(LmHardwareCommandType.CONFIG);
                                 command.setUser(user);
-                                
-                                if(hardwareType.isItron()) {
-                                    var addedEnrollmentGroupIds = getAddedEnrollmentGroupIds(requests, liteHw.getInventoryID());
-                                    var removedEnrollmentGroupIds = getRemovedEnrollmentGroupIds(originalEnrollments, requests);
-                                    var groupIds = CollectionUtils.union(addedEnrollmentGroupIds, removedEnrollmentGroupIds);
-                                    command.getParams().put(LmHardwareCommandParam.GROUP_ID, groupIds);
-                                }
-                                
                                 lmHardwareCommandService.sendConfigCommand(command);
                             }
-                        } else if (inventoryBaseDao.getDeviceStatus(liteHw.getInventoryID())
-                                == YukonListEntryTypes.YUK_DEF_ID_DEV_STAT_UNAVAIL && !suppressMessages) {
+                        } else if (checkDeviceStatus(liteHw.getInventoryID(), hardwareType) && !suppressMessages) {
                             LmHardwareCommand command = new LmHardwareCommand();
                             command.setDevice(liteHw);
                             command.setType(LmHardwareCommandType.IN_SERVICE);
-                            command.setUser(user);  
-                            
-                            if(hardwareType.isItron()) {
+                            command.setUser(user);
+
+                            if (hardwareType.isItron()) {
                                 var addedEnrollmentGroupIds = getAddedEnrollmentGroupIds(requests, liteHw.getInventoryID());
                                 var removedEnrollmentGroupIds = getRemovedEnrollmentGroupIds(originalEnrollments, requests);
                                 var groupIds = CollectionUtils.union(addedEnrollmentGroupIds, removedEnrollmentGroupIds);
                                 command.getParams().put(LmHardwareCommandParam.GROUP_ID, groupIds);
                             }
-                            
+                            if (hardwareType.isEcobee()) {
+                                boolean unenRollFlag = isUnenrollment(originalEnrollments, requests,
+                                        liteHw.getInventoryID());
+                                if (unenRollFlag) {
+                                    var groupIds = getAddedEnrollmentGroupIds(originalEnrollments, liteHw.getInventoryID());
+                                    command.getParams().put(LmHardwareCommandParam.GROUP_ID, groupIds);
+                                    command.setType(LmHardwareCommandType.OUT_OF_SERVICE);
+                                } else {
+                                    Set<Integer> removedEnrollmentGroupIds = getRemovedEnrollmentGroupIds(originalEnrollments,
+                                            requests);
+                                    command.getParams().put(LmHardwareCommandParam.GROUP_ID, removedEnrollmentGroupIds);
+                                }
+                            }
                             lmHardwareCommandService.sendInServiceCommand(command);
                         }
                     } else if (!suppressMessages) {
@@ -222,12 +223,11 @@ public class ProgramEnrollmentServiceImpl implements ProgramEnrollmentService {
                         command.setDevice(liteHw);
                         command.setType(LmHardwareCommandType.OUT_OF_SERVICE);
                         command.setUser(user);
-                        
-                        if(hardwareType.isItron()) {
+
+                        if (hardwareType.isItron() || hardwareType.isEcobee()) {
                             var groupIds = getAddedEnrollmentGroupIds(originalEnrollments, liteHw.getInventoryID());
                             command.getParams().put(LmHardwareCommandParam.GROUP_ID, groupIds);
                         }
-                        
                         lmHardwareCommandService.sendOutOfServiceCommand(command);
                     }
                 }
@@ -261,7 +261,51 @@ public class ProgramEnrollmentServiceImpl implements ProgramEnrollmentService {
             return result;
         }
     }
-    
+
+    /**
+     * For Ecobee, Itron & Honewell devices, return true if the device status is Available & Unavailable.For other devices return
+     * true if device status is Unavailable.
+     */
+    private boolean checkDeviceStatus(int inventoryID, HardwareType hardwareType) {
+        // For YUK_DEF_ID_CUST_ACT_INSTALL, getDeviceStatus() returns YUK_DEF_ID_DEV_STAT_AVAIL. If a device is created and not
+        // yet enrolled to a program then status of that device is : YUK_DEF_ID_CUST_ACT_INSTALL
+        int available = YukonListEntryTypes.YUK_DEF_ID_DEV_STAT_AVAIL;
+        // For YUK_DEF_ID_CUST_ACT_TERMINATION, getDeviceStatus() returns YUK_DEF_ID_DEV_STAT_UNAVAIL. If the device is unenrolled
+        // from a program then status of that device is : YUK_DEF_ID_CUST_ACT_TERMINATION
+        int unavailable = YukonListEntryTypes.YUK_DEF_ID_DEV_STAT_UNAVAIL;
+        int deviceStatus = inventoryBaseDao.getDeviceStatus(inventoryID);
+        if (hardwareType.isEcobee() || hardwareType.isItron() || hardwareType.isHoneywell()) {
+            return deviceStatus == unavailable || deviceStatus == available;
+        } else {
+            return deviceStatus == unavailable;
+        }
+    }
+
+    /**
+     * This method takes original enrollments, new enrollment requests and inventory id to check whether it's unenrollment flow or
+     * not. Condition for unenrollment flow :<br>
+     * 1> If originalEnrollments contain enrollment but newRequests does not : Unenrollment flow.<br>
+     * 2> If originalEnrollments contain has more enrollment than newRequests : Unenrollment flow.<br>
+     * 3> If originalEnrollments contain has less enrollment than newRequests : Enrollment flow.<br>
+     * 3> If originalEnrollments contain has equal enrollment as newRequests : User changed group.
+     */
+    private boolean isUnenrollment(List<ProgramEnrollment> originalEnrollments, List<ProgramEnrollment> newRequests,
+            int inventoryId) {
+
+        List<ProgramEnrollment> originalEnrolmentsForInventory = originalEnrollments.stream()
+                .filter(enroll -> enroll.getInventoryId() == inventoryId)
+                .collect(Collectors.toList());
+        List<ProgramEnrollment> newRequestForInventory = newRequests.stream()
+                .filter(enroll -> enroll.getInventoryId() == inventoryId)
+                .collect(Collectors.toList());
+        if (CollectionUtils.isEmpty(newRequestForInventory)
+                || (originalEnrolmentsForInventory.size() > newRequestForInventory.size())) {
+            return true;
+        } else {
+            return false;
+        }
+    }
+
     private Set<Integer> getRemovedEnrollmentGroupIds(Collection<ProgramEnrollment> originalEnrollments, 
                                                       Collection<ProgramEnrollment> updatedEnrollments) {
         
@@ -938,4 +982,5 @@ public class ProgramEnrollmentServiceImpl implements ProgramEnrollmentService {
 
         return null;
     }
+
 }

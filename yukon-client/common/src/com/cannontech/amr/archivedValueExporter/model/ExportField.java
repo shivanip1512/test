@@ -2,6 +2,8 @@ package com.cannontech.amr.archivedValueExporter.model;
 
 import java.text.DecimalFormat;
 
+import org.apache.commons.lang3.builder.ToStringBuilder;
+import org.apache.commons.lang3.builder.ToStringStyle;
 import org.joda.time.DateTime;
 import org.joda.time.format.DateTimeFormat;
 import org.joda.time.format.DateTimeFormatter;
@@ -16,8 +18,6 @@ public class ExportField implements Displayable {
     private Field field = new Field();
     private int formatId;
     private AttributeField attributeField;
-    private ReadingPattern readingPattern = ReadingPattern.FIVE_ZERO;
-    private TimestampPattern timestampPattern = TimestampPattern.MONTH_DAY_YEAR; // MERICA!
     private Integer maxLength = 0;
     private String padChar;
     private PadSide padSide = PadSide.NONE;
@@ -56,44 +56,6 @@ public class ExportField implements Displayable {
 
     public void setAttributeField(AttributeField attributeField) {
         this.attributeField = attributeField;
-    }
-
-    public ReadingPattern getReadingPattern() {
-        boolean patternFound = false;
-        if(isValue()){
-            for (ReadingPattern type : ReadingPattern.values()) {
-                if (type.getPattern().equals(pattern)) {
-                    readingPattern = type;
-                    patternFound = true;
-                    break;
-                }
-            }
-            if(!patternFound) readingPattern = ReadingPattern.valueOf("CUSTOM");
-        }
-        return readingPattern;
-    }
-
-    public void setReadingPattern(ReadingPattern readingPattern) {
-        this.readingPattern = readingPattern;
-    }
-
-    public TimestampPattern getTimestampPattern() {
-        boolean patternFound = false;
-        if(isTimestamp()){
-            for (TimestampPattern type : TimestampPattern.values()) {
-                if (type.getPattern().equals(pattern)) {
-                    timestampPattern = type;
-                    patternFound = true;
-                    break;
-                }
-            }
-            if(!patternFound) timestampPattern = TimestampPattern.valueOf("CUSTOM");
-        }
-        return timestampPattern;
-    }
-
-    public void setTimestampPattern(TimestampPattern timestampPattern) {
-        this.timestampPattern = timestampPattern;
     }
 
     public Integer getMaxLength() {
@@ -263,12 +225,8 @@ public class ExportField implements Displayable {
         result = prime * result + ((padSide == null) ? 0 : padSide.hashCode());
         result = prime * result + ((pattern == null) ? 0 : pattern.hashCode());
         result = prime * result
-                + ((readingPattern == null) ? 0 : readingPattern.hashCode());
-        result = prime * result
                 + ((roundingMode == null) ? 0 : roundingMode.hashCode());
-        result = prime
-                * result
-                + ((timestampPattern == null) ? 0 : timestampPattern.hashCode());
+    
         return result;
     }
 
@@ -334,26 +292,36 @@ public class ExportField implements Displayable {
         } else if (!pattern.equals(other.pattern)) {
             return false;
         }
-        if (readingPattern != other.readingPattern) {
-            return false;
-        }
+
         if (roundingMode != other.roundingMode) {
             return false;
         }
-        if (timestampPattern != other.timestampPattern) {
-            return false;
-        }
+
         return true;
     }
-
+    
     @Override
     public String toString() {
-        return String
-                .format("ExportField [fieldId=%s, field=%s, formatId=%s, attributeField=%s, readingPattern=%s, timestampPattern=%s, maxLength=%s, padChar=%s, padSide=%s, roundingMode=%s, missingAttribute=%s, missingAttributeValue=%s, pattern=%s]",
-                        fieldId, field, formatId, attributeField,
-                        readingPattern, timestampPattern, maxLength, padChar,
-                        padSide, roundingMode, missingAttribute,
-                        missingAttributeValue, pattern);
+        return ToStringBuilder.reflectionToString(this, ToStringStyle.SHORT_PREFIX_STYLE)
+                + System.getProperty("line.separator");
     }
     
+    public Boolean isCustomPattern() {
+
+        if (isValue()) {
+            for (ReadingPattern type : ReadingPattern.values()) {
+                if (type.getPattern().equals(pattern)) {
+                    return false;
+                }
+            }
+        } else if (isTimestamp()) {
+            for (TimestampPattern type : TimestampPattern.values()) {
+                if (type.getPattern().equals(pattern)) {
+                    return false;
+                }
+            }
+        }
+
+        return true;
+    }
 }

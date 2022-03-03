@@ -82,11 +82,8 @@ public class DemandResetServiceImpl implements DemandResetService, CollectionAct
             unsupportedDevices.addAll(Sets.difference(allDevices, devicesToSend));
             verifiableDevices.values().forEach(v -> devicesToVerify.addAll(v));
             unverifiableDevices.addAll(Sets.difference(devicesToSend, devicesToVerify));
-            log.debug("All Devices:" + allDevices);
-            log.debug("Support Demand Reset:" + devicesToSend);
-            log.debug("Unsupported:" + unsupportedDevices);
-            log.debug("Verifiable:" + devicesToVerify);
-            log.debug("Unverifiable:" + unverifiableDevices);
+            log.debug("All Devices: {} Support Demand Reset: {} Unsupported: {} Verifiable: {} Unverifiable: {}", allDevices,
+                    devicesToSend, unsupportedDevices, devicesToVerify, unverifiableDevices);
         }
 
         public Set<SimpleDevice> getValidDevices(StrategyType strategyType) {

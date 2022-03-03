@@ -48,7 +48,10 @@ public class InventoryPageIndexBuilder extends DbPageIndexBuilder {
         sql.append(    "lmhw.manufacturerSerialNumber, lmhw.lmHardwareTypeId, meterTypeId,");
         sql.append(    "ecm.energyCompanyId, c_yle.yukonDefinitionId, ypo.type as devicePaoType,");
         sql.append(    "ypo.paoName as devicePaoName, lmht_yle.entryText as hwDisplayType,");
-        sql.append(    "dmg.meterNumber as deviceMeterNumber, mhw.meterNumber as meterMeterNumber");
+        sql.append(    "dmg.meterNumber as deviceMeterNumber, mhw.meterNumber as meterMeterNumber,");
+        sql.append(    "hwt.MacAddress as honeywellMacAddress,");
+        sql.append(    "zbep.MacAddress as zigbeeMacAddress,");
+        sql.append(    "dma.MacAddress as itronMacAddress, dma.SecondaryMacAddress as itronSecondaryMacAddress");
         baseQuery = sql;
 
         sql = new SqlStatementBuilder();
@@ -60,6 +63,9 @@ public class InventoryPageIndexBuilder extends DbPageIndexBuilder {
         sql.append(    "left join yukonListEntry c_yle on c_yle.entryId = ib.categoryId");
         sql.append(    "left join yukonListEntry lmht_yle on lmht_yle.entryId = lmhw.lmHardwareTypeId");
         sql.append(    "left join deviceMeterGroup dmg on dmg.deviceId = ib.deviceId");
+        sql.append(    "left join HoneywellWifiThermostat hwt on hwt.deviceId = ib.deviceId");
+        sql.append(    "left join ZBEndPoint zbep on zbep.deviceId = ib.deviceId");
+        sql.append(    "left join DeviceMacAddress dma on dma.deviceId = ib.deviceId");
         queryTables = sql;
 
         allWhereClause = new SqlStatementBuilder("ib.inventoryId <> 0");
@@ -109,6 +115,10 @@ public class InventoryPageIndexBuilder extends DbPageIndexBuilder {
         String deviceLabel = rs.getString("deviceLabel");
         String altTrackingNumber = rs.getString("alternateTrackingNumber");
         String devicePaoName = rs.getString("devicePaoName");
+        String honeywellMacAddress = rs.getString("honeywellMacAddress");
+        String zigbeeMacAddress = rs.getString("zigbeeMacAddress");
+        String itronMacAddress = rs.getString("itronMacAddress");
+        String itronSecondaryMacAddress = rs.getString("itronSecondaryMacAddress");
         LiteStarsEnergyCompany energyCompany = starsDatabaseCache.getEnergyCompany(ecId);
 
         String displayName;
@@ -140,7 +150,8 @@ public class InventoryPageIndexBuilder extends DbPageIndexBuilder {
 
         builder.pageArgs(displayName);
 
-        builder.summaryArgs(manufacturerSerialNumber, meterNumber, deviceLabel, altTrackingNumber, displayType);
+        builder.summaryArgs(manufacturerSerialNumber, meterNumber, deviceLabel, altTrackingNumber, honeywellMacAddress,
+                zigbeeMacAddress, itronMacAddress, itronSecondaryMacAddress, displayType);
 
         return builder.build();
     }

@@ -1,14 +1,14 @@
 package com.cannontech.web.ami.trend;
 
-import static org.junit.Assert.assertTrue;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import java.lang.reflect.InvocationTargetException;
 import java.util.ArrayList;
 import java.util.List;
 
 import org.joda.time.DateTime;
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 import org.springframework.test.util.ReflectionTestUtils;
 
 import com.cannontech.common.chart.model.ChartInterval;
@@ -18,7 +18,7 @@ import com.cannontech.web.common.chart.service.impl.ChartServiceImpl;
 public class ChartServiceImplTest {
     
     private ChartServiceImpl chartServiceImpl;
-    @Before
+    @BeforeEach
     public void setUp() throws NoSuchMethodException, SecurityException {
         chartServiceImpl = new ChartServiceImpl();
     }

@@ -1,0 +1,300 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Project DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup Label="ProjectConfigurations">
+    <ProjectConfiguration Include="Debug|Win32">
+      <Configuration>Debug</Configuration>
+      <Platform>Win32</Platform>
+    </ProjectConfiguration>
+    <ProjectConfiguration Include="Release|Win32">
+      <Configuration>Release</Configuration>
+      <Platform>Win32</Platform>
+    </ProjectConfiguration>
+    <ProjectConfiguration Include="Debug|x64">
+      <Configuration>Debug</Configuration>
+      <Platform>x64</Platform>
+    </ProjectConfiguration>
+    <ProjectConfiguration Include="Release|x64">
+      <Configuration>Release</Configuration>
+      <Platform>x64</Platform>
+    </ProjectConfiguration>
+  </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="..\COMMON\boost_assert.cpp" />
+    <ClCompile Include="..\precompiled.cpp">
+      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Create</PrecompiledHeader>
+      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">Create</PrecompiledHeader>
+      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">Create</PrecompiledHeader>
+      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|x64'">Create</PrecompiledHeader>
+    </ClCompile>
+    <ClCompile Include="CapControlCParms.cpp" />
+    <ClCompile Include="CapControlDispatchConnection.cpp" />
+    <ClCompile Include="capcontroller.cpp" />
+    <ClCompile Include="CapControlPao.cpp" />
+    <ClCompile Include="CapControlPointDatahandler.cpp" />
+    <ClCompile Include="cbcHeartbeatPolicy.cpp" />
+    <ClCompile Include="ccarea.cpp" />
+    <ClCompile Include="ccareabase.cpp" />
+    <ClCompile Include="cccapbank.cpp" />
+    <ClCompile Include="ccclientconn.cpp" />
+    <ClCompile Include="ccclientlistener.cpp" />
+    <ClCompile Include="ccconfirmationstats.cpp" />
+    <ClCompile Include="ccexecutor.cpp" />
+    <ClCompile Include="ccfeeder.cpp" />
+    <ClCompile Include="ccmonitorpoint.cpp" />
+    <ClCompile Include="ccoperationstats.cpp" />
+    <ClCompile Include="ccoriginalparent.cpp" />
+    <ClCompile Include="ccsparea.cpp" />
+    <ClCompile Include="ccstate.cpp" />
+    <ClCompile Include="ccstatsobject.cpp" />
+    <ClCompile Include="ccsubstation.cpp" />
+    <ClCompile Include="ccsubstationbus.cpp" />
+    <ClCompile Include="ccsubstationbusstore.cpp" />
+    <ClCompile Include="cctwowaycbcpoints.cpp" />
+    <ClCompile Include="ccutil.cpp" />
+    <ClCompile Include="cc_message_serialization.cpp" />
+    <ClCompile Include="Conductor.cpp" />
+    <ClCompile Include="Controllable.cpp" />
+    <ClCompile Include="ControlPolicy.cpp" />
+    <ClCompile Include="ControlStrategy.cpp" />
+    <ClCompile Include="CountdownKeepAlivePolicy.cpp" />
+    <ClCompile Include="DispatchPointRegistry.cpp" />
+    <ClCompile Include="DynamicCommand.cpp" />
+    <ClCompile Include="DynamicCommandExecutor.cpp" />
+    <ClCompile Include="DynamicData.cpp" />
+    <ClCompile Include="ExecChangeOpState.cpp" />
+    <ClCompile Include="ExecutorFactory.cpp" />
+    <ClCompile Include="ExecVerification.cpp" />
+    <ClCompile Include="IgnoredControlReason.cpp" />
+    <ClCompile Include="IncrementingKeepAlivePolicy.cpp" />
+    <ClCompile Include="IVVCAlgorithm.cpp" />
+    <ClCompile Include="IVVCState.cpp" />
+    <ClCompile Include="IVVCStrategy.cpp" />
+    <ClCompile Include="KeepAlivePolicy.cpp" />
+    <ClCompile Include="KVarStrategy.cpp" />
+    <ClCompile Include="LastControlReason.cpp" />
+    <ClCompile Include="LoadOnlyScanPolicy.cpp" />
+    <ClCompile Include="mgr_paosched.cpp" />
+    <ClCompile Include="MsgAreas.cpp" />
+    <ClCompile Include="MsgBankMove.cpp" />
+    <ClCompile Include="MsgCapBankStates.cpp" />
+    <ClCompile Include="MsgCapControlCommand.cpp" />
+    <ClCompile Include="MsgCapControlMessage.cpp" />
+    <ClCompile Include="MsgCapControlServerResponse.cpp" />
+    <ClCompile Include="MsgCapControlShutdown.cpp" />
+    <ClCompile Include="MsgChangeOpState.cpp" />
+    <ClCompile Include="MsgDeleteItem.cpp" />
+    <ClCompile Include="MsgItemCommand.cpp" />
+    <ClCompile Include="MsgObjectMove.cpp" />
+    <ClCompile Include="MsgSpecialAreas.cpp" />
+    <ClCompile Include="MsgSubstationBus.cpp" />
+    <ClCompile Include="MsgSubstations.cpp" />
+    <ClCompile Include="MsgSystemStatus.cpp" />
+    <ClCompile Include="MsgTriggerDmvTest.cpp" />
+    <ClCompile Include="MsgVerifyBanks.cpp" />
+    <ClCompile Include="MsgVerifyInactiveBanks.cpp" />
+    <ClCompile Include="MsgVerifySelectedBank.cpp" />
+    <ClCompile Include="MsgVoltageRegulator.cpp" />
+    <ClCompile Include="MultiVoltStrategy.cpp" />
+    <ClCompile Include="MultiVoltVarStrategy.cpp" />
+    <ClCompile Include="NoKeepAlivePolicy.cpp" />
+    <ClCompile Include="NoStrategy.cpp" />
+    <ClCompile Include="pao_event.cpp" />
+    <ClCompile Include="pao_schedule.cpp" />
+    <ClCompile Include="PFactorKWKVarStrategy.cpp" />
+    <ClCompile Include="PointResponse.cpp" />
+    <ClCompile Include="PointResponseDatabaseDao.cpp" />
+    <ClCompile Include="PointResponseManager.cpp" />
+    <ClCompile Include="PointValueHolder.cpp" />
+    <ClCompile Include="Policy.cpp" />
+    <ClCompile Include="RegulatorEvents.cpp" />
+    <ClCompile Include="Requests.cpp" />
+    <ClCompile Include="ScanPolicy.cpp" />
+    <ClCompile Include="StandardControlPolicy.cpp" />
+    <ClCompile Include="StandardScanPolicy.cpp" />
+    <ClCompile Include="StrategyLoader.cpp" />
+    <ClCompile Include="StrategyManager.cpp" />
+    <ClCompile Include="TimeOfDayStrategy.cpp" />
+    <ClCompile Include="VoltageRegulator.cpp" />
+    <ClCompile Include="VoltageRegulatorLoader.cpp" />
+    <ClCompile Include="VoltageRegulatorManager.cpp" />
+    <ClCompile Include="VoltStrategy.cpp" />
+    <ClCompile Include="Zone.cpp" />
+    <ClCompile Include="ZoneLoader.cpp" />
+    <ClCompile Include="ZoneManager.cpp" />
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="include\Requests.h" />
+  </ItemGroup>
+  <PropertyGroup Label="Globals">
+    <VCProjectVersion>16.0</VCProjectVersion>
+    <ProjectGuid>{A5301B79-BC9B-4024-B617-3E0E773204D2}</ProjectGuid>
+    <Keyword>Win32Proj</Keyword>
+    <RootNamespace>capcontrolcommon</RootNamespace>
+    <WindowsTargetPlatformVersion>10.0</WindowsTargetPlatformVersion>
+  </PropertyGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'" Label="Configuration">
+    <ConfigurationType>StaticLibrary</ConfigurationType>
+    <UseDebugLibraries>true</UseDebugLibraries>
+    <PlatformToolset>v142</PlatformToolset>
+    <CharacterSet>NotSet</CharacterSet>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'" Label="Configuration">
+    <ConfigurationType>StaticLibrary</ConfigurationType>
+    <UseDebugLibraries>false</UseDebugLibraries>
+    <PlatformToolset>v142</PlatformToolset>
+    <WholeProgramOptimization>true</WholeProgramOptimization>
+    <CharacterSet>NotSet</CharacterSet>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'" Label="Configuration">
+    <ConfigurationType>StaticLibrary</ConfigurationType>
+    <UseDebugLibraries>true</UseDebugLibraries>
+    <PlatformToolset>v142</PlatformToolset>
+    <CharacterSet>NotSet</CharacterSet>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'" Label="Configuration">
+    <ConfigurationType>StaticLibrary</ConfigurationType>
+    <UseDebugLibraries>false</UseDebugLibraries>
+    <PlatformToolset>v142</PlatformToolset>
+    <WholeProgramOptimization>true</WholeProgramOptimization>
+    <CharacterSet>NotSet</CharacterSet>
+  </PropertyGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.props" />
+  <ImportGroup Label="ExtensionSettings">
+  </ImportGroup>
+  <ImportGroup Label="Shared">
+  </ImportGroup>
+  <ImportGroup Label="PropertySheets" Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+    <Import Project="$(SolutionDir)build.props" />
+  </ImportGroup>
+  <ImportGroup Label="PropertySheets" Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+    <Import Project="$(SolutionDir)build.props" />
+  </ImportGroup>
+  <ImportGroup Label="PropertySheets" Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+    <Import Project="$(SolutionDir)build.props" />
+  </ImportGroup>
+  <ImportGroup Label="PropertySheets" Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+    <Import Project="$(SolutionDir)build.props" />
+  </ImportGroup>
+  <PropertyGroup Label="UserMacros" />
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
+    <LinkIncremental>false</LinkIncremental>
+    <OutDir>$(SolutionDir)lib\</OutDir>
+    <IntDir>Debug\capcontrol-common\I386\</IntDir>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
+    <LinkIncremental>true</LinkIncremental>
+    <OutDir>$(SolutionDir)lib-debug\</OutDir>
+    <IntDir>Debug\capcontrol-common\I386\</IntDir>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
+    <LinkIncremental>true</LinkIncremental>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
+    <LinkIncremental>false</LinkIncremental>
+  </PropertyGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
+    <ClCompile>
+      <Optimization>MaxSpeed</Optimization>
+      <IntrinsicFunctions>true</IntrinsicFunctions>
+      <AdditionalIncludeDirectories>$(DBGHELP)\include;$(BOOST)\include;$(SQLAPI)\include;$(THRIFT)\include;.;..\capcontrol\include;..\common\include;..\database\include;..\deviceconfiguration\include;..\message\Serialization;..\message\include;..\protocol\include;..\rtdb\include;..\server\include;..\service\include;.\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <PreprocessorDefinitions>USING_PCH;WIN32;NDEBUG;_LIB;_CONSOLE;_CRT_NONSTDC_NO_WARNINGS;BOOST_ALL_DYN_LINK;BOOST_ENABLE_ASSERT_HANDLER;NOMINMAX;WINDOWS;_REENTRANT;_WINDOWS;_X86_=1;__DLL__;D_FILE_NAME=capcontrol-common;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <RuntimeTypeInfo>true</RuntimeTypeInfo>
+      <PrecompiledHeaderFile>precompiled.h</PrecompiledHeaderFile>
+      <BasicRuntimeChecks>Default</BasicRuntimeChecks>
+      <DebugInformationFormat>ProgramDatabase</DebugInformationFormat>
+      <MultiProcessorCompilation>true</MultiProcessorCompilation>
+      <PrecompiledHeader>Use</PrecompiledHeader>
+      <WarningLevel>Level1</WarningLevel>
+      <FunctionLevelLinking>true</FunctionLevelLinking>
+      <SDLCheck>
+      </SDLCheck>
+      <LanguageStandard>stdcpp17</LanguageStandard>
+      <ConformanceMode>false</ConformanceMode>
+      <ProgramDataBaseFileName>$(SolutionDir)pdb\$(TargetName).pdb</ProgramDataBaseFileName>
+      <WholeProgramOptimization>false</WholeProgramOptimization>
+      <DisableSpecificWarnings>4103</DisableSpecificWarnings>
+    </ClCompile>
+    <Link>
+      <SubSystem>Windows</SubSystem>
+      <EnableCOMDATFolding>true</EnableCOMDATFolding>
+      <OptimizeReferences>true</OptimizeReferences>
+      <GenerateDebugInformation>true</GenerateDebugInformation>
+      <AdditionalDependencies>$(BOOST)\lib\boost_system-$(BOOST_VERSION).lib;$(BOOST)\lib\boost_filesystem-$(BOOST_VERSION).lib;$(BOOST)\lib\boost_regex-$(BOOST_VERSION).lib;$(BOOST)\lib\boost_thread-$(BOOST_VERSION).lib;$(BOOST)\lib\boost_date_time-$(BOOST_VERSION).lib;$(BOOST)\lib\boost_chrono-$(BOOST_VERSION).lib;advapi32.lib;..\lib\service.lib;..\lib\ctimsg.lib;..\lib\ctibase.lib;..\lib\ctiholidaydb.lib;..\lib\ctiseasondb.lib;..\lib\ctidbsrc.lib;..\lib\ctithriftmsg.lib;$(THRIFT)\$(CONFIGURATION)\lib\libthrift.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <LargeAddressAware>true</LargeAddressAware>
+      <ProgramDatabaseFile>$(SolutionDir)pdb\$(TargetName).pdb</ProgramDatabaseFile>
+    </Link>
+  </ItemDefinitionGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
+    <ClCompile>
+      <PrecompiledHeader>Use</PrecompiledHeader>
+      <PrecompiledHeaderFile>precompiled.h</PrecompiledHeaderFile>
+      <WarningLevel>Level1</WarningLevel>
+      <SDLCheck>
+      </SDLCheck>
+      <AdditionalIncludeDirectories>$(DBGHELP)\include;$(BOOST)\include;$(SQLAPI)\include;$(THRIFT)\include;.;..\capcontrol\include;..\common\include;..\database\include;..\deviceconfiguration\include;..\message\Serialization;..\message\include;..\protocol\include;..\rtdb\include;..\server\include;..\service\include;.\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <PreprocessorDefinitions>USING_PCH;_DEBUG;WIN32;_LIB;_CONSOLE;_CRT_NONSTDC_NO_WARNINGS;BOOST_ALL_DYN_LINK;BOOST_ENABLE_ASSERT_HANDLER;NOMINMAX;WINDOWS;_REENTRANT;_WINDOWS;_X86_=1;__DLL__;D_FILE_NAME=capcontrol-common;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <ConformanceMode>false</ConformanceMode>
+      <PrecompiledHeaderFile>precompiled.h</PrecompiledHeaderFile>
+      <LanguageStandard>stdcpp17</LanguageStandard>
+      <Optimization>Disabled</Optimization>
+      <MinimalRebuild>false</MinimalRebuild>
+      <RuntimeLibrary>MultiThreadedDebugDLL</RuntimeLibrary>
+      <RuntimeTypeInfo>true</RuntimeTypeInfo>
+      <BasicRuntimeChecks>Default</BasicRuntimeChecks>
+      <ProgramDataBaseFileName>$(SolutionDir)pdb-debug\$(TargetName).pdb</ProgramDataBaseFileName>
+      <DebugInformationFormat>ProgramDatabase</DebugInformationFormat>
+      <MultiProcessorCompilation>true</MultiProcessorCompilation>
+      <DisableSpecificWarnings>4103</DisableSpecificWarnings>
+    </ClCompile>
+    <Link>
+      <SubSystem>Windows</SubSystem>
+      <GenerateDebugInformation>true</GenerateDebugInformation>
+      <AdditionalDependencies>$(BOOST)\lib\boost_system-$(BOOST_VERSION).lib;$(BOOST)\lib\boost_filesystem-$(BOOST_VERSION).lib;$(BOOST)\lib\boost_regex-$(BOOST_VERSION).lib;$(BOOST)\lib\boost_thread-$(BOOST_VERSION).lib;$(BOOST)\lib\boost_date_time-$(BOOST_VERSION).lib;$(BOOST)\lib\boost_chrono-$(BOOST_VERSION).lib;advapi32.lib;..\lib-debug\service.lib;..\lib-debug\ctimsg.lib;..\lib-debug\ctibase.lib;..\lib-debug\ctiholidaydb.lib;..\lib-debug\ctiseasondb.lib;..\lib-debug\ctidevdb.lib;..\lib-debug\cticonfig.lib;..\lib-debug\ctidbsrc.lib;..\lib-debug\ctithriftmsg.lib;$(THRIFT)\$(CONFIGURATION)\lib\libthrift.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalLibraryDirectories>.;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
+      <ProgramDatabaseFile>$(SolutionDir)pdb-debug\$(TargetName).pdb</ProgramDatabaseFile>
+      <ImageHasSafeExceptionHandlers>false</ImageHasSafeExceptionHandlers>
+      <LargeAddressAware>true</LargeAddressAware>
+      <ImportLibrary>$(SolutionDir)lib-debug\$(TargetName).lib</ImportLibrary>
+    </Link>
+  </ItemDefinitionGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
+    <ClCompile>
+      <PrecompiledHeader>Use</PrecompiledHeader>
+      <WarningLevel>Level3</WarningLevel>
+      <SDLCheck>true</SDLCheck>
+      <PreprocessorDefinitions>_DEBUG;_LIB;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <ConformanceMode>true</ConformanceMode>
+      <PrecompiledHeaderFile>pch.h</PrecompiledHeaderFile>
+    </ClCompile>
+    <Link>
+      <SubSystem>Windows</SubSystem>
+      <GenerateDebugInformation>true</GenerateDebugInformation>
+    </Link>
+  </ItemDefinitionGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
+    <ClCompile>
+      <PrecompiledHeader>Use</PrecompiledHeader>
+      <WarningLevel>Level3</WarningLevel>
+      <FunctionLevelLinking>true</FunctionLevelLinking>
+      <IntrinsicFunctions>true</IntrinsicFunctions>
+      <SDLCheck>true</SDLCheck>
+      <PreprocessorDefinitions>NDEBUG;_LIB;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <ConformanceMode>true</ConformanceMode>
+      <PrecompiledHeaderFile>pch.h</PrecompiledHeaderFile>
+    </ClCompile>
+    <Link>
+      <SubSystem>Windows</SubSystem>
+      <EnableCOMDATFolding>true</EnableCOMDATFolding>
+      <OptimizeReferences>true</OptimizeReferences>
+      <GenerateDebugInformation>true</GenerateDebugInformation>
+    </Link>
+  </ItemDefinitionGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
+  <ImportGroup Label="ExtensionTargets">
+  </ImportGroup>
+</Project>

@@ -7,6 +7,7 @@
 #include <boost/optional.hpp>
 #include <boost/ptr_container/ptr_vector.hpp>
 #include <boost/regex.hpp>
+#include <boost/shared_ptr.hpp>
 
 #include <wtypes.h>  //  for SYSTEMTIME
 

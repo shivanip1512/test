@@ -28,7 +28,7 @@
                                    disabled="${disableJobEdit}" classes="${disableJobCss}"/>
                 <li class="divider"></li>
                 <!-- Delete -->
-                <cm:dropdownOption icon="icon-cross" key="yukon.web.components.button.delete.label" classes="js-hide-dropdown ${disableJobCss}"
+                <cm:dropdownOption icon="icon-delete" key="yukon.web.components.button.delete.label" classes="js-hide-dropdown ${disableJobCss}"
                                    id="delete-option" data-ok-event="yukon:scheduledDataImport:delete" disabled="${disableJobEdit}"/>
                 <c:if test="${disableJobEdit == false}">
                     <d:confirm on="#delete-option" nameKey="confirmDelete" argument="${scheduledImportData.scheduleName}" />

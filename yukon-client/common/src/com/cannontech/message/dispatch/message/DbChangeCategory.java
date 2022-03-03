@@ -38,7 +38,10 @@ public enum DbChangeCategory {
     PORTER_RESPONSE_MONITOR,
     VALIDATION_MONITOR,
     DASHBOARD_ASSIGNMENT,
-    MULTISPEAK
+    MULTISPEAK,
+    ATTRIBUTE,
+    ATTRIBUTE_ASSIGNMENT,
+    LOGGER
     ;
     
     
@@ -114,5 +117,12 @@ public enum DbChangeCategory {
     public static Set<DbChangeCategory> getMonitorCategories(){
         return EnumSet.of(DEVICE_DATA_MONITOR, OUTAGE_MONITOR, TAMPER_FLAG_MONITOR, STATUS_POINT_MONITOR,
             PORTER_RESPONSE_MONITOR, VALIDATION_MONITOR);
+    }
+
+    /**
+     * Returns true when the event category is LOGGER .
+     */
+    public static boolean isDbChangeForLogger(DatabaseChangeEvent event) {
+        return event.getChangeCategory() == LOGGER;
     }
 }

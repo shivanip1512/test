@@ -6,7 +6,7 @@ public class LoadGroupPoint extends LoadGroupBase<LMGroupPoint> {
 
     private LMDto deviceUsage;
     private LMDto pointUsage;
-    private ControlRawState startControlRawState;
+    private LMDto startControlRawState;
 
     public LMDto getDeviceUsage() {
         return deviceUsage;
@@ -24,11 +24,11 @@ public class LoadGroupPoint extends LoadGroupBase<LMGroupPoint> {
         this.pointUsage = pointUsage;
     }
 
-    public ControlRawState getStartControlRawState() {
+    public LMDto getStartControlRawState() {
         return startControlRawState;
     }
 
-    public void setStartControlRawState(ControlRawState startControlRawState) {
+    public void setStartControlRawState(LMDto startControlRawState) {
         this.startControlRawState = startControlRawState;
     }
 
@@ -47,7 +47,7 @@ public class LoadGroupPoint extends LoadGroupBase<LMGroupPoint> {
         com.cannontech.database.db.device.lm.LMGroupPoint lmGroupPoint = group.getLMGroupPoint();
         lmGroupPoint.setDeviceIDUsage(getDeviceUsage().getId());
         lmGroupPoint.setPointIDUsage(getPointUsage().getId());
-        lmGroupPoint.setStartControlRawState(getStartControlRawState().getRawState());
+        lmGroupPoint.setStartControlRawState(getStartControlRawState().getId());
     }
 
 }

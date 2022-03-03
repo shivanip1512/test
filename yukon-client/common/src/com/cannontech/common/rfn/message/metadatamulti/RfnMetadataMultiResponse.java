@@ -1,6 +1,9 @@
 package com.cannontech.common.rfn.message.metadatamulti;
 
+
 import java.util.Map;
+
+import org.apache.logging.log4j.Level;
 
 import com.cannontech.common.rfn.message.JmsMultiResponse;
 import com.cannontech.common.rfn.message.RfnIdentifier;
@@ -160,11 +163,15 @@ public class RfnMetadataMultiResponse implements JmsMultiResponse {
                 requestID, totalSegments, segmentNumber, responseType, responseMessage, queryResults,
                 treeGenerationStartTimeMillis);
     }
-    
-    public String toInfoString() { // use for log info level
-        return String.format(
-                "RfnMetadataMultiResponse [requestID=%s, totalSegments=%s, segmentNumber=%s, responseType=%s, responseMessage=%s, treeGenerationStartTimeMillis=%s]",
-                requestID, totalSegments, segmentNumber, responseType, responseMessage,
-                treeGenerationStartTimeMillis);
+
+    @Override
+    public String loggingString(Level level) {
+        if (level.isMoreSpecificThan(Level.INFO)) {
+            return String.format(
+                    "RfnMetadataMultiResponse [requestID=%s, totalSegments=%s, segmentNumber=%s, responseType=%s, responseMessage=%s, treeGenerationStartTimeMillis=%s]",
+                    requestID, totalSegments, segmentNumber, responseType, responseMessage, treeGenerationStartTimeMillis);
+        } else {
+            return toString();
+        }
     }
 }

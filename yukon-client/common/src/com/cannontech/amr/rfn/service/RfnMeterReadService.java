@@ -3,8 +3,6 @@ package com.cannontech.amr.rfn.service;
 import java.util.List;
 
 import javax.annotation.PostConstruct;
-import javax.jms.ConnectionFactory;
-
 import org.apache.logging.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.MessageSourceResolvable;
@@ -21,20 +19,30 @@ import com.cannontech.clientutils.YukonLogManager;
 import com.cannontech.common.config.ConfigurationSource;
 import com.cannontech.common.rfn.message.RfnIdentifier;
 import com.cannontech.common.rfn.model.RfnDevice;
+import com.cannontech.common.rfn.util.RfnFeature;
+import com.cannontech.common.rfn.util.RfnFeatureHelper;
 import com.cannontech.common.util.jms.JmsReplyReplyHandler;
 import com.cannontech.common.util.jms.RequestReplyReplyTemplate;
-import com.cannontech.core.dynamic.PointValueHolder;
+import com.cannontech.common.util.jms.ThriftRequestReplyReplyTemplate;
+import com.cannontech.common.util.jms.YukonJmsTemplate;
+import com.cannontech.common.util.jms.YukonJmsTemplateFactory;
+import com.cannontech.common.util.jms.api.JmsApiDirectory;
 import com.cannontech.i18n.YukonMessageSourceResolvable;
+import com.cannontech.message.dispatch.message.PointData;
+import com.cannontech.messaging.serialization.thrift.serializer.porter.RfnMeterReadDataReplySerializer;
+import com.cannontech.messaging.serialization.thrift.serializer.porter.RfnMeterReadReplySerializer;
+import com.cannontech.messaging.serialization.thrift.serializer.porter.RfnMeterReadRequestSerializer;
 import com.google.common.collect.Lists;
 
 public class RfnMeterReadService {
     
     @Autowired private ConfigurationSource configurationSource;
-    @Autowired private ConnectionFactory connectionFactory;
     @Autowired private RfnChannelDataConverter rfnChannelDataConverter;
+    @Autowired private YukonJmsTemplateFactory jmsTemplateFactory;
     private final static Logger log = YukonLogManager.getLogger(RfnMeterReadService.class);
 
-    private RequestReplyReplyTemplate<RfnMeterReadReply, RfnMeterReadDataReply> rrrTemplate;
+    private RequestReplyReplyTemplate<RfnMeterReadReply, RfnMeterReadDataReply> legacyTemplate;
+    private ThriftRequestReplyReplyTemplate<RfnMeterReadRequest, RfnMeterReadReply, RfnMeterReadDataReply> e2eTemplate;
     
     /**
      * Attempts to send a read request for a RFN meter. Will use a separate thread to make the request.
@@ -57,8 +65,8 @@ public class RfnMeterReadService {
      * @param rfnMeter The meter to read.
      * @param callback The callback to use for updating status, errors and read data.
      */
-    public void send(final RfnMeter rfnMeter, final RfnDeviceReadCompletionCallback<RfnMeterReadingReplyType, RfnMeterReadingDataReplyType> callback) {
-        JmsReplyReplyHandler<RfnMeterReadReply, RfnMeterReadDataReply> handler = new JmsReplyReplyHandler<RfnMeterReadReply, RfnMeterReadDataReply>() {
+    public void send(final RfnMeter rfnMeter, final RfnMeterReadCompletionCallback callback) {
+        JmsReplyReplyHandler<RfnMeterReadReply, RfnMeterReadDataReply> handler = new JmsReplyReplyHandler<>() {
 
             @Override
             public void complete() {
@@ -89,11 +97,10 @@ public class RfnMeterReadService {
                     /* Request failed */
                     callback.receivedStatusError(statusReply.getReplyType());
                     return false;
-                } else {
-                    /* Request successful */
-                    callback.receivedStatus(statusReply.getReplyType());
-                    return true;
                 }
+                /* Request successful */
+                callback.receivedStatus(statusReply.getReplyType());
+                return true;
             }
 
             @Override
@@ -115,14 +122,14 @@ public class RfnMeterReadService {
                 if (!receivedIdentifier.equals(expectedIdentifier)) {
                     log.error("RFN identifier mismatch, received " + receivedIdentifier + " instead of " + expectedIdentifier);
                     callback.receivedDataError(dataReplyMessage.getReplyType());
-                } else {
-                    /* Data response successful, process point data */
-                    List<PointValueHolder> pointDatas = Lists.newArrayList();
-                    RfnDevice rfnDevice = new RfnDevice(rfnMeter.getName(), rfnMeter.getPaoIdentifier(), rfnMeter.getRfnIdentifier());
-                    rfnChannelDataConverter.convert(new RfnMeterPlusReadingData(rfnDevice, dataReplyMessage.getData()), pointDatas, null);
-
-                    pointDatas.forEach(callback::receivedData);
+                    return;
                 }
+                /* Data response successful, process point data */
+                List<PointData> pointDatas = Lists.newArrayList();
+                RfnDevice rfnDevice = new RfnDevice(rfnMeter.getName(), rfnMeter.getPaoIdentifier(), rfnMeter.getRfnIdentifier());
+                rfnChannelDataConverter.convert(new RfnMeterPlusReadingData(rfnDevice, dataReplyMessage.getData()), pointDatas, null);
+
+                callback.receivedData(pointDatas);
            }
 
             @Override
@@ -138,13 +145,23 @@ public class RfnMeterReadService {
             }
         };
         
-        rrrTemplate.send(new RfnMeterReadRequest(rfnMeter.getRfnIdentifier()), handler);
+        if (RfnFeatureHelper.isSupported(RfnFeature.E2E_READ_NOW, configurationSource)) {
+            e2eTemplate.send(new RfnMeterReadRequest(rfnMeter.getRfnIdentifier()), handler);
+        } else {
+            legacyTemplate.send(new RfnMeterReadRequest(rfnMeter.getRfnIdentifier()), handler);
+        }
     }
     
     @PostConstruct
     public void initialize() {
-        rrrTemplate = new RequestReplyReplyTemplate<>("RFN_METER_READ", configurationSource, connectionFactory,
-            "yukon.qr.obj.amr.rfn.MeterReadRequest", false);
+        YukonJmsTemplate e2eJmsTemplate = jmsTemplateFactory.createTemplate(JmsApiDirectory.RFN_METER_READ);
+        e2eTemplate = new ThriftRequestReplyReplyTemplate<>("RFN_METER_READ", configurationSource, e2eJmsTemplate, false,
+                new RfnMeterReadRequestSerializer(),
+                new RfnMeterReadReplySerializer(),
+                new RfnMeterReadDataReplySerializer());
+
+        YukonJmsTemplate legacyJmsTemplate = jmsTemplateFactory.createTemplate(JmsApiDirectory.RFN_METER_READ_LEGACY);
+        legacyTemplate = new RequestReplyReplyTemplate<>("RFN_METER_READ", configurationSource, legacyJmsTemplate);
     }
     
 }

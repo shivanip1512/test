@@ -9,37 +9,34 @@ yukon.namespace('yukon.dev.smartNotificationsSimulator');
 
 yukon.dev.smartNotificationsSimulator = (function() {
     var _initialized = false,
+    
+    _showHideControls = function() {
+      var eventType = $('.js-event-type-dropdown').val(),
+          allTypes = $('.js-all-types').is(":checked"),
+          ddmType = $('#ddmType').val(),
+          assetImportType = $('#assetImportType').val();
+      $('.js-event-type').toggleClass('dn', allTypes);
+      $('.js-monitor').toggleClass('dn', allTypes || eventType != ddmType);
+      $('.js-asset-import').toggleClass('dn', allTypes || eventType != assetImportType);
+      $('.js-monitor-dropdown').attr('disabled', allTypes || eventType != ddmType);
+      $('.js-asset-import-dropdown').attr('disabled', allTypes || eventType != assetImportType);
+    },
 
     mod = {
         init : function() {
             if (_initialized) return;
             
-            /** 'Save' button clicked on the notifications popup. */
-            $(document).on('yukon:simulatorNotifications:save', function (ev) {
-                var popup = $(ev.target),
-                form = popup.find('#notification-details'),
-                userGroupPicker = yukon.pickers['userGroupPicker'],
-                userGroupId = $('#userGroupId').val(),
-                generateTestEmail = $('#generateTestEmailAddresses').is(':checked');
-                $.ajax({
-                    url: yukon.url('/dev/saveSubscription?userGroupId=' + userGroupId + "&generateTestEmailAddresses=" + generateTestEmail),
-                    type: 'post',
-                    data: form.serialize()
-                }).done( function(data) {
-                    popup.dialog('close');
-                    if (data.success) {
-                        yukon.ui.alertSuccess(data.message);
-                    } else {
-                        yukon.ui.alertError(data.message);
-                    }
-                });
-            });
+            _showHideControls();
             
             $(document).on('click', '.js-create-events', function () {
                 var waitTime = $('#waitTime').val(),
                     eventsPerMessage = $('#eventsPerMessage').val(),
                     numberOfMessages = $('#numberOfMessages').val();
                 window.location.href = yukon.url('/dev/createEvents?waitTime=' + waitTime + "&eventsPerMessage=" + eventsPerMessage + "&numberOfMessages=" + numberOfMessages);
+            });
+            
+            $(document).on('change', '.js-event-type, .js-all-types', function () {
+                _showHideControls();
             });
             
             //set the value for the Daily Digest hour dropdown that was received from YukonSimulatorSettings

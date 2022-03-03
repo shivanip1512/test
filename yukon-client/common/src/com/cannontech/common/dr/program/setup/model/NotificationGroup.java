@@ -1,6 +1,9 @@
 package com.cannontech.common.dr.program.setup.model;
 
-public class NotificationGroup {
+import com.cannontech.common.device.port.DBPersistentConverter;
+import com.cannontech.database.db.device.lm.LMDirectNotificationGroupList;
+
+public class NotificationGroup implements DBPersistentConverter<LMDirectNotificationGroupList> {
 
     private Integer notificationGrpID;
     private String notificationGrpName;
@@ -27,6 +30,16 @@ public class NotificationGroup {
 
     public void setNotificationGrpName(String notificationGrpName) {
         this.notificationGrpName = notificationGrpName;
+    }
+
+    @Override
+    public void buildModel(LMDirectNotificationGroupList lmDirectNotificationGroupList) {
+        setNotificationGrpID(lmDirectNotificationGroupList.getNotificationGroupID());
+    }
+
+    @Override
+    public void buildDBPersistent(LMDirectNotificationGroupList lmDirectNotificationGroupList) {
+        lmDirectNotificationGroupList.setNotificationGrpID(getNotificationGrpID());
     }
 
 }

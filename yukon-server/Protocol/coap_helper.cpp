@@ -1,6 +1,7 @@
 #include "precompiled.h"
 
 #include "coap_helper.h"
+#include "std_helper.h"
 
 extern "C" {
 #include "coap/block.h"
@@ -10,7 +11,11 @@ extern "C" {
 
 namespace Cti::Protocols::Coap {
 
-scoped_pdu_ptr::scoped_pdu_ptr(coap_pdu_t* pdu_) 
+StreamBufferSink& operator<<(StreamBufferSink& s, const ResponseCode r) {
+    return s << "[CoAP error " << static_cast<int>(r) << "]";
+}
+    
+scoped_pdu_ptr::scoped_pdu_ptr(coap_pdu_t* pdu_)
     : pdu { pdu_ } 
 {
 }
@@ -67,7 +72,7 @@ void scoped_pdu_ptr::add_token(unsigned long token)
 
 scoped_pdu_ptr scoped_pdu_ptr::make_confirmable_request(RequestMethod method, unsigned long token, unsigned short id)
 {
-    scoped_pdu_ptr pdu { coap_pdu_init(COAP_MESSAGE_CON, static_cast<unsigned char>(method), id, COAP_MAX_PDU_SIZE) };
+    scoped_pdu_ptr pdu { coap_pdu_init(COAP_MESSAGE_CON, as_underlying(method), id, COAP_MAX_PDU_SIZE) };
 
     pdu.add_token(token);
 
@@ -76,7 +81,7 @@ scoped_pdu_ptr scoped_pdu_ptr::make_confirmable_request(RequestMethod method, un
 
 scoped_pdu_ptr scoped_pdu_ptr::make_get_continuation(unsigned long token, unsigned short id, const BlockSize size, const unsigned num)
 {
-    scoped_pdu_ptr pdu { coap_pdu_init(COAP_MESSAGE_CON, static_cast<unsigned char>(RequestMethod::Get), id, COAP_MAX_PDU_SIZE) };
+    scoped_pdu_ptr pdu { coap_pdu_init(COAP_MESSAGE_CON, as_underlying(RequestMethod::Get), id, COAP_MAX_PDU_SIZE) };
 
     pdu.add_token(token);
 
@@ -91,7 +96,7 @@ scoped_pdu_ptr scoped_pdu_ptr::make_get_continuation(unsigned long token, unsign
 
 scoped_pdu_ptr scoped_pdu_ptr::make_nonconfirmable_request(RequestMethod method, unsigned long token, unsigned short id)
 {
-    scoped_pdu_ptr pdu { coap_pdu_init(COAP_MESSAGE_NON, static_cast<unsigned char>(method), id, COAP_MAX_PDU_SIZE) };
+    scoped_pdu_ptr pdu { coap_pdu_init(COAP_MESSAGE_NON, as_underlying(method), id, COAP_MAX_PDU_SIZE) };
 
     pdu.add_token(token);
 
@@ -100,14 +105,14 @@ scoped_pdu_ptr scoped_pdu_ptr::make_nonconfirmable_request(RequestMethod method,
 
 scoped_pdu_ptr scoped_pdu_ptr::make_ack(unsigned short id, ResponseCode status)
 {
-    scoped_pdu_ptr pdu { coap_pdu_init(COAP_MESSAGE_ACK, static_cast<unsigned char>(status), id, COAP_MAX_PDU_SIZE) };
+    scoped_pdu_ptr pdu { coap_pdu_init(COAP_MESSAGE_ACK, as_underlying(status), id, COAP_MAX_PDU_SIZE) };
 
     return pdu;
 }
 
 scoped_pdu_ptr scoped_pdu_ptr::make_ack(unsigned long token, unsigned short id, ResponseCode status)
 {
-    scoped_pdu_ptr pdu{ coap_pdu_init(COAP_MESSAGE_ACK, static_cast<unsigned char>(status), id, COAP_MAX_PDU_SIZE) };
+    scoped_pdu_ptr pdu{ coap_pdu_init(COAP_MESSAGE_ACK, as_underlying(status), id, COAP_MAX_PDU_SIZE) };
 
     pdu.add_token(token);
 
@@ -116,7 +121,7 @@ scoped_pdu_ptr scoped_pdu_ptr::make_ack(unsigned long token, unsigned short id, 
 
 scoped_pdu_ptr scoped_pdu_ptr::make_data_ack(unsigned long token, unsigned short id, std::vector<unsigned char> data)
 {
-    scoped_pdu_ptr pdu(coap_pdu_init(COAP_MESSAGE_ACK, static_cast<unsigned char>(ResponseCode::Content), id, COAP_MAX_PDU_SIZE));
+    scoped_pdu_ptr pdu(coap_pdu_init(COAP_MESSAGE_ACK, as_underlying(ResponseCode::Content), id, COAP_MAX_PDU_SIZE));
 
     pdu.add_token(token);
 
@@ -127,7 +132,7 @@ scoped_pdu_ptr scoped_pdu_ptr::make_data_ack(unsigned long token, unsigned short
 
 scoped_pdu_ptr scoped_pdu_ptr::make_block_ack(unsigned long token, unsigned short id, std::vector<unsigned char> data, const Block block)
 {
-    scoped_pdu_ptr pdu(coap_pdu_init(COAP_MESSAGE_ACK, static_cast<unsigned char>(ResponseCode::Content), id, COAP_MAX_PDU_SIZE));
+    scoped_pdu_ptr pdu(coap_pdu_init(COAP_MESSAGE_ACK, as_underlying(ResponseCode::Content), id, COAP_MAX_PDU_SIZE));
 
     pdu.add_token(token);
 

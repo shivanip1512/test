@@ -13,6 +13,12 @@ using std::string;
 
 extern ULONG _LM_DEBUG;
 
+std::size_t calculateMemoryConsumption( const CtiLMProgramDirectGear * g )
+{
+    return  g->getFixedSize()
+        +   g->getVariableSize();
+}
+
 DEFINE_COLLECTABLE( CtiLMProgramDirectGear, CTILMPROGRAMDIRECTGEAR_ID )
 
 /*---------------------------------------------------------------------------
@@ -678,31 +684,21 @@ void CtiLMProgramDirectGear::restore(Cti::RowReader &rdr)
     rdr["stopcommandrepeat"] >> _stop_repeat_count;
 }
 
-// Static Members
+std::size_t CtiLMProgramDirectGear::getVariableSize() const
+{
+    return  dynamic_sizeof( _gearname )
+        +   dynamic_sizeof( _controlmethod )
+        +   dynamic_sizeof( _methodstoptype )
+        +   dynamic_sizeof( _changecondition )
+        +   dynamic_sizeof( _groupselectionmethod )
+        +   dynamic_sizeof( _methodoptiontype )
+        +   dynamic_sizeof( _front_ramp_option )
+        +   dynamic_sizeof( _back_ramp_option );
+}
 
-//Possible control methods
-const string CtiLMProgramDirectGear::TimeRefreshMethod = "TimeRefresh";
-const string CtiLMProgramDirectGear::SmartCycleMethod = "SmartCycle";
-const string CtiLMProgramDirectGear::MasterCycleMethod = "MasterCycle";
-const string CtiLMProgramDirectGear::RotationMethod = "Rotation";
-const string CtiLMProgramDirectGear::LatchingMethod = "Latching";
-const string CtiLMProgramDirectGear::TrueCycleMethod = "TrueCycle";
-const string CtiLMProgramDirectGear::ThermostatRampingMethod = "ThermostatRamping";
-const string CtiLMProgramDirectGear::SimpleThermostatRampingMethod = "SimpleThermostatRamping";
-const string CtiLMProgramDirectGear::TargetCycleMethod = "TargetCycle";
-const string CtiLMProgramDirectGear::MagnitudeCycleMethod = "MagnitudeCycle";
-const string CtiLMProgramDirectGear::SEPCycleMethod = "SEPCycle";
-const string CtiLMProgramDirectGear::SEPTempOffsetMethod = "SEPTemperatureOffset";
-const string CtiLMProgramDirectGear::EcobeeCycleMethod = "EcobeeCycle";
-const string CtiLMProgramDirectGear::EcobeeSetpointMethod = "EcobeeSetpoint";
-const string CtiLMProgramDirectGear::HoneywellCycleMethod = "HoneywellCycle";
-const string CtiLMProgramDirectGear::HoneywellSetpointMethod = "HoneywellSetpoint";
-const string CtiLMProgramDirectGear::NestCriticalCycleMethod = "NestCriticalCycle";
-const string CtiLMProgramDirectGear::NestStandardCycleMethod = "NestStandardCycle";
-const string CtiLMProgramDirectGear::ItronCycleMethod = "ItronCycle";
-const string CtiLMProgramDirectGear::MeterDisconnectMethod = "MeterDisconnect";
-const string CtiLMProgramDirectGear::BeatThePeakMethod = "BeatThePeak";
-const string CtiLMProgramDirectGear::NoControlMethod = "NoControl";
+
+
+// Static Members
 
 //Possible method stop types
 const string CtiLMProgramDirectGear::RestoreStopType = "Restore";

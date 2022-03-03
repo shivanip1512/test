@@ -1,10 +1,10 @@
 package com.cannontech.amr.meterEvents;
 
+import static org.junit.jupiter.api.Assertions.assertTrue;
+
 import java.util.Set;
 
-import junit.framework.Assert;
-
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 import com.cannontech.amr.meter.service.impl.MeterEventStatusTypeGroupings;
 import com.cannontech.common.pao.attribute.model.BuiltInAttribute;
@@ -30,7 +30,7 @@ public class MeterEventTypeGroupsTest {
             result = false;
         }
         
-        Assert.assertTrue(result);
+        assertTrue(result);
     }
 
     private static void checkSetAgainstAll(Set<BuiltInAttribute> attrs) {

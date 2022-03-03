@@ -1,6 +1,7 @@
 #include "precompiled.h"
 
 #include "cmd_rfn_MeterProgramming.h"
+#include "meter_programming_prefixes.h"
 #include "std_helper.h"
 #include "cmd_rfn_helper.h"
 #include "cmd_rfn_Individual.h"
@@ -8,6 +9,7 @@
 namespace Cti::Devices::Commands {
 
     using Logging::Vector::Hex::operator<<;
+    using Prefix = MeterProgramming::GuidPrefixes;
 
     namespace
     {
@@ -31,37 +33,45 @@ namespace Cti::Devices::Commands {
 
         static const std::map<unsigned char, MeterStatuses> detailedConfigurationStatusCodes
         {
-            {   0,  { ClientErrors::None,                           "Success"                                       } },
-            {   1,  { ClientErrors::ReasonUnknown,                  "Reason Unknown"                                } },
-            {   2,  { ClientErrors::ServiceUnsupported,             "Service Not Supported"                         } },
-            {   3,  { ClientErrors::InsufficientSecurityClearance,  "Insufficient Security Clearance"               } },
-            {   4,  { ClientErrors::OperationNotPossible,           "Operation Not Possible"                        } },
-            {   5,  { ClientErrors::InappropriateActionRequested,   "Inappropriate Action Requested"                } },
-            {   6,  { ClientErrors::DeviceBusy,                     "Device Busy"                                   } },
-            {   7,  { ClientErrors::DataNotReady,                   "Data Not Ready"                                } },
-            {   8,  { ClientErrors::DataLocked,                     "Data Locked"                                   } },
-            {   9,  { ClientErrors::RenegotiateRequest,             "Renegotiate Request"                           } },
-            {  10,  { ClientErrors::InvalidServiceSequence,         "Invalid Service Sequence State"                } },
-            {  32,  { ClientErrors::DownloadAborted,                "Download Aborted"                              } },
-            {  33,  { ClientErrors::FileTooLarge,                   "File Too Large"                                } },
-            {  34,  { ClientErrors::ConfigurationInProgress,        "Configuration In Progress"                     } },
-            {  35,  { ClientErrors::UnableToGETFile,                "Unable To GET File"                            } },
-            {  36,  { ClientErrors::InsufficientMeterVersion,       "Insufficient Meter Version"                    } },
-            {  37,  { ClientErrors::FileExpired,                    "File Expired"                                  } },
-            {  38,  { ClientErrors::FailedRequirements,             "Failed Requirements"                           } },
-            {  39,  { ClientErrors::MalformedConfigFileRecord,      "Malformed Record In Configuration File"        } },
-            {  40,  { ClientErrors::VerificationFailed,             "Verification Failed"                           } },
-            {  41,  { ClientErrors::WriteKeyFailed,                 "Write Key Failed"                              } },
-            {  42,  { ClientErrors::CatastrophicFailure,            "Catastrophic Failure, Full Reprogram Required" } }
+            {   0,  { ClientErrors::None,                           "Success"                                                } },
+            {   1,  { ClientErrors::ReasonUnknown,                  "Reason Unknown"                                         } },
+            {   2,  { ClientErrors::ServiceUnsupported,             "Service Not Supported"                                  } },
+            {   3,  { ClientErrors::InsufficientSecurityClearance,  "Insufficient Security Clearance"                        } },
+            {   4,  { ClientErrors::OperationNotPossible,           "Operation Not Possible"                                 } },
+            {   5,  { ClientErrors::InappropriateActionRequested,   "Inappropriate Action Requested"                         } },
+            {   6,  { ClientErrors::DeviceBusy,                     "Device Busy"                                            } },
+            {   7,  { ClientErrors::DataNotReady,                   "Data Not Ready"                                         } },
+            {   8,  { ClientErrors::DataLocked,                     "Data Locked"                                            } },
+            {   9,  { ClientErrors::RenegotiateRequest,             "Renegotiate Request"                                    } },
+            {  10,  { ClientErrors::InvalidServiceSequence,         "Invalid Service Sequence State"                         } },
+            {  32,  { ClientErrors::DownloadAborted,                "Download Aborted"                                       } },
+            {  33,  { ClientErrors::FileTooLarge,                   "File Too Large"                                         } },
+            {  34,  { ClientErrors::ConfigurationInProgress,        "Configuration In Progress"                              } },
+            {  35,  { ClientErrors::UnableToGETFile,                "Unable To GET File"                                     } },
+            {  36,  { ClientErrors::InsufficientMeterVersion,       "Insufficient Meter Version"                             } },
+            {  37,  { ClientErrors::FileExpired,                    "File Expired"                                           } },
+            {  38,  { ClientErrors::FailedRequirements,             "Failed Requirements"                                    } },
+            {  39,  { ClientErrors::MalformedConfigFileRecord,      "Malformed Record In Configuration File"                 } },
+            {  40,  { ClientErrors::VerificationFailed,             "Verification Failed"                                    } },
+            {  41,  { ClientErrors::WriteKeyFailed,                 "Write Key Failed"                                       } },
+            {  42,  { ClientErrors::CatastrophicFailure,            "Catastrophic Failure, Full Reprogram Required"          } },
+            {  43,  { ClientErrors::MeterProgramPasswordInvalid,    "Meter program password not valid"                       } },
+            {  44,  { ClientErrors::MeterProgramResponseTimeout,    "Node timed out while waiting for a response from Yukon" } },
+            {  45,  { ClientErrors::MeterProgramErrorResponse,      "Node received an error response from Yukon"             } }
         };
 
-        static const std::map<unsigned char, std::string> validGuidPrefixes
+        static const std::map<Prefix, std::string> validGuidPrefixes
         {
-            {   'R',    "Yukon programmed"                      },
-            {   'P',    "Optically programmed"                  },
-            {   'N',    "Unknown program"                       },
-            {   'U',    "Unprogrammed"                          },
-            {   'X',    "Insufficient meter hardware/firmware"  }
+            {   Prefix::YukonProgrammed,      
+                        "Yukon programmed"                      },
+            {   Prefix::OpticallyProgrammed,    
+                        "Optically programmed"                  },
+            {   Prefix::UnknownProgram,    
+                        "Unknown program"                       },
+            {   Prefix::Unprogrammed,    
+                        "Unprogrammed"                          },
+            {   Prefix::InsufficientMeterHardwareFirmware,    
+                        "Insufficient meter hardware/firmware"  }
         };
     }
 
@@ -118,19 +128,14 @@ namespace Cti::Devices::Commands {
 
         // the detailed configuration status code
 
-        auto detailedStatus = Cti::mapFind( detailedConfigurationStatusCodes, response[2] );
+        auto detailedStatus = Cti::mapFindOrDefault( detailedConfigurationStatusCodes, response[2], { ClientErrors::ReasonUnknown, "Other"} );
 
-        // detailed configuration status code not found in map
-
-        validate( Condition( !! detailedStatus, ClientErrors::InvalidData )
-                  << "Invalid Detailed Configuration Status (" << response[2] << ")" );
-
-        description += "\nDetailed Configuration Status: " + detailedStatus->text + " (" + std::to_string(response[2]) + ")";
+        description += "\nDetailed Configuration Status: " + detailedStatus.text + " (" + std::to_string(response[2]) + ")";
 
         _returnCode =
             meterStatus->returnCode != ClientErrors::None 
                 ? meterStatus->returnCode
-                : detailedStatus->returnCode;
+                : detailedStatus.returnCode;
 
         // convert the rest of the data (if any) into the meter configuration ID
 
@@ -141,7 +146,7 @@ namespace Cti::Devices::Commands {
             using namespace std::string_literals;
 
             std::string guidPrefix =
-                Cti::mapFindOrDefault( validGuidPrefixes, _meterConfigurationID[0],
+                Cti::mapFindOrDefault(validGuidPrefixes, Prefix { _meterConfigurationID[0] },
                                        "Unmapped Prefix '"s + _meterConfigurationID[0] + "'"s );
 
             description += "\nSource: " + guidPrefix 
@@ -192,6 +197,11 @@ namespace Cti::Devices::Commands {
     bool RfnMeterProgrammingSetConfigurationCommand::isPost() const
     {
         return true;
+    }
+
+    std::string RfnMeterProgrammingSetConfigurationCommand::getGuid() const
+    {
+        return _guid;
     }
 
     std::unique_ptr<RfnMeterProgrammingSetConfigurationCommand> RfnMeterProgrammingSetConfigurationCommand::handleUnsolicitedReply(const CtiTime now, const RfnResponsePayload & response)

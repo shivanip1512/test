@@ -1,49 +1,53 @@
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
 <%@ taglib prefix="cti" uri="http://cannontech.com/tags/cti" %>
 <%@ taglib prefix="fn" uri="http://java.sun.com/jsp/jstl/functions" %>
-<%@ taglib prefix="tags" tagdir="/WEB-INF/tags"%>
+<%@ taglib prefix="form" uri="http://www.springframework.org/tags/form" %>
 <%@ taglib prefix="i" tagdir="/WEB-INF/tags/i18n"%>
+<%@ taglib prefix="tags" tagdir="/WEB-INF/tags"%>
 
 <cti:standardPage module="operator" page="relays.list">
 
 <cti:url var="dataUrl" value="/stars/relay" />
 
-<tags:sectionContainer2 nameKey="searchCriteria">
-    <form action="${dataUrl}">
-        <div class="column-10-10-4 clearfix">
-            <div class="column one">
-                <tags:nameValueContainer2>
-                    <tags:nameValue2 nameKey=".name">
-                        <input type="text" id="selectedName" name="selectedName" value="${fn:escapeXml(criteria.name)}">
-                    </tags:nameValue2>
-                </tags:nameValueContainer2>
-            </div>
-            <div class="column two">
-                <tags:nameValueContainer2>
-                    <tags:nameValue2 nameKey=".serialNumber">
-                        <input type="text" id="selectedSerialNumber" name="selectedSerialNumber" value="${fn:escapeXml(criteria.serialNumber)}">
-                    </tags:nameValue2>
-                </tags:nameValueContainer2>
-            </div>
-            <div class="column three nogutter">
-                <cti:button type="button" classes="button" nameKey="showAll" href="${dataUrl}" />
-                <cti:button type="submit" classes="button primary" nameKey="search" />
-            </div>
-        </div>
-    </form>
-</tags:sectionContainer2>
+    <hr>
+    <form:form action="${dataUrl}" method="GET" class="filter-section" modelAttribute="criteria">
+        <i:inline key="yukon.common.filterBy"/>
+        <select name="type">
+            <option value=""><i:inline key="yukon.common.allTypes"/></option>
+            <c:forEach var="relayType" items="${relayTypes}">
+                <c:set var="selected"/>
+                <c:if test="${selectedRelayType == relayType}">
+                    <c:set var="selected" value="selected='selected'"/>
+                </c:if>
+                <option value="${relayType}" ${selected}><i:inline key="${relayType.formatKey}"/></option>
+            </c:forEach>
+        </select>
+        <cti:msg2 var="nameLabel" key="yukon.common.name"/>
+        <tags:input path="name" placeholder="${nameLabel}"/>
+        <cti:msg2 var="serialNumberLabel" key="yukon.common.serialNumber"/>
+        <tags:input path="serialNumber" placeholder="${serialNumberLabel}"/>
+        
+        <cti:button type="submit" classes="button primary fn vab" nameKey="filter"/>
+    </form:form>
+    <hr>    
 
-<h3><i:inline key=".searchResults.title"/>&nbsp;<span class="badge">${relays.hitCount}</span></h3>
+<h3><i:inline key="yukon.common.filteredResults"/>&nbsp;<span class="badge">${relays.hitCount}</span></h3>
 
 <c:choose>
 <c:when test="${relays.hitCount > 0}">
-    <div data-url="${dataUrl}" data-static style="width:60%">
+    <cti:url var="tableDataUrl" value="/stars/relay">
+        <cti:param name="name" value="${criteria.name}"/>
+        <cti:param name="serialNumber" value="${criteria.serialNumber}"/>
+        <cti:param name="type" value="${selectedRelayType}"/>
+    </cti:url>
+    <div data-url="${tableDataUrl}" data-static>
         <table class="compact-results-table row-highlighting">
             <thead>
                 <tr>
                     <th class="row-icon" />
                     <tags:sort column="${name}" />                
                     <tags:sort column="${serialNumber}" />
+                    <tags:sort column="${type}" />
                 </tr>
             </thead>
             <tfoot></tfoot>
@@ -59,6 +63,7 @@
                         </td>
                         <td><a href="${detailUrl}">${fn:escapeXml(relay.name)}</a></td>
                         <td>${fn:escapeXml(relay.serialNumber)}</td>
+                        <td><i:inline key="${relay.type.formatKey}"/></td>
                     </tr>
                 </c:forEach>
             </tbody>

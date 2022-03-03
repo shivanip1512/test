@@ -13,6 +13,7 @@
         <tag name="RFN_DEMAND_RESET"/>
         <tag name="RFN_EVENTS"/>
         <tag name="RFN_POINT_CALCULATION"/>
+        <tag name="SUPPORTS_ATTRIBUTE_ASSIGNMENT"/>
         <tag name="USES_METER_NUMBER_FOR_MSP"/>
     </tags>
     <configuration>
@@ -57,9 +58,11 @@
         <pointInfo name="Rom Error" attributes="ROM_ERROR"/>
         <pointInfo name="Season Change" attributes="SEASON_CHANGE"/>
         <pointInfo name="SiteScan Error" attributes="SITESCAN_ERROR"/>
+        <pointInfo name="Sum kWh" init="true" attributes="SUM_KWH"/>
         <pointInfo name="THD V or TDD I Error" attributes="THD_V_OR_TDD_I_ERROR"/>
         <pointInfo name="Total Outage Count" init="true" attributes="BLINK_COUNT"/>
         <pointInfo name="TOU Schedule Error" attributes="TOU_SCHEDULE_ERROR"/>
+        <pointInfo name="Ultra Capacitor Bad" attributes="ULTRA_CAPACITOR_BAD"/>
         <pointInfo name="Unprogrammed" attributes="UNPROGRAMMED"/>
     </pointInfos>
 </pao>

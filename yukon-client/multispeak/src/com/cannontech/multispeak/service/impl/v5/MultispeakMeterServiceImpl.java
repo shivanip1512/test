@@ -2156,7 +2156,7 @@ public class MultispeakMeterServiceImpl extends MultispeakMeterServiceBase imple
 
                     // Get a new updater object for the current value
                     MeterReadUpdater meterReadUpdater =
-                        meterReadProcessingService.buildMeterReadUpdater(attribute, value);
+                        meterReadProcessingService.buildMeterReadUpdater(attribute, value, pao.getPaoType());
                     // if the map is empty, place the updater into it
                     MeterReadUpdater oldValue = updaterMap.putIfAbsent(pao, meterReadUpdater);
                     while (oldValue != null) {

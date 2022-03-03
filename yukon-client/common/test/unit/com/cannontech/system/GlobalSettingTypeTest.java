@@ -1,9 +1,10 @@
 package com.cannontech.system;
 
 import static com.cannontech.core.roleproperties.InputTypeFactory.*;
-import static org.junit.Assert.*;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.junit.jupiter.api.Assertions.fail;
 
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 public class GlobalSettingTypeTest {
 
@@ -16,11 +17,25 @@ public class GlobalSettingTypeTest {
                 // If we need to encrypt non string types we need to modify GlobalSettingDao, GlobalSettingEditorDao
                 // and GlobalSettingUpdateDao to handle non string types.
                 boolean isStringType = settingType.getType().equals(stringType());
-                assertTrue(settingType + " is not a stringType and doesn't support encryption", isStringType);
+                assertTrue(isStringType, settingType + " is not a stringType and doesn't support encryption");
             }
         }
     }
 
+    @Test
+    public void test_isNonViewableSensitiveInformation() {
+        for (GlobalSettingType settingType : GlobalSettingType.values()) {
+            if (settingType.isNonViewableSensitiveInformation()) {
+                // If this test fails it is because an encrypted global setting type was changed (e.g. from string to int)
+                // or a new global setting was added to isNonViewableSensitiveInformation to be encrypted and isn't a string type
+                // If we need to encrypt non string types we need to modify GlobalSettingDao, GlobalSettingEditorDao
+                // and GlobalSettingUpdateDao to handle non string types.
+                boolean isStringType = settingType.getType().equals(stringType());
+                assertTrue(isStringType, settingType + " is not a stringType and doesn't support encryption");
+            }
+        }
+    }
+    
     @Test
     public void test_defaultValueType() {
         for (GlobalSettingType settingType : GlobalSettingType.values()) {

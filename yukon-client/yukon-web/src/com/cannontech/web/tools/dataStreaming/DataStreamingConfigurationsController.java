@@ -37,7 +37,7 @@ import com.cannontech.common.alert.service.AlertService;
 import com.cannontech.common.bulk.collection.DeviceIdListCollectionProducer;
 import com.cannontech.common.bulk.collection.device.model.CollectionActionResult;
 import com.cannontech.common.bulk.collection.device.model.DeviceCollection;
-import com.cannontech.common.config.MasterConfigBoolean;
+import com.cannontech.common.config.MasterConfigLicenseKey;
 import com.cannontech.common.device.groups.editor.dao.DeviceGroupMemberEditorDao;
 import com.cannontech.common.device.groups.editor.model.StoredDeviceGroup;
 import com.cannontech.common.device.groups.service.TemporaryDeviceGroupService;
@@ -65,7 +65,7 @@ import com.cannontech.user.YukonUserContext;
 import com.cannontech.web.bulk.CollectionActionAlertHelper;
 import com.cannontech.web.common.flashScope.FlashScope;
 import com.cannontech.web.common.sort.SortableColumn;
-import com.cannontech.web.security.annotation.CheckCparm;
+import com.cannontech.web.security.annotation.CheckCparmLicense;
 import com.cannontech.web.security.annotation.CheckRoleProperty;
 import com.cannontech.web.util.WebFileUtils;
 import com.cannontech.yukon.IDatabaseCache;
@@ -74,7 +74,7 @@ import com.google.common.collect.Lists;
 
 @Controller
 @RequestMapping("/dataStreaming/*")
-@CheckCparm(MasterConfigBoolean.RF_DATA_STREAMING_ENABLED)
+@CheckCparmLicense(license = MasterConfigLicenseKey.RF_DATA_STREAMING_ENABLED)
 public class DataStreamingConfigurationsController {
 
     @Autowired private DateFormattingService dateFormattingService;

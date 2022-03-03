@@ -1,7 +1,9 @@
 package com.cannontech.common.dr.setup;
 
 import com.cannontech.common.dr.gear.setup.fields.BeatThePeakGearFields;
+import com.cannontech.common.dr.gear.setup.fields.EatonCloudCycleGearFields;
 import com.cannontech.common.dr.gear.setup.fields.EcobeeCycleGearFields;
+import com.cannontech.common.dr.gear.setup.fields.EcobeePlusGearFields;
 import com.cannontech.common.dr.gear.setup.fields.EcobeeSetpointGearFields;
 import com.cannontech.common.dr.gear.setup.fields.HoneywellCycleGearFields;
 import com.cannontech.common.dr.gear.setup.fields.HoneywellSetpointGearFields;
@@ -45,8 +47,10 @@ public class LMModelFactory {
             loadGroup = new LoadGroupNest();
             break;
         case LM_GROUP_EXPRESSCOMM:
-        case LM_GROUP_RFN_EXPRESSCOMM:
             loadGroup = new LoadGroupExpresscom();
+            break;
+        case LM_GROUP_RFN_EXPRESSCOMM:
+            loadGroup = new LoadGroupRFNExpresscom();
             break;
         case LM_GROUP_VERSACOM:
             loadGroup = new LoadGroupVersacom();
@@ -68,6 +72,9 @@ public class LMModelFactory {
             break;
         case LM_GROUP_RIPPLE:
             loadGroup = new LoadGroupRipple();
+            break;
+        case LM_GROUP_EATON_CLOUD:
+            loadGroup = new LoadGroupEatonCloud();
             break;
 
         }
@@ -92,6 +99,9 @@ public class LMModelFactory {
             break;
         case EcobeeSetpoint:
             gearFields = new EcobeeSetpointGearFields();
+            break;
+        case EcobeePlus:
+            gearFields = new EcobeePlusGearFields();
             break;
         case HoneywellCycle:
             gearFields = new HoneywellCycleGearFields();
@@ -134,6 +144,9 @@ public class LMModelFactory {
             break;
         case BeatThePeak:
             gearFields = new BeatThePeakGearFields();
+            break;
+        case EatonCloudCycle:
+            gearFields = new EatonCloudCycleGearFields();
             break;
         case NoControl:
             gearFields = new NoControlGearFields();

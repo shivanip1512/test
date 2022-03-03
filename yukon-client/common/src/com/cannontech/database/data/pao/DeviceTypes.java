@@ -279,4 +279,24 @@ public interface DeviceTypes extends TypeBase
     public final static int WRL420CL = DEVICE_OFFSET + 211;
     public final static int WRL420CD = DEVICE_OFFSET + 212;
     public final static int VIRTUAL_GATEWAY = DEVICE_OFFSET + 213;
+    public final static int GWY801 = DEVICE_OFFSET + 214;
+    public final static int VIRTUAL_METER = DEVICE_OFFSET + 215;
+    
+    public final static int LCR6200C = DEVICE_OFFSET + 216;
+    public final static int LCR6600C = DEVICE_OFFSET + 217;
+    public final static int LM_GROUP_EATON_CLOUD = DEVICE_OFFSET + 219;
+    public final static int LM_EATON_CLOUD_PROGRAM = DEVICE_OFFSET + 220;
+    public final static int CRLY856 = DEVICE_OFFSET + 221;
+
+    public final static int RFN520FAXE = DEVICE_OFFSET + 222;
+    public final static int RFN520FRXE = DEVICE_OFFSET + 223;
+    public final static int RFN520FAXED = DEVICE_OFFSET + 224;
+    public final static int RFN520FRXED = DEVICE_OFFSET + 225;
+    
+    public final static int RFN530FAXE = DEVICE_OFFSET + 226;
+    public final static int RFN530FRXE = DEVICE_OFFSET + 227;
+    public final static int LCR6200S = DEVICE_OFFSET + 228;
+    
+    public final static int RFG301A = DEVICE_OFFSET + 229;
+    public final static int RFG301R = DEVICE_OFFSET + 230;
 }

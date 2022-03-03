@@ -32,6 +32,8 @@ public:
                               const bool mandatory,
                               const int  temperatureOffset,
                               const int  controlDurationSeconds ) override;
+
+    std::size_t getFixedSize() const override   { return sizeof( *this ); }
 };
 
 typedef boost::shared_ptr<LMGroupHoneywell> LMGroupHoneywellPtr;

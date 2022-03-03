@@ -145,6 +145,7 @@
       <WarningLevel>Level1</WarningLevel>
       <DebugInformationFormat>ProgramDatabase</DebugInformationFormat>
       <MultiProcessorCompilation>true</MultiProcessorCompilation>
+      <DisableSpecificWarnings>4103</DisableSpecificWarnings>
     </ClCompile>
     <ResourceCompile>
       <PreprocessorDefinitions>_DEBUG;BOOST_ALL_DYN_LINK;BOOST_ENABLE_ASSERT_HANDLER;NOMINMAX;WIN32;WINDOWS;_CONSOLE;_DEBUG;_REENTRANT;_WINDOWS;_X86_=1;__DLL__;%(PreprocessorDefinitions)</PreprocessorDefinitions>
@@ -154,7 +155,7 @@
     <Link>
       <SubSystem>Console</SubSystem>
       <GenerateDebugInformation>true</GenerateDebugInformation>
-      <AdditionalDependencies>$(THRIFT)\$(CONFIGURATION)\lib\libthrift.lib;..\lib-debug\ctithriftmsg.lib;..\lib-debug\ctidbsrc.lib;..\lib-debug\ctiseasondb.lib;..\lib-debug\ctiholidaydb.lib;..\lib-debug\ctimsg.lib;..\lib-debug\service.lib;advapi32.lib;$(BOOST)\lib\boost_unit_test_framework-vc141-mt-gd-x32-1_67.lib;$(BOOST)\lib\boost_system-vc141-mt-gd-x32-1_67.lib;$(BOOST)\lib\boost_filesystem-vc141-mt-gd-x32-1_67.lib;$(BOOST)\lib\boost_regex-vc141-mt-gd-x32-1_67.lib;$(BOOST)\lib\boost_thread-vc141-mt-gd-x32-1_67.lib;$(BOOST)\lib\boost_date_time-vc141-mt-gd-x32-1_67.lib;$(BOOST)\lib\boost_chrono-vc141-mt-gd-x32-1_67.lib;..\lib-debug\ctibase.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>$(THRIFT)\$(CONFIGURATION)\lib\libthrift.lib;..\lib-debug\ctithriftmsg.lib;..\lib-debug\ctidbsrc.lib;..\lib-debug\ctiseasondb.lib;..\lib-debug\ctiholidaydb.lib;..\lib-debug\ctimsg.lib;..\lib-debug\service.lib;advapi32.lib;$(BOOST)\lib\boost_unit_test_framework-$(BOOST_VERSION).lib;$(BOOST)\lib\boost_system-$(BOOST_VERSION).lib;$(BOOST)\lib\boost_filesystem-$(BOOST_VERSION).lib;$(BOOST)\lib\boost_regex-$(BOOST_VERSION).lib;$(BOOST)\lib\boost_thread-$(BOOST_VERSION).lib;$(BOOST)\lib\boost_date_time-$(BOOST_VERSION).lib;$(BOOST)\lib\boost_chrono-$(BOOST_VERSION).lib;..\lib-debug\ctibase.lib;%(AdditionalDependencies)</AdditionalDependencies>
       <AdditionalLibraryDirectories>.;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
       <ProgramDatabaseFile>$(SolutionDir)pdb-debug\$(TargetName).pdb</ProgramDatabaseFile>
       <ImageHasSafeExceptionHandlers>false</ImageHasSafeExceptionHandlers>
@@ -194,6 +195,7 @@
       <WarningLevel>Level1</WarningLevel>
       <DebugInformationFormat>ProgramDatabase</DebugInformationFormat>
       <MultiProcessorCompilation>true</MultiProcessorCompilation>
+      <DisableSpecificWarnings>4103</DisableSpecificWarnings>
     </ClCompile>
     <ResourceCompile>
       <PreprocessorDefinitions>NDEBUG;BOOST_ALL_DYN_LINK;BOOST_ENABLE_ASSERT_HANDLER;NOMINMAX;WIN32;WINDOWS;_CONSOLE;_REENTRANT;_WINDOWS;_X86_=1;__DLL__;%(PreprocessorDefinitions)</PreprocessorDefinitions>
@@ -203,7 +205,7 @@
     <Link>
       <SubSystem>Console</SubSystem>
       <GenerateDebugInformation>true</GenerateDebugInformation>
-      <AdditionalDependencies>$(THRIFT)\$(CONFIGURATION)\lib\libthrift.lib;..\lib\ctithriftmsg.lib;..\lib\ctidbsrc.lib;..\lib\ctiseasondb.lib;..\lib\ctiholidaydb.lib;..\lib\ctimsg.lib;..\lib\service.lib;advapi32.lib;$(BOOST)\lib\boost_unit_test_framework-vc141-mt-x32-1_67.lib;$(BOOST)\lib\boost_system-vc141-mt-x32-1_67.lib;$(BOOST)\lib\boost_filesystem-vc141-mt-x32-1_67.lib;$(BOOST)\lib\boost_regex-vc141-mt-x32-1_67.lib;$(BOOST)\lib\boost_thread-vc141-mt-x32-1_67.lib;$(BOOST)\lib\boost_date_time-vc141-mt-x32-1_67.lib;$(BOOST)\lib\boost_chrono-vc141-mt-x32-1_67.lib;..\lib\ctibase.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>$(THRIFT)\$(CONFIGURATION)\lib\libthrift.lib;..\lib\ctithriftmsg.lib;..\lib\ctidbsrc.lib;..\lib\ctiseasondb.lib;..\lib\ctiholidaydb.lib;..\lib\ctimsg.lib;..\lib\service.lib;advapi32.lib;$(BOOST)\lib\boost_unit_test_framework-$(BOOST_VERSION).lib;$(BOOST)\lib\boost_system-$(BOOST_VERSION).lib;$(BOOST)\lib\boost_filesystem-$(BOOST_VERSION).lib;$(BOOST)\lib\boost_regex-$(BOOST_VERSION).lib;$(BOOST)\lib\boost_thread-$(BOOST_VERSION).lib;$(BOOST)\lib\boost_date_time-$(BOOST_VERSION).lib;$(BOOST)\lib\boost_chrono-$(BOOST_VERSION).lib;..\lib\ctibase.lib;%(AdditionalDependencies)</AdditionalDependencies>
       <AdditionalLibraryDirectories>.;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
       <OptimizeReferences>true</OptimizeReferences>
       <EnableCOMDATFolding>true</EnableCOMDATFolding>
@@ -211,7 +213,7 @@
       <LargeAddressAware>true</LargeAddressAware>
       <ProgramDatabaseFile>$(SolutionDir)pdb\$(TargetName).pdb</ProgramDatabaseFile>
       <ImportLibrary>$(SolutionDir)lib\$(TargetName).lib</ImportLibrary>
-      <LinkTimeCodeGeneration>UseLinkTimeCodeGeneration</LinkTimeCodeGeneration>
+      <LinkTimeCodeGeneration>Default</LinkTimeCodeGeneration>
     </Link>
     <PostBuildEvent>
       <Command>
@@ -256,7 +258,7 @@
     <Link>
       <SubSystem>Console</SubSystem>
       <GenerateDebugInformation>true</GenerateDebugInformation>
-      <AdditionalDependencies>$(THRIFT)\$(CONFIGURATION)\lib\libthrift.lib;..\lib-debug\ctithriftmsg.lib;..\lib-debug\ctidbsrc.lib;..\lib-debug\ctiseasondb.lib;..\lib-debug\ctiholidaydb.lib;..\lib-debug\ctimsg.lib;..\lib-debug\service.lib;advapi32.lib;$(BOOST)\lib\boost_unit_test_framework-vc141-mt-gd-x32-1_67.lib;$(BOOST)\lib\boost_system-vc141-mt-gd-x32-1_67.lib;$(BOOST)\lib\boost_filesystem-vc141-mt-gd-x32-1_67.lib;$(BOOST)\lib\boost_regex-vc141-mt-gd-x32-1_67.lib;$(BOOST)\lib\boost_thread-vc141-mt-gd-x32-1_67.lib;$(BOOST)\lib\boost_date_time-vc141-mt-gd-x32-1_67.lib;$(BOOST)\lib\boost_chrono-vc141-mt-gd-x32-1_67.lib;..\lib-debug\ctibase.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>$(THRIFT)\$(CONFIGURATION)\lib\libthrift.lib;..\lib-debug\ctithriftmsg.lib;..\lib-debug\ctidbsrc.lib;..\lib-debug\ctiseasondb.lib;..\lib-debug\ctiholidaydb.lib;..\lib-debug\ctimsg.lib;..\lib-debug\service.lib;advapi32.lib;$(BOOST)\lib\boost_unit_test_framework-$(BOOST_VERSION).lib;$(BOOST)\lib\boost_system-$(BOOST_VERSION).lib;$(BOOST)\lib\boost_filesystem-$(BOOST_VERSION).lib;$(BOOST)\lib\boost_regex-$(BOOST_VERSION).lib;$(BOOST)\lib\boost_thread-$(BOOST_VERSION).lib;$(BOOST)\lib\boost_date_time-$(BOOST_VERSION).lib;$(BOOST)\lib\boost_chrono-$(BOOST_VERSION).lib;..\lib-debug\ctibase.lib;%(AdditionalDependencies)</AdditionalDependencies>
       <AdditionalLibraryDirectories>.;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
       <ProgramDatabaseFile>
       </ProgramDatabaseFile>
@@ -314,7 +316,7 @@ if exist $(OutDir)$(TargetName).pdb xcopy /d/y/f $(OutDir)$(TargetName).pdb $(So
     <Link>
       <SubSystem>Console</SubSystem>
       <GenerateDebugInformation>true</GenerateDebugInformation>
-      <AdditionalDependencies>$(THRIFT)\$(CONFIGURATION)\lib\libthrift.lib;..\lib\ctithriftmsg.lib;..\lib\ctidbsrc.lib;..\lib\ctiseasondb.lib;..\lib\ctiholidaydb.lib;..\lib\ctimsg.lib;..\lib\service.lib;advapi32.lib;$(BOOST)\lib\boost_unit_test_framework-vc141-mt-x32-1_67.lib;$(BOOST)\lib\boost_system-vc141-mt-x32-1_67.lib;$(BOOST)\lib\boost_filesystem-vc141-mt-x32-1_67.lib;$(BOOST)\lib\boost_regex-vc141-mt-x32-1_67.lib;$(BOOST)\lib\boost_thread-vc141-mt-x32-1_67.lib;$(BOOST)\lib\boost_date_time-vc141-mt-x32-1_67.lib;$(BOOST)\lib\boost_chrono-vc141-mt-x32-1_67.lib;..\lib\ctibase.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>$(THRIFT)\$(CONFIGURATION)\lib\libthrift.lib;..\lib\ctithriftmsg.lib;..\lib\ctidbsrc.lib;..\lib\ctiseasondb.lib;..\lib\ctiholidaydb.lib;..\lib\ctimsg.lib;..\lib\service.lib;advapi32.lib;$(BOOST)\lib\boost_unit_test_framework-$(BOOST_VERSION).lib;$(BOOST)\lib\boost_system-$(BOOST_VERSION).lib;$(BOOST)\lib\boost_filesystem-$(BOOST_VERSION).lib;$(BOOST)\lib\boost_regex-$(BOOST_VERSION).lib;$(BOOST)\lib\boost_thread-$(BOOST_VERSION).lib;$(BOOST)\lib\boost_date_time-$(BOOST_VERSION).lib;$(BOOST)\lib\boost_chrono-$(BOOST_VERSION).lib;..\lib\ctibase.lib;%(AdditionalDependencies)</AdditionalDependencies>
       <AdditionalLibraryDirectories>.;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
       <OptimizeReferences>true</OptimizeReferences>
       <EnableCOMDATFolding>true</EnableCOMDATFolding>
@@ -342,130 +344,21 @@ if exist $(OutDir)$(TargetName).pdb xcopy /d/y/f $(OutDir)$(TargetName).pdb $(So
 -->
   </ItemDefinitionGroup>
   <ItemGroup>
-  </ItemGroup>
-  <ItemGroup>
-    <ClCompile Include="..\COMMON\boost_assert.cpp" />
     <ClCompile Include="..\precompiled.cpp">
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Create</PrecompiledHeader>
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">Create</PrecompiledHeader>
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">Create</PrecompiledHeader>
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|x64'">Create</PrecompiledHeader>
     </ClCompile>
-    <ClCompile Include="clistener.cpp">
-    </ClCompile>
-    <ClCompile Include="ConstraintViolation.cpp">
-    </ClCompile>
-    <ClCompile Include="ecobeeCycleGear.cpp">
-    </ClCompile>
-    <ClCompile Include="ecobeeSetpointGear.cpp" />
-    <ClCompile Include="executor.cpp">
-    </ClCompile>
-    <ClCompile Include="honeywellCycleGear.cpp" />
-    <ClCompile Include="honeywellSetPointGear.cpp" />
-    <ClCompile Include="ItronCycleGear.cpp" />
-    <ClCompile Include="lmgrouphoneywell.cpp" />
-    <ClCompile Include="lmgroupitron.cpp" />
-    <ClCompile Include="lmgroupmeterdisconnect.cpp" />
-    <ClCompile Include="lmgroupnest.cpp" />
-    <ClCompile Include="lm_group_serialization.cpp">
-    </ClCompile>
-    <ClCompile Include="lm_message_serialization.cpp">
-    </ClCompile>
-    <ClCompile Include="lm_program_serialization.cpp">
-    </ClCompile>
+    <ClCompile Include="lmservice.cpp" />
+    <ClCompile Include="lm_group_serialization.cpp" />
+    <ClCompile Include="lm_message_serialization.cpp" />
+    <ClCompile Include="lm_program_serialization.cpp" />
     <ClCompile Include="lm_server_client_serialization_test.cpp">
     </ClCompile>
-    <ClCompile Include="lmcicustomerbase.cpp">
-    </ClCompile>
-    <ClCompile Include="lmconstraint.cpp">
-    </ClCompile>
-    <ClCompile Include="lmcontrolarea.cpp">
-    </ClCompile>
-    <ClCompile Include="lmcontrolareastore.cpp">
-    </ClCompile>
-    <ClCompile Include="lmcontrolareatrigger.cpp">
-    </ClCompile>
-    <ClCompile Include="lmcurtailcustomer.cpp">
-    </ClCompile>
-    <ClCompile Include="lmenergyexchangecustomer.cpp">
-    </ClCompile>
-    <ClCompile Include="lmenergyexchangecustomerreply.cpp">
-    </ClCompile>
-    <ClCompile Include="lmenergyexchangehourlycustomer.cpp">
-    </ClCompile>
-    <ClCompile Include="lmenergyexchangehourlyoffer.cpp">
-    </ClCompile>
-    <ClCompile Include="lmenergyexchangeoffer.cpp">
-    </ClCompile>
-    <ClCompile Include="lmenergyexchangeofferrevision.cpp">
-    </ClCompile>
-    <ClCompile Include="lmfactory.cpp">
-    </ClCompile>
-    <ClCompile Include="lmgroupbase.cpp">
-    </ClCompile>
-    <ClCompile Include="lmgroupdigisep.cpp">
-    </ClCompile>
-    <ClCompile Include="lmgroupecobee.cpp">
-    </ClCompile>
-    <ClCompile Include="lmgroupemetcon.cpp">
-    </ClCompile>
-    <ClCompile Include="lmgroupexpresscom.cpp">
-    </ClCompile>
-    <ClCompile Include="lmgroupgolay.cpp">
-    </ClCompile>
-    <ClCompile Include="lmgroupmacro.cpp">
-    </ClCompile>
-    <ClCompile Include="lmgroupmct.cpp">
-    </ClCompile>
-    <ClCompile Include="lmgrouppoint.cpp">
-    </ClCompile>
-    <ClCompile Include="lmgroupripple.cpp">
-    </ClCompile>
-    <ClCompile Include="lmgroupsa105.cpp">
-    </ClCompile>
-    <ClCompile Include="lmgroupsa205.cpp">
-    </ClCompile>
-    <ClCompile Include="lmgroupsa305.cpp">
-    </ClCompile>
-    <ClCompile Include="lmgroupsadigital.cpp">
-    </ClCompile>
-    <ClCompile Include="lmgroupversacom.cpp">
-    </ClCompile>
-    <ClCompile Include="lmmessage.cpp">
-    </ClCompile>
-    <ClCompile Include="lmprogrambase.cpp">
-    </ClCompile>
-    <ClCompile Include="lmprogrambeatthepeakgear.cpp">
-    </ClCompile>
-    <ClCompile Include="lmprogramcontrolwindow.cpp">
-    </ClCompile>
-    <ClCompile Include="lmprogramcurtailment.cpp">
-    </ClCompile>
-    <ClCompile Include="lmprogramdirect.cpp">
-    </ClCompile>
-    <ClCompile Include="lmprogramdirectgear.cpp">
-    </ClCompile>
-    <ClCompile Include="lmprogramenergyexchange.cpp">
-    </ClCompile>
-    <ClCompile Include="lmprogramthermostatgear.cpp">
-    </ClCompile>
-    <ClCompile Include="lmservice.cpp">
-    </ClCompile>
-    <ClCompile Include="lmutility.cpp">
-    </ClCompile>
-    <ClCompile Include="loadmanager.cpp">
-    </ClCompile>
-    <ClCompile Include="LMScheduledMessageHolder.cpp" />
-    <ClCompile Include="MeterDisconnectGear.cpp" />
-    <ClCompile Include="NestCriticalCycleGear.cpp" />
-    <ClCompile Include="NestStandardCycleGear.cpp" />
-    <ClCompile Include="sepcyclegear.cpp">
-    </ClCompile>
-    <ClCompile Include="septempoffsetgear.cpp">
-    </ClCompile>
-    <ClCompile Include="SmartGroupBase.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="ecobeePlusGear.h" />
     <ClInclude Include="include\BeatThePeakControlInterface.h" />
     <ClInclude Include="include\clistener.h" />
     <ClInclude Include="include\ConstraintViolation.h" />
@@ -539,6 +432,11 @@ if exist $(OutDir)$(TargetName).pdb xcopy /d/y/f $(OutDir)$(TargetName).pdb $(So
     <ClInclude Include="include\smartgearbase.h" />
     <ClInclude Include="include\SmartGroupBase.h" />
     <ClInclude Include="include\test_lm_serialization.h" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="loadmanagement-common.vcxproj">
+      <Project>{7b2d9318-7354-4a53-880d-7992d8bad9a4}</Project>
+    </ProjectReference>
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

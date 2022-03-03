@@ -2,7 +2,6 @@ package com.cannontech.multispeak.service.v3;
 
 import java.util.GregorianCalendar;
 import java.util.List;
-import java.util.concurrent.atomic.AtomicLong;
 
 import javax.annotation.PostConstruct;
 
@@ -23,10 +22,7 @@ import com.cannontech.message.dispatch.message.DatabaseChangeEvent;
 import com.cannontech.message.dispatch.message.DbChangeCategory;
 import com.cannontech.msp.beans.v3.ArrayOfErrorObject;
 import com.cannontech.msp.beans.v3.ArrayOfOutageDetectionEvent;
-import com.cannontech.msp.beans.v3.ArrayOfString;
 import com.cannontech.msp.beans.v3.ErrorObject;
-import com.cannontech.msp.beans.v3.GetMethods;
-import com.cannontech.msp.beans.v3.GetMethodsResponse;
 import com.cannontech.msp.beans.v3.ODEventNotification;
 import com.cannontech.msp.beans.v3.ODEventNotificationResponse;
 import com.cannontech.msp.beans.v3.ObjectFactory;
@@ -59,7 +55,6 @@ public class OutageJmsMessageListener extends OutageJmsMessageService {
     private ImmutableMap<OutageActionType, OutageEventType> outageMap = ImmutableMap.of();
     private static final Logger log = YukonLogManager.getLogger(OutageJmsMessageListener.class);
     private ImmutableList<MultispeakVendor> vendorsToSendOutageMsg = ImmutableList.of();
-    private AtomicLong atomicLong = new AtomicLong();
 
     @PostConstruct
     public void initialize() {
@@ -90,21 +85,9 @@ public class OutageJmsMessageListener extends OutageJmsMessageService {
             Pair<String, MultiSpeakVersion> keyPair =
                 MultispeakVendor.buildMapKey(MultispeakDefines.OA_Server_STR, MultiSpeakVersion.V3);
             if (mspVendor.getMspInterfaceMap().get(keyPair) != null) {
-                String endpointUrl = multispeakFuncs.getEndpointUrl(mspVendor, MultispeakDefines.OA_Server_STR);
-                try {
-                    GetMethods getMethods = objectFactory.createGetMethods();
-                    GetMethodsResponse getMethodsResponse = oaClient.getMethods(mspVendor, endpointUrl, getMethods);
-                    ArrayOfString arrayOfMethods = getMethodsResponse.getGetMethodsResult();
-                    List<String> mspMethodNames = arrayOfMethods.getString();
-                    // not sure where a static variable containing this method exists.. doing this for now
-                    if (mspMethodNames.stream().anyMatch("ODEventNotification"::equalsIgnoreCase)) {
-                        supportsOutage.add(mspVendor);
-                        log.info("Added OMS vendor to receive Status Point Monitor messages: "
-                            + mspVendor.getCompanyName());
-                    }
-                } catch (MultispeakWebServiceClientException e) {
-                    log.warn("caught exception in initialize", e);
-                }
+                supportsOutage.add(mspVendor);
+                log.info("Added OMS vendor to receive Status Point Monitor messages: "
+                    + mspVendor.getCompanyName());
             }
         }
         
@@ -128,12 +111,10 @@ public class OutageJmsMessageListener extends OutageJmsMessageService {
             log.info("Sending ODEventNotification ("+ endpointUrl + "): ObjectID: " + outageDetectionEvent.getObjectID() + " Type: " + outageDetectionEvent.getOutageEventType());
             
             try {
-                String transactionId = String.valueOf(atomicLong.getAndIncrement());
                 ODEventNotification odEventNotification = objectFactory.createODEventNotification();
                 ArrayOfOutageDetectionEvent odEvents = objectFactory.createArrayOfOutageDetectionEvent();
                 List<OutageDetectionEvent> listOfODEvents = odEvents.getOutageDetectionEvent();
                 listOfODEvents.add(outageDetectionEvent);
-                odEventNotification.setTransactionID(transactionId);
                 odEventNotification.setODEvents(odEvents);
                 ODEventNotificationResponse odEventNotificationResponse = oaClient.odEventNotification(mspVendor,
                                                                                                        endpointUrl,

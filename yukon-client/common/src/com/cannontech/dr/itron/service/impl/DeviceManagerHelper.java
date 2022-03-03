@@ -40,7 +40,7 @@ public class DeviceManagerHelper implements SoapFaultParser {
      * 
      * DeviceManager::addHANDevice request with Utility Service Point ID
      */
-    public static AddHANDeviceRequest buildAddRequestWithServicePoint(String macAddress, AccountDto account) {
+    public static AddHANDeviceRequest buildAddRequestWithServicePoint(String macAddress, String serialNumber, AccountDto account) {
         //Create outer AddHANDeviceRequest
         AddHANDeviceRequest request = new AddHANDeviceRequest();
         
@@ -52,6 +52,7 @@ public class DeviceManagerHelper implements SoapFaultParser {
         identifier.setMacID(macAddress);
         ESIType esi = new ESIType();
         esi.setDeviceIdentifiers(identifier);
+        esi.setSerialNumber(serialNumber);
         d2gAttribute.setESI(esi);
         
         //Set ServicePointUtilID on D2GAttributes
@@ -148,7 +149,7 @@ public class DeviceManagerHelper implements SoapFaultParser {
      * 
      * DeviceManager::addHANDevice request without Utility Service Point ID, including Switch MAC ID
      */
-    public static AddHANDeviceRequest buildAddRequestWithoutServicePoint(String macAddress) {
+    public static AddHANDeviceRequest buildAddRequestWithoutServicePoint(String macAddress, String serialNumber) {
         
         //Create outer AddHANDeviceRequest
         AddHANDeviceRequest request = new AddHANDeviceRequest();
@@ -161,6 +162,7 @@ public class DeviceManagerHelper implements SoapFaultParser {
         identifier.setMacID(macAddress);
         ESIType esi = new ESIType();
         esi.setDeviceIdentifiers(identifier);
+        esi.setSerialNumber(serialNumber);
         d2gAttribute.setESI(esi);
         
         //Add D2GAttributes to request

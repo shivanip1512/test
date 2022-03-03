@@ -11,6 +11,8 @@ import org.jdom2.JDOMException;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import com.cannontech.clientutils.YukonLogManager;
+import com.cannontech.common.events.helper.EventLogHelper;
+import com.cannontech.common.util.BootstrapUtils;
 import com.cannontech.common.util.Pair;
 import com.cannontech.common.util.SqlStatementBuilder;
 import com.cannontech.core.roleproperties.InputTypeFactory;
@@ -31,7 +33,8 @@ public class GlobalSettingEditorDaoImpl implements GlobalSettingEditorDao {
     private final Logger log = YukonLogManager.getLogger(GlobalSettingEditorDaoImpl.class);
 
     @Autowired private YukonJdbcTemplate jdbcTemplate;
-    
+    @Autowired private EventLogHelper eventLogHelper;
+
     @Override
     public Map<GlobalSettingType, GlobalSetting> getSettingsForCategory(GlobalSettingSubCategory category) {
         Set<GlobalSettingType> all = GlobalSettingType.getSettingsForCategory(category);
@@ -51,16 +54,18 @@ public class GlobalSettingEditorDaoImpl implements GlobalSettingEditorDao {
         jdbcTemplate.query(sql, new YukonRowCallbackHandler() {
             @Override
             public void processRow(YukonResultSet rs) throws SQLException {
-
+                boolean decryptValueFailed = false;
                 GlobalSettingType type = rs.getEnum(("Name"), GlobalSettingType.class);
                 Object value = InputTypeFactory.convertPropertyValue(type.getType(), rs.getString("Value"));
-                if (value != null && type.isSensitiveInformation()) {
+                if (value != null && (type.isSensitiveInformation() || type.isNonViewableSensitiveInformation())) {
                     try {
                         if (GlobalSettingCryptoUtils.isEncrypted((String) value)) {
                             value = GlobalSettingCryptoUtils.decryptValue((String) value);
                         }
                     } catch (CryptoException | IOException | JDOMException | DecoderException e) {
                         value = type.getDefaultValue();
+                        eventLogHelper.decryptionFailedEventLog(BootstrapUtils.getApplicationName(), type.name());
+                        decryptValueFailed = true;
                         log.error("Unable to decrypt value for setting " + type + ". Using the default value. ", e);
                     }
                 }
@@ -69,7 +74,7 @@ public class GlobalSettingEditorDaoImpl implements GlobalSettingEditorDao {
                 setting.setId(rs.getInt("GlobalSettingId"));
                 setting.setComments(rs.getString("Comments"));
                 setting.setLastChanged(rs.getInstant("LastChangedDate"));
-                
+                setting.setDecryptValueFailed(decryptValueFailed);
                 settings.put(type, setting);
                 found.add(type);
             }
@@ -78,6 +83,7 @@ public class GlobalSettingEditorDaoImpl implements GlobalSettingEditorDao {
         Set<GlobalSettingType> missing = Sets.difference(all, found);
         for (GlobalSettingType type : missing) {
             GlobalSetting setting = new GlobalSetting(type, type.getDefaultValue());
+            setting.setDecryptValueFailed(false);
             settings.put(type, setting);
         }
         

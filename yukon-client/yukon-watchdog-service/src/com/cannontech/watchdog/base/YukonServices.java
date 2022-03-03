@@ -14,7 +14,8 @@ public enum YukonServices {
     CAPCONTROL(3),
     CALCLOGIC(2),
     NETWORKMANAGER(2),
-    ITRON(2);
+    ITRON(2),
+    DATABASE(0);
 
     private Integer failedPollThreshold;
 

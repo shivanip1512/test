@@ -41,16 +41,7 @@ public class AnalogPointImportProcessor extends ScalarPointImportProcessor {
         
         AnalogPointBuilder builder = pointBuilderFactory.getAnalogPointBuilder(paoId, pointDao.getNextPointId(), pointName, isDisabled);
         
-        if (row.hasValue(POINT_OFFSET.NAME)) {
-            int pointOffset = Integer.valueOf(row.getValue(POINT_OFFSET.NAME));
-            if (pointOffset > 0) {
-                if(pointDao.deviceHasPoint(paoId, pointOffset, PointType.Analog)) {
-                    String error = messageSourceAccessor.getMessage("yukon.exception.processingException.pointOffsetInUse", pointOffset, deviceName);
-                    throw new ProcessingException(error, "pointOffsetInUse");
-                }
-            }
-            builder.setPointOffset(pointOffset);
-        }
+        setPointOffset(builder, row, paoId, deviceName);
         
         if(row.hasValue(DEADBAND.NAME)) {
             double deadband = Double.valueOf(row.getValue(DEADBAND.NAME));
@@ -69,5 +60,10 @@ public class AnalogPointImportProcessor extends ScalarPointImportProcessor {
         builder.setMeterDials(meterDials);
         
         builder.insert();
+    }
+    
+    @Override
+    protected PointType getPointType(ImportRow row) {
+        return PointType.Analog;
     }
 }

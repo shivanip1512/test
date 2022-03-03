@@ -155,4 +155,44 @@ ActiveMQConnectionManager::SerializedMessage MessageSerializer<DpiRspMsg>::seria
     return{};
 }
 
+using MpvReqMsg = Porter::MeterProgramValidationRequestMsg;
+using MpvRspMsg = Porter::MeterProgramValidationResponseMsg;
+
+template<>
+boost::optional<MpvReqMsg> MessageSerializer<MpvReqMsg>::deserialize(const ActiveMQConnectionManager::SerializedMessage& msg)
+{
+    try
+    {
+        auto tmsg = DeserializeThriftBytes<Thrift::Porter::MeterProgramValidationRequest>(msg);
+
+        return MpvReqMsg{ tmsg._meterProgramGuid };
+    }
+    catch( apache::thrift::TException& e )
+    {
+        CTILOG_EXCEPTION_ERROR(dout, e, "Failed to deserialize a \"" << typeid(MpvReqMsg).name() << "\"");
+    }
+
+    return boost::none;
+}
+
+template<>
+ActiveMQConnectionManager::SerializedMessage MessageSerializer<MpvRspMsg>::serialize(const MpvRspMsg& msg)
+{
+    try
+    {
+        Thrift::Porter::MeterProgramValidationResponse tmsg;
+
+        tmsg.__set__meterProgramGuid(msg.meterProgramGuid);
+        tmsg.__set__status(msg.status);
+
+        return SerializeThriftBytes(tmsg);
+    }
+    catch( apache::thrift::TException& e )
+    {
+        CTILOG_EXCEPTION_ERROR(dout, e, "Failed to serialize a \"" << typeid(MpvRspMsg).name() << "\"");
+    }
+
+    return{};
+}
+
 }

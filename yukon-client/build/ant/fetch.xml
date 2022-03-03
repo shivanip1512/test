@@ -8,7 +8,7 @@
    (the "License"); you may not use this file except in compliance with
    the License.  You may obtain a copy of the License at
 
-       http://www.apache.org/licenses/LICENSE-2.0
+       https://www.apache.org/licenses/LICENSE-2.0
 
    Unless required by applicable law or agreed to in writing, software
    distributed under the License is distributed on an "AS IS" BASIS,
@@ -305,7 +305,6 @@ Set -Ddest=LOCATION on the command line
           description="load BeanShell support"
           depends="bsf">
     <f2 project="org.beanshell" archive="bsh"/>
-    <f2 project="org.beanshell" archive="bsh-core"/>
   </target>
 
   <target name="jython"
@@ -320,9 +319,15 @@ Set -Ddest=LOCATION on the command line
     <f2 project="org.mozilla" archive="rhino"/>
   </target>
 
+  <target name="graal.js"
+          description="load Graal.js">
+    <f2 project="org.graalvm.js" archive="js"/>
+    <f2 project="org.graalvm.js" archive="js-scriptengine"/>
+  </target>
+
   <target name="script"
           description="load script languages (except Jython)"
-          depends="bsf,jruby,beanshell,rhino"/>
+          depends="bsf,jruby,beanshell,rhino,graal.js"/>
 
   <target name="debugging"
     description="internal Ant debugging"
@@ -330,10 +335,14 @@ Set -Ddest=LOCATION on the command line
     <f2 project="which"/>
   </target>
 
-  <target name="javamail"
-          description="load Java Mail"
+  <target name="jakartamail"
+          description="load Jakarta Mail"
           depends="init">
-    <f2 project="javax.mail" archive="javax.mail-api"/>
+    <!-- We only need this one dependency as per
+      the project doc https://eclipse-ee4j.github.io/mail/
+      This alone should bring in all necessary dependencies (including the API
+       jars and the activation jars -->
+    <f2 project="com.sun.mail" archive="jakarta.mail"/>
   </target>
 
   <target name="jspc"
@@ -356,6 +365,14 @@ Set -Ddest=LOCATION on the command line
   <target name="netrexx"
           description="load NetRexx compiler"
           depends="init-no-m2,-setup-temp-cache,-fetch-netrexx,-fetch-netrexx-no-commons-net">
+    <checksum file="${temp.dir}/NetRexx.zip" algorithm="SHA-256" property="${netrexx.sha256}" verifyProperty="netrexx.hash.matches"/>
+    <fail message="NetRexx.zip fetched via ftp has an unexpected SHA-256 checksum, the file may have been tampered with">
+       <condition>
+         <not>
+           <istrue value="${netrexx.hash.matches}"/>
+         </not>
+      </condition>
+    </fail>
     <copy todir="${dest.dir}" flatten="true">
       <zipfileset src="${temp.dir}/NetRexx.zip">
         <include name="NetRexx\lib\NetRexxC.jar"/>
@@ -386,5 +403,5 @@ Set -Ddest=LOCATION on the command line
   <target name="all"
     description="load all the libraries (except jython)"
     depends="antunit,ivy,logging,junit,junitlauncher,xml,networking,regexp,antlr,bcel,jdepend,bsf,debugging,script,
-      javamail,jspc,jai,xz,netrexx,junit-engine-vintage,junit-engine-jupiter"/>
+      jakartamail,jspc,jai,xz,netrexx,junit-engine-vintage,junit-engine-jupiter"/>
 </project>

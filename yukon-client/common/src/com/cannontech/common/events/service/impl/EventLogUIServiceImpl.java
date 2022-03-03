@@ -33,27 +33,36 @@ public class EventLogUIServiceImpl implements EventLogUIService {
     @Autowired private FilterDao filterDao;
 
     @Override
-    public List<List<String>> getDataGridRowByType(SearchResults<EventLog> searchResult, YukonUserContext userContext) {
+    public List<List<String>> getDataGridRowByType(SearchResults<EventLog> searchResult, List<Integer> argumentIndexes, 
+            YukonUserContext userContext) {
         
         List<EventLog> resultList = searchResult.getResultList();
-        
         List<List<String>> dataGrid = Lists.newArrayList();
         for (EventLog eventLog : resultList) {
-            DateFormatEnum dateDisplayFormat = DateFormatEnum.BOTH;
+            DateFormatEnum dateDisplayFormat = DateFormatEnum.FILE_DATA_DATE;
+            DateFormatEnum timeDisplayFormat = DateFormatEnum.FILE_DATA_TIME;
             
             List<String> dataRow = Lists.newArrayList();
             
             dataRow.add(eventLog.getEventType());
             dataRow.add(dateFormattingService.format(eventLog.getDateTime(), dateDisplayFormat, userContext));
+            dataRow.add(dateFormattingService.format(eventLog.getDateTime(), timeDisplayFormat, userContext));
 
+            int i = 1;
             for (Object argument : eventLog.getArguments()) {
                 if (argument != null) { 
                   if (argument instanceof Date) {
-                    dataRow.add(dateFormattingService.format(argument, dateDisplayFormat, userContext));
+                    dataRow.add(dateFormattingService.format(argument, DateFormatEnum.FILE_DATA_BOTH, userContext));
                   } else {
                     dataRow.add(argument.toString());
                   }
+                } else {
+                    if (argumentIndexes.contains(Integer.valueOf(i))) {
+                        // add empty string for expected/valid arguments with null value
+                        dataRow.add(StringUtils.EMPTY);
+                    }
                 }
+                i++;
             }
             dataGrid.add(dataRow);
        }
@@ -69,13 +78,14 @@ public class EventLogUIServiceImpl implements EventLogUIService {
 
         List<List<String>> dataGrid = Lists.newArrayListWithExpectedSize(resultList.size());
         for (EventLog eventLog : resultList) {
-            DateFormatEnum dateDisplayFormat = DateFormatEnum.BOTH;
+            DateFormatEnum dateDisplayFormat = DateFormatEnum.FILE_DATA_DATE;
+            DateFormatEnum timeDisplayFormat = DateFormatEnum.FILE_DATA_TIME;
             
-            List<String> dataRow = Lists.newArrayListWithCapacity(3);
-            
+            List<String> dataRow = Lists.newArrayListWithCapacity(4);
             dataRow.add(eventLog.getEventType());
             dataRow.add(dateFormattingService.format(eventLog.getDateTime(), dateDisplayFormat, userContext));
-            
+            dataRow.add(dateFormattingService.format(eventLog.getDateTime(), timeDisplayFormat, userContext));
+
             String eventLogMessage = messageSourceAccessor.getMessage(eventLog.getMessageSourceResolvable());
             dataRow.add(eventLogMessage);
             
@@ -93,13 +103,7 @@ public class EventLogUIServiceImpl implements EventLogUIService {
                                                          Integer pageCount,
                                                          String filterText,
                                                          YukonUserContext userContext) {
-        
-        // There was no filter text supplied.  Return the whole list of event logs for the
-        // supplied time period time period.
-        if (StringUtils.isBlank(filterText)) {
-            return eventLogDao.getPagedSearchResultByCategories(eventCategories, startDate, 
-                                                                stopDate, start, pageCount);
-        }
+       
 
         SearchResults<EventLog> pagedSearchResultByCategories = 
             eventLogDao.getFilteredPagedSearchResultByCategories(eventCategories, 

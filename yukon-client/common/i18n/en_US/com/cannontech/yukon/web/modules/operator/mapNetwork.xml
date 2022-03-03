@@ -45,6 +45,7 @@
     <entry key="yukon.web.modules.operator.mapNetwork.hopCount">Hop Count</entry>
     <entry key="yukon.web.modules.operator.mapNetwork.descendantCount">Descendant Count</entry>
     <entry key="yukon.web.modules.operator.mapNetwork.mapDevice">Map Device</entry>
+    <entry key="yukon.web.modules.operator.mapNetwork.viewDescendants">View Descendants</entry>
     <entry key="yukon.web.modules.operator.mapNetwork.viewNeighbors">View Neighbors</entry>
     <entry key="yukon.web.modules.operator.mapNetwork.viewPrimaryRoute">View Primary Route</entry>
     
@@ -52,22 +53,27 @@
     <entry key="yukon.web.modules.operator.mapNetwork.status.READY">Ready</entry>
     <entry key="yukon.web.modules.operator.mapNetwork.status.NOT_READY">Not Ready</entry>
     
-    <entry key="yukon.web.modules.operator.mapNetwork.routeFlagType.PF">Primary forward route</entry>
-    <entry key="yukon.web.modules.operator.mapNetwork.routeFlagType.PR">Primary reverse route</entry>
-    <entry key="yukon.web.modules.operator.mapNetwork.routeFlagType.BR">Battery Route</entry>
-    <entry key="yukon.web.modules.operator.mapNetwork.routeFlagType.GC">Route start GC</entry>
-    <entry key="yukon.web.modules.operator.mapNetwork.routeFlagType.RU">Route remedial update</entry>
-    <entry key="yukon.web.modules.operator.mapNetwork.routeFlagType.IR">Ignored route</entry>
-    <entry key="yukon.web.modules.operator.mapNetwork.routeFlagType.VR">Valid route</entry>
-    <entry key="yukon.web.modules.operator.mapNetwork.routeFlagType.TO">Route timed out</entry>
+    <entry key="yukon.web.modules.operator.mapNetwork.commStatus">Comm Status</entry>
+    <entry key="yukon.web.modules.operator.mapNetwork.commStatus.RF">Connected via RF</entry>
+    <entry key="yukon.web.modules.operator.mapNetwork.commStatus.WiFi">Connected via Wi-Fi</entry>
+    <entry key="yukon.web.modules.operator.mapNetwork.commStatus.Cellular">Connected via Cellular</entry>
     
-    <entry key="yukon.web.modules.operator.mapNetwork.neighborFlagType.PF">Primary forward route</entry>
-    <entry key="yukon.web.modules.operator.mapNetwork.neighborFlagType.PR">Primary reverse route</entry>
-    <entry key="yukon.web.modules.operator.mapNetwork.neighborFlagType.S2">Secondary neighbor for alternate gateway</entry>
-    <entry key="yukon.web.modules.operator.mapNetwork.neighborFlagType.F">Float neighbor</entry>
-    <entry key="yukon.web.modules.operator.mapNetwork.neighborFlagType.IN">Ignored neighbor</entry>
-    <entry key="yukon.web.modules.operator.mapNetwork.neighborFlagType.BN">Battery neighbor</entry>
-    <entry key="yukon.web.modules.operator.mapNetwork.neighborFlagType.S1">Secondary neighbor for serving gateway</entry>
+    <entry key="yukon.web.modules.operator.mapNetwork.routeFlag.PRIMARY_FORWARD">Primary forward route</entry>
+    <entry key="yukon.web.modules.operator.mapNetwork.routeFlag.PRIMARY_REVERSE">Primary reverse route</entry>
+    <entry key="yukon.web.modules.operator.mapNetwork.routeFlag.BATTERY">Battery Route</entry>
+    <entry key="yukon.web.modules.operator.mapNetwork.routeFlag.ROUTE_START_GC">Route start GC</entry>
+    <entry key="yukon.web.modules.operator.mapNetwork.routeFlag.ROUTE_REMEDIAL_UPDATE">Route remedial update</entry>
+    <entry key="yukon.web.modules.operator.mapNetwork.routeFlag.IGNORED">Ignored route</entry>
+    <entry key="yukon.web.modules.operator.mapNetwork.routeFlag.VALID">Valid route</entry>
+    <entry key="yukon.web.modules.operator.mapNetwork.routeFlag.TIMED_OUT">Route timed out</entry>
+                       
+    <entry key="yukon.web.modules.operator.mapNetwork.neighborFlag.PRIMARY_FORWARD">Primary forward route</entry>
+    <entry key="yukon.web.modules.operator.mapNetwork.neighborFlag.PRIMARY_REVERSE">Primary reverse route</entry>
+    <entry key="yukon.web.modules.operator.mapNetwork.neighborFlag.SECONDARY_FOR_ALT_GW">Secondary neighbor for alternate gateway</entry>
+    <entry key="yukon.web.modules.operator.mapNetwork.neighborFlag.FLOAT">Float neighbor</entry>
+    <entry key="yukon.web.modules.operator.mapNetwork.neighborFlag.IGNORED">Ignored neighbor</entry>
+    <entry key="yukon.web.modules.operator.mapNetwork.neighborFlag.BATTERY">Battery neighbor</entry>
+    <entry key="yukon.web.modules.operator.mapNetwork.neighborFlag.SECONDARY_FOR_SERVING_GW">Secondary neighbor for serving gateway</entry>
     
     <entry key="yukon.web.modules.operator.mapNetwork.exception.NO_PARENT">No parent was found for this device.</entry>
     <entry key="yukon.web.modules.operator.mapNetwork.exception.INVALID_DEVICE">Retrieving parent information for this device is not supported.</entry>
@@ -75,10 +81,11 @@
     <entry key="yukon.web.modules.operator.mapNetwork.exception.DB_ERROR">A Database Error has occurred trying to retrieve the parent information.</entry>
     <entry key="yukon.web.modules.operator.mapNetwork.exception.FAILURE">Failed to retrieve information.</entry>
     <entry key="yukon.web.modules.operator.mapNetwork.exception.commsError">A communication error occurred between Yukon and Network Manager.</entry>
-    <entry key="yukon.web.modules.operator.mapNetwork.exception.noLocation">No location was found for the parent device.</entry>
-    <entry key="yukon.web.modules.operator.mapNetwork.exception.noRoute">One or more devices within the route could not be located.</entry>
-    <entry key="yukon.web.modules.operator.mapNetwork.exception.noParentLocation">No location was found for the parent of this device.</entry>
-    <entry key="yukon.web.modules.operator.mapNetwork.exception.primaryRoute.missingLocationData">Device: {0} within the primary route does not have location data to display.</entry>
+    <entry key="yukon.web.modules.operator.mapNetwork.exception.noParent">No parent was found for this device.</entry>
+    <entry key="yukon.web.modules.operator.mapNetwork.exception.noParentLocation">No location data was found for the parent device: {0}.</entry>
+    <entry key="yukon.web.modules.operator.mapNetwork.exception.primaryRoute.missingLocationData">The following device(s) within the primary route do not have location data to display: {0}.</entry>
+    <entry key="yukon.web.modules.operator.mapNetwork.exception.primaryRoute.noDevicesReturned">No devices were returned for the primary route.</entry>
+    <entry key="yukon.web.modules.operator.mapNetwork.exception.neighbors.noDevicesReturned">No neighbor devices were returned for this device.</entry>
     <entry key="yukon.web.modules.operator.mapNetwork.exception.neighbors.missingLocationData">The following neighbor device(s) do not have location data to display: {0}</entry>
     <entry key="yukon.web.modules.operator.mapNetwork.exception.NO_NEARBY_DEVICES">No nearby devices were found for this device.</entry>
     <entry key="yukon.web.modules.operator.mapNetwork.exception.TOO_MANY_NEARBY_DEVICES">{0} nearby devices were found for this device.  The map is displaying the closest {1} devices.</entry>

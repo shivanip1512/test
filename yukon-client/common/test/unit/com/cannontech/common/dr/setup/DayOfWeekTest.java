@@ -1,10 +1,11 @@
 package com.cannontech.common.dr.setup;
 
+import static org.junit.jupiter.api.Assertions.assertTrue;
+
 import java.util.ArrayList;
 import java.util.List;
 
-import org.junit.Assert;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 public class DayOfWeekTest {
 
@@ -19,19 +20,19 @@ public class DayOfWeekTest {
         daySelections.add(DayOfWeek.FRIDAY);
         daySelections.add(DayOfWeek.SATURDAY);
         String daySelection = DayOfWeek.buildDBPersistent(daySelections);
-        Assert.assertTrue("Day Selection length mismatch", daySelection.length() == 7);
-        Assert.assertTrue("Day Selection Character mismatch", !daySelection.contains("N"));
+        assertTrue(daySelection.length() == 7, "Day Selection length mismatch");
+        assertTrue(!daySelection.contains("N"), "Day Selection Character mismatch");
     }
 
     @Test
     public void Test_buildDBPersistent_NNNNNNN() {
         List<DayOfWeek> daySelections = new ArrayList<>();
         String daySelection = DayOfWeek.buildDBPersistent(daySelections);
-        Assert.assertTrue("Day Selection length mismatch", daySelection.length() == 7);
-        Assert.assertTrue("Day Selection Character mismatch", !daySelection.contains("Y"));
+        assertTrue(daySelection.length() == 7, "Day Selection length mismatch");
+        assertTrue(!daySelection.contains("Y"), "Day Selection Character mismatch");
         daySelection = DayOfWeek.buildDBPersistent(null);
-        Assert.assertTrue("Day Selection length mismatch", daySelection.length() == 7);
-        Assert.assertTrue("Day Selection Character mismatch", !daySelection.contains("Y"));
+        assertTrue(daySelection.length() == 7, "Day Selection length mismatch");
+        assertTrue(!daySelection.contains("Y"), "Day Selection Character mismatch");
     }
     
     @Test
@@ -41,30 +42,30 @@ public class DayOfWeekTest {
         daySelections.add(DayOfWeek.WEDNESDAY);
         daySelections.add(DayOfWeek.SATURDAY);
         String daySelection = DayOfWeek.buildDBPersistent(daySelections);
-        Assert.assertTrue("Day Selection length mismatch", daySelection.length() == 7);
+        assertTrue(daySelection.length() == 7, "Day Selection length mismatch");
         boolean flag = daySelection.charAt(0) == 'Y' && daySelection.charAt(3) == 'Y' && daySelection.charAt(6) == 'Y';
-        Assert.assertTrue("Day Selection Character mismatch", flag);
+        assertTrue(flag, "Day Selection Character mismatch");
     }
     
     @Test
     public void Test_buildModelRepresentation_YYYYYYY() {
         List<DayOfWeek> daySelections= DayOfWeek.buildModelRepresentation("YYYYYYY");
-        Assert.assertTrue("Day Selection length mismatch", daySelections.size() == 7);
+        assertTrue(daySelections.size() == 7, "Day Selection length mismatch");
     }
 
     @Test
     public void Test_buildModelRepresentation_NNNNNNN() {
         List<DayOfWeek> daySelections = DayOfWeek.buildModelRepresentation("NNNNNNN");
-        Assert.assertTrue("Day Selection length mismatch", daySelections.size() == 0);
+        assertTrue(daySelections.size() == 0, "Day Selection length mismatch");
     }
 
     @Test
     public void Test_buildModelRepresentation_YNNYNNY() {
         List<DayOfWeek> daySelections = DayOfWeek.buildModelRepresentation("YNNYNNY");
-        Assert.assertTrue("Day Selection length mismatch", daySelections.size() == 3);
-        Assert.assertTrue("Day Selection mismatch", daySelections.get(0) == DayOfWeek.SUNDAY);
-        Assert.assertTrue("Day Selection mismatch", daySelections.get(1) == DayOfWeek.WEDNESDAY);
-        Assert.assertTrue("Day Selection mismatch", daySelections.get(2) == DayOfWeek.SATURDAY);
+        assertTrue(daySelections.size() == 3, "Day Selection length mismatch");
+        assertTrue(daySelections.get(0) == DayOfWeek.SUNDAY, "Day Selection mismatch");
+        assertTrue(daySelections.get(1) == DayOfWeek.WEDNESDAY, "Day Selection mismatch");
+        assertTrue(daySelections.get(2) == DayOfWeek.SATURDAY, "Day Selection mismatch");
         
     }
 }

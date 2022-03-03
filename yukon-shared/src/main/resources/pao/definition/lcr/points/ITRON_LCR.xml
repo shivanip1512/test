@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8" standalone="no"?>
 <points xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="../../points.xsd">
     <highestOffsets>
-        <analog offset="63"/>
+        <analog offset="66"/>
         <status offset="21"/>
     </highestOffsets>
     <!--- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -Analog- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -->
@@ -257,18 +257,28 @@
         <unitofmeasure value="UNDEF"/>
         <decimalplaces value="0"/>        
     </point>
-    
+    <point offset="64" type="Analog">
+        <name>Event Started</name>
+        <multiplier value="1"/>
+        <unitofmeasure value="UNDEF"/>
+        <decimalplaces value="0"/>        
+    </point>
+    <point offset="65" type="Analog">
+        <name>Event Cancelled</name>
+        <multiplier value="1"/>
+        <unitofmeasure value="UNDEF"/>
+        <decimalplaces value="0"/>        
+    </point>
+    <point offset="66" type="Analog">
+        <name>Event Stopped</name>
+        <multiplier value="1"/>
+        <unitofmeasure value="UNDEF"/>
+        <decimalplaces value="0"/>        
+    </point>
+
     <!--- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -Status- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -->
-    <point offset="1" type="Status">
-        <name>Control Status</name>
-        <stategroup value="TrueFalse"/>
-    </point>
-    <point offset="2" type="Status">
-        <name>Service Status</name>
-        <stategroup value="LCR Service Status"/>
-    </point>
     <point offset="3" type="Status">
-        <name>Relay 1 Relay State</name>
+        <name>Relay 1 Load State</name>
         <archive interval="ZERO" type="ON_UPDATE"/>
         <stategroup value="RelayState"/>
     </point>
@@ -278,7 +288,7 @@
         <stategroup value="TwoStateActive"/>
     </point>
     <point offset="5" type="Status">
-        <name>Relay 2 Relay State</name>
+        <name>Relay 2 Load State</name>
         <archive interval="ZERO" type="ON_UPDATE"/>
         <stategroup value="RelayState"/>
     </point>
@@ -288,7 +298,7 @@
         <stategroup value="TwoStateActive"/>
     </point>
     <point offset="7" type="Status">
-        <name>Relay 3 Relay State</name>
+        <name>Relay 3 Load State</name>
         <archive interval="ZERO" type="ON_UPDATE"/>
         <stategroup value="RelayState"/>
     </point>
@@ -298,7 +308,7 @@
         <stategroup value="TwoStateActive"/>
     </point>
     <point offset="9" type="Status">
-        <name>Relay 4 Relay State</name>
+        <name>Relay 4 Load State</name>
         <archive interval="ZERO" type="ON_UPDATE"/>
         <stategroup value="RelayState"/>
     </point>

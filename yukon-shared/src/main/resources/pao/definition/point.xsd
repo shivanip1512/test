@@ -105,6 +105,7 @@
             <xs:enumeration value="On Timer+Change" />
             <xs:enumeration value="Constant" />
             <xs:enumeration value="Historical" />
+            <xs:enumeration value="Backfilling" />
         </xs:restriction>
     </xs:simpleType>
 
@@ -196,6 +197,9 @@
             <xs:enumeration value="CUBIC_METERS" />
             <xs:enumeration value="MEGABYTES" />
             <xs:enumeration value="DBM" />
+            <xs:enumeration value="THERMS"/>
+            <xs:enumeration value="DB" />
+            <xs:enumeration value="CCF" />
         </xs:restriction>
     </xs:simpleType>
 </xs:schema>

@@ -109,6 +109,9 @@
     <entry key="yukon.web.modules.tools.configs.enum.regulatorHeartbeatMode.INCREMENT">Increment</entry>
     <entry key="yukon.web.modules.tools.configs.enum.regulatorHeartbeatMode.COUNTDOWN">Countdown</entry>
     
+    <entry key="yukon.web.modules.tools.configs.enum.regulatorInstallOrientation.FORWARD">Forward</entry>
+    <entry key="yukon.web.modules.tools.configs.enum.regulatorInstallOrientation.REVERSE">Reverse</entry>
+
     <entry key="yukon.web.modules.tools.configs.enum.cbcHeartbeatMode.DISABLED">Disabled</entry>
     <entry key="yukon.web.modules.tools.configs.enum.cbcHeartbeatMode.ANALOG">Analog</entry>
     <entry key="yukon.web.modules.tools.configs.enum.cbcHeartbeatMode.PULSED">Pulsed</entry>
@@ -282,6 +285,7 @@
 
     <entry key="yukon.web.modules.tools.configs.category.rfnDemand.title">RFN Demand</entry>
     <entry key="yukon.web.modules.tools.configs.category.rfnDemand.definition">Demand settings for single-phase RFN meters.</entry>
+    <entry key="yukon.web.modules.tools.configs.category.rfnDemand.warning">These settings only apply to RFN meters if Advanced Metrology Preferred is enabled.</entry>
     <entry key="yukon.web.modules.tools.configs.category.rfnDemand.demandInterval">Demand Interval</entry>
     <entry key="yukon.web.modules.tools.configs.category.rfnDemand.demandInterval.description">Interval in minutes over which most recent demand is calculated.</entry>
 
@@ -292,6 +296,7 @@
 
     <entry key="yukon.web.modules.tools.configs.category.demandFreeze.title">Demand Freeze</entry>
     <entry key="yukon.web.modules.tools.configs.category.demandFreeze.definition">Demand freeze settings for meters.</entry>
+    <entry key="yukon.web.modules.tools.configs.category.demandFreeze.warning">These settings always apply to RFN-500 Focus AX meters with 9.5+ firmware, but only apply to other RFN meters if Advanced Metrology Preferred is enabled.</entry>
     <entry key="yukon.web.modules.tools.configs.category.demandFreeze.demandFreezeDay">Scheduled Demand Freeze Day</entry>
     <entry key="yukon.web.modules.tools.configs.category.demandFreeze.demandFreezeDay.description">The day of scheduled demand freeze/reset. 0 disables demand freeze. 32 indicates last day of month.</entry>
 
@@ -412,6 +417,7 @@
 
     <entry key="yukon.web.modules.tools.configs.category.tou.title">Time of Use</entry>
     <entry key="yukon.web.modules.tools.configs.category.tou.definition">The time of use schedules devices will apply to any data collected. For MCT-470 devices, the TOU schedules will only apply to data collected through their KYZ inputs.</entry>
+    <entry key="yukon.web.modules.tools.configs.category.tou.warning">These settings only apply to RFN meters if Advanced Metrology Preferred is enabled.</entry>
     <entry key="yukon.web.modules.tools.configs.category.tou.enableTou">Enable TOU</entry>
     <entry key="yukon.web.modules.tools.configs.category.tou.enableTou.description">When true, the device also stores usage into its TOU rate registers based on the TOU schedule specified below.</entry>
     <entry key="yukon.web.modules.tools.configs.category.tou.schedule1">Schedule 1</entry>
@@ -556,9 +562,12 @@
 
     <entry key="yukon.web.modules.tools.configs.category.regulatorCategory.title">Regulator Category</entry>
     <entry key="yukon.web.modules.tools.configs.category.regulatorCategory.definition">Regulator Control Method</entry>
+    <entry key="yukon.web.modules.tools.configs.category.regulatorCategory.minTapPosition">Minimum Tap Position</entry>
+    <entry key="yukon.web.modules.tools.configs.category.regulatorCategory.maxTapPosition">Maximum Tap Position</entry>
     <entry key="yukon.web.modules.tools.configs.category.regulatorCategory.voltageChangePerTap">Volt Change Per Tap</entry>
     <entry key="yukon.web.modules.tools.configs.category.regulatorCategory.voltageControlMode">Control Mode</entry>
-
+    <entry key="yukon.web.modules.tools.configs.category.regulatorCategory.installOrientation">Install Orientation</entry>
+    
     <entry key="yukon.web.modules.tools.configs.category.regulatorHeartbeat.title">Regulator Heartbeat</entry>
     <entry key="yukon.web.modules.tools.configs.category.regulatorHeartbeat.definition">Heartbeat control parameters for Regulators</entry>
     <entry key="yukon.web.modules.tools.configs.category.regulatorHeartbeat.regulatorHeartbeatMode">Heartbeat Mode</entry>
@@ -575,6 +584,16 @@
     <entry key="yukon.web.modules.tools.configs.category.cbcHeartbeat.cbcHeartbeatValue">Heartbeat Value</entry>
     <entry key="yukon.web.modules.tools.configs.category.cbcHeartbeat.cbcHeartbeatValue.description">The value to send to the device for its heartbeat countdown</entry>
     <entry key="yukon.web.modules.tools.configs.category.cbcHeartbeat.cbcHeartbeatValue.unassigned">Heartbeat category unassigned.</entry>
+
+    <entry key="yukon.web.modules.tools.configs.category.rfnMetrologyConfiguration.title">RFN Metrology Library Configuration</entry>
+    <entry key="yukon.web.modules.tools.configs.category.rfnMetrologyConfiguration.warning">Requires Firmware Version 9.4 or higher.</entry>
+    <entry key="yukon.web.modules.tools.configs.category.rfnMetrologyConfiguration.definition">
+        <![CDATA[Configuration parameters for the metrology library feature for RFN devices.<br/>
+            Requires Firmware version 9.4 or higher.
+        ]]>
+    </entry>
+    <entry key="yukon.web.modules.tools.configs.category.rfnMetrologyConfiguration.metrologyLibraryEnabled">Advanced Metrology Preferred</entry>
+    <entry key="yukon.web.modules.tools.configs.category.rfnMetrologyConfiguration.metrologyLibraryEnabled.description">When true, measurements, including TOU and demand, are determined by the AMI module instead of the meter. When false, the node is in Meter Biased mode and the measurements, including TOU and demand, are determined by the meter.</entry>
 
     <!-- help text used by all categories using attribute mapping inputs -->
     <entry key="yukon.web.modules.tools.configs.category.attributeMapping.helpText">The name of the point that will be associated with the specified attribute.  Overrides existing device attribute assignments.</entry>
@@ -711,19 +730,20 @@
             The Device Configuration Summary page displays the status of device configuration messaging being processed throughout the system.<br/>
             The following filters can be applied to the results:
             <ul>
-                <li><b>Configuration(s)</b> - Select one to many configurations (by holding down the Ctrl key).  There are also options to include any devices that are Unassigned or Assigned to Any configuration.</li>
+                <li><b>Configuration(s)</b> - Select one to many configurations. There are also options to include any devices that are Unassigned or to include All Configurations.</li>
+                <li><b>Status</b> - Select a status to filter by. Options include All Statuses, In Progress, Needs Upload or Needs Validation.
                 <li><b>Device Group(s)</b> - Select one to many device groups to filter by.
-                <li><b>Send/Read/Verify</b> - Select whether to include devices where the Last Action was a Read, Send, and/or Verify Command.</li>
-                <li><b>Success/Failure/In Progress</b> - Select whether to include devices where the Last Action was Successful, resulted in Failure and/or is currently In Progress.</li>
-                <li><b>In Sync/Out Of Sync/Unverified</b> - Select whether to include devices that are currently In Sync, Out of Sync and/or Unverified.  This is based off of the last verification result.</li>
             </ul>
             The resulting devices will display in the table.<br/>
-            There are options to Download the results, Assign Config, Send Config, Read Config and Verify Config on the resulting collection of devices.<br/>
-            There are also options to View the History, Send, Read and Verify for each individual device.
+            There are options to Download the results, Change Config, Upload Config, and Validate Config on the resulting collection of devices.<br/>
+            There are also options to View the History, Upload, and Validate for each individual device.
     
         ]]>
     </entry>
     <entry key="yukon.web.modules.tools.configs.summary.configurations">Configuration(s)</entry>
+    <entry key="yukon.web.modules.tools.configs.summary.selectConfigurations">Select Configuration(s)</entry>
+    <entry key="yukon.web.modules.tools.configs.summary.configurations.unassigned">Unassigned</entry>
+    <entry key="yukon.web.modules.tools.configs.summary.configurations.all">All Configurations</entry>
     <entry key="yukon.web.modules.tools.configs.summary.deviceGroups">Device Group(s)</entry>
     <entry key="yukon.web.modules.tools.configs.summary.deviceName">Device Name</entry>
     <entry key="yukon.web.modules.tools.configs.summary.type">Type</entry>
@@ -731,25 +751,25 @@
     <entry key="yukon.web.modules.tools.configs.summary.lastAction">Last Action</entry>
     <entry key="yukon.web.modules.tools.configs.summary.lastActionStatus">Last Action Status</entry>
     <entry key="yukon.web.modules.tools.configs.summary.lastVerificationStatus">Last Verification Status</entry>
-    <entry key="yukon.web.modules.tools.configs.summary.inSync">In Sync</entry>
+    <entry key="yukon.web.modules.tools.configs.summary.currentState">Device Status</entry>
     <entry key="yukon.web.modules.tools.configs.summary.lastActionStart">Last Action Start</entry>
     <entry key="yukon.web.modules.tools.configs.summary.lastActionEnd">Last Action End</entry>
     <entry key="yukon.web.modules.tools.configs.summary.filteredResults">Filtered Results:</entry>
     <entry key="yukon.web.modules.tools.configs.summary.devices">Devices</entry>
     
-    <entry key="yukon.web.modules.tools.configs.summary.assignConfig">Assign Config</entry>
-    <entry key="yukon.web.modules.tools.configs.summary.sendConfig">Send Config</entry>
-    <entry key="yukon.web.modules.tools.configs.summary.readConfig">Read Config</entry>
-    <entry key="yukon.web.modules.tools.configs.summary.verifyConfig">Verify Config</entry>
+    <entry key="yukon.web.modules.tools.configs.summary.changeConfig">Change Config</entry>
+    <entry key="yukon.web.modules.tools.configs.summary.uploadConfig">Upload Config</entry>
+    <entry key="yukon.web.modules.tools.configs.summary.validateConfig">Validate Config</entry>
     <entry key="yukon.web.modules.tools.configs.summary.download">Download</entry>
     <entry key="yukon.web.modules.tools.configs.summary.date">Date (Optional)</entry>    
     <entry key="yukon.web.modules.tools.configs.summary.filter.to">to</entry>
     
     <entry key="yukon.web.modules.tools.configs.summary.outOfSync">Configuration</entry>
     <entry key="yukon.web.modules.tools.configs.summary.failure">Error Message</entry>
-    <entry key="yukon.web.modules.tools.configs.summary.sendConfig.success">Configuration has been sent to device: {0}.</entry>
-    <entry key="yukon.web.modules.tools.configs.summary.readConfig.success">Read Configuration has been sent to device: {0}.</entry>
-    <entry key="yukon.web.modules.tools.configs.summary.verifyConfig.success">Verify Configuration has been sent.</entry>
+    <entry key="yukon.web.modules.tools.configs.summary.uploadConfig.success">Configuration Upload has been sent to device: {0}. Please allow time for a response to be received.</entry>
+    <entry key="yukon.web.modules.tools.configs.summary.validateConfig.success">Configuration Validation has been requested for device: {0}. Please allow time for a response to be received.</entry>
+    <entry key="yukon.web.modules.tools.configs.summary.needsUploadMessage">Device requires an Upload to change its Device Configuration. The device may also be Validated to determine if it matches prior to an Upload.</entry>
+    <entry key="yukon.web.modules.tools.configs.summary.needsUploadUnreadMessage">No Device Configuration Reading. Yukon has no configuration reading for this device yet. The device requires an Upload or the device may also be Validated to determine if it matches prior to an Upload.</entry>
     
     <entry key="yukon.web.modules.tools.configs.summary.viewHistory">View History</entry>
     <entry key="yukon.web.modules.tools.configs.summary.viewHistory.action">Action</entry>
@@ -759,24 +779,34 @@
     <entry key="yukon.web.modules.tools.configs.summary.viewHistory.none">No history found.</entry>
     <entry key="yukon.web.modules.tools.configs.summary.viewHistory.title">Device:{0} History</entry>
        
-    <entry key="yukon.web.modules.tools.configs.summary.read">Read</entry>
-    <entry key="yukon.web.modules.tools.configs.summary.send">Send</entry>
-    <entry key="yukon.web.modules.tools.configs.summary.verify">Verify</entry>
+    <entry key="yukon.web.modules.tools.configs.summary.upload">Upload</entry>
+    <entry key="yukon.web.modules.tools.configs.summary.validate">Validate</entry>
+    
+    <!-- State Selections -->
+    <entry key="yukon.web.modules.tools.configs.summary.stateSelection.ALL">All Statuses</entry>
+    <entry key="yukon.web.modules.tools.configs.summary.stateSelection.IN_PROGRESS">In Progress</entry>
+    <entry key="yukon.web.modules.tools.configs.summary.stateSelection.NEEDS_UPLOAD">Needs Upload</entry>
+    <entry key="yukon.web.modules.tools.configs.summary.stateSelection.NEEDS_VALIDATION">Needs Validation</entry>
+    <entry key="yukon.web.modules.tools.configs.summary.stateSelection.IN_SYNC">In Sync</entry>
+    
+    <!-- Statuses -->
+    <entry key="yukon.web.modules.tools.configs.summary.configState.UNKNOWN">Unassigned</entry>
+    <entry key="yukon.web.modules.tools.configs.summary.configState.UNASSIGNED">Unassigned</entry>
+    <entry key="yukon.web.modules.tools.configs.summary.configState.IN_SYNC">In Sync</entry>
+    <entry key="yukon.web.modules.tools.configs.summary.configState.OUT_OF_SYNC">Needs Upload</entry>
+    <entry key="yukon.web.modules.tools.configs.summary.configState.UNREAD">Needs Upload</entry>
+    <entry key="yukon.web.modules.tools.configs.summary.configState.UNCONFIRMED">Needs Validation</entry>
     
     <!-- Action Types -->
-    <entry key="yukon.web.modules.tools.configs.summary.actionType.READ">Read</entry>
-    <entry key="yukon.web.modules.tools.configs.summary.actionType.SEND">Send</entry>
-    <entry key="yukon.web.modules.tools.configs.summary.actionType.VERIFY">Verify</entry>
+    <entry key="yukon.web.modules.tools.configs.summary.actionType.READ">Validate</entry>
+    <entry key="yukon.web.modules.tools.configs.summary.actionType.SEND">Upload</entry>
+    <entry key="yukon.web.modules.tools.configs.summary.actionType.VERIFY">Change</entry>
+    <entry key="yukon.web.modules.tools.configs.summary.actionType.ASSIGN">Change</entry>
+    <entry key="yukon.web.modules.tools.configs.summary.actionType.UNASSIGN">Remove</entry>
     <!-- Status Types -->
     <entry key="yukon.web.modules.tools.configs.summary.statusType.SUCCESS">Success</entry>
     <entry key="yukon.web.modules.tools.configs.summary.statusType.FAILURE">Failure</entry>
     <entry key="yukon.web.modules.tools.configs.summary.statusType.IN_PROGRESS">In Progress</entry>
-    <entry key="yukon.web.modules.tools.configs.summary.statusType.NA">N/A</entry>
-    <!-- Status Types -->
-    <entry key="yukon.web.modules.tools.configs.summary.syncType.IN_SYNC">In Sync</entry>
-    <entry key="yukon.web.modules.tools.configs.summary.syncType.OUT_OF_SYNC">Out Of Sync</entry>
-    <entry key="yukon.web.modules.tools.configs.summary.syncType.UNVERIFIED">Unverified</entry>
-    <entry key="yukon.web.modules.tools.configs.summary.syncType.NA">N/A</entry>
     
     <entry key="yukon.web.modules.tools.configs.summary.error">Error</entry>
     <entry key="yukon.web.modules.tools.configs.summary.description">Description</entry>

@@ -6,10 +6,8 @@
     <!-- module wide key -->
     <entry key="yukon.web.modules.tools.options.title">Options</entry>
     <entry key="yukon.web.modules.tools.instructions.title">Instructions</entry>
-    <entry key="yukon.web.modules.tools.printChart">Print Chart</entry>
-    <entry key="yukon.web.modules.tools.downloadPng">Download PNG</entry>
-    <entry key="yukon.web.modules.tools.downloadJpg">Download JPG</entry>
-    <entry key="yukon.web.modules.tools.downloadPdf">Download PDF</entry>
+    <entry key="yukon.web.modules.tools.printTrend">Print</entry>
+    <entry key="yukon.web.modules.tools.downloadJpg">Download</entry>
     <entry key="yukon.web.modules.tools.downloadCsv">Download CSV</entry>
     
     <entry key="yukon.web.modules.tools.bulk.disconnect.result.pageName">Connect/Disconnect Results</entry>
@@ -23,7 +21,7 @@
     <entry key="yukon.web.modules.tools.commander.readings.title">Readings: </entry>
     <entry key="yukon.web.modules.tools.commander.recent">Recent</entry>
     <entry key="yukon.web.modules.tools.commander.nearby">Nearby</entry>
-    <entry key="yukon.web.modules.tools.commander.prompt">User Input Required</entry>
+    <entry key="yukon.web.modules.tools.commander.prompt">Command Parameter Required</entry>
     <entry key="yukon.web.modules.tools.commander.command">Command</entry>
     <entry key="yukon.web.modules.tools.commander.device">Device</entry>
     <entry key="yukon.web.modules.tools.commander.target">Target</entry>
@@ -132,33 +130,7 @@
     <entry key="yukon.web.modules.tools.map.lastChangedTime">LAST_CHANGED_TIME</entry>
     <entry key="yukon.web.modules.tools.map.origin">ORIGIN</entry>
     <entry key="yukon.web.modules.tools.map.na">N/A</entry>
-    <!-- /trend -->  
-    <entry key="yukon.web.modules.tools.trend.pageName">Trends</entry>
-    <entry key="yukon.web.modules.tools.trend.pageDescription">{0}</entry>
-    <!-- If no trend is found -->
-    <entry key="yukon.web.modules.tools.trend.noTrends">No Trends</entry>
-    <!-- /trends -->
-    <entry key="yukon.web.modules.tools.trends.pageName">Trends</entry>
-    <entry key="yukon.web.modules.tools.trends.axis">Axis: {0}</entry>
-    <entry key="yukon.web.modules.tools.trends.day">1d</entry>
-    <entry key="yukon.web.modules.tools.trends.week">1w</entry>
-    <entry key="yukon.web.modules.tools.trends.month">1m</entry>
-    <entry key="yukon.web.modules.tools.trends.threeMonths">3m</entry>
-    <entry key="yukon.web.modules.tools.trends.sixMonths">6m</entry>
-    <entry key="yukon.web.modules.tools.trends.ytd">YTD</entry>
-    <entry key="yukon.web.modules.tools.trends.year">1y</entry>
-    <entry key="yukon.web.modules.tools.trends.truncateWarning">* Some historical data has been truncated.</entry>
-    <!-- Trends GRAPHS -->
-    <entry key="yukon.web.modules.tools.trends.data.trendType.graphType.BASIC_TYPE">Basic</entry>
-    <entry key="yukon.web.modules.tools.trends.data.trendType.graphType.USAGE_TYPE">Usage</entry>
-    <entry key="yukon.web.modules.tools.trends.data.trendType.graphType.PEAK_TYPE">Peak</entry>
-    <entry key="yukon.web.modules.tools.trends.data.trendType.graphType.YESTERDAY_TYPE">Yesterday</entry>
-    <entry key="yukon.web.modules.tools.trends.data.trendType.graphType.MARKER_TYPE">Mark</entry>
-    <entry key="yukon.web.modules.tools.trends.data.trendType.graphType.DATE_TYPE">Date</entry>
-    <!-- Trend Graph State -->
-    <entry key="yukon.web.modules.tools.trends.data.error.graphDataError.NO_TREND_DATA_AVAILABLE">No Data available.</entry>
-    <entry key="yukon.web.modules.tools.trends.data.error.graphDataError.DB_ERROR">A database transaction has occurred. Contact Administrator</entry>
-    <entry key="yukon.web.modules.tools.trends.data.error.graphDataError.PARSE_ERROR">A parsing error occurred. Please check logs.</entry>
+
     <!-- TDC -->
     <entry key="yukon.web.modules.tools.tdc.displays">Displays</entry>
 
@@ -294,6 +266,7 @@
     <entry key="yukon.web.modules.tools.point.viewError">Point {0} cannot be viewed.</entry>
     <entry key="yukon.web.modules.tools.point.notFoundError">Point {0} was not found.</entry>
     <entry key="yukon.web.modules.tools.point.error.reasonability">Low Reasonability must be less than High Reasonability.</entry>
+    <entry key="yukon.web.modules.tools.point.error.timestampExists">Point data already exists for the selected Date/Time.</entry>
 
     <entry key="yukon.web.modules.tools.point.tab.general">General</entry>
     <entry key="yukon.web.modules.tools.point.tab.physical">Physical Setup</entry>
@@ -303,6 +276,7 @@
     <entry key="yukon.web.modules.tools.point.tab.calculation">Calculation</entry>
     <entry key="yukon.web.modules.tools.point.name">Name</entry>
     <entry key="yukon.web.modules.tools.point.parent">Parent</entry>
+    <entry key="yukon.web.modules.tools.point.status">Status</entry>
     <entry key="yukon.web.modules.tools.point.timingGroup">Timing Group</entry>
     <entry key="yukon.web.modules.tools.point.settings">Settings</entry>
     <entry key="yukon.web.modules.tools.point.archive">Archive Data</entry>
@@ -378,9 +352,10 @@
     </entry>
     
     <!-- Arguments available for the electric and water meter detail pages are 0: device name, 1: meter number -->
-    <entry key="yukon.web.modules.search.amr.meterDetail.electric.summary"><![CDATA[Meter Number: <strong class="subtle">{1}</strong>, Address/Serial Number: <strong class="subtle">{2}</strong>]]></entry>
-    <entry key="yukon.web.modules.search.amr.meterDetail.water.summary"><![CDATA[Meter Number: <strong class="subtle">{1}, Address/Serial Number: <strong class="subtle">{2}</strong>]]></entry>
-    <entry key="yukon.web.modules.search.amr.meterDetail.gas.summary"><![CDATA[Meter Number: <strong class="subtle">{1}, Address/Serial Number: <strong class="subtle">{2}</strong>]]></entry>
+    <entry key="yukon.web.modules.search.amr.meterDetail.electric.summary"><![CDATA[Device Name: <strong class="subtle">{1}</strong>, Meter Number: <strong class="subtle">{2}</strong>, Address/Serial Number: <strong class="subtle">{3}</strong>]]></entry>
+    <entry key="yukon.web.modules.search.amr.meterDetail.water.summary"><![CDATA[Device Name: <strong class="subtle">{1}</strong>, Meter Number: <strong class="subtle">{2}, Address/Serial Number: <strong class="subtle">{3}</strong>]]></entry>
+    <entry key="yukon.web.modules.search.amr.meterDetail.gas.summary"><![CDATA[Device Name: <strong class="subtle">{1}</strong>, Meter Number: <strong class="subtle">{2}, Address/Serial Number: <strong class="subtle">{3}</strong>]]></entry>
+    <entry key="yukon.web.modules.search.amr.meterDetail.virtual.summary"><![CDATA[Device Name: <strong class="subtle">{1}</strong>, Meter Number: <strong class="subtle">{2}</strong>]]></entry>
 
     <!-- Arguments available for the control area page 0: control area name -->
     <entry key="yukon.web.modules.search.dr.controlAreaDetail.summary">{0}</entry>
@@ -578,4 +553,46 @@
 
 	<entry key="yukon.web.modules.tools.collectionActions.deviceUploadFailed">{0} errors were encountered while processing the import file.</entry>
     <entry key="yukon.web.modules.tools.collectionActions.unsupportedFileFormat">Incorrect File format.</entry>
+    
+        
+    <!-- Aggregate Interval Report -->
+    <entry key="yukon.web.modules.tools.aggregateIntervalReport.pageName">Aggregate Interval Data Report</entry>
+    <entry key="yukon.web.modules.tools.aggregateIntervalReport.missingIntervalData">Missing Interval Data</entry>
+    <entry key="yukon.web.modules.tools.aggregateIntervalReport.operation">Operation</entry>
+    <entry key="yukon.web.modules.tools.aggregateIntervalReport.missingData.helpTitle">Missing Interval Data Help</entry>
+    <entry key="yukon.web.modules.tools.aggregateIntervalReport.missingData.helpText">
+            <![CDATA[
+            The following options are available to select from to control how missing interval data will be displayed:
+            <ul style="list-style-type:none;padding-left:10px;">
+                <li><b>Skip Record</b> - Interval is completely omitted from report.</li>
+                <li><b>Leave Blank</b> - Interval is shown in report, but value is left blank.</li>
+                <li><b>Partial</b> - Interval is shown and value is calculated with missing data.</li>
+                <li><b>Fixed Value</b> - The value entered will be displayed.</li>
+            </ul>
+        ]]>
+    </entry>
+    <entry key="yukon.web.modules.tools.aggregateIntervalReport.operation.helpTitle">Operation Help</entry>
+    <entry key="yukon.web.modules.tools.aggregateIntervalReport.operation.helpText">
+            <![CDATA[
+            The following options are available to control how value aggregation will work:
+            <ul style="list-style-type:none;padding-left:10px;">
+                <li><b>Add</b> - Value is calculated by adding all devices' values for the attribute at the interval timestamp.</li>
+                <li><b>Max</b> - Value is calculated by choosing the highest value among all devices' values for the attribute at the interval timestamp.</li>
+            </ul>
+        ]]>
+    </entry>
+    <!-- Missing Interval Data Enum -->
+    <entry key="yukon.web.modules.tools.aggregateIntervalReport.missingIntervalData.SKIP">Skip Record</entry>
+    <entry key="yukon.web.modules.tools.aggregateIntervalReport.missingIntervalData.BLANK">Leave Blank</entry>
+    <entry key="yukon.web.modules.tools.aggregateIntervalReport.missingIntervalData.PARTIAL">Partial</entry>
+    <entry key="yukon.web.modules.tools.aggregateIntervalReport.missingIntervalData.FIXED_VALUE">Fixed Value</entry>
+    <!-- Operation Enum -->
+    <entry key="yukon.web.modules.tools.aggregateIntervalReport.operation.ADD">Add</entry>
+    <entry key="yukon.web.modules.tools.aggregateIntervalReport.operation.MAX">Max</entry>
+    <!-- Intervals -->
+    <entry key="yukon.web.modules.tools.aggregateIntervalReport.interval.MINUTES_5">5 minutes</entry>
+    <entry key="yukon.web.modules.tools.aggregateIntervalReport.interval.MINUTES_15">15 minutes</entry>
+    <entry key="yukon.web.modules.tools.aggregateIntervalReport.interval.MINUTES_30">30 minutes</entry>
+    <entry key="yukon.web.modules.tools.aggregateIntervalReport.interval.HOURS_1">1 hour</entry>
+    <entry key="yukon.web.modules.tools.aggregateIntervalReport.interval.DAYS_1">Daily (midnight)</entry>
 </properties>

@@ -15,6 +15,7 @@
         <tag name="RFN_DEMAND_RESET"/>
         <tag name="RFN_EVENTS"/>
         <tag name="RFN_POINT_CALCULATION"/>
+        <tag name="SUPPORTS_ATTRIBUTE_ASSIGNMENT"/>
         <tag name="TOU"/>
         <tag name="USES_METER_NUMBER_FOR_MSP"/>
         <tag name="VOLTAGE_PROFILE"/>
@@ -39,6 +40,8 @@
         <pointInfo name="Daily Min Volts" init="true" attributes="MINIMUM_VOLTAGE_DAILY,MINIMUM_VOLTAGE"/>
         <pointInfo name="Delivered kVA" attributes="DELIVERED_KVA"/>
         <pointInfo name="Delivered kVAh" attributes="KVAH"/>
+        <pointInfo name="kVA Load Profile" attributes="KVA_LOAD_PROFILE"/>
+        <pointInfo name="Delivered kVAh per Interval" attributes="DELIVERED_KVAH_PER_INTERVAL"/>
         <pointInfo name="Delivered kW" init="true" attributes="DELIVERED_DEMAND,DEMAND"/>
         <pointInfo name="Delivered kW Load Profile" attributes="LOAD_PROFILE,DELIVERED_KW_LOAD_PROFILE"/>
         <pointInfo name="Delivered kWh" init="true" attributes="USAGE,DELIVERED_KWH"/>
@@ -80,6 +83,7 @@
         <pointInfo name="Rate C kWh" attributes="USAGE_RATE_C"/>
         <pointInfo name="Rate D kWh" attributes="USAGE_RATE_D"/>
         <pointInfo name="Received kVAh" attributes="RECEIVED_KVAH"/>
+        <pointInfo name="Received kVAh per Interval" attributes="RECEIVED_KVAH_PER_INTERVAL"/>
         <pointInfo name="Received kW Load Profile" attributes="RECEIVED_KW_LOAD_PROFILE"/>
         <pointInfo name="Received kWh" attributes="RECEIVED_KWH"/>
         <pointInfo name="Received kWh (Rate A kWh)" attributes="RECEIVED_KWH_RATE_A"/>
@@ -108,6 +112,7 @@
         <pointInfo name="Tamper - Large Decrease After Outage" attributes="TAMPER_LARGE_DECREASE_AFTER_OUTAGE"/>
         <pointInfo name="Total Outage Count" init="true" attributes="BLINK_COUNT"/>
         <pointInfo name="TOU Schedule Change" attributes="TOU_SCHEDULE_CHANGE"/>
+        <pointInfo name="Ultra Capacitor Bad" attributes="ULTRA_CAPACITOR_BAD"/>
         <pointInfo name="Under Voltage" attributes="UNDER_VOLTAGE"/>
         <pointInfo name="Voltage" init="true" attributes="VOLTAGE,VOLTAGE_PROFILE"/>
         <pointInfo name="Voltage Alerts" attributes="VOLTAGE_ALERTS"/>

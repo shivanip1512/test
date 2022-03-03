@@ -66,13 +66,13 @@
     
     <entry key="yukon.web.modules.smartNotifications.email.invalid">Not a valid email address.</entry>
     <entry key="yukon.web.modules.smartNotifications.popup.helpText">
-        <![CDATA[<div style="font-size:85%;">
+        <![CDATA[<div style='font-size:85%;'>
             <b>Type:</b> The event to trigger notifications.<br/>
             <b>Frequency:</b> 
-            <ul style="list-style-type:none;margin:0;">
+            <ul style='list-style-type:none;margin:0;'>
                 <li><b>Immediate</b> - receive a notification for every event.</li>  
                 <li><b>Aggregate</b> - group notifications based on time.  Send the first notification immediately and if there are more events, send notifications at the following intervals:</li>
-                    <ul style="list-style-type:none;margin:0;">
+                    <ul style='list-style-type:none;margin:0;'>
                         <li>First event – send a notification immediately.</li>
                         <li>Wait 1 minute.</li>
                         <li>Wait 3 minutes.</li>
@@ -96,6 +96,7 @@
     <entry key="yukon.web.modules.smartNotifications.eventType.YUKON_WATCHDOG">Yukon Watchdog</entry>
     <entry key="yukon.web.modules.smartNotifications.eventType.ASSET_IMPORT">Asset Import</entry>
     <entry key="yukon.web.modules.smartNotifications.eventType.METER_DR">Meter Demand Response</entry>
+    <entry key="yukon.web.modules.smartNotifications.eventType.EATON_CLOUD_DR">Cellular DR Event Acknowledgement Warning</entry>
     
     <!-- Frequency -->
     <entry key="yukon.web.modules.smartNotifications.frequency.IMMEDIATE">Immediate</entry>
@@ -210,4 +211,22 @@ See {3}]]></entry>
 
 {1}]]></entry>
     <entry key="yukon.web.modules.smartNotifications.METER_DR.multi.subject">[yukon] Meter Demand Response Results - {0}</entry>
+    
+    
+    <entry key="yukon.web.modules.smartNotifications.EATON_CLOUD_DR.single.subject">[yukon] “{0} Control Acknowledgements Warning” Events</entry>
+    <entry key="yukon.web.modules.smartNotifications.EATON_CLOUD_DR.single.SUMMARY.text">
+    
+Acknowledgements of receipt for the control message from program {0} targeting devices in load group {1} have dropped below the {2}% warning threshold.
+
+
+{3} {4}
+
+{5} - Total Device Count Targeted
+
+{6}% - Acknowledgements
+
+{7}% - Unknown</entry>
+      
 </properties>
+
+

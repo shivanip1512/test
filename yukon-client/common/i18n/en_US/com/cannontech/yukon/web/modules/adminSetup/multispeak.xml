@@ -145,6 +145,11 @@
     <entry key="yukon.web.modules.adminSetup.vendor.results">Results</entry>
     <entry key="yukon.web.modules.adminSetup.vendor.tab.title">Vendor Setup</entry>
     <entry key="yukon.web.modules.adminSetup.vendor.ping">Ping</entry>
+    <entry key="yukon.web.modules.adminSetup.vendor.interfaceAuth">Interface Authentication</entry>
+    <entry key="yukon.web.modules.adminSetup.vendor.interfaceAuthPopupTitle">Interface Level Authentication Settings</entry>
+    <entry key="yukon.web.modules.adminSetup.vendor.interfaceAuthPopupTitle.incomingAuth.title">Incoming Authentication</entry>
+    <entry key="yukon.web.modules.adminSetup.vendor.interfaceAuthPopupTitle.outgoingAuth.title">Outgoing Authentication</entry>
+    <entry key="yukon.web.modules.adminSetup.vendor.interfaceAuthPopupTitle.useVendorAuth">Use Vendor Authentication Settings</entry>
     <entry key="yukon.web.modules.adminSetup.vendor.getMethods">Get Methods</entry>
     <entry key="yukon.web.modules.adminSetup.vendor.companyName">Company Name</entry>
     <entry key="yukon.web.modules.adminSetup.vendor.appName">App Name</entry>

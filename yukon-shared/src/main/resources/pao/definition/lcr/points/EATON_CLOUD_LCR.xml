@@ -1,0 +1,334 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<points xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="../../points.xsd">
+    <highestOffsets>
+        <analog offset="44"/>
+        <status offset="13"/>
+    </highestOffsets>
+    <!--- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -Analog- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -->
+    <point offset="1" type="Analog">
+        <name>Blink Count</name>
+        <multiplier value="1"/>
+        <unitofmeasure value="COUNTS"/>
+        <decimalplaces value="0"/>
+    </point>
+    <point offset="2" type="Analog">
+        <name>Comms Loss Count</name>
+        <multiplier value="1"/>
+        <unitofmeasure value="COUNTS"/>
+        <decimalplaces value="0"/>
+    </point>
+    <point offset="4" type="Analog">
+        <name>Frequency</name>
+        <multiplier value="1"/>
+        <unitofmeasure value="HZ"/>
+        <decimalplaces value="3"/>
+    </point>
+    <point offset="5" type="Analog">
+        <name>Relay 1 Run Time Data Log</name>
+        <multiplier value="1"/>
+        <unitofmeasure value="MINUTES"/>
+        <decimalplaces value="0"/>
+    </point>
+    <point offset="6" type="Analog">
+        <name>Relay 1 Run Time Data Log 5 Minutes</name>
+        <multiplier value="1"/>
+        <unitofmeasure value="MINUTES"/>
+        <decimalplaces value="0"/>
+    </point>
+    <point offset="7" type="Analog">
+        <name>Relay 1 Run Time Data Log 15 Minutes</name>
+        <multiplier value="1"/>
+        <unitofmeasure value="MINUTES"/>
+        <decimalplaces value="0"/>
+    </point>
+    <point offset="8" type="Analog">
+        <name>Relay 1 Run Time Data Log 30 Minutes</name>
+        <multiplier value="1"/>
+        <unitofmeasure value="MINUTES"/>
+        <decimalplaces value="0"/>
+    </point>
+    <point offset="9" type="Analog">
+        <name>Relay 1 Shed Time Data Log</name>
+        <multiplier value="1"/>
+        <unitofmeasure value="MINUTES"/>
+        <decimalplaces value="0"/>
+    </point>
+    <point offset="10" type="Analog">
+        <name>Relay 1 Shed Time Data Log 5 Minutes</name>
+        <multiplier value="1"/>
+        <unitofmeasure value="MINUTES"/>
+        <decimalplaces value="0"/>
+    </point>
+    <point offset="11" type="Analog">
+        <name>Relay 1 Shed Time Data Log 15 Minutes</name>
+        <multiplier value="1"/>
+        <unitofmeasure value="MINUTES"/>
+        <decimalplaces value="0"/>
+    </point>
+    <point offset="12" type="Analog">
+        <name>Relay 1 Shed Time Data Log 30 Minutes</name>
+        <multiplier value="1"/>
+        <unitofmeasure value="MINUTES"/>
+        <decimalplaces value="0"/>
+    </point>
+    <point offset="13" type="Analog">
+        <name>Relay 2 Run Time Data Log</name>
+        <multiplier value="1"/>
+        <unitofmeasure value="MINUTES"/>
+        <decimalplaces value="0"/>
+    </point>
+    <point offset="14" type="Analog">
+        <name>Relay 2 Run Time Data Log 5 Minutes</name>
+        <multiplier value="1"/>
+        <unitofmeasure value="MINUTES"/>
+        <decimalplaces value="0"/>
+    </point>
+    <point offset="15" type="Analog">
+        <name>Relay 2 Run Time Data Log 15 Minutes</name>
+        <multiplier value="1"/>
+        <unitofmeasure value="MINUTES"/>
+        <decimalplaces value="0"/>
+    </point>
+    <point offset="16" type="Analog">
+        <name>Relay 2 Run Time Data Log 30 Minutes</name>
+        <multiplier value="1"/>
+        <unitofmeasure value="MINUTES"/>
+        <decimalplaces value="0"/>
+    </point>
+    <point offset="17" type="Analog">
+        <name>Relay 2 Shed Time Data Log</name>
+        <multiplier value="1"/>
+        <unitofmeasure value="MINUTES"/>
+        <decimalplaces value="0"/>
+    </point>
+    <point offset="18" type="Analog">
+        <name>Relay 2 Shed Time Data Log 5 Minutes</name>
+        <multiplier value="1"/>
+        <unitofmeasure value="MINUTES"/>
+        <decimalplaces value="0"/>
+    </point>
+    <point offset="19" type="Analog">
+        <name>Relay 2 Shed Time Data Log 15 Minutes</name>
+        <multiplier value="1"/>
+        <unitofmeasure value="MINUTES"/>
+        <decimalplaces value="0"/>
+    </point>
+    <point offset="20" type="Analog">
+        <name>Relay 2 Shed Time Data Log 30 Minutes</name>
+        <multiplier value="1"/>
+        <unitofmeasure value="MINUTES"/>
+        <decimalplaces value="0"/>
+    </point>
+    <point offset="21" type="Analog">
+        <name>Relay 3 Run Time Data Log</name>
+        <multiplier value="1"/>
+        <unitofmeasure value="MINUTES"/>
+        <decimalplaces value="0"/>
+    </point>
+    <point offset="22" type="Analog">
+        <name>Relay 3 Run Time Data Log 5 Minutes</name>
+        <multiplier value="1"/>
+        <unitofmeasure value="MINUTES"/>
+        <decimalplaces value="0"/>
+    </point>
+    <point offset="23" type="Analog">
+        <name>Relay 3 Run Time Data Log 15 Minutes</name>
+        <multiplier value="1"/>
+        <unitofmeasure value="MINUTES"/>
+        <decimalplaces value="0"/>
+    </point>
+    <point offset="24" type="Analog">
+        <name>Relay 3 Run Time Data Log 30 Minutes</name>
+        <multiplier value="1"/>
+        <unitofmeasure value="MINUTES"/>
+        <decimalplaces value="0"/>
+    </point>
+    <point offset="25" type="Analog">
+        <name>Relay 3 Shed Time Data Log</name>
+        <multiplier value="1"/>
+        <unitofmeasure value="MINUTES"/>
+        <decimalplaces value="0"/>
+    </point>
+    <point offset="26" type="Analog">
+        <name>Relay 3 Shed Time Data Log 5 Minutes</name>
+        <multiplier value="1"/>
+        <unitofmeasure value="MINUTES"/>
+        <decimalplaces value="0"/>
+    </point>
+    <point offset="27" type="Analog">
+        <name>Relay 3 Shed Time Data Log 15 Minutes</name>
+        <multiplier value="1"/>
+        <unitofmeasure value="MINUTES"/>
+        <decimalplaces value="0"/>
+    </point>
+    <point offset="28" type="Analog">
+        <name>Relay 3 Shed Time Data Log 30 Minutes</name>
+        <multiplier value="1"/>
+        <unitofmeasure value="MINUTES"/>
+        <decimalplaces value="0"/>
+    </point>
+    <point offset="29" type="Analog">
+        <name>Relay 4 Run Time Data Log</name>
+        <multiplier value="1"/>
+        <unitofmeasure value="MINUTES"/>
+        <decimalplaces value="0"/>
+    </point>
+    <point offset="30" type="Analog">
+        <name>Relay 4 Run Time Data Log 5 Minutes</name>
+        <multiplier value="1"/>
+        <unitofmeasure value="MINUTES"/>
+        <decimalplaces value="0"/>
+    </point>
+    <point offset="31" type="Analog">
+        <name>Relay 4 Run Time Data Log 15 Minutes</name>
+        <multiplier value="1"/>
+        <unitofmeasure value="MINUTES"/>
+        <decimalplaces value="0"/>
+    </point>
+    <point offset="32" type="Analog">
+        <name>Relay 4 Run Time Data Log 30 Minutes</name>
+        <multiplier value="1"/>
+        <unitofmeasure value="MINUTES"/>
+        <decimalplaces value="0"/>
+    </point>
+    <point offset="33" type="Analog">
+        <name>Relay 4 Shed Time Data Log</name>
+        <multiplier value="1"/>
+        <unitofmeasure value="MINUTES"/>
+        <decimalplaces value="0"/>
+    </point>
+    <point offset="34" type="Analog">
+        <name>Relay 4 Shed Time Data Log 5 Minutes</name>
+        <multiplier value="1"/>
+        <unitofmeasure value="MINUTES"/>
+        <decimalplaces value="0"/>
+    </point>
+    <point offset="35" type="Analog">
+        <name>Relay 4 Shed Time Data Log 15 Minutes</name>
+        <multiplier value="1"/>
+        <unitofmeasure value="MINUTES"/>
+        <decimalplaces value="0"/>
+    </point>
+    <point offset="36" type="Analog">
+        <name>Relay 4 Shed Time Data Log 30 Minutes</name>
+        <multiplier value="1"/>
+        <unitofmeasure value="MINUTES"/>
+        <decimalplaces value="0"/>
+    </point>
+    <point offset="37" type="Analog">
+        <name>RSSI</name>
+        <archive interval="ZERO" type="ON_CHANGE"/>
+        <multiplier value="1"/>
+        <unitofmeasure value="DBM"/>
+        <decimalplaces value="0"/>
+    </point>
+    <point offset="38" type="Analog">
+        <name>Total LUF Event Count</name>
+        <multiplier value="1"/>
+        <unitofmeasure value="COUNTS"/>
+        <decimalplaces value="0"/>
+    </point>
+    <point offset="39" type="Analog">
+        <name>Total LUV Event Count</name>
+        <multiplier value="1"/>
+        <unitofmeasure value="COUNTS"/>
+        <decimalplaces value="0"/>
+    </point>
+    <point offset="40" type="Analog">
+        <name>Voltage</name>
+        <multiplier value="1"/>
+        <unitofmeasure value="VOLTS"/>
+        <decimalplaces value="3"/>
+    </point>
+    <point offset="41" type="Analog">
+        <name>Relay 1 Cold Load Pickup Time</name>
+        <multiplier value="1"/>
+        <unitofmeasure value="SECONDS"/>
+        <decimalplaces value="1"/>
+    </point>
+    <point offset="42" type="Analog">
+        <name>Relay 2 Cold Load Pickup Time</name>
+        <multiplier value="1"/>
+        <unitofmeasure value="SECONDS"/>
+        <decimalplaces value="1"/>
+    </point>
+    <point offset="43" type="Analog">
+        <name>Relay 3 Cold Load Pickup Time</name>
+        <multiplier value="1"/>
+        <unitofmeasure value="SECONDS"/>
+        <decimalplaces value="1"/>
+    </point>
+    <point offset="44" type="Analog">
+        <name>Relay 4 Cold Load Pickup Time</name>
+        <multiplier value="1"/>
+        <unitofmeasure value="SECONDS"/>
+        <decimalplaces value="1"/>
+    </point>
+
+    <!--- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -Status- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -->
+    <point offset="1" type="Status">
+        <name>Firmware Update Status</name>
+        <archive interval="ZERO" type="ON_UPDATE"/>
+        <stategroup value="LCR Firmware Update Status"/>
+    </point>
+    <point offset="2" type="Status">
+        <name>Relay 1 Activation Status</name>
+        <archive interval="ZERO" type="ON_UPDATE"/>
+        <stategroup value="TrueFalse"/>
+    </point>
+    <point offset="3" type="Status">
+        <name>Relay 1 Load State</name>
+        <archive interval="ZERO" type="ON_UPDATE"/>
+        <stategroup value="OnOff"/>
+    </point>
+    <point offset="4" type="Status">
+        <name>Relay 1 Shed Status</name>
+        <archive interval="ZERO" type="ON_UPDATE"/>
+        <stategroup value="TwoStateActive"/>
+    </point>
+    <point offset="5" type="Status">
+        <name>Relay 2 Activation Status</name>
+        <archive interval="ZERO" type="ON_UPDATE"/>
+        <stategroup value="TrueFalse"/>
+    </point>
+    <point offset="6" type="Status">
+        <name>Relay 2 Load State</name>
+        <archive interval="ZERO" type="ON_UPDATE"/>
+        <stategroup value="OnOff"/>
+    </point>
+    <point offset="7" type="Status">
+        <name>Relay 2 Shed Status</name>
+        <archive interval="ZERO" type="ON_UPDATE"/>
+        <stategroup value="TwoStateActive"/>
+    </point>
+    <point offset="8" type="Status">
+        <name>Relay 3 Activation Status</name>
+        <archive interval="ZERO" type="ON_UPDATE"/>
+        <stategroup value="TrueFalse"/>
+    </point>
+    <point offset="9" type="Status">
+        <name>Relay 3 Load State</name>
+        <archive interval="ZERO" type="ON_UPDATE"/>
+        <stategroup value="OnOff"/>
+    </point>
+    <point offset="10" type="Status">
+        <name>Relay 3 Shed Status</name>
+        <archive interval="ZERO" type="ON_UPDATE"/>
+        <stategroup value="TwoStateActive"/>
+    </point>
+    <point offset="11" type="Status">
+        <name>Relay 4 Activation Status</name>
+        <archive interval="ZERO" type="ON_UPDATE"/>
+        <stategroup value="TrueFalse"/>
+    </point>
+    <point offset="12" type="Status">
+        <name>Relay 4 Load State</name>
+        <archive interval="ZERO" type="ON_UPDATE"/>
+        <stategroup value="OnOff"/>
+    </point>
+    <point offset="13" type="Status">
+        <name>Relay 4 Shed Status</name>
+        <archive interval="ZERO" type="ON_UPDATE"/>
+        <stategroup value="TwoStateActive"/>
+    </point>
+</points>

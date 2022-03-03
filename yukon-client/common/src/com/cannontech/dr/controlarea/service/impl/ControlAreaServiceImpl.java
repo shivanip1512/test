@@ -353,7 +353,7 @@ public class ControlAreaServiceImpl implements ControlAreaService {
         List<LMCommand> commandList = new ArrayList<LMCommand>();
         
         Integer triggerNumber = trigger.getTriggerNumber();
-        if(offset != null && trigger.getMinRestoreOffset() != offset) {
+        if(offset != null && !trigger.getMinRestoreOffset().equals(offset)) {
             //create a new restore offset command message
             LMCommand offsetCommand = new LMCommand(LMCommand.CHANGE_RESTORE_OFFSET,
                                                     controlAreaId,
@@ -362,7 +362,7 @@ public class ControlAreaServiceImpl implements ControlAreaService {
             commandList.add(offsetCommand);
         }
 
-        if(threshold != null && trigger.getThreshold() != threshold ) {
+        if(threshold != null && !trigger.getThreshold().equals(threshold)) {
             //create a new threshold command message
             LMCommand thresholdCommand = new LMCommand(LMCommand.CHANGE_THRESHOLD,
                                                         controlAreaId,

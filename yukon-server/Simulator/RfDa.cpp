@@ -16,11 +16,15 @@ using namespace std::chrono_literals;
 
 namespace Cti::Simulator {
 
-void RfDa::processRequest(const E2eReplySender e2eReplySender, const e2edt_request_packet& request, const Messaging::Rfn::E2eDataRequestMsg& requestMsg)
+void RfDa::processRequest(
+    const E2eReplySender e2eReplySender, 
+    const e2edt_request_packet& request, 
+    const RfnIdentifier rfnIdentifier, 
+    const Messaging::Rfn::ApplicationServiceIdentifiers applicationServiceId)
 {
     using ASIDs = Cti::Messaging::Rfn::ApplicationServiceIdentifiers;
 
-    switch( requestMsg.applicationServiceId )
+    switch( applicationServiceId )
     {
         case ASIDs::HubMeterCommandSet:
         {
@@ -30,7 +34,7 @@ void RfDa::processRequest(const E2eReplySender e2eReplySender, const e2edt_reque
                 {
                     case 0x35:
                     {
-                        auto serial = std::stoi(requestMsg.rfnIdentifier.serialNumber);
+                        auto serial = std::stoi(rfnIdentifier.serialNumber);
 
                         e2edt_reply_packet replyPacket;
                         
@@ -39,7 +43,7 @@ void RfDa::processRequest(const E2eReplySender e2eReplySender, const e2edt_reque
                         replyPacket.payload = { 0x36, static_cast<unsigned char>(serial >> 8), static_cast<unsigned char>(serial) };
                         replyPacket.status = Protocols::Coap::ResponseCode::Content;
 
-                        e2eReplySender(requestMsg, replyPacket);
+                        e2eReplySender(replyPacket);
                     }
                 }
             }

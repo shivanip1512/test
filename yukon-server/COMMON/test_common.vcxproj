@@ -132,7 +132,7 @@
     <ClCompile>
       <Optimization>Disabled</Optimization>
       <AdditionalIncludeDirectories>$(DBGHELP)\include;$(ACTIVEMQ)\include;$(BOOST)\include;$(OPENSSL)\include;$(SQLAPI)\include;$(YAML_CPP)\include;.;..\common\include;..\resource\include;.\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
-      <PreprocessorDefinitions>_DEBUG;WIN32;_CONSOLE;_CRT_NONSTDC_NO_WARNINGS;BOOST_ALL_DYN_LINK;BOOST_ENABLE_ASSERT_HANDLER;NOMINMAX;_REENTRANT;_WINDOWS;_X86_=1;__DLL__;PATH_TO_ACTIVEMQ=$(ACTIVEMQ);PATH_TO_APR=$(APR);PATH_TO_APR_ICONV=$(APR_ICONV);PATH_TO_APR_UTIL=$(APR_UTIL);PATH_TO_BOOST=$(BOOST);PATH_TO_DBGHELP=$(DBGHELP);PATH_TO_JSON=$(JSON);PATH_TO_LIBCOAP=$(LIBCOAP);PATH_TO_LOG4CXX=$(LOG4CXX);PATH_TO_MICROSOFT_SQL=$(MICROSOFT_SQL);PATH_TO_OPENSSL=$(OPENSSL);PATH_TO_RMP_CONVERTER=$(RMP_CONVERTER);PATH_TO_SQLAPI=$(SQLAPI);PATH_TO_TCL=$(TCL);PATH_TO_THRIFT=$(THRIFT);PATH_TO_XERCES=$(XERCES);PATH_TO_YAML_CPP=$(YAML_CPP);%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <PreprocessorDefinitions>_DEBUG;WIN32;_CONSOLE;_CRT_NONSTDC_NO_WARNINGS;BOOST_ALL_DYN_LINK;BOOST_ENABLE_ASSERT_HANDLER;NOMINMAX;_REENTRANT;_WINDOWS;_X86_=1;__DLL__;PATH_TO_ACTIVEMQ=$(ACTIVEMQ);PATH_TO_APR=$(APR);PATH_TO_APR_ICONV=$(APR_ICONV);PATH_TO_APR_UTIL=$(APR_UTIL);PATH_TO_BOOST=$(BOOST);PATH_TO_DBGHELP=$(DBGHELP);PATH_TO_JSON=$(JSON);PATH_TO_LIBCOAP=$(LIBCOAP);PATH_TO_LOG4CXX=$(LOG4CXX);PATH_TO_MICROSOFT_GSL=$(MICROSOFT_GSL);PATH_TO_OPENSSL=$(OPENSSL);PATH_TO_RMP_CONVERTER=$(RMP_CONVERTER);PATH_TO_SQLAPI=$(SQLAPI);PATH_TO_TCL=$(TCL);PATH_TO_THRIFT=$(THRIFT);PATH_TO_XERCES=$(XERCES);PATH_TO_YAML_CPP=$(YAML_CPP);%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <MinimalRebuild>false</MinimalRebuild>
       <RuntimeLibrary>MultiThreadedDebugDLL</RuntimeLibrary>
       <RuntimeTypeInfo>true</RuntimeTypeInfo>
@@ -143,6 +143,7 @@
       <ForcedIncludeFiles>precompiled.h;%(ForcedIncludeFiles)</ForcedIncludeFiles>
       <MultiProcessorCompilation>true</MultiProcessorCompilation>
       <AdditionalOptions>/await</AdditionalOptions>
+      <DisableSpecificWarnings>4103</DisableSpecificWarnings>
     </ClCompile>
     <ResourceCompile>
       <PreprocessorDefinitions>_DEBUG;BOOST_ALL_DYN_LINK;BOOST_ENABLE_ASSERT_HANDLER;NOMINMAX;WIN32;_CONSOLE;_DEBUG;_REENTRANT;_WINDOWS;_X86_=1;__DLL__;%(PreprocessorDefinitions)</PreprocessorDefinitions>
@@ -152,7 +153,7 @@
     <Link>
       <SubSystem>Console</SubSystem>
       <GenerateDebugInformation>true</GenerateDebugInformation>
-      <AdditionalDependencies>advapi32.lib;$(OPENSSL)\$(CONFIGURATION)\lib\libssl.lib;$(OPENSSL)\$(CONFIGURATION)\lib\libcrypto.lib;$(BOOST)\lib\boost_unit_test_framework-vc141-mt-gd-x32-1_67.lib;$(BOOST)\lib\boost_system-vc141-mt-gd-x32-1_67.lib;$(BOOST)\lib\boost_filesystem-vc141-mt-gd-x32-1_67.lib;$(BOOST)\lib\boost_regex-vc141-mt-gd-x32-1_67.lib;$(BOOST)\lib\boost_thread-vc141-mt-gd-x32-1_67.lib;$(BOOST)\lib\boost_date_time-vc141-mt-gd-x32-1_67.lib;$(BOOST)\lib\boost_chrono-vc141-mt-gd-x32-1_67.lib;$(YAML_CPP)\$(CONFIGURATION)\libyaml-cppmdd.lib;..\lib-debug\ctibase.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>advapi32.lib;$(OPENSSL)\$(CONFIGURATION)\lib\libssl.lib;$(OPENSSL)\$(CONFIGURATION)\lib\libcrypto.lib;$(BOOST)\lib\boost_unit_test_framework-$(BOOST_VERSION).lib;$(BOOST)\lib\boost_system-$(BOOST_VERSION).lib;$(BOOST)\lib\boost_filesystem-$(BOOST_VERSION).lib;$(BOOST)\lib\boost_regex-$(BOOST_VERSION).lib;$(BOOST)\lib\boost_thread-$(BOOST_VERSION).lib;$(BOOST)\lib\boost_date_time-$(BOOST_VERSION).lib;$(BOOST)\lib\boost_chrono-$(BOOST_VERSION).lib;$(YAML_CPP)\$(CONFIGURATION)\libyaml-cppmdd.lib;..\lib-debug\ctibase.lib;%(AdditionalDependencies)</AdditionalDependencies>
       <AdditionalLibraryDirectories>.;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
       <ProgramDatabaseFile>$(SolutionDir)pdb-debug\$(TargetName).pdb</ProgramDatabaseFile>
       <ImageHasSafeExceptionHandlers>false</ImageHasSafeExceptionHandlers>
@@ -183,7 +184,7 @@
       <Optimization>MaxSpeed</Optimization>
       <IntrinsicFunctions>true</IntrinsicFunctions>
       <AdditionalIncludeDirectories>$(DBGHELP)\include;$(ACTIVEMQ)\include;$(BOOST)\include;$(OPENSSL)\include;$(SQLAPI)\include;$(YAML_CPP)\include;.;..\common\include;..\resource\include;.\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
-      <PreprocessorDefinitions>NDEBUG;WIN32;_CONSOLE;_CRT_NONSTDC_NO_WARNINGS;BOOST_ALL_DYN_LINK;BOOST_ENABLE_ASSERT_HANDLER;NOMINMAX;_REENTRANT;_WINDOWS;_X86_=1;__DLL__;PATH_TO_ACTIVEMQ=$(ACTIVEMQ);PATH_TO_APR=$(APR);PATH_TO_APR_ICONV=$(APR_ICONV);PATH_TO_APR_UTIL=$(APR_UTIL);PATH_TO_BOOST=$(BOOST);PATH_TO_DBGHELP=$(DBGHELP);PATH_TO_JSON=$(JSON);PATH_TO_LIBCOAP=$(LIBCOAP);PATH_TO_LOG4CXX=$(LOG4CXX);PATH_TO_MICROSOFT_SQL=$(MICROSOFT_SQL);PATH_TO_OPENSSL=$(OPENSSL);PATH_TO_RMP_CONVERTER=$(RMP_CONVERTER);PATH_TO_SQLAPI=$(SQLAPI);PATH_TO_TCL=$(TCL);PATH_TO_THRIFT=$(THRIFT);PATH_TO_XERCES=$(XERCES);PATH_TO_YAML_CPP=$(YAML_CPP);%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <PreprocessorDefinitions>NDEBUG;WIN32;_CONSOLE;_CRT_NONSTDC_NO_WARNINGS;BOOST_ALL_DYN_LINK;BOOST_ENABLE_ASSERT_HANDLER;NOMINMAX;_REENTRANT;_WINDOWS;_X86_=1;__DLL__;PATH_TO_ACTIVEMQ=$(ACTIVEMQ);PATH_TO_APR=$(APR);PATH_TO_APR_ICONV=$(APR_ICONV);PATH_TO_APR_UTIL=$(APR_UTIL);PATH_TO_BOOST=$(BOOST);PATH_TO_DBGHELP=$(DBGHELP);PATH_TO_JSON=$(JSON);PATH_TO_LIBCOAP=$(LIBCOAP);PATH_TO_LOG4CXX=$(LOG4CXX);PATH_TO_MICROSOFT_GSL=$(MICROSOFT_GSL);PATH_TO_OPENSSL=$(OPENSSL);PATH_TO_RMP_CONVERTER=$(RMP_CONVERTER);PATH_TO_SQLAPI=$(SQLAPI);PATH_TO_TCL=$(TCL);PATH_TO_THRIFT=$(THRIFT);PATH_TO_XERCES=$(XERCES);PATH_TO_YAML_CPP=$(YAML_CPP);%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <RuntimeLibrary>MultiThreadedDLL</RuntimeLibrary>
       <RuntimeTypeInfo>true</RuntimeTypeInfo>
       <BasicRuntimeChecks>Default</BasicRuntimeChecks>
@@ -192,6 +193,7 @@
       <ForcedIncludeFiles>precompiled.h;%(ForcedIncludeFiles)</ForcedIncludeFiles>
       <MultiProcessorCompilation>true</MultiProcessorCompilation>
       <AdditionalOptions>/await</AdditionalOptions>
+      <DisableSpecificWarnings>4103</DisableSpecificWarnings>
     </ClCompile>
     <ResourceCompile>
       <PreprocessorDefinitions>NDEBUG;BOOST_ALL_DYN_LINK;BOOST_ENABLE_ASSERT_HANDLER;NOMINMAX;WIN32;_CONSOLE;_REENTRANT;_WINDOWS;_X86_=1;__DLL__;%(PreprocessorDefinitions)</PreprocessorDefinitions>
@@ -201,7 +203,7 @@
     <Link>
       <SubSystem>Console</SubSystem>
       <GenerateDebugInformation>true</GenerateDebugInformation>
-      <AdditionalDependencies>advapi32.lib;$(OPENSSL)\$(CONFIGURATION)\lib\libssl.lib;$(OPENSSL)\$(CONFIGURATION)\lib\libcrypto.lib;$(BOOST)\lib\boost_unit_test_framework-vc141-mt-x32-1_67.lib;$(BOOST)\lib\boost_system-vc141-mt-x32-1_67.lib;$(BOOST)\lib\boost_filesystem-vc141-mt-x32-1_67.lib;$(BOOST)\lib\boost_regex-vc141-mt-x32-1_67.lib;$(BOOST)\lib\boost_thread-vc141-mt-x32-1_67.lib;$(BOOST)\lib\boost_date_time-vc141-mt-x32-1_67.lib;$(BOOST)\lib\boost_chrono-vc141-mt-x32-1_67.lib;$(YAML_CPP)\$(CONFIGURATION)\libyaml-cppmd.lib;..\lib\ctibase.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>advapi32.lib;$(OPENSSL)\$(CONFIGURATION)\lib\libssl.lib;$(OPENSSL)\$(CONFIGURATION)\lib\libcrypto.lib;$(BOOST)\lib\boost_unit_test_framework-$(BOOST_VERSION).lib;$(BOOST)\lib\boost_system-$(BOOST_VERSION).lib;$(BOOST)\lib\boost_filesystem-$(BOOST_VERSION).lib;$(BOOST)\lib\boost_regex-$(BOOST_VERSION).lib;$(BOOST)\lib\boost_thread-$(BOOST_VERSION).lib;$(BOOST)\lib\boost_date_time-$(BOOST_VERSION).lib;$(BOOST)\lib\boost_chrono-$(BOOST_VERSION).lib;$(YAML_CPP)\$(CONFIGURATION)\libyaml-cppmd.lib;..\lib\ctibase.lib;%(AdditionalDependencies)</AdditionalDependencies>
       <AdditionalLibraryDirectories>.;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
       <OptimizeReferences>true</OptimizeReferences>
       <EnableCOMDATFolding>true</EnableCOMDATFolding>
@@ -233,7 +235,7 @@
     <ClCompile>
       <Optimization>Disabled</Optimization>
       <AdditionalIncludeDirectories>$(ACTIVEMQ)\include;$(BOOST)\include;$(OPENSSL)\include;$(SQLAPI)\include;.;..\common\include;.\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
-      <PreprocessorDefinitions>_DEBUG;WIN32;_CONSOLE;_CRT_NONSTDC_NO_WARNINGS;_AMD64_;_WIN64;BOOST_ALL_DYN_LINK;BOOST_ENABLE_ASSERT_HANDLER;NOMINMAX;_REENTRANT;_WINDOWS;_X86_=1;__DLL__;PATH_TO_ACTIVEMQ=$(ACTIVEMQ);PATH_TO_APR=$(APR);PATH_TO_APR_ICONV=$(APR_ICONV);PATH_TO_APR_UTIL=$(APR_UTIL);PATH_TO_BOOST=$(BOOST);PATH_TO_DBGHELP=$(DBGHELP);PATH_TO_JSON=$(JSON);PATH_TO_LIBCOAP=$(LIBCOAP);PATH_TO_LOG4CXX=$(LOG4CXX);PATH_TO_MICROSOFT_SQL=$(MICROSOFT_SQL);PATH_TO_OPENSSL=$(OPENSSL);PATH_TO_RMP_CONVERTER=$(RMP_CONVERTER);PATH_TO_SQLAPI=$(SQLAPI);PATH_TO_TCL=$(TCL);PATH_TO_THRIFT=$(THRIFT);PATH_TO_XERCES=$(XERCES);PATH_TO_YAML_CPP=$(YAML_CPP);%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <PreprocessorDefinitions>_DEBUG;WIN32;_CONSOLE;_CRT_NONSTDC_NO_WARNINGS;_AMD64_;_WIN64;BOOST_ALL_DYN_LINK;BOOST_ENABLE_ASSERT_HANDLER;NOMINMAX;_REENTRANT;_WINDOWS;_X86_=1;__DLL__;PATH_TO_ACTIVEMQ=$(ACTIVEMQ);PATH_TO_APR=$(APR);PATH_TO_APR_ICONV=$(APR_ICONV);PATH_TO_APR_UTIL=$(APR_UTIL);PATH_TO_BOOST=$(BOOST);PATH_TO_DBGHELP=$(DBGHELP);PATH_TO_JSON=$(JSON);PATH_TO_LIBCOAP=$(LIBCOAP);PATH_TO_LOG4CXX=$(LOG4CXX);PATH_TO_MICROSOFT_GSL=$(MICROSOFT_GSL);PATH_TO_OPENSSL=$(OPENSSL);PATH_TO_RMP_CONVERTER=$(RMP_CONVERTER);PATH_TO_SQLAPI=$(SQLAPI);PATH_TO_TCL=$(TCL);PATH_TO_THRIFT=$(THRIFT);PATH_TO_XERCES=$(XERCES);PATH_TO_YAML_CPP=$(YAML_CPP);%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <MinimalRebuild>false</MinimalRebuild>
       <RuntimeLibrary>MultiThreadedDebugDLL</RuntimeLibrary>
       <RuntimeTypeInfo>true</RuntimeTypeInfo>
@@ -253,7 +255,7 @@
     <Link>
       <SubSystem>Console</SubSystem>
       <GenerateDebugInformation>true</GenerateDebugInformation>
-      <AdditionalDependencies>advapi32.lib;$(OPENSSL)\$(CONFIGURATION)\lib\libssl.lib;$(OPENSSL)\$(CONFIGURATION)\lib\libcrypto.lib;$(BOOST)\lib\boost_unit_test_framework-vc141-mt-gd-x32-1_67.lib;$(BOOST)\lib\boost_system-vc141-mt-gd-x32-1_67.lib;$(BOOST)\lib\boost_filesystem-vc141-mt-gd-x32-1_67.lib;$(BOOST)\lib\boost_regex-vc141-mt-gd-x32-1_67.lib;$(BOOST)\lib\boost_thread-vc141-mt-gd-x32-1_67.lib;$(BOOST)\lib\boost_date_time-vc141-mt-gd-x32-1_67.lib;$(BOOST)\lib\boost_chrono-vc141-mt-gd-x32-1_67.lib;..\lib-debug\ctibase.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>advapi32.lib;$(OPENSSL)\$(CONFIGURATION)\lib\libssl.lib;$(OPENSSL)\$(CONFIGURATION)\lib\libcrypto.lib;$(BOOST)\lib\boost_unit_test_framework-$(BOOST_VERSION).lib;$(BOOST)\lib\boost_system-$(BOOST_VERSION).lib;$(BOOST)\lib\boost_filesystem-$(BOOST_VERSION).lib;$(BOOST)\lib\boost_regex-$(BOOST_VERSION).lib;$(BOOST)\lib\boost_thread-$(BOOST_VERSION).lib;$(BOOST)\lib\boost_date_time-$(BOOST_VERSION).lib;$(BOOST)\lib\boost_chrono-$(BOOST_VERSION).lib;..\lib-debug\ctibase.lib;%(AdditionalDependencies)</AdditionalDependencies>
       <AdditionalLibraryDirectories>.;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
       <ProgramDatabaseFile>
       </ProgramDatabaseFile>
@@ -290,7 +292,7 @@
       <Optimization>MaxSpeed</Optimization>
       <IntrinsicFunctions>true</IntrinsicFunctions>
       <AdditionalIncludeDirectories>$(ACTIVEMQ)\include;$(BOOST)\include;$(OPENSSL)\include;$(SQLAPI)\include;.;..\common\include;.\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
-      <PreprocessorDefinitions>NDEBUG;WIN32;_CONSOLE;_CRT_NONSTDC_NO_WARNINGS;_AMD64_;_WIN64;BOOST_ALL_DYN_LINK;BOOST_ENABLE_ASSERT_HANDLER;NOMINMAX;_REENTRANT;_WINDOWS;_X86_=1;__DLL__;PATH_TO_ACTIVEMQ=$(ACTIVEMQ);PATH_TO_APR=$(APR);PATH_TO_APR_ICONV=$(APR_ICONV);PATH_TO_APR_UTIL=$(APR_UTIL);PATH_TO_BOOST=$(BOOST);PATH_TO_DBGHELP=$(DBGHELP);PATH_TO_JSON=$(JSON);PATH_TO_LIBCOAP=$(LIBCOAP);PATH_TO_LOG4CXX=$(LOG4CXX);PATH_TO_MICROSOFT_SQL=$(MICROSOFT_SQL);PATH_TO_OPENSSL=$(OPENSSL);PATH_TO_RMP_CONVERTER=$(RMP_CONVERTER);PATH_TO_SQLAPI=$(SQLAPI);PATH_TO_TCL=$(TCL);PATH_TO_THRIFT=$(THRIFT);PATH_TO_XERCES=$(XERCES);PATH_TO_YAML_CPP=$(YAML_CPP);%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <PreprocessorDefinitions>NDEBUG;WIN32;_CONSOLE;_CRT_NONSTDC_NO_WARNINGS;_AMD64_;_WIN64;BOOST_ALL_DYN_LINK;BOOST_ENABLE_ASSERT_HANDLER;NOMINMAX;_REENTRANT;_WINDOWS;_X86_=1;__DLL__;PATH_TO_ACTIVEMQ=$(ACTIVEMQ);PATH_TO_APR=$(APR);PATH_TO_APR_ICONV=$(APR_ICONV);PATH_TO_APR_UTIL=$(APR_UTIL);PATH_TO_BOOST=$(BOOST);PATH_TO_DBGHELP=$(DBGHELP);PATH_TO_JSON=$(JSON);PATH_TO_LIBCOAP=$(LIBCOAP);PATH_TO_LOG4CXX=$(LOG4CXX);PATH_TO_MICROSOFT_GSL=$(MICROSOFT_GSL);PATH_TO_OPENSSL=$(OPENSSL);PATH_TO_RMP_CONVERTER=$(RMP_CONVERTER);PATH_TO_SQLAPI=$(SQLAPI);PATH_TO_TCL=$(TCL);PATH_TO_THRIFT=$(THRIFT);PATH_TO_XERCES=$(XERCES);PATH_TO_YAML_CPP=$(YAML_CPP);%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <RuntimeLibrary>MultiThreadedDLL</RuntimeLibrary>
       <RuntimeTypeInfo>true</RuntimeTypeInfo>
       <BasicRuntimeChecks>Default</BasicRuntimeChecks>
@@ -308,7 +310,7 @@
     <Link>
       <SubSystem>Console</SubSystem>
       <GenerateDebugInformation>true</GenerateDebugInformation>
-      <AdditionalDependencies>advapi32.lib;$(OPENSSL)\$(CONFIGURATION)\lib\libssl.lib;$(OPENSSL)\$(CONFIGURATION)\lib\libcrypto.lib;$(BOOST)\lib\boost_unit_test_framework-vc141-mt-x32-1_67.lib;$(BOOST)\lib\boost_system-vc141-mt-x32-1_67.lib;$(BOOST)\lib\boost_filesystem-vc141-mt-x32-1_67.lib;$(BOOST)\lib\boost_regex-vc141-mt-x32-1_67.lib;$(BOOST)\lib\boost_thread-vc141-mt-x32-1_67.lib;$(BOOST)\lib\boost_date_time-vc141-mt-x32-1_67.lib;$(BOOST)\lib\boost_chrono-vc141-mt-x32-1_67.lib;..\lib\ctibase.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>advapi32.lib;$(OPENSSL)\$(CONFIGURATION)\lib\libssl.lib;$(OPENSSL)\$(CONFIGURATION)\lib\libcrypto.lib;$(BOOST)\lib\boost_unit_test_framework-$(BOOST_VERSION).lib;$(BOOST)\lib\boost_system-$(BOOST_VERSION).lib;$(BOOST)\lib\boost_filesystem-$(BOOST_VERSION).lib;$(BOOST)\lib\boost_regex-$(BOOST_VERSION).lib;$(BOOST)\lib\boost_thread-$(BOOST_VERSION).lib;$(BOOST)\lib\boost_date_time-$(BOOST_VERSION).lib;$(BOOST)\lib\boost_chrono-$(BOOST_VERSION).lib;..\lib\ctibase.lib;%(AdditionalDependencies)</AdditionalDependencies>
       <AdditionalLibraryDirectories>.;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
       <OptimizeReferences>true</OptimizeReferences>
       <EnableCOMDATFolding>true</EnableCOMDATFolding>
@@ -359,6 +361,7 @@
     </ClCompile>
     <ClCompile Include="test_desolvers.cpp">
     </ClCompile>
+    <ClCompile Include="test_DeviceConfigDescription.cpp" />
     <ClCompile Include="test_encryption.cpp">
     </ClCompile>
     <ClCompile Include="test_error.cpp">

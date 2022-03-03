@@ -1,10 +1,10 @@
 package com.cannontech.common.dr.setup;
 
 import java.util.List;
-
+import com.cannontech.common.device.port.DBPersistentConverter;
 import com.cannontech.database.db.device.lm.LMProgramConstraint;
 
-public class ProgramConstraint {
+public class ProgramConstraint implements DBPersistentConverter<LMProgramConstraint> {
     private Integer id;
     private String name;
     private LMDto seasonSchedule;
@@ -136,6 +136,7 @@ public class ProgramConstraint {
         this.maxHoursSeasonal = maxHoursSeasonal;
     }
 
+    @Override
     public void buildModel(LMProgramConstraint lMProgramConstraint) {
         setId(lMProgramConstraint.getConstraintID());
         setName(lMProgramConstraint.getConstraintName());
@@ -160,6 +161,7 @@ public class ProgramConstraint {
         setHolidayUsage(HolidayUsage.getForHoliday(holidayUsage));
     }
 
+    @Override
     public void buildDBPersistent(LMProgramConstraint lMProgramConstraint) {
         lMProgramConstraint.setConstraintID(getId());
         lMProgramConstraint.setConstraintName(getName());

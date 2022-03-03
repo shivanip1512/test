@@ -7,12 +7,12 @@
 
 <tags:setFormEditMode mode="${mode}"/>
 
-    <div class="page-actions fr">
+    <div class="page-actions fr PB10">
         <cti:button icon="icon-plus-green" nameKey="addWidgets" data-popup=".js-add-widgets-popup"/>
         <cti:button icon="icon-pencil" nameKey="editDetails" data-popup=".js-dashboard-details-popup"/>
     </div>
-    <br/><br/>
-    
+    <br/><br/><br/>
+
     <cti:url var="action" value="/dashboards/save"/>
     <form:form modelAttribute="dashboard" action="${action}" method="POST">
         <cti:csrfToken/>
