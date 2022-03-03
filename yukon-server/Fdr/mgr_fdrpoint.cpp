@@ -108,14 +108,14 @@ bool CtiFDRManager::loadPointList()
             }
         }
 
-        std::map<long,CtiFDRPointSPtr> fdrTempMap;    
+        std::map<long,CtiFDRPointSPtr> fdrTempMap;
         functionSuccess = getPointsFromDB(ss,fdrTempMap);
 
         //move all from tempMap to main Map.  Note that any removed points have already been taken out of the list.
         for (std::map<long,CtiFDRPointSPtr>::iterator itr = fdrTempMap.begin(); itr != fdrTempMap.end(); itr++)
         {
             pointMap.insert((*itr).second->getPointID(),(*itr).second);
-        }     
+        }
         fdrTempMap.clear();
     }
     catch(...)
