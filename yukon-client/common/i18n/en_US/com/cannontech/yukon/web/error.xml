@@ -76,7 +76,7 @@
     <entry key="yukon.web.error.100109">HTTP request method not supported.</entry>
     <entry key="yukon.web.error.100110">Duplicates {0} not allowed, duplicates {1} : {2}.</entry>
     <entry key="yukon.web.error.100111">Only {0} valid {1} allowed.</entry>
-    <entry key="yukon.web.error.100112">Constraint for {0} violated. Constraint : {1}.</entry>
+    <entry key="yukon.web.error.100112">Constraint for {0} violated. Constraint : {1}</entry>
     
     <!-- Api Error Detail Validation -->
     <entry key="yukon.web.error.101101">Invalid value, valid value(s): {0}.</entry>
