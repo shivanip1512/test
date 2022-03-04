@@ -68,7 +68,7 @@
     <entry key="yukon.web.error.100101">An identical object already exists.</entry>
     <entry key="yukon.web.error.100102">Username or password not valid.</entry>
     <entry key="yukon.web.error.100103">User not authorized to perform this transaction.</entry>
-    <entry key="yukon.web.error.100104">Database error occured while performing this transaction.</entry>
+    <entry key="yukon.web.error.100104">Database error occurred while performing this transaction.</entry>
     <entry key="yukon.web.error.100105">Method arguments are not matching.</entry>
     <entry key="yukon.web.error.100106">Bad Request.</entry>
     <entry key="yukon.web.error.100107">Expired or invalid token</entry>
