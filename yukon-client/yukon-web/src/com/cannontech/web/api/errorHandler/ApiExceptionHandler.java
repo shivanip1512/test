@@ -45,6 +45,7 @@ import com.cannontech.common.exception.DataDependencyException;
 import com.cannontech.common.exception.DeletionFailureException;
 import com.cannontech.common.exception.LoadProgramProcessingException;
 import com.cannontech.common.exception.NotAuthorizedException;
+import com.cannontech.common.exception.PasswordChangeException;
 import com.cannontech.common.exception.TypeNotSupportedException;
 import com.cannontech.common.i18n.MessageSourceAccessor;
 import com.cannontech.common.pao.attribute.service.IllegalUseOfAttribute;
@@ -223,7 +224,8 @@ public class ApiExceptionHandler extends ResponseEntityExceptionHandler {
                         InvalidSortingParametersException.class,
                         InvalidPagingParametersException.class,
                         DuplicateException.class,
-                        EmailException.class})
+                        EmailException.class,
+                        PasswordChangeException.class})
     public ResponseEntity<Object> handleBadRequestException(final Exception ex, final WebRequest request) {
 
         String uniqueKey = CtiUtilities.getYKUniqueKey();

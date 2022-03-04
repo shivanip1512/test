@@ -10,6 +10,7 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.cannontech.common.exception.BadRequestException;
+import com.cannontech.common.exception.PasswordChangeException;
 import com.cannontech.common.i18n.MessageSourceAccessor;
 import com.cannontech.common.user.UserAuthenticationInfo;
 import com.cannontech.core.authentication.service.AuthenticationService;
@@ -42,7 +43,7 @@ public class PasswordApiController {
 
     @PostMapping("/forgottenPassword")
     public ResponseEntity<Object> forgottenPassword(HttpServletRequest request,
-            @RequestBody ForgotPasswordRequest forgottenPassword) throws BadRequestException {
+            @RequestBody ForgotPasswordRequest forgottenPassword) {
 
         if (forgottenPassword.getForgottenPasswordField() != null) {
             globalSettingDao.verifySetting(GlobalSettingType.ENABLE_PASSWORD_RECOVERY);
@@ -57,7 +58,8 @@ public class PasswordApiController {
 
                 // The Captcha failed. return the user the forgotten password page
                 if (captchaResponse.isError()) {
-                    throw new BadRequestException(captchaResponse.getError().getFormatKey());
+                    String captchaResponseMessage = captchaResponse.getError().getFormatKey();
+                    throw new PasswordChangeException(messageSourceAccessor.getMessage(captchaResponseMessage));
                 }
             }
 
@@ -67,7 +69,7 @@ public class PasswordApiController {
             // Validate the request.
             if (!passwordResetInfo.isPasswordResetInfoValid()) {
                 String invalidPasswordInfoMessage = baseKey + "forgottenPassword.invalidProvidedInformation";
-                throw new AuthenticationException(messageSourceAccessor.getMessage(invalidPasswordInfoMessage));
+                throw new PasswordChangeException(messageSourceAccessor.getMessage(invalidPasswordInfoMessage));
             }
 
             // Are we allowed to set this password?
@@ -98,7 +100,7 @@ public class PasswordApiController {
             forgotPasswordResponse.setMessage(messageSourceAccessor.getMessage(emailSentMessage));
             return new ResponseEntity<>(forgotPasswordResponse, HttpStatus.OK);
         } else {
-            throw new AuthenticationException("Username or account number or email address are not provided.");
+            throw new PasswordChangeException("Email, Username, or Account Number are not provided.");
         }
     }
 }
