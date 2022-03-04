@@ -340,7 +340,7 @@ public class ComprehensiveMapController {
         List<String[]> dataRows = Lists.newArrayList();
         log.debug("Got data from NM for {} devices", metaData.keySet().size());
         for (RfnDevice rfnDevice : devices) {
-            String[] dataRow = new String[14];
+            String[] dataRow = new String[15];
             LiteYukonPAObject pao = cache.getAllPaosMap().get(rfnDevice.getPaoIdentifier().getPaoId());
             dataRow[0] = pao.getPaoName();
             SimpleMeter meter = cache.getAllMeters().get(rfnDevice.getPaoIdentifier().getPaoId());

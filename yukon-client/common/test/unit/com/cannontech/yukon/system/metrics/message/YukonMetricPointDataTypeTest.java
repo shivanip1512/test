@@ -2,7 +2,6 @@ package com.cannontech.yukon.system.metrics.message;
 
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
-import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
@@ -11,27 +10,26 @@ import com.cannontech.database.data.point.PointType;
 
 public class YukonMetricPointDataTypeTest {
     @Test
-    public void testIsYukonMetricType() {
-        for (YukonMetricPointDataType type : YukonMetricPointDataType.values()) {
-            assertTrue(YukonMetricPointDataType.isYukonMetricType(type.getOffset(), type.getType()));
-        }
-        assertFalse(YukonMetricPointDataType.isYukonMetricType(-1, PointType.Analog));
+    public void testIsYukonMetricTypeDisplyable() {
+        assertFalse(YukonMetricPointDataType.isYukonMetricTypeDisplayable(-1, PointType.Analog));
         Assertions.assertThrows(IllegalArgumentException.class, () -> {
-            YukonMetricPointDataType.isYukonMetricType(null, null);
+            YukonMetricPointDataType.isYukonMetricTypeDisplayable(null, null);
         });
         Assertions.assertThrows(IllegalArgumentException.class, () -> {
-            YukonMetricPointDataType.isYukonMetricType(1, null);
+            YukonMetricPointDataType.isYukonMetricTypeDisplayable(1, null);
         });
         Assertions.assertThrows(IllegalArgumentException.class, () -> {
-            YukonMetricPointDataType.isYukonMetricType(null, PointType.Analog);
+            YukonMetricPointDataType.isYukonMetricTypeDisplayable(null, PointType.Analog);
         });
     }
 
     @Test
     public void testGetChartInterval() {
         for (YukonMetricPointDataType type : YukonMetricPointDataType.values()) {
-            assertNotNull(YukonMetricPointDataType.getChartInterval(type.getOffset(), type.getType()),
-                    "Chart interval can not be null.");
+            if (YukonMetricPointDataType.isYukonMetricTypeDisplayable(type.getOffset(), type.getType())) {
+                assertNotNull(YukonMetricPointDataType.getChartInterval(type.getOffset(), type.getType()),
+                        "Chart interval can not be null.");
+            }
         }
         Assertions.assertThrows(IllegalArgumentException.class, () -> {
             YukonMetricPointDataType.getChartInterval(-1, PointType.Analog);
@@ -51,8 +49,10 @@ public class YukonMetricPointDataTypeTest {
     @Test
     public void testGetConverterType() {
         for (YukonMetricPointDataType type : YukonMetricPointDataType.values()) {
-            assertNotNull(YukonMetricPointDataType.getConverterType(type.getOffset(), type.getType()),
-                    "Converter type can not be null.");
+            if (YukonMetricPointDataType.isYukonMetricTypeDisplayable(type.getOffset(), type.getType())) {
+                assertNotNull(YukonMetricPointDataType.getConverterType(type.getOffset(), type.getType()),
+                        "Converter type can not be null.");
+            }
         }
         Assertions.assertThrows(IllegalArgumentException.class, () -> {
             YukonMetricPointDataType.getConverterType(-1, PointType.Analog);
