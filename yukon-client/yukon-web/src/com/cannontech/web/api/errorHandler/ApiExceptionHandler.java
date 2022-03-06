@@ -45,6 +45,7 @@ import com.cannontech.common.exception.DataDependencyException;
 import com.cannontech.common.exception.DeletionFailureException;
 import com.cannontech.common.exception.LoadProgramProcessingException;
 import com.cannontech.common.exception.NotAuthorizedException;
+import com.cannontech.common.exception.PasswordChangeException;
 import com.cannontech.common.exception.TypeNotSupportedException;
 import com.cannontech.common.i18n.MessageSourceAccessor;
 import com.cannontech.common.pao.attribute.service.IllegalUseOfAttribute;
@@ -57,6 +58,7 @@ import com.cannontech.core.dao.PersistenceException;
 import com.cannontech.core.dynamic.exception.DynamicDataAccessException;
 import com.cannontech.i18n.YukonUserContextMessageSourceResolver;
 import com.cannontech.spring.filtering.exceptions.InvalidFilteringParametersException;
+import com.cannontech.tools.email.EmailException;
 import com.cannontech.user.YukonUserContext;
 import com.cannontech.util.ServletUtil;
 import com.cannontech.web.api.ApiURL;
@@ -221,7 +223,9 @@ public class ApiExceptionHandler extends ResponseEntityExceptionHandler {
                         InvalidFilteringParametersException.class,
                         InvalidSortingParametersException.class,
                         InvalidPagingParametersException.class,
-                        DuplicateException.class})
+                        DuplicateException.class,
+                        EmailException.class,
+                        PasswordChangeException.class})
     public ResponseEntity<Object> handleBadRequestException(final Exception ex, final WebRequest request) {
 
         String uniqueKey = CtiUtilities.getYKUniqueKey();

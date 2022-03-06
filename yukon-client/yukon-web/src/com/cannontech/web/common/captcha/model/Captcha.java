@@ -10,6 +10,10 @@ public class Captcha {
         this.response = response;
     }
 
+    public Captcha(String response) {
+        this.response = response;
+    }
+
     public String getRemoteAddr() {
         return remoteAddr;
     }
