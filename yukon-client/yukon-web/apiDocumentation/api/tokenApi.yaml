@@ -80,3 +80,32 @@ logout:
               examples:
                 LogoutResponse: 
                   $ref: '../schemas/tokenSchema.yaml#/components/examples/logoutResponse'
+
+forgottenPassword:
+  post:
+      tags:
+        - Authentication
+      summary: Generate send email address for password change.
+      description: Generate send email address for password change.
+      requestBody:
+        description: |-
+          Send email, username or account number and captcha to send email address for password change.
+        content:
+          application/json:
+            schema:
+              $ref: '../schemas/tokenSchema.yaml#/Forgotten-Password-Request'
+            examples:
+              ForgottenPasswordRequest: 
+                $ref: '../schemas/tokenSchema.yaml#/components/examples/ForgottenPasswordRequest'
+        required: true
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '../schemas/tokenSchema.yaml#/Forgotten-Password-Response'
+              examples:
+                ForgottenPasswordResponse: 
+                  $ref: '../schemas/tokenSchema.yaml#/components/examples/ForgottenPasswordResponse'
+
