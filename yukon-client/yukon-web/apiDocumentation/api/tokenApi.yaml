@@ -110,7 +110,7 @@ forgottenPassword:
                   $ref: '../schemas/tokenSchema.yaml#/components/examples/ForgottenPasswordResponse'
 
 captchaDetails:
-  post:
+  get:
       tags:
         - Authentication
       summary: Get CAPTCHA details. 
