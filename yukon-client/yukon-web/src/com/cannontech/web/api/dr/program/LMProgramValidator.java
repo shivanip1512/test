@@ -45,7 +45,7 @@ import com.cannontech.stars.util.ServletUtils;
 import com.cannontech.user.UserUtils;
 import com.cannontech.user.YukonUserContext;
 import com.cannontech.web.api.dr.gear.setup.fields.validator.ProgramGearFieldsValidator;
-import com.cannontech.web.api.dr.setup.LMValidatorHelper;
+import com.cannontech.web.api.dr.setup.LMApiValidatorHelper;
 import com.cannontech.yukon.IDatabaseCache;
 import com.google.common.collect.ImmutableSet;
 
@@ -53,7 +53,7 @@ public class LMProgramValidator extends SimpleValidator<LoadProgram> {
     
     private final static String key = "yukon.web.modules.dr.setup.loadProgram.error.";
 
-    @Autowired private LMValidatorHelper lmValidatorHelper;
+    @Autowired private LMApiValidatorHelper lmApiValidatorHelper;
     @Autowired private IDatabaseCache cache;
     @Autowired LoadGroupDao loadGroupDao;
     @Autowired LoadProgramSetupService programSetupService;
@@ -400,7 +400,7 @@ public class LMProgramValidator extends SimpleValidator<LoadProgram> {
         List<Integer> groupIds = assignedLoadGroups.stream()
                                                    .map(ProgramGroup::getGroupId)
                                                    .collect(Collectors.toList());
-        return lmValidatorHelper.findDuplicates(groupIds);
+        return lmApiValidatorHelper.findDuplicates(groupIds);
 
     }
 

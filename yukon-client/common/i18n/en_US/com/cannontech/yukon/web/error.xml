@@ -65,15 +65,12 @@
     <entry key="yukon.web.error.repeater850Message"> {0} is Repeater 850 type. Repeater 850 must be last in repeater list</entry>
     
     <!-- Api Error Detail Exception -->
-    <entry key="yukon.web.error.100101">An identical object already exists.</entry>
-    <entry key="yukon.web.error.100102">Username or password not valid.</entry>
+    <entry key="yukon.web.error.100101">{0} must be unique.</entry>
+    <entry key="yukon.web.error.100102">Authentication required - unauthorized.</entry>
     <entry key="yukon.web.error.100103">User not authorized to perform this transaction.</entry>
-    <entry key="yukon.web.error.100104">Database error occured while performing this transaction.</entry>
+    <entry key="yukon.web.error.100104">Database error occurred while performing this transaction.</entry>
     <entry key="yukon.web.error.100105">Method arguments are not matching.</entry>
     <entry key="yukon.web.error.100106">Bad Request.</entry>
-    <entry key="yukon.web.error.100107">Expired or invalid token</entry>
-    <entry key="yukon.web.error.100108">No handler found.</entry>
-    <entry key="yukon.web.error.100109">HTTP request method not supported.</entry>
     <entry key="yukon.web.error.100110">Duplicates {0} not allowed, duplicates {1} : {2}.</entry>
     <entry key="yukon.web.error.100111">Only {0} valid {1} allowed.</entry>
     <entry key="yukon.web.error.100112">Constraint for {0} violated. Constraint : {1}</entry>
