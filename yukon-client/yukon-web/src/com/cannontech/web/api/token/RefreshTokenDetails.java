@@ -60,6 +60,4 @@ public class RefreshTokenDetails {
             return false;
         return true;
     }
-
- 
 }

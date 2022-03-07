@@ -10,5 +10,4 @@ public class LogoutResponse {
     public void setLogout(boolean logout) {
         this.logout = logout;
     }
-
 }

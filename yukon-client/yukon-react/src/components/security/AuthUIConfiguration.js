@@ -32,6 +32,7 @@ const AuthUIConfiguration = (props) => {
             contactEmail={'something@email.com'}
             contactPhone={'1-800-123-4567'}
             projectImage={productLogo}
+            loginErrorDisplayConfig={{mode:"message-box"}}
         >
             {props.children}
         </AuthUIContextProvider>

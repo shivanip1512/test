@@ -34,5 +34,5 @@ public class LogoutRequest {
     public void setLogoutfromAllSystem(boolean logoutfromAllSystem) {
         this.logoutfromAllSystem = logoutfromAllSystem;
     }
-
 }
+

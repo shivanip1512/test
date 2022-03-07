@@ -1,6 +1,7 @@
 /* eslint-disable @typescript-eslint/no-unused-vars */
 import { AuthUIActions, SecurityContextActions } from '@brightlayer-ui/react-auth-workflow';
 import { LocalStorage } from '../store/local-storage';
+import axios from '../axiosConfig';
 
 const sleep = (ms: number): Promise<void> => new Promise((resolve) => setTimeout(resolve, ms));
 
@@ -84,14 +85,19 @@ export const ProjectAuthUIActions: AuthUIActionsWithSecurity = (securityHelper) 
      * @returns Resolve if code is credentials are valid, otherwise reject.
      */
     logIn: async (email: string, password: string, rememberMe: boolean): Promise<void> => {
-
-        if (isRandomFailure()) {
-            // reject(new Error('LOGIN.GENERIC_ERROR'));
-            throw new Error('LOGIN.INVALID_CREDENTIALS');
-        }
-
-        LocalStorage.saveAuthCredentials(email, email);
-        LocalStorage.saveRememberMeData(email, rememberMe);
+        //fetch access token 
+    await   axios.post('/api/token', {
+                     username: email,
+                     password: password
+            }).then((response) => {
+                LocalStorage.saveAuthCredentials(email, email);
+                LocalStorage.saveRememberMeData(email, rememberMe);
+            }).catch((error:any) => {
+                console.warn(error.response.data.detail);
+                throw new Error('LOGIN.INVALID_CREDENTIALS');
+                // uncomment this line to check custom error from API
+                //throw new Error (error.response.data.detail) 
+            })
 
         //get the theme and store in browser local storage
         //storing in react store gets cleared after every old yukon page since it's counted as a refresh

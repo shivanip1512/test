@@ -5,16 +5,14 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 
 public class RefreshTokenRequest {
 
-   private String refreshToken;
-  
+    private String refreshToken;
+
     @JsonCreator
     RefreshTokenRequest() {
-
     }
 
     RefreshTokenRequest(@JsonProperty(value = "refreshToken") String refreshToken) {
         this.refreshToken = refreshToken;
-       
     }
 
     public String getRefreshToken() {
