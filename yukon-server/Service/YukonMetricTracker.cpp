@@ -21,7 +21,7 @@ namespace {
 template<class T>
 void sendImpl(const std::string pointInfo, T value, std::chrono::system_clock::time_point timestamp)
 {
-    using Cti::Messaging::ActiveMQ::Topics::OutboundTopic;
+    using Cti::Messaging::Qpid::Topics::OutboundTopic;
 
     const auto timestamp8601 = std::format("{:%FT%TZ}", timestamp);
 
