@@ -1,10 +1,17 @@
 package com.cannontech.common.search.result;
 
+import java.lang.invoke.MethodHandles;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
+import org.apache.logging.log4j.core.Logger;
+
+import com.cannontech.clientutils.YukonLogManager;
 import com.cannontech.common.model.PagingParameters;
+import com.cannontech.common.util.SqlStatementBuilder;
+import com.cannontech.database.YukonJdbcTemplate;
+import com.cannontech.database.YukonRowMapper;
 import com.fasterxml.jackson.annotation.JsonCreator;
 
 public class SearchResults<T> {
@@ -17,7 +24,10 @@ public class SearchResults<T> {
     private int count = 0;          // number of results per page
     private int lastStartIndex = 0; // index of last page of results
     private int numberOfPages = 0;  // total number of result pages 
+    
 
+    private static final Logger log = YukonLogManager.getLogger(MethodHandles.lookup().lookupClass());
+    
     @SuppressWarnings("unchecked")
     @JsonCreator
     public static <T> SearchResults<T> emptyResult() {
@@ -74,6 +84,19 @@ public class SearchResults<T> {
         SearchResults<T> result = new SearchResults<>();
         result.setResultList(sublist);
         result.setBounds(pagingParameters.getStartIndex(), pagingParameters.getItemsPerPage(), numberOfResults);
+        return result;
+    }
+    
+    /**
+     * Utilizes fetch/offset to find search result
+     */
+    public static <T> SearchResults<T> pageBasedForOffset(YukonJdbcTemplate template, PagingParameters paging,
+            SqlStatementBuilder sql, YukonRowMapper<T> mapper, SqlStatementBuilder countSql) {
+        sql.append("OFFSET").append(paging.getStartIndex()).append("ROWS FETCH NEXT").append(paging.getItemsPerPage()).append("ROWS ONLY");   
+        SearchResults<T> result = new SearchResults<>();
+        result.setResultList(template.query(sql, mapper));
+        log.debug("paging:{} result count:{} total count:{} sql:{}", paging, result.getResultCount(), result.hitCount, sql.getDebugSql());
+        result.setBounds(paging.getStartIndex(), paging.getItemsPerPage(), template.queryForInt(countSql));
         return result;
     }
 

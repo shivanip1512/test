@@ -92,8 +92,7 @@ public class EventLogCategoryController {
             eventLogUIService.getFilteredPagedSearchResultByCategories(eventCategories, 
                    filter.getStartDate().toDateTimeAtStartOfDay(userContext.getJodaTimeZone()),
                    filter.getStopDate().plusDays(1).toDateTimeAtStartOfDay(userContext.getJodaTimeZone()),
-                   paging.getStartIndex(), 
-                   paging.getItemsPerPage(),
+                   paging,
                    filter.getFilterValue(),
                    userContext);
         
@@ -118,8 +117,7 @@ public class EventLogCategoryController {
             eventLogUIService.getFilteredPagedSearchResultByCategories(eventCategories, 
                    filter.getStartDate().toDateTimeAtStartOfDay(userContext.getJodaTimeZone()),
                    filter.getStopDate().plusDays(1).toDateTimeAtStartOfDay(userContext.getJodaTimeZone()),
-                   paging.getStartIndex(), 
-                   Integer.MAX_VALUE,
+                   paging,
                    filter.getFilterValue(),
                    userContext);
         

@@ -9,30 +9,27 @@ import java.util.Set;
 import java.util.concurrent.TimeUnit;
 
 import org.apache.commons.lang3.StringUtils;
-import org.apache.logging.log4j.Logger;
 import org.joda.time.ReadableInstant;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.support.JdbcUtils;
 
-import com.cannontech.clientutils.YukonLogManager;
 import com.cannontech.common.bulk.filter.AbstractRowMapperWithBaseQuery;
 import com.cannontech.common.bulk.filter.RowMapperWithBaseQuery;
 import com.cannontech.common.events.dao.EventLogDao;
 import com.cannontech.common.events.model.ArgumentColumn;
 import com.cannontech.common.events.model.EventCategory;
 import com.cannontech.common.events.model.EventLog;
+import com.cannontech.common.model.PagingParameters;
 import com.cannontech.common.search.result.SearchResults;
 import com.cannontech.common.util.SimpleSqlFragment;
 import com.cannontech.common.util.SqlFragmentCollection;
 import com.cannontech.common.util.SqlFragmentSource;
 import com.cannontech.common.util.SqlStatementBuilder;
-import com.cannontech.database.PagingResultSetExtractor;
 import com.cannontech.database.SqlUtils;
-import com.cannontech.database.StringRowMapper;
+import com.cannontech.database.TypeRowMapper;
 import com.cannontech.database.YukonJdbcTemplate;
 import com.cannontech.database.YukonResultSet;
-import com.cannontech.database.YukonRowMapperAdapter;
 import com.cannontech.database.incrementer.NextValueHelper;
 import com.google.common.cache.Cache;
 import com.google.common.cache.CacheBuilder;
@@ -45,12 +42,9 @@ public class EventLogDaoImpl implements EventLogDao {
     @Autowired private JdbcTemplate jdbcTemplate;
     @Autowired private YukonJdbcTemplate yukonJdbcTemplate;
     @Autowired private NextValueHelper nextValueHelper;
-
-    private static final Logger log = YukonLogManager.getLogger(EventLogDaoImpl.class);
     
-    
-    private final Cache<String,Set<EventCategory>> allCategories = CacheBuilder.newBuilder()
-            .expireAfterWrite(30, TimeUnit.SECONDS).build();
+    private final Cache<String, Set<EventCategory>> allCategories = CacheBuilder.newBuilder()
+            .expireAfterWrite(15, TimeUnit.MINUTES).build();
     
     private final int countOfTotalArguments;
     private List<ArgumentColumn> argumentColumns;
@@ -96,7 +90,7 @@ public class EventLogDaoImpl implements EventLogDao {
         @Override
         public SqlFragmentSource getBaseQuery() {
             SqlStatementBuilder retVal = new SqlStatementBuilder();
-            retVal.append("SELECT * ");
+            retVal.append("SELECT EventLogId, EventType, EventTime, String1, String2, String3, String4, String5, String6, Int7, Int8, Int9, Int10, Date11, Date12");
             retVal.append("FROM EventLog");
             return retVal;
         }
@@ -163,6 +157,10 @@ public class EventLogDaoImpl implements EventLogDao {
         } 
 
         jdbcTemplate.update(insertSql, totalArguments, totalArgumentTypes);
+        Set<EventCategory> categories = allCategories.getIfPresent("allCategories");
+        if(categories != null && !categories.contains(eventLog.getEventCategory())) {
+            allCategories.invalidateAll();
+        }
     }
     
     
@@ -170,17 +168,14 @@ public class EventLogDaoImpl implements EventLogDao {
      * This doesn't really get all types.  
      * This only gets the types that have already been logged.
      */
-    public Set<String> getAllLoggedTypes() {
+    private Set<String> getAllLoggedTypes() {
         SqlStatementBuilder sql = new SqlStatementBuilder();
         sql.append("SELECT DISTINCT EventType"); 
         sql.append("FROM EventLog");
-        
-        Set<String> result = Sets.newHashSet();
-        yukonJdbcTemplate.query(sql, new StringRowMapper(), result);
-        return result;
+        return Sets.newHashSet( yukonJdbcTemplate.query(sql, TypeRowMapper.STRING));
     }
     
-    public Set<EventCategory> getAllCategoryLeafs() {
+    private Set<EventCategory> getAllCategoryLeafs() {
         Set<String> allTypes = getAllLoggedTypes();
         
         Set<EventCategory> allCategories = Sets.newHashSet();
@@ -195,7 +190,8 @@ public class EventLogDaoImpl implements EventLogDao {
     
     @Override
     public Set<EventCategory> getAllCategories() {
-        Set<EventCategory> categories = allCategories.getIfPresent("allCategories");
+        //Set<EventCategory> categories = allCategories.getIfPresent("allCategories");
+        Set<EventCategory> categories = null;
         if (categories != null) {
             return categories;
         }
@@ -220,86 +216,62 @@ public class EventLogDaoImpl implements EventLogDao {
         }
     }
 
-    public List<EventLog> findAllByCategory(EventCategory eventCategory) {
-        SqlStatementBuilder sql = new SqlStatementBuilder();
-        sql.append("SELECT *");
-        sql.append("FROM EventLog EL");
-        sql.append("WHERE EL.EventType LIKE ").appendArgument(eventCategory.getFullName() + "%");
-        sql.append("ORDER BY EL.EventTime, EL.EventLogId");
-        
-        List<EventLog> result = yukonJdbcTemplate.query(sql, eventLogRowMapper);
-        return result;
-    }
-        
-
     @Override
     public SearchResults<EventLog> getFilteredPagedSearchResultByCategories(Iterable<EventCategory> eventCategories,
             ReadableInstant startDate,
             ReadableInstant stopDate,
-            Integer start,
-            Integer pageCount,
+            PagingParameters paging,
             String filterString) {
 
-        SearchResults<EventLog> result = new SearchResults<EventLog>();
-        Set<EventCategory> slimEventCategories = removeDuplicates(eventCategories);
-        if (slimEventCategories.isEmpty()) {
-            return SearchResults.emptyResult();
+        SqlStatementBuilder catSql = null;
+      
+        if (!Sets.newHashSet(eventCategories).containsAll(getAllCategories())) {
+            Set<EventCategory> slimEventCategories = removeDuplicates(eventCategories);
+            catSql = new SqlStatementBuilder();
+            catSql.append("AND (");
+
+            SqlFragmentCollection sqlFragmentCollection = getEventCategorySqlFragment(slimEventCategories);
+            catSql.appendFragment(sqlFragmentCollection);
+
+            catSql.append(")");
         }
-        /* Get row count. */
-        SqlStatementBuilder countSql = new SqlStatementBuilder();
-        countSql.appendFragment(findAllSqlStatementBuilder(startDate, stopDate, slimEventCategories, true));
-        if (!StringUtils.isEmpty(filterString)) {
-            countSql.append("AND").appendFragment(getEventLogColumnSqlFragment(filterString));
+        
+        SqlStatementBuilder countSql = findAllSqlStatementBuilder(startDate, stopDate, catSql, true, filterString);
+        SqlStatementBuilder sql = findAllSqlStatementBuilder(startDate, stopDate, catSql, false, filterString);
+        
+        return SearchResults.pageBasedForOffset(yukonJdbcTemplate, paging, sql, eventLogRowMapper, countSql);
+    }
+
+    private SqlStatementBuilder findAllSqlStatementBuilder(ReadableInstant startDate,
+            ReadableInstant stopDate,
+            SqlStatementBuilder catSql,
+            boolean isCount,
+            String filterString) {
+        SqlStatementBuilder sql = new SqlStatementBuilder();
+        if (isCount) {
+            sql.append("SELECT count(*) ");
+            sql.append("FROM EventLog");
+        } else {
+            sql.append(eventLogRowMapper.getBaseQuery());
         }
 
-        /* Get paged data. */
-        SqlStatementBuilder sql = new SqlStatementBuilder();
-        sql.appendFragment(findAllSqlStatementBuilder(startDate, stopDate, slimEventCategories, false));
+        sql.append("WHERE EventTime").lt(stopDate);
+        sql.append("AND EventTime").gte(startDate);
+
+        if (catSql != null) {
+            sql.append(catSql);
+        }
+        
         if (!StringUtils.isEmpty(filterString)) {
             sql.append("AND").appendFragment(getEventLogColumnSqlFragment(filterString));
         }
-        sql.append("ORDER BY EL.EventTime DESC, EL.EventLogId DESC");
-
-        PagingResultSetExtractor<EventLog> rse = new PagingResultSetExtractor<EventLog>(start, pageCount,
-                new YukonRowMapperAdapter<EventLog>(eventLogRowMapper));
-        int hitCount = yukonJdbcTemplate.queryForInt(countSql);
-        yukonJdbcTemplate.query(sql, rse);
-        result.setResultList(rse.getResultList());
         
-        result.setBounds(start, pageCount, hitCount);
-        return result;
-    }
-
-    @Override
-    public SearchResults<EventLog> findEventsByStringAndPaginate(String searchString, Integer firstRowIndex, Integer pageRowCount) {
-
-        SearchResults<EventLog> results = new SearchResults<EventLog>();
-        if (StringUtils.isEmpty(searchString)) {
-            log.info("findEventsByStringAndPaginate(..): Attempted query with blank searchString.  Returning no results.");
-            return results;
+        if (!isCount) {
+            sql.append("ORDER BY EventTime DESC, EventLogId DESC"); 
         }
-
-        /* Get row count. */
-        SqlStatementBuilder countSql = new SqlStatementBuilder();
-        countSql.append("SELECT COUNT(*)");
-        countSql.append("FROM EventLog EL");
-        countSql.append("WHERE").appendFragment(getEventLogColumnSqlFragment(searchString));
-        int hitCount = yukonJdbcTemplate.queryForInt(countSql);
         
-        /* Get paged data. */
-        SqlStatementBuilder sql = findAllSqlStatementBuilder();
-        sql.append("WHERE").appendFragment(getEventLogColumnSqlFragment(searchString));
-        sql.append("ORDER BY EL.EventTime DESC, EL.EventLogId DESC");
-        
-        PagingResultSetExtractor<EventLog> rse = 
-            new PagingResultSetExtractor<EventLog>(firstRowIndex, pageRowCount, eventLogRowMapper);
-        yukonJdbcTemplate.query(sql, rse);
-        results.setResultList(rse.getResultList());
-        results.setBounds(firstRowIndex, pageRowCount, hitCount);
-        
-        return results;
+        return sql;
     }
-
 
     /**
      * This method returns an sql fragment that contains an ORed liked list of all
@@ -316,7 +288,7 @@ public class EventLogDaoImpl implements EventLogDao {
         SqlFragmentCollection sqlFragmentCollection = SqlFragmentCollection.newOrCollection();
         for (EventCategory eventCategory : slimEventCategories) {
             SqlStatementBuilder whereFragment = new SqlStatementBuilder();
-            whereFragment.append("EL.EventType LIKE ").appendArgument(eventCategory.getFullName() + "%");
+            whereFragment.append("EventType LIKE ").appendArgument(eventCategory.getFullName() + "%");
             sqlFragmentCollection.add(whereFragment);
             
         }
@@ -382,41 +354,6 @@ public class EventLogDaoImpl implements EventLogDao {
         }
 
         return sqlFragmentCollection;
-    }
-
-    private SqlStatementBuilder findAllSqlStatementBuilder(ReadableInstant startDate, 
-                                                           ReadableInstant stopDate, 
-                                                           Set<EventCategory> slimEventCategories,
-                                                           boolean isCount) {
-        SqlStatementBuilder sql = new SqlStatementBuilder();
-        if(isCount) {
-            sql.append("SELECT count(*) ");
-        } else {
-            sql.append("SELECT * "); 
-        }
-
-        sql.append("FROM EventLog EL");
-        sql.append("WHERE EL.EventTime").lt(stopDate);
-        sql.append("AND EL.EventTime").gte(startDate);
-        
-        if(!slimEventCategories.containsAll(getAllCategories())){
-            sql.append("AND (");
-            
-            SqlFragmentCollection sqlFragmentCollection = getEventCategorySqlFragment(slimEventCategories);
-            sql.appendFragment(sqlFragmentCollection);
-            
-            sql.append(")");            
-        }
-
-        return sql;
-    }
-
-    private SqlStatementBuilder findAllSqlStatementBuilder() {
-        SqlStatementBuilder sql = new SqlStatementBuilder();
-        sql.append("SELECT EventLogId, EventType, EventTime, String1, String2, String3, String4, String5, String6, Int7, Int8, Int9, Int10, Date11, Date12");
-        sql.append("FROM EventLog EL");
-
-        return sql;
     }
 
     private Set<EventCategory> removeDuplicates(Iterable<EventCategory> eventCategories) {
