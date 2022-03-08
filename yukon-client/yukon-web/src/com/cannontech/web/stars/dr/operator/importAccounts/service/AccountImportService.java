@@ -16,7 +16,7 @@ import java.util.TreeMap;
 import java.util.concurrent.Executor;
 import java.util.stream.Collectors;
 
-import javax.mail.internet.InternetAddress;
+import jakarta.mail.internet.InternetAddress;
 
 import org.apache.commons.lang3.StringUtils;
 import org.apache.logging.log4j.Logger;

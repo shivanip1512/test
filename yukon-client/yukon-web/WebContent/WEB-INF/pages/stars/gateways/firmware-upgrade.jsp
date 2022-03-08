@@ -13,7 +13,7 @@
 
 <form:form id="firmware-upgrade-form" modelAttribute="gateways" action="${updateUrl}">
     <cti:csrfToken/>
-    <div class="scroll-lg js-resize-with-dialog">
+    <div class="js-resize-with-dialog">
     <table class="compact-results-table with-form-controls js-select-all-container">
         <thead>
             <tr>

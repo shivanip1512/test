@@ -65,9 +65,11 @@ import com.google.common.collect.Sets;
 public class ItronRuntimeCalcServiceImplTest {
     private ItronRuntimeCalcService itronRuntimeCalcService = new ItronRuntimeCalcService();
     
+    private static final int lcr6200sId = 24;
     private static final int lcr6600sId = 17;
     private static final int lcr6601sId = 79;
     
+    private LiteYukonPAObject lcr6200s;
     private LiteYukonPAObject lcr6600s;
     private LiteYukonPAObject lcr6601s;
     private List<YukonPao> allDevices;
@@ -86,6 +88,7 @@ public class ItronRuntimeCalcServiceImplTest {
     
     @BeforeEach
     public void initEach() {
+        lcr6200s = new LiteYukonPAObject(lcr6200sId, "LCR-6200S", PaoCategory.DEVICE, PaoClass.ITRON, PaoType.LCR6200S, "description", "F");
         lcr6600s = new LiteYukonPAObject(lcr6600sId, "LCR-6600S", PaoCategory.DEVICE, PaoClass.ITRON, PaoType.LCR6600S, "description", "F");
         lcr6601s = new LiteYukonPAObject(lcr6601sId, "LCR-6601S", PaoCategory.DEVICE, PaoClass.ITRON, PaoType.LCR6601S, "description", "F");
 
@@ -120,6 +123,8 @@ public class ItronRuntimeCalcServiceImplTest {
         
         PaoDao mockPaoDao = createNiceMock(PaoDao.class);
         
+        expect(mockPaoDao.getLiteYukonPAObjectByType(PaoType.LCR6200S))
+            .andReturn(Lists.newArrayList(lcr6200s));
         expect(mockPaoDao.getLiteYukonPAObjectByType(PaoType.LCR6600S))
             .andReturn(Lists.newArrayList(lcr6600s));
         expect(mockPaoDao.getLiteYukonPAObjectByType(PaoType.LCR6601S))
@@ -130,9 +135,10 @@ public class ItronRuntimeCalcServiceImplTest {
         
         List<YukonPao> devices = ReflectionTestUtils.invokeMethod(itronRuntimeCalcService, "getAllDevices");
         
+        assertThat("device list contains lcr6200s", devices, hasItems(lcr6200s));
         assertThat("device list contains lcr6600s", devices, hasItems(lcr6600s));
         assertThat("device list contains lcr6601s", devices, hasItems(lcr6601s));
-        assertThat("device list size", devices.size(), equalTo(2));
+        assertThat("device list size", devices.size(), equalTo(3));
     }
     
     @Test
@@ -347,6 +353,8 @@ public class ItronRuntimeCalcServiceImplTest {
             .andReturn(Lists.newArrayList(lcr6600s));
         expect(mockPaoDao.getLiteYukonPAObjectByType(PaoType.LCR6601S))
             .andReturn(Collections.emptyList());
+        expect(mockPaoDao.getLiteYukonPAObjectByType(PaoType.LCR6200S))
+            .andReturn(Collections.emptyList());
         replay(mockPaoDao);
         
         ReflectionTestUtils.setField(itronRuntimeCalcService, "paoDao", mockPaoDao);
@@ -479,6 +487,8 @@ public class ItronRuntimeCalcServiceImplTest {
         expect(mockPaoDao.getLiteYukonPAObjectByType(PaoType.LCR6600S))
             .andReturn(Lists.newArrayList(lcr6600s));
         expect(mockPaoDao.getLiteYukonPAObjectByType(PaoType.LCR6601S))
+            .andReturn(Collections.emptyList());
+        expect(mockPaoDao.getLiteYukonPAObjectByType(PaoType.LCR6200S))
             .andReturn(Collections.emptyList());
         replay(mockPaoDao);
         

@@ -1,6 +1,11 @@
 package com.cannontech.services.calculated;
 
-import static org.easymock.EasyMock.*;
+import static org.easymock.EasyMock.anyInt;
+import static org.easymock.EasyMock.anyLong;
+import static org.easymock.EasyMock.anyObject;
+import static org.easymock.EasyMock.createNiceMock;
+import static org.easymock.EasyMock.expectLastCall;
+import static org.easymock.EasyMock.replay;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
@@ -436,6 +441,19 @@ public class PerIntervalAndLoadProfileCalculatorTest {
         checkNumberOfMessages(12, PAO_POINT_IDENTIFIER, calculationDateValues);
     }
 
+    @Test public void testNegativekWhReadings() {
+        calculator.setBasedOn(BuiltInAttribute.NET_KWH);
+        calculator.setPerInterval(BuiltInAttribute.NET_KWH_PER_INTERVAL);
+        calculator.setLoadProfile(BuiltInAttribute.NET_KW_LOAD_PROFILE);
+        
+        LinkedHashMap<Instant, Integer> calculationDateValues = new LinkedHashMap<>();
+        calculationDateValues.put(new Instant(1472126400000l), 0); // Date -2016-08-25T12:00:00.000Z
+        calculationDateValues.put(new Instant(1472126700000l), 1); // Date -2016-08-25T12:05:00.000Z
+        calculationDateValues.put(new Instant(1472127000000l), 0); // Date -2016-08-25T12:10:00.000Z
+        
+        checkNumberOfMessages(12, PAO_POINT_IDENTIFIER, calculationDateValues);
+    }
+    
     @Test
     public void validCalculableAttributeUpToDate() throws IOException {
         InputStream in = this.getClass().getResourceAsStream("/com/cannontech/services/rfn/rfnMeteringContext.xml");

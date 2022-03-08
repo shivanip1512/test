@@ -63,10 +63,8 @@ public class LoadProgramSetupApiController {
     @CheckPermissionLevel(property = YukonRoleProperty.DR_SETUP_PERMISSION, level = HierarchyPermissionLevel.CREATE)
     public ResponseEntity<Object> copy(@PathVariable int id, @Valid @RequestBody LoadProgramCopy loadProgramCopy,
             YukonUserContext userContext) {
-        int paoId = loadProgramService.copy(id, loadProgramCopy, userContext.getYukonUser());
-        HashMap<String, Integer> paoIdMap = new HashMap<>();
-        paoIdMap.put("programId", paoId);
-        return new ResponseEntity<>(paoIdMap, HttpStatus.OK);
+        LoadProgram copiedLoadProgram = loadProgramService.copy(id, loadProgramCopy, userContext.getYukonUser());
+        return new ResponseEntity<>(copiedLoadProgram, HttpStatus.OK);
     }
 
     @PutMapping("/{id}")

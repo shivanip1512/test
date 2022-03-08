@@ -59,7 +59,7 @@ public class AlarmArchiveRequestListener extends ArchiveRequestListenerBase<RfnA
                 processedAlarmArchiveRequest.addAndGet(messagesToSend.size());
     
                 if (log.isDebugEnabled()) {
-                    log.debug(messagesToSend.size() + " PointDatas generated for RfnAlarmArchiveRequest");
+                    log.debug("{} PointDatas generated for RfnAlarmArchiveRequest", messagesToSend.size());
                 }
             }
             sendAcknowledgement(archiveRequest);

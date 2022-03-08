@@ -49,7 +49,7 @@
                 </div>
                 <c:if test="${pickerImage.deletable and pickerImage.image.imageID != selected}">
                     <div class="page-action-area">
-                        <cti:button icon="icon-cross" nameKey="delete" classes="show-on-hover delete-image"/>
+                        <cti:button icon="icon-delete" nameKey="delete" classes="show-on-hover delete-image"/>
                         <div class="dn dib fr js-delete-confirm">
                             <span class="fl js-confirm-message"><i:inline key=".delete"/></span>
                             <cti:button nameKey="cancel" classes="cancel"/>
@@ -76,7 +76,7 @@
                     </div>
                 </div>
                 <div class="page-action-area">
-                    <cti:button icon="icon-cross" nameKey="delete" classes="show-on-hover delete-image"/>
+                    <cti:button icon="icon-delete" nameKey="delete" classes="show-on-hover delete-image"/>
                     <div class="dn dib fr js-delete-confirm">
                         <span class="fl js-confirm-message"><i:inline key=".delete"/></span>
                         <cti:button nameKey="cancel" classes="cancel"/>

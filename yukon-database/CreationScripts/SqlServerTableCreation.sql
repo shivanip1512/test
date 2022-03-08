@@ -1,7 +1,7 @@
 /*==============================================================*/
 /* Database name:  YukonDatabase                                */
 /* DBMS name:      Microsoft SQL Server 2005                    */
-/* Created on:     9/13/2021 10:42:05 AM                        */
+/* Created on:     3/1/2022 3:32:28 AM                          */
 /*==============================================================*/
 
 
@@ -3358,6 +3358,7 @@ create table DeviceDataMonitor (
    Name                 varchar(255)         not null,
    GroupName            varchar(255)         not null,
    Enabled              char(1)              not null,
+   NotifyOnAlarmOnly    char(1)              not null,
    constraint PK_DeviceDataMonitor primary key (MonitorId)
 )
 go
@@ -5869,9 +5870,11 @@ create table EventLog (
 go
 
 /*==============================================================*/
-/* Index: INDX_EventType                                        */
+/* Index: INDX_EventLog_EvntTime_EvntLogId_EvntType             */
 /*==============================================================*/
-create index INDX_EventType on EventLog (
+create index INDX_EventLog_EvntTime_EvntLogId_EvntType on EventLog (
+EventTime DESC,
+EventLogId DESC,
 EventType ASC
 )
 go
@@ -9693,6 +9696,7 @@ create table StatusPointMonitorProcessor (
    PrevState            varchar(255)         not null,
    NextState            varchar(255)         not null,
    ActionType           varchar(255)         not null,
+   NotifyOnAlarmOnly    char(1)              not null,
    constraint PK_StatPointMonProcId primary key (StatusPointMonitorProcessorId)
 )
 go
@@ -10000,7 +10004,7 @@ create table Theme (
 )
 go
 
-INSERT INTO Theme VALUES (-1, 'Yukon Gray', 1);
+INSERT INTO Theme VALUES (-1, 'Default', 1);
 
 /*==============================================================*/
 /* Table: ThemeProperty                                         */
@@ -10013,22 +10017,22 @@ create table ThemeProperty (
 )
 go
 
-INSERT INTO ThemeProperty VALUES (-1, 'PAGE_BACKGROUND', '#6e6d71');
+INSERT INTO ThemeProperty VALUES (-1, 'PAGE_BACKGROUND', '#727e84');
 INSERT INTO ThemeProperty VALUES (-1, 'PAGE_BACKGROUND_FONT_COLOR', '#ffffff');
-INSERT INTO ThemeProperty VALUES (-1, 'PAGE_BACKGROUND_SHADOW', '#5a595d');
-INSERT INTO ThemeProperty VALUES (-1, 'PRIMARY_COLOR', '#0066cc');
+INSERT INTO ThemeProperty VALUES (-1, 'PAGE_BACKGROUND_SHADOW', '#727e84');
+INSERT INTO ThemeProperty VALUES (-1, 'PRIMARY_COLOR', '#007bc1');
 INSERT INTO ThemeProperty VALUES (-1, 'LOGIN_BACKGROUND', '-2');
 INSERT INTO ThemeProperty VALUES (-1, 'LOGIN_FONT_COLOR', '#ffffff');
-INSERT INTO ThemeProperty VALUES (-1, 'LOGIN_FONT_SHADOW', 'rgba(0,0,0,0.5)');
+INSERT INTO ThemeProperty VALUES (-1, 'LOGIN_FONT_SHADOW', '#727e84');
 INSERT INTO ThemeProperty VALUES (-1, 'LOGIN_TAGLINE_MARGIN', '35');
 INSERT INTO ThemeProperty VALUES (-1, 'LOGO', '-1');
 INSERT INTO ThemeProperty VALUES (-1, 'LOGO_LEFT', '0');
 INSERT INTO ThemeProperty VALUES (-1, 'LOGO_TOP', '17');
 INSERT INTO ThemeProperty VALUES (-1, 'LOGO_WIDTH', '163');
-INSERT INTO ThemeProperty VALUES (-1, 'VISITED_COLOR', '#1c49a6');
-INSERT INTO ThemeProperty VALUES (-1, 'BUTTON_COLOR', '#777');
-INSERT INTO ThemeProperty VALUES (-1, 'BUTTON_COLOR_BORDER', '#666');
-INSERT INTO ThemeProperty VALUES (-1, 'BUTTON_COLOR_HOVER', '#888');
+INSERT INTO ThemeProperty VALUES (-1, 'VISITED_COLOR', '#007bc1');
+INSERT INTO ThemeProperty VALUES (-1, 'BUTTON_COLOR', '#007bc1');
+INSERT INTO ThemeProperty VALUES (-1, 'BUTTON_COLOR_BORDER', '#007bc1');
+INSERT INTO ThemeProperty VALUES (-1, 'BUTTON_COLOR_HOVER', '#4da3d4');
 
 /*==============================================================*/
 /* Table: ThermostatEventHistory                                */
@@ -10123,6 +10127,7 @@ INSERT INTO UnitMeasure VALUES ( 56,'MB', 0, 'Megabytes', '(none)');
 INSERT INTO UnitMeasure VALUES ( 57,'dBm', 0, 'Decibel-Milliwatts', '(none)');
 INSERT INTO UnitMeasure VALUES ( 58,'Therms', 0, 'Therms', '(none)');
 INSERT INTO UnitMeasure VALUES ( 59,'dB', 0, 'Decibels', '(none)');
+INSERT INTO UnitMeasure VALUES ( 60,'CCF', 0, 'Centum Cubic Feet', '(none)');
 
 /*==============================================================*/
 /* Table: UsageThresholdReport                                  */
@@ -10960,9 +10965,10 @@ INSERT INTO YukonListEntry VALUES (2034, 1005, 0, 'LCR-6700 (RFN)', 1337);
 INSERT INTO YukonListEntry VALUES (2035, 1005, 0, 'Nest', 1338);
 INSERT INTO YukonListEntry VALUES (2036, 1005, 0, 'LCR-6601S', 1339);
 INSERT INTO YukonListEntry VALUES (2037, 1005, 0, 'LCR-6600S', 1340);
+INSERT INTO YukonListEntry VALUES (2038, 1005, 0, 'LCR-6200S', 1344);
 
-INSERT INTO YukonListEntry VALUES (2038, 1005, 0, 'LCR-6200C', 1342);
-INSERT INTO YukonListEntry VALUES (2039, 1005, 0, 'LCR-6600C', 1343);
+INSERT INTO YukonListEntry VALUES (2039, 1005, 0, 'LCR-6200C', 1342);
+INSERT INTO YukonListEntry VALUES (2040, 1005, 0, 'LCR-6600C', 1343);
 
 insert into yukonlistentry values (10101, 1067, 0, 'CustomerAccount', 0);
 insert into yukonlistentry values (10102, 1067, 0, 'Inventory', 0);
@@ -11714,6 +11720,10 @@ create table Zone (
    ZoneType             varchar(40)          not null,
    constraint PK_Zone primary key (ZoneId)
 )
+go
+
+alter table Zone
+   add constraint AK_ZONENAME_ZONE unique (ZoneName)
 go
 
 /*==============================================================*/

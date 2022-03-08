@@ -301,6 +301,8 @@ static const std::map<std::string, DeviceTypes> device_lookups
     //  --- RF gas meters ---
     { "rfg-201",            TYPE_RFG201 },
     { "rfg-301",            TYPE_RFG301 },
+    { "rfg-301a",           TYPE_RFG301A },
+    { "rfg-301r",           TYPE_RFG301R },
 
     //  --- RF Cellular IPLink Relays ---
     { "crly-856",           TYPE_CRLY856 },
@@ -440,6 +442,9 @@ bool isKnownUnsupportedDevice(const string& typeStr)
         "lcr-6200 rfn",
         "lcr-6600 rfn",
         "lcr-6700 rfn",
+        "lcr-6200c",
+        "lcr-6600c",
+		"lcr-6200s",
         "lcr-6600s",
         "lcr-6601s",
         "weather location",

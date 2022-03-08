@@ -191,6 +191,11 @@ public class GlobalSettingDaoImpl implements GlobalSettingDao {
                 Integer.valueOf(event.getPrimaryKey()).equals(getSetting(globalSettingType).getId()));
     }
     
+    @Override
+    public boolean isDbChangeForSetting(DatabaseChangeEvent event) {
+        return event.getChangeCategory() == DbChangeCategory.GLOBAL_SETTING;
+    }
+    
     private final YukonRowMapper<GlobalSetting> settingMapper = new YukonRowMapper<GlobalSetting>() {
         @Override
         public GlobalSetting mapRow(YukonResultSet rs) throws SQLException {

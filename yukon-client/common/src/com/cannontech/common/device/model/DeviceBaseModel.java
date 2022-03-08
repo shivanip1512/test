@@ -7,24 +7,23 @@ import com.cannontech.database.data.lite.LiteYukonPAObject;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 
 public class DeviceBaseModel implements YukonDevice {
-
-    private Integer id;
-    private PaoType type;
-    private String name;
+    private Integer deviceId;
+    private PaoType deviceType;
+    private String deviceName;
     private Boolean enable;
 
     public DeviceBaseModel of(LiteYukonPAObject pao) {
-        id = pao.getPaoIdentifier().getPaoId();
-        type = pao.getPaoType();
-        name = pao.getPaoName();
+        deviceId = pao.getPaoIdentifier().getPaoId();
+        deviceType = pao.getPaoType();
+        deviceName = pao.getPaoName();
         enable = (pao.getDisableFlag().equals("N") ? true : false);
         return this;
     }
 
-    public DeviceBaseModel(Integer id, PaoType type, String name, Boolean enable) {
-        this.id = id;
-        this.type = type;
-        this.name = name;
+    public DeviceBaseModel(Integer deviceId, PaoType deviceType, String deviceName, Boolean enable) {
+        this.deviceId = deviceId;
+        this.deviceType = deviceType;
+        this.deviceName = deviceName;
         this.enable = enable;
     }
 
@@ -32,28 +31,27 @@ public class DeviceBaseModel implements YukonDevice {
         super();
     }
 
-    public Integer getId() {
-        return id;
+    public Integer getDeviceId() {
+        return deviceId;
     }
 
-    public void setId(Integer id) {
-        this.id = id;
+    public void setDeviceId(Integer deviceId) {
+        this.deviceId = deviceId;
     }
 
-    public PaoType getType() {
-        return type;
+    public PaoType getDeviceType() {
+        return deviceType;
+    }
+    public void setDeviceType(PaoType deviceType) {
+        this.deviceType = deviceType;
     }
 
-    public void setType(PaoType type) {
-        this.type = type;
+    public String getDeviceName() {
+        return deviceName;
     }
 
-    public String getName() {
-        return name;
-    }
-
-    public void setName(String name) {
-        this.name = name;
+    public void setDeviceName(String deviceName) {
+        this.deviceName = deviceName;
     }
 
     public Boolean getEnable() {
@@ -67,6 +65,6 @@ public class DeviceBaseModel implements YukonDevice {
     @Override
     @JsonIgnore
     public PaoIdentifier getPaoIdentifier() {
-        return new PaoIdentifier(id, type);
+        return new PaoIdentifier(deviceId, deviceType);
     }
 }

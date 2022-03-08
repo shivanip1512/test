@@ -101,6 +101,10 @@
                     <tags:nameValue2 nameKey=".status" valueClass="${clazz}">${monitoringEnabled}</tags:nameValue2>
                 </cti:displayForPageEditModes>
                 
+                <tags:nameValue2 nameKey=".notifyOnAlarmOnly">
+                    <tags:switchButton path="notifyOnAlarmOnly" offNameKey=".enabledfalse" onNameKey=".enabledtrue"/>
+                </tags:nameValue2>
+                
                 <tags:nameValue2 excludeColon="true">
                     <a href="javascript:void(0);" id="refresh-violations" class="dn" data-add-key="">
                         <cti:icon icon="icon-arrow-refresh"/>
@@ -120,7 +124,7 @@
                 noBlockOnAdd="true" 
                 disableAddButton="${disableAddProcessAtStart}">
                 <div>
-                    <table class="compact-results-table js-processors-table full-width dashed with-form-controls">
+                    <table class="compact-results-table no-stripes js-processors-table full-width dashed with-form-controls">
                         <thead>
                             <tr>
                                 <th><i:inline key=".processors.attribute" /></th>
@@ -227,7 +231,7 @@
                 noBlockOnAdd="true" 
                 disableAddButton="${disableAddProcessAtStart}">
                 <div>
-                    <table class="compact-results-table js-value-processors-table full-width dashed with-form-controls">
+                    <table class="compact-results-table no-stripes js-value-processors-table full-width dashed with-form-controls">
                         <thead>
                             <tr>
                                 <th><i:inline key=".processors.attribute" /></th>

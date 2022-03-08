@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<pao xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" paoType="RFG301R" changeGroup="rfg" displayGroup="RFMESH" displayName="RFG-301R" xsi:noNamespaceSchemaLocation="../pao.xsd">
+    <pointFiles>
+        <pointFile>RFG.xml</pointFile>
+    </pointFiles>
+    <tags>
+        <tag name="COMMANDER_REQUESTS"/>
+        <tag name="DEVICE_CONFIGURATION"/>
+        <tag name="DEVICE_ICON_TYPE" option="gas_meter"/>
+        <tag name="RFN_EVENTS"/>
+        <tag name="RFN_POINT_CALCULATION"/>
+        <tag name="GAS_METER_DETAIL_DISPLAYABLE"/>
+        <tag name="SUPPORTS_ATTRIBUTE_ASSIGNMENT"/>
+    </tags>
+    <configuration>
+        <category type="rfnGasChannelConfiguration"/>
+    </configuration>
+    <pointInfos>
+        <pointInfo name="Battery Voltage" init="true" attributes="BATTERY_VOLTAGE"/>
+        <pointInfo name="Gas Usage" init="true" attributes="USAGE_GAS, USAGE"/>
+        <pointInfo name="Gas Usage per Interval" init="true" attributes="GAS_USAGE_PER_INTERVAL"/>
+        <pointInfo name="Low Battery Warning" attributes="LOW_BATTERY_WARNING"/>
+        <pointInfo name="Magnet Tampering" attributes="MAGNET_TAMPERING"/>
+        <pointInfo name="Register Removal" attributes="REGISTER_REMOVAL"/>
+        <pointInfo name="Reverse Flow" attributes="REVERSE_FLOW"/>
+        <pointInfo name="Temperature" init="true" attributes="TEMPERATURE_DEVICE"/>
+        <pointInfo name="Pulse 1 Switch Failure" attributes="PULSE_1_SWITCH_FAILURE"/>
+        <pointInfo name="Pulse 2 Switch Failure" attributes="PULSE_2_SWITCH_FAILURE"/>
+        <pointInfo name="Node Commission Event"  attributes="NODE_COMMISSION_EVENT"/>
+        <pointInfo name="Lost Association" attributes="LOST_ASSOCIATION"/>
+    </pointInfos>
+</pao>

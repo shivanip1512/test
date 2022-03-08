@@ -11,7 +11,8 @@ class IM_EX_MSG OutboundTopic
 public:
     std::string name;
 
-    static const OutboundTopic YukonMetric;
+    static const OutboundTopic YukonMetricTopic;
+
 };
 
 }

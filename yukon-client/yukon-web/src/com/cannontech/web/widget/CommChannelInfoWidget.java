@@ -91,7 +91,7 @@ public class CommChannelInfoWidget extends AdvancedWidgetControllerBase {
                     HttpMethod.GET, PortBase.class);
             if (response.getStatusCode() == HttpStatus.OK) {
                 PortBase commChannel = (PortBase) response.getBody();
-                commChannel.setId(id);
+                commChannel.setDeviceId(id);
                 model.addAttribute("commChannel", commChannel);
                 commChanelSetupHelper.setupCommChannelFields(commChannel, model);
                 commChanelSetupHelper.setupPhysicalPort(commChannel, model);
@@ -123,7 +123,7 @@ public class CommChannelInfoWidget extends AdvancedWidgetControllerBase {
                 setupErrorFields(resp, commChannel, model, result, userContext);
                 return "commChannelInfoWidget/render.jsp";
             }
-            String url = helper.findWebServerUrl(request, userContext, ApiURL.commChannelUrl + "/" + commChannel.getId());
+            String url = helper.findWebServerUrl(request, userContext, ApiURL.commChannelUrl + "/" + commChannel.getDeviceId());
             ResponseEntity<? extends Object> response = apiRequestHelper.callAPIForObject(userContext, request, url,
                     HttpMethod.PATCH, Object.class, commChannel);
             if (response.getStatusCode() == HttpStatus.UNPROCESSABLE_ENTITY) {
@@ -137,7 +137,7 @@ public class CommChannelInfoWidget extends AdvancedWidgetControllerBase {
 
             if (response.getStatusCode() == HttpStatus.OK) {
                 model.clear();
-                flash.setConfirm(new YukonMessageSourceResolvable("yukon.common.save.success", commChannel.getName()));
+                flash.setConfirm(new YukonMessageSourceResolvable("yukon.common.save.success", commChannel.getDeviceName()));
                 return null;
             }
 
@@ -145,8 +145,8 @@ public class CommChannelInfoWidget extends AdvancedWidgetControllerBase {
             log.error(ex.getMessage());
             return "commChannelInfoWidget/render.jsp";
         } catch (RestClientException e) {
-            log.error("Error updating comm Channel: {}. Error: {}", commChannel.getName(), e.getMessage());
-            flash.setError(new YukonMessageSourceResolvable("yukon.web.api.save.error", commChannel.getName(), e.getMessage()));
+            log.error("Error updating comm Channel: {}. Error: {}", commChannel.getDeviceName(), e.getMessage());
+            flash.setError(new YukonMessageSourceResolvable("yukon.web.api.save.error", commChannel.getDeviceName(), e.getMessage()));
             return "commChannelInfoWidget/render.jsp";
         }
         return null;
@@ -157,7 +157,7 @@ public class CommChannelInfoWidget extends AdvancedWidgetControllerBase {
         resp.setStatus(HttpStatus.BAD_REQUEST.value());
         commChanelSetupHelper.setupCommChannelFields(commChannel, model);
         commChanelSetupHelper.setupPhysicalPort(commChannel, model);
-        commChanelSetupHelper.setupGlobalError(result, model, userContext, commChannel.getType());
+        commChanelSetupHelper.setupGlobalError(result, model, userContext, commChannel.getDeviceType());
         setupSharedType(commChannel, model);
     }
     

@@ -26,7 +26,7 @@
         <div class="scroll-md">
         <c:choose>
             <c:when test="${!isDisable}"> 
-            <table id="hardwareAssignedTable" class="compact-results-table with-form-controls clearfix">
+            <table id="hardwareAssignedTable" class="compact-results-table with-form-controls clearfix no-stripes">
                 <thead>
                     <tr>
                         <th></th>

@@ -78,6 +78,7 @@ import com.cannontech.common.rfn.service.RfnDeviceCreationService;
 import com.cannontech.common.rfn.service.RfnDeviceMetadataMultiService;
 import com.cannontech.common.rfn.service.RfnGatewayDataCache;
 import com.cannontech.common.rfn.service.RfnGatewayService;
+import com.cannontech.common.util.ExceptionToNullHelper;
 import com.cannontech.core.dao.NotFoundException;
 import com.cannontech.core.dao.StateGroupDao;
 import com.cannontech.core.dynamic.AsyncDynamicDataSource;
@@ -256,12 +257,14 @@ public class MapController {
                 if (type.isWifiDevice() || type.isCellularDevice()) {
                     String commStatus = accessor.getMessage(mapNetworkKey + "commStatus.RF");
                     LitePoint commStatusPoint = attributeService.findPointForAttribute(pao, BuiltInAttribute.COMM_STATUS);
-                    PointValueQualityHolder commStatusValue = asyncDynamicDataSource.getPointValue(commStatusPoint.getPointID());
-                    if ((int)commStatusValue.getValue() == CommStatusState.CONNECTED.getRawState()) {
-                        if (type.isWifiDevice()) {
-                            commStatus = accessor.getMessage(mapNetworkKey + "commStatus.WiFi");
-                        } else {
-                            commStatus = accessor.getMessage(mapNetworkKey + "commStatus.Cellular");
+                    if (commStatusPoint != null) {
+                        PointValueQualityHolder commStatusValue = asyncDynamicDataSource.getPointValue(commStatusPoint.getPointID());
+                        if ((int)commStatusValue.getValue() == CommStatusState.CONNECTED.getRawState()) {
+                            if (type.isWifiDevice()) {
+                                commStatus = accessor.getMessage(mapNetworkKey + "commStatus.WiFi");
+                            } else {
+                                commStatus = accessor.getMessage(mapNetworkKey + "commStatus.Cellular");
+                            }
                         }
                     }
                     model.addAttribute("commStatus", commStatus);
@@ -321,7 +324,7 @@ public class MapController {
                                 //get distance to next hop
                                 RfnIdentifier nextHop = routeData.getNextHopRfnIdentifier();
                                 if (nextHop != null) {
-                                    RfnDevice nextHopDevice = rfnDeviceCreationService.findOrCreate(nextHop);
+                                    RfnDevice nextHopDevice = ExceptionToNullHelper.nullifyExceptions(() -> rfnDeviceCreationService.getOrCreate(nextHop));
                                     if(nextHopDevice != null) {
                                         PaoLocation deviceLocation = paoLocationDao.getLocation(rfnDevice.getPaoIdentifier().getPaoId());
                                         PaoLocation nextHopLocation = paoLocationDao.getLocation(nextHopDevice.getPaoIdentifier().getPaoId());

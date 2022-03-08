@@ -29,7 +29,7 @@
             <cti:url value="/admin/config/attribute/create" var="createAttributeUrl" />
             <form:form modelAttribute="createAttribute" action="${createAttributeUrl}" method="POST">
                 <cti:csrfToken />
-                <div class="column-10-14 clearfix">
+                <div class="column-12-12 clearfix">
                     <div class="column one">
                         <cti:msg2 var="attributePlaceholder" key=".attributeName"/>
                         <tags:input path="name" placeholder="${attributePlaceholder}" maxlength="60" size="50"/>
@@ -40,9 +40,8 @@
                 </div>
             </form:form>
             
-            <div style="width:60%;" class="PT10">
-                <c:set var="tableClass" value="${attributes.size() > 10 ? 'js-attributes-table' : ''}"/>
-                <table class="compact-results-table row-highlighting has-actions ${tableClass}">
+            <div style="width:60%;" class="MT10 js-table-container scroll-sm">
+                <table class="compact-results-table no-stripes has-actions">
                     <thead>
                         <tr>
                             <th><i:inline key=".attributeName"></i:inline></th>
@@ -68,14 +67,14 @@
                                             <input type="hidden" name="savedName" value="${attr.name}"/>
                                             <spring:bind path="name">
                                                 <c:set var="errorClass" value="${status.error ? 'error' : ''}"/>
-                                                <form:input path="name" maxlength="60" size="60" cssClass="${errorClass}"/>
+                                                <form:input path="name" maxlength="60" size="50" cssClass="${errorClass}"/>
                                             </spring:bind>
                                             <div class="button-group">
                                                 <cti:msg2 var="cancelText" key=".cancelChanges"/>
                                                 <cti:msg2 var="saveText" key=".save"/>
                                                 <cti:button renderMode="buttonImage" icon="icon-disk" type="submit"
-                                                    data-attribute-id="${attributeId}" title="${saveText}"/>
-                                                <cti:button renderMode="buttonImage" icon="icon-delete" classes="js-cancel-edit-attribute" 
+                                                    data-attribute-id="${attributeId}" title="${saveText}" classes="ML0"/>
+                                                <cti:button renderMode="buttonImage" icon="icon-cross" classes="js-cancel-edit-attribute MR0" 
                                                     data-attribute-id="${attributeId}" title="${cancelText}"/>
                                             </div>
                                             <spring:bind path="name">
@@ -87,7 +86,7 @@
                                 <td>
                                     <cm:dropdown icon="icon-cog" triggerClasses="js-view-attribute-${attributeId} ${viewClass}">
                                         <cm:dropdownOption key=".edit" icon="icon-pencil" classes="js-edit-attribute" data-attribute-id="${attributeId}"/>
-                                        <cm:dropdownOption id="delete-attribute-${attributeId}" key=".delete" icon="icon-cross" 
+                                        <cm:dropdownOption id="delete-attribute-${attributeId}" key=".delete" icon="icon-delete" 
                                             data-ok-event="yukon:attribute:delete" classes="js-hide-dropdown" data-attribute-id="${attributeId}"/>
                                         <d:confirm on="#delete-attribute-${attributeId}" nameKey="confirmDelete" argument="${attr.name}"  />
                                         <cti:url var="deleteUrl" value="/admin/config/attribute/${attributeId}/delete"/>
@@ -148,7 +147,7 @@
                         </select>
                     </span>
                                         
-                    <cti:button nameKey="filter" classes="js-filter-assignments action primary fn"/>
+                    <cti:button nameKey="filter" classes="js-filter-assignments action primary fn ML15"/>
                 </form:form>
             </div>
             <hr/>

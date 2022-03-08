@@ -34,7 +34,7 @@ public class VirtualMeterModel extends VirtualDeviceBaseModel<VirtualMeter> impl
         super.buildDBPersistent(virtualMeter);
         if (getMeterNumber() != null) {
             DeviceMeterGroup deviceMeterGroup = new DeviceMeterGroup();
-            deviceMeterGroup.setDeviceID(getId());
+            deviceMeterGroup.setDeviceID(getDeviceId());
             deviceMeterGroup.setMeterNumber(getMeterNumber());
             virtualMeter.setDeviceMeterGroup(deviceMeterGroup);
         }

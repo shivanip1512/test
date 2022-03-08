@@ -29,21 +29,21 @@ struct test_ActiveMQConnectionManager : Cti::Messaging::ActiveMQConnectionManage
     void enqueueOutgoingMessage(
         const Cti::Messaging::Qpid::Queues::OutboundQueue&,
         Cti::Messaging::StreamableMessagePtr,
-        ReturnLabel returnLabel) override
+        ReturnLabel) override
     {
         //  ignore message, do not send
     }
     void enqueueOutgoingMessage(
         const Cti::Messaging::Qpid::Queues::OutboundQueue&,
-        const Cti::Messaging::ActiveMQConnectionManager::SerializedMessage& message,
-        ReturnLabel returnLabel) override
+        const Cti::Messaging::ActiveMQConnectionManager::SerializedMessage&,
+        ReturnLabel) override
     {
         //  ignore message, do not send
     }
     void enqueueOutgoingMessage(
         const Cti::Messaging::Qpid::Topics::OutboundTopic&,
-        const std::string message,
-        ReturnLabel returnLabel) override
+        const std::string,
+        ReturnLabel) override
     {
         //  ignore message, do not send
     }

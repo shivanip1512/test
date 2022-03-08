@@ -21,7 +21,7 @@ import com.cannontech.common.util.jms.api.JmsApiDirectory;
 import com.google.common.collect.Lists;
 
 public class SmartNotificationEventCreationServiceImpl implements SmartNotificationEventCreationService {
-    private static Logger commsLogger = YukonLogManager.getCommsLogger();
+    private static Logger snLogger = YukonLogManager.getSmartNotificationsLogger(SmartNotificationEventCreationServiceImpl.class);
     @Autowired private YukonJmsTemplateFactory jmsTemplateFactory;
     private YukonJmsTemplate template;
 
@@ -47,7 +47,7 @@ public class SmartNotificationEventCreationServiceImpl implements SmartNotificat
                     eventsDao.save(type, events);
                     sendEvents(type, events);
                 } catch (Exception e) {
-                    commsLogger.error("Exception sending smart notification event", e);
+                    snLogger.error("Exception sending smart notification event", e);
                 }
             });
         }
@@ -61,8 +61,8 @@ public class SmartNotificationEventCreationServiceImpl implements SmartNotificat
     private void sendEvents(SmartNotificationEventType type, List<SmartNotificationEvent> events) {
         if (!events.isEmpty()) {
             SmartNotificationEventMulti msg = new SmartNotificationEventMulti(type, events);
-            commsLogger.info("[SN:SmartNotificationEventCreationServiceImpl:{}] Sending Smart Notification {}", type,
-                    msg.loggingString(commsLogger.getLevel()));
+            snLogger.info("Sending Smart Notification {}", type,
+                    msg.loggingString(snLogger.getLevel()));
             template.convertAndSend(msg);
         }
     }

@@ -581,7 +581,7 @@ yukon.ui.unbusy('#busy-test-3');
 <div class="column-4-20 clearfix button-example">
     <div class="column one"><h4 class="subtle">Example:</h4></div>
     <div class="column two nogutter">
-        <cm:dropdown type="button" key="yukon.common.actions">
+        <cm:dropdown type="button" key="yukon.common.actions" showIcon="false">
             <cm:dropdownOption icon="icon-pencil" href="buttons#drop-down-example">Edit</cm:dropdownOption>
             <cm:dropdownOption icon="icon-page-copy" disabled="true" key="yukon.web.components.button.copy.label"/>
             <cm:dropdownOption icon="icon-cross" label="Delete" classes="js-delete-all-the-things"/>
@@ -597,11 +597,12 @@ yukon.ui.unbusy('#busy-test-3');
             <cm:dropdownOption icon="icon-plus-green" key=".create" id="create-option"/>
         </cm:dropdown>
         &nbsp;&nbsp;
-        <cm:dropdown icon="icon-emoticon-smile">
-            <cm:dropdownOption icon="icon-emoticon-smile">Smile</cm:dropdownOption>
-            <cm:dropdownOption icon="icon-emoticon-tongue">Tongue</cm:dropdownOption>
-            <cm:dropdownOption icon="icon-emoticon-happy">Happy</cm:dropdownOption>
-            <cm:dropdownOption icon="icon-emoticon-surprised">Surprised</cm:dropdownOption>
+        <cm:dropdown icon="icon-electric-meter">
+            <cm:dropdownOption icon="icon-electric-meter">RF Meter</cm:dropdownOption>
+            <cm:dropdownOption icon="icon-electric-plc-meter">PLC Meter</cm:dropdownOption>
+            <cm:dropdownOption icon="icon-water-meter">Water Meter</cm:dropdownOption>
+            <cm:dropdownOption icon="icon-gas-meter">Gas Meter</cm:dropdownOption>
+            <cm:dropdownOption icon="icon-virtual-meter">Virtual Meter</cm:dropdownOption>
         </cm:dropdown>
     </div>
 </div>
@@ -623,11 +624,12 @@ yukon.ui.unbusy('#busy-test-3');
     &lt;cm:dropdownOption icon=&quot;icon-plus-green&quot; key=&quot;.create&quot; id=&quot;create-option&quot;/&gt;
 &lt;/cm:dropdown&gt;
 ...
-&lt;cm:dropdown icon=&quot;icon-emoticon-smile&quot;&gt;
-    &lt;cm:dropdownOption icon=&quot;icon-emoticon-smile&quot;&gt;Smile&lt;/cm:dropdownOption&gt;
-    &lt;cm:dropdownOption icon=&quot;icon-emoticon-tongue&quot;&gt;Tongue&lt;/cm:dropdownOption&gt;
-    &lt;cm:dropdownOption icon=&quot;icon-emoticon-happy&quot;&gt;Happy&lt;/cm:dropdownOption&gt;
-    &lt;cm:dropdownOption icon=&quot;icon-emoticon-surprised&quot;&gt;Surprised&lt;/cm:dropdownOption&gt;
+&lt;cm:dropdown icon=&quot;icon-electric-meter&quot;&gt;
+    &lt;cm:dropdownOption icon=&quot;icon-electric-meter&quot;&gt;RF Meter&lt;/cm:dropdownOption&gt;
+    &lt;cm:dropdownOption icon=&quot;icon-electric-plc-meter&quot;&gt;PLC Meter&lt;/cm:dropdownOption&gt;
+    &lt;cm:dropdownOption icon=&quot;icon-water-meter&quot;&gt;Water Meter&lt;/cm:dropdownOption&gt;
+    &lt;cm:dropdownOption icon=&quot;icon-gas-meter&quot;&gt;Gas Meter&lt;/cm:dropdownOption&gt;
+    &lt;cm:dropdownOption icon=&quot;icon-virtual-meter&quot;&gt;Virtual Meter&lt;/cm:dropdownOption&gt;
 &lt;/cm:dropdown&gt;
 </pre>
     

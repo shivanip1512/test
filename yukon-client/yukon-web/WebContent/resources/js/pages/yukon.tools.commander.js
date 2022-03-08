@@ -127,11 +127,26 @@ yukon.tools.commander = (function () {
         var field = $('#command-text'),
             command = field.val(),
             dialog = $('#prompt-dialog'),
-            at = command.search(_regex.firstPrompt);
+            at = command.search(_regex.firstPrompt),
+            target = _targetButtons[$('#target-row .on').attr('id')],
+            isExpressCom = target === _targetTypes.ecom,
+            isVersaCom = target === _targetTypes.vcom;
             
         if (at != -1) {
-            dialog.find('.js-prompt-text').text(_regex.firstPrompt.exec(command)[1]);
-            dialog.find('.js-prompt-input').val('');
+        	var inputPrompt = _regex.firstPrompt.exec(command)[1],
+        		isLoadGroup = inputPrompt === 'LoadGroup',
+        		inputText = dialog.find('.js-prompt-input'),
+        		expressComPicker = yukon.pickers['expressComGroupPicker'],
+        		versaComPicker = yukon.pickers['versaComGroupPicker'];
+            dialog.find('.js-prompt-text').text(inputPrompt);
+            inputText.val('');
+            versaComPicker.clearSelected()
+            versaComPicker.clearEntireSelection();
+            expressComPicker.clearSelected()
+            expressComPicker.clearEntireSelection();
+            inputText.toggleClass('dn', ((isExpressCom || isVersaCom) && isLoadGroup));
+            dialog.find('.js-prompt-expresscom-group-picker').toggleClass('dn', !(isExpressCom && isLoadGroup));
+            dialog.find('.js-prompt-versacom-group-picker').toggleClass('dn', !(isVersaCom && isLoadGroup));
             yukon.ui.dialog('#prompt-dialog');
         } else {
             // For some reason setting focus immediately doesn't work.
@@ -312,7 +327,9 @@ yukon.tools.commander = (function () {
                 $('#route-id').val = targetStore.routeId;
                 option.data('routeId', targetStore.routeId);
                 option.data('serialNumber', targetStore.serialNumber);
-                option.find('.icon').toggleClass('icon-database-add icon-textfield');
+                option.find('.icon').toggleClass('icon-database-add icon-arrow-forward');
+                option.find('.icon-database-add').html(yg.iconSvg.iconDatabaseAdd);
+                option.find('.icon-arrow-forward').html(yg.iconSvg.iconArrowForward);
             }
             option.find('.dropdown-option-label').text(element.label);
             $('.js-recent-menu').append(option);
@@ -910,6 +927,10 @@ yukon.tools.commander = (function () {
                 $('#prompt-dialog').dialog('close');
                 field.focus();
                 _promptForInput();
+            });
+            
+            $(document).on('yukon:tools:commander:group:picker:closed', function (ev, items, picker) {
+                $('#prompt-dialog').find('.js-prompt-input').val(items[0].paoName);
             });
             
             $(document).on('keyup mouseup', '#commandPriority', function() {

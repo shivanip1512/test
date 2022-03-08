@@ -24,15 +24,15 @@
             <cti:tab title="${infoTab}">
                 <c:choose>
                     <c:when test="${not empty commChannel}">
-                        <tags:hidden path="id"/>
-                        <tags:hidden path="type"/>
-                        <input type="hidden" name="commChannel" value="${commChannel.type}">
+                        <tags:hidden path="deviceId"/>
+                        <tags:hidden path="deviceType"/>
+                        <input type="hidden" name="commChannel" value="${commChannel.deviceType}">
                         <tags:nameValueContainer2>
                             <tags:nameValue2 nameKey=".name">
-                                <tags:input path="name" maxlength="60" inputClass="w300 wrbw dib"/>
+                                <tags:input path="deviceName" maxlength="60" inputClass="w300 wrbw dib"/>
                             </tags:nameValue2>
                             <tags:nameValue2 nameKey=".type">
-                                <i:inline key="${commChannel.type}"/>
+                                <i:inline key="${commChannel.deviceType}"/>
                             </tags:nameValue2>
                             <%@ include file="configuration.jsp" %>
                         </tags:nameValueContainer2>
@@ -167,9 +167,9 @@
     <cti:displayForPageEditModes modes="VIEW">
         <div class="action-area">
              <cti:checkRolesAndProperties value="MANAGE_INFRASTRUCTURE" level="CREATE"> 
-                <cti:url var="editUrl" value="/widget/commChannelInfoWidget/${commChannel.id}/edit"/>
+                <cti:url var="editUrl" value="/widget/commChannelInfoWidget/${commChannel.deviceId}/edit"/>
                 <cti:msg2 var="saveText" key="components.button.save.label"/>
-                <cti:msg2 var="editPopupTitle" key="yukon.web.modules.operator.commChannelInfoWidget.edit" argument="${commChannel.name}"/>
+                <cti:msg2 var="editPopupTitle" key="yukon.web.modules.operator.commChannelInfoWidget.edit" argument="${commChannel.deviceName}"/>
                 <c:if test="${not empty commChannel}">
                     <cti:button icon="icon-pencil"
                                 nameKey="edit"

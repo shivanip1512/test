@@ -11,6 +11,7 @@ import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.jdbc.core.RowCallbackHandler;
 
 import com.cannontech.common.util.SqlStatementBuilder;
+import com.cannontech.core.dao.NotFoundException;
 import com.cannontech.database.SqlParameterSink;
 import com.cannontech.database.TypeRowMapper;
 import com.cannontech.database.YukonJdbcTemplate;
@@ -40,14 +41,18 @@ public class EcobeeZeusGroupDaoImpl implements EcobeeZeusGroupDao {
 
     @Override
     public String getZeusGroupId(int yukonGroupId, int inventoryId, int programId) {
-        SqlStatementBuilder sql = new SqlStatementBuilder();
-        sql.append("SELECT LGZM.EcobeeGroupId FROM LMGroupZeusMapping LGZM");
-        sql.append("LEFT JOIN ZeusGroupInventoryMapping ZGIM");
-        sql.append("ON LGZM.EcobeeGroupId = ZGIM.EcobeeGroupId");
-        sql.append("WHERE LGZM.YukonGroupId").eq(yukonGroupId);
-        sql.append("AND ZGIM.InventoryID").eq(inventoryId);
-        sql.append("AND LGZM.ProgramId").eq(programId);
-        return jdbcTemplate.queryForString(sql);
+        try {
+            SqlStatementBuilder sql = new SqlStatementBuilder();
+            sql.append("SELECT LGZM.EcobeeGroupId FROM LMGroupZeusMapping LGZM");
+            sql.append("LEFT JOIN ZeusGroupInventoryMapping ZGIM");
+            sql.append("ON LGZM.EcobeeGroupId = ZGIM.EcobeeGroupId");
+            sql.append("WHERE LGZM.YukonGroupId").eq(yukonGroupId);
+            sql.append("AND ZGIM.InventoryID").eq(inventoryId);
+            sql.append("AND LGZM.ProgramId").eq(programId);
+            return jdbcTemplate.queryForString(sql);
+        } catch (EmptyResultDataAccessException e) {
+            throw new NotFoundException("No ecobee group found for the yukon group");
+        }
     }
 
     @Override
@@ -265,5 +270,13 @@ public class EcobeeZeusGroupDaoImpl implements EcobeeZeusGroupDao {
         zeusGroupInventoryMappingSql.append("UPDATE ZeusGroupInventoryMapping");
         zeusGroupInventoryMappingSql.append(updateSql);
         jdbcTemplate.update(zeusGroupInventoryMappingSql);
+    }
+
+    @Override
+    public List<Integer> getProgramIdsByGroupId(Integer lmGroupId) {
+        SqlStatementBuilder sql = new SqlStatementBuilder();
+        sql.append("SELECT ProgramID FROM LMGroupZeusMapping");
+        sql.append("WHERE YukonGroupId").eq(lmGroupId);
+        return jdbcTemplate.query(sql, TypeRowMapper.INTEGER);
     }
 }

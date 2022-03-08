@@ -1,7 +1,7 @@
 token-generate:
   post:
       tags:
-        - Token Generation
+        - Authentication
       summary: Log in and generate token
       description: API to Generate a token and set it for authorization.
       requestBody:
@@ -21,7 +21,91 @@ token-generate:
           content:
             application/json:
               schema:
-                $ref: '../schemas/tokenSchema.yaml#/components/examples/Token'
+                $ref: '../schemas/tokenSchema.yaml#/Token-Generate-Response'
               examples:
                 Token: 
                   $ref: '../schemas/tokenSchema.yaml#/components/examples/Token'
+
+refreshToken:
+  post:
+      tags:
+        - Authentication
+      summary: Generate Refresh and Access token
+      description: Use existing valid refresh token to generate a new set of access and refresh tokens to continue making API calls.
+      requestBody:
+        description: |-
+          Send the existing refresh token to generate an API access and refresh token.
+        content:
+          application/json:
+            schema:
+              $ref: '../schemas/tokenSchema.yaml#/Token-Refresh-Generate-Request'
+            examples:
+              RefreshToken: 
+                $ref: '../schemas/tokenSchema.yaml#/components/examples/RefreshToken'
+        required: true
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '../schemas/tokenSchema.yaml#/Token-Refresh-Generate-Response'
+              examples:
+                Token: 
+                  $ref: '../schemas/tokenSchema.yaml#/components/examples/Token'
+logout:
+  post:
+      tags:
+        - Authentication
+      summary: Log out and invalidate refresh token
+      description: Logout a User by invalidating refresh token.
+      requestBody:
+        description: |-
+          Send refresh token and logoutfromAllSystem to logout from system.
+        content:
+          application/json:
+            schema:
+              $ref: '../schemas/tokenSchema.yaml#/Token-logout-Request'
+            examples:
+              LogoutRequest: 
+                $ref: '../schemas/tokenSchema.yaml#/components/examples/logoutRequest'
+        required: true
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '../schemas/tokenSchema.yaml#/Token-logout-Response'
+              examples:
+                LogoutResponse: 
+                  $ref: '../schemas/tokenSchema.yaml#/components/examples/logoutResponse'
+
+forgottenPassword:
+  post:
+      tags:
+        - Authentication
+      summary: Generate send email address for password change.
+      description: Generate send email address for password change.
+      requestBody:
+        description: |-
+          Send email, username or account number and captcha to send email address for password change.
+        content:
+          application/json:
+            schema:
+              $ref: '../schemas/tokenSchema.yaml#/Forgotten-Password-Request'
+            examples:
+              ForgottenPasswordRequest: 
+                $ref: '../schemas/tokenSchema.yaml#/components/examples/ForgottenPasswordRequest'
+        required: true
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '../schemas/tokenSchema.yaml#/Forgotten-Password-Response'
+              examples:
+                ForgottenPasswordResponse: 
+                  $ref: '../schemas/tokenSchema.yaml#/components/examples/ForgottenPasswordResponse'
+

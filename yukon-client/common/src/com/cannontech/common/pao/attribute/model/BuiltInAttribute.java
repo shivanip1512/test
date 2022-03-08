@@ -528,11 +528,21 @@ public enum BuiltInAttribute implements Attribute, DisplayableEnum {
     NET_DELIVERED_KVARH_RATE_C("Net Delivered kVArh Rate C", AttributeGroup.REACTIVE),
     NET_DELIVERED_KVARH_RATE_D("Net Delivered kVArh Rate D", AttributeGroup.REACTIVE),
 
+    DELIVERED_KVARH_Q1("Delivered kVArh (Quadrant 1)", AttributeGroup.REACTIVE),
+    DELIVERED_KVARH_Q1_RATE_A("Delivered kVArh (Quadrant 1) Rate A", AttributeGroup.REACTIVE),
+    DELIVERED_KVARH_Q1_RATE_B("Delivered kVArh (Quadrant 1) Rate B", AttributeGroup.REACTIVE),
+    DELIVERED_KVARH_Q1_RATE_C("Delivered kVArh (Quadrant 1) Rate C", AttributeGroup.REACTIVE),
+    DELIVERED_KVARH_Q1_RATE_D("Delivered kVArh (Quadrant 1) Rate D", AttributeGroup.REACTIVE),
     RECEIVED_KVARH("Received kVArh", AttributeGroup.REACTIVE),
     RECEIVED_KVARH_RATE_A("Received kVArh Rate A", AttributeGroup.REACTIVE),
     RECEIVED_KVARH_RATE_B("Received kVArh Rate B", AttributeGroup.REACTIVE),
     RECEIVED_KVARH_RATE_C("Received kVArh Rate C", AttributeGroup.REACTIVE),
     RECEIVED_KVARH_RATE_D("Received kVArh Rate D", AttributeGroup.REACTIVE),
+    RECEIVED_KVARH_Q4("Received kVArh (Quadrant 4)", AttributeGroup.REACTIVE),
+    RECEIVED_KVARH_Q4_RATE_A("Received kVArh (Quadrant 4) Rate A", AttributeGroup.REACTIVE),
+    RECEIVED_KVARH_Q4_RATE_B("Received kVArh (Quadrant 4) Rate B", AttributeGroup.REACTIVE),
+    RECEIVED_KVARH_Q4_RATE_C("Received kVArh (Quadrant 4) Rate C", AttributeGroup.REACTIVE),
+    RECEIVED_KVARH_Q4_RATE_D("Received kVArh (Quadrant 4) Rate D", AttributeGroup.REACTIVE),
     NET_RECEIVED_KVARH("Net Received kVArh", AttributeGroup.REACTIVE),
     NET_RECEIVED_KVARH_RATE_A("Net Received kVArh Rate A", AttributeGroup.REACTIVE),
     NET_RECEIVED_KVARH_RATE_B("Net Received kVArh Rate B", AttributeGroup.REACTIVE),
@@ -649,6 +659,10 @@ public enum BuiltInAttribute implements Attribute, DisplayableEnum {
     // RFN Integrated Gas Meter Events
     MAGNET_TAMPERING("Magnet Tampering", AttributeGroup.RFN_METERING_EVENT, false),
     REGISTER_REMOVAL("Register Removal", AttributeGroup.RFN_METERING_EVENT, false),
+    PULSE_1_SWITCH_FAILURE("Pulse 1 Switch Failure", AttributeGroup.RFN_METERING_EVENT, false),
+    PULSE_2_SWITCH_FAILURE("Pulse 2 Switch Failure", AttributeGroup.RFN_METERING_EVENT, false),
+    NODE_COMMISSION_EVENT("Node Commission Event", AttributeGroup.RFN_METERING_EVENT, false),
+    LOST_ASSOCIATION("Lost Association", AttributeGroup.RFN_METERING_EVENT, false),
     
     // RFN Tamper Alarm/Event
     TAMPER_NO_USAGE_OVER_24_HOURS("Tamper - No Usage over 24 hours", AttributeGroup.RFN_METERING_EVENT, false),
@@ -852,6 +866,8 @@ public enum BuiltInAttribute implements Attribute, DisplayableEnum {
     private static Set<BuiltInAttribute> itronLcrAttributes;
     
     private static Set<BuiltInAttribute> calculableAttributes;
+    
+    private static Set<BuiltInAttribute> canCreateNegativeCalculations;
 
     static {
 
@@ -876,6 +892,7 @@ public enum BuiltInAttribute implements Attribute, DisplayableEnum {
         buildVoltageAttributes();
         buildItronLcrAttributes();
         buildCalculableAttributes();
+        buildCanCreateNegativeCalculations();
     }
 
     /**
@@ -1025,7 +1042,9 @@ public enum BuiltInAttribute implements Attribute, DisplayableEnum {
                 SUM_PEAK_KVAR_RATE_A,
                 SUM_PEAK_KVAR_RATE_B,
                 SUM_PEAK_KVAR_RATE_C,
-                SUM_PEAK_KVAR_RATE_D);
+                SUM_PEAK_KVAR_RATE_D,
+                MINIMUM_POWER_FACTOR,
+                MINIMUM_POWER_FACTOR_FROZEN);
 
         Builder<BuiltInAttribute> builder = ImmutableSet.builder();
         builder.addAll(lookupByGroup.get(AttributeGroup.RFN_HARDWARE_EVENT));
@@ -1236,6 +1255,15 @@ public enum BuiltInAttribute implements Attribute, DisplayableEnum {
                                                NET_KWH_RATE_C,
                                                NET_KWH_RATE_D);
     }
+    
+    private static void buildCanCreateNegativeCalculations() {
+
+        canCreateNegativeCalculations = ImmutableSet.of(NET_KWH,
+                                                        NET_KWH_RATE_A,
+                                                        NET_KWH_RATE_B,
+                                                        NET_KWH_RATE_C,
+                                                        NET_KWH_RATE_D);
+    }
 
     private String defaultDescription;
     private AttributeGroup attributeGroup;
@@ -1256,6 +1284,10 @@ public enum BuiltInAttribute implements Attribute, DisplayableEnum {
 
     public boolean isReadableProfile() {
         return readableProfileAttributes.contains(this);
+    }
+
+    public boolean canCreateNegativeCalcualations() {
+        return canCreateNegativeCalculations.contains(this);
     }
 
     public static Map<AttributeGroup, Set<BuiltInAttribute>> getStandardGroupedAttributes() {

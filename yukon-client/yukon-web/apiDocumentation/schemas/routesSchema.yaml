@@ -1,11 +1,11 @@
 Route:
   title: Route
   required:
-    - routeName
+    - deviceName
     - signalTransmitterId
   type: object
   properties:
-    name:
+    deviceName:
       type: string
       maxLength: 60
       description: 'Name for the route.'
@@ -31,11 +31,9 @@ id:
       description: 'Unique identifier for Route.'
 routeId:
   title: routeId
-  required:
-    - routeId
   type: object
   properties:
-    routeId:
+    id:
       type: integer
       description: 'Unique identifier for Route.'
 
@@ -63,14 +61,15 @@ carrierRoute:
         description: 'Carrier Route User Lock'
       resetRptSettings: 
         type: boolean
-        default: true
+        default: false
         description: 'Carrier Route ResetRtrSettings'
 
 repeaters:
   type: array
   items:
     required:
-    - repeaterId
+      - repeaterId
+      - variableBits
     type: object
     properties:
       repeaterId:
@@ -78,19 +77,44 @@ repeaters:
         description: 'Repeater Route Id.'
       variableBits:
         type: integer
-        range : 0-7
-        description: 'VariableBits for Repeater Route.'
+        range : 1-7
+        description: 'VariableBits for Repeater Route.Last Repeater bit is always 7, all other cases variable bit range between 1-6'
       repeaterOrder:
         type: integer
-        range : 0-7
-        description: 'Order of the Repeater Route'
+        range : 1-7
+        description: 'Order of the Repeater Route. Order is not dependent on user input, ordering will be done automatically between 1-7'
+
+Route Response Schema:
+  title: Route
+  type: object
+  properties:
+    deviceId:
+      type: integer
+      description: 'Unique identifier for Route.'
+    deviceName:
+      type: string
+      maxLength: 60
+      description: 'Name for the route.'
+    deviceType:
+      type: string
+      description: 'Type of Route'
+    signalTransmitterId:
+      type: integer
+      description: 'Id for the signal transmitter.'
+    defaultRoute:
+      type: boolean
+      description: 'Setting up default Route.'
+    carrierRoute:
+      $ref: '#/carrierRoute'
+    repeaters:
+        $ref: '#/repeaters'
 
 components:
   examples:
-    Route:
+    Route Request:
       value:
-        name: Test Route
-        signalTransmitterId: 5
+        deviceName: Test Route
+        signalTransmitterId: 12339
         defaultRoute: true
         carrierRoute:
           busNumber: 1
@@ -99,12 +123,31 @@ components:
           userLocked: false
           resetRptSettings: true
         repeaters:
-          repeaterId: 787
-          variableBits: 5
-          repeaterOrder: 1
+          - repeaterId: 787
+            variableBits: 7
+            repeaterOrder: 1
+    Route Response:
+      value:
+        deviceId: 7
+        deviceName: Test Route
+        deviceType: ROUTE_CCU
+        signalTransmitterId: 12339
+        defaultRoute: true
+        carrierRoute:
+          busNumber: 1
+          ccuFixBits: 5
+          ccuVariableBits: 1
+          userLocked: false
+          resetRptSettings: true
+        repeaters:
+          - repeaterId: 787
+            variableBits: 7
+            repeaterOrder: 1
     List Routes:
       value:
-        - name: Test Route
+
+        - id: 9
+          deviceName: Test Route
           signalTransmitterId: 5
           defaultRoute: true
           carrierRoute:
@@ -114,10 +157,11 @@ components:
             userLocked: false
             resetRptSettings: true
           repeaters:
-            repeaterId: 787
-            variableBits: 5
-            repeaterOrder: 1
-        - name: Test Route 1
+            - repeaterId: 787
+              variableBits: 5
+              repeaterOrder: 1
+        - id: 11
+          deviceName: Test Route 1
           signalTransmitterId: 5
           defaultRoute: true
           carrierRoute:
@@ -127,9 +171,9 @@ components:
             userLocked: false
             resetRptSettings: true
           repeaters:
-            repeaterId: 787
-            variableBits: 5
-            repeaterOrder: 1
+            - repeaterId: 787
+              variableBits: 5
+              repeaterOrder: 1
     routeId:
       value:
-      routeId: 10
+        id: 10

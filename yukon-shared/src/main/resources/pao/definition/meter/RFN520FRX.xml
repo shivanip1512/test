@@ -46,6 +46,11 @@
         <pointInfo name="Delivered kVArh (Rate B kVArh)" attributes="KVARH_RATE_B"/>
         <pointInfo name="Delivered kVArh (Rate C kVArh)" attributes="KVARH_RATE_C"/>
         <pointInfo name="Delivered kVArh (Rate D kVArh)" attributes="KVARH_RATE_D"/>
+        <pointInfo name="Delivered kVArh (Quadrant 1)" attributes="DELIVERED_KVARH_Q1"/>
+        <pointInfo name="Delivered kVArh (Quadrant 1) (Rate A kVArh)" attributes="DELIVERED_KVARH_Q1_RATE_A"/>
+        <pointInfo name="Delivered kVArh (Quadrant 1) (Rate B kVArh)" attributes="DELIVERED_KVARH_Q1_RATE_B"/>
+        <pointInfo name="Delivered kVArh (Quadrant 1) (Rate C kVArh)" attributes="DELIVERED_KVARH_Q1_RATE_C"/>
+        <pointInfo name="Delivered kVArh (Quadrant 1) (Rate D kVArh)" attributes="DELIVERED_KVARH_Q1_RATE_D"/>
         <pointInfo name="Delivered kW" init="true" attributes="DELIVERED_DEMAND,DEMAND"/>
         <pointInfo name="Delivered kW Load Profile" attributes="LOAD_PROFILE,DELIVERED_KW_LOAD_PROFILE"/>
         <pointInfo name="Delivered kWh" init="true" attributes="USAGE,DELIVERED_KWH"/>
@@ -119,6 +124,11 @@
         <pointInfo name="Received kVArh (Rate B kVArh)" attributes="RECEIVED_KVARH_RATE_B"/>
         <pointInfo name="Received kVArh (Rate C kVArh)" attributes="RECEIVED_KVARH_RATE_C"/>
         <pointInfo name="Received kVArh (Rate D kVArh)" attributes="RECEIVED_KVARH_RATE_D"/>
+        <pointInfo name="Received kVArh (Quadrant 4)" attributes="RECEIVED_KVARH_Q4"/>
+        <pointInfo name="Received kVArh (Quadrant 4) (Rate A kVArh)" attributes="RECEIVED_KVARH_Q4_RATE_A"/>
+        <pointInfo name="Received kVArh (Quadrant 4) (Rate B kVArh)" attributes="RECEIVED_KVARH_Q4_RATE_B"/>
+        <pointInfo name="Received kVArh (Quadrant 4) (Rate C kVArh)" attributes="RECEIVED_KVARH_Q4_RATE_C"/>
+        <pointInfo name="Received kVArh (Quadrant 4) (Rate D kVArh)" attributes="RECEIVED_KVARH_Q4_RATE_D"/>
         <pointInfo name="Received kW Load Profile" attributes="RECEIVED_KW_LOAD_PROFILE"/>
         <pointInfo name="Received kWh" attributes="RECEIVED_KWH"/>
         <pointInfo name="Received kWh (Rate A kWh)" attributes="RECEIVED_KWH_RATE_A"/>
@@ -191,5 +201,11 @@
         <pointInfo name="Sum kVAr" attributes="SUM_KVAR"/>
         <pointInfo name="Sum kVA" attributes="SUM_KVA"/>
         <pointInfo name="kVA (Quadrants 1 2 4)" attributes="KVA_Q124"/>
+        <pointInfo name="Received kW" attributes="RECEIVED_DEMAND"/>
+        <pointInfo name="Received Peak kW" attributes="RECEIVED_PEAK_DEMAND"/>
+        <pointInfo name="Received Peak kW (Rate A kW)" attributes="RECEIVED_PEAK_DEMAND_RATE_A"/>
+        <pointInfo name="Received Peak kW (Rate B kW)" attributes="RECEIVED_PEAK_DEMAND_RATE_B"/>
+        <pointInfo name="Received Peak kW (Rate C kW)" attributes="RECEIVED_PEAK_DEMAND_RATE_C"/>
+        <pointInfo name="Received Peak kW (Rate D kW)" attributes="RECEIVED_PEAK_DEMAND_RATE_D"/>
     </pointInfos>
 </pao>

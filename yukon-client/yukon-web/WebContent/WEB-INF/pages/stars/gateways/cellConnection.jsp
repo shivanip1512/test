@@ -37,7 +37,7 @@
                 </cti:url>
                 <cm:dropdownOption key="yukon.common.collectionActions" icon="icon-cog-go" href="${collectionActionsUrl}" newTab="true" classes="js-collection-actions"/>
                 <cm:dropdownOption key="yukon.common.download" icon="icon-csv" classes="js-download"/>
-                <cm:dropdownOption key="yukon.common.mapDevices" icon="icon-map-sat" classes="js-map"/>
+                <cm:dropdownOption key="yukon.common.mapDevices" icon="icon-map" classes="js-map"/>
                 <cm:dropdownOption key="yukon.web.modules.operator.connectedDevices.queryAll" icon="icon-read" classes="js-refresh-all"/>
             </cm:dropdown>
         </span>

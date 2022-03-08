@@ -29,9 +29,9 @@
             <cti:msg2 var="percent" key="yukon.common.units.PERCENT"/>
             <cti:msg2 var="min" key="yukon.common.min"/>
             <cti:msg2 var="max" key="yukon.common.max"/>
-            <tags:input path="minLoadPercent" size="3" units="${percent}" inputClass="MR0" placeholder="${min}"/>
+            <tags:input path="minLoadPercent" size="3" units="${percent}" inputClass="MR0 vam" placeholder="${min}"/>
             &nbsp;&nbsp;<i:inline key="yukon.common.to" />&nbsp;&nbsp;
-            <tags:input path="maxLoadPercent" size="3" units="${percent}" inputClass="MR0" placeholder="${max}"/>
+            <tags:input path="maxLoadPercent" size="3" units="${percent}" inputClass="MR0 vam" placeholder="${max}"/>
             
             <div style="padding-top:5px;padding-left:60px;">
                 <form:select path="selectedConfiguration" name="selectedConfiguration" class="js-selected-configuration">
@@ -55,11 +55,11 @@
 
                 <span class="ML15">
                     <cti:msg2 var="intervalPlaceholder" key=".filter.interval"/>
-                    <tags:selectWithItems id="intervalSelect" path="selectedInterval" items="${searchIntervals}" inputClass="js-selected-attInterval"
+                    <tags:selectWithItems id="intervalSelect" path="selectedInterval" items="${searchIntervals}" inputClass="js-selected-attInterval vam"
                                           defaultItemValue="-1" defaultItemLabel="${intervalPlaceholder}"/>
                 </span>
 
-                <span class="fr">
+                <span class="fr MT5 MB5">
                     <cti:url var="showAllUrl" value="/tools/dataStreaming/summary" />
                     <cti:button nameKey="showAll" href="${showAllUrl}"/>
                     <cti:button nameKey="export" classes="primary action" type="submit" />

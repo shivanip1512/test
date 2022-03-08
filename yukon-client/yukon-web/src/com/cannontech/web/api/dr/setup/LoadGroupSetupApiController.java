@@ -60,10 +60,8 @@ public class LoadGroupSetupApiController {
     @PostMapping("/{id}/copy")
     @CheckPermissionLevel(property = YukonRoleProperty.DR_SETUP_PERMISSION, level = HierarchyPermissionLevel.CREATE)
     public ResponseEntity<Object> copy(@PathVariable int id, @Valid @RequestBody LMCopy lmCopy, YukonUserContext userContext) {
-        int paoId = loadGroupService.copy(id, lmCopy, userContext.getYukonUser());
-        HashMap<String, Integer> paoIdMap = new HashMap<>();
-        paoIdMap.put("groupId", paoId);
-        return new ResponseEntity<>(paoIdMap, HttpStatus.OK);
+        LoadGroupBase copiedLoadGroup = loadGroupService.copy(id, lmCopy, userContext.getYukonUser());
+        return new ResponseEntity<>(copiedLoadGroup, HttpStatus.OK);
     }
 
     @DeleteMapping("/{id}")

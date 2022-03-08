@@ -85,7 +85,6 @@ private:
 
     CtiSignalManager           _signalManager;
     CtiTagManager              _tagManager;
-
     CtiClientConnection*       _notificationConnection;
     bool ShutdownOnThreadTimeout;
 

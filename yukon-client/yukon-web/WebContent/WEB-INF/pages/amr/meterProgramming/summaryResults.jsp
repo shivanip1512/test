@@ -22,7 +22,7 @@
                 <cti:url var="mapUrl" value="/tools/map">
                     <cti:mapParam value="${deviceCollection.collectionParameters}"/>
                 </cti:url>
-                <cm:dropdownOption icon="icon-map-sat" key="yukon.common.mapDevices" href="${mapUrl}" newTab="true"/>
+                <cm:dropdownOption icon="icon-map" key="yukon.common.mapDevices" href="${mapUrl}" newTab="true"/>
             </cm:dropdown>
         </span>
     </c:if>

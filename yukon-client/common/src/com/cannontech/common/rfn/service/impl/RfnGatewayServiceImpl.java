@@ -405,6 +405,9 @@ public class RfnGatewayServiceImpl implements RfnGatewayService {
         data.setAdmin(settings.getAdmin());
         data.setSuperAdmin(settings.getSuperAdmin());
         
+        data.setNmIpAddress(settings.getNmIpAddress());
+        data.setNmPort(settings.getNmPort());
+        
         if (settings.isUseDefaultUpdateServer()) {
             String updateServerUrl = globalSettingDao.getString(GlobalSettingType.RFN_FIRMWARE_UPDATE_SERVER);
             Authentication updateServerAuth = new Authentication();
@@ -435,6 +438,16 @@ public class RfnGatewayServiceImpl implements RfnGatewayService {
         GatewaySaveData editData = new GatewaySaveData();
         boolean sendGatewayEditRequest = false;
         
+        if (newGatewayData.getNmIpAddress() != null 
+                && !newGatewayData.getNmIpAddress().equals(existingGatewayData.getNmIpAddress())) {
+            editData.setNmIpAddress(newGatewayData.getNmIpAddress());
+            sendGatewayEditRequest = true;
+        }
+        if (newGatewayData.getNmPort() != null 
+                && !newGatewayData.getNmPort().equals(existingGatewayData.getNmPort())) {
+            editData.setNmPort(newGatewayData.getNmPort());
+            sendGatewayEditRequest = true;
+        }
         if (newGatewayData.getIpAddress() != null 
                 && !newGatewayData.getIpAddress().equals(existingGatewayData.getIpAddress())) {
             editData.setIpAddress(newGatewayData.getIpAddress());
@@ -651,6 +664,10 @@ public class RfnGatewayServiceImpl implements RfnGatewayService {
         settings.setIpAddress(gateway.getData().getIpAddress());
         settings.setAdmin(gateway.getData().getAdmin());
         settings.setSuperAdmin(gateway.getData().getSuperAdmin());
+
+        settings.setNmIpAddress(gateway.getData().getNmIpAddress());
+        settings.setNmPort(gateway.getData().getNmPort());
+        
         if (gateway.getLocation() != null) {
             settings.setLatitude(gateway.getLocation().getLatitude());
             settings.setLongitude(gateway.getLocation().getLongitude());

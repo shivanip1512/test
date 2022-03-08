@@ -21,7 +21,7 @@
     <entry key="yukon.web.modules.tools.commander.readings.title">Readings: </entry>
     <entry key="yukon.web.modules.tools.commander.recent">Recent</entry>
     <entry key="yukon.web.modules.tools.commander.nearby">Nearby</entry>
-    <entry key="yukon.web.modules.tools.commander.prompt">User Input Required</entry>
+    <entry key="yukon.web.modules.tools.commander.prompt">Command Parameter Required</entry>
     <entry key="yukon.web.modules.tools.commander.command">Command</entry>
     <entry key="yukon.web.modules.tools.commander.device">Device</entry>
     <entry key="yukon.web.modules.tools.commander.target">Target</entry>

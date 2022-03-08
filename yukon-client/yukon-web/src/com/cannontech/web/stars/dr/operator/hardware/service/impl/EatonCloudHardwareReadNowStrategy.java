@@ -1,8 +1,6 @@
 package com.cannontech.web.stars.dr.operator.hardware.service.impl;
 
-import java.util.HashSet;
 import java.util.Map;
-import java.util.Set;
 
 import org.apache.logging.log4j.Logger;
 import org.joda.time.DateTime;
@@ -14,7 +12,6 @@ import com.cannontech.common.i18n.MessageSourceAccessor;
 import com.cannontech.common.inventory.HardwareType;
 import com.cannontech.common.util.Range;
 import com.cannontech.database.data.lite.LiteYukonPAObject;
-import com.cannontech.dr.eatonCloud.model.EatonCloudException;
 import com.cannontech.dr.eatonCloud.model.v1.EatonCloudCommunicationExceptionV1;
 import com.cannontech.dr.eatonCloud.service.v1.EatonCloudDataReadService;
 import com.cannontech.i18n.YukonUserContextMessageSourceResolver;
@@ -42,16 +39,14 @@ public class EatonCloudHardwareReadNowStrategy implements HardwareReadNowStrateg
             DateTime end = start.minusDays(7);
             Range<Instant> range = new Range<Instant>(end.toInstant(), false, start.toInstant(), true);
 
-            Set<Integer> deviceIds = new HashSet<>();
-            deviceIds.add(deviceId);
             // Read Device.
-            readService.collectDataForRead(deviceIds, range);
+            readService.collectDataForRead(deviceId, range);
             json.put("success", true);
             json.put("message", accessor.getMessage(keyBase + "readNowSuccess"));
-        } catch (EatonCloudCommunicationExceptionV1 | EatonCloudException e) {
+        } catch (EatonCloudCommunicationExceptionV1 e) {
             log.debug("Read now failed for " + device);
             json.put("success", false);
-            json.put("message", accessor.getMessage(keyBase + "error.readNowFailed", e.getMessage()));
+            json.put("message", accessor.getMessage(keyBase + "error.readNowFailed", e.getDisplayMessage()));
         }
 
         return json;

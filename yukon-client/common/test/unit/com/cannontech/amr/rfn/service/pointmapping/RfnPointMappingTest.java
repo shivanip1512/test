@@ -287,12 +287,14 @@ public class RfnPointMappingTest {
         rfnPointMapping.remove(PaoType.RFG201);
         rfnPointMapping.remove(PaoType.RFG301);
 
+        compareMeterClassPoints(icd, rfnPointMapping, icd.gasNode, MeterClass.GAS_NODE);
+
         //  RFN-430kV unmapped in yukonPointMapping
         rfnPointMapping.remove(PaoType.RFN430KV);
 
         
         rfnPointMapping.entrySet().stream()
-            .forEach(e -> fail(e.getKey() + " has " + e.getValue().size() + " unmapped points." 
+            .forEach(e -> fail(e.getKey() + " has " + e.getValue().size() + " points in rfnPointMapping that are not in yukonPointMappingIcd." 
                                       + "\nFirst entry: " + Iterables.getFirst(e.getValue().entrySet(), null)));
     }
 
@@ -495,10 +497,20 @@ public class RfnPointMappingTest {
         missing.put(PaoType.RFN520FAX, "Delivered kVArh (Rate B kVArh)");
         missing.put(PaoType.RFN520FAX, "Delivered kVArh (Rate C kVArh)");
         missing.put(PaoType.RFN520FAX, "Delivered kVArh (Rate D kVArh)");
+        missing.put(PaoType.RFN520FAX, "Delivered kVArh (Quadrant 1)");
+        missing.put(PaoType.RFN520FAX, "Delivered kVArh (Quadrant 1) (Rate A kVArh)");
+        missing.put(PaoType.RFN520FAX, "Delivered kVArh (Quadrant 1) (Rate B kVArh)");
+        missing.put(PaoType.RFN520FAX, "Delivered kVArh (Quadrant 1) (Rate C kVArh)");
+        missing.put(PaoType.RFN520FAX, "Delivered kVArh (Quadrant 1) (Rate D kVArh)");
         missing.put(PaoType.RFN520FAX, "Received kVArh (Rate A kVArh)");
         missing.put(PaoType.RFN520FAX, "Received kVArh (Rate B kVArh)");
         missing.put(PaoType.RFN520FAX, "Received kVArh (Rate C kVArh)");
         missing.put(PaoType.RFN520FAX, "Received kVArh (Rate D kVArh)");
+        missing.put(PaoType.RFN520FAX, "Received kVArh (Quadrant 4)");
+        missing.put(PaoType.RFN520FAX, "Received kVArh (Quadrant 4) (Rate A kVArh)");
+        missing.put(PaoType.RFN520FAX, "Received kVArh (Quadrant 4) (Rate B kVArh)");
+        missing.put(PaoType.RFN520FAX, "Received kVArh (Quadrant 4) (Rate C kVArh)");
+        missing.put(PaoType.RFN520FAX, "Received kVArh (Quadrant 4) (Rate D kVArh)");
         missing.put(PaoType.RFN520FAX, "Net kVArh (Rate A kVArh)");
         missing.put(PaoType.RFN520FAX, "Net kVArh (Rate B kVArh)");
         missing.put(PaoType.RFN520FAX, "Net kVArh (Rate C kVArh)");
@@ -577,6 +589,16 @@ public class RfnPointMappingTest {
         missing.put(PaoType.RFN520FAXD, "Received kVArh (Rate B kVArh)");
         missing.put(PaoType.RFN520FAXD, "Received kVArh (Rate C kVArh)");
         missing.put(PaoType.RFN520FAXD, "Received kVArh (Rate D kVArh)");
+        missing.put(PaoType.RFN520FAXD, "Delivered kVArh (Quadrant 1)");
+        missing.put(PaoType.RFN520FAXD, "Delivered kVArh (Quadrant 1) (Rate A kVArh)");
+        missing.put(PaoType.RFN520FAXD, "Delivered kVArh (Quadrant 1) (Rate B kVArh)");
+        missing.put(PaoType.RFN520FAXD, "Delivered kVArh (Quadrant 1) (Rate C kVArh)");
+        missing.put(PaoType.RFN520FAXD, "Delivered kVArh (Quadrant 1) (Rate D kVArh)");
+        missing.put(PaoType.RFN520FAXD, "Received kVArh (Quadrant 4)");
+        missing.put(PaoType.RFN520FAXD, "Received kVArh (Quadrant 4) (Rate A kVArh)");
+        missing.put(PaoType.RFN520FAXD, "Received kVArh (Quadrant 4) (Rate B kVArh)");
+        missing.put(PaoType.RFN520FAXD, "Received kVArh (Quadrant 4) (Rate C kVArh)");
+        missing.put(PaoType.RFN520FAXD, "Received kVArh (Quadrant 4) (Rate D kVArh)");
         missing.put(PaoType.RFN520FAXD, "Net kVArh (Rate A kVArh)");
         missing.put(PaoType.RFN520FAXD, "Net kVArh (Rate B kVArh)");
         missing.put(PaoType.RFN520FAXD, "Net kVArh (Rate C kVArh)");
@@ -665,6 +687,16 @@ public class RfnPointMappingTest {
         missing.put(PaoType.RFN530FAX, "Received kVArh (Rate B kVArh)");
         missing.put(PaoType.RFN530FAX, "Received kVArh (Rate C kVArh)");
         missing.put(PaoType.RFN530FAX, "Received kVArh (Rate D kVArh)");
+        missing.put(PaoType.RFN530FAX, "Delivered kVArh (Quadrant 1)");
+        missing.put(PaoType.RFN530FAX, "Delivered kVArh (Quadrant 1) (Rate A kVArh)");
+        missing.put(PaoType.RFN530FAX, "Delivered kVArh (Quadrant 1) (Rate B kVArh)");
+        missing.put(PaoType.RFN530FAX, "Delivered kVArh (Quadrant 1) (Rate C kVArh)");
+        missing.put(PaoType.RFN530FAX, "Delivered kVArh (Quadrant 1) (Rate D kVArh)");
+        missing.put(PaoType.RFN530FAX, "Received kVArh (Quadrant 4)");
+        missing.put(PaoType.RFN530FAX, "Received kVArh (Quadrant 4) (Rate A kVArh)");
+        missing.put(PaoType.RFN530FAX, "Received kVArh (Quadrant 4) (Rate B kVArh)");
+        missing.put(PaoType.RFN530FAX, "Received kVArh (Quadrant 4) (Rate C kVArh)");
+        missing.put(PaoType.RFN530FAX, "Received kVArh (Quadrant 4) (Rate D kVArh)");
         missing.put(PaoType.RFN530FAX, "Net kVArh (Rate A kVArh)");
         missing.put(PaoType.RFN530FAX, "Net kVArh (Rate B kVArh)");
         missing.put(PaoType.RFN530FAX, "Net kVArh (Rate C kVArh)");
@@ -752,6 +784,16 @@ public class RfnPointMappingTest {
         missing.put(PaoType.RFN520FAXE, "Received kVArh (Rate B kVArh)");
         missing.put(PaoType.RFN520FAXE, "Received kVArh (Rate C kVArh)");
         missing.put(PaoType.RFN520FAXE, "Received kVArh (Rate D kVArh)");
+        missing.put(PaoType.RFN520FAXE, "Delivered kVArh (Quadrant 1)");
+        missing.put(PaoType.RFN520FAXE, "Delivered kVArh (Quadrant 1) (Rate A kVArh)");
+        missing.put(PaoType.RFN520FAXE, "Delivered kVArh (Quadrant 1) (Rate B kVArh)");
+        missing.put(PaoType.RFN520FAXE, "Delivered kVArh (Quadrant 1) (Rate C kVArh)");
+        missing.put(PaoType.RFN520FAXE, "Delivered kVArh (Quadrant 1) (Rate D kVArh)");
+        missing.put(PaoType.RFN520FAXE, "Received kVArh (Quadrant 4)");
+        missing.put(PaoType.RFN520FAXE, "Received kVArh (Quadrant 4) (Rate A kVArh)");
+        missing.put(PaoType.RFN520FAXE, "Received kVArh (Quadrant 4) (Rate B kVArh)");
+        missing.put(PaoType.RFN520FAXE, "Received kVArh (Quadrant 4) (Rate C kVArh)");
+        missing.put(PaoType.RFN520FAXE, "Received kVArh (Quadrant 4) (Rate D kVArh)");
         missing.put(PaoType.RFN520FAXE, "Net kVArh (Rate A kVArh)");
         missing.put(PaoType.RFN520FAXE, "Net kVArh (Rate B kVArh)");
         missing.put(PaoType.RFN520FAXE, "Net kVArh (Rate C kVArh)");
@@ -830,6 +872,16 @@ public class RfnPointMappingTest {
         missing.put(PaoType.RFN520FAXED, "Received kVArh (Rate B kVArh)");
         missing.put(PaoType.RFN520FAXED, "Received kVArh (Rate C kVArh)");
         missing.put(PaoType.RFN520FAXED, "Received kVArh (Rate D kVArh)");
+        missing.put(PaoType.RFN520FAXED, "Delivered kVArh (Quadrant 1)");
+        missing.put(PaoType.RFN520FAXED, "Delivered kVArh (Quadrant 1) (Rate A kVArh)");
+        missing.put(PaoType.RFN520FAXED, "Delivered kVArh (Quadrant 1) (Rate B kVArh)");
+        missing.put(PaoType.RFN520FAXED, "Delivered kVArh (Quadrant 1) (Rate C kVArh)");
+        missing.put(PaoType.RFN520FAXED, "Delivered kVArh (Quadrant 1) (Rate D kVArh)");
+        missing.put(PaoType.RFN520FAXED, "Received kVArh (Quadrant 4)");
+        missing.put(PaoType.RFN520FAXED, "Received kVArh (Quadrant 4) (Rate A kVArh)");
+        missing.put(PaoType.RFN520FAXED, "Received kVArh (Quadrant 4) (Rate B kVArh)");
+        missing.put(PaoType.RFN520FAXED, "Received kVArh (Quadrant 4) (Rate C kVArh)");
+        missing.put(PaoType.RFN520FAXED, "Received kVArh (Quadrant 4) (Rate D kVArh)");
         missing.put(PaoType.RFN520FAXED, "Net kVArh (Rate A kVArh)");
         missing.put(PaoType.RFN520FAXED, "Net kVArh (Rate B kVArh)");
         missing.put(PaoType.RFN520FAXED, "Net kVArh (Rate C kVArh)");
@@ -918,6 +970,16 @@ public class RfnPointMappingTest {
         missing.put(PaoType.RFN530FAXE, "Received kVArh (Rate B kVArh)");
         missing.put(PaoType.RFN530FAXE, "Received kVArh (Rate C kVArh)");
         missing.put(PaoType.RFN530FAXE, "Received kVArh (Rate D kVArh)");
+        missing.put(PaoType.RFN530FAXE, "Delivered kVArh (Quadrant 1)");
+        missing.put(PaoType.RFN530FAXE, "Delivered kVArh (Quadrant 1) (Rate A kVArh)");
+        missing.put(PaoType.RFN530FAXE, "Delivered kVArh (Quadrant 1) (Rate B kVArh)");
+        missing.put(PaoType.RFN530FAXE, "Delivered kVArh (Quadrant 1) (Rate C kVArh)");
+        missing.put(PaoType.RFN530FAXE, "Delivered kVArh (Quadrant 1) (Rate D kVArh)");
+        missing.put(PaoType.RFN530FAXE, "Received kVArh (Quadrant 4)");
+        missing.put(PaoType.RFN530FAXE, "Received kVArh (Quadrant 4) (Rate A kVArh)");
+        missing.put(PaoType.RFN530FAXE, "Received kVArh (Quadrant 4) (Rate B kVArh)");
+        missing.put(PaoType.RFN530FAXE, "Received kVArh (Quadrant 4) (Rate C kVArh)");
+        missing.put(PaoType.RFN530FAXE, "Received kVArh (Quadrant 4) (Rate D kVArh)");
         missing.put(PaoType.RFN530FAXE, "Net kVArh (Rate A kVArh)");
         missing.put(PaoType.RFN530FAXE, "Net kVArh (Rate B kVArh)");
         missing.put(PaoType.RFN530FAXE, "Net kVArh (Rate C kVArh)");
@@ -1583,10 +1645,8 @@ public class RfnPointMappingTest {
                         "Rate D Coincident Peak kW",
                         "Rate D Coincident kVA")
                 .putAll(PaoType.RFN430SL1,
-                        "Coincident Cumulative Peak kVAr",
                         "Demand at Peak kVa Coincidental",
-                        "kVA at Peak kW Coincidental",
-                        "Peak kVAr")
+                        "kVA at Peak kW Coincidental")
                 .putAll(PaoType.RFN430SL2,
                         "Demand at Peak kVa Coincidental",
                         "kVA at Peak kW Coincidental")

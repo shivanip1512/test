@@ -27,7 +27,8 @@
     <entry key="yukon.web.modules.adminSetup.config.testEmail.failure">An email could not be sent to {0} via SMTP host {1}</entry>
     <entry key="yukon.web.modules.adminSetup.config.testEmail.logSuccess">A test email was sent to {0} via SMTP host {1}</entry>
     <entry key="yukon.web.modules.adminSetup.config.testEmail.subject">[yukon] Yukon Test Email</entry>
-    <entry key="yukon.web.modules.adminSetup.config.testEmail.alert">A test email has been sent to {0}</entry>
+    <entry key="yukon.web.modules.adminSetup.config.testEmail.alert">A test email has been sent to notification server with email address {0}.</entry>
+    <entry key="yukon.web.modules.adminSetup.config.testEmail.tooltip">Test email will be sent only if the notification server is running.</entry>
     
     <entry key="yukon.web.modules.adminSetup.config.category.pageName">Yukon Configuration Settings</entry>
     <entry key="yukon.web.modules.adminSetup.config.category.contextualPageName">{0}</entry>
@@ -97,6 +98,7 @@
         ]]>
     </entry>
     <entry key="yukon.web.modules.adminSetup.config.showHideData">Show/Hide Data</entry>
+    <entry key="yukon.web.modules.adminSetup.config.clearData">Clear Data</entry>
     <entry key="yukon.common.imagePicker.title">Choose Image</entry>
     <entry key="yukon.common.imagePicker.name">Name</entry>
     <entry key="yukon.common.imagePicker.category">Category</entry>
@@ -223,6 +225,14 @@
     <entry key="yukon.web.modules.adminSetup.security.ecobeeZeusKeyRegisterBtn.label">Send</entry>
 
     <entry key="yukon.web.modules.adminSetup.security.routesBox.title">Encrypted Routes</entry>
+    
+    <entry key="yukon.web.modules.adminSetup.security.secretsBox.title">Brightlayer Utilities Suite Demand Response Secrets</entry>
+    <entry key="yukon.web.modules.adminSetup.security.secretsBox.secret1Expiration">Secret1 Expiration</entry>
+    <entry key="yukon.web.modules.adminSetup.security.secretsBox.secret2Expiration">Secret2 Expiration</entry>
+    <entry key="yukon.web.modules.adminSetup.security.secretsBox.secretRotationSuccess">Secret{0} was successfully refreshed.</entry>
+    <entry key="yukon.web.modules.adminSetup.security.secretsBox.secretRotationError">An error occurred trying to refresh secret{0}. {1}</entry>
+    <entry key="yukon.web.modules.adminSetup.security.secretsBox.secretExpirationRetrieveError">Unable to retrieve the Brightlayer Secret Expirations. {0}</entry>
+    <entry key="yukon.web.modules.adminSetup.security.secretsBox.secretNotFound">Secret not found.</entry>
     
     <entry key="yukon.web.modules.adminSetup.security.deleteKeyBtnTitle">Delete Key</entry>
     <entry key="yukon.web.modules.adminSetup.security.deleteKeyBtnDisabledTitle">Cannot delete key while key is in use</entry>

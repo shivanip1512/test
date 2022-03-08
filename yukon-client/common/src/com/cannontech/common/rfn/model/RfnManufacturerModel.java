@@ -51,6 +51,8 @@ public enum RfnManufacturerModel {
     
     RFG201_PULSE(PaoType.RFG201, "GAS2", "Pulse-201"),
     RFG301_PULSE(PaoType.RFG301, "EATON", "Pulse-301"),
+    RFG301A(PaoType.RFG301A, "HNYWL", "AM-Pulse-301"),
+    RFG301R(PaoType.RFG301R, "SENSU", "RW-Pulse-301"),
     
     RFN_430KV(PaoType.RFN430KV, "GE", "kV2"),
     

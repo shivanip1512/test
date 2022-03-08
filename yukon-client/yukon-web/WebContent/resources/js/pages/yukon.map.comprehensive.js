@@ -230,7 +230,7 @@ yukon.map.comprehensive = (function () {
             
             if (_initialized) return;
             
-            $(".js-selected-gateways").chosen({width: "350px", max_selected_options: 5});
+            $(".js-selected-gateways").chosen({width: "320px", max_selected_options: 5});
             $(".js-selected-gateways").bind("chosen:maxselected", function () {
                 var gatewayError = $('#tooManyGatewaysError').val();
                 yukon.ui.alertError(gatewayError);

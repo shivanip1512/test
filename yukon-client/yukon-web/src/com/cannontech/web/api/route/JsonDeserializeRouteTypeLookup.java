@@ -45,7 +45,7 @@ public class JsonDeserializeRouteTypeLookup extends StdDeserializer<RouteBaseMod
 
         RouteBaseModel<?> routeBaseModel = (RouteBaseModel<?>) parser.getCodec().treeToValue(node,
                 routeHelper.getRouteFromModelFactory(routeHelper.getRouteType(signalTransmitterId)).getClass());
-        routeBaseModel.setType(routeHelper.getPaoTypeFromCache(signalTransmitterId));
+        routeBaseModel.setDeviceType(routeHelper.getPaoTypeFromCache(signalTransmitterId));
         return routeBaseModel;
     }
 

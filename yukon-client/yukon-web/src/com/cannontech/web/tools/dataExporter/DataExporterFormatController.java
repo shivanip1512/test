@@ -144,7 +144,7 @@ public class DataExporterFormatController {
 
     @RequestMapping(value = "/data-exporter/format/{id}/copy", method = RequestMethod.GET)
     public String copy(ModelMap model, YukonUserContext userContext, @PathVariable int id) {
-        
+
         String name = "";
         ExportFormat format = archiveValuesExportFormatDao.getByFormatId(id);
         name = format.getFormatName();
@@ -185,7 +185,7 @@ public class DataExporterFormatController {
         setupModel(model, userContext, exportFormat);
         return "data-exporter/format/format.jsp";
     }
-    
+
     private ExportFormat setExportFormatForErrorScenario() {
         ExportFormat format = new ExportFormat();
         format.setFormatType(ArchivedValuesExportFormatType.FIXED_ATTRIBUTE);
@@ -278,7 +278,7 @@ public class DataExporterFormatController {
         
         Map<String, Object> json = new HashMap<>();
         json.put("attribute", attribute);
-        
+
         Map<String, Object> text = new HashMap<>();
         text.put("attribute", accessor.getMessage(attribute.getAttribute().getMessage()));
         text.put("dataSelection", accessor.getMessage(attribute.getDataSelection()));
@@ -298,7 +298,7 @@ public class DataExporterFormatController {
             @ModelAttribute AttributeList attributeList, 
             ArchivedValuesExportFormatType formatType,
             String exportFieldJson) throws IOException {
-        
+
         if (StringUtils.isEmpty(exportFieldJson)) {
             // add field popup
             ExportField exportField = new ExportField();
@@ -311,6 +311,7 @@ public class DataExporterFormatController {
             // edit field popup
             ExportField exportField = JsonUtils.fromJson(exportFieldJson, ExportField.class);
             model.addAttribute("exportField", exportField);
+            model.addAttribute("customSelected", exportField.isCustomPattern());
         }
         
         model.addAttribute("fields", getFields(formatType, attributeList.getAttributes()));
@@ -351,12 +352,11 @@ public class DataExporterFormatController {
             model.addAttribute("timestampPatterns", TimestampPattern.values());
             
             MessageSourceAccessor accessor = messageSourceResolver.getMessageSourceAccessor(userContext);
-            FieldError patternError = result.getFieldError("timestampPattern");
-            if (patternError != null) {
+            FieldError patternError = result.getFieldError("pattern");
+            if (patternError != null && exportField.isTimestamp()) {
                 model.addAttribute("timestampPatternError", accessor.getMessage(patternError));
             }
-            patternError = result.getFieldError("readingPattern");
-            if (patternError != null) {
+            if (patternError != null && exportField.isValue()) {
                 model.addAttribute("readingPatternError", accessor.getMessage(patternError));
             }
             
@@ -390,31 +390,12 @@ public class DataExporterFormatController {
             text.put("missingAttribute", missingText);
         }
         
-        text.put("roundingMode", isAttribute && isValue ? accessor.getMessage(exportField.getRoundingMode()) : "");
+        text.put("roundingMode", isValue ? accessor.getMessage(exportField.getRoundingMode()) : "");
         
         if (isPlainText || isTimestamp || isValue) {
-            String pattern = exportField.getPattern();
-            if (isValue) {
-                if (!exportField.getReadingPattern().isCustom()) {
-                    pattern = accessor.getMessage(exportField.getReadingPattern());
-                } else { // custom format, default if empty
-                    if (pattern.isEmpty()) {
-                        pattern = "#####.00";
-                    }
-                }
-            } else if (isTimestamp) {
-                if (!exportField.getTimestampPattern().isCustom()) {
-                    pattern = accessor.getMessage(exportField.getTimestampPattern());
-                } else { // custom format, default if empty
-                    if (pattern.isEmpty()) {
-                        pattern = "MM/dd/yyyy hh:mm:ss zZ";
-                    }
-                }
-            } 
-            text.put("pattern", pattern);
+            text.put("pattern", exportField.getPattern());
         } else if (exportField.getField().isAttributeName()) {
-            exportField.setPattern(exportField.getFieldValue().name());
-            text.put("pattern", exportField.getFieldValue().toString());
+            text.put("pattern", exportField.getPattern().toString());
         } else {
             text.put("pattern", "");
         }

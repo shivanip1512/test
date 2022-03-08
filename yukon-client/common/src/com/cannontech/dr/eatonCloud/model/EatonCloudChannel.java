@@ -58,7 +58,7 @@ public enum EatonCloudChannel {
     VOLTAGE(110742, "Voltage", BuiltInAttribute.VOLTAGE, 0.1),
     IMEI(110598, "IMEI", null),
     ICCID(112077, "ICCID", null);
-    
+   
 
     private Integer channelId;
     private String shortName;
@@ -221,5 +221,19 @@ public enum EatonCloudChannel {
             throw new TypeNotSupportedException(mWChannelJsonString + " mWChannel is not valid.");
         }
     }
-
+    
+    public Integer getRelayNumberByRuntime() {
+        switch (this) {
+        case RUNTIME_R1:
+            return 1;
+        case RUNTIME_R2:
+            return 2;
+        case RUNTIME_R3:
+            return 3;
+        case RUNTIME_R4:
+            return 4;
+        default:
+            return null;
+        }
+    }
 }

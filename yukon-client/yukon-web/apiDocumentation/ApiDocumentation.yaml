@@ -1,7 +1,7 @@
 openapi: 3.0.0
 info:
   title: Yukon API Documentation
-  version: 9.0.0
+  version: 9.2.0
   description: 'Yukon provides REST based API support for different modules like Load Management,Point,Comm Channel,Trends and Virtual Devices.'
 servers:
   - url: /api/
@@ -18,6 +18,12 @@ security:
 paths:
   /token:
     $ref: 'api/tokenApi.yaml#/token-generate'
+  /refreshToken:
+     $ref: 'api/tokenApi.yaml#/refreshToken'
+  /logout:
+     $ref: 'api/tokenApi.yaml#/logout' 
+  /forgottenPassword:
+     $ref: 'api/tokenApi.yaml#/forgottenPassword'
 
   /devices/commChannels:
     $ref: 'api/commChannelsApi.yaml#/post-operation'
@@ -30,7 +36,7 @@ paths:
     $ref: 'api/trendsApi.yaml#/get-update-delete-operation'
   /trends/{id}/resetPeak:
     $ref: 'api/trendsApi.yaml#/resetPeak'
-  
+
   /dr/loadGroups:
     $ref: 'api/loadGroupsApi.yaml#/post-operation'
   /dr/loadGroups/{id}:
@@ -42,7 +48,7 @@ paths:
     $ref: 'api/MacroLoadGroupsApi.yaml#/post-operation'
   /dr/macroLoadGroups/{id}:
     $ref: 'api/MacroLoadGroupsApi.yaml#/get-update-delete-operation'
-  / dr/macroLoadGroups/{id}/copy:
+  /dr/macroLoadGroups/{id}/copy:
     $ref: 'api/MacroLoadGroupsApi.yaml#/copy-operation'
     
   /dr/loadPrograms:
@@ -126,7 +132,7 @@ components:
       scheme: bearer
       bearerFormat: JWT
 tags:
-  - name: Token Generation
+  - name: Authentication
   - name: Comm Channel
   - name: Trend
   - name: Load Group
@@ -143,3 +149,4 @@ tags:
   - name: Route
   - name: Logger
   - name: Macro Route
+

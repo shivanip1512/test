@@ -17,13 +17,11 @@ import com.cannontech.common.smartNotification.model.SmartNotificationMessagePar
 import com.cannontech.common.smartNotification.model.SmartNotificationMessageParametersMulti;
 import com.cannontech.common.stream.StreamUtils;
 import com.cannontech.core.dao.NotFoundException;
-import com.cannontech.services.smartNotification.service.SmartNotificationDeciderService;
 import com.cannontech.services.smartNotification.service.SmartNotificationMessageParametersHandler;
 
 public class SmartNotificationMessageAssembler implements MessageListener {
-    private static final Logger commslogger = YukonLogManager.getCommsLogger();
     private Map<SmartNotificationMedia, SmartNotificationMessageParametersHandler> mediaHandlers;
-    @Autowired private SmartNotificationDeciderService deciderService;
+    private static Logger snLogger = YukonLogManager.getSmartNotificationsLogger(SmartNotificationMessageAssembler.class);
     
     @Autowired
     public SmartNotificationMessageAssembler(List<SmartNotificationMessageParametersHandler> messageParametersHandlers) {
@@ -43,7 +41,7 @@ public class SmartNotificationMessageAssembler implements MessageListener {
                 }
             }
         } catch (Exception e) {
-            commslogger.error("Unable to process message", e);
+            snLogger.error("Unable to process message", e);
         }
     }
     
@@ -58,7 +56,8 @@ public class SmartNotificationMessageAssembler implements MessageListener {
             if (builder == null) {
                 throw new NotFoundException("Unable to send notification - unsupported media type: " + parametersMulti.getMedia());
             }
-            deciderService.logInfo("Sending messages in combined email. Message parameters: " + parametersMulti.loggingString(commslogger.getLevel()), this);
+            snLogger.info("Sending messages in combined email. Message parameters:{}",
+                    parametersMulti.loggingString(snLogger.getLevel()));
             builder.buildMultiAndSend(parametersMulti);
         } else {
             // Process each parameters object individually
@@ -68,7 +67,7 @@ public class SmartNotificationMessageAssembler implements MessageListener {
                 if (builder == null) {
                     throw new NotFoundException("Unable to send notification - unsupported media type: " + parametersMulti.getMedia());
                 }
-                deciderService.logInfo("Sending individual messages for interval:" + intervalMinutes + ". Message parameters: " + parametersMulti.loggingString(commslogger.getLevel()), this);
+                snLogger.info("Sending individual messages for interval:{}. Message parameters:{}", intervalMinutes, parametersMulti.loggingString(snLogger.getLevel()));
                 builder.buildAndSend(parameters, intervalMinutes);
             }
         }

@@ -39,7 +39,7 @@
                     <li class="divider">
                 </cti:checkRolesAndProperties>
                 <cti:checkRolesAndProperties value="MANAGE_TRENDS" level="OWNER">
-                    <cm:dropdownOption icon="icon-cross" key="yukon.web.components.button.delete.label" id="js-delete-option" data-ok-event="yukon:tools:trend:delete"
+                    <cm:dropdownOption icon="icon-delete" key="yukon.web.components.button.delete.label" id="js-delete-option" data-ok-event="yukon:tools:trend:delete"
                                                           classes="js-hide-dropdown"/>
                     <d:confirm on="#js-delete-option" nameKey="confirmDelete" argument="${trendModel.name}" />
                     <cti:url var="deleteUrl" value="/tools/trend/${trendId}/delete"/>

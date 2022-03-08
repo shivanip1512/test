@@ -112,7 +112,7 @@
     <div class="column-12-12">
         <div class="column one">
             <tags:boxContainer2 nameKey="routesBox" styleClass="largeContainer">
-                <table id="routesBoxTable" class="compact-results-table row-highlighting">
+                <table id="routesBoxTable" class="compact-results-table no-stripes">
                     <thead>
                         <tr>
                             <th><i:inline key=".paoName" /></th>
@@ -139,14 +139,14 @@
                                             <form:input path="encryptionKeyId" type="hidden" value="${route.encryptionKeyId}" />
                                             <form:input path="encryptionKeyName" type="hidden" value="${route.encryptionKeyName}" />
                                             <d:confirm on="#remove_EncryptionBtn_${route.paobjectId}" nameKey="confirmRemove" argument="${fn:escapeXml(route.paoName)}" />
-                                            <select disabled="disabled" style="width: 100%">
+                                            <select disabled="disabled" style="width: 85%">
                                                 <option>${fn:escapeXml(route.encryptionKeyName)}</option>
                                             <select>
                                         </c:if> 
                                         <c:if test="${!route.encrypted}">
                                             <c:if test="${fn:length(encryptionKeys) > 0}">
                                                 <d:confirm on="#add_EncryptionBtn_${route.paobjectId}" nameKey="confirmAdd" argument="${fn:escapeXml(route.paoName)}" />
-                                                <form:select id="keyNameSelect${route.paobjectId}" path="encryptionKeyId" style="width:100%">
+                                                <form:select id="keyNameSelect${route.paobjectId}" path="encryptionKeyId" style="width:85%">
                                                     <c:forEach items="${encryptionKeys}" var="key">
                                                         <form:option value="${key.encryptionKeyId}">${fn:escapeXml(key.name)}</form:option>
                                                     </c:forEach>
@@ -172,6 +172,26 @@
                     </tbody>
                 </table>
             </tags:boxContainer2>
+            <tags:boxContainer2 nameKey="secretsBox" styleClass="largeContainer">
+                <c:if test="${!empty secretExpirationError}">
+                    <tags:alertBox type="warning">${secretExpirationError}</tags:alertBox> 
+                </c:if>
+                <form:form id="refreshSecretForm" method="POST" action="refreshSecret">
+                	<cti:csrfToken/>
+                	<input type="hidden" id="secretNumber" name="secretNumber"/>
+                </form:form>
+                <cti:msg2 var="secretNotFoundMessage" key=".secretsBox.secretNotFound"/>
+            	<div class="PB10" style="line-height:40px;">
+            		<i:inline key=".secretsBox.secret1Expiration"/>:&nbsp;
+            		<cti:formatDate type="DATEHMS_12" value="${brightlayerSecretKeyExpiration.expiryTime1}" nullText="${secretNotFoundMessage}"/>
+            		<cti:button nameKey="refresh" classes="fr js-refresh-secret" data-secret-number="1"/>
+            	</div>
+            	<div style="line-height:40px;">
+            		<i:inline key=".secretsBox.secret2Expiration"/>:&nbsp;
+            		<cti:formatDate type="DATEHMS_12" value="${brightlayerSecretKeyExpiration.expiryTime2}" nullText="${secretNotFoundMessage}"/>
+            		<cti:button nameKey="refresh" classes="fr js-refresh-secret" data-secret-number="2"/>
+            	</div>
+            </tags:boxContainer2>
         </div>
         <div class="column two nogutter">
             <tags:boxContainer2 nameKey="keyBox" styleClass="largeContainer">
@@ -194,7 +214,10 @@
                                 <form:form id="keys_${key.encryptionKeyId}" method="POST" action="deleteKey" autocomplete="off">
                                     <cti:csrfToken/>
                                     <tr>
-                                        <td><input type="hidden" name="encryptionKeyId" value="${key.encryptionKeyId}" />${fn:escapeXml(key.name)}</td>
+                                        <td style="width: 55%;">
+                                            <input type="hidden" name="encryptionKeyId" value="${key.encryptionKeyId}" />
+                                            <span class="wrbw">${fn:escapeXml(key.name)}</span>
+                                        </td>
                                         <td id="keyStatus_${key.encryptionKeyId}">
                                             <c:if test="${key.isValid}">
                                                 <span class="success"><i:inline key=".validKey" /></span>
@@ -217,12 +240,12 @@
                                             <c:choose>
                                                 <c:when test="${key.currentlyUsed}">
                                                     <cti:msg2 key=".deleteKeyBtnDisabledTitle" var="title"/>
-                                                    <cti:button renderMode="buttonImage" disabled="true" title="${title}" icon="icon-cross" />
+                                                    <cti:button renderMode="buttonImage" disabled="true" title="${title}" icon="icon-delete" />
                                                 </c:when>
                                                 <c:otherwise>
                                                     <cti:msg2 key=".deleteKeyBtnTitle" var="title"/>
                                                     <cti:button renderMode="buttonImage" id="deleteKeyBtn_${key.encryptionKeyId}" title="${title}" 
-                                                        icon="icon-cross" data-ok-event="yukon:admin:security:submitForm" data-form-id="keys_${key.encryptionKeyId}"/>
+                                                        icon="icon-delete" data-ok-event="yukon:admin:security:submitForm" data-form-id="keys_${key.encryptionKeyId}"/>
                                                     <d:confirm on="#deleteKeyBtn_${key.encryptionKeyId}" nameKey="confirmDelete" argument="${key.name}"/>
                                                 </c:otherwise>
                                             </c:choose>
@@ -251,7 +274,7 @@
                           <c:set var="isPublicKeyGenerated" value="true" />
                           <div id="honeywellPublicKeyText">
             		          <p><i:inline key=".currentPublicKey" /></p>
-            		                 <textarea id="honeywellPublicKeyTextArea" rows="6" cols="60" 
+            		                 <textarea id="honeywellPublicKeyTextArea" rows="6" cols="54" 
                 		              readonly="readonly">${honeywellPublicKey}</textarea>
         		          </div>
                       </c:otherwise>
@@ -262,7 +285,7 @@
                       <cti:button id="importHoneywellKeyFileBtn" nameKey="importKeyFileBtn" data-popup="#importHoneywellKeyDialog"/>
                       <form:form method="POST" action="generateHoneywellCertificate" autocomplete="off" enctype="multipart/form-data">
                          <cti:csrfToken/>
-                         <cti:button id="generateCertificate" nameKey="generateCertificate" type="submit" disabled="${!isPublicKeyGenerated}" />
+                         <cti:button id="generateCertificate" nameKey="generateCertificate" type="submit" disabled="${!isPublicKeyGenerated}" classes="MT5"/>
                       </form:form>
                   </div>
               </tags:boxContainer2>

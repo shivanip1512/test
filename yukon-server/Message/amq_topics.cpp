@@ -5,7 +5,7 @@
 namespace Cti::Messaging::Qpid::Topics {
 
 const IM_EX_MSG OutboundTopic
-    OutboundTopic::YukonMetric
+    OutboundTopic::YukonMetricTopic
     {"com.eaton.eas.yukon.metric"};
 
 }

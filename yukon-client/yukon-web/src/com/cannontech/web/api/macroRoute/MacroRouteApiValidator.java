@@ -27,8 +27,8 @@ public class MacroRouteApiValidator<T extends MacroRouteModel<?>> extends Simple
         String strRouteId = ServletUtils.getPathVariable("id");
         Integer id = strRouteId == null ? null : Integer.valueOf(strRouteId);
 
-        if (macroRoute.getName() != null) {
-            macroRouteApiValidatorHelper.validateMacroRouteName(errors, macroRoute.getName(), id);
+        if (macroRoute.getDeviceName() != null) {
+            macroRouteApiValidatorHelper.validateMacroRouteName(errors, macroRoute.getDeviceName(), id);
         }
 
         if (macroRoute.getRouteList() != null) {

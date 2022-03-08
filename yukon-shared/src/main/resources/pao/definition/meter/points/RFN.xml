@@ -10,7 +10,7 @@ Note: For attributes that reference the modifiers of "Quadrant" directly, the mo
 Note: Look at BuiltInAttribute as that follows the same convention. 
 -->
     <highestOffsets>
-        <analog offset="510"/>
+        <analog offset="515"/>
         <calcAnalog offset="0"/>
         <demandAccumulator offset="251"/>
         <status offset="102"/>
@@ -176,6 +176,36 @@ Note: Look at BuiltInAttribute as that follows the same convention.
     </point>
     <point offset="50" type="Analog">
         <name>Delivered kVArh</name>
+        <multiplier value="1"/>
+        <unitofmeasure value="KVARH"/>
+        <decimalplaces value="3"/>
+    </point>
+    <point offset="51" type="Analog">
+        <name>Delivered kVArh (Quadrant 1)</name>
+        <multiplier value="1"/>
+        <unitofmeasure value="KVARH"/>
+        <decimalplaces value="3"/>
+    </point>
+    <point offset="52" type="Analog">
+        <name>Delivered kVArh (Quadrant 1) (Rate A kVArh)</name>
+        <multiplier value="1"/>
+        <unitofmeasure value="KVARH"/>
+        <decimalplaces value="3"/>
+    </point>
+    <point offset="53" type="Analog">
+        <name>Delivered kVArh (Quadrant 1) (Rate B kVArh)</name>
+        <multiplier value="1"/>
+        <unitofmeasure value="KVARH"/>
+        <decimalplaces value="3"/>
+    </point>
+    <point offset="54" type="Analog">
+        <name>Delivered kVArh (Quadrant 1) (Rate C kVArh)</name>
+        <multiplier value="1"/>
+        <unitofmeasure value="KVARH"/>
+        <decimalplaces value="3"/>
+    </point>
+    <point offset="55" type="Analog">
+        <name>Delivered kVArh (Quadrant 1) (Rate D kVArh)</name>
         <multiplier value="1"/>
         <unitofmeasure value="KVARH"/>
         <decimalplaces value="3"/>
@@ -2543,7 +2573,36 @@ Note: Look at BuiltInAttribute as that follows the same convention.
         <unitofmeasure value="KVA"/>
         <decimalplaces value="3"/>
     </point>
-    
+    <point offset="511" type="Analog">
+        <name>Received kVArh (Quadrant 4)</name>
+        <multiplier value="1"/>
+        <unitofmeasure value="KVARH"/>
+        <decimalplaces value="3"/>
+    </point>
+    <point offset="512" type="Analog">
+        <name>Received kVArh (Quadrant 4) (Rate A kVArh)</name>
+        <multiplier value="1"/>
+        <unitofmeasure value="KVARH"/>
+        <decimalplaces value="3"/>
+    </point>
+    <point offset="513" type="Analog">
+        <name>Received kVArh (Quadrant 4) (Rate B kVArh)</name>
+        <multiplier value="1"/>
+        <unitofmeasure value="KVARH"/>
+        <decimalplaces value="3"/>
+    </point>
+    <point offset="514" type="Analog">
+        <name>Received kVArh (Quadrant 4) (Rate C kVArh)</name>
+        <multiplier value="1"/>
+        <unitofmeasure value="KVARH"/>
+        <decimalplaces value="3"/>
+    </point>
+    <point offset="515" type="Analog">
+        <name>Received kVArh (Quadrant 4) (Rate D kVArh)</name>
+        <multiplier value="1"/>
+        <unitofmeasure value="KVARH"/>
+        <decimalplaces value="3"/>
+    </point>
     <!--- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -CalcAnalog- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -->
     <point offset="0" type="CalcAnalog">
         <name>Total Outage Count</name>
@@ -2556,6 +2615,7 @@ Note: Look at BuiltInAttribute as that follows the same convention.
             <components>
                 <component point="Blink Count"/>
                 <component point="Outage Count"/>
+                <component point="Blink Restore Count"/>
             </components>
         </calculation>
     </point>

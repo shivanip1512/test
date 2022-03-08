@@ -4,11 +4,15 @@ import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 import java.util.concurrent.ExecutionException;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 import javax.annotation.PostConstruct;
 import javax.servlet.http.HttpServletRequest;
 
+import org.joda.time.format.DateTimeFormat;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.MessageSourceResolvable;
 import org.springframework.stereotype.Controller;
@@ -23,12 +27,14 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import com.cannontech.common.i18n.MessageSourceAccessor;
 import com.cannontech.common.util.Pair;
 import com.cannontech.common.validator.YukonValidationUtils;
+import com.cannontech.core.dynamic.AsyncDynamicDataSource;
 import com.cannontech.core.roleproperties.YukonRoleProperty;
 import com.cannontech.i18n.YukonMessageSourceResolvable;
 import com.cannontech.i18n.YukonUserContextMessageSourceResolver;
 import com.cannontech.system.GlobalSettingCategory;
 import com.cannontech.system.GlobalSettingSubCategory;
 import com.cannontech.system.GlobalSettingType;
+import com.cannontech.system.dao.GlobalSettingDao;
 import com.cannontech.system.dao.GlobalSettingEditorDao;
 import com.cannontech.system.dao.GlobalSettingUpdateDao;
 import com.cannontech.system.model.GlobalSetting;
@@ -55,7 +61,9 @@ public class YukonConfigurationController {
     
     @Autowired private GlobalSettingEditorDao globalSettingEditorDao;
     @Autowired private GlobalSettingUpdateDao globalSettingUpdateDao;
+    @Autowired private GlobalSettingDao globalSettingDao;
     @Autowired private YukonUserContextMessageSourceResolver resolver;
+    @Autowired private AsyncDynamicDataSource asyncDynamicDataSource;
     
     private GlobalSettingValidator globalSettingValidator = new GlobalSettingValidator();
     
@@ -63,6 +71,15 @@ public class YukonConfigurationController {
     private Map<GlobalSettingSubCategory, String> iconMap;
     
     @PostConstruct
+    public void init() {
+        setupHelperLookup();
+        asyncDynamicDataSource.addDatabaseChangeEventListener(event -> {
+            if (globalSettingDao.isDbChangeForSetting(event)) {
+                setupHelperLookup();
+            } 
+        });
+    }
+    
     public void setupHelperLookup() {
         helperLookup = CacheBuilder.newBuilder().concurrencyLevel(1).build(new CacheLoader<GlobalSettingSubCategory, MappedPropertiesHelper<GlobalSetting>>() {
             @Override
@@ -227,6 +244,24 @@ public class YukonConfigurationController {
                        YukonUserContext context, 
                        ModelMap map, 
                        FlashScope flashScope) throws Exception {
+    	
+    	//change masked values back before validation/saving
+        Set<GlobalSettingType> globalSettingTypes = GlobalSettingType.getSettingsForCategory(command.getCategory());
+        Map<GlobalSettingType, Object> values = command.getValues();
+
+		for (GlobalSettingType globalSettingType : globalSettingTypes) {
+			if (globalSettingType.isNonViewableSensitiveInformation()) {
+				Object value = values.get(globalSettingType);
+				Pattern pattern = Pattern.compile("^[*]*$");
+				if (value != null) {
+					Matcher m = pattern.matcher(value.toString());
+					if (m.matches()) {
+						GlobalSetting currentSetting = globalSettingDao.getSetting(globalSettingType);
+						values.put(globalSettingType, currentSetting.getValue());
+					}
+				}
+			}
+		}
         
         globalSettingValidator.doValidation(command, result);
         GlobalSettingSubCategory category = command.getCategory();

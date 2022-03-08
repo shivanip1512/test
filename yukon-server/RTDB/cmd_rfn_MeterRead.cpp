@@ -89,7 +89,7 @@ auto RfnMeterReadCommand::getResponseMessage() const -> std::optional<ReplyMsg>
 
 auto makeFailureResponse(const CtiTime now)
 {
-    Messaging::Rfn::RfnMeterReadDataReplyMsg response;
+    Messaging::Rfn::RfnMeterReadDataReplyMsg response {};
 
     response.replyType = Messaging::Rfn::RfnMeterReadingDataReplyType::FAILURE;
     response.data.timeStamp = now;
@@ -285,9 +285,19 @@ namespace {
 using namespace Cti;
 using namespace Cti::Messaging::Rfn;
     
-std::map<std::uint8_t, ChannelDataStatus> StatusLookup {
+std::map<std::uint8_t, ChannelDataStatus> CmrStatusLookup {
     { 0, ChannelDataStatus::OK },
-    { 1, ChannelDataStatus::LONG }}; //  Replicating NM behavior
+    { 1, ChannelDataStatus::PARTIAL_READ_TIMEOUT },
+	{ 2, ChannelDataStatus::PARTIAL_READ_FAILURE },
+	{ 3, ChannelDataStatus::PARTIAL_READ_LONG },
+	{ 4, ChannelDataStatus::FULL_READ_PASSWORD_ERROR },
+	{ 5, ChannelDataStatus::FULL_READ_BUSY_ERROR },
+	{ 6, ChannelDataStatus::FULL_READ_TIMEOUT_ERROR },
+	{ 7, ChannelDataStatus::FULL_READ_PROTOCOL_ERROR },
+	{ 8, ChannelDataStatus::FULL_READ_NO_SUCH_CHANNEL_ERROR },
+	{ 9, ChannelDataStatus::FULL_READ_READ_RESPONSE_ERROR_UNKNOWN },
+	{ 10, ChannelDataStatus::FULL_READ_UNKNOWN },
+	{ 11, ChannelDataStatus::FAILURE }};
 
 //  Helper methods for creating the messaging objects
 ChannelData makeChannelData(const RawChannel& rawChannel)
@@ -295,7 +305,7 @@ ChannelData makeChannelData(const RawChannel& rawChannel)
     ChannelData cd;
 
     cd.channelNumber = rawChannel.channelNumber;
-    cd.status = mapFindOrDefault(StatusLookup, rawChannel.status, ChannelDataStatus::FAILURE);
+    cd.status = mapFindOrDefault(CmrStatusLookup, rawChannel.status, ChannelDataStatus::FAILURE);
     cd.unitOfMeasure = rawChannel.unitOfMeasure.getName();
     cd.value = rawChannel.value;
 

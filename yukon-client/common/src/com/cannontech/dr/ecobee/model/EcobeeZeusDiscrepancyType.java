@@ -5,7 +5,7 @@ import com.cannontech.common.i18n.DisplayableEnum;
 public enum EcobeeZeusDiscrepancyType implements DisplayableEnum {
     MISSING_GROUP(EcobeeZeusDiscrepancyCategory.GROUP, true),
     EXTRANEOUS_GROUP(EcobeeZeusDiscrepancyCategory.GROUP, true),
-    MISSING_DEVICE(EcobeeZeusDiscrepancyCategory.DEVICE, false),
+    MISSING_DEVICE(EcobeeZeusDiscrepancyCategory.DEVICE, true),
     MISLOCATED_DEVICE(EcobeeZeusDiscrepancyCategory.DEVICE, true),
     EXTRANEOUS_DEVICE(EcobeeZeusDiscrepancyCategory.DEVICE, false),
     ;

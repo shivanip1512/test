@@ -7,6 +7,14 @@
 
 <cti:checkRolesAndProperties value="OPERATOR_IMPORT_CUSTOMER_ACCOUNT">
     <cti:standardPage module="operator" page="accountImport" smartNotificationsEvent="ASSET_IMPORT">
+    
+    <style>
+    	.importHeaderStyle {
+    		background-color: whitesmoke;
+    		border: 1px solid #ccc;
+    		padding: 10px;
+    	}
+    </style>
 
         <cti:checkEnergyCompanyOperator showError="true">
 
@@ -80,7 +88,7 @@
                 
             <div class="column-12-12">
                 <div class="column one">
-                    <div class="box" style="background-color:#CDCDCD;padding:10px;">
+                    <div class="box importHeaderStyle">
                         <div class="fl"></div>
                         <div class="fl" style="margin-left:20px;">
                             <h2><i:inline key=".importAccountTableHeader"/></h2>
@@ -98,13 +106,13 @@
                         <tbody>
                             <c:forEach var="field" items="${accountFields}">
                                 <tr valign="top">
-                                    <td class="fwb">${field.name} <sup>${field.legendKey}</sup></td>
+                                    <td>${field.name} <sup>${field.legendKey}</sup></td>
                                     <td><i:inline key=".accountField.description.${field}"/></td>
                                 </tr>
                             </c:forEach>
                         </tbody>
                     </table>
-                    <div class="box detail" style="background-color:#CDCDCD;padding:10px;">
+                    <div class="box detail importHeaderStyle">
                         <table>
                             <tr>
                                 <td><i:inline key=".accountFieldLegend.a.label"/></td>
@@ -124,7 +132,7 @@
                 </div>
                 
                 <div class="column two nogutter">
-                    <div class="box" style="background-color:#CDCDCD;padding:10px;">
+                    <div class="box importHeaderStyle">
                         <div class="fl"></div>
                         <div class="fl" style="margin-left:20px;">
                             <h2><i:inline key=".importHardwareTableHeader"/></h2>
@@ -142,13 +150,13 @@
                         <tbody>
                         <c:forEach var="field" items="${hardwareFields}">
                             <tr>
-                                <td class="fwb">${field.name} <sup>${field.legendKey}</sup></td>
+                                <td>${field.name} <sup>${field.legendKey}</sup></td>
                                 <td><i:inline key=".hardwareField.description.${field}"/></td>
                             </tr>
                         </c:forEach>
                         </tbody>
                     </table>
-                    <div class="box detail" style="background-color:#CDCDCD;padding:10px;">
+                    <div class="box detail importHeaderStyle">
                         <table>
                             <tr>
                                 <td><i:inline key=".hardwareFieldLegend.a.label"/></td>

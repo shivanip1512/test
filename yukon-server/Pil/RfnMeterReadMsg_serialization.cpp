@@ -77,14 +77,30 @@ Thrift::RfnMeterReadingData toThrift(const Rfn::RfnMeterReadingData& data)
 
     static const auto channelDataToThrift = [](const Rfn::ChannelData& cd) {
         static const std::map<Rfn::ChannelDataStatus, Thrift::ChannelDataStatus::type> statuses {
-            { Rfn::ChannelDataStatus::FAILURE, 
-                Thrift::ChannelDataStatus::FAILURE },
-            { Rfn::ChannelDataStatus::LONG,
-                Thrift::ChannelDataStatus::LONG },
-            { Rfn::ChannelDataStatus::OK,
+            { Rfn::ChannelDataStatus::OK, 
                 Thrift::ChannelDataStatus::OK },
-            { Rfn::ChannelDataStatus::TIMEOUT, 
-                Thrift::ChannelDataStatus::TIMEOUT } };
+            { Rfn::ChannelDataStatus::PARTIAL_READ_TIMEOUT,
+                Thrift::ChannelDataStatus::PARTIAL_READ_TIMEOUT },
+            { Rfn::ChannelDataStatus::PARTIAL_READ_FAILURE,
+                Thrift::ChannelDataStatus::PARTIAL_READ_FAILURE },
+            { Rfn::ChannelDataStatus::PARTIAL_READ_LONG,
+                Thrift::ChannelDataStatus::PARTIAL_READ_LONG },
+            { Rfn::ChannelDataStatus::FULL_READ_PASSWORD_ERROR,
+                Thrift::ChannelDataStatus::FULL_READ_PASSWORD_ERROR },
+            { Rfn::ChannelDataStatus::FULL_READ_BUSY_ERROR,
+                Thrift::ChannelDataStatus::FULL_READ_BUSY_ERROR },
+            { Rfn::ChannelDataStatus::FULL_READ_TIMEOUT_ERROR,
+                Thrift::ChannelDataStatus::FULL_READ_TIMEOUT_ERROR },
+            { Rfn::ChannelDataStatus::FULL_READ_PROTOCOL_ERROR,
+                Thrift::ChannelDataStatus::FULL_READ_PROTOCOL_ERROR },
+            { Rfn::ChannelDataStatus::FULL_READ_NO_SUCH_CHANNEL_ERROR,
+                Thrift::ChannelDataStatus::FULL_READ_NO_SUCH_CHANNEL_ERROR },
+            { Rfn::ChannelDataStatus::FULL_READ_READ_RESPONSE_ERROR_UNKNOWN,
+                Thrift::ChannelDataStatus::FULL_READ_READ_RESPONSE_ERROR_UNKNOWN },
+            { Rfn::ChannelDataStatus::FULL_READ_UNKNOWN,
+                Thrift::ChannelDataStatus::FULL_READ_UNKNOWN },
+            { Rfn::ChannelDataStatus::FAILURE,
+                Thrift::ChannelDataStatus::FAILURE } };
         Thrift::ChannelData tcd;
         tcd.__set_channelNumber(cd.channelNumber);
         if( auto status = mapFind(statuses, cd.status) )

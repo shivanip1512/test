@@ -33,7 +33,7 @@
                 <cti:param name="date" value="${backingBean.date}"/>
                 <cti:param name="alarmFilter" value="${backingBean.alarmFilter}"/>
             </cti:url>               
-            <cti:button nameKey="download" href="${download}" icon="icon-page-white-excel"/>
+            <cti:button nameKey="download" href="${download}" icon="icon-page-white-excel" classes="ML15"/>
         </c:if>
     </div>
     <c:if test="${display.type == cti:constantValue('com.cannontech.common.tdc.model.DisplayType.CUSTOM_DISPLAYS')}">
@@ -48,7 +48,7 @@
                 <cm:dropdownOption key="yukon.web.modules.tools.tdc.copy" icon="icon-disk-multiple"
             data-display-id="${display.displayId}" data-copy-title="${copyTitle}" 
             classes="js-tdc-copy"/>
-            <cm:dropdownOption id="deleteCustomDisplay_${display.displayId}" key=".display.DELETE" icon="icon-cross"
+            <cm:dropdownOption id="deleteCustomDisplay_${display.displayId}" key=".display.DELETE" icon="icon-delete"
                 data-display-id="${display.displayId}" data-ok-event="yukon:display:remove"/>
             <d:confirm on="#deleteCustomDisplay_${display.displayId}" nameKey="confirmDelete" argument="${display.name}"/>
             <li class="divider"/>
@@ -74,4 +74,6 @@
     
     <cti:includeScript link="/resources/js/pages/yukon.tools.tdc.js"/>
     <cti:includeScript link="/resources/js/pages/yukon.points.js"/>
+    <cti:includeScript link="/resources/js/lib/sortable/sortable.js"/>
+<cti:includeCss link="/resources/js/lib/sortable/sortable.css"/>
 </cti:standardPage>

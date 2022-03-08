@@ -43,16 +43,16 @@ trendSeries:
         description: 'Color.'
         enum:
         - BLACK
+        - SKY
         - BLUE
-        - CYAN
-        - GREY
+        - TEAL
+        - GRAY
         - GREEN
-        - MAGENTA
+        - SAGE
         - ORANGE
-        - PINK
+        - PURPLE
         - WINE
         - YELLOW
-        - PURPLE
       axis:
         type: string
         default: LEFT
@@ -114,11 +114,36 @@ trendId:
       type: integer
       description: 'Unique identifier for Trend.'
 
+Trend Response Schema:
+  type: object
+  properties:
+    trendId:
+      type: integer
+      description: 'Unique identifier for Trend.'
+    trendName:
+      type: string
+      maxLength: 40
+      description: 'Name for the trend.'
+    trendSeries:
+      $ref: '#/trendSeries'
 
 components:
   examples:
-    Trend:
+    Trend Request:
       value:
+        trendName: Test Trend
+        trendSeries:
+          - type: DATE_TYPE
+            pointId: -110
+            label: System Device / System Point
+            color: BLACK
+            axis: LEFT
+            multiplier: 1.2
+            style: LINE
+            date: 07/22/2020
+    Trend Response:
+      value:
+        trendId: 7
         trendName: Test Trend
         trendSeries:
           - type: DATE_TYPE

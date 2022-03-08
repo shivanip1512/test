@@ -236,6 +236,8 @@ std::optional<DeviceTypes> resolvePaoIdXmlType( const std::string & type )
         //  --- RF gas meters ---
         { "RFG201",                      TYPE_RFG201 },
         { "RFG301",                      TYPE_RFG301 },
+        { "RFG301A",                     TYPE_RFG301A },
+        { "RFG301R",                     TYPE_RFG301R },
 
         //  --- RF Cellular IPLink Relays ---
         { "CRLY856",                     TYPE_CRLY856 },
@@ -300,6 +302,7 @@ std::optional<DeviceTypes> resolvePaoIdXmlType( const std::string & type )
         { "ZIGBEE_ENDPOINT",             _unmapped_ },
 
         //  --- Itron ---
+        { "LCR6200S",                    _unmapped_ },
         { "LCR6600S",                    _unmapped_ },
         { "LCR6601S",                    _unmapped_ },
 

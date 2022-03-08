@@ -207,12 +207,12 @@
 		                </cti:url>
 		                <li>
         		            <tags:simpleDialogLink titleKey="yukon.web.modules.dr.controlArea.sendDisableConfirm.title" 
-                		        dialogId="drDialog" actionUrl="${sendDisableUrl}" icon="icon-delete"
+                		        dialogId="drDialog" actionUrl="${sendDisableUrl}" icon="icon-disable"
                         		labelKey=".actions.disable"/>
 		                </li>
 		            </div>
             		<div data-disable-control-area-action="off" class="dn" data-pao-id="${controlAreaId}">
-		                <cm:dropdownOption icon="icon-delete" disabled="true">
+		                <cm:dropdownOption icon="icon-disable" disabled="true">
         	        	    <cti:msg2 key=".actions.disable" />
             		    </cm:dropdownOption>
 		            </div>
@@ -224,7 +224,7 @@
 		                </cm:dropdownOption>
 		            </div>
 		            <div data-disable-control-area-action="off" class="dn" data-pao-id="${controlAreaId}">
-        		        <cm:dropdownOption icon="icon-delete" disabled="true">
+        		        <cm:dropdownOption icon="icon-disable" disabled="true">
                 		    <cti:msg2 key=".actions.disable" />
 		                </cm:dropdownOption>
 		            </div>
@@ -283,12 +283,12 @@
 		                </cti:url>
         	        <li>
             	        <tags:simpleDialogLink titleKey="yukon.web.modules.dr.program.sendDisableProgramsConfirm.title" 
-                	        dialogId="drDialog" actionUrl="${sendDisableProgramsUrl}" icon="icon-delete"
+                	        dialogId="drDialog" actionUrl="${sendDisableProgramsUrl}" icon="icon-disable"
                     	    labelKey=".actions.disablePrograms"/>
 	                </li>
     		        </div>
             		<div data-disable-programs-action="off" class="dn" data-pao-id="${controlAreaId}">
-		                <cm:dropdownOption icon="icon-delete" disabled="true">
+		                <cm:dropdownOption icon="icon-disable" disabled="true">
 		                    <cti:msg2 key=".actions.disablePrograms" />
 		                </cm:dropdownOption>
 		            </div>
@@ -300,7 +300,7 @@
 		                </cm:dropdownOption>
 		            </div>
         		    <div data-disable-programs-action="off" class="dn" data-pao-id="${controlAreaId}">
-                		<cm:dropdownOption icon="icon-delete" disabled="true">
+                		<cm:dropdownOption icon="icon-disable" disabled="true">
 	    	                <cti:msg2 key=".actions.disablePrograms" />
 		                </cm:dropdownOption>
             		</div>
@@ -352,7 +352,7 @@
             <cm:dropdownOption icon="icon-time" disabled="true" title="${noAssignedPrograms}">
                 <cti:msg2 key=".actions.dailyTimeChange" />
             </cm:dropdownOption>
-            <cm:dropdownOption icon="icon-delete" disabled="true" title="${noAssignedPrograms}">
+            <cm:dropdownOption icon="icon-disable" disabled="true" title="${noAssignedPrograms}">
                 <cti:msg2 key=".actions.disable" />
             </cm:dropdownOption>
             <li class="divider"></li>

@@ -142,11 +142,14 @@
 
     <entry key="yukon.common.pao.RFG201">RFG-201</entry>
     <entry key="yukon.common.pao.RFG301">RFG-301</entry>
+    <entry key="yukon.common.pao.RFG301A">RFG-301A</entry>
+    <entry key="yukon.common.pao.RFG301R">RFG-301R</entry>
     
     <entry key="yukon.common.pao.LCR6200_RFN">LCR-6200 RFN</entry>
     <entry key="yukon.common.pao.LCR6600_RFN">LCR-6600 RFN</entry>
     <entry key="yukon.common.pao.LCR6700_RFN">LCR-6700 RFN</entry>
 
+    <entry key="yukon.common.pao.LCR6200S">LCR-6200S</entry>
     <entry key="yukon.common.pao.LCR6600S">LCR-6600S</entry>
     <entry key="yukon.common.pao.LCR6601S">LCR-6601S</entry>
 

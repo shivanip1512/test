@@ -60,6 +60,9 @@
 <entry key="yukon.web.picker.lmControlAreaPaoPermissionCheckingPicker.dialogTitle">Select Control Area</entry>
 <entry key="yukon.web.picker.lmScenarioPaoPermissionCheckingPicker.dialogTitle">Select Scenario</entry>
 
+<entry key="yukon.web.picker.versacomGroupPicker.dialogTitle">Select VersaCom Group</entry>
+<entry key="yukon.web.picker.expresscomGroupPicker.dialogTitle">Select ExpressCom Group</entry>
+
 <entry key="yukon.web.picker.portPicker.dialogTitle">Select Comm Channels</entry>
 
 <!-- Point Pickers -->
@@ -229,4 +232,8 @@
 
 <!-- RF Gateway Picker -->
 <entry key="yukon.web.picker.rfGatewayLegacyPicker.dialogTitle">Gateways</entry>
+
+<!-- Gateway NM IP Address/Port Picker -->
+<entry key="yukon.web.picker.gatewayNmIpAddressPortPicker.dialogTitle">Select Gateway(s)</entry>
+
 </properties>

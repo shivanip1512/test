@@ -55,12 +55,12 @@ BOOST_AUTO_TEST_CASE(test_is_dnp_device_type)
     (_)(_)(_)(_)(_) (_)(_)(_)(_)(_)  //  70
     (_)(_)(_)(_)(_) (_)(_)(_)(_)(_)  //  80
     (_)(_)(_)(_)(_) (_)(_)(_)(_)(_)  //  90
-    (_)(_)(_)(X)(_) (_)(_)(_)(_)(_)  //  100
+    (_)(_)(_)(_)(_) (X)(_)(_)(_)(_)  //  100
 */
     expected[ 46 ] = true;
     expected[ 47 ] = true;
     expected[ 49 ] = true;
-    expected[ 103 ] = true;
+    expected[ 105 ] = true;
 
     std::vector<bool> results;
 
@@ -186,12 +186,14 @@ BOOST_AUTO_TEST_CASE(test_createDeviceType)
     *i++ = "class Cti::Devices::RfBatteryNodeDevice";
     *i++ = "class Cti::Devices::RfBatteryNodeDevice";
     *i++ = "class Cti::Devices::RfBatteryNodeDevice";
+    *i++ = "class Cti::Devices::RfBatteryNodeDevice";
+    *i++ = "class Cti::Devices::RfBatteryNodeDevice";
     *i++ = "class Cti::Devices::RfCellularRelayDevice";
     *i++ = "class CtiDeviceCCU710";
     *i++ = "class CtiDeviceCCU710";
+    //  100
     *i++ = "class CtiDeviceCCU";
     *i++ = "class Cti::Devices::Ccu721Device";
-    //  100
     *i++ = "class CtiDeviceILEX";
     *i++ = "class CtiDeviceWelco";
     *i++ = "class CtiDeviceRemote";
@@ -200,9 +202,9 @@ BOOST_AUTO_TEST_CASE(test_createDeviceType)
     *i++ = "class CtiDeviceION";
     *i++ = "class CtiDeviceION";
     *i++ = "class CtiDeviceION";
-    *i++ = "class CtiDeviceLCU";
-    *i++ = "class CtiDeviceLCU";
     //  110
+    *i++ = "class CtiDeviceLCU";
+    *i++ = "class CtiDeviceLCU";
     *i++ = "class CtiDeviceLCU";
     *i++ = "class CtiDeviceLCU";
     *i++ = "class CtiDeviceTCU";
@@ -211,9 +213,9 @@ BOOST_AUTO_TEST_CASE(test_createDeviceType)
     *i++ = "class CtiDeviceDavis";
     *i++ = "class CtiDeviceAlphaPPlus";
     *i++ = "class CtiDeviceFulcrum";
+    //  120
     *i++ = "class CtiDeviceLandisGyrS4";
     *i++ = "class CtiDeviceVectron";
-    //  120
     *i++ = "class CtiDeviceAlphaA1";
     *i++ = "class CtiDeviceDR87";
     *i++ = "class CtiDeviceQuantum";
@@ -222,9 +224,9 @@ BOOST_AUTO_TEST_CASE(test_createDeviceType)
     *i++ = "class Cti::Devices::CtiDeviceFocus";
     *i++ = "class CtiDeviceKV2";
     *i++ = "class CtiDeviceSixnet";
+    //  130
     *i++ = "class Cti::Devices::Ipc410ALDevice";
     *i++ = "class Cti::Devices::Ipc420ADDevice";
-    //  130
     *i++ = "class CtiDeviceLandisGyrS4";
     *i++ = "class Cti::Devices::CtiDeviceSentinel";
     *i++ = "class Cti::Devices::TapPagingTerminal";
@@ -233,9 +235,9 @@ BOOST_AUTO_TEST_CASE(test_createDeviceType)
     *i++ = "class CtiDeviceSnppPagingTerminal";
     *i++ = "class CtiDevicePagingReceiver";
     *i++ = "class CtiDeviceTnppPagingTerminal";
+    //  140
     *i++ = "class CtiDeviceRTC";
     *i++ = "class CtiDeviceRTM";
-    //  140
     *i++ = "class CtiDeviceSeriesV";
     *i++ = "class CtiDeviceLMI";
     *i++ = "class Cti::Devices::ModbusDevice";
@@ -244,24 +246,24 @@ BOOST_AUTO_TEST_CASE(test_createDeviceType)
     *i++ = "class CtiDeviceGroupEmetcon";
     *i++ = "class CtiDeviceGroupVersacom";
     *i++ = "class CtiDeviceGroupRipple";
+    //  150
     *i++ = "class CtiDeviceGroupPoint";
     *i++ = "class CtiDeviceGroupExpresscom";
-    //  150
     *i++ = "class CtiDeviceGroupRfnExpresscom";
-    i += 5;
-    i++;
+    i += 6;
     *i++ = "class CtiDeviceGroupMCT";
+    //  160
     i++;
     *i++ = "class CtiDeviceGroupGolay";
-    //  160
     *i++ = "class CtiDeviceGroupSADigital";
     *i++ = "class CtiDeviceGroupSA105";
     *i++ = "class CtiDeviceGroupSA205";
     *i++ = "class CtiDeviceGroupSA305";
     *i++ = "class Cti::Devices::MctBroadcastDevice";
-    i += 5;
+    i += 3;
     //  170
-    i += 8;
+    i += 10;
+    //  180
     *i++ = "class CtiDeviceMacro";
     *i++ = "class CtiDeviceSystem";
 
@@ -388,6 +390,12 @@ BOOST_AUTO_TEST_CASE(test_DeviceFactory)
         { "rfn-530s4eaxr",                  "class Cti::Devices::RfnCommercialDevice" },
         { "rfn-530s4erx",                   "class Cti::Devices::RfnCommercialDevice" },
         { "rfn-530s4erxr",                  "class Cti::Devices::RfnCommercialDevice" },
+
+        { "rfg-201",                        "class Cti::Devices::RfBatteryNodeDevice" },
+        { "rfw-201",                        "class Cti::Devices::RfBatteryNodeDevice" },
+        { "rfg-301",                        "class Cti::Devices::RfBatteryNodeDevice" },
+        { "rfg-301a",                       "class Cti::Devices::RfBatteryNodeDevice" },
+        { "rfg-301r",                       "class Cti::Devices::RfBatteryNodeDevice" },
 
         { "rtu-dart",                       "class Cti::Devices::DnpRtuDevice" },
         { "rtu-dnp",                        "class Cti::Devices::DnpRtuDevice" },

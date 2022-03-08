@@ -45,7 +45,6 @@ yukon.adminSetup.yukonLoggers = (function () {
 
             if (_initialized) return;
 
-            $('.js-loggers-table').scrollTableBody();
             $('.js-selected-levels').chosen({'width': '350px'});
 
             $(document).on('yukon:logger:delete', function (ev) {

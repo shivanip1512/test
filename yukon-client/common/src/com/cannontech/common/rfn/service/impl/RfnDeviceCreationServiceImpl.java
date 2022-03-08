@@ -119,19 +119,9 @@ public class RfnDeviceCreationServiceImpl implements RfnDeviceCreationService {
         });
         
         templatePrefix = configurationSource.getString(MasterConfigString.RFN_METER_TEMPLATE_PREFIX, "*RfnTemplate_");
-        jmsTemplate = jmsTemplateFactory.createTemplate(JmsApiDirectory.RFN_DEVICE_CREATION_ALERT);
+        jmsTemplate = jmsTemplateFactory.createTemplate(JmsApiDirectory.NEW_ALERT_CREATION);
     }
 
-    @Override
-    @Transactional
-    public synchronized RfnDevice findOrCreate(RfnIdentifier newDeviceIdentifier) {
-        try {
-            return getOrCreate(newDeviceIdentifier);
-        } catch (Exception e) {
-            return null;
-        }
-    }
-    
     @Override
     @Transactional
     public synchronized RfnDevice getOrCreate(RfnIdentifier newDeviceIdentifier) {
@@ -141,7 +131,6 @@ public class RfnDeviceCreationServiceImpl implements RfnDeviceCreationService {
     @Override
     @Transactional
     public synchronized RfnDevice getOrCreate(RfnIdentifier newDeviceIdentifier, Instant dataTimestamp) {
-        
         dataTimestamp = dataTimestamp == null ? new Instant() : dataTimestamp;
         
         if (newDeviceIdentifier == null || newDeviceIdentifier.is_Empty_()) {

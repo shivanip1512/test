@@ -59,9 +59,9 @@ yukon.tools.dataStreaming = (function () {
         init: function () {
                         
             if (_initialized) return;
-            $(".js-selected-gateways").chosen({width: "350px"});
-            $(".js-selected-configuration").chosen({width: "350px"});
-            $(".js-selected-attribute").chosen({width: "250px"});
+            $(".js-selected-gateways").chosen({width: "500px"});
+            $(".js-selected-configuration").chosen({width: "400px"});
+            $(".js-selected-attribute").chosen({width: "300px"});
 
             if ($('#searchSection').exists()) {
                 mod.showHideConfigurations();

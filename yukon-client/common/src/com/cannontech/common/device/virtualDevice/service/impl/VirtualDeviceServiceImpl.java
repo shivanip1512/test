@@ -30,7 +30,7 @@ public class VirtualDeviceServiceImpl implements VirtualDeviceService {
 
     @Override
     public VirtualDeviceBaseModel<? extends VirtualBase> create(VirtualDeviceBaseModel virtualDeviceBase) {
-        VirtualBase virtualDevice = (VirtualBase) DeviceFactory.createDevice(virtualDeviceBase.getType());
+        VirtualBase virtualDevice = (VirtualBase) DeviceFactory.createDevice(virtualDeviceBase.getDeviceType());
         virtualDeviceBase.buildDBPersistent(virtualDevice);
         dBPersistentDao.performDBChange(virtualDevice, TransactionType.INSERT);
         virtualDeviceBase.buildModel(virtualDevice);

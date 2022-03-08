@@ -36,8 +36,8 @@ public class RfnLcrExiParsingStrategy implements RfnLcrParsingStrategy {
     private static final Logger log = YukonLogManager.getLogger(RfnLcrExiParsingStrategy.class);
 
     @Override
-    public void parseRfLcrReading(RfnLcrArchiveRequest request, RfnDevice rfnDevice, AtomicInteger archivedReadings)
-            throws ParseException {
+    public void parseRfLcrReading(RfnLcrArchiveRequest request, RfnDevice rfnDevice, AtomicInteger archivedReadings,
+            AtomicInteger pointDataProduced) throws ParseException {
         RfnLcrReadingArchiveRequest reading = ((RfnLcrReadingArchiveRequest) request);
         SimpleXPathTemplate decodedPayload = null;
 
@@ -68,6 +68,7 @@ public class RfnLcrExiParsingStrategy implements RfnLcrParsingStrategy {
             messagesToSend = rfnLcrDataMappingService.mapPointData(reading, decodedPayload);
             asyncDynamicDataSource.putValues(messagesToSend);
             archivedReadings.addAndGet(messagesToSend.size());
+            pointDataProduced.addAndGet(messagesToSend.size());
             if (log.isDebugEnabled()) {
                 log.debug(messagesToSend.size() + " PointDatas generated for RfnLcrReadingArchiveRequest");
             }

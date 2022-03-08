@@ -72,6 +72,9 @@
                 <cti:formatDate type="TIME" value="${status.actualValue}"/>
             </cti:displayForPageEditModes>
             <cti:displayForPageEditModes modes="EDIT,CREATE">
+            <c:if test="${status.error}">
+                <c:set var="wrapClass" value="${wrapClass} date-time-error"/>       
+            </c:if>
                 <span class="datetimeEntry_wrap ${wrapClass}">
                     <form:input id="${id}" 
                         path="${path}"
@@ -104,6 +107,7 @@
                     <input id="${id}" 
                         <c:if test="${!empty pageScope.name}">name="${pageScope.name}"</c:if>
                         value="${timeValue}"
+                        type="text"
                         class="js-timePicker js-timePickerUI timePicker ${cssClass}"
                         <c:if test="${disabled}">disabled="true"</c:if>
                         data-max-date="${maxFormattedDate}"

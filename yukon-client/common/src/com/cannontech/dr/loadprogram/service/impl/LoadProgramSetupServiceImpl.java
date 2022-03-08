@@ -152,7 +152,7 @@ public class LoadProgramSetupServiceImpl implements LoadProgramSetupService {
 
     @Override
     @Transactional
-    public int copy(int programId, LoadProgramCopy loadProgramCopy, LiteYukonUser liteYukonUser) {
+    public LoadProgram copy(int programId, LoadProgramCopy loadProgramCopy, LiteYukonUser liteYukonUser) {
 
         LiteYukonPAObject lmProgram = getProgramFromCache(programId);
  
@@ -192,8 +192,12 @@ public class LoadProgramSetupServiceImpl implements LoadProgramSetupService {
 
         // Logging events during load program copy
         processEventLogsForProgramCopy(directBase, liteYukonUser);
-
-        return program.getPAObjectID();
+        
+        LoadProgram loadProgram = new LoadProgram();
+        updateLoadProgramModel(loadProgram, program, liteYukonUser);
+        
+        return loadProgram;
+        
     }
 
     /**
@@ -640,4 +644,6 @@ public class LoadProgramSetupServiceImpl implements LoadProgramSetupService {
                                                       liteYukonUser);
         }
     }
+
+
 }

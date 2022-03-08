@@ -3,8 +3,8 @@ package com.cannontech.web.scheduledFileExport.validator;
 import java.io.File;
 import java.text.SimpleDateFormat;
 
-import javax.mail.internet.AddressException;
-import javax.mail.internet.InternetAddress;
+import jakarta.mail.internet.AddressException;
+import jakarta.mail.internet.InternetAddress;
 
 import org.springframework.validation.Errors;
 

@@ -43,7 +43,7 @@
         </c:when>
         <c:otherwise>
             <div class="scroll-lg" id="pao-notes-list-container" data-url="${searchUrl}" data-static>
-                <table class="compact-results-table has-actions row-highlighting wrbw" style="width:100%; table-layout:fixed;">
+                <table class="compact-results-table no-stripes has-actions wrbw" style="width:100%; table-layout:fixed;">
                     <thead>
                         <th width="36%"><i:inline key="yukon.web.common.paoNote.noteText"/></th>
                         <th width="10%"/>
@@ -99,7 +99,7 @@
                                         <c:if test="${paoNoteSearchResult.modifiable}">
                                             <cti:button id="js-edit-popup-note-btn-${noteId}" renderMode="buttonImage" icon="icon-pencil" 
                                                         data-note-id="${noteId}" title="${editText}"/>
-                                            <cti:button id="js-delete-popup-note-btn-${noteId}" renderMode="buttonImage" icon="icon-cross" 
+                                            <cti:button id="js-delete-popup-note-btn-${noteId}" renderMode="buttonImage" icon="icon-delete" 
                                                         data-ok-event="yukon:popup:note:delete" title="${deleteText}"/>
                                             <d:confirm on="#js-delete-popup-note-btn-${noteId}"  nameKey="confirmDelete"/>
                                         </c:if>

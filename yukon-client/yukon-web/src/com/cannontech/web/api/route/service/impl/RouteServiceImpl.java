@@ -38,7 +38,7 @@ public class RouteServiceImpl implements RouteService {
     public RouteBaseModel<? extends RouteBase> create(RouteBaseModel routeBaseModel, LiteYukonUser yukonUser) {
 
         setRoutePaoType(routeBaseModel);
-        RouteBase routeBase = RouteFactory.createRoute(routeBaseModel.getType());
+        RouteBase routeBase = RouteFactory.createRoute(routeBaseModel.getDeviceType());
         routeBaseModel.buildDBPersistent(routeBase);
         dbPersistentDao.performDBChange(routeBase, TransactionType.INSERT);
         SimpleDevice device = SimpleDevice.of(routeBase.getPAObjectID(), routeBase.getPaoType());
@@ -120,7 +120,7 @@ public class RouteServiceImpl implements RouteService {
      */
     private void setRoutePaoType(RouteBaseModel<? extends RouteBase> routeBaseModel) {
         PaoType routePaoType = routeHelper.getRouteType(String.valueOf(routeBaseModel.getSignalTransmitterId()));
-        routeBaseModel.setType(routePaoType);
+        routeBaseModel.setDeviceType(routePaoType);
     }
 
 }

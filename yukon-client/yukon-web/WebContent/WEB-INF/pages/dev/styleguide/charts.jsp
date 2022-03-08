@@ -32,7 +32,7 @@
             legendOptionsJSON = {
                 labelFormatter : function(point) {
                     var legendValueText = '<span class="js-legend-value dn">' + this.name + '</span>', 
-                        spanText = '<span class="badge" style="margin:2px;width:60px;color:white;background-color:' + this.color + '">'
+                        spanText = '<span class="badge" style="margin:2px;padding:4px;width:60px;color:white;background-color:' + this.color + '">'
                                     + this.x + '</span> ';
                     return legendValueText + spanText + this.name + ': ' + this.displayPercentage;
                 },
@@ -186,8 +186,8 @@
                     }
                 }],
                 seriesDetails: [{
-                    color: '#2ca618',
-                    borderColor: 'GREEN',
+                    color: '#5d9c53',
+                    borderColor: 'EMERALD',
                     fillOpacity: '0.45',
                     marker: {enabled: true},
                     showInLegend: false,
@@ -259,8 +259,8 @@
                     }
                 }],
                 seriesDetails: [{
-                    color: '#2ca618',
-                    borderColor: 'GREEN',
+                    color: '#5d9c53',
+                    borderColor: 'EMERALD',
                     fillOpacity: '0.45',
                     marker: {enabled: true},
                     showInLegend: false,

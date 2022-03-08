@@ -30,7 +30,7 @@
                     </td>
                     
                     <td>
-                        <table class="dib fl">
+                        <table class="dib fl no-borders">
                             <c:if test="${not empty contact.homePhone}">
                                 <tr>
                                     <td class="name"><i:inline key="yukon.web.modules.operator.contactNotificationEnum.HOME_PHONE"/>:</td>

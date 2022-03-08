@@ -41,7 +41,7 @@
                         classes="js-edit ${clazz}"/>
             </cti:checkRolesAndProperties>
             <cti:checkRolesAndProperties value="MANAGE_INFRASTRUCTURE" level="OWNER">
-                <cm:dropdownOption icon="icon-cross" key="components.button.delete.label" id="gateway-delete"
+                <cm:dropdownOption icon="icon-delete" key="components.button.delete.label" id="gateway-delete"
                     data-ok-event="yukon:assets:gateways:delete"/>
             </cti:checkRolesAndProperties>
         </cm:dropdown>
@@ -91,7 +91,15 @@
                                 </c:if>
                             </span>
                         </tags:nameValue2>
-                        <tags:nameValue2 nameKey=".radios" valueClass="js-gw-radios">
+				        <tags:nameValue2 nameKey=".nmipaddress">
+                            <span class="js-gw-nmip">${fn:escapeXml(data.nmIpAddress)}</span>&nbsp;
+                            <span class="js-gw-nmport">
+                                <c:if test="${not empty data}">
+                                    <i:inline key=".port" arguments="${data.nmPort}"/>
+                                </c:if>
+                            </span>
+                        </tags:nameValue2>
+						<tags:nameValue2 nameKey=".radios" valueClass="js-gw-radios">
                             <c:if test="${not empty data}">
                                 <c:forEach var="radio" items="${data.radios}">
                                     <div title="<cti:formatDate type="DATEHM" value="${radio.timestamp}"/>" class="stacked">

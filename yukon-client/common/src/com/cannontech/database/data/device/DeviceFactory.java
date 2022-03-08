@@ -202,6 +202,8 @@ public final class DeviceFactory {
         case RFW201:
         case RFG201:
         case RFG301:
+        case RFG301A:
+        case RFG301R:
         case RFN430SL0:
         case RFN430SL1:
         case RFN430SL2:
@@ -239,6 +241,9 @@ public final class DeviceFactory {
             break;
 
         //ITRON (SilverSpring) type devices
+        case LCR6200S:
+            returnDevice = new Lcr6200S();
+            break;
         case LCR6600S:
             returnDevice = new Lcr6600S();
             break;

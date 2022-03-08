@@ -6,7 +6,7 @@ public enum EatonCloudEventStatus {
     RECEIVED(1),
     STARTED(2),
     COMPLETE(3),
-    CANCELED(4)
+    CANCELED(6)
     ;
     
     private final int id;

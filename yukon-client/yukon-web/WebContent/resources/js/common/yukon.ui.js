@@ -255,60 +255,16 @@ yukon.ui = (function () {
             }
             
         });
+        
+        /** Paging Handler: Changes the items per page size. */
+        $(document).on('change', yg.selectors.pageSize, function (ev) {
+            $(this).data('pageSize', $(this).val());
+            mod.changePaging($(this));
+        });
 
-        /** Paging Handler: Get the next or previous page, or change page size. */
+        /** Paging Handler: Get the next or previous page */
         $(document).on('click', yg.selectors.paging, function (ev) {
-
-            var
-            target = $(this),
-            container = target.closest('[data-url]'),
-            loadEvent = container.data('loadEvent'),
-            sortables = container.find('.sortable'),
-            url = container.data('url'),
-            pagingArea = container.find('.paging-area'),
-            page = pagingArea.data('currentPage'),
-            pageSize = pagingArea.data('pageSize'),
-            changePage = target.parent().is('.previous-page') || target.parent().is('.next-page'),
-            params = {},
-            sort;
-
-            if (changePage) {
-                // they clicked the next or previous page buttons
-                params.page = target.parent().is('.previous-page') ? page - 1 : page + 1;
-                params.itemsPerPage = pageSize;
-            } else {
-                // they clicked one of the page size links
-                params.page = 1;
-                params.itemsPerPage = target.data('pageSize');
-            }
-
-            // add sorting parameters if necessary
-            if (sortables.length) {
-                sort = sortables.filter('.desc');
-                if (sort.length) {
-                    params.dir = 'desc';
-                    params.sort = sort.data('sort');
-                } else {
-                    sort = sortables.filter('.asc');
-                    if (sort.length) {
-                        params.dir = 'asc';
-                        params.sort = sort.data('sort');
-                    }
-                }
-            }
-
-            if (container.is('[data-static]')) {
-                var joiner = url.indexOf('?') === -1 ? '?' : '&';
-                window.location.href = url + joiner + $.param(params);
-            } else {
-                $.get(url, params).done(function (data) {
-                    container.html(data);
-                    container.trigger(yg.events.pagingend);
-                    if (loadEvent) container.trigger(loadEvent);
-                });
-            }
-
-            return false; // return false to stop form submissions
+            mod.changePaging($(this));
         });
 
         /** Show or hide an element when something is clicked. */
@@ -656,6 +612,57 @@ yukon.ui = (function () {
             return btn;
         },
         
+        changePaging: function (target) {
+            var container = target.closest('[data-url]'),
+                loadEvent = container.data('loadEvent'),
+                sortables = container.find('.sortable'),
+                url = container.data('url'),
+                pagingArea = container.find('.paging-area'),
+                page = pagingArea.data('currentPage'),
+                pageSize = pagingArea.data('pageSize'),
+                changePage = target.parent().is('.previous-page') || target.parent().is('.next-page'),
+                params = {},
+                sort;
+
+            if (changePage) {
+                // they clicked the next or previous page buttons
+                params.page = target.parent().is('.previous-page') ? page - 1 : page + 1;
+                params.itemsPerPage = pageSize;
+            } else {
+                // they clicked one of the page size links
+                params.page = 1;
+                params.itemsPerPage = target.data('pageSize');
+            }
+
+            // add sorting parameters if necessary
+            if (sortables.length) {
+                sort = sortables.filter('.desc');
+                if (sort.length) {
+                    params.dir = 'desc';
+                    params.sort = sort.data('sort');
+                } else {
+                    sort = sortables.filter('.asc');
+                    if (sort.length) {
+                        params.dir = 'asc';
+                        params.sort = sort.data('sort');
+                    }
+                }
+            }
+
+            if (container.is('[data-static]')) {
+                var joiner = url.indexOf('?') === -1 ? '?' : '&';
+                window.location.href = url + joiner + $.param(params);
+            } else {
+                $.get(url, params).done(function (data) {
+                    container.html(data);
+                    container.trigger(yg.events.pagingend);
+                    if (loadEvent) container.trigger(loadEvent);
+                });
+            }
+
+            return false; // return false to stop form submissions  
+        },
+        
         /** 
          * Returns button array for jquery ui dialogs that contain a 'Cancel' and 'OK' buttons and an
          * optional 'Delete' button.
@@ -738,6 +745,10 @@ yukon.ui = (function () {
                     },
                     'class' : 'delete'
                 });
+            }
+            
+            if (options.okText === yg.text.deleteButton) {
+                options.okClass += ' delete';
             }
             
             // OK Button
@@ -831,7 +842,7 @@ yukon.ui = (function () {
                             popup.append(content);
                         }
                         if (popup.is('[data-help-text]') && !$(this).parent().children(".ui-dialog-titlebar").find(".icon-help").exists()) {
-                            $(this).parent().children(".ui-dialog-titlebar").prepend('<i class="icon icon-help fr js-dialog-help-text cp">');
+                            $(this).parent().children(".ui-dialog-titlebar").prepend('<i class="icon icon-help fr js-dialog-help-text cp">' + yg.iconSvg.iconHelp);
                             $(this).parent().children(".ui-dialog-titlebar").find('.icon-help').css('margin-right', '20px');
                             $(this).parent().find(".ui-dialog-title").width("80%");
                         }
@@ -850,6 +861,10 @@ yukon.ui = (function () {
                     at: 'center',
                     of: window
                 };
+            
+            if (popup.is('[data-max-height]')) {
+                options.maxHeight = popup.data('maxHeight');
+            }
             
             if (popup.is('[data-title]')) options.title = popup.data('title');
             if (popup.is('[title]')) options.title = popup.attr('title');

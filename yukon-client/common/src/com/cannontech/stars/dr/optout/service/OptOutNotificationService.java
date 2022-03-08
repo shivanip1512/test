@@ -1,6 +1,6 @@
 package com.cannontech.stars.dr.optout.service;
 
-import javax.mail.MessagingException;
+import jakarta.mail.MessagingException;
 
 import com.cannontech.database.data.lite.LiteYukonUser;
 import com.cannontech.stars.dr.account.model.CustomerAccount;

@@ -54,7 +54,6 @@ public class YukonLoggerDaoImpl implements YukonLoggerDao {
     public void updateLogger(int loggerId, YukonLogger logger) {
         SqlStatementBuilder sql = new SqlStatementBuilder();
         SqlParameterSink sink = sql.update(TABLE_NAME);
-        sink.addValue("LoggerName", logger.getLoggerName());
         sink.addValue("LoggerLevel", logger.getLevel());
         sink.addValue("ExpirationDate", logger.getExpirationDate());
         sink.addValue("Notes", logger.getNotes());

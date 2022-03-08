@@ -3,7 +3,10 @@ package com.cannontech.dr.ecobee.service;
 import java.util.List;
 import java.util.Set;
 
+import org.springframework.web.client.RestClientException;
+
 import com.cannontech.common.device.commands.exception.CommandCompletionException;
+import com.cannontech.dr.ecobee.EcobeeAuthenticationException;
 import com.cannontech.dr.ecobee.message.ZeusGroup;
 import com.cannontech.dr.ecobee.message.ZeusShowPushConfig;
 import com.cannontech.dr.ecobee.message.ZeusThermostat;
@@ -14,9 +17,9 @@ import com.cannontech.dr.ecobee.model.EcobeeSetpointDrParameters;
 public interface EcobeeZeusCommunicationService {
 
     /**
-     * Check whether the provided thermostat serial number is registered in Ecobee portal and its already connected.
+     * Add the specified thermostat to the root group with NOT_YET_CONNECTED state
      */
-    boolean isDeviceRegistered(String serialNumber);
+    void createDevice(String serialNumber);
 
     /**
      * Deletes the specified thermostat from a program's root group and deletes from all child groups.
@@ -66,7 +69,7 @@ public interface EcobeeZeusCommunicationService {
     /**
      * Get thermostats for the group. 
      */
-    List<ZeusThermostat> getThermostatsInGroup(String groupId);
+    List<ZeusThermostat> getThermostatsInGroup(String groupId, String...serialNumbers);
 
     /**
      * Initiates a Setpoint demand response event in Ecobee.
@@ -103,4 +106,15 @@ public interface EcobeeZeusCommunicationService {
      * Cancel opt out for the device.
      */
     void cancelOptOut(String serialNumber, int inventoryID);
+    
+    /**
+     * Get root group. 
+     */
+    String retrieveThermostatGroupID() throws RestClientException, EcobeeAuthenticationException;
+
+    /**
+     * Retrieve thermostat from the root group. 
+     */
+    ZeusThermostat retrieveThermostatFromRootGroup(String yukonSerialNumber);
+
 }

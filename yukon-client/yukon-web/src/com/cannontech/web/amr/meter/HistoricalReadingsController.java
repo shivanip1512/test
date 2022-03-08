@@ -488,6 +488,11 @@ public class HistoricalReadingsController {
                     attributeMsg = pointInfo.getName();
                 }
             }
+        } else {
+        	//just return point name
+            Map<Integer, PointInfo> pointInfoByPointIds = pointDao.getPointInfoByPointIds(Sets.newHashSet(pointId));
+            PointInfo pointInfo = pointInfoByPointIds.get(pointId);
+            attributeMsg = pointInfo.getName();
         }
         return attributeMsg;
     }

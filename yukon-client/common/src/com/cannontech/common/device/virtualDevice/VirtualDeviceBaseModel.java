@@ -18,19 +18,19 @@ public class VirtualDeviceBaseModel<T extends VirtualBase> extends DeviceBaseMod
 
     @Override
     public void buildModel(T virtualDevice) {
-        setId(virtualDevice.getPAObjectID());
-        setName(virtualDevice.getPAOName());
+        setDeviceId(virtualDevice.getPAObjectID());
+        setDeviceName(virtualDevice.getPAOName());
         setEnable(virtualDevice.getPAODisableFlag() == 'N' ? true : false);
-        setType(virtualDevice.getPaoType());
+        setDeviceType(virtualDevice.getPaoType());
     }
 
     @Override
     public void buildDBPersistent(T virtualDevice) {
-        if (getId() != null) {
-            virtualDevice.setDeviceID(getId());
+        if (getDeviceId() != null) {
+            virtualDevice.setDeviceID(getDeviceId());
         }
-        if (getName() != null) {
-            virtualDevice.setPAOName(getName());
+        if (getDeviceName() != null) {
+            virtualDevice.setPAOName(getDeviceName());
         }
         if (getEnable() != null) {
             virtualDevice.setDisableFlag(BooleanUtils.isFalse(getEnable()) ? 'Y' : 'N');

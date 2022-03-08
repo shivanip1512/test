@@ -3,14 +3,14 @@ post-operation:
     tags:
      - Macro Route
     summary: 'Create Macro Route'
-    description: 'API to Create MocroRoute.'
+    description: 'API to Create Macro Route.'
     requestBody:
       content:
         application/json:
           schema:
             $ref: '../schemas/macroRoutesSchema.yaml#/MacroRoute'
           examples:
-            MacroRoute:
+            Macro Route:
               $ref: '../schemas/macroRoutesSchema.yaml#/components/examples/MacroRouteRequest'
       required: true
     responses:
@@ -21,7 +21,7 @@ post-operation:
             schema:
               $ref: '../schemas/macroRoutesSchema.yaml#/MacroRouteResponseSchema'
             examples:
-              MacroRoute:
+              Macro Route:
                 $ref: '../schemas/macroRoutesSchema.yaml#/components/examples/MacroRoute'
 
   get:
@@ -38,7 +38,7 @@ post-operation:
             schema:
               $ref: '../schemas/macroRoutesSchema.yaml#/MacroRouteResponseSchema'
             examples:
-              MacroRoutes List:
+              Macro Routes List:
                 $ref: '../schemas/macroRoutesSchema.yaml#/components/examples/List MacroRoutes'
 
 get-update-delete-operation:
@@ -46,13 +46,13 @@ get-update-delete-operation:
     tags:
      - Macro Route
     summary: 'Retrieve Macro Route'
-    description: 'API to retrieve macroRoute based on passed id.'
+    description: 'API to retrieve Macro Route based on passed id.'
     parameters:
       - name: id
         in: path
         schema:
           type: integer
-        description: 'Unique identifier for macroRoute.'
+        description: 'Unique identifier for Macro Route.'
         required: true
     responses:
       '200':
@@ -62,7 +62,7 @@ get-update-delete-operation:
             schema:
               $ref: '../schemas/macroRoutesSchema.yaml#/MacroRouteResponseSchema'
             examples:
-              MacroRoute:
+              Macro Route:
                 $ref: '../schemas/macroRoutesSchema.yaml#/components/examples/MacroRoute'
 
   patch:
@@ -107,7 +107,7 @@ get-update-delete-operation:
         in: path
         schema:
           type: integer
-        description: 'Unique identifier for MacroRoute.'
+        description: 'Unique identifier for Macro Route.'
         required: true
     responses:
       '200':
@@ -115,7 +115,7 @@ get-update-delete-operation:
         content:
           application/json:
             schema:
-              $ref: '../schemas/macroRoutesSchema.yaml#/id'
+              $ref: '../schemas/macroRoutesSchema.yaml#/macroRouteId'
             examples:
-              MacroRoute:
+              Macro Route:
                 $ref: '../schemas/macroRoutesSchema.yaml#/components/examples/macroRouteId'

@@ -153,7 +153,7 @@ public class MacroLoadGroupSetupController {
 
             if (responseEntity.getStatusCode() == HttpStatus.UNPROCESSABLE_ENTITY) {
                 BindException error = new BindException(lmCopy, "lmCopy");
-                helper.populateBindingError(result, error, responseEntity);
+                helper.populateBindingErrorForApiErrorModel(result, error, responseEntity,  "yukon.web.error.");
                 model.addAttribute("lmCopy", lmCopy);
                 model.addAttribute("loadGroupId", id);
                 response.setStatus(HttpStatus.BAD_REQUEST.value());
@@ -162,7 +162,7 @@ public class MacroLoadGroupSetupController {
 
             if (responseEntity.getStatusCode() == HttpStatus.OK) {
                 HashMap<String, Integer> paoIdMap = (HashMap<String, Integer>) responseEntity.getBody();
-                int copiedLoadGroupId = paoIdMap.get("paoId");
+                int copiedLoadGroupId = paoIdMap.get("id");
                 json.put("copiedLoadGroupId", String.valueOf(copiedLoadGroupId));
                 flash.setConfirm(new YukonMessageSourceResolvable(baseKey + "copy.success", lmCopy.getName()));
             }
@@ -214,7 +214,7 @@ public class MacroLoadGroupSetupController {
 
             if (response.getStatusCode() == HttpStatus.UNPROCESSABLE_ENTITY) {
                 BindException error = new BindException(macroLoadGroup, "macroLoadGroup");
-                result = helper.populateBindingError(result, error, response);
+                result = helper.populateBindingErrorForApiErrorModel(result, error, response, "yukon.web.error.");
                 if (result.hasFieldErrors("assignedLoadGroups")) {
                     flash.setError(result.getFieldError("assignedLoadGroups"));
                 }

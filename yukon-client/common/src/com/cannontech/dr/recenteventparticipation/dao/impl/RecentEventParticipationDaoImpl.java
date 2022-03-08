@@ -1,5 +1,6 @@
 package com.cannontech.dr.recenteventparticipation.dao.impl;
 
+import static com.cannontech.dr.recenteventparticipation.ControlEventDeviceStatus.FAILED_WILL_RETRY;
 import static com.cannontech.dr.recenteventparticipation.ControlEventDeviceStatus.FAILED;
 import static com.cannontech.dr.recenteventparticipation.ControlEventDeviceStatus.UNKNOWN;
 
@@ -159,7 +160,7 @@ public class RecentEventParticipationDaoImpl implements RecentEventParticipation
     public SqlStatementBuilder getSumSql() {
         SqlStatementBuilder sql = new SqlStatementBuilder();
         sql.append("SUM(CASE WHEN ced.Result").eq_k(UNKNOWN).append("THEN 1 ELSE 0 END) Unknown,");
-        sql.append("SUM(CASE WHEN ced.Result").eq_k(FAILED).append("THEN 1 ELSE 0 END) Failed,");
+        sql.append("SUM(CASE WHEN ced.Result").in_k(List.of(FAILED, FAILED_WILL_RETRY)).append("THEN 1 ELSE 0 END) Failed,");
         sql.append("SUM(CASE WHEN ced.Result").in_k(List.of(ControlEventDeviceStatus.SUCCESS_COMPLETED,
                 ControlEventDeviceStatus.SUCCESS_RECEIVED, ControlEventDeviceStatus.SUCCESS_STARTED))
                 .append("AND ced.RetryTime is NULL THEN 1 ELSE 0 END) Confirmed,");
@@ -422,4 +423,16 @@ public class RecentEventParticipationDaoImpl implements RecentEventParticipation
         return jdbcTemplate.query(sql, TypeRowMapper.INTEGER)
                 .stream().distinct().collect(Collectors.toSet());
     }
-}
+    
+    @Override
+    public int failWillRetryDevices(Integer externalEventId) {
+        SqlStatementBuilder sql = new SqlStatementBuilder();
+        sql.append("UPDATE ControlEventDevice").set("Result", ControlEventDeviceStatus.FAILED);
+        sql.append("WHERE Result").in_k(List.of(ControlEventDeviceStatus.FAILED_WILL_RETRY, ControlEventDeviceStatus.UNKNOWN));
+        if(externalEventId != null) {
+            sql.append("AND ControlEventId = (select ControlEventId from ControlEvent where ExternalEventId").eq(externalEventId).append(")"); 
+        }
+        return jdbcTemplate.update(sql);
+    }
+}    
+    

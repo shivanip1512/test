@@ -221,7 +221,7 @@ inline std::unique_ptr<QueueConsumer> createQueueConsumer( proton::session & ses
 
 inline std::unique_ptr<TopicProducer> createTopicProducer( proton::session& sess, const std::string& topicName )
 {
-    return std::make_unique<TopicProducer>(sess, topicName);
+    return std::make_unique<TopicProducer>( sess, topicName );
 }
 
 inline std::unique_ptr<TopicConsumer> createTopicConsumer( proton::session & sess, const std::string &topicName, ManagedConsumer::MessageCallback c )

@@ -144,9 +144,7 @@ void ActiveMQConnectionManager::start_impl()
     const auto broker_host = GlobalSettings::getString(GlobalSettings::Strings::JmsBrokerHost, Qpid::Broker::defaultHost);
     const auto broker_port = GlobalSettings::getString(GlobalSettings::Strings::JmsBrokerPort, Qpid::Broker::defaultPort);
 
- //   const auto brokerUri = Qpid::Broker::protocol + broker_host + ":" + broker_port;
-    // jmoc
-    const std::string brokerUri = "tcp://127.0.0.1:5672";
+    const auto brokerUri = Qpid::Broker::protocol + broker_host + ":" + broker_port;
 
     // the idle timeout
     const auto idle = GlobalSettings::getInteger( GlobalSettings::Integers::MaxInactivityDuration, 30 );    // seconds
@@ -664,7 +662,7 @@ Qpid::DestinationProducer& ActiveMQConnectionManager::getDestinationProducer( pr
         return **existingProducer;
     }
 
-    static const auto make_producer = lambda_overloads(
+    const auto make_producer = lambda_overloads(
         [&session](const Qpid::Queues::OutboundQueue* queue) -> std::unique_ptr<Qpid::DestinationProducer> {
             return Qpid::createQueueProducer(session, queue->name);
         },

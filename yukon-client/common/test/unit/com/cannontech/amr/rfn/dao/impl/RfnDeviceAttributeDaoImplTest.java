@@ -126,8 +126,6 @@ public class RfnDeviceAttributeDaoImplTest {
                 "frozen");
 
         var allowedIntervalAttributes = Set.of(
-                BuiltInAttribute.MINIMUM_POWER_FACTOR,
-                BuiltInAttribute.MINIMUM_POWER_FACTOR_FROZEN,
                 BuiltInAttribute.RECEIVED_KWH_FROZEN,
                 BuiltInAttribute.USAGE_FROZEN);
 
@@ -202,7 +200,7 @@ public class RfnDeviceAttributeDaoImplTest {
                 206, 207, 208, 209, 
                 211, 212, 213, 214, 215, 216, 217, 
                 220, 221, 222, 
-                230, 
+                230, 232,
                 255, 256, 
                 300, 
                 310, 

@@ -16,6 +16,8 @@
     
     <bean class="com.cannontech.web.stars.gateway.model.GatewaySettingsValidator"/>
     
+    <bean class="com.cannontech.web.stars.gateway.GatewayBulkUpdateValidator"/>
+    
     <bean class="com.cannontech.web.tools.mapping.LocationValidator"/>
     
     <bean class="com.cannontech.web.tools.commander.service.CommanderServiceImpl"/>
@@ -1315,6 +1317,8 @@
     <bean class="com.cannontech.web.support.service.impl.YsmJmxQueryService"/>
     <bean class="com.cannontech.web.support.dao.impl.SystemMetricCriteriaDaoImpl"/>
     
+    <bean class="com.cannontech.web.support.systemPerformanceMetrics.service.impl.SystemPerformanceMetricsServiceImpl"/>
+    
     <bean class="com.cannontech.web.support.waterNode.dao.impl.WaterNodeDaoImpl"/>
     <bean class="com.cannontech.web.support.waterNode.fileUploadDao.impl.WaterNodeFileUploadDaoImpl"/>
     <bean class="com.cannontech.web.support.waterNode.service.impl.WaterNodeServiceImpl"/>
@@ -1555,4 +1559,8 @@
     <bean class="com.cannontech.web.api.macroRoute.MacroRouteApiValidatorHelper"/>
     <bean class="com.cannontech.web.api.macroRoute.MacroRouteApiCreateValidator"/>
     <bean class="com.cannontech.web.api.macroRoute.service.impl.MacroRouteServiceImpl"/>
+    
+    <bean class="com.cannontech.web.dr.eatonCloud.service.impl.v1.EatonCloudSecretRotationServiceImplV1"/>
+    
+    <bean class="com.cannontech.common.validator.YukonApiValidationUtils"/>
 </beans>

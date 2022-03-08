@@ -24,6 +24,11 @@ public class DeviceCreationException extends DisplayableRuntimeException {
         super(message, keyBase + key);
     }
     
+    public DeviceCreationException(String message, String key, Type type, Throwable cause) {
+        super(message, keyBase + key, cause);
+        this.type = type;
+    }
+    
     public DeviceCreationException(String message, String key, Type type) {
         super(message, keyBase + key);
         this.type = type;

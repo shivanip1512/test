@@ -25,15 +25,15 @@ post-operation:
               
           examples:
             Analog Point:
-              $ref: '../schemas/pointsSchema.yaml#/components/examples/Analog Point' 
+              $ref: '../schemas/pointsSchema.yaml#/components/examples/Analog Point Request' 
             Status Point:
-              $ref: '../schemas/pointsSchema.yaml#/components/examples/Status Point'
+              $ref: '../schemas/pointsSchema.yaml#/components/examples/Status Point Request'
             Pulse Accumulator Point:
-              $ref: '../schemas/pointsSchema.yaml#/components/examples/Pulse Accumulator Point'
+              $ref: '../schemas/pointsSchema.yaml#/components/examples/Pulse Accumulator Point Request'
             Calc Analog Point:
-              $ref: '../schemas/pointsSchema.yaml#/components/examples/Calc Analog Point'
+              $ref: '../schemas/pointsSchema.yaml#/components/examples/Calc Analog Point Request'
             Calc Status Point:
-              $ref: '../schemas/pointsSchema.yaml#/components/examples/Calc Status Point'
+              $ref: '../schemas/pointsSchema.yaml#/components/examples/Calc Status Point Request'
       required: true
     responses:
         '201':
@@ -42,23 +42,23 @@ post-operation:
             application/json:
               schema:
                 oneOf:
-                  - $ref: '../schemas/pointsSchema.yaml#/Analog'
-                  - $ref: '../schemas/pointsSchema.yaml#/PulseAccumulator'
-                  - $ref: '../schemas/pointsSchema.yaml#/CalcAnalog'
-                  - $ref: '../schemas/pointsSchema.yaml#/Status'
-                  - $ref: '../schemas/pointsSchema.yaml#/CalcStatus'
+                  - $ref: '../schemas/pointsSchema.yaml#/Analog Response Schema'
+                  - $ref: '../schemas/pointsSchema.yaml#/PulseAccumulator Response Schema'
+                  - $ref: '../schemas/pointsSchema.yaml#/CalcAnalog Response Schema'
+                  - $ref: '../schemas/pointsSchema.yaml#/Status Response Schema'
+                  - $ref: '../schemas/pointsSchema.yaml#/CalcStatus Response Schema'
                  
               examples:
                 Analog Point:
-                  $ref: '../schemas/pointsSchema.yaml#/components/examples/Analog Point' 
+                  $ref: '../schemas/pointsSchema.yaml#/components/examples/Analog Point Response' 
                 Status Point:
-                  $ref: '../schemas/pointsSchema.yaml#/components/examples/Status Point'
+                  $ref: '../schemas/pointsSchema.yaml#/components/examples/Status Point Response'
                 Pulse Accumulator Point:
-                  $ref: '../schemas/pointsSchema.yaml#/components/examples/Pulse Accumulator Point'
+                  $ref: '../schemas/pointsSchema.yaml#/components/examples/Pulse Accumulator Point Response'
                 Calc Analog Point:
-                  $ref: '../schemas/pointsSchema.yaml#/components/examples/Calc Analog Point'
+                  $ref: '../schemas/pointsSchema.yaml#/components/examples/Calc Analog Point Response'
                 Calc Status Point:
-                  $ref: '../schemas/pointsSchema.yaml#/components/examples/Calc Status Point'
+                  $ref: '../schemas/pointsSchema.yaml#/components/examples/Calc Status Point Response'
 
 get-update-delete-operation:
   get:
@@ -88,22 +88,22 @@ get-update-delete-operation:
           application/json:
             schema:
                 oneOf:
-                  - $ref: '../schemas/pointsSchema.yaml#/Analog'
-                  - $ref: '../schemas/pointsSchema.yaml#/PulseAccumulator'
-                  - $ref: '../schemas/pointsSchema.yaml#/CalcAnalog'
-                  - $ref: '../schemas/pointsSchema.yaml#/Status'
-                  - $ref: '../schemas/pointsSchema.yaml#/CalcStatus'
+                  - $ref: '../schemas/pointsSchema.yaml#/Analog Response Schema'
+                  - $ref: '../schemas/pointsSchema.yaml#/PulseAccumulator Response Schema'
+                  - $ref: '../schemas/pointsSchema.yaml#/CalcAnalog Response Schema'
+                  - $ref: '../schemas/pointsSchema.yaml#/Status Response Schema'
+                  - $ref: '../schemas/pointsSchema.yaml#/CalcStatus Response Schema'
             examples:
               Analog Point:
-                $ref: '../schemas/pointsSchema.yaml#/components/examples/Analog Point' 
+                $ref: '../schemas/pointsSchema.yaml#/components/examples/Analog Point Response' 
               Status Point:
-                $ref: '../schemas/pointsSchema.yaml#/components/examples/Status Point'
+                $ref: '../schemas/pointsSchema.yaml#/components/examples/Status Point Response'
               Pulse Accumulator Point:
-                $ref: '../schemas/pointsSchema.yaml#/components/examples/Pulse Accumulator Point'
+                $ref: '../schemas/pointsSchema.yaml#/components/examples/Pulse Accumulator Point Response'
               Calc Analog Point:
-                $ref: '../schemas/pointsSchema.yaml#/components/examples/Calc Analog Point'
+                $ref: '../schemas/pointsSchema.yaml#/components/examples/Calc Analog Point Response'
               Calc Status Point:
-                $ref: '../schemas/pointsSchema.yaml#/components/examples/Calc Status Point'
+                $ref: '../schemas/pointsSchema.yaml#/components/examples/Calc Status Point Response'
   patch:
     tags:
       - Points
@@ -135,15 +135,15 @@ get-update-delete-operation:
               - $ref: '../schemas/pointsSchema.yaml#/CalcStatus'
           examples:
             Analog Point:
-              $ref: '../schemas/pointsSchema.yaml#/components/examples/Analog Point' 
+              $ref: '../schemas/pointsSchema.yaml#/components/examples/Analog Point Request' 
             Status Point:
-              $ref: '../schemas/pointsSchema.yaml#/components/examples/Status Point'
+              $ref: '../schemas/pointsSchema.yaml#/components/examples/Status Point Request'
             Pulse Accumulator Point:
-              $ref: '../schemas/pointsSchema.yaml#/components/examples/Pulse Accumulator Point'
+              $ref: '../schemas/pointsSchema.yaml#/components/examples/Pulse Accumulator Point Request'
             Calc Analog Point:
-              $ref: '../schemas/pointsSchema.yaml#/components/examples/Calc Analog Point'
+              $ref: '../schemas/pointsSchema.yaml#/components/examples/Calc Analog Point Request'
             Calc Status Point:
-              $ref: '../schemas/pointsSchema.yaml#/components/examples/Calc Status Point'
+              $ref: '../schemas/pointsSchema.yaml#/components/examples/Calc Status Point Request'
       required: true
     responses:
       '200':
@@ -152,22 +152,22 @@ get-update-delete-operation:
           application/json:
             schema:
               oneOf:
-               - $ref: '../schemas/pointsSchema.yaml#/Analog'
-               - $ref: '../schemas/pointsSchema.yaml#/PulseAccumulator'
-               - $ref: '../schemas/pointsSchema.yaml#/CalcAnalog'
-               - $ref: '../schemas/pointsSchema.yaml#/Status'
-               - $ref: '../schemas/pointsSchema.yaml#/CalcStatus'
+               - $ref: '../schemas/pointsSchema.yaml#/Analog Response Schema'
+               - $ref: '../schemas/pointsSchema.yaml#/PulseAccumulator Response Schema'
+               - $ref: '../schemas/pointsSchema.yaml#/CalcAnalog Response Schema'
+               - $ref: '../schemas/pointsSchema.yaml#/Status Response Schema'
+               - $ref: '../schemas/pointsSchema.yaml#/CalcStatus Response Schema'
             examples:
               Analog Point:
-                $ref: '../schemas/pointsSchema.yaml#/components/examples/Analog Point' 
+                $ref: '../schemas/pointsSchema.yaml#/components/examples/Analog Point Response' 
               Status Point:
-                $ref: '../schemas/pointsSchema.yaml#/components/examples/Status Point'
+                $ref: '../schemas/pointsSchema.yaml#/components/examples/Status Point Response'
               Pulse Accumulator Point:
-                $ref: '../schemas/pointsSchema.yaml#/components/examples/Pulse Accumulator Point'
+                $ref: '../schemas/pointsSchema.yaml#/components/examples/Pulse Accumulator Point Response'
               Calc Analog Point:
-                $ref: '../schemas/pointsSchema.yaml#/components/examples/Calc Analog Point'
+                $ref: '../schemas/pointsSchema.yaml#/components/examples/Calc Analog Point Response'
               Calc Status Point:
-                $ref: '../schemas/pointsSchema.yaml#/components/examples/Calc Status Point'
+                $ref: '../schemas/pointsSchema.yaml#/components/examples/Calc Status Point Response'
   delete:
     tags:
       - Points
@@ -227,7 +227,7 @@ copy-operation:
              
           examples:
             Point Copy:
-              $ref: '../schemas/pointsSchema.yaml#/components/examples/PointCopy' 
+              $ref: '../schemas/pointsSchema.yaml#/components/examples/PointCopy Request' 
            
       required: true
     responses:
@@ -237,20 +237,20 @@ copy-operation:
           application/json:
             schema:
                 oneOf:
-                  - $ref: '../schemas/pointsSchema.yaml#/Analog'
-                  - $ref: '../schemas/pointsSchema.yaml#/PulseAccumulator'
-                  - $ref: '../schemas/pointsSchema.yaml#/CalcAnalog'
-                  - $ref: '../schemas/pointsSchema.yaml#/Status'
-                  - $ref: '../schemas/pointsSchema.yaml#/CalcStatus'
+                  - $ref: '../schemas/pointsSchema.yaml#/Analog Response Schema'
+                  - $ref: '../schemas/pointsSchema.yaml#/PulseAccumulator Response Schema'
+                  - $ref: '../schemas/pointsSchema.yaml#/CalcAnalog Response Schema'
+                  - $ref: '../schemas/pointsSchema.yaml#/Status Response Schema'
+                  - $ref: '../schemas/pointsSchema.yaml#/CalcStatus Response Schema'
             examples:
               Analog Point Copy:
-                $ref: '../schemas/pointsSchema.yaml#/components/examples/Analog Point' 
+                $ref: '../schemas/pointsSchema.yaml#/components/examples/Analog Point Response' 
               Status Point Copy:
-                $ref: '../schemas/pointsSchema.yaml#/components/examples/Status Point'
+                $ref: '../schemas/pointsSchema.yaml#/components/examples/Status Point Response'
               Pulse Accumulator Point Copy:
-                $ref: '../schemas/pointsSchema.yaml#/components/examples/Pulse Accumulator Point'
+                $ref: '../schemas/pointsSchema.yaml#/components/examples/Pulse Accumulator Point Response'
               Calc Analog Point Copy:
-                $ref: '../schemas/pointsSchema.yaml#/components/examples/Calc Analog Point'
+                $ref: '../schemas/pointsSchema.yaml#/components/examples/Calc Analog Point Response'
               Calc Status Point Copy:
-                $ref: '../schemas/pointsSchema.yaml#/components/examples/Calc Status Point'
+                $ref: '../schemas/pointsSchema.yaml#/components/examples/Calc Status Point Response'
 

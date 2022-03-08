@@ -29,7 +29,6 @@ import com.cannontech.common.pao.definition.model.PaoMultiPointIdentifier;
 import com.cannontech.common.stream.StreamUtils;
 import com.cannontech.common.util.Range;
 import com.cannontech.database.data.lite.LiteYukonUser;
-import com.cannontech.dr.eatonCloud.model.EatonCloudException;
 import com.cannontech.dr.eatonCloud.model.v1.EatonCloudCommunicationExceptionV1;
 import com.cannontech.dr.eatonCloud.service.v1.EatonCloudDataReadService;
 import com.cannontech.i18n.YukonMessageSourceResolvable;
@@ -79,7 +78,7 @@ public class DeviceAttributeReadEatonCloudServiceImpl implements DeviceAttribute
             Range<Instant> range =  new Range<Instant>(end.toInstant(), false, start.toInstant(), true);
 
             // All devices succeeded.
-            Multimap<PaoIdentifier, PointData> devicesToPointValues = readService.collectDataForRead(deviceIds, range);
+            Multimap<PaoIdentifier, PointData> devicesToPointValues = readService.collectDataForRead(deviceIds, range, "COLLECTION ACTION");
           
             for (PaoIdentifier pao : devicesToPointValues.keySet()) {
                 Map<Integer, Set<PointData>> data = devicesToPointValues.get(pao).stream()
@@ -111,10 +110,10 @@ public class DeviceAttributeReadEatonCloudServiceImpl implements DeviceAttribute
                     });
             
             callback.complete(getStrategy());
-        } catch (EatonCloudCommunicationExceptionV1 | EatonCloudException error) {
+        } catch (EatonCloudCommunicationExceptionV1  error) {
             DeviceErrorDescription errorDescription = deviceErrorTranslatorDao.translateErrorCode(DeviceError.TIMEOUT);
             MessageSourceResolvable detail = YukonMessageSourceResolvable.createSingleCodeWithArguments(
-                "yukon.common.device.attributeRead.general.readError", error.getMessage());
+                    "yukon.common.device.attributeRead.general.readError", error.getDisplayMessage());
             SpecificDeviceErrorDescription deviceError = new SpecificDeviceErrorDescription(errorDescription, detail);
             log.error("Error", error);
             callback.receivedException(deviceError);

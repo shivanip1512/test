@@ -18,7 +18,9 @@ public enum AlertType implements DisplayableEnum {
     RFN_DEVICE_CREATION_FROM_TEMPLATE_FAILED,
     RFN_DEVICE_CREATION_FAILED,
     RFN_DEVICE_MODEL_CHANGED,
-    RFN_DEVICE_MODEL_AND_TYPE_CHANGED
+    RFN_DEVICE_MODEL_AND_TYPE_CHANGED,
+    EATON_CLOUD_CREDENTIAL_INVALID,
+    EATON_CLOUD_CREDENTIAL_UPDATE_FAILURE
     ;
     
     private final static String keyPrefix = "yukon.web.alerts.types.";

@@ -16,6 +16,10 @@ public class GatewaySettings {
     private String updateServerUrl;
     private Authentication updateServerLogin;
     private boolean useDefaultUpdateServer;
+    // IP address that the gateway should use to connect to NM.
+    private String nmIpAddress;
+    // Port that the gateway should use to connect to NM.
+    private Integer nmPort;
 
     public Integer getId() {
         return id;
@@ -112,12 +116,28 @@ public class GatewaySettings {
     public void setUseDefaultUpdateServer(boolean useDefaultUpdateServer) {
         this.useDefaultUpdateServer = useDefaultUpdateServer;
     }
+    
+    public String getNmIpAddress() {
+        return nmIpAddress;
+    }
+
+    public void setNmIpAddress(String nmIpAddress) {
+        this.nmIpAddress = nmIpAddress;
+    }
+
+    public Integer getNmPort() {
+        return nmPort;
+    }
+
+    public void setNmPort(Integer nmPort) {
+        this.nmPort = nmPort;
+    }
 
     @Override
     public String toString() {
         return String.format(
-                "GatewaySettings [id=%s, name=%s, ipAddress=%s, port=%s, admin=%s, superAdmin=%s, latitude=%s, longitude=%s, updateServerUrl=%s, updateServerLogin=%s, useDefault=%s]",
-                id, name, ipAddress, port, admin, superAdmin, latitude, longitude, updateServerUrl, updateServerLogin,useDefaultUpdateServer);
+                "GatewaySettings [id=%s, name=%s, ipAddress=%s, port=%s, admin=%s, superAdmin=%s, latitude=%s, longitude=%s, updateServerUrl=%s, updateServerLogin=%s, useDefault=%s, nmIpAddress=%s, nmPort=%s]",
+                id, name, ipAddress, port, admin, superAdmin, latitude, longitude, updateServerUrl, updateServerLogin,useDefaultUpdateServer, nmIpAddress, nmPort);
     }
 
     @Override
@@ -130,10 +150,13 @@ public class GatewaySettings {
         result = prime * result + ((latitude == null) ? 0 : latitude.hashCode());
         result = prime * result + ((longitude == null) ? 0 : longitude.hashCode());
         result = prime * result + ((name == null) ? 0 : name.hashCode());
+        result = prime * result + ((nmIpAddress == null) ? 0 : nmIpAddress.hashCode());
+        result = prime * result + ((nmPort == null) ? 0 : nmPort.hashCode());
         result = prime * result + ((port == null) ? 0 : port.hashCode());
         result = prime * result + ((superAdmin == null) ? 0 : superAdmin.hashCode());
         result = prime * result + ((updateServerLogin == null) ? 0 : updateServerLogin.hashCode());
         result = prime * result + ((updateServerUrl == null) ? 0 : updateServerUrl.hashCode());
+        result = prime * result + (useDefaultPort ? 1231 : 1237);
         result = prime * result + (useDefaultUpdateServer ? 1231 : 1237);
         return result;
     }
@@ -177,6 +200,16 @@ public class GatewaySettings {
                 return false;
         } else if (!name.equals(other.name))
             return false;
+        if (nmIpAddress == null) {
+            if (other.nmIpAddress != null)
+                return false;
+        } else if (!nmIpAddress.equals(other.nmIpAddress))
+            return false;
+        if (nmPort == null) {
+            if (other.nmPort != null)
+                return false;
+        } else if (!nmPort.equals(other.nmPort))
+            return false;
         if (port == null) {
             if (other.port != null)
                 return false;
@@ -197,9 +230,10 @@ public class GatewaySettings {
                 return false;
         } else if (!updateServerUrl.equals(other.updateServerUrl))
             return false;
+        if (useDefaultPort != other.useDefaultPort)
+            return false;
         if (useDefaultUpdateServer != other.useDefaultUpdateServer)
             return false;
         return true;
-    }
-
+    } 
 }

@@ -51,8 +51,8 @@ yukon.da.zone.wizard = (function () {
              click: function () {
                  submitFormViaAjax('zoneWizardPopup', 'zoneTypeForm', null);
                  $('#zoneWizardPopup').dialog({
-                     width: 'auto',
-                     height: 'auto',
+                     width: '700',
+                     height: '700',
                      buttons: _zoneDetailButtons
                  });
              }
