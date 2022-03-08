@@ -85,6 +85,17 @@ Forgotten-Password-Response:
     message:
       type: string
 
+Captcha-Details-Response:
+   title: Captcha-Details-Response
+   type: object
+   properties:
+    siteKey:
+      type: string
+    captchaEnabled:
+      type: string
+    locale:
+      type: string
+      
 components:
   examples:
     Login:
@@ -115,3 +126,9 @@ components:
       value:
         status: Success
         message: An email has been sent to the supplied address with instructions to reset your password.
+    CaptchaDetailsResponse:
+      value:
+        siteKey: 6LfIVEkUAAAAAEtqdQcwZU8V6cYGKi0d0Yuz-ISZ-ISZ
+        captchaEnabled: false
+        locale: en
+    

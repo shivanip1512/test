@@ -109,3 +109,23 @@ forgottenPassword:
                 ForgottenPasswordResponse: 
                   $ref: '../schemas/tokenSchema.yaml#/components/examples/ForgottenPasswordResponse'
 
+captchaDetails:
+  get:
+      tags:
+        - Authentication
+      summary: Get CAPTCHA details. 
+      description: Get CAPTCHA details. 
+      requestBody:
+        description: |-
+          Get CAPTCHA details sitekey, captchaEnabled, locale. 
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '../schemas/tokenSchema.yaml#/Captcha-Details-Response'
+              examples:
+                CaptchaDetailsResponse: 
+                  $ref: '../schemas/tokenSchema.yaml#/components/examples/CaptchaDetailsResponse'
+
