@@ -14,6 +14,13 @@ function isRandomFailure(): boolean {
     return false; // randomResponseNumber < 10;
 }
 
+const getRefreshToken = async () => {
+    await   axios.post('/api/refreshToken', {
+    }).catch((error:any) => {
+        console.warn("error in refreshing token");
+    })
+}
+
 type AuthUIActionsFunction = () => AuthUIActions;
 type AuthUIActionsWithSecurity = (securityHelper: SecurityContextActions) => AuthUIActionsFunction;
 
@@ -89,9 +96,13 @@ export const ProjectAuthUIActions: AuthUIActionsWithSecurity = (securityHelper) 
     await   axios.post('/api/token', {
                      username: email,
                      password: password
-            }).then((response) => {
+            }).then((response: any) => {
                 LocalStorage.saveAuthCredentials(email, email);
                 LocalStorage.saveRememberMeData(email, rememberMe);
+                //refresh just one minute before expiry
+                const expiresIn = (response.data.expiresIn);
+                const refreshIn = expiresIn - 60000;
+                setInterval(getRefreshToken, refreshIn);
             }).catch((error:any) => {
                 console.warn(error.response.data.detail);
                 throw new Error('LOGIN.INVALID_CREDENTIALS');
