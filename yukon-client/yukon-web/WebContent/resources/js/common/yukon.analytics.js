@@ -62,9 +62,9 @@ yukon.analytics = (function() {
             if (typeof _additional_tracking_ids[i] !== 'undefined' && _additional_tracking_ids[i] !== '') {
                 if (typeof args !== 'undefined' && typeof args.url === "string" && args.url !== "") {
                     _gtag('event', 'page_view', {
-                        page_title: settings.url,
-                        page_location: settings.url,
-                        page_page: settings.url,
+                        page_title: args.url,
+                        page_location: args.url,
+                        page_page: args.url,
                         send_to: _additional_tracking_ids[i]
                     });
                 } else {
