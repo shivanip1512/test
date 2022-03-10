@@ -167,12 +167,25 @@ public class ApiAuthenticationController {
     }
 
     @RequestMapping(value = "/logout", method = RequestMethod.POST, produces = MediaType.APPLICATION_JSON_VALUE)
-    public ResponseEntity<Object> logout(HttpServletRequest request, @RequestBody LogoutRequest logoutRequest) {
+    public ResponseEntity<Object> logout(HttpServletRequest request, HttpServletResponse resp, @RequestBody LogoutRequest logoutRequest) {
 
-        if (logoutRequest.getRefreshToken() != null) {
+        String refreshToken = null;
+        if (request.getCookies() != null) {
+            Optional<Cookie> refreshTokenCookie = Arrays.stream(request.getCookies())
+                                                        .filter(cookie -> cookie.getName().equals("refresh_token"))
+                                                        .findAny();
+            if (refreshTokenCookie.isPresent()) {
+                refreshToken = refreshTokenCookie.get().getValue();
+            }
+        }
+        if (refreshToken == null) {
+            refreshToken = logoutRequest.getRefreshToken();
+        }
+        
+        if (refreshToken != null) {
             try {
                 LogoutResponse logoutResponse = new LogoutResponse();
-                String refreshToken = logoutRequest.getRefreshToken();
+                //String refreshToken = logoutRequest.getRefreshToken();
                 RefreshTokenDetails refreshTokenDetails = TokenHelper.getRefreshTokenDetails(refreshToken);
                 String cacheRefreshToken = tokenCache.get(refreshTokenDetails.getRefreshTokenId());
 
@@ -189,6 +202,7 @@ public class ApiAuthenticationController {
                     } else {
                         tokenCache.remove(refreshTokenDetails.getRefreshTokenId());
                     }
+                    TokenHelper.removeCookies(request, resp);
                 } else {
                     throw new AuthenticationException("Refresh token not valid.");
                 }

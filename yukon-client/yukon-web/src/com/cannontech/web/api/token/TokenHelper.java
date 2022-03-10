@@ -11,6 +11,7 @@ import java.util.UUID;
 import javax.annotation.PostConstruct;
 import javax.servlet.http.Cookie;
 import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
 
 import org.apache.commons.lang3.StringUtils;
 
@@ -212,6 +213,23 @@ public class TokenHelper {
             return true;
         }
         return false;
+    }
+    
+    /**
+     * Remove cookies 
+     */
+    public static void removeCookie(HttpServletResponse response, String name) {
+        Cookie cookie = new Cookie(name, "");
+        cookie.setMaxAge(0);
+        response.addCookie(cookie);
+    }
+    
+    public static void removeCookies(HttpServletRequest request, HttpServletResponse response) {
+        Cookie[] cookies = request.getCookies();
+        for (int i = 0; i < cookies.length; i++) {
+            Cookie cookie = cookies[i];
+            removeCookie(response, cookie.getName());
+        }
     }
 
 }
