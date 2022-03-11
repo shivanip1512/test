@@ -229,21 +229,4 @@ public class TokenHelper {
         }
         return refreshToken;
     }
-    /**
-     * Remove cookies 
-     */
-    public static void removeCookie(HttpServletResponse response, String name) {
-        Cookie cookie = new Cookie(name, "");
-        cookie.setMaxAge(0);
-        response.addCookie(cookie);
-    }
-    
-    public static void removeCookies(HttpServletRequest request, HttpServletResponse response) {
-        Cookie[] cookies = request.getCookies();
-        for (int i = 0; i < cookies.length; i++) {
-            Cookie cookie = cookies[i];
-            removeCookie(response, cookie.getName());
-        }
-    }
-
 }

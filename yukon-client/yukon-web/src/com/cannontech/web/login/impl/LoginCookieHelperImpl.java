@@ -132,4 +132,27 @@ public class LoginCookieHelperImpl implements LoginCookieHelper {
         }
         response.addCookie(cookie);
     }
+    
+    /**
+     * Remove cookies 
+     */
+    private static void removeCookie(HttpServletResponse response, HttpServletRequest request, String refreshToken) {
+        Cookie cookie = new Cookie(refreshToken, "");
+        cookie.setMaxAge(0);
+        String contextPath = request.getContextPath();
+        if ("".equals(contextPath)) {
+            contextPath = "/";
+        }
+        cookie.setPath(contextPath);
+        cookie.setHttpOnly(true);
+        response.addCookie(cookie);
+    }
+    
+    public static void removeCookies(HttpServletRequest request, HttpServletResponse response) {
+        Cookie[] cookies = request.getCookies();
+        for (int i = 0; i < cookies.length; i++) {
+            Cookie cookie = cookies[i];
+            removeCookie(response, request, cookie.getName());
+        }
+    }
 }

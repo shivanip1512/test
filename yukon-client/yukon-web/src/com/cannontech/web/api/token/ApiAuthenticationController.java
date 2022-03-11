@@ -31,6 +31,7 @@ import com.cannontech.common.util.ScheduledExecutor;
 import com.cannontech.core.authentication.service.AuthenticationService;
 import com.cannontech.database.data.lite.LiteYukonUser;
 import com.cannontech.web.login.LoginCookieHelper;
+import com.cannontech.web.login.impl.LoginCookieHelperImpl;
 
 @RestController
 public class ApiAuthenticationController {
@@ -92,7 +93,6 @@ public class ApiAuthenticationController {
         }
 
         if (refreshToken != null) {
-            //String refreshToken = tokenRequest.getRefreshToken();
             RefreshTokenDetails refreshTokenDetails = TokenHelper.getRefreshTokenDetails(refreshToken);
             String cacheRefreshToken = tokenCache.get(refreshTokenDetails.getRefreshTokenId());
 
@@ -155,7 +155,7 @@ public class ApiAuthenticationController {
                         tokenCache.remove(refreshTokenDetails.getRefreshTokenId());
                     }
                     //remove token from cookies
-                    TokenHelper.removeCookies(request, resp);
+                    LoginCookieHelperImpl.removeCookies(request, resp);
                 } else {
                     throw new AuthenticationException("Refresh token not valid.");
                 }
