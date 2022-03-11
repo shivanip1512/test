@@ -22,8 +22,8 @@ public class Broker {
 
     private final ApplicationId applicationId;
     private final String listenerHost;
-    private static final String localhostConnector = "tcp://localhost:61616";
-    private static final String anyhostConnector = "tcp://0.0.0.0:61616";
+    private static final String localhostConnector = "auto://localhost:61616";
+    private static final String anyhostConnector = "auto://0.0.0.0:61616";
 
     private long memoryUsageLimit = Long.getLong("com.cannontech.services.jms.ServerBroker.memoryUsageLimit",
                                                  DEFAULT_MEMORY_USAGE_LIMIT);
