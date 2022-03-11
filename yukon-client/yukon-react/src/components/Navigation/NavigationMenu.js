@@ -73,19 +73,9 @@ const NavigationMenu = (props) => {
     const { t } = useTranslation();
 
     const logOut = () => {
-        axios.post('/api/logout', {
-            //refreshToken: refreshToken
-       }).then((response) => {
-            console.log("user is successfully logged out!!")
-            LocalStorage.clearAuthCredentials();
-        }).catch((error) => {
-            console.warn(error.response.data.detail);
-            // uncomment this line to check custom error from API
-            //throw new Error (error.response.data.detail) 
-        })
-        //LocalStorage.clearAuthCredentials();
+        LocalStorage.clearAuthCredentials();
         //onNavItemClick("/servlet/LoginController/logout")
-        //securityHelper.onUserNotAuthenticated();
+        securityHelper.onUserNotAuthenticated();
         //window.location.href = props.reactPath + "/yukon-ui/dashboard";
     };
 
