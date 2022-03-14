@@ -136,8 +136,18 @@ public class LoginCookieHelperImpl implements LoginCookieHelper {
     /**
      * Remove cookies 
      */
-    private static void removeCookie(HttpServletResponse response, HttpServletRequest request, String refreshToken) {
-        Cookie cookie = new Cookie(refreshToken, "");
+    
+    public static void removeCookies(HttpServletRequest request, HttpServletResponse response) {
+        Cookie[] cookies = request.getCookies();
+        for (int i = 0; i < cookies.length; i++) {
+            Cookie cookie = cookies[i];
+            response.addCookie(cookie);
+            removeCookie(response, request, cookie.getName());
+        }
+    }
+    
+    private static void removeCookie(HttpServletResponse response, HttpServletRequest request, String name) {
+        Cookie cookie = new Cookie(name, "");
         cookie.setMaxAge(0);
         String contextPath = request.getContextPath();
         if ("".equals(contextPath)) {
@@ -146,13 +156,5 @@ public class LoginCookieHelperImpl implements LoginCookieHelper {
         cookie.setPath(contextPath);
         cookie.setHttpOnly(true);
         response.addCookie(cookie);
-    }
-    
-    public static void removeCookies(HttpServletRequest request, HttpServletResponse response) {
-        Cookie[] cookies = request.getCookies();
-        for (int i = 0; i < cookies.length; i++) {
-            Cookie cookie = cookies[i];
-            removeCookie(response, request, cookie.getName());
-        }
     }
 }

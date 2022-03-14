@@ -84,7 +84,7 @@ public class ApiAuthenticationController {
     }
 
     @RequestMapping(value = "/refreshToken", method = RequestMethod.POST, produces = MediaType.APPLICATION_JSON_VALUE)
-    public ResponseEntity<Object> generateRefreshToken(HttpServletRequest request, @RequestBody RefreshTokenRequest tokenRequest) {
+    public ResponseEntity<Object> generateRefreshToken(HttpServletRequest request, HttpServletResponse resp, @RequestBody RefreshTokenRequest tokenRequest) {
 
         String refreshToken = TokenHelper.getTokenFromCookies(request);
 
@@ -107,8 +107,8 @@ public class ApiAuthenticationController {
                     response.setAccessToken(newAccessToken);
                     response.setRefreshToken(newRefreshTokenDetails.getRefreshToken());
                     // Update latest refresh token in cache
-                    tokenCache.put(newRefreshTokenDetails.getRefreshTokenId(), newRefreshTokenDetails.getRefreshToken());
-
+                    tokenCache.put(newRefreshTokenDetails.getRefreshTokenId(), response.getRefreshToken());
+                    loginCookieHelper.setTokensInCookie(request, resp, response.getAccessToken(), response.getRefreshToken());
                 } else {
                     // Delete refresh token from cache
                     tokenCache.remove(refreshTokenDetails.getRefreshTokenId());
