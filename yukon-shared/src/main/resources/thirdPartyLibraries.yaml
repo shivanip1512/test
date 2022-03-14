@@ -21,6 +21,20 @@ Java :
     jira : none
     notes : This JAR version is not stored in Maven
   
+  - filename : activemq-amqp-5.16.1.jar
+    yukon group : ActiveMQ
+    project : Apache ActiveMQ
+    version : 5.16.1
+    project URL : "http://activemq.apache.org/"
+    license : Apache 2.0
+    license URLs : "https://www.apache.org/licenses/LICENSE-2.0.txt"
+    maven URL : "https://mvnrepository.com/artifact/org.apache.activemq/activemq-amqp/5.16.1"
+    md5 : 59d9823bcc705dc4cf866aa537a495cd
+    sha1 : f607d0d63352957990aeca616d0a848eadc03c4a
+    updated : 2022-03-14
+    jira : YUK-23307
+    notes : 
+  
   - filename : activemq-broker-5.16.1.jar
     yukon group : ActiveMQ
     project : Apache ActiveMQ
