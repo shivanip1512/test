@@ -32,7 +32,7 @@
                                     data-pao-id="${regulatorIdMap[phaseKey]}" data-command-id="${tapDownCommandHolder.commandId}" />
                                 <cm:dropdownOption key=".enable.label" icon="icon-accept" classes="js-command-button" 
                                     data-pao-id="${regulatorIdMap[phaseKey]}" data-command-id="${enableRemoteCommandHolder.commandId}" />
-                                <cm:dropdownOption key=".disable.label" icon="icon-delete" classes="js-command-button" 
+                                <cm:dropdownOption key=".disable.label" icon="icon-disable" classes="js-command-button" 
                                     data-pao-id="${regulatorIdMap[phaseKey]}" data-command-id="${disableRemoteCommandHolder.commandId}" />
                             </cti:checkRolesAndProperties>
                     </cm:dropdown>
