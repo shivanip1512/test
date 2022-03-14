@@ -8,7 +8,6 @@ import java.util.HashSet;
 import java.util.Set;
 import java.util.stream.Collectors;
 
-import javax.xml.parsers.SAXParser;
 import javax.xml.parsers.SAXParserFactory;
 
 import org.junit.jupiter.api.Test;
@@ -16,13 +15,12 @@ import org.xml.sax.Attributes;
 import org.xml.sax.SAXException;
 import org.xml.sax.helpers.DefaultHandler;
 
-import com.google.common.collect.ImmutableSet;
 import com.google.common.collect.Sets;
 
 public class EimJavaLibraryTest {
 
-    private static Set<String> excludedJars = ImmutableSet.of(
-        "activemq-openwire-legacy-5.13.4.jar",
+    private static Set<String> excludedJars = Set.of(
+        "activemq-amqp-5.16.1.jar",  //  not needed for EIM, only needed for Message Broker
         "ahessian.jar",
         "annotations-api.jar",
         "apache-log4j-extras-1.0.jar",
@@ -183,12 +181,12 @@ public class EimJavaLibraryTest {
         Set<String> eimJars = new HashSet<>();
         String userDirectory = System.getProperty("user.dir");
         if (!userDirectory.contains("api-web")) {
-            String clientDir = userDirectory.substring(0, userDirectory.lastIndexOf("\\") + 1);
+            var clientDir = userDirectory.substring(0, userDirectory.lastIndexOf("\\") + 1);
             userDirectory = clientDir + "api-web";
         }
-        File resourceFile = new File(userDirectory + File.separatorChar + "build.xml");
-        SAXParserFactory factory = SAXParserFactory.newInstance();
-        SAXParser saxParser = factory.newSAXParser();
+        var resourceFile = new File(userDirectory + File.separatorChar + "build.xml");
+        var factory = SAXParserFactory.newInstance();
+        var saxParser = factory.newSAXParser();
         DefaultHandler handler = new DefaultHandler() {
             @Override
             public void startElement(String uri, String localName, String qName, Attributes attributes)
