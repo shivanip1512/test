@@ -57,10 +57,8 @@ public class MeterReadProcessingServiceImpl implements MeterReadProcessingServic
                 ReadingValue readingValue = new ReadingValue();
                 readingValue.setTimeStamp(MultispeakFuncs.toXMLGregorianCalendar(calendar));
 
-                // Reading Value - create a nice BigDecimal with unlimited precision
-                BigDecimal exactValue = new BigDecimal(value.getValue());
-                BigDecimal noFractionValue = exactValue.setScale(0, roundingMode);
-                readingValue.setValue(noFractionValue.toBigIntegerExact().toString());
+                BigDecimal valueWithPrecision = new BigDecimal(value.getValue()).setScale(3, roundingMode).stripTrailingZeros();
+                readingValue.setValue(valueWithPrecision.toString());
                 readingValues.getReadingValue().add(readingValue);
                 reading.setReadingValues(readingValues);
 
@@ -95,10 +93,8 @@ public class MeterReadProcessingServiceImpl implements MeterReadProcessingServic
                 ReadingValue readingValue = new ReadingValue();
                 readingValue.setTimeStamp(MultispeakFuncs.toXMLGregorianCalendar(calendar));
 
-                // Reading Value - create a nice BigDecimal with unlimited precision
-                BigDecimal exactValue = new BigDecimal(value.getValue());
-                BigDecimal noFractionValue = exactValue.setScale(0, roundingMode);
-                readingValue.setValue(noFractionValue.toBigIntegerExact().toString());
+                BigDecimal valueWithPrecision = new BigDecimal(value.getValue()).setScale(3, roundingMode).stripTrailingZeros();
+                readingValue.setValue(valueWithPrecision.toString());
                 readingValues.getReadingValue().add(readingValue);
                 reading.setReadingValues(readingValues);
 
