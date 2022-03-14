@@ -35,6 +35,42 @@
         <decimalplaces value="1"/>
     </point>
 
+    <point offset="5" type="Analog">
+        <name>Asset Availability Active Devices</name>
+        <archive interval="ZERO" type="ON_UPDATE"/>
+        <multiplier value="1"/>
+        <unitofmeasure value="COUNTS"/>
+        <decimalplaces value="1"/>
+    </point>
+    <point offset="6" type="Analog">
+        <name>Asset Availability Opted Out Devices</name>
+        <archive interval="ZERO" type="ON_UPDATE"/>
+        <multiplier value="1"/>
+        <unitofmeasure value="COUNTS"/>
+        <decimalplaces value="1"/>
+    </point>
+    <point offset="7" type="Analog">
+        <name>Asset Availability Inactive Devices</name>
+        <archive interval="ZERO" type="ON_UPDATE"/>
+        <multiplier value="1"/>
+        <unitofmeasure value="COUNTS"/>
+        <decimalplaces value="1"/>
+    </point>
+    <point offset="8" type="Analog">
+        <name>Asset Availability Unavailable Devices</name>
+        <archive interval="ZERO" type="ON_UPDATE"/>
+        <multiplier value="1"/>
+        <unitofmeasure value="COUNTS"/>
+        <decimalplaces value="1"/>
+    </point>
+    <point offset="9" type="Analog">
+        <name>Asset Availability Total Devices</name>
+        <archive interval="ZERO" type="ON_UPDATE"/>
+        <multiplier value="1"/>
+        <unitofmeasure value="COUNTS"/>
+        <decimalplaces value="1"/>
+    </point>
+
     <point offset="2500" type="Analog">
         <name>Daily History</name>
         <archive interval="ZERO" type="NONE"/>
