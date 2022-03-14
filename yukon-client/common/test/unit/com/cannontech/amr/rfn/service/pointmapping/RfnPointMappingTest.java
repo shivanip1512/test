@@ -283,9 +283,8 @@ public class RfnPointMappingTest {
         //  1st gen water meter not mapped in yukonPointMapping
         rfnPointMapping.remove(PaoType.RFWMETER);
 
-        //  Gas node not mapped in yukonPointMapping
+        //  RFG-201 not mapped in yukonPointMapping
         rfnPointMapping.remove(PaoType.RFG201);
-        rfnPointMapping.remove(PaoType.RFG301);
 
         compareMeterClassPoints(icd, rfnPointMapping, icd.gasNode, MeterClass.GAS_NODE);
 
