@@ -1083,10 +1083,6 @@ public class RfnPointMappingTest {
         missing.put(PaoType.RFN530S4EAX, "Net kVArh (Rate C kVArh)");
         missing.put(PaoType.RFN530S4EAX, "Net kVArh (Rate D kVArh)");
         missing.put(PaoType.RFN530S4EAX, "Net kVArh");
-        missing.put(PaoType.RFN530S4EAX, "Net kWh (Rate A kWh)");
-        missing.put(PaoType.RFN530S4EAX, "Net kWh (Rate B kWh)");
-        missing.put(PaoType.RFN530S4EAX, "Net kWh (Rate C kWh)");
-        missing.put(PaoType.RFN530S4EAX, "Net kWh (Rate D kWh)");
         missing.put(PaoType.RFN530S4EAX, "Peak Demand Daily");
         missing.put(PaoType.RFN530S4EAX, "Peak kVA");
         missing.put(PaoType.RFN530S4EAX, "Peak kW (Rate A kW)");
@@ -1148,10 +1144,6 @@ public class RfnPointMappingTest {
         missing.put(PaoType.RFN530S4EAX, "Sum Peak kVAr (Rate C kVAr)");
         missing.put(PaoType.RFN530S4EAX, "Sum Peak kVAr (Rate D kVAr)");
         missing.put(PaoType.RFN530S4EAX, "Sum Peak kVAr");
-        missing.put(PaoType.RFN530S4EAX, "Sum Peak kW (Rate A kW)");
-        missing.put(PaoType.RFN530S4EAX, "Sum Peak kW (Rate B kW)");
-        missing.put(PaoType.RFN530S4EAX, "Sum Peak kW (Rate C kW)");
-        missing.put(PaoType.RFN530S4EAX, "Sum Peak kW (Rate D kW)");
         missing.put(PaoType.RFN530S4EAX, "Sum kVA");
         missing.put(PaoType.RFN530S4EAX, "Sum kVAh (Rate A kVAh)");
         missing.put(PaoType.RFN530S4EAX, "Sum kVAh (Rate B kVAh)");
@@ -1165,10 +1157,6 @@ public class RfnPointMappingTest {
         missing.put(PaoType.RFN530S4EAX, "Sum kVArh (Rate D kVArh)");
         missing.put(PaoType.RFN530S4EAX, "Sum kVArh");
         missing.put(PaoType.RFN530S4EAX, "Sum kW");
-        missing.put(PaoType.RFN530S4EAX, "Sum kWh (Rate A kWh)");
-        missing.put(PaoType.RFN530S4EAX, "Sum kWh (Rate B kWh)");
-        missing.put(PaoType.RFN530S4EAX, "Sum kWh (Rate C kWh)");
-        missing.put(PaoType.RFN530S4EAX, "Sum kWh (Rate D kWh)");
         missing.put(PaoType.RFN530S4EAX, "kVAh Leading (Q1 + Q3)");
         missing.put(PaoType.RFN530S4EAX, "kVArh Leading (Q1 + Q3)");
         missing.put(PaoType.RFN530S4EAX, "Average Power Factor");
@@ -1297,11 +1285,7 @@ public class RfnPointMappingTest {
         missing.put(PaoType.RFN530S4EAXR, "Rate B kWh");
         missing.put(PaoType.RFN530S4EAXR, "Rate C kWh");
         missing.put(PaoType.RFN530S4EAXR, "Rate D kWh");
-        missing.put(PaoType.RFN530S4EAXR, "Net kWh (Rate A kWh)");
-        missing.put(PaoType.RFN530S4EAXR, "Net kWh (Rate B kWh)");
-        missing.put(PaoType.RFN530S4EAXR, "Net kWh (Rate C kWh)");
-        missing.put(PaoType.RFN530S4EAXR, "Net kWh (Rate D kWh)");
-        
+
         missing.put(PaoType.RFN530S4ERX, "Avg Voltage Phase A");
         missing.put(PaoType.RFN530S4ERX, "Avg Voltage Phase B");
         missing.put(PaoType.RFN530S4ERX, "Avg Voltage Phase C");
@@ -1343,10 +1327,6 @@ public class RfnPointMappingTest {
         missing.put(PaoType.RFN530S4ERX, "Net kVArh (Rate B kVArh)");
         missing.put(PaoType.RFN530S4ERX, "Net kVArh (Rate C kVArh)");
         missing.put(PaoType.RFN530S4ERX, "Net kVArh (Rate D kVArh)");
-        missing.put(PaoType.RFN530S4ERX, "Net kWh (Rate A kWh)");
-        missing.put(PaoType.RFN530S4ERX, "Net kWh (Rate B kWh)");
-        missing.put(PaoType.RFN530S4ERX, "Net kWh (Rate C kWh)");
-        missing.put(PaoType.RFN530S4ERX, "Net kWh (Rate D kWh)");
         missing.put(PaoType.RFN530S4ERX, "Peak Demand Daily");
         missing.put(PaoType.RFN530S4ERX, "Peak kVA");
         missing.put(PaoType.RFN530S4ERX, "Peak kW (Rate A kW)");
@@ -1406,10 +1386,6 @@ public class RfnPointMappingTest {
         missing.put(PaoType.RFN530S4ERX, "Sum Peak kVAr (Rate B kVAr)");
         missing.put(PaoType.RFN530S4ERX, "Sum Peak kVAr (Rate C kVAr)");
         missing.put(PaoType.RFN530S4ERX, "Sum Peak kVAr (Rate D kVAr)");
-        missing.put(PaoType.RFN530S4ERX, "Sum Peak kW (Rate A kW)");
-        missing.put(PaoType.RFN530S4ERX, "Sum Peak kW (Rate B kW)");
-        missing.put(PaoType.RFN530S4ERX, "Sum Peak kW (Rate C kW)");
-        missing.put(PaoType.RFN530S4ERX, "Sum Peak kW (Rate D kW)");
         missing.put(PaoType.RFN530S4ERX, "Sum kVA");
         missing.put(PaoType.RFN530S4ERX, "Sum kVAh (Rate A kVAh)");
         missing.put(PaoType.RFN530S4ERX, "Sum kVAh (Rate B kVAh)");
@@ -1421,10 +1397,6 @@ public class RfnPointMappingTest {
         missing.put(PaoType.RFN530S4ERX, "Sum kVArh (Rate C kVArh)");
         missing.put(PaoType.RFN530S4ERX, "Sum kVArh (Rate D kVArh)");
         missing.put(PaoType.RFN530S4ERX, "Sum kW");
-        missing.put(PaoType.RFN530S4ERX, "Sum kWh (Rate A kWh)");
-        missing.put(PaoType.RFN530S4ERX, "Sum kWh (Rate B kWh)");
-        missing.put(PaoType.RFN530S4ERX, "Sum kWh (Rate C kWh)");
-        missing.put(PaoType.RFN530S4ERX, "Sum kWh (Rate D kWh)");
         missing.put(PaoType.RFN530S4ERX, "kVAh Leading (Q1 + Q3)");
         missing.put(PaoType.RFN530S4ERX, "kVArh Leading (Q1 + Q3)");
         
@@ -1520,10 +1492,6 @@ public class RfnPointMappingTest {
         missing.put(PaoType.RFN530S4ERXR, "Rate B kWh");
         missing.put(PaoType.RFN530S4ERXR, "Rate C kWh");
         missing.put(PaoType.RFN530S4ERXR, "Rate D kWh");
-        missing.put(PaoType.RFN530S4ERXR, "Net kWh (Rate A kWh)");
-        missing.put(PaoType.RFN530S4ERXR, "Net kWh (Rate B kWh)");
-        missing.put(PaoType.RFN530S4ERXR, "Net kWh (Rate C kWh)");
-        missing.put(PaoType.RFN530S4ERXR, "Net kWh (Rate D kWh)");
         
         missing.put(PaoType.RFN530S4X, "Average Power Factor");
         missing.put(PaoType.RFN530S4X, "Net kVA");
