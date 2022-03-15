@@ -36,6 +36,10 @@
         <pointInfo name="Current Phase C" attributes="CURRENT_PHASE_C"/>
         <pointInfo name="Delivered kW Load Profile" attributes="LOAD_PROFILE,DELIVERED_KW_LOAD_PROFILE"/>
         <pointInfo name="Delivered kWh" init="true" attributes="DELIVERED_KWH"/>
+        <pointInfo name="Rate A kWh" attributes="DELIVERED_KWH_RATE_A"/>
+        <pointInfo name="Rate B kWh" attributes="DELIVERED_KWH_RATE_B"/>
+        <pointInfo name="Rate C kWh" attributes="DELIVERED_KWH_RATE_C"/>
+        <pointInfo name="Rate D kWh" attributes="DELIVERED_KWH_RATE_D"/>
         <pointInfo name="Delivered kWh per Interval" init="true" attributes="DELIVERED_KWH_PER_INTERVAL"/>
         <pointInfo name="Demand Overload" attributes="DEMAND_OVERLOAD"/>
         <pointInfo name="Device Temperature" init="true" attributes="TEMPERATURE_DEVICE"/>

@@ -1112,7 +1112,7 @@ RFN-500 Node in Landis & Gyr S4e and S4x:
     - Continuous Cumulative Min Power factor:     { Unit: *PF,    Modifiers: [ *Q1, *Q2, *Q3, *Q4, *Min, *Cont                       ], Models: *____-____-650, Mapped: false }
     - Min Power Factor Frozen:                    { Unit: *PF,    Modifiers: [ *Q1, *Q2, *Q3, *Q4, *Min, *Prev                       ], Models: *____-RDTR-650 }
     - Time of Previous Min Power factor:          { Unit: *s,     Modifiers: [ *Coin1, *Prev                                         ], Models: *____-RDTR-650 }
-    - Delivered Watthours:                        { Unit: *Wh,    Modifiers: [ *Q1, *Q4, *RateA                                      ], Models: *____-____-650 }
+    - Delivered Watthours:                        { Unit: *Wh,    Modifiers: [ *Q1, *Q4, *RateA                                      ], Models: *ADTR-RDTR-650 }
     - Received Watthours:                         { Unit: *Wh,    Modifiers: [ *Q2, *Q3, *RateA                                      ], Models: *____-____-650 }
     - Total Watthours:                            { Unit: *Wh,    Modifiers: [ *Q1, *Q2, *Q3, *Q4, *RateA                            ], Models: *A_TR-R_TR-650 }
     - Q1 Watthours:                               { Unit: *Wh,    Modifiers: [ *Q1, *RateA                                           ], Models: *____-____-650, Mapped: false }
@@ -1209,7 +1209,7 @@ RFN-500 Node in Landis & Gyr S4e and S4x:
     - Continuous Cumulative Min Power factor:     { Unit: *PF,    Modifiers: [ *Q1, *Q2, *Q3, *Q4, *Min, *RateA, *Cont               ], Models: *____-____-650, Mapped: false }
     - Previous Min Power factor:                  { Unit: *PF,    Modifiers: [ *Q1, *Q2, *Q3, *Q4, *Min, *RateA, *Prev               ], Models: *____-R_TR-650, Mapped: false }
     - Time of Previous Min Power factor:          { Unit: *s,     Modifiers: [ *RateA, *Coin1, *Prev                                 ], Models: *____-R_TR-650 }
-    - Delivered Watthours:                        { Unit: *Wh,    Modifiers: [ *Q1, *Q4, *RateB                                      ], Models: *____-____-650 }
+    - Delivered Watthours:                        { Unit: *Wh,    Modifiers: [ *Q1, *Q4, *RateB                                      ], Models: *ADTR-RDTR-650 }
     - Received Watthours:                         { Unit: *Wh,    Modifiers: [ *Q2, *Q3, *RateB                                      ], Models: *____-____-650 }
     - Total Watthours:                            { Unit: *Wh,    Modifiers: [ *Q1, *Q2, *Q3, *Q4, *RateB                            ], Models: *A_TR-R_TR-650 }
     - Q1 Watthours:                               { Unit: *Wh,    Modifiers: [ *Q1, *RateB                                           ], Models: *____-____-650, Mapped: false }
@@ -1306,7 +1306,7 @@ RFN-500 Node in Landis & Gyr S4e and S4x:
     - Continuous Cumulative Min Power factor:     { Unit: *PF,    Modifiers: [ *Q1, *Q2, *Q3, *Q4, *Min, *RateB, *Cont               ], Models: *____-____-650, Mapped: false }
     - Previous Min Power factor:                  { Unit: *PF,    Modifiers: [ *Q1, *Q2, *Q3, *Q4, *Min, *RateB, *Prev               ], Models: *____-____-650, Mapped: false }
     - Time of Previous Min Power factor:          { Unit: *s,     Modifiers: [ *RateB, *Coin1, *Prev                                 ], Models: *____-____-650 }
-    - Delivered Watthours:                        { Unit: *Wh,    Modifiers: [ *Q1, *Q4, *RateC                                      ], Models: *____-____-650 }
+    - Delivered Watthours:                        { Unit: *Wh,    Modifiers: [ *Q1, *Q4, *RateC                                      ], Models: *ADTR-RDTR-650 }
     - Received Watthours:                         { Unit: *Wh,    Modifiers: [ *Q2, *Q3, *RateC                                      ], Models: *____-____-650 }
     - Total Watthours:                            { Unit: *Wh,    Modifiers: [ *Q1, *Q2, *Q3, *Q4, *RateC                            ], Models: *A_TR-R_TR-650 }
     - Q1 Watthours:                               { Unit: *Wh,    Modifiers: [ *Q1, *RateC                                           ], Models: *____-____-650, Mapped: false }
@@ -1403,7 +1403,7 @@ RFN-500 Node in Landis & Gyr S4e and S4x:
     - Continuous Cumulative Min Power factor:     { Unit: *PF,    Modifiers: [ *Q1, *Q2, *Q3, *Q4, *Min, *RateC, *Cont               ], Models: *____-____-650, Mapped: false }
     - Previous Min Power factor:                  { Unit: *PF,    Modifiers: [ *Q1, *Q2, *Q3, *Q4, *Min, *RateC, *Prev               ], Models: *____-____-650, Mapped: false }
     - Time of Previous Min Power factor:          { Unit: *s,     Modifiers: [ *RateC, *Coin1, *Prev                                 ], Models: *____-____-650 }
-    - Delivered Watthours:                        { Unit: *Wh,    Modifiers: [ *Q1, *Q4, *RateD                                      ], Models: *____-____-650 }
+    - Delivered Watthours:                        { Unit: *Wh,    Modifiers: [ *Q1, *Q4, *RateD                                      ], Models: *ADTR-RDTR-650 }
     - Received Watthours:                         { Unit: *Wh,    Modifiers: [ *Q2, *Q3, *RateD                                      ], Models: *____-____-650 }
     - Total Watthours:                            { Unit: *Wh,    Modifiers: [ *Q1, *Q2, *Q3, *Q4, *RateD                            ], Models: *A_TR-R_TR-650 }
     - Q1 Watthours:                               { Unit: *Wh,    Modifiers: [ *Q1, *RateD                                           ], Models: *____-____-650, Mapped: false }
