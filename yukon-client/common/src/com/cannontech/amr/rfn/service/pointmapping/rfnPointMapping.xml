@@ -5657,7 +5657,7 @@
                 <modifier>TOU Rate A</modifier>
             </modifiers>
         </point>
-        <point name="Sum Peak kW (Rate A kW)" icdExcludedTypes="RFN530S4EAX,RFN530S4ERX">
+        <point name="Sum Peak kW (Rate A kW)">
             <uom>W</uom>
             <multiplier value=".001"/>
             <parseSiPrefix/>
@@ -5842,7 +5842,7 @@
                 <modifier>TOU Rate B</modifier>
             </modifiers>
         </point>
-        <point name="Sum Peak kW (Rate B kW)" icdExcludedTypes="RFN530S4EAX,RFN530S4ERX">
+        <point name="Sum Peak kW (Rate B kW)">
             <uom>W</uom>
             <multiplier value=".001"/>
             <parseSiPrefix/>
@@ -6027,7 +6027,7 @@
                 <modifier>TOU Rate C</modifier>
             </modifiers>
         </point>
-        <point name="Sum Peak kW (Rate C kW)" icdExcludedTypes="RFN530S4EAX,RFN530S4ERX">
+        <point name="Sum Peak kW (Rate C kW)">
             <uom>W</uom>
             <multiplier value=".001"/>
             <parseSiPrefix/>
@@ -6212,7 +6212,7 @@
                 <modifier>TOU Rate D</modifier>
             </modifiers>
         </point>
-        <point name="Sum Peak kW (Rate D kW)" icdExcludedTypes="RFN530S4EAX,RFN530S4ERX">
+        <point name="Sum Peak kW (Rate D kW)">
             <uom>W</uom>
             <multiplier value=".001"/>
             <parseSiPrefix/>
