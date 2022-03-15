@@ -53,7 +53,7 @@ public class MeterReadProcessingServiceImpl implements MeterReadProcessingServic
                 // Reading Timestamp
                 Calendar calendar = Calendar.getInstance();
                 calendar.setTime(value.getPointDataTimeStamp());
-                ReadingValues readingValues = new ReadingValues();
+                ReadingValues readingValues = getReadingValues(reading);
                 ReadingValue readingValue = new ReadingValue();
                 readingValue.setTimeStamp(MultispeakFuncs.toXMLGregorianCalendar(calendar));
 
@@ -63,7 +63,7 @@ public class MeterReadProcessingServiceImpl implements MeterReadProcessingServic
                 reading.setReadingValues(readingValues);
 
                 // Reading Type Code
-                ReadingTypeCodeItems readingTypeCodeItems = new ReadingTypeCodeItems();
+                ReadingTypeCodeItems readingTypeCodeItems = getReadingTypeCodeItems(reading);
                 ReadingTypeCodeItem readingTypeCodeItem = new ReadingTypeCodeItem();
                 ReadingTypeCode readingTypeCode = new ReadingTypeCode();
                 
@@ -89,7 +89,7 @@ public class MeterReadProcessingServiceImpl implements MeterReadProcessingServic
                 // Reading Timestamp
                 Calendar calendar = Calendar.getInstance();
                 calendar.setTime(value.getPointDataTimeStamp());
-                ReadingValues readingValues = new ReadingValues();
+                ReadingValues readingValues = getReadingValues(reading);
                 ReadingValue readingValue = new ReadingValue();
                 readingValue.setTimeStamp(MultispeakFuncs.toXMLGregorianCalendar(calendar));
 
@@ -99,7 +99,7 @@ public class MeterReadProcessingServiceImpl implements MeterReadProcessingServic
                 reading.setReadingValues(readingValues);
 
                 // Reading Type Code
-                ReadingTypeCodeItems readingTypeCodeItems = new ReadingTypeCodeItems();
+                ReadingTypeCodeItems readingTypeCodeItems = getReadingTypeCodeItems(reading);
                 ReadingTypeCodeItem readingTypeCodeItem = new ReadingTypeCodeItem();
                 ReadingTypeCode readingTypeCode = new ReadingTypeCode();
                 readingTypeCode.setFieldName(FieldNameKind.MAX_DEMAND);
@@ -119,7 +119,7 @@ public class MeterReadProcessingServiceImpl implements MeterReadProcessingServic
                 // Reading Timestamp
                 Calendar calendar = Calendar.getInstance();
                 calendar.setTime(value.getPointDataTimeStamp());
-                ReadingValues readingValues = new ReadingValues();
+                ReadingValues readingValues = getReadingValues(reading);
                 ReadingValue readingValue = new ReadingValue();
                 readingValue.setTimeStamp(MultispeakFuncs.toXMLGregorianCalendar(calendar));
 
@@ -131,7 +131,7 @@ public class MeterReadProcessingServiceImpl implements MeterReadProcessingServic
                 reading.setReadingValues(readingValues);
 
                 // Reading Type Code
-                ReadingTypeCodeItems readingTypeCodeItems = new ReadingTypeCodeItems();
+                ReadingTypeCodeItems readingTypeCodeItems = getReadingTypeCodeItems(reading);
                 ReadingTypeCodeItem readingTypeCodeItem = new ReadingTypeCodeItem();
                 ReadingTypeCode readingTypeCode = new ReadingTypeCode();
                 readingTypeCode.setFieldName(FieldNameKind.SUSTAINED_OUTAGE);
@@ -199,6 +199,22 @@ public class MeterReadProcessingServiceImpl implements MeterReadProcessingServic
         reading.setReferableID(meter.getMeterNumber());
         reading.setDeviceID(meter.getMeterNumber());
         return reading;
+    }
+    
+    private ReadingValues getReadingValues(MeterReading reading) {
+        ReadingValues readingValues = reading.getReadingValues();
+        if (readingValues == null) {
+            readingValues = new ReadingValues();
+        }
+        return readingValues;
+    }
+
+    private ReadingTypeCodeItems getReadingTypeCodeItems(MeterReading reading) {
+        ReadingTypeCodeItems readingTypeCodeItems = reading.getReadingTypeCodeItems();
+        if (readingTypeCodeItems == null) {
+            readingTypeCodeItems = new ReadingTypeCodeItems();
+        }
+        return readingTypeCodeItems;
     }
 
 }
