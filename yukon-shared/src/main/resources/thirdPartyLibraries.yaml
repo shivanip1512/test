@@ -6032,15 +6032,15 @@ JavaScript :
     notes : Used for creating Tree Views in our UI - Being replaced by fancytree
     
   - project : fancytree
-    version : 2.38.0
+    version : 2.38.1
     project URL : "https://github.com/mar10/fancytree"
     license : MIT
     license URLs : "https://github.com/mar10/fancytree/wiki/LicenseInfo"
     npm URL : "https://www.npmjs.com/package/jquery.fancytree"
-    md5 : 5872d13c90547bd1ababd9172dc3d91d
-    sha1 : 9d9ff6765d052e56cd6174226cf8fe14627222fe
-    jira : YUK-24189
-    updated : 2021-05-12
+    md5 : de6e542f188b24563e48c601e0f48788
+    sha1 : b6eb9c352e358315c60c716738789d240b79b707
+    jira : YUK-25898
+    updated : 2022-03-14
     notes : Used for creating Tree Views in our UI
 
   - project : fileupload

@@ -272,7 +272,7 @@ public interface DeviceTypes extends TypeBase
     public final static int LM_GROUP_ITRON = DEVICE_OFFSET + 206;
     public final static int LM_ITRON_PROGRAM = DEVICE_OFFSET + 207;
     
-    public final static int RFG301 = DEVICE_OFFSET + 208;
+    //public final static int RFG301 = DEVICE_OFFSET + 208;
     public final static int LM_GROUP_METER_DISCONNECT = DEVICE_OFFSET + 209;
     public final static int LM_METER_DISCONNECT_PROGRAM = DEVICE_OFFSET + 210;
 
