@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8" standalone="no"?>
 <points xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="../../points.xsd">
     <highestOffsets>
-        <analog offset="4"/>
+        <analog offset="9"/>
         <status offset="1"/>
         <systemAnalog offset="2505"/>
     </highestOffsets>
