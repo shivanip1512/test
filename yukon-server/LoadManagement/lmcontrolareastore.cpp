@@ -200,6 +200,8 @@ vector<CtiLMControlArea*> CtiLMControlAreaStore::findControlAreasByPointID(long 
 ---------------------------------------------------------------------------*/
 void CtiLMControlAreaStore::dumpAllDynamicData()
 {
+    std::unique_lock taskLock(_threadMux);
+
     if( _controlAreas->size() > 0 )
     {
         Cti::Timing::DebugTimer debugTime("Dump All Dynamic Data", true, 3);
@@ -1750,6 +1752,8 @@ void CtiLMControlAreaStore::reset()
         }
 
         {
+            std::unique_lock taskLock(_threadMux);
+            
             // Clear out our old working objects
             _all_control_area_map.clear();
             delete_container(*_controlAreas);
