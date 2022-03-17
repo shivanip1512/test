@@ -699,6 +699,11 @@ INIT_ATTRIBUTE( LMMonthHistory,                                     "LM_MONTH_HI
 INIT_ATTRIBUTE( LMSeasonHistory,                                    "LM_SEASON_HISTORY" );
 INIT_ATTRIBUTE( LMAnnualHistory,                                    "LM_ANNUAL_HISTORY" );
 INIT_ATTRIBUTE( LMControlCountdown,                                 "LM_CONTROL_COUNTDOWN" );
+INIT_ATTRIBUTE( AssetAvailabilityActiveDevices,                     "LM_ASSET_AVAILABILITY_ACTIVE_DEVICES" );
+INIT_ATTRIBUTE( AssetAvailabilityOptedOutDevices,                   "LM_ASSET_AVAILABILITY_OPTED_OUT_DEVICES" );
+INIT_ATTRIBUTE( AssetAvailabilityInactiveDevices,                   "LM_ASSET_AVAILABILITY_INACTIVE_DEVICES" );
+INIT_ATTRIBUTE( AssetAvailabilityUnavailableDevices,                "LM_ASSET_AVAILABILITY_UNAVAILABLE_DEVICES" );
+INIT_ATTRIBUTE( AssetAvailabilityTotalDevices,                      "LM_ASSET_AVAILABILITY_TOTAL_DEVICES" );
 
 INIT_ATTRIBUTE( ConnectedLoad,                                      "CONNECTED_LOAD" );
 INIT_ATTRIBUTE( DiversifiedLoad,                                    "DIVERSIFIED_LOAD" );
