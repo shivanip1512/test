@@ -119,7 +119,7 @@ private:
     std::map< long, CtiLMControlArea*> _all_control_area_map;
 
     boost::thread   _resetthr;
-    std::mutex _threadMux;
+    std::mutex _hierarchyMapsMux;
 
     bool _isvalid;
     bool _reregisterforpoints;

@@ -200,7 +200,7 @@ vector<CtiLMControlArea*> CtiLMControlAreaStore::findControlAreasByPointID(long 
 ---------------------------------------------------------------------------*/
 void CtiLMControlAreaStore::dumpAllDynamicData()
 {
-    std::unique_lock taskLock(_threadMux);
+    std::unique_lock taskLock(_hierarchyMapsMux);
 
     if( _controlAreas->size() > 0 )
     {
@@ -1752,7 +1752,7 @@ void CtiLMControlAreaStore::reset()
         }
 
         {
-            std::unique_lock taskLock(_threadMux);
+            std::unique_lock taskLock(_hierarchyMapsMux);
             
             // Clear out our old working objects
             _all_control_area_map.clear();
