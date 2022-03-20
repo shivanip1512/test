@@ -16,6 +16,14 @@ import DRSetupFilterPage from './components/YukonPage/DemandResponse/DRSetupFilt
 import DRTestPage from './components/YukonPage/DemandResponse/DRTestPage';
 import CommChannelCreatePage from './components/YukonPage/Assets/CommChannelCreate';
 import DashboardPage from './components/YukonPage/Dashboards/Dashboard';
+import {useIdleTimer} from 'react-idle-timer'
+
+
+const onIdle = () => {
+    console.log("working timer");
+    // Close Modal Prompt
+    // Do some idle action like log out your user
+  }
 
 const ScrollToTop = () => {
     const { pathname } = useLocation();
@@ -28,6 +36,9 @@ const ScrollToTop = () => {
 };
 
 export const App = () => {
+
+    useIdleTimer({ onIdle, timeout: 1000 * 5})
+
     return (
         <SecurityContextProvider>
             <AuthUIConfiguration>
