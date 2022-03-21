@@ -94,16 +94,16 @@ Java :
   - filename : ahessian.jar
     yukon group : Yet Another Java Service Wrapper
     project : YAJSW
-    version : 12.15
+    version : 13.02
     project URL : "http://yajsw.sourceforge.net/"
     license : Apache 2.0, LGPL 2.1
     license URLs : "https://opensource.org/licenses/Apache-2.0, https://opensource.org/licenses/LGPL-2.1"
     maven URL : "https://mvnrepository.com/artifact/org.rzo.yajsw/ahessian/11.11"
     md5 : fdd01e8005a439af3c1b4922d01d7b79
     sha1 : 50ab91cbc6f6ae50cd5ec8a96ec7fb3a47300260
-    updated : 2020-12-14
-    jira : YUK-22557
-    notes : YAJSW - Asynchronous Hessian.  Maven version is 11.11, not 12.15
+    updated : 2022-03-01
+    jira : YUK-25904
+    notes : YAJSW - Asynchronous Hessian.  Maven version is 11.11, not 13.02
   
   - filename : annotations-api.jar
     yukon group : Tomcat
@@ -567,18 +567,18 @@ Java :
     jira : YUK-18347
     notes : 
   
-  - filename : commons-io-2.6.jar
+  - filename : commons-io-2.11.0.jar
     yukon group : Apache Commons
     project : Apache Commons IO
-    version : 2.6
+    version : 2.11.0
     project URL : "https://commons.apache.org/proper/commons-io/"
     license : Apache 2.0
     license URLs : "https://opensource.org/licenses/Apache-2.0"
-    maven URL : "https://mvnrepository.com/artifact/commons-io/commons-io/2.6"
-    md5 : 467c2a1f64319c99b5faf03fc78572af
-    sha1 : 815893df5f31da2ece4040fe0a12fd44b577afaf
-    updated : 2020-01-13
-    jira : YUK-21104
+    maven URL : "https://mvnrepository.com/artifact/commons-io/commons-io/2.11.0"
+    md5 : 3b4b7ccfaeceeac240b804839ee1a1ca
+    sha1 : a2503f302b11ebde7ebc3df41daebe0e4eea3689
+    updated : 2022-03-01
+    jira : YUK-25904
     notes : 
   
   - filename : commons-lang-2.6.jar
@@ -777,18 +777,18 @@ Java :
     jira : YUK-11337
     notes : Geronimo J2EE Management 1.1
   
-  - filename : groovy-2.5.7.jar
+  - filename : groovy-4.0.0.jar
     yukon group : Yet Another Java Service Wrapper
     project : YAJSW
-    version : 2.5.7
+    version : 4.0.0
     project URL : "http://groovy-lang.org/" 
     license : Apache 2.0
     license URLs : "https://www.apache.org/licenses/LICENSE-2.0.txt"
-    maven URL : "https://mvnrepository.com/artifact/org.codehaus.groovy/groovy/2.5.7" 
-    md5 : da5d7df6713a271861606fd75a837992
-    sha1 : 99907efe4b69f800c42584386f5d668e4d952bd5
-    updated : 2020-01-13
-    jira : YUK-21104
+    maven URL : "https://mvnrepository.com/artifact/org.codehaus.groovy/groovy/4.0.0" 
+    md5 : 8dbeb72abd33624e036539908826ac4c
+    sha1 : 6856ea9e77c50c52429d996a9ce194db8497e682
+    updated : 2022-03-01
+    jira : YUK-25904
     notes :
   
   - filename : groovy-all-2.4.11.jar
@@ -808,13 +808,13 @@ Java :
   - filename : groovy-patch.jar
     yukon group : Yet Another Java Service Wrapper 
     project : YAJSW
-    version : 12.15
+    version : 13.02
     project URL : "http://yajsw.sourceforge.net"
     license : Apache 2.0
     license URLs : "http://yajsw.sourceforge.net/#mozTocId236130"
     maven URL : n/a
-    md5 : fa0241d8df629309d2b3df4ffce9d51e
-    sha1 : aa468a8d48881e759129dd69462c4e3de1a33316
+    md5 : f9988a421e787d346ee0f9fdf51f9610
+    sha1 : 3efdac43ee89f31e21938b1cb161255de564d81c
     updated : 2020-12-14
     jira : YUK-22557
     notes : YAJSW specific patches for Groovy
@@ -959,46 +959,46 @@ Java :
     jira : YUK-25377
     notes : Pentaho reporting latest version is dependent on this
     
-  - filename : jackson-annotations-2.13.0.jar
+  - filename : jackson-annotations-2.12.6.jar
     yukon group : Jackson
     project : Jackson
-    version : 2.13.0
+    version : 2.12.6
     project URL : "https://github.com/FasterXML/jackson"
     license : Apache 2.0
     license URLs : "https://opensource.org/licenses/Apache-2.0"
-    maven URL : "https://mvnrepository.com/artifact/com.fasterxml.jackson.core/jackson-annotations/2.13.0"
-    md5 : 9b8bb9a5e1f2af431ad919252c643cbc
-    sha1 : 15be89db6609bd6fda3dc309bacf0318a312c03f
-    updated : 2022-01-07
-    jira : YUK-25692
+    maven URL : "https://mvnrepository.com/artifact/com.fasterxml.jackson.core/jackson-annotations/2.12.6"
+    md5 : 9c936122eb418ee985b195d183623618
+    sha1 : 9487231edd6b0b1f14692c9cba9e0462809215d1
+    updated : 2022-03-04
+    jira : YUK-25929
     notes : Jackson Annotations
 
-  - filename : jackson-core-2.13.0.jar
+  - filename : jackson-core-2.12.6.jar
     yukon group : Jackson
     project : Jackson
-    version : 2.13.0
+    version : 2.12.6
     project URL : "https://github.com/FasterXML/jackson"
     license : Apache 2.0
     license URLs : "https://opensource.org/licenses/Apache-2.0"
-    maven URL : "https://mvnrepository.com/artifact/com.fasterxml.jackson.core/jackson-core/2.13.0"
-    md5 : 94e04abccab99e295a3f4f57f6e387c8
-    sha1 : e957ec5442966e69cef543927bdc80e5426968bb
-    updated : 2022-01-07
-    jira : YUK-25692
+    maven URL : "https://mvnrepository.com/artifact/com.fasterxml.jackson.core/jackson-core/2.12.6"
+    md5 : 3976126e023f2969b4267963fe841f43
+    sha1 : 5bf206c0b5982cfcd868b3d9349dc5190db8bab5
+    updated : 2022-03-04
+    jira : YUK-25929
     notes : Jackson Core
 
-  - filename : jackson-databind-2.13.0.jar
+  - filename : jackson-databind-2.12.6.jar
     yukon group : Jackson
     project : Jackson
-    version : 2.13.0
+    version : 2.12.6
     project URL : "https://github.com/FasterXML/jackson"
     license : Apache 2.0
     license URLs : "https://opensource.org/licenses/Apache-2.0"
-    maven URL : "https://mvnrepository.com/artifact/com.fasterxml.jackson.core/jackson-databind/2.13.0"
-    md5 : 309228a89a5a9da89174114b1e681def
-    sha1 : 889672a1721d6d85b2834fcd29d3fda92c8c8891
-    updated : 2022-01-07
-    jira : YUK-25692
+    maven URL : "https://mvnrepository.com/artifact/com.fasterxml.jackson.core/jackson-databind/2.12.6"
+    md5 : a618e883f32dd2ea37e06195971e7f32
+    sha1 : fac216b606c1086e36acea6e572ee61572ad1670
+    updated : 2022-03-04
+    jira : YUK-25929
     notes : Jackson Databind
 
   - filename : jackson-dataformat-csv-2.9.6.jar
@@ -1029,32 +1029,46 @@ Java :
     jira : YUK-24554
     notes :    
 
-  - filename : jackson-dataformat-xml-2.13.0.jar
+  - filename : jackson-dataformat-xml-2.12.6.jar
     yukon group : Azure
     project : Microsoft Azure SDK
-    version : 2.13.0
+    version : 2.12.6
     project URL : "https://github.com/Azure/azure-sdk-for-java"
     license : Apache 2.0
     license URLs : "https://www.apache.org/licenses/LICENSE-2.0.txt"
-    maven URL : "https://mvnrepository.com/artifact/com.fasterxml.jackson.dataformat/jackson-dataformat-xml/2.13.0"
-    md5 : b00a072102430c1efbd9d4be63e102dd
-    sha1 : 396634365e8439b27794fa94b571fdc03b4cf7be
-    updated : 2022-01-07
-    jira : YUK-25692
+    maven URL : "https://mvnrepository.com/artifact/com.fasterxml.jackson.dataformat/jackson-dataformat-xml/2.12.6"
+    md5 : a1f72cb2498c32bc6472f385864ed2f2
+    sha1 : fecb8514c3a89102bd619b6c624f906a6098b588
+    updated : 2022-03-04
+    jira : YUK-25929
     notes :
 
-  - filename : jackson-datatype-jsr310-2.13.0.jar
+  - filename : jackson-datatype-jsr310-2.12.6.jar
     yukon group : Azure
     project : Microsoft Azure SDK
-    version : 2.13.0
+    version : 2.12.6
     project URL : "https://github.com/Azure/azure-sdk-for-java"
     license : Apache 2.0
     license URLs : "https://www.apache.org/licenses/LICENSE-2.0.txt"
-    maven URL : "https://mvnrepository.com/artifact/com.fasterxml.jackson.datatype/jackson-datatype-jsr310/2.13.0"
-    md5 : 44c4fb74c4f5a0966b9655bfbc86af4e
-    sha1 : 4c143877fc733befe6189151c8b95d84acd06941
-    updated : 2022-01-07
-    jira : YUK-25692
+    maven URL : "https://mvnrepository.com/artifact/com.fasterxml.jackson.datatype/jackson-datatype-jsr310/2.12.6"
+    md5 : 0dcce05f281b2f8bc0e7d422eebb8f7c
+    sha1 : 0f7d0d854f24c4254885c275a09fb885ef578b48
+    updated : 2022-03-04
+    jira : YUK-25929
+    notes :
+
+  - filename : jackson-module-jaxb-annotations-2.12.6.jar
+    yukon group : Azure
+    project : Microsoft Azure SDK
+    version : 2.12.6
+    project URL : "https://github.com/Azure/azure-sdk-for-java"
+    license : Apache 2.0
+    license URLs : "https://www.apache.org/licenses/LICENSE-2.0.txt"
+    maven URL : "https://mvnrepository.com/artifact/com.fasterxml.jackson.module/jackson-module-jaxb-annotations/2.12.6"
+    md5 : 471323308a1743b1d3c9c848aadeb466
+    sha1 : a0bea2c6f98eb0dc24208b54a53da80ea459c156
+    updated : 2022-03-04
+    jira : YUK-25929
     notes :
 
   - filename : jakarta.activation-api-2.0.1.jar
@@ -1407,32 +1421,32 @@ Java :
     jira : YUK-24245
     notes :  
   
-  - filename : jna-5.3.1.jar
+  - filename : jna-5.10.0.jar
     yukon group : Yet Another Java Service Wrapper
     project : Java Native Access
-    version : 5.3.1
+    version : 5.10.0
     project URL : "https://github.com/java-native-access/jna"
     license : Apache 2.0, LGPL 2.1
     license URLs : "https://opensource.org/licenses/Apache-2.0"
-    maven URL : "https://mvnrepository.com/artifact/net.java.dev.jna/jna/5.3.1"
-    md5 : df3ad04f50fb50840eeb674210200f64
-    sha1 : 6eb9d07456c56b9c2560722e90382252f0f98405
-    updated : 2020-01-13
-    jira : YUK-21104
+    maven URL : "https://mvnrepository.com/artifact/net.java.dev.jna/jna/5.10.0"
+    md5 : 2b884b01ad2f62d4f5dd11387a8bf799
+    sha1 : 7cf4c87dd802db50721db66947aa237d7ad09418
+    updated : 2022-03-01
+    jira : YUK-25904
     notes : 
   
-  - filename : jna-platform-5.3.1.jar
+  - filename : jna-platform-5.10.0.jar
     yukon group : Yet Another Java Service Wrapper
     project : Java Native Access
-    version : 5.3.1
+    version : 5.10.0
     project URL : "https://github.com/java-native-access/jna"
     license : Apache 2.0, LGPL 2.1
     license URLs : "https://opensource.org/licenses/Apache-2.0"
-    maven URL : "https://mvnrepository.com/artifact/net.java.dev.jna/jna-platform/5.3.1"
-    md5 : 078fb626e8879c55e7a0035f389ec30c
-    sha1 : 925049dd00b3def5ab561709a56b96055fa67011
-    updated : 2020-01-13
-    jira : YUK-21104
+    maven URL : "https://mvnrepository.com/artifact/net.java.dev.jna/jna-platform/5.10.0"
+    md5 : c1ab841070c388ec32b77cdc05f084fb
+    sha1 : fbed7d9669dba47714ad0d4f4454290a997aee69
+    updated : 2022-03-01
+    jira : YUK-25904
     notes : Java Native Access Platform
   
   - filename : joda-time-2.3.jar
@@ -2329,6 +2343,20 @@ Java :
     sha1 : e33a859163e3f4786cbb111693d6d5e0e4784088
     updated : 2021-11-24
     jira : YUK-25377
+    notes : pentaho reporting engine core
+   
+  - filename : permit-reflect-0.4.jar
+    yukon group : Yet Another Java Service Wrapper
+    project : Java Native Access
+    version : 5.3.1
+    project URL : "	https://github.com/nqzero/permit-reflect"
+    license : MIT
+    license URLs : "https://opensource.org/licenses/Apache-2.0"
+    maven URL : https://mvnrepository.com/artifact/com.nqzero/permit-reflect/0.4
+    md5 : 143be6361e27f5126710f60e907d6811
+    sha1 : 16b5d28e12779548c111da88324091118060c7ed
+    updated : 2022-03-01
+    jira : YUK-25904
     notes : pentaho reporting engine core
     
   - filename : protobuf-java-3.15.8.jar
@@ -3286,30 +3314,44 @@ Java :
   - filename : wrapper.jar
     yukon group : Yet Another Java Service Wrapper
     project : YAJSW
-    version : 12.15
+    version : 13.02
     project URL : "http://yajsw.sourceforge.net/"
     license : Apache 2.0, LGPL 2.1
     license URLs : "https://opensource.org/licenses/Apache-2.0, https://opensource.org/licenses/LGPL-2.1"
     maven URL : "https://mvnrepository.com/artifact/org.rzo.yajsw/wrapper/11.11"
-    md5 : 593e33f29cfc57a73fdece620a826f16
-    sha1 : 1b6b85fea00360e9e95f7ced5157a141fc80542c
-    updated : 2020-12-14
-    jira : YUK-22557
-    notes : YAJSW Wrapper.  Maven version is 11.11, not 12.15.  Jar rebuilt to adjust classpath entries in MANIFEST.MF
+    md5 : fc0ca6942c61e91b419823a04d7f78c0
+    sha1 : e36153fe1a5bb956ef2e3054ff198a808f3b7112
+    updated : 2022-03-01
+    jira : YUK-25904
+    notes : YAJSW Wrapper.  Maven version is 11.11, not 13.02.  Jar rebuilt to adjust classpath entries in MANIFEST.MF
   
   - filename : wrapperApp.jar
     yukon group : Yet Another Java Service Wrapper
     project : YAJSW
-    version : 12.15
+    version : 13.02
     project URL : "http://yajsw.sourceforge.net/"
     license : Apache 2.0, LGPL 2.1
     license URLs : "https://opensource.org/licenses/Apache-2.0, https://opensource.org/licenses/LGPL-2.1"
     maven URL : "https://mvnrepository.com/artifact/org.rzo.yajsw/wrapperApp/11.11"
-    md5 : cf9f8dbfc234f4a46fa7552cf29db70e
-    sha1 : 90f6003543f184a8fd8de08fca66311b43946129
-    updated : 2020-12-14
-    jira : YUK-22557
-    notes : YAJSW Wrapper App.  Maven version is 11.11, not 12.15.  Jar rebuilt to adjust classpath entries in MANIFEST.MF
+    md5 : 884d259e35716e63e8b2fefa9fb3eda9
+    sha1 : d0a36318643c45769b758379bdb556dba7088022
+    updated : 2022-03-01
+    jira : YUK-25904
+    notes : YAJSW Wrapper App.  Maven version is 11.11, not 13.02.  Jar rebuilt to adjust classpath entries in MANIFEST.MF
+  
+  - filename : wrapperApp9.jar
+    yukon group : Yet Another Java Service Wrapper
+    project : YAJSW
+    version : 13.02
+    project URL : "http://yajsw.sourceforge.net/"
+    license : Apache 2.0, LGPL 2.1
+    license URLs : "https://opensource.org/licenses/Apache-2.0, https://opensource.org/licenses/LGPL-2.1"
+    maven URL : "https://mvnrepository.com/artifact/org.rzo.yajsw/wrapperApp/11.11"
+    md5 : 042f0a0bd46d57ee151fbf52174b2aad
+    sha1 : 04f031e4d1f6b3b7df1e7d7806b46a6084751df6
+    updated : 2022-03-01
+    jira : YUK-25904
+    notes : YAJSW Wrapper App.  Maven version is 11.11, not 13.02.  Jar rebuilt to adjust classpath entries in MANIFEST.MF
   
   - filename : woodstox-core-6.2.6.jar
     yukon group : Azure
@@ -6004,27 +6046,27 @@ JavaScript :
     notes : Used for creating Tree Views in our UI - Being replaced by fancytree
     
   - project : fancytree
-    version : 2.38.0
+    version : 2.38.1
     project URL : "https://github.com/mar10/fancytree"
     license : MIT
     license URLs : "https://github.com/mar10/fancytree/wiki/LicenseInfo"
     npm URL : "https://www.npmjs.com/package/jquery.fancytree"
-    md5 : 5872d13c90547bd1ababd9172dc3d91d
-    sha1 : 9d9ff6765d052e56cd6174226cf8fe14627222fe
-    jira : YUK-24189
-    updated : 2021-05-12
+    md5 : de6e542f188b24563e48c601e0f48788
+    sha1 : b6eb9c352e358315c60c716738789d240b79b707
+    jira : YUK-25898
+    updated : 2022-03-14
     notes : Used for creating Tree Views in our UI
 
   - project : fileupload
-    version : 10.31.0
+    version : 10.32.0
     project URL : "https://github.com/blueimp/jQuery-File-Upload"
     license : MIT
     license URLs : "https://github.com/blueimp/jQuery-File-Upload/blob/master/LICENSE.txt"
     npm URL : "https://www.npmjs.com/package/blueimp-file-upload"
-    md5 : 86355d1bfabc77990eef6ae6f57e1460
-    sha1 : fb3d88d28f087c54d960c8fb44ecdaf9b508c388
-    jira : YUK-24190
-    updated : 2021-04-21
+    md5 : 60a9f6bf0823e3a535b997819cb83e3b
+    sha1 : c71867d3f8204782e1dbade48d2e5718d99aeb03
+    jira : YUK-25899
+    updated : 2022-03-15
     notes : The jquery.iframe-transport.js and jquery.ui.widget.js files comes along with this package. It is used for file Upload widget with multiple file selection and drag&drop support for jQuery in Yukon.
 
   - project : form
@@ -6052,15 +6094,15 @@ JavaScript :
     notes : 
 
   - project : highstock
-    version : 9.1.0
+    version : 9.3.3
     project URL : "https://www.highcharts.com/blog/products/highstock/"
     license : Eaton-owned
     license URLs : n/a
-    npm URL : "https://www.npmjs.com/package/highcharts/v/9.1.0"
-    md5 : 88af53ddb08fe92effebb65b00956ead
-    sha1 : a710e15802f03c4ee56500ea86af1c22113d1a60
-    jira : YUK-24346
-    updated : 2021-05-10
+    npm URL : "https://www.npmjs.com/package/highcharts/v/9.3.3"
+    md5 : cc38cb39a98dd261939f8f2ce2a86d0a
+    sha1 : fd24d151b2fc2d5c211adcb3d2b1cbf99d39a936
+    jira : YUK-25895
+    updated : 2022-02-24
     notes : Used for charting
 
   - project : jqgrid

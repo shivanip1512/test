@@ -9,8 +9,11 @@ import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Set;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 import org.apache.commons.lang3.StringUtils;
+import org.apache.logging.log4j.Logger;
 import org.joda.time.Instant;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.EmptyResultDataAccessException;
@@ -18,6 +21,7 @@ import org.springframework.dao.IncorrectResultSizeDataAccessException;
 import org.springframework.jdbc.core.RowCallbackHandler;
 import org.springframework.jdbc.core.RowMapper;
 
+import com.cannontech.clientutils.YukonLogManager;
 import com.cannontech.common.config.ConfigurationSource;
 import com.cannontech.common.config.MasterConfigString;
 import com.cannontech.common.device.groups.model.DeviceGroup;
@@ -70,6 +74,8 @@ public final class PaoDaoImpl implements PaoDao {
         + "LEFT OUTER JOIN deviceroutes dr ON y.paobjectid = dr.deviceid ";
 
     private final RowMapper<LiteYukonPAObject> litePaoRowMapper = new LitePaoRowMapper();
+
+    private final static Logger log = YukonLogManager.getLogger(PaoDaoImpl.class);
 
     @Autowired private YukonJdbcTemplate jdbcTemplate;
     @Autowired private IDatabaseCache databaseCache;
@@ -628,12 +634,23 @@ public final class PaoDaoImpl implements PaoDao {
     
     @Override
     public List<PaoType> getExistingPaoTypes() {
-        SqlStatementBuilder sql = new SqlStatementBuilder();
+        var sql = new SqlStatementBuilder();
         sql.append("SELECT DISTINCT Type");
         sql.append("FROM YukonPaobject");
         sql.append("ORDER BY Type");
         
-        return jdbcTemplate.query(sql, TypeRowMapper.PAO_TYPE);
+        return jdbcTemplate.queryForList(sql.getSql(), String.class)
+                    .stream()
+                    .sequential()
+                    .flatMap(dbString -> {
+                        try {
+                            return Stream.of(PaoType.getForDbString(dbString));
+                        } catch (IllegalArgumentException ex) {
+                            log.warn("Invalid paoType, ignoring", ex);
+                            return Stream.empty();
+                        }
+                    })
+                    .collect(Collectors.toList());
     }
     
     @Override

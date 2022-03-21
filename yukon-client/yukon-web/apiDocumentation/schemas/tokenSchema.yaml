@@ -63,6 +63,39 @@ Token-logout-Response:
        type: boolean
        description: 'Indicates whether the user is logged out of the system. Valid values are true or false.'
 
+Forgotten-Password-Request:
+   title: Forgotten-Password-Request
+   required:
+    - forgottenPasswordField
+   type: object
+   properties:
+    forgottenPasswordField:
+      type: string
+      description: 'This field can be username, email or account number.'
+    gRecaptchaResponse:
+      type: string
+      description: 'Captcha response.'
+      
+Forgotten-Password-Response:
+   title: Forgotten-Password-Response
+   type: object
+   properties:
+    status:
+      type: string
+    message:
+      type: string
+
+Captcha-Details-Response:
+   title: Captcha-Details-Response
+   type: object
+   properties:
+    siteKey:
+      type: string
+    captchaEnabled:
+      type: boolean
+    locale:
+      type: string
+      
 components:
   examples:
     Login:
@@ -85,3 +118,17 @@ components:
     logoutResponse:
        value: 
         logout: true
+    ForgottenPasswordRequest:
+      value:
+        forgottenPasswordField: yukon
+        gRecaptchaResponse: Testresponse
+    ForgottenPasswordResponse:
+      value:
+        status: Success
+        message: An email has been sent to the supplied address with instructions to reset your password.
+    CaptchaDetailsResponse:
+      value:
+        siteKey: 6LfIVEkUAAAAAEtqdQcwZU8V6cYGKi0d0Yuz-ISZ-ISZ
+        captchaEnabled: false
+        locale: en
+    

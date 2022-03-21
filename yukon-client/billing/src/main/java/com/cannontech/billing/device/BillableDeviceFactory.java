@@ -108,7 +108,8 @@ public class BillableDeviceFactory {
         case DeviceTypes.RFWMETER:
         case DeviceTypes.RFW201:
         case DeviceTypes.RFG201:
-        case DeviceTypes.RFG301:
+        case DeviceTypes.RFG301A:
+        case DeviceTypes.RFG301R:
         case DeviceTypes.RFN430SL0:
         case DeviceTypes.RFN430SL1:
         case DeviceTypes.RFN430SL2:

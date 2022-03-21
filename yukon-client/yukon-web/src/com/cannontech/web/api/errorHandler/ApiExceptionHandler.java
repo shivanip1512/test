@@ -1,6 +1,7 @@
 package com.cannontech.web.api.errorHandler;
 
 import static org.springframework.http.HttpStatus.BAD_REQUEST;
+
 import java.io.IOException;
 import java.io.PrintWriter;
 import java.sql.SQLException;
@@ -45,6 +46,7 @@ import com.cannontech.common.exception.DataDependencyException;
 import com.cannontech.common.exception.DeletionFailureException;
 import com.cannontech.common.exception.LoadProgramProcessingException;
 import com.cannontech.common.exception.NotAuthorizedException;
+import com.cannontech.common.exception.PasswordChangeException;
 import com.cannontech.common.exception.TypeNotSupportedException;
 import com.cannontech.common.i18n.MessageSourceAccessor;
 import com.cannontech.common.pao.attribute.service.IllegalUseOfAttribute;
@@ -57,6 +59,7 @@ import com.cannontech.core.dao.PersistenceException;
 import com.cannontech.core.dynamic.exception.DynamicDataAccessException;
 import com.cannontech.i18n.YukonUserContextMessageSourceResolver;
 import com.cannontech.spring.filtering.exceptions.InvalidFilteringParametersException;
+import com.cannontech.tools.email.EmailException;
 import com.cannontech.user.YukonUserContext;
 import com.cannontech.util.ServletUtil;
 import com.cannontech.web.api.ApiURL;
@@ -221,7 +224,9 @@ public class ApiExceptionHandler extends ResponseEntityExceptionHandler {
                         InvalidFilteringParametersException.class,
                         InvalidSortingParametersException.class,
                         InvalidPagingParametersException.class,
-                        DuplicateException.class})
+                        DuplicateException.class,
+                        EmailException.class,
+                        PasswordChangeException.class})
     public ResponseEntity<Object> handleBadRequestException(final Exception ex, final WebRequest request) {
 
         String uniqueKey = CtiUtilities.getYKUniqueKey();
@@ -520,8 +525,9 @@ public class ApiExceptionHandler extends ResponseEntityExceptionHandler {
     /**
      * Build and return ApiErrors for Global Error Response for the specified exception.
      */
-    private ApiErrorModel buildGlobalErrorResponse(ApiErrorDetails errorDetails , WebRequest request, String uniqueKey) {
-        return buildGlobalErrors(errorDetails, uniqueKey, request);
+    private ApiErrorModel buildGlobalErrorResponse(ApiErrorDetails errorDetails, WebRequest request, String uniqueKey) {
+        // This is to handle the Exceptions thrown by the controllers. BindingResult will not be available.
+        return buildGlobalErrors(errorDetails, uniqueKey, request, null);
     }
 
     /**
@@ -531,7 +537,7 @@ public class ApiExceptionHandler extends ResponseEntityExceptionHandler {
         List<ApiFieldErrorModel> errors = new ArrayList<ApiFieldErrorModel>();
         if (CollectionUtils.isNotEmpty(bindingResult.getGlobalErrors())) {
             ApiErrorDetails errorDetails = ApiErrorDetails.getError(bindingResult.getGlobalErrors().get(0).getCode());
-            return buildGlobalErrors(errorDetails, uniqueKey, request);
+            return buildGlobalErrors(errorDetails, uniqueKey, request, bindingResult);
         }
         MessageSourceAccessor messageSourceAccessor = messageSourceResolver.getMessageSourceAccessor(YukonUserContext.system);
         bindingResult.getFieldErrors().stream().forEach(
@@ -543,20 +549,27 @@ public class ApiExceptionHandler extends ResponseEntityExceptionHandler {
                     errors.add(error);
                 });
         ApiErrorDetails childError = ApiErrorDetails.getError(bindingResult.getFieldErrors().get(0).getCode());
-        ApiErrorModel apiErrors = buildGlobalErrors(childError, uniqueKey, request);
+        ApiErrorModel apiErrors = buildGlobalErrors(childError, uniqueKey, request, bindingResult);
         apiErrors.setErrors(errors);
         return apiErrors;
     }
 
-    private ApiErrorModel buildGlobalErrors(ApiErrorDetails errorDetails, String uniqueKey, WebRequest request) {
-        ApiErrorModel apiErrors;
+    private ApiErrorModel buildGlobalErrors(ApiErrorDetails errorDetails, String uniqueKey, WebRequest request,
+            BindingResult bindingResult) {
+        ApiErrorModel apiErrors = null;
+        String requestUri = ServletUtil.getFullURL(((ServletWebRequest) request).getRequest());
         if (errorDetails.getCategory() == ApiErrorCategory.NONE) {
-            apiErrors = new ApiErrorModel(errorDetails, ServletUtil.getFullURL(((ServletWebRequest) request).getRequest()),
-                    uniqueKey);
+            if (bindingResult == null || CollectionUtils.isEmpty(bindingResult.getGlobalErrors())) {
+                apiErrors = new ApiErrorModel(errorDetails, requestUri, uniqueKey);
+            } else {
+                MessageSourceAccessor messageSourceAccessor = messageSourceResolver.getMessageSourceAccessor(YukonUserContext.system);
+                String i18nMessage = messageSourceAccessor.getMessage("yukon.web.error." + bindingResult.getGlobalError().getCode(),
+                        bindingResult.getGlobalError().getArguments());
+                apiErrors = new ApiErrorModel(errorDetails, i18nMessage, requestUri, uniqueKey);
+            }
         } else {
             ApiErrorCategory category = errorDetails.getCategory();
-            apiErrors = new ApiErrorModel(category, ServletUtil.getFullURL(((ServletWebRequest) request).getRequest()),
-                    uniqueKey);
+            apiErrors = new ApiErrorModel(category, requestUri, uniqueKey);
         }
         return apiErrors;
     }

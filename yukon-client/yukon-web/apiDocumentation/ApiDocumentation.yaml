@@ -22,6 +22,10 @@ paths:
      $ref: 'api/tokenApi.yaml#/refreshToken'
   /logout:
      $ref: 'api/tokenApi.yaml#/logout' 
+  /forgottenPassword:
+     $ref: 'api/tokenApi.yaml#/forgottenPassword'
+  /captchaDetails:
+     $ref: 'api/tokenApi.yaml#/captchaDetails'
 
   /devices/commChannels:
     $ref: 'api/commChannelsApi.yaml#/post-operation'
@@ -34,7 +38,7 @@ paths:
     $ref: 'api/trendsApi.yaml#/get-update-delete-operation'
   /trends/{id}/resetPeak:
     $ref: 'api/trendsApi.yaml#/resetPeak'
-  
+
   /dr/loadGroups:
     $ref: 'api/loadGroupsApi.yaml#/post-operation'
   /dr/loadGroups/{id}:
@@ -147,3 +151,4 @@ tags:
   - name: Route
   - name: Logger
   - name: Macro Route
+
