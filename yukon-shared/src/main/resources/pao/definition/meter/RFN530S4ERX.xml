@@ -39,6 +39,10 @@
         <pointInfo name="Current Phase C" attributes="CURRENT_PHASE_C"/>
         <pointInfo name="Delivered kW Load Profile" attributes="LOAD_PROFILE,DELIVERED_KW_LOAD_PROFILE"/>
         <pointInfo name="Delivered kWh" init="true" attributes="DELIVERED_KWH"/>
+        <pointInfo name="Rate A kWh" attributes="DELIVERED_KWH_RATE_A"/>
+        <pointInfo name="Rate B kWh" attributes="DELIVERED_KWH_RATE_B"/>
+        <pointInfo name="Rate C kWh" attributes="DELIVERED_KWH_RATE_C"/>
+        <pointInfo name="Rate D kWh" attributes="DELIVERED_KWH_RATE_D"/>
         <pointInfo name="Delivered kWh per Interval" init="true" attributes="DELIVERED_KWH_PER_INTERVAL"/>
         <pointInfo name="Demand Overload" attributes="DEMAND_OVERLOAD"/>
         <pointInfo name="Device Temperature" init="true" attributes="TEMPERATURE_DEVICE"/>
@@ -83,10 +87,10 @@
         <pointInfo name="Sum Peak kVA" attributes="SUM_PEAK_KVA"/>
         <pointInfo name="Sum Peak kVAr" attributes="SUM_PEAK_KVAR"/>
         <pointInfo name="Sum Peak kW" init="true" attributes="SUM_PEAK_DEMAND,PEAK_DEMAND"/>
-        <pointInfo name="Sum Peak kW (Rate A kW)" attributes="SUM_PEAK_DEMAND_RATE_A"/>
-        <pointInfo name="Sum Peak kW (Rate B kW)" attributes="SUM_PEAK_DEMAND_RATE_B"/>
-        <pointInfo name="Sum Peak kW (Rate C kW)" attributes="SUM_PEAK_DEMAND_RATE_C"/>
-        <pointInfo name="Sum Peak kW (Rate D kW)" attributes="SUM_PEAK_DEMAND_RATE_D"/>
+        <pointInfo name="Sum Peak kW (Rate A kW)" attributes="SUM_PEAK_DEMAND_RATE_A,PEAK_DEMAND_RATE_A"/>
+        <pointInfo name="Sum Peak kW (Rate B kW)" attributes="SUM_PEAK_DEMAND_RATE_B,PEAK_DEMAND_RATE_B"/>
+        <pointInfo name="Sum Peak kW (Rate C kW)" attributes="SUM_PEAK_DEMAND_RATE_C,PEAK_DEMAND_RATE_C"/>
+        <pointInfo name="Sum Peak kW (Rate D kW)" attributes="SUM_PEAK_DEMAND_RATE_D,PEAK_DEMAND_RATE_D"/>
         <pointInfo name="Total Outage Count" init="true" attributes="BLINK_COUNT"/>
         <pointInfo name="TOU Schedule Change" attributes="TOU_SCHEDULE_CHANGE"/>
         <pointInfo name="Ultra Capacitor Bad" attributes="ULTRA_CAPACITOR_BAD"/>
