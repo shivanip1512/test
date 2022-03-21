@@ -690,7 +690,12 @@ public:
     static const Attribute  LMSeasonHistory;
     static const Attribute  LMAnnualHistory;
     static const Attribute  LMControlCountdown;
-    
+    static const Attribute  AssetAvailabilityActiveDevices;
+    static const Attribute  AssetAvailabilityOptedOutDevices;
+    static const Attribute  AssetAvailabilityInactiveDevices;
+    static const Attribute  AssetAvailabilityUnavailableDevices;
+    static const Attribute  AssetAvailabilityTotalDevices;	
+
     static const Attribute  ConnectedLoad;
     static const Attribute  DiversifiedLoad;
     static const Attribute  MaxLoadReduction;

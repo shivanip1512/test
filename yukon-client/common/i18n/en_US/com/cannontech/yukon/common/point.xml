@@ -683,6 +683,11 @@
     <entry key="yukon.common.attribute.builtInAttribute.LM_SEASON_HISTORY">Season History</entry>
     <entry key="yukon.common.attribute.builtInAttribute.LM_ANNUAL_HISTORY">Annual History</entry>
     <entry key="yukon.common.attribute.builtInAttribute.LM_CONTROL_COUNTDOWN">Control Countdown</entry>
+    <entry key="yukon.common.attribute.builtInAttribute.LM_ASSET_AVAILABILITY_ACTIVE_DEVICES">Asset Availability Active Devices</entry>
+    <entry key="yukon.common.attribute.builtInAttribute.LM_ASSET_AVAILABILITY_OPTED_OUT_DEVICES">Asset Availability Opted Out Devices</entry>
+    <entry key="yukon.common.attribute.builtInAttribute.LM_ASSET_AVAILABILITY_INACTIVE_DEVICES">Asset Availability Inactive Devices</entry>
+    <entry key="yukon.common.attribute.builtInAttribute.LM_ASSET_AVAILABILITY_UNAVAILABLE_DEVICES">Asset Availability Unavailable Devices</entry>
+    <entry key="yukon.common.attribute.builtInAttribute.LM_ASSET_AVAILABILITY_TOTAL_DEVICES">Asset Availability Total Devices</entry>
 
     <entry key="yukon.common.attribute.builtInAttribute.CONNECTED_LOAD">Connected Load</entry>
     <entry key="yukon.common.attribute.builtInAttribute.DIVERSIFIED_LOAD">Diversified Load</entry>

@@ -52,6 +52,10 @@
         <pointInfo name="Net kVArh" attributes="NET_KVARH"/>
         <pointInfo name="Net kW Load Profile" attributes="NET_KW_LOAD_PROFILE"/>
         <pointInfo name="Net kWh" attributes="NET_KWH"/>
+        <pointInfo name="Net kWh (Rate A kWh)" attributes="NET_KWH_RATE_A"/>
+        <pointInfo name="Net kWh (Rate B kWh)" attributes="NET_KWH_RATE_B"/>
+        <pointInfo name="Net kWh (Rate C kWh)" attributes="NET_KWH_RATE_C"/>
+        <pointInfo name="Net kWh (Rate D kWh)" attributes="NET_KWH_RATE_D"/>
         <pointInfo name="Net kWh per Interval" attributes="NET_KWH_PER_INTERVAL"/>
         <pointInfo name="Non Volatile Mem Failure" attributes="NON_VOLATILE_MEM_FAILURE"/>
         <pointInfo name="Outage Count" init="true" attributes="RFN_OUTAGE_COUNT"/>
@@ -75,6 +79,10 @@
         <pointInfo name="Sum kVArh per Interval" attributes="SUM_KVARH_PER_INTERVAL"/>
         <pointInfo name="Sum kW Load Profile" attributes="SUM_KW_LOAD_PROFILE"/>
         <pointInfo name="Sum kWh" init="true" attributes="USAGE,SUM_KWH"/>
+        <pointInfo name="Sum kWh (Rate A kWh)" attributes="SUM_KWH_RATE_A"/>
+        <pointInfo name="Sum kWh (Rate B kWh)" attributes="SUM_KWH_RATE_B"/>
+        <pointInfo name="Sum kWh (Rate C kWh)" attributes="SUM_KWH_RATE_C"/>
+        <pointInfo name="Sum kWh (Rate D kWh)" attributes="SUM_KWH_RATE_D"/>
         <pointInfo name="Sum kWh per Interval" init="true" attributes="SUM_KWH_PER_INTERVAL"/>
         <pointInfo name="Sum Peak kVA" attributes="SUM_PEAK_KVA"/>
         <pointInfo name="Sum Peak kVAr" attributes="SUM_PEAK_KVAR"/>

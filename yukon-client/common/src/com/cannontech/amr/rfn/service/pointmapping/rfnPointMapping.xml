@@ -530,7 +530,7 @@
                 <modifier>Quadrant 4</modifier>
             </modifiers>
         </point>
-        <point name="Net kWh (Rate A kWh)" icdExcludedTypes="RFN430A3T,RFN430A3K,RFN430A3R,RFN530S4EAX,RFN530S4ERX,RFN530S4X,RFN530S4ERXR,RFN530S4EAXR">
+        <point name="Net kWh (Rate A kWh)" icdExcludedTypes="RFN430A3T,RFN430A3K,RFN430A3R,RFN530S4X">
             <uom>Wh</uom>
             <multiplier value=".001"/>
             <parseSiPrefix/>
@@ -543,7 +543,7 @@
                 <modifier>TOU Rate A</modifier>
             </modifiers>
         </point>
-        <point name="Net kWh (Rate B kWh)" icdExcludedTypes="RFN430A3T,RFN430A3K,RFN430A3R,RFN530S4EAX,RFN530S4ERX,RFN530S4X,RFN530S4ERXR,RFN530S4EAXR">
+        <point name="Net kWh (Rate B kWh)" icdExcludedTypes="RFN430A3T,RFN430A3K,RFN430A3R,RFN530S4X">
             <uom>Wh</uom>
             <multiplier value=".001"/>
             <parseSiPrefix/>
@@ -556,7 +556,7 @@
                 <modifier>TOU Rate B</modifier>
             </modifiers>
         </point>
-        <point name="Net kWh (Rate C kWh)" icdExcludedTypes="RFN430A3T,RFN430A3K,RFN430A3R,RFN530S4EAX,RFN530S4ERX,RFN530S4X,RFN530S4ERXR,RFN530S4EAXR">
+        <point name="Net kWh (Rate C kWh)" icdExcludedTypes="RFN430A3T,RFN430A3K,RFN430A3R,RFN530S4X">
             <uom>Wh</uom>
             <multiplier value=".001"/>
             <parseSiPrefix/>
@@ -569,7 +569,7 @@
                 <modifier>TOU Rate C</modifier>
             </modifiers>
         </point>
-        <point name="Net kWh (Rate D kWh)" icdExcludedTypes="RFN430A3T,RFN430A3K,RFN430A3R,RFN530S4EAX,RFN530S4ERX,RFN530S4X,RFN530S4ERXR,RFN530S4EAXR">
+        <point name="Net kWh (Rate D kWh)" icdExcludedTypes="RFN430A3T,RFN430A3K,RFN430A3R,RFN530S4X">
             <uom>Wh</uom>
             <multiplier value=".001"/>
             <parseSiPrefix/>
@@ -660,7 +660,7 @@
                 <modifier>Quadrant 3</modifier>
             </modifiers>
         </point>
-        <point name="Sum kWh (Rate A kWh)" icdExcludedTypes="RFN530S4EAX,RFN530S4ERX">
+        <point name="Sum kWh (Rate A kWh)">
             <uom>Wh</uom>
             <multiplier value=".001"/>
             <parseSiPrefix/>
@@ -672,7 +672,7 @@
                 <modifier>Quadrant 4</modifier>
             </modifiers>
         </point>
-        <point name="Sum kWh (Rate B kWh)" icdExcludedTypes="RFN530S4EAX,RFN530S4ERX">
+        <point name="Sum kWh (Rate B kWh)">
             <uom>Wh</uom>
             <multiplier value=".001"/>
             <parseSiPrefix/>
@@ -684,7 +684,7 @@
                 <modifier>Quadrant 4</modifier>
             </modifiers>
         </point>
-        <point name="Sum kWh (Rate C kWh)" icdExcludedTypes="RFN530S4EAX,RFN530S4ERX">
+        <point name="Sum kWh (Rate C kWh)">
             <uom>Wh</uom>
             <multiplier value=".001"/>
             <parseSiPrefix/>
@@ -696,7 +696,7 @@
                 <modifier>Quadrant 4</modifier>
             </modifiers>
         </point>
-        <point name="Sum kWh (Rate D kWh)" icdExcludedTypes="RFN530S4EAX,RFN530S4ERX">
+        <point name="Sum kWh (Rate D kWh)">
             <uom>Wh</uom>
             <multiplier value=".001"/>
             <parseSiPrefix/>

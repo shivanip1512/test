@@ -705,6 +705,11 @@ public enum BuiltInAttribute implements Attribute, DisplayableEnum {
     LM_SEASON_HISTORY("Season History", AttributeGroup.DEMAND_RESPONSE, false),
     LM_ANNUAL_HISTORY("Annual History", AttributeGroup.DEMAND_RESPONSE, false),
     LM_CONTROL_COUNTDOWN("Control Countdown", AttributeGroup.DEMAND_RESPONSE, false),
+    LM_ASSET_AVAILABILITY_ACTIVE_DEVICES("Asset Availability Active Devices", AttributeGroup.DEMAND_RESPONSE, false),
+    LM_ASSET_AVAILABILITY_OPTED_OUT_DEVICES("Asset Availability Opted Out Devices", AttributeGroup.DEMAND_RESPONSE, false),
+    LM_ASSET_AVAILABILITY_INACTIVE_DEVICES("Asset Availability Inactive Devices", AttributeGroup.DEMAND_RESPONSE, false),
+    LM_ASSET_AVAILABILITY_UNAVAILABLE_DEVICES("Asset Availability Unavailable Devices", AttributeGroup.DEMAND_RESPONSE, false),
+    LM_ASSET_AVAILABILITY_TOTAL_DEVICES("Asset Availability Total Devices", AttributeGroup.DEMAND_RESPONSE, false),
     
     // Estimated load
     CONNECTED_LOAD("Connected Load", AttributeGroup.ESTIMATED_LOAD, false), //calculated dr
