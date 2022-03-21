@@ -1,19 +1,20 @@
 package com.cannontech.common.events.dao.impl;
 
-import java.sql.ResultSet;
 import java.sql.Types;
-import java.util.Collections;
+import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Set;
 import java.util.concurrent.TimeUnit;
+import java.util.concurrent.atomic.AtomicInteger;
 
 import org.apache.commons.lang3.StringUtils;
+import org.apache.logging.log4j.Logger;
 import org.joda.time.ReadableInstant;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.jdbc.core.JdbcTemplate;
-import org.springframework.jdbc.support.JdbcUtils;
+import org.springframework.dao.DataIntegrityViolationException;
 
+import com.cannontech.clientutils.YukonLogManager;
 import com.cannontech.common.bulk.filter.AbstractRowMapperWithBaseQuery;
 import com.cannontech.common.bulk.filter.RowMapperWithBaseQuery;
 import com.cannontech.common.events.dao.EventLogDao;
@@ -26,65 +27,40 @@ import com.cannontech.common.util.SimpleSqlFragment;
 import com.cannontech.common.util.SqlFragmentCollection;
 import com.cannontech.common.util.SqlFragmentSource;
 import com.cannontech.common.util.SqlStatementBuilder;
-import com.cannontech.database.SqlUtils;
+import com.cannontech.database.SqlParameterSink;
 import com.cannontech.database.TypeRowMapper;
 import com.cannontech.database.YukonJdbcTemplate;
 import com.cannontech.database.YukonResultSet;
 import com.cannontech.database.incrementer.NextValueHelper;
 import com.google.common.cache.Cache;
 import com.google.common.cache.CacheBuilder;
-import com.google.common.collect.ImmutableList;
-import com.google.common.collect.ImmutableList.Builder;
 import com.google.common.collect.Sets;
 
 public class EventLogDaoImpl implements EventLogDao {
     
-    @Autowired private JdbcTemplate jdbcTemplate;
-    @Autowired private YukonJdbcTemplate yukonJdbcTemplate;
+    @Autowired private YukonJdbcTemplate jdbcTemplate;
     @Autowired private NextValueHelper nextValueHelper;
     
     private final Cache<String, Set<EventCategory>> allCategories = CacheBuilder.newBuilder()
             .expireAfterWrite(15, TimeUnit.MINUTES).build();
     
-    private final int countOfTotalArguments;
-    private List<ArgumentColumn> argumentColumns;
-    private int countOfNonVariableColumns = 3; // 3 <-- id + type + datetime
-    private int[] totalArgumentTypes;
-    {
-        Builder<ArgumentColumn> builder = ImmutableList.builder();
-        builder.add(new ArgumentColumn("String1",Types.VARCHAR));
-        builder.add(new ArgumentColumn("String2", Types.VARCHAR));
-        builder.add(new ArgumentColumn("String3", Types.VARCHAR));
-        builder.add(new ArgumentColumn("String4", Types.VARCHAR));
-        builder.add(new ArgumentColumn("String5", Types.VARCHAR));
-        builder.add(new ArgumentColumn("String6", Types.VARCHAR));
-        builder.add(new ArgumentColumn("Int7", Types.NUMERIC));
-        builder.add(new ArgumentColumn("Int8", Types.NUMERIC));
-        builder.add(new ArgumentColumn("Int9", Types.NUMERIC));
-        builder.add(new ArgumentColumn("Int10", Types.NUMERIC));
-        builder.add(new ArgumentColumn("Date11", Types.TIMESTAMP));
-        builder.add(new ArgumentColumn("Date12", Types.TIMESTAMP));
-        argumentColumns = builder.build();
+    private static final Logger log = YukonLogManager.getLogger(EventLogDaoImpl.class);
 
-        countOfTotalArguments = argumentColumns.size() + countOfNonVariableColumns; 
-        
-        totalArgumentTypes = new int[countOfTotalArguments];
-        totalArgumentTypes[0] = Types.NUMERIC;
-        totalArgumentTypes[1] = Types.VARCHAR;
-        totalArgumentTypes[2] = Types.TIMESTAMP;
-        for (int i = 0; i < argumentColumns.size(); ++i) {
-            totalArgumentTypes[i + countOfNonVariableColumns] = argumentColumns.get(i).getSqlType();
-        }
-    }
+    private List<ArgumentColumn> argumentColumns = List.of(
+            new ArgumentColumn("String1", Types.VARCHAR),
+            new ArgumentColumn("String2", Types.VARCHAR),
+            new ArgumentColumn("String3", Types.VARCHAR),
+            new ArgumentColumn("String4", Types.VARCHAR),
+            new ArgumentColumn("String5", Types.VARCHAR),
+            new ArgumentColumn("String6", Types.VARCHAR),
+            new ArgumentColumn("Int7", Types.NUMERIC),
+            new ArgumentColumn("Int8", Types.NUMERIC),
+            new ArgumentColumn("Int9", Types.NUMERIC),
+            new ArgumentColumn("Int10", Types.NUMERIC),
+            new ArgumentColumn("Date11", Types.TIMESTAMP),
+            new ArgumentColumn("Date12", Types.TIMESTAMP));
     
-    private String insertSql;
-    {
-        insertSql = "INSERT INTO EventLog VALUES (";
-        List<String> questionMarks = Collections.nCopies(countOfTotalArguments, "?");
-        insertSql += StringUtils.join(questionMarks, ",");
-        insertSql += ")";
-    }
-    
+
     private RowMapperWithBaseQuery<EventLog> eventLogRowMapper = new AbstractRowMapperWithBaseQuery<EventLog>() {
 
         @Override
@@ -106,28 +82,33 @@ public class EventLogDaoImpl implements EventLogDao {
         }
         
         @Override
-        public EventLog mapRow(YukonResultSet yrs) throws java.sql.SQLException {
-            ResultSet rs = yrs.getResultSet();
+        public EventLog mapRow(YukonResultSet rs) throws java.sql.SQLException {
             EventLog eventLog = new EventLog();
-            eventLog.setEventLogId(rs.getInt(1));
-            eventLog.setEventType(rs.getString(2));
-            eventLog.setDateTime(rs.getTimestamp(3));
-            
-            Object[] arguments = new Object[argumentColumns.size()];
-            for (int i = 0; i < argumentColumns.size(); ++i) {
-                Object arg;
-                int columnIndex = i + countOfNonVariableColumns + 1;    //columns are 1-based
-                if (argumentColumns.get(i).getSqlType() == Types.VARCHAR) {
-                    String rawString = rs.getString(columnIndex);
-                    arg = SqlUtils.convertDbValueToString(rawString);
-                } else {
-                    arg = JdbcUtils.getResultSetValue(rs, columnIndex);
+            eventLog.setEventLogId(rs.getInt("EventLogId"));
+            eventLog.setEventType(rs.getString("EventType"));
+            eventLog.setDateTime(rs.getDate("EventTime"));
+
+            List<Object> arguments = new ArrayList<>();
+            argumentColumns.forEach(argument -> {
+                try {
+                    switch (argument.getSqlType()) {
+                    case Types.VARCHAR:
+                        arguments.add(rs.getStringSafe(argument.getColumnName()));
+                        break;
+                    case Types.NUMERIC:
+                        arguments.add(rs.getInt(argument.getColumnName()));
+                        break;
+                    case Types.TIMESTAMP:
+                        arguments.add(rs.getDate(argument.getColumnName()));
+                        break;
+                    default:
+                        log.error("{} not supported", argument.getSqlType());
+                    }
+                } catch (Exception e) {
+                    log.error("Error parsing the value", e);
                 }
-                arguments[i] = arg;
-            }
-            
-            eventLog.setArguments(arguments);
-            
+            });
+            eventLog.setArguments(arguments.toArray());
             return eventLog;
         };
     };
@@ -138,31 +119,25 @@ public class EventLogDaoImpl implements EventLogDao {
     }
     
     @Override
-    public void insert(EventLog eventLog) {
-        Object[] totalArguments = new Object[countOfTotalArguments];
-        
-        totalArguments[0] = nextValueHelper.getNextValue("EventLog"); //EventLogId
-        totalArguments[1] = eventLog.getEventType(); // Type
-        totalArguments[2] = eventLog.getDateTime(); // DateTime
-        
-        for (int i = 0; i < argumentColumns.size(); ++i) {
-            int inputIndex = i;
-            int outputIndex = i + countOfNonVariableColumns;
-            
-            Object value = eventLog.getArguments()[inputIndex];
-            if (value != null && argumentColumns.get(i).getSqlType() == Types.VARCHAR) {
-                value = SqlUtils.convertStringToDbValue(value.toString());
-            }
-            totalArguments[outputIndex] = value;
-        } 
-
-        jdbcTemplate.update(insertSql, totalArguments, totalArgumentTypes);
-        Set<EventCategory> categories = allCategories.getIfPresent("allCategories");
-        if(categories != null && !categories.contains(eventLog.getEventCategory())) {
-            allCategories.invalidateAll();
+    public void insert(EventLog eventLog) {        
+        try {
+            SqlStatementBuilder createSql = new SqlStatementBuilder();
+            SqlParameterSink params = createSql.insertInto("EventLog");
+            params.addValue("EventLogId", nextValueHelper.getNextValue("EventLog"));
+            params.addValue("EventType", eventLog.getEventType());
+            params.addValue("EventTime", eventLog.getDateTime());
+            AtomicInteger counter = new AtomicInteger(0);
+            argumentColumns.forEach(argument -> {
+                Object value = eventLog.getArguments()[counter.getAndIncrement()];
+                if (value != null) {
+                    params.addValue(argument.getColumnName(), value);
+                }
+            });
+            jdbcTemplate.update(createSql);
+        } catch (DataIntegrityViolationException e) {
+            throw new RuntimeException("Unable to create EventLog entry", e);
         }
     }
-    
     
     /**
      * This doesn't really get all types.  
@@ -172,7 +147,7 @@ public class EventLogDaoImpl implements EventLogDao {
         SqlStatementBuilder sql = new SqlStatementBuilder();
         sql.append("SELECT DISTINCT EventType"); 
         sql.append("FROM EventLog");
-        return Sets.newHashSet( yukonJdbcTemplate.query(sql, TypeRowMapper.STRING));
+        return Sets.newHashSet(jdbcTemplate.query(sql, TypeRowMapper.STRING));
     }
     
     private Set<EventCategory> getAllCategoryLeafs() {
@@ -190,8 +165,8 @@ public class EventLogDaoImpl implements EventLogDao {
     
     @Override
     public Set<EventCategory> getAllCategories() {
-        //Set<EventCategory> categories = allCategories.getIfPresent("allCategories");
-        Set<EventCategory> categories = null;
+        Set<EventCategory> categories = allCategories.getIfPresent("allCategories");
+
         if (categories != null) {
             return categories;
         }
@@ -239,7 +214,7 @@ public class EventLogDaoImpl implements EventLogDao {
         SqlStatementBuilder countSql = findAllSqlStatementBuilder(startDate, stopDate, catSql, true, filterString);
         SqlStatementBuilder sql = findAllSqlStatementBuilder(startDate, stopDate, catSql, false, filterString);
         
-        return SearchResults.pageBasedForOffset(yukonJdbcTemplate, paging, sql, eventLogRowMapper, countSql);
+        return SearchResults.pageBasedForOffset(jdbcTemplate, paging, sql, eventLogRowMapper, countSql);
     }
 
     private SqlStatementBuilder findAllSqlStatementBuilder(ReadableInstant startDate,
