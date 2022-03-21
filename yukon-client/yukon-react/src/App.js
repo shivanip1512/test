@@ -16,17 +16,6 @@ import DRSetupFilterPage from './components/YukonPage/DemandResponse/DRSetupFilt
 import DRTestPage from './components/YukonPage/DemandResponse/DRTestPage';
 import CommChannelCreatePage from './components/YukonPage/Assets/CommChannelCreate';
 import DashboardPage from './components/YukonPage/Dashboards/Dashboard';
-import {useIdleTimer} from 'react-idle-timer'
-import axios from '../src/axiosConfig';
-
-
-const onIdle = () => {
-    axios.post('/api/logout', {})
-         .catch((error) => {
-        console.warn("error in logout while user is idle");
-    })
-};
-    
 
 const ScrollToTop = () => {
     const { pathname } = useLocation();
@@ -39,9 +28,6 @@ const ScrollToTop = () => {
 };
 
 export const App = () => {
-    // 2hr is default user idle time in yukon, which can be customizable as well
-    useIdleTimer({ onIdle, timeout: 1000 * 60 * 60 * 2})
-
     return (
         <SecurityContextProvider>
             <AuthUIConfiguration>
