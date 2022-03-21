@@ -75,7 +75,7 @@
         <pointInfo name="Sum kWh (Rate D kWh)" attributes="SUM_KWH_RATE_D"/>
         <pointInfo name="Sum kWh per Interval" init="true" attributes="SUM_KWH_PER_INTERVAL"/>
         <pointInfo name="Sum Peak kW" init="true" attributes="SUM_PEAK_DEMAND,PEAK_DEMAND"/>
-        <pointInfo name="Sum Peak kW (Rate A kW)" attributes="SUM_PEAK_DEMAND_RATE_A,PEAK_DEMAND_RATE_A"/>
+		<pointInfo name="Sum Peak kW (Rate A kW)" attributes="SUM_PEAK_DEMAND_RATE_A,PEAK_DEMAND_RATE_A"/>
         <pointInfo name="Sum Peak kW (Rate B kW)" attributes="SUM_PEAK_DEMAND_RATE_B,PEAK_DEMAND_RATE_B"/>
         <pointInfo name="Sum Peak kW (Rate C kW)" attributes="SUM_PEAK_DEMAND_RATE_C,PEAK_DEMAND_RATE_C"/>
         <pointInfo name="Sum Peak kW (Rate D kW)" attributes="SUM_PEAK_DEMAND_RATE_D,PEAK_DEMAND_RATE_D"/>
