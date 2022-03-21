@@ -258,13 +258,32 @@ yukon.map.comprehensive = (function () {
             var _overlay = new ol.Overlay({ element: document.getElementById('marker-info'), positioning: 'bottom-center', stopEvent: false });
             _map.addOverlay(_overlay);
             _map.on('click', function(ev) {
+                var popupCoordinates = ev.coordinate;
                 var paoFeature = _map.forEachFeatureAtPixel(ev.pixel, function(feature) {
                     if (feature && feature.get('pao') != null) {
+                        return feature;
+                    } else if (feature && feature.get('geometry') != null) {
                         return feature;
                     }
                 });
                 if (paoFeature) {
-                    yukon.mapping.displayMappingPopup(paoFeature, _overlay);
+                    if (paoFeature.get('pao') != null) {
+                        yukon.mapping.displayMappingPopup(paoFeature, _overlay);
+                    } else {
+                        var popupContent = '',
+                            properties = paoFeature.getProperties();
+                        
+                        const jsonMap = new Map(Object.entries(properties));
+                        for (const [key, value] of jsonMap) {
+                            if (value != '' && key != 'geometry') {
+                                popupContent = popupContent + key + ": " + value + "<br/>";
+                            }
+                        }
+                        $('#device-info').html(popupContent);
+                        $('#device-info').show();
+                        $('#marker-info').show();
+                        _overlay.setPosition(popupCoordinates);
+                    }
                 } else {
                     var target = ev.originalEvent.target;
                     //check if user clicked on the cog, the error hide-reveal, or notes icon
@@ -482,6 +501,59 @@ yukon.map.comprehensive = (function () {
             /** Add an elevation layer to the map **/
             $(document).on('click', '.js-elevation-layer', function() {
                 yukon.mapping.showHideElevationLayer(_map, $(this));
+            });
+            
+            /** Add GIS Shapefile layer to the map **/
+            $(document).on('change', '.js-upload-shapefile', function(ev) {
+                var color = $('#upload-color').val(),
+                    fr = new FileReader();
+                fr.onload = function () {
+                  shp(fr.result).then(function(geojson) {
+                    var features = (new ol.format.GeoJSON()).readFeatures(geojson, {featureProjection: _destProjection});
+                    var source = new ol.source.Vector({
+                        features: features
+                    });
+                    
+                    var styleName = features[0].getGeometry().getType();
+                    var style = new ol.style.Style({
+                            stroke: new ol.style.Stroke({
+                                color: color,
+                                width: 1
+                            })
+                        });
+                    
+                    if (styleName === 'Polygon') {
+                        var r = parseInt(color.slice(1, 3), 16),
+                            g = parseInt(color.slice(3, 5), 16),
+                            b = parseInt(color.slice(5, 7), 16);
+                        style = new ol.style.Style({
+                            stroke: new ol.style.Stroke({
+                                color: color,
+                                width: 1
+                            }),
+                            fill: new ol.style.Fill({
+                                color: 'rgba(' + r + ', ' + g + ', ' + b + ', 0.5)'
+                            })
+                        });
+                    } else if (styleName === 'Point') {
+                        style = new ol.style.Style({
+                            image: new ol.style.Circle({
+                                fill: new ol.style.Fill({color: color}),
+                                radius: 3
+                            })
+                        });
+                    } 
+                    
+                    var layerLines = new ol.layer.Vector({
+                        source: source,
+                        style: style
+                    });
+
+                    _map.addLayer(layerLines);
+                    
+                  })
+                };
+                fr.readAsArrayBuffer(ev.target.files[0]);
             });
             
             /** Remove the coordinates for the device when the user clicks OK on the confirmation popup. **/

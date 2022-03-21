@@ -62,6 +62,8 @@
                 <hr>
             </div>
             
+
+            
             <div id="filtered-devices" class="dn PB20">
                 <span class="fwn"><i:inline key="yukon.common.filteredResults"/></span>
                 <span class="badge js-number-devices"></span>&nbsp;<i:inline key="yukon.common.devices"/>
@@ -75,6 +77,11 @@
                 </span>
                 
                 <span class="fr">
+                
+                   <span>
+		               Color: <input type="color" id="upload-color"/>GIS Shapefile:<tags:file classes="js-upload-shapefile dif"/>
+		           </span>
+		           
                     <cm:criteria key=".infrastructure">
                         <cm:criteriaOption classes="js-all-gateways" key=".infrastructure.allGateways"/>
                         <cm:criteriaOption classes="js-all-relays" key=".infrastructure.allRelays"/>
@@ -113,5 +120,6 @@
     <cti:includeScript link="/resources/js/pages/yukon.map.comprehensive.js"/>
     <div class="dn" id="js-pao-notes-popup"></div>
     <cti:includeScript link="/resources/js/pages/yukon.tools.paonotespopup.js"/>
+    <cti:includeScript link="/resources/js/lib/shapefile/shp.min.js"/>
 
 </cti:standardPage>
