@@ -92,7 +92,7 @@ Captcha-Details-Response:
     siteKey:
       type: string
     captchaEnabled:
-      type: string
+      type: boolean
     locale:
       type: string
       
