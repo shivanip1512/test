@@ -201,7 +201,6 @@ public final class DeviceFactory {
         case RFWMETER:
         case RFW201:
         case RFG201:
-        case RFG301:
         case RFG301A:
         case RFG301R:
         case RFN430SL0:

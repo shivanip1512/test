@@ -40,7 +40,7 @@ public class ControlScenarioSetupValidator extends SimpleValidator<ControlScenar
                 if (CollectionUtils.isEmpty(program.getGears())) {
                     errors.reject(ApiErrorDetails.FIELD_REQUIRED.getCodeString(), new Object[] { "Start Gear" }, "");
                 } else if (program.getGears().size() > 1) {
-                    errors.reject(ApiErrorDetails.ONE_GEAR.getCodeString(), new Object[] { 1, "Gear"}, "");
+                    errors.reject(ApiErrorDetails.ONLY_ONE_ALLOWED.getCodeString(), new Object[] { 1, "Gear"}, "");
                     //errors.reject(key + "oneGear");
                 } else if (program.getGears().get(0) == null) {
                     YukonApiValidationUtils.checkIfFieldRequired("gears", errors, program.getGears().get(0), "Gear");

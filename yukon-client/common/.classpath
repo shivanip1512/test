@@ -405,17 +405,17 @@
 			<attribute name="org.eclipse.jst.component.dependency" value="../"/>
 		</attributes>
 	</classpathentry>
-	<classpathentry exported="true" kind="lib" path="/third-party/jackson-databind-2.13.0.jar" sourcepath="/third-party/linked-sources/jackson-databind-2.13.0-sources.jar">
+	<classpathentry exported="true" kind="lib" path="/third-party/jackson-databind-2.12.6.jar" sourcepath="/third-party/linked-sources/jackson-databind-2.12.6-sources.jar">
 		<attributes>
 			<attribute name="org.eclipse.jst.component.dependency" value="../"/>
 		</attributes>
 	</classpathentry>
-	<classpathentry exported="true" kind="lib" path="/third-party/jackson-core-2.13.0.jar" sourcepath="/third-party/linked-sources/jackson-core-2.13.0-sources.jar">
+	<classpathentry exported="true" kind="lib" path="/third-party/jackson-core-2.12.6.jar" sourcepath="/third-party/linked-sources/jackson-core-2.12.6-sources.jar">
 		<attributes>
 			<attribute name="org.eclipse.jst.component.dependency" value="../"/>
 		</attributes>
 	</classpathentry>
-	<classpathentry exported="true" kind="lib" path="/third-party/jackson-annotations-2.13.0.jar" sourcepath="/third-party/linked-sources/jackson-annotations-2.13.0-sources.jar">
+	<classpathentry exported="true" kind="lib" path="/third-party/jackson-annotations-2.12.6.jar" sourcepath="/third-party/linked-sources/jackson-annotations-2.12.6-sources.jar">
 		<attributes>
 			<attribute name="org.eclipse.jst.component.dependency" value="../"/>
 		</attributes>
@@ -521,8 +521,9 @@
 	<classpathentry exported="true" kind="lib" path="/third-party/azure-core-amqp-2.3.5.jar"/>
 	<classpathentry exported="true" kind="lib" path="/third-party/azure-core-http-netty-1.11.4.jar"/>
 	<classpathentry exported="true" kind="lib" path="/third-party/azure-messaging-servicebus-7.5.1.jar"/>
-	<classpathentry exported="true" kind="lib" path="/third-party/jackson-dataformat-xml-2.13.0.jar"/>
-	<classpathentry exported="true" kind="lib" path="/third-party/jackson-datatype-jsr310-2.13.0.jar"/>
+	<classpathentry exported="true" kind="lib" path="/third-party/jackson-dataformat-xml-2.12.6.jar"/>
+	<classpathentry exported="true" kind="lib" path="/third-party/jackson-datatype-jsr310-2.12.6.jar"/>
+	<classpathentry exported="true" kind="lib" path="/third-party/jackson-module-jaxb-annotations-2.12.6.jar"/>
 	<classpathentry exported="true" kind="lib" path="/third-party/netty-resolver-dns-classes-macos-4.1.70.Final.jar"/>
 	<classpathentry exported="true" kind="lib" path="/third-party/netty-tcnative-classes-2.0.46.Final.jar"/>
 	<classpathentry exported="true" kind="lib" path="/third-party/netty-transport-classes-epoll-4.1.70.Final.jar"/>

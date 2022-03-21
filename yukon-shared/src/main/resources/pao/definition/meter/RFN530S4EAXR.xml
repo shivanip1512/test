@@ -37,6 +37,10 @@
         <pointInfo name="Current Phase C" attributes="CURRENT_PHASE_C"/>
         <pointInfo name="Delivered kW Load Profile" attributes="LOAD_PROFILE,DELIVERED_KW_LOAD_PROFILE"/>
         <pointInfo name="Delivered kWh" init="true" attributes="DELIVERED_KWH"/>
+        <pointInfo name="Rate A kWh" attributes="DELIVERED_KWH_RATE_A"/>
+        <pointInfo name="Rate B kWh" attributes="DELIVERED_KWH_RATE_B"/>
+        <pointInfo name="Rate C kWh" attributes="DELIVERED_KWH_RATE_C"/>
+        <pointInfo name="Rate D kWh" attributes="DELIVERED_KWH_RATE_D"/>
         <pointInfo name="Delivered kWh per Interval" init="true" attributes="DELIVERED_KWH_PER_INTERVAL"/>
         <pointInfo name="Demand Overload" attributes="DEMAND_OVERLOAD"/>
         <pointInfo name="Device Temperature" init="true" attributes="TEMPERATURE_DEVICE"/>
@@ -45,6 +49,10 @@
         <pointInfo name="Measurement Error" attributes="MEASUREMENT_ERROR"/>
         <pointInfo name="Net kW Load Profile" attributes="NET_KW_LOAD_PROFILE"/>
         <pointInfo name="Net kWh" attributes="NET_KWH"/>
+        <pointInfo name="Net kWh (Rate A kWh)" attributes="NET_KWH_RATE_A"/>
+        <pointInfo name="Net kWh (Rate B kWh)" attributes="NET_KWH_RATE_B"/>
+        <pointInfo name="Net kWh (Rate C kWh)" attributes="NET_KWH_RATE_C"/>
+        <pointInfo name="Net kWh (Rate D kWh)" attributes="NET_KWH_RATE_D"/>
         <pointInfo name="Net kWh per Interval" attributes="NET_KWH_PER_INTERVAL"/>
         <pointInfo name="Non Volatile Mem Failure" attributes="NON_VOLATILE_MEM_FAILURE"/>
         <pointInfo name="Outage Count" init="true" attributes="RFN_OUTAGE_COUNT"/>
