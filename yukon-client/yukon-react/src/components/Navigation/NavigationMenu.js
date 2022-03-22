@@ -21,7 +21,7 @@ import PhoneIcon from '@material-ui/icons/Phone';
 import NotificationsIcon from '@material-ui/icons/Notifications';
 import PersonIcon from '@material-ui/icons/Person';
 import KeyIcon from '@material-ui/icons/VpnKey';
-
+import {useIdleTimer} from 'react-idle-timer'
 import Avatar from '@material-ui/core/Avatar';
 import axios from '../../axiosConfig';
 
@@ -73,6 +73,17 @@ const NavigationMenu = (props) => {
     const securityHelper = useSecurityActions();
     const { t } = useTranslation();
 
+    const onIdle = () => {
+        axios.post('/api/logout', {})
+             .catch((error) => {
+            console.warn("error in logout while user is idle");
+        })
+    };
+
+    // 2hr is default user idle time in yukon, which can be customizable as well
+    // when that api will be created then timeout value can be used from that api
+    useIdleTimer({ onIdle, timeout: 1000 * 60 * 60 * 2})
+
     const logOut = () => {
 
         axios.post('/api/logout', {
@@ -83,11 +94,6 @@ const NavigationMenu = (props) => {
             // uncomment this line to check custom error from API
             throw new Error (error.response.data.detail) 
         })
-
-        LocalStorage.clearAuthCredentials();
-        //onNavItemClick("/servlet/LoginController/logout")
-        securityHelper.onUserNotAuthenticated();
-        //window.location.href = props.reactPath + "/yukon-ui/dashboard";
     };
 
     const changePassword = () => {
