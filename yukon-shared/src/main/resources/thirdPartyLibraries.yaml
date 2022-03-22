@@ -6200,6 +6200,18 @@ JavaScript :
     updated : 2021-04-23
     notes : This is used for animated scrolling in Yukon.
 
+  - project : shapefile
+    version : 1.0.0
+    project URL : "https://github.com/calvinmetcalf/shapefile-js"
+    license : MIT
+    license URLs : "https://github.com/calvinmetcalf/shapefile-js/blob/gh-pages/README.md#license"
+    npm URL : "n/a"
+    md5 : c7832d17ca164f7e9193d84e74eaddfd
+    sha1 : 8edaf35f1c43cef22bfb7373a24082090f3d158b
+    jira : YUK-21241
+    updated : 2022-03-22
+    notes : This is used for converting GIS shapefiles into GeoJson to be used in mapping.
+
   - project : sortable
     version : 0.8.0
     project URL : "https://github.com/HubSpot/sortable"
@@ -6212,6 +6224,7 @@ JavaScript :
     updated : 2017-08-30
     notes : "Includes several subsequent Eaton changes; open issue to add project to NPM at https://github.com/HubSpot/sortable/issues/30"
     
+
   - project : spectrum
     version : 1.8.1
     project URL : "https://github.com/bgrins/spectrum"
