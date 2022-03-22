@@ -23,6 +23,7 @@ import PersonIcon from '@material-ui/icons/Person';
 import KeyIcon from '@material-ui/icons/VpnKey';
 
 import Avatar from '@material-ui/core/Avatar';
+import axios from '../../axiosConfig';
 
 const useStyles = makeStyles(theme => ({
     search: {
@@ -73,6 +74,16 @@ const NavigationMenu = (props) => {
     const { t } = useTranslation();
 
     const logOut = () => {
+
+        axios.post('/api/logout', {
+        }).then((response) => {
+            LocalStorage.clearAuthCredentials();
+            securityHelper.onUserNotAuthenticated();
+        }).catch((error) => {
+            // uncomment this line to check custom error from API
+            throw new Error (error.response.data.detail) 
+        })
+
         LocalStorage.clearAuthCredentials();
         //onNavItemClick("/servlet/LoginController/logout")
         securityHelper.onUserNotAuthenticated();

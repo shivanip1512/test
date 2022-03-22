@@ -11,6 +11,7 @@ import java.util.UUID;
 import javax.annotation.PostConstruct;
 import javax.servlet.http.Cookie;
 import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
 
 import org.apache.commons.lang3.StringUtils;
 
@@ -213,5 +214,19 @@ public class TokenHelper {
         }
         return false;
     }
-
+    /**
+     * get refresh token from cookies 
+     */
+    public static String getTokenFromCookies (HttpServletRequest request) {
+    String refreshToken = null;
+        if (request.getCookies() != null) {
+            Optional<Cookie> refreshTokenCookie = Arrays.stream(request.getCookies())
+                                                        .filter(cookie -> cookie.getName().equals("refresh_token"))
+                                                        .findAny();
+            if (refreshTokenCookie.isPresent()) {
+                refreshToken = refreshTokenCookie.get().getValue();
+            }
+        }
+        return refreshToken;
+    }
 }

@@ -31,6 +31,7 @@ import com.cannontech.common.util.ScheduledExecutor;
 import com.cannontech.core.authentication.service.AuthenticationService;
 import com.cannontech.database.data.lite.LiteYukonUser;
 import com.cannontech.web.login.LoginCookieHelper;
+import com.cannontech.web.login.impl.LoginCookieHelperImpl;
 
 @RestController
 public class ApiAuthenticationController {
@@ -85,19 +86,12 @@ public class ApiAuthenticationController {
     @RequestMapping(value = "/refreshToken", method = RequestMethod.POST, produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<Object> generateRefreshToken(HttpServletRequest request, HttpServletResponse resp, @RequestBody RefreshTokenRequest tokenRequest) {
 
-        String refreshToken = null;
-        if (request.getCookies() != null) {
-            Optional<Cookie> refreshTokenCookie = Arrays.stream(request.getCookies())
-                                                        .filter(cookie -> cookie.getName().equals("refresh_token"))
-                                                        .findAny();
-            if (refreshTokenCookie.isPresent()) {
-                refreshToken = refreshTokenCookie.get().getValue();
-            }
-        }
+        String refreshToken = TokenHelper.getTokenFromCookies(request);
+
         if (refreshToken == null) {
             refreshToken = tokenRequest.getRefreshToken();
         }
-        
+
         if (refreshToken != null) {
             RefreshTokenDetails refreshTokenDetails = TokenHelper.getRefreshTokenDetails(refreshToken);
             String cacheRefreshToken = tokenCache.get(refreshTokenDetails.getRefreshTokenId());
@@ -115,41 +109,6 @@ public class ApiAuthenticationController {
                     // Update latest refresh token in cache
                     tokenCache.put(newRefreshTokenDetails.getRefreshTokenId(), response.getRefreshToken());
                     loginCookieHelper.setTokensInCookie(request, resp, response.getAccessToken(), response.getRefreshToken());
-
-                } else {
-                    // Delete refresh token from cache
-                    tokenCache.remove(refreshTokenDetails.getRefreshTokenId());
-                    throw new AuthenticationException("Refresh token only valid for one-time use");
-                }
-
-            } else {
-                throw new AuthenticationException("Refresh token not valid.");
-            }
-            return new ResponseEntity<>(response, HttpStatus.OK);
-
-        } else {
-            throw new AuthenticationException("Refresh token not provided");
-        }
-    }
-    public ResponseEntity<Object> generateRefreshToken(HttpServletRequest request, @RequestBody RefreshTokenRequest tokenRequest) {
-
-        if (tokenRequest.getRefreshToken() != null) {
-            String refreshToken = tokenRequest.getRefreshToken();
-            RefreshTokenDetails refreshTokenDetails = TokenHelper.getRefreshTokenDetails(refreshToken);
-            String cacheRefreshToken = tokenCache.get(refreshTokenDetails.getRefreshTokenId());
-
-            TokenResponse response = new TokenResponse();
-            if (cacheRefreshToken != null) {
-                if (cacheRefreshToken.equals(refreshToken)) {
-                    response = TokenHelper.setTokenTypeAndExpiresIn(response);
-                    String newAccessToken = TokenHelper.createToken(Integer.valueOf(refreshTokenDetails.getUserId()));
-                    String uuid = TokenHelper.getUUIDFromRefreshTokenId(refreshTokenDetails);
-                    RefreshTokenDetails newRefreshTokenDetails = TokenHelper.createRefreshTokenWithUUID(Integer.valueOf(refreshTokenDetails.getUserId()),
-                                                                                                        uuid);
-                    response.setAccessToken(newAccessToken);
-                    response.setRefreshToken(newRefreshTokenDetails.getRefreshToken());
-                    // Update latest refresh token in cache
-                    tokenCache.put(newRefreshTokenDetails.getRefreshTokenId(), newRefreshTokenDetails.getRefreshToken());
                 } else {
                     // Delete refresh token from cache
                     tokenCache.remove(refreshTokenDetails.getRefreshTokenId());
@@ -167,12 +126,18 @@ public class ApiAuthenticationController {
     }
 
     @RequestMapping(value = "/logout", method = RequestMethod.POST, produces = MediaType.APPLICATION_JSON_VALUE)
-    public ResponseEntity<Object> logout(HttpServletRequest request, @RequestBody LogoutRequest logoutRequest) {
+    public ResponseEntity<Object> logout(HttpServletRequest request, HttpServletResponse resp, @RequestBody LogoutRequest logoutRequest) {
 
-        if (logoutRequest.getRefreshToken() != null) {
+        String refreshToken = TokenHelper.getTokenFromCookies(request);
+
+        if (refreshToken == null) {
+            refreshToken = logoutRequest.getRefreshToken();
+        }
+
+        if (refreshToken != null) {
             try {
                 LogoutResponse logoutResponse = new LogoutResponse();
-                String refreshToken = logoutRequest.getRefreshToken();
+                //String refreshToken = logoutRequest.getRefreshToken();
                 RefreshTokenDetails refreshTokenDetails = TokenHelper.getRefreshTokenDetails(refreshToken);
                 String cacheRefreshToken = tokenCache.get(refreshTokenDetails.getRefreshTokenId());
 
@@ -189,6 +154,8 @@ public class ApiAuthenticationController {
                     } else {
                         tokenCache.remove(refreshTokenDetails.getRefreshTokenId());
                     }
+                    //remove token from cookies
+                    LoginCookieHelperImpl.removeCookies(request, resp);
                 } else {
                     throw new AuthenticationException("Refresh token not valid.");
                 }
