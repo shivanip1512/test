@@ -122,8 +122,10 @@ import com.cannontech.common.smartNotification.model.SmartNotificationEventMulti
 import com.cannontech.common.smartNotification.model.SmartNotificationMessageParametersMulti;
 import com.cannontech.core.dynamic.RichPointData;
 import com.cannontech.dr.dao.LmReportedAddress;
-import com.cannontech.dr.eatonCloud.message.EatonCloudAuthTokenRequestV1;
-import com.cannontech.dr.eatonCloud.message.V1.EatonCloudAuthTokenResponseV1;
+import com.cannontech.dr.eatonCloud.message.EatonCloudHeartbeatRequest;
+import com.cannontech.dr.eatonCloud.message.EatonCloudHeartbeatResponse;
+import com.cannontech.dr.eatonCloud.message.v1.EatonCloudAuthTokenRequestV1;
+import com.cannontech.dr.eatonCloud.message.v1.EatonCloudAuthTokenResponseV1;
 import com.cannontech.dr.rfn.message.archive.RfnLcrArchiveRequest;
 import com.cannontech.dr.rfn.message.archive.RfnLcrArchiveResponse;
 import com.cannontech.dr.rfn.message.archive.RfnLcrReadingArchiveRequest;
@@ -1397,6 +1399,19 @@ public final class JmsApiDirectory {
             .receiver(YUKON_SERVICE_MANAGER)
             .receiver(YUKON_CLOUD_SERVICE)
             .build();
+    
+    public static final JmsApi<EatonCloudHeartbeatRequest, ?, EatonCloudHeartbeatResponse> EATON_CLOUD_HEARTBEAT = 
+            JmsApi.builder(EatonCloudHeartbeatRequest.class, EatonCloudHeartbeatResponse.class)
+                  .name("Eaton Cloud Heartbeat")
+                  .description("Verifies connection from Service Manager to Eaton Cloud")
+                  .communicationPattern(REQUEST_RESPONSE)
+                  .queue(new JmsQueue("com.cannontech.dr.eatonCloud.message.EatonCloudHeartbeatRequest"))
+                  .responseQueue(JmsQueue.TEMP_QUEUE)
+                  .requestMessage(EatonCloudHeartbeatRequest.class)
+                  .responseMessage(EatonCloudHeartbeatResponse.class)
+                  .sender(YUKON_WATCHDOG)
+                  .receiver(YUKON_SERVICE_MANAGER)
+                  .build();
 
     /*
      * WARNING: JmsApiDirectoryTest will fail if you don't add each new JmsApi to the category map below!
@@ -1436,7 +1451,8 @@ public final class JmsApiDirectory {
                 NEW_ALERT_CREATION,
                 ZEUS_ECOBEE_AUTH_TOKEN,
                 DATABASE_CHANGE_EVENT_REQUEST,
-                YUKON_METRIC);
+                YUKON_METRIC,
+                EATON_CLOUD_HEARTBEAT);
         
         addApis(jmsApis, RFN_LCR, 
                 RFN_EXPRESSCOM_BROADCAST, 
