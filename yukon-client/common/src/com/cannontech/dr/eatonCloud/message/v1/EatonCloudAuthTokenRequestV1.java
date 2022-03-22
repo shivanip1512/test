@@ -1,4 +1,4 @@
-package com.cannontech.dr.eatonCloud.message;
+package com.cannontech.dr.eatonCloud.message.v1;
 
 import java.io.Serializable;
 
