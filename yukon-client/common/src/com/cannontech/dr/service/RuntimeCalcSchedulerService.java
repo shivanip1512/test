@@ -403,8 +403,10 @@ public abstract class RuntimeCalcSchedulerService {
 
     private Iterable<PointValueHolder> addPrecedingValue(Iterable<PointValueHolder> relayStatuses, Range<Instant> logRange) {
         PointValueHolder firstStatus = Iterables.getFirst(relayStatuses, null);
+        log.debug("First Status :{}", firstStatus);
         if (firstStatus != null) {
             var firstStatusInstant = new Instant(firstStatus.getPointDataTimeStamp().getTime());
+            log.debug("First Status Instant :{}", firstStatusInstant);
             // Get the entry preceding the range, if the start of the range is defined
             if (logRange.getMin() != null && logRange.getMin().isBefore(firstStatusInstant)) {
                 relayStatuses = Iterables.concat(getPrecedingArchivedValue(firstStatus), relayStatuses);
@@ -416,7 +418,9 @@ public abstract class RuntimeCalcSchedulerService {
     public List<PointValueHolder> getPrecedingArchivedValue(PointValueHolder firstStatus) {
         int pointId = firstStatus.getId();
         Date centerDate = firstStatus.getPointDataTimeStamp();
+        log.debug("Center Date :{}", centerDate);
         Range<Date> dateRange = new Range<>(null, true, centerDate, false);
+        log.debug("Date Range :{}", dateRange);
         return rphDao.getLimitedPointData(pointId,
                 dateRange.translate(CtiUtilities.INSTANT_FROM_DATE)
                 /* Clusivity.INCLUSIVE_EXCLUSIVE */, false,
