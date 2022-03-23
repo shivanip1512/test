@@ -3,6 +3,8 @@
 <%@ taglib prefix="cti" uri="http://cannontech.com/tags/cti" %>
 <%@ taglib prefix="tags" tagdir="/WEB-INF/tags" %>
 
+<div data-dialog class="js-point-data-dialog"></div>
+
 <c:choose>
     <c:when test="${assetAvailabilitySummary.totalDeviceCount <= 0}">
         <span class="empty-list">

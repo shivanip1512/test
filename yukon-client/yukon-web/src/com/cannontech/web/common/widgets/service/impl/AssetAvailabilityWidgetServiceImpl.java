@@ -6,6 +6,10 @@ import org.joda.time.Instant;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import com.cannontech.clientutils.YukonLogManager;
+import com.cannontech.common.pao.attribute.model.BuiltInAttribute;
+import com.cannontech.common.pao.attribute.service.AttributeService;
+import com.cannontech.common.pao.attribute.service.IllegalUseOfAttribute;
+import com.cannontech.database.data.lite.LitePoint;
 import com.cannontech.database.data.lite.LiteYukonPAObject;
 import com.cannontech.dr.assetavailability.AssetAvailabilitySummary;
 import com.cannontech.dr.assetavailability.service.impl.AssetAvailabilityServiceImpl;
@@ -19,6 +23,7 @@ public class AssetAvailabilityWidgetServiceImpl implements AssetAvailabilityWidg
     private static final Duration MINUTES_TO_WAIT_BEFORE_NEXT_REFRESH = Duration.standardMinutes(15);
 
     @Autowired private AssetAvailabilityServiceImpl assetAvailabilityService;
+    @Autowired private AttributeService attributeService;
     @Autowired private IDatabaseCache cache;
 
     @Override
@@ -33,10 +38,23 @@ public class AssetAvailabilityWidgetServiceImpl implements AssetAvailabilityWidg
         AssetAvailabilityWidgetSummary summary = new AssetAvailabilityWidgetSummary(lastUpdateTime);
         LiteYukonPAObject drPao = cache.getAllPaosMap().get(areaOrLMProgramOrScenarioId);
         AssetAvailabilitySummary assetAvailabilitySummary = assetAvailabilityService.getAssetAvailabilityFromDrGroup(drPao.getPaoIdentifier());
-        summary.setActive(assetAvailabilitySummary.getActiveSize());
-        summary.setInactive(assetAvailabilitySummary.getInactiveSize());
-        summary.setUnavailable(assetAvailabilitySummary.getUnavailableSize());
-        summary.setOptedOut(assetAvailabilitySummary.getOptedOutSize());
+
+        try {
+            LitePoint activePoint = attributeService.getPointForAttribute(drPao, BuiltInAttribute.LM_ASSET_AVAILABILITY_ACTIVE_DEVICES);
+            LitePoint inactivePoint = attributeService.getPointForAttribute(drPao, BuiltInAttribute.LM_ASSET_AVAILABILITY_INACTIVE_DEVICES);
+            LitePoint unavailablePoint = attributeService.getPointForAttribute(drPao, BuiltInAttribute.LM_ASSET_AVAILABILITY_UNAVAILABLE_DEVICES);
+            LitePoint optedOutPoint = attributeService.getPointForAttribute(drPao, BuiltInAttribute.LM_ASSET_AVAILABILITY_OPTED_OUT_DEVICES);
+            summary.setActive(assetAvailabilitySummary.getActiveSize(), activePoint.getPointID());
+            summary.setInactive(assetAvailabilitySummary.getInactiveSize(), inactivePoint.getPointID());
+            summary.setUnavailable(assetAvailabilitySummary.getUnavailableSize(), unavailablePoint.getPointID());
+            summary.setOptedOut(assetAvailabilitySummary.getOptedOutSize(), optedOutPoint.getPointID());
+        } catch (IllegalUseOfAttribute e) {
+            summary.setActive(assetAvailabilitySummary.getActiveSize(), null);
+            summary.setInactive(assetAvailabilitySummary.getInactiveSize(), null);
+            summary.setUnavailable(assetAvailabilitySummary.getUnavailableSize(), null);
+            summary.setOptedOut(assetAvailabilitySummary.getOptedOutSize(), null);
+        }
+
         summary.calculatePrecentages();
         log.debug(summary);
         return summary;

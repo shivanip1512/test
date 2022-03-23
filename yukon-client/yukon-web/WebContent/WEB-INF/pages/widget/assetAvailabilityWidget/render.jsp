@@ -5,6 +5,9 @@
 <cti:uniqueIdentifier var="id" />
 
 <cti:msgScope paths="modules.dashboard,modules.dr">
+
+    <div data-dialog class="js-point-data-dialog"></div>
+
     <div class="js-asset-availability-widget">
         <div id="asset-availability-error-msg" class="user-message error dn"></div>
         <c:forEach var="status" items="${statuses}">
