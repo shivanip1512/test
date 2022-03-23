@@ -221,6 +221,8 @@ public abstract class RuntimeCalcSchedulerService {
                     .map(RelayLogInterval.LOG_60_MINUTE::start) // round down to a 60 minute interval to allow full calculation of all interval lengths
                     .map(DateTime::toInstant)
                     .orElse(null);
+        
+        log.debug("End Range:{}", endOfRange);
 
         if (endOfRange == null) {
             log.debug("No recent point data found for " + device);
@@ -247,10 +249,14 @@ public abstract class RuntimeCalcSchedulerService {
         Instant startOfRange = getLatestInitializedTimestamp(dataLogValues.values())
                 .map(DateTime::toInstant)
                 .orElse(null);
+        
+        log.debug("Start Range:{}", startOfRange);
 
         // Limit the range of data calculated. Default: 30 days back.
         // So if the latest initialized timestamp is older, ignore it, and limit the range to e.g. 30 days.
         startOfRange = getLimitedStartOfRange(startOfRange, historyLimitDays, DateTime.now());
+        
+        log.debug("Start Range after limiter:{}", startOfRange);
         
         var logRange = Range.inclusive(startOfRange, endOfRange);
 
@@ -258,10 +264,15 @@ public abstract class RuntimeCalcSchedulerService {
         Map<Integer, List<PointValueHolder>> relayStatusData = rphDao
                 .getPointData(relayStatusPointIds, logRange, false, Order.FORWARD).stream()
                 .collect(Collectors.groupingBy(PointValueHolder::getId));
+        
+        log.debug("Relay Status Data since the last data log update :{}", relayStatusData);
 
         // Add in any relay information that's outside of the range
         relayStatusIdLookup
                 .forEach((ppi, pointId) -> relayStatusData.computeIfAbsent(pointId, x -> List.of(relayStatusValues.get(ppi))));
+        
+        log.debug("Relay Status Id Lookup :{}", relayStatusIdLookup);
+        log.debug("Relay Status Data since the last data log update plus missing stuff :{}", relayStatusData);
 
         calculateRelayDataLogs(device, dataLogIdLookup, relayStatusIdLookup, logRange, relayStatusData);
     }
@@ -308,6 +319,16 @@ public abstract class RuntimeCalcSchedulerService {
             Map<BuiltInAttribute, RelayLogInterval> intervals,
             Map<PaoPointIdentifier, Integer> relayStatusIdLookup,
             Map<PaoPointIdentifier, Integer> dataLogIdLookup) {
+        
+        log.debug("Device:{}", device);
+        log.debug("logRange:{}", logRange);
+        log.debug("relayStatusData:{}", relayStatusData);
+        log.debug("relayStatusAttribute:{}", relayStatusAttribute);
+        log.debug("isRuntime:{}", isRuntime);
+        log.debug("relayNumber:{}", relayNumber);
+        log.debug("intervals:{}", intervals);
+        log.debug("relayStatusIdLookup:{}", relayStatusIdLookup);
+        log.debug("dataLogIdLookup:{}", dataLogIdLookup);
 
         // Map of point ID to its RelayLogInterval
         Map<Integer, RelayLogInterval> dataLogIntervals = intervals.entrySet().stream()
@@ -338,6 +359,8 @@ public abstract class RuntimeCalcSchedulerService {
                     Iterable<PointValueHolder> relayStatuses = addBoundaryValues(relayStatusData.get(relayStatusPointId),
                             logRange);
 
+                    log.debug("Relay Statuses after boundry values :{}", relayStatuses);
+                    
                     if (isRuntime) {
                         // Transform the raw relay state data into runtime status
                         Iterable<? extends DatedStatus> statuses = IterableUtils.toList(relayStatuses).stream()
@@ -370,6 +393,7 @@ public abstract class RuntimeCalcSchedulerService {
      */
     public Iterable<PointValueHolder> addBoundaryValues(Iterable<PointValueHolder> relayStatuses, Range<Instant> logRange) {
 
+        log.debug("Relay Statuses before boundry values :{}", relayStatuses);
         relayStatuses = addPrecedingValue(relayStatuses, logRange);
 
         relayStatuses = addTrailingValue(relayStatuses, logRange);
