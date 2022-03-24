@@ -136,7 +136,6 @@
     <entry key="yukon.web.modules.dashboard.widgetCategory.ALL">All</entry>
     <entry key="yukon.web.modules.dashboard.widgetCategory.AMI">AMI</entry>
     <entry key="yukon.web.modules.dashboard.widgetCategory.DR">Demand Response</entry>
-    <entry key="yukon.web.modules.dashboard.widgetCategory.IVVC">Volt/Var</entry>
     <entry key="yukon.web.modules.dashboard.widgetCategory.OTHER">Other</entry>
     
     <!-- Dashboard Page Types -->

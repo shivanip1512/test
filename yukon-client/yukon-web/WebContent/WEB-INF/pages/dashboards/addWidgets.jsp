@@ -11,7 +11,7 @@
             <h4><i:inline key=".addWidgets.widgetCategory"/></h4>
             <table class="compact-results-table full-width">
                 <tr class="cp js-show-all-row">
-                    <td><input type="radio" name="js-widget-category"/></td>
+                    <td><input type="radio" name="js-widget-category" checked="checked"/></td>
                     <td><a class="js-show-all cp"><i:inline key=".widgetCategory.ALL"/></a></td>
                     <td class="fr txt-color-gray">${totalWidgets}</td>
                 </tr>
