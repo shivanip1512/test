@@ -89,13 +89,20 @@ public class SearchResults<T> {
     
     /**
      * Utilizes fetch/offset to find search result
+     * 
+     * @param template - used to do the query
+     * @param paging - determines how many rows to fetch
+     * @param selectSql - used to do select data
+     * @param countSql - find row count
+     * @param mapper - maps returned data
+     * @return SearchResults
      */
     public static <T> SearchResults<T> pageBasedForOffset(YukonJdbcTemplate template, PagingParameters paging,
-            SqlStatementBuilder sql, YukonRowMapper<T> mapper, SqlStatementBuilder countSql) {
-        sql.append("OFFSET").append(paging.getStartIndex()).append("ROWS FETCH NEXT").append(paging.getItemsPerPage()).append("ROWS ONLY");   
+            SqlStatementBuilder selectSql, SqlStatementBuilder countSql, YukonRowMapper<T> mapper) {
+        selectSql.append("OFFSET").append(paging.getStartIndex()).append("ROWS FETCH NEXT").append(paging.getItemsPerPage()).append("ROWS ONLY");   
         SearchResults<T> result = new SearchResults<>();
-        result.setResultList(template.query(sql, mapper));
-        log.debug("paging:{} result count:{} total count:{} sql:{}", paging, result.getResultCount(), result.hitCount, sql.getDebugSql());
+        result.setResultList(template.query(selectSql, mapper));
+        log.debug("paging:{} result count:{} total count:{} sql:{}", paging, result.getResultCount(), result.hitCount, selectSql.getDebugSql());
         result.setBounds(paging.getStartIndex(), paging.getItemsPerPage(), template.queryForInt(countSql));
         return result;
     }

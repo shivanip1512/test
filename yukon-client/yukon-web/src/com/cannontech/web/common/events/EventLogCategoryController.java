@@ -106,18 +106,17 @@ public class EventLogCategoryController {
     @RequestMapping(value="viewByCategory", params="export", method=RequestMethod.GET)
     public void exportByCategory(@ModelAttribute("filter") EventLogCategoryFilter filter,
                            HttpServletResponse response,
-                           YukonUserContext userContext, 
-                           @DefaultItemsPerPage(50) PagingParameters paging) throws IOException {
+                           YukonUserContext userContext) throws IOException {
 
         List<EventCategory> eventCategories = Lists.newArrayList();
         eventCategories.addAll(Arrays.asList(filter.getCategories()));
-        
+ 
         // Getting the search results
         SearchResults<EventLog> searchResult = 
             eventLogUIService.getFilteredPagedSearchResultByCategories(eventCategories, 
                    filter.getStartDate().toDateTimeAtStartOfDay(userContext.getJodaTimeZone()),
                    filter.getStopDate().plusDays(1).toDateTimeAtStartOfDay(userContext.getJodaTimeZone()),
-                   paging,
+                   PagingParameters.EVERYTHING,
                    filter.getFilterValue(),
                    userContext);
         

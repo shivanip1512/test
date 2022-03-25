@@ -5,7 +5,6 @@ import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Set;
-import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicInteger;
 
 import org.apache.commons.lang3.StringUtils;
@@ -32,17 +31,12 @@ import com.cannontech.database.TypeRowMapper;
 import com.cannontech.database.YukonJdbcTemplate;
 import com.cannontech.database.YukonResultSet;
 import com.cannontech.database.incrementer.NextValueHelper;
-import com.google.common.cache.Cache;
-import com.google.common.cache.CacheBuilder;
 import com.google.common.collect.Sets;
 
 public class EventLogDaoImpl implements EventLogDao {
     
     @Autowired private YukonJdbcTemplate jdbcTemplate;
     @Autowired private NextValueHelper nextValueHelper;
-    
-    private final Cache<String, Set<EventCategory>> allCategories = CacheBuilder.newBuilder()
-            .expireAfterWrite(15, TimeUnit.MINUTES).build();
     
     private static final Logger log = YukonLogManager.getLogger(EventLogDaoImpl.class);
 
@@ -60,7 +54,6 @@ public class EventLogDaoImpl implements EventLogDao {
             new ArgumentColumn("Date11", Types.TIMESTAMP),
             new ArgumentColumn("Date12", Types.TIMESTAMP));
     
-
     private RowMapperWithBaseQuery<EventLog> eventLogRowMapper = new AbstractRowMapperWithBaseQuery<EventLog>() {
 
         @Override
@@ -68,6 +61,7 @@ public class EventLogDaoImpl implements EventLogDao {
             SqlStatementBuilder retVal = new SqlStatementBuilder();
             retVal.append("SELECT EventLogId, EventType, EventTime, String1, String2, String3, String4, String5, String6, Int7, Int8, Int9, Int10, Date11, Date12");
             retVal.append("FROM EventLog");
+            retVal.append("JOIN EventLogType ON EventLog.EventTypeId=EventLogType.EventTypeId");
             return retVal;
         }
 
@@ -96,7 +90,7 @@ public class EventLogDaoImpl implements EventLogDao {
                         arguments.add(rs.getStringSafe(argument.getColumnName()));
                         break;
                     case Types.NUMERIC:
-                        arguments.add(rs.getInt(argument.getColumnName()));
+                        arguments.add(rs.getLong(argument.getColumnName()));
                         break;
                     case Types.TIMESTAMP:
                         arguments.add(rs.getDate(argument.getColumnName()));
@@ -120,11 +114,11 @@ public class EventLogDaoImpl implements EventLogDao {
     
     @Override
     public void insert(EventLog eventLog) {        
-        try {
+        try {            
             SqlStatementBuilder createSql = new SqlStatementBuilder();
             SqlParameterSink params = createSql.insertInto("EventLog");
             params.addValue("EventLogId", nextValueHelper.getNextValue("EventLog"));
-            params.addValue("EventType", eventLog.getEventType());
+            params.addValue("EventTypeId", getEventTypeId(eventLog));
             params.addValue("EventTime", eventLog.getDateTime());
             AtomicInteger counter = new AtomicInteger(0);
             argumentColumns.forEach(argument -> {
@@ -138,20 +132,35 @@ public class EventLogDaoImpl implements EventLogDao {
             throw new RuntimeException("Unable to create EventLog entry", e);
         }
     }
-    
+
     /**
-     * This doesn't really get all types.  
-     * This only gets the types that have already been logged.
+     * If Event Type Id is not found, creates one
      */
-    private Set<String> getAllLoggedTypes() {
+    private int getEventTypeId(EventLog eventLog) {
+        int eventTypeId;
         SqlStatementBuilder sql = new SqlStatementBuilder();
-        sql.append("SELECT DISTINCT EventType"); 
-        sql.append("FROM EventLog");
-        return Sets.newHashSet(jdbcTemplate.query(sql, TypeRowMapper.STRING));
+        sql.append("SELECT EventTypeId");
+        sql.append("FROM EventLogType");
+        sql.append("WHERE EventType").eq(eventLog.getEventType());
+        try {
+            eventTypeId = jdbcTemplate.queryForInt(sql);
+        } catch (Exception e) {
+            SqlStatementBuilder createSql = new SqlStatementBuilder();
+            SqlParameterSink params = createSql.insertInto("EventLogType");
+            eventTypeId = nextValueHelper.getNextValue("EventLogType");
+            params.addValue("EventTypeId", eventTypeId);
+            params.addValue("EventType", eventLog.getEventType());
+            jdbcTemplate.update(createSql);
+            log.info("Created new event log type: {}", eventLog.getEventType());
+        }
+        return eventTypeId;
     }
     
-    private Set<EventCategory> getAllCategoryLeafs() {
-        Set<String> allTypes = getAllLoggedTypes();
+    private Set<EventCategory> getCategories() {
+        SqlStatementBuilder sql = new SqlStatementBuilder();
+        sql.append("SELECT EventType"); 
+        sql.append("FROM EventLogType");
+        Set<String> allTypes = Sets.newHashSet(jdbcTemplate.query(sql, TypeRowMapper.STRING));
         
         Set<EventCategory> allCategories = Sets.newHashSet();
         
@@ -165,20 +174,13 @@ public class EventLogDaoImpl implements EventLogDao {
     
     @Override
     public Set<EventCategory> getAllCategories() {
-        Set<EventCategory> categories = allCategories.getIfPresent("allCategories");
+        Set<EventCategory> allCategoryLeafs = getCategories();
 
-        if (categories != null) {
-            return categories;
-        }
-
-        Set<EventCategory> allCategoryLeafs = getAllCategoryLeafs();
-
-        categories = Sets.newHashSet(allCategoryLeafs);
+        Set<EventCategory> categories = Sets.newHashSet(allCategoryLeafs);
 
         for (EventCategory eventCategory : allCategoryLeafs) {
             collectParentCategories(eventCategory, categories);
         }
-        allCategories.put("allCategories", categories);
         return categories;
 
     }
@@ -200,6 +202,17 @@ public class EventLogDaoImpl implements EventLogDao {
 
         SqlStatementBuilder catSql = null;
       
+        // YUK-26003 the controller will set eventCategories = null if user selects ALL so the getAllCategories() will not be used
+        /*if(eventCategories != null) {
+            Set<EventCategory> slimEventCategories = removeDuplicates(eventCategories);
+            catSql = new SqlStatementBuilder();
+            catSql.append("AND (");
+
+            SqlFragmentCollection sqlFragmentCollection = getEventCategorySqlFragment(slimEventCategories);
+            catSql.appendFragment(sqlFragmentCollection);
+
+            catSql.append(")");
+        }*/
         if (!Sets.newHashSet(eventCategories).containsAll(getAllCategories())) {
             Set<EventCategory> slimEventCategories = removeDuplicates(eventCategories);
             catSql = new SqlStatementBuilder();
@@ -212,9 +225,11 @@ public class EventLogDaoImpl implements EventLogDao {
         }
         
         SqlStatementBuilder countSql = findAllSqlStatementBuilder(startDate, stopDate, catSql, true, filterString);
-        SqlStatementBuilder sql = findAllSqlStatementBuilder(startDate, stopDate, catSql, false, filterString);
+
+        SqlStatementBuilder selectSql = findAllSqlStatementBuilder(startDate, stopDate, catSql, false, filterString);
+        System.out.println(selectSql.getDebugSql());
         
-        return SearchResults.pageBasedForOffset(jdbcTemplate, paging, sql, eventLogRowMapper, countSql);
+        return SearchResults.pageBasedForOffset(jdbcTemplate, paging, selectSql, countSql, eventLogRowMapper);
     }
 
     private SqlStatementBuilder findAllSqlStatementBuilder(ReadableInstant startDate,
@@ -226,6 +241,7 @@ public class EventLogDaoImpl implements EventLogDao {
         if (isCount) {
             sql.append("SELECT count(*) ");
             sql.append("FROM EventLog");
+            sql.append("JOIN EventLogType ON EventLog.EventTypeId=EventLogType.EventTypeId");
         } else {
             sql.append(eventLogRowMapper.getBaseQuery());
         }
