@@ -129,3 +129,28 @@ captchaDetails:
                 CaptchaDetailsResponse: 
                   $ref: '../schemas/tokenSchema.yaml#/components/examples/CaptchaDetailsResponse'
 
+changePassword:
+  get:
+      tags:
+        - Authentication
+      summary: Get change password details. 
+      description: Get password policies, uuid, userId for change-password functionality. 
+      parameters:
+        - name: uuid
+          in: path
+          schema:
+           type: string
+          required: true
+      requestBody:
+        description: |-
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '../schemas/tokenSchema.yaml#/Password-Policy-Response'
+              examples:
+                ChangePasswordResponse: 
+                  $ref: '../schemas/tokenSchema.yaml#/components/examples/PasswordPolicyResponse'
+
