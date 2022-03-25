@@ -69,6 +69,7 @@ Class-Path: ./
  httpcore-4.3.2.jar 
  quartz-2.3.2.jar 
  joda-time-2.3.jar 
+ activemq-amqp-5.16.1.jar 
  activemq-broker-5.16.1.jar 
  activemq-client-5.16.1.jar 
  activemq-kahadb-store-5.16.1.jar 
