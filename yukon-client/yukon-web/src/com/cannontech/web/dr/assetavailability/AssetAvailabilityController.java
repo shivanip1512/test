@@ -103,7 +103,7 @@ public class AssetAvailabilityController {
         Map<String, Object> json = new HashMap<>();
 
         Instant lastUpdateTime = new Instant();
-        AssetAvailabilityWidgetSummary summary = assetAvailabilityWidgetService.getAssetAvailabilitySummary(controlAreaOrProgramOrScenarioId, lastUpdateTime);
+        AssetAvailabilityWidgetSummary summary = assetAvailabilityWidgetService.getAssetAvailabilitySummary(controlAreaOrProgramOrScenarioId, lastUpdateTime, userContext);
 
         if (summary.getTotalDeviceCount() == 0) {
             String errorMsg = accessor.getMessage(widgetKey + "assetAvailabilityWidget.noDevicesFound");
@@ -128,7 +128,7 @@ public class AssetAvailabilityController {
             @DefaultItemsPerPage(value = 250) PagingParameters paging) {
         Instant lastUpdateTime = new Instant();
         AssetAvailabilityWidgetSummary summary = assetAvailabilityWidgetService.getAssetAvailabilitySummary(
-            paobjectId, lastUpdateTime);
+            paobjectId, lastUpdateTime, userContext);
         model.addAttribute("selectedGateways", selectedGatewayIds);
         model.addAttribute("summary", summary);
         model.addAttribute("totalDevices", summary.getTotalDeviceCount());

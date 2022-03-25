@@ -78,7 +78,7 @@ public abstract class DemandResponseControllerBase {
 
     protected int getAssetAvailabilityInfo(DisplayablePao dispPao, ModelMap model, YukonUserContext userContext) {
         AssetAvailabilityWidgetSummary assetAvailabilityWidgetSummary = assetAvailabilityWidgetService
-                .getAssetAvailabilitySummary(dispPao.getPaoIdentifier().getPaoId(), new Instant());
+                .getAssetAvailabilitySummary(dispPao.getPaoIdentifier().getPaoId(), new Instant(), userContext);
         model.addAttribute("assetAvailabilitySummary", assetAvailabilityWidgetSummary);
         model.addAttribute("statusTypes", AssetAvailabilityCombinedStatus.values());
         model.addAttribute("maxPingableDevices", AssetAvailabilityPingService.PING_MAXIMUM_DEVICES);

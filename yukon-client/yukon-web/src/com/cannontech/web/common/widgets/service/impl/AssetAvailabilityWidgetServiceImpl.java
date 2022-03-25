@@ -9,12 +9,16 @@ import com.cannontech.clientutils.YukonLogManager;
 import com.cannontech.common.pao.attribute.model.BuiltInAttribute;
 import com.cannontech.common.pao.attribute.service.AttributeService;
 import com.cannontech.common.pao.attribute.service.IllegalUseOfAttribute;
+import com.cannontech.core.service.PointFormattingService.Format;
 import com.cannontech.database.data.lite.LitePoint;
 import com.cannontech.database.data.lite.LiteYukonPAObject;
 import com.cannontech.dr.assetavailability.AssetAvailabilitySummary;
 import com.cannontech.dr.assetavailability.service.impl.AssetAvailabilityServiceImpl;
+import com.cannontech.user.YukonUserContext;
 import com.cannontech.web.common.widgets.model.AssetAvailabilityWidgetSummary;
 import com.cannontech.web.common.widgets.service.AssetAvailabilityWidgetService;
+import com.cannontech.web.updater.UpdateValue;
+import com.cannontech.web.updater.point.PointDataRegistrationService;
 import com.cannontech.yukon.IDatabaseCache;
 
 public class AssetAvailabilityWidgetServiceImpl implements AssetAvailabilityWidgetService {
@@ -24,35 +28,58 @@ public class AssetAvailabilityWidgetServiceImpl implements AssetAvailabilityWidg
 
     @Autowired private AssetAvailabilityServiceImpl assetAvailabilityService;
     @Autowired private AttributeService attributeService;
+    @Autowired private PointDataRegistrationService registrationService;
     @Autowired private IDatabaseCache cache;
 
     @Override
-    public AssetAvailabilityWidgetSummary getAssetAvailabilitySummary(Integer areaOrLMProgramOrScenarioId, Instant lastUpdateTime) {
-        return buildAssetAvailabilityWidgetSummary(areaOrLMProgramOrScenarioId, lastUpdateTime);
+    public AssetAvailabilityWidgetSummary getAssetAvailabilitySummary(Integer areaOrLMProgramOrScenarioId, Instant lastUpdateTime, YukonUserContext userContext) {
+        return buildAssetAvailabilityWidgetSummary(areaOrLMProgramOrScenarioId, lastUpdateTime, userContext);
     }
 
     /**
      * Creates asset availability widget summary .
      */
-    private AssetAvailabilityWidgetSummary buildAssetAvailabilityWidgetSummary(Integer areaOrLMProgramOrScenarioId, Instant lastUpdateTime) {
+    private AssetAvailabilityWidgetSummary buildAssetAvailabilityWidgetSummary(Integer areaOrLMProgramOrScenarioId, Instant lastUpdateTime, YukonUserContext userContext) {
         AssetAvailabilityWidgetSummary summary = new AssetAvailabilityWidgetSummary(lastUpdateTime);
         LiteYukonPAObject drPao = cache.getAllPaosMap().get(areaOrLMProgramOrScenarioId);
         AssetAvailabilitySummary assetAvailabilitySummary = assetAvailabilityService.getAssetAvailabilityFromDrGroup(drPao.getPaoIdentifier());
-
+        //set initial values - i believe these will be removed once the archiving of point values is complete
+        summary.setActive(assetAvailabilitySummary.getActiveSize(), null);
+        summary.setInactive(assetAvailabilitySummary.getInactiveSize(), null);
+        summary.setUnavailable(assetAvailabilitySummary.getUnavailableSize(), null);
+        summary.setOptedOut(assetAvailabilitySummary.getOptedOutSize(), null);
+        
         try {
             LitePoint activePoint = attributeService.getPointForAttribute(drPao, BuiltInAttribute.LM_ASSET_AVAILABILITY_ACTIVE_DEVICES);
+            if (activePoint != null) {
+                UpdateValue activeValue = registrationService.getLatestValue(activePoint.getPointID(), Format.VALUE.toString(), userContext);
+                if (!activeValue.isUnavailable()) {
+                    summary.setActive((int)Math.round(Double.parseDouble(activeValue.getValue())), activePoint.getPointID());
+                }
+            }
             LitePoint inactivePoint = attributeService.getPointForAttribute(drPao, BuiltInAttribute.LM_ASSET_AVAILABILITY_INACTIVE_DEVICES);
+            if (inactivePoint != null) {
+                UpdateValue inactiveValue = registrationService.getLatestValue(inactivePoint.getPointID(), Format.VALUE.toString(), userContext);
+                if (!inactiveValue.isUnavailable()) {
+                    summary.setInactive((int)Math.round(Double.parseDouble(inactiveValue.getValue())), inactivePoint.getPointID());
+                }
+            }
             LitePoint unavailablePoint = attributeService.getPointForAttribute(drPao, BuiltInAttribute.LM_ASSET_AVAILABILITY_UNAVAILABLE_DEVICES);
+            if (unavailablePoint != null) {
+                UpdateValue unavailableValue = registrationService.getLatestValue(unavailablePoint.getPointID(), Format.VALUE.toString(), userContext);
+                if (!unavailableValue.isUnavailable()) {
+                    summary.setUnavailable((int)Math.round(Double.parseDouble(unavailableValue.getValue())), unavailablePoint.getPointID());
+                }
+            }
             LitePoint optedOutPoint = attributeService.getPointForAttribute(drPao, BuiltInAttribute.LM_ASSET_AVAILABILITY_OPTED_OUT_DEVICES);
-            summary.setActive(assetAvailabilitySummary.getActiveSize(), activePoint.getPointID());
-            summary.setInactive(assetAvailabilitySummary.getInactiveSize(), inactivePoint.getPointID());
-            summary.setUnavailable(assetAvailabilitySummary.getUnavailableSize(), unavailablePoint.getPointID());
-            summary.setOptedOut(assetAvailabilitySummary.getOptedOutSize(), optedOutPoint.getPointID());
+            if (optedOutPoint != null) {
+                UpdateValue optedOutValue = registrationService.getLatestValue(optedOutPoint.getPointID(), Format.VALUE.toString(), userContext);
+                if (!optedOutValue.isUnavailable()) {
+                    summary.setOptedOut((int)Math.round(Double.parseDouble(optedOutValue.getValue())), optedOutPoint.getPointID());
+                }
+            }
         } catch (IllegalUseOfAttribute e) {
-            summary.setActive(assetAvailabilitySummary.getActiveSize(), null);
-            summary.setInactive(assetAvailabilitySummary.getInactiveSize(), null);
-            summary.setUnavailable(assetAvailabilitySummary.getUnavailableSize(), null);
-            summary.setOptedOut(assetAvailabilitySummary.getOptedOutSize(), null);
+            log.error("Point not found for Asset Availability." , e);
         }
 
         summary.calculatePrecentages();

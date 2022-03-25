@@ -2,6 +2,7 @@ package com.cannontech.web.common.widgets.service;
 
 import org.joda.time.Instant;
 
+import com.cannontech.user.YukonUserContext;
 import com.cannontech.web.common.widgets.model.AssetAvailabilityWidgetSummary;
 
 public interface AssetAvailabilityWidgetService {
@@ -22,6 +23,6 @@ public interface AssetAvailabilityWidgetService {
     /**
      * Returns Asset Availability summary for areaOrLMProgramOrScenarioId.
      */
-    AssetAvailabilityWidgetSummary getAssetAvailabilitySummary(Integer areaOrLMProgramOrScenarioId, Instant lastUpdateTime);
+    AssetAvailabilityWidgetSummary getAssetAvailabilitySummary(Integer areaOrLMProgramOrScenarioId, Instant lastUpdateTime, YukonUserContext userContext);
 
 }

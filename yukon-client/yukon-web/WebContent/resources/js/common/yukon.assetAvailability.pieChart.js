@@ -72,14 +72,25 @@ yukon.assetAvailability.pieChart = (function () {
                             legendItemClick: function(e) {
                                 var pointId = e.target.pointId,
                                     popup = $('.js-point-data-dialog');
-                                popup.load(yukon.url('/meter/historicalReadings/view?pointId=' + pointId), function () {
-                                    popup.dialog({
-                                        title : popup.find('.js-popup-title').val(),
-                                        width : 800,
-                                        height: 400,
+                                if (pointId != null) {
+                                    popup.load(yukon.url('/meter/historicalReadings/view?pointId=' + pointId), function () {
+                                        popup.dialog({
+                                            title : popup.find('.js-popup-title').val(),
+                                            width : 600,
+                                            height : 400,
+                                            modal : true,
+                                            autoOpen : true
+                                        });
+                                    });
+                                } else {
+                                    popup.html(yg.text.pointDataNotFound).dialog({
+                                        title : yg.text.pointNotFound,
+                                        width : 400,
+                                        height : 200,
+                                        modal : true,
                                         autoOpen : true
                                     });
-                                });
+                                }
                                 e.preventDefault();
                             }
                         }
