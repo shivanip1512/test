@@ -1,5 +1,8 @@
 package com.cannontech.web.common.widgets.service.impl;
 
+import java.text.NumberFormat;
+import java.text.ParseException;
+
 import org.apache.logging.log4j.Logger;
 import org.joda.time.Duration;
 import org.joda.time.Instant;
@@ -48,38 +51,41 @@ public class AssetAvailabilityWidgetServiceImpl implements AssetAvailabilityWidg
         summary.setInactive(assetAvailabilitySummary.getInactiveSize(), null);
         summary.setUnavailable(assetAvailabilitySummary.getUnavailableSize(), null);
         summary.setOptedOut(assetAvailabilitySummary.getOptedOutSize(), null);
+        NumberFormat formatter = NumberFormat.getInstance(userContext.getLocale());
         
         try {
             LitePoint activePoint = attributeService.getPointForAttribute(drPao, BuiltInAttribute.LM_ASSET_AVAILABILITY_ACTIVE_DEVICES);
             if (activePoint != null) {
                 UpdateValue activeValue = registrationService.getLatestValue(activePoint.getPointID(), Format.VALUE.toString(), userContext);
                 if (!activeValue.isUnavailable()) {
-                    summary.setActive((int)Math.round(Double.parseDouble(activeValue.getValue())), activePoint.getPointID());
+                    summary.setActive(formatter.parse(activeValue.getValue()).intValue(), activePoint.getPointID());
                 }
             }
             LitePoint inactivePoint = attributeService.getPointForAttribute(drPao, BuiltInAttribute.LM_ASSET_AVAILABILITY_INACTIVE_DEVICES);
             if (inactivePoint != null) {
                 UpdateValue inactiveValue = registrationService.getLatestValue(inactivePoint.getPointID(), Format.VALUE.toString(), userContext);
                 if (!inactiveValue.isUnavailable()) {
-                    summary.setInactive((int)Math.round(Double.parseDouble(inactiveValue.getValue())), inactivePoint.getPointID());
+                    summary.setInactive(formatter.parse(inactiveValue.getValue()).intValue(), inactivePoint.getPointID());
                 }
             }
             LitePoint unavailablePoint = attributeService.getPointForAttribute(drPao, BuiltInAttribute.LM_ASSET_AVAILABILITY_UNAVAILABLE_DEVICES);
             if (unavailablePoint != null) {
                 UpdateValue unavailableValue = registrationService.getLatestValue(unavailablePoint.getPointID(), Format.VALUE.toString(), userContext);
                 if (!unavailableValue.isUnavailable()) {
-                    summary.setUnavailable((int)Math.round(Double.parseDouble(unavailableValue.getValue())), unavailablePoint.getPointID());
+                    summary.setUnavailable(formatter.parse(unavailableValue.getValue()).intValue(), unavailablePoint.getPointID());
                 }
             }
             LitePoint optedOutPoint = attributeService.getPointForAttribute(drPao, BuiltInAttribute.LM_ASSET_AVAILABILITY_OPTED_OUT_DEVICES);
             if (optedOutPoint != null) {
                 UpdateValue optedOutValue = registrationService.getLatestValue(optedOutPoint.getPointID(), Format.VALUE.toString(), userContext);
                 if (!optedOutValue.isUnavailable()) {
-                    summary.setOptedOut((int)Math.round(Double.parseDouble(optedOutValue.getValue())), optedOutPoint.getPointID());
+                    summary.setOptedOut(formatter.parse(optedOutValue.getValue()).intValue(), optedOutPoint.getPointID());
                 }
             }
         } catch (IllegalUseOfAttribute e) {
-            log.error("Point not found for Asset Availability." , e);
+            log.info("Point not found for Asset Availability." , e);
+        } catch (ParseException e) {
+            log.info("Could not parse Asset Availability point value.", e);
         }
 
         summary.calculatePrecentages();
