@@ -8,6 +8,8 @@
 #include "GlobalSettings.h"
 
 #include <proton/target.hpp>
+#include <proton/source.hpp>
+#include <proton/types.hpp>
 
 #include <atomic>
 
@@ -53,7 +55,8 @@ CtiClientConnection::CtiClientConnection( const string &serverQueueName,
                                           int termSeconds ) :
     CtiConnection( "Client Connection " + std::to_string(++clientConnectionCount), inQ, termSeconds ),
     _serverQueueName( serverQueueName ),
-    _canAbortConn( false )
+    _canAbortConn( false ),
+    _sessionIsAlive{ false }
 {
 
     // initialize the session
@@ -86,9 +89,12 @@ CtiClientConnection::~CtiClientConnection()
  */
 bool CtiClientConnection::establishConnection()
 {
-    if ( ! Cti::Messaging::ActiveMQConnectionManager::getSession( *this )  )
+    if ( ! _sessionIsAlive )
     {
-        return false;
+        if (!Cti::Messaging::ActiveMQConnectionManager::getSession(*this))
+        {
+            return false;
+        }
     }
 
 
@@ -121,36 +127,34 @@ bool CtiClientConnection::establishConnection()
 
 void CtiClientConnection::on_session_open( proton::session & s )
 {
+    _sessionIsAlive = true;
+
+    _session = s;
 
     _consumer = createTempQueueConsumer(
-        s,
-        [this,&s](proton::message& m)
+        _session,
+        [this](proton::message& m)
         {
-            if (_handshakeProducer)
-            {
-                _handshakeProducer.reset();
-            }
-
             if ( ! _producer )
             {
                 std::unique_lock<std::mutex> lock(_sessionMutex);
 
-                if ( getJmsType(m) == MessageType::serverResp )
+                if ( m.subject() == MessageType::serverResp )
                 {
-                    _producer = createQueueProducer(s, m.reply_to());
+                    _producer = createTempQueueProducer( _session, m.reply_to() );
 
-                    _connectionState = ConnectionState::Connected;
+                    _consumer->setDestination( m.to() );
 
-                    // send ClientAck ?? -- jmoc
                     proton::message ack;
 
-              //      ack.to(_serverQueueName);
-               //     ack.reply_to(r.target().address());
-               //     setJmsType( ack, MessageType::clientAck );
+                    ack.reply_to( m.to() );
+                    ack.subject( MessageType::clientAck );
 
+                    _producer->send( ack );
                    
-                    // writeRegistration();
+                    _connectionState = ConnectionState::Connected;
 
+                    writeRegistration();
                 }
                 else
                 {
@@ -166,19 +170,31 @@ void CtiClientConnection::on_session_open( proton::session & s )
                     onMessage( m );
                 }
             }
+
+            _handshakeProducer.reset();
         },
-        [this, &s](proton::receiver& r)
+        [this](proton::receiver& r)
         {
-            _handshakeProducer = createQueueProducer( s, _serverQueueName );
+            _handshakeProducer = createQueueProducer( _session, _serverQueueName );
 
-            proton::message m;
+            proton::message handshake;
 
-            m.to( _serverQueueName );
-            m.reply_to( r.target().address() );
-            setJmsType( m, MessageType::clientInit );
+            handshake.reply_to( r.source().address() );
+            handshake.subject( MessageType::clientInit );
 
-            _handshakeProducer->send( m );
+            _handshakeProducer->send( handshake );
         });
+}
+
+void CtiClientConnection::on_message(proton::delivery &d, proton::message &m )
+{
+    CTILOG_DEBUG( dout, who() << " - got a message for some reason...");
+}
+
+void CtiClientConnection::on_receiver_open( proton::receiver & r )
+{
+    CTILOG_DEBUG( dout, who() << "CtiClientConnection::on_receiver_open");
+
 }
 
 

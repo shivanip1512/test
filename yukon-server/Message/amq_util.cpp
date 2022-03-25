@@ -3,7 +3,9 @@
 #include "amq_util.h"
 
 #include "logger.h"
+#include "std_helper.h"
 
+#include <proton/types.hpp>
 #include <proton/connection_options.hpp>
 #include <proton/sender_options.hpp>
 #include <proton/source_options.hpp>
@@ -226,6 +228,14 @@ std::string ManagedDestination::getDestination() const
     return _dest;
 }
 
+void ManagedDestination::setDestination( const std::string & dest )
+{
+    if ( _dest.empty() )    // empty string is temp destination to be filled in when connection is complete.
+    {
+        _dest = dest;
+    }
+}
+
 /*-----------------------------------------------------------------------------
   Managed message producer
 -----------------------------------------------------------------------------*/
@@ -236,12 +246,33 @@ ManagedProducer::ManagedProducer( proton::session & sess, const std::string & de
 {
     proton::sender_options options;
 
+    options.handler( *this );
+
     _producer = sess.open_sender( dest, options );
 }
 
 ManagedProducer::~ManagedProducer()
 {
    _producer.close();
+}
+
+std::string ManagedProducer::desolveProducerType( const ProducerType p )
+{
+    static const std::map<ProducerType, std::string> typeLookup
+    {
+        { ProducerType::Queue,     "queue"     },
+        { ProducerType::Temporary, "temporary" },
+        { ProducerType::Topic,     "topic"     }
+    };
+
+    if ( auto result = Cti::mapFind( typeLookup, p ) )
+    {
+        return *result;
+    }
+
+    CTILOG_ERROR( dout, "unknown message producer type: " << Cti::as_underlying( p ) );
+
+    return "queue";   // the default for better or worse
 }
 
 void ManagedProducer::setTimeToLiveMillis( std::chrono::milliseconds time )
@@ -251,9 +282,11 @@ void ManagedProducer::setTimeToLiveMillis( std::chrono::milliseconds time )
 
 void ManagedProducer::send( proton::message & msg )
 {
-    auto now = proton::timestamp::now();
+    const auto now = proton::timestamp::now();
 
-    msg.durable( false );                       // non-persistent
+    msg.to( getDestination() );
+    msg.message_annotations().put( "x-opt-to-type", desolveProducerType( getProducerType() ) );
+    msg.durable( false );
     msg.expiry_time( now + _expiryDuration );
 
     _producer
@@ -292,6 +325,8 @@ ManagedConsumer::ManagedConsumer( proton::session & sess, const std::string & de
 {
     proton::receiver_options    options;
 
+    options.handler( *this );
+
     if ( dest.empty() )     // this is a temp queue consumer
     {
         options.source( proton::source_options().dynamic( true ) );     // which one of these???  source or target?
@@ -314,15 +349,37 @@ ManagedConsumer::~ManagedConsumer()
 
 void ManagedConsumer::on_message( proton::delivery & d, proton::message & msg )
 {
+    CTILOG_DEBUG(dout, "on_message");
+
     _msgCallback( msg );   // magic!!!!!!!!!!!!!!!!!!!!!
 }
 
 void ManagedConsumer::on_receiver_open( proton::receiver & rcvr )
 {
+    CTILOG_DEBUG(dout, "on_receiver_open");
+
     if ( _openCallback )
     {
         _openCallback( rcvr );
     }
+}
+
+void ManagedConsumer::on_receiver_detach( proton::receiver & rcvr )
+{
+    CTILOG_DEBUG(dout, "on_receiver_detach");
+
+}
+void ManagedConsumer::on_receiver_close( proton::receiver & rcvr )
+{
+    CTILOG_DEBUG(dout, "on_receiver_close");
+
+}
+void ManagedConsumer::on_receiver_error( proton::receiver & rcvr )
+{
+    auto error = rcvr.error();
+
+    CTILOG_DEBUG(dout, "on_receiver_error: " << error.what() );
+
 }
 
 /*-----------------------------------------------------------------------------
@@ -336,6 +393,11 @@ DestinationProducer::DestinationProducer( proton::session & sess, const std::str
 
 DestinationProducer::~DestinationProducer()
 {
+}
+
+ManagedProducer::ProducerType DestinationProducer::getProducerType() const
+{
+    return ProducerType::Queue;
 }
 
 /*-----------------------------------------------------------------------------
@@ -367,6 +429,11 @@ QueueProducer::~QueueProducer()
 {
 }
 
+ManagedProducer::ProducerType QueueProducer::getProducerType() const
+{
+    return ProducerType::Queue;
+}
+
 /*-----------------------------------------------------------------------------
   Managed Queue message consumer
 -----------------------------------------------------------------------------*/
@@ -394,6 +461,11 @@ TopicProducer::TopicProducer(proton::session& sess, const std::string& dest) :
 
 TopicProducer::~TopicProducer()
 {
+}
+
+ManagedProducer::ProducerType TopicProducer::getProducerType() const
+{
+    return ProducerType::Topic;
 }
 
 /*-----------------------------------------------------------------------------
@@ -425,6 +497,11 @@ TempQueueProducer::TempQueueProducer(proton::session& sess, const std::string& t
 
 TempQueueProducer::~TempQueueProducer()
 {
+}
+
+ManagedProducer::ProducerType TempQueueProducer::getProducerType() const
+{
+    return ProducerType::Temporary;
 }
 
 /*-----------------------------------------------------------------------------

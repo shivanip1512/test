@@ -35,6 +35,8 @@ public:
     ~ManagedDestination();
 
     std::string getDestination() const;
+
+    void setDestination( const std::string & dest );
 };
 
 
@@ -54,6 +56,17 @@ protected:
     std::queue<proton::message> _deferredMessages;
 
     ManagedProducer( proton::session & sess, const std::string & dest );
+
+    enum class ProducerType
+    {
+        Queue,
+        Temporary,
+        Topic,
+    };
+
+    virtual ProducerType getProducerType() const = 0;
+
+    std::string desolveProducerType( const ProducerType p );
 
 public:
 
@@ -93,6 +106,10 @@ public:
 
     void on_message( proton::delivery & d, proton::message & msg ) override;
     void on_receiver_open( proton::receiver & rcvr ) override;
+
+    void on_receiver_detach( proton::receiver & rcvr ) override;
+    void on_receiver_close( proton::receiver & rcvr ) override;
+    void on_receiver_error( proton::receiver & rcvr ) override;
 };
 
 
@@ -106,6 +123,10 @@ public:
     DestinationProducer( proton::session & sess, const std::string & dest );
 
     ~DestinationProducer();
+
+protected:
+
+    ProducerType getProducerType() const override;
 };
 
 /*-----------------------------------------------------------------------------
@@ -131,6 +152,10 @@ public:
     QueueProducer( proton::session & sess, const std::string & dest );
 
     ~QueueProducer();
+
+protected:
+
+    ProducerType getProducerType() const override;
 };
 
 /*-----------------------------------------------------------------------------
@@ -156,6 +181,10 @@ public:
     TopicProducer(proton::session& sess, const std::string& dest);
 
     ~TopicProducer();
+
+protected:
+
+    ProducerType getProducerType() const override;
 };
 
 /*-----------------------------------------------------------------------------
@@ -185,6 +214,10 @@ public:
     TempQueueProducer(proton::session& sess, const std::string& dest);
 
     ~TempQueueProducer();
+
+protected:
+
+    ProducerType getProducerType() const override;
 };
 
 /*-----------------------------------------------------------------------------

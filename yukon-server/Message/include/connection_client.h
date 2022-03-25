@@ -2,6 +2,8 @@
 
 #include "connection.h"
 
+#include <proton/delivery.hpp>
+#include <proton/receiver.hpp>
 
 class IM_EX_MSG CtiClientConnection : public CtiConnection
 {
@@ -25,9 +27,14 @@ class IM_EX_MSG CtiClientConnection : public CtiConnection
 
     std::unique_ptr<Cti::Messaging::Qpid::QueueProducer>    _handshakeProducer;
 
+    bool _sessionIsAlive;
+
 public:
 
     void on_session_open(proton::session& s) override;
+
+    void on_message(proton::delivery &d, proton::message &m ) override;
+    void on_receiver_open( proton::receiver & r ) override;
 
     CtiClientConnection ( const std::string &serverQueueName,
                           Que_t *inQ = NULL,

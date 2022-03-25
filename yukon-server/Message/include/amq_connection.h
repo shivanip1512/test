@@ -11,6 +11,8 @@
 #include <proton/session_options.hpp>
 #include <proton/container.hpp>
 #include <proton/connection.hpp>
+#include <proton/transport.hpp>
+#include <proton/error_condition.hpp>
 
 
 #include <chrono>
@@ -146,9 +148,23 @@ public:
 
     virtual void close();
 
+void on_container_start( proton::container&) override;
+void on_container_stop( proton::container&) override;
+
+void on_transport_open(proton::transport&) override;
+void on_transport_close(proton::transport&) override;
+void on_transport_error(proton::transport&) override;
+
     void on_connection_open( proton::connection & c ) override;
     void on_connection_close( proton::connection & c ) override;
+    void on_connection_error( proton::connection & c ) override;
+void on_connection_wake(proton::connection&) override;
+
     void on_session_open( proton::session & s ) override;
+void on_session_close(proton::session&) override;
+void on_session_error(proton::session&) override;
+
+void on_error(const proton::error_condition&) override;
 
     static bool getSession( proton::messaging_handler & handler );    	
     bool getNewSession( proton::messaging_handler & handler );

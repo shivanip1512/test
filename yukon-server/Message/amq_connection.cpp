@@ -32,6 +32,7 @@
 #include <proton/reconnect_options.hpp>
 #include <proton/session_options.hpp>
 #include <proton/work_queue.hpp>
+#include <proton/error_condition.hpp>
 
 #include <boost/range/algorithm/for_each.hpp>
 #include <boost/range/adaptor/adjacent_filtered.hpp>
@@ -48,10 +49,11 @@ std::atomic_size_t ActiveMQConnectionManager::SessionCallback::globalId;
 
 
 ActiveMQConnectionManager::ActiveMQConnectionManager()
-    : _container(),
-        _sessionIsAlive{ false }
+    :   _container( *this ),
+        _sessionIsAlive{ false },
+        _container_thread( [&](){ _container.run(); } )
 {
-    _container_thread = std::thread([&]() { _container.run(); });
+    // empty
 }
 
 ActiveMQConnectionManager::~ActiveMQConnectionManager()
@@ -68,6 +70,32 @@ ActiveMQConnectionManager::~ActiveMQConnectionManager()
     }
 }
 
+void ActiveMQConnectionManager::on_container_start( proton::container & c )
+{
+    CTILOG_INFO(dout, "on_container_start");
+}
+
+void ActiveMQConnectionManager::on_container_stop( proton::container & c )
+{
+    CTILOG_INFO(dout, "on_container_stop");
+}
+
+void ActiveMQConnectionManager::on_transport_open( proton::transport & t )
+{
+    CTILOG_INFO(dout, "on_transport_open");
+}
+
+void ActiveMQConnectionManager::on_transport_close( proton::transport & t )
+{
+    CTILOG_INFO(dout, "on_transport_close");
+}
+
+void ActiveMQConnectionManager::on_transport_error( proton::transport & t )
+{
+    auto error = t.error();
+
+    CTILOG_INFO(dout, "on_transport_error: " << error.what()  );
+}
 
 void ActiveMQConnectionManager::on_connection_open( proton::connection & c )
 {
@@ -88,6 +116,17 @@ void ActiveMQConnectionManager::on_connection_close( proton::connection & c )
     CTILOG_INFO(dout, "Broker connection closed");
 }
 
+void ActiveMQConnectionManager::on_connection_error( proton::connection & c )
+{
+    auto error = c.error();
+
+    CTILOG_INFO(dout, "Broker connection error: " << error.what()  );
+}
+
+void ActiveMQConnectionManager::on_connection_wake( proton::connection & c )
+{
+ //   CTILOG_INFO(dout, "on_connection_wake");
+}
 
 void ActiveMQConnectionManager::on_session_open( proton::session & s )
 {
@@ -107,6 +146,23 @@ void ActiveMQConnectionManager::on_session_open( proton::session & s )
                    {
                        this->expiry_periodic_task();
                    } );
+}
+
+void ActiveMQConnectionManager::on_session_close( proton::session & s  )
+{
+    CTILOG_INFO(dout, "on_session_close");
+}
+
+void ActiveMQConnectionManager::on_session_error( proton::session & s )
+{
+    auto error = s.error();
+
+    CTILOG_INFO(dout, "on_session_error: " << error.what() );
+}
+
+void ActiveMQConnectionManager::on_error( const proton::error_condition & e )
+{
+    CTILOG_INFO(dout, "on_error: " << e.what() );
 }
 
 bool ActiveMQConnectionManager::getSession( proton::messaging_handler & handler )
