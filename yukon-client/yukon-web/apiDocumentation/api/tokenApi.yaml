@@ -149,8 +149,8 @@ changePassword:
           content:
             application/json:
               schema:
-                $ref: '../schemas/tokenSchema.yaml#/Password-Policy-Response'
+                $ref: '../schemas/tokenSchema.yaml#/Change-Password-details-Response'
               examples:
                 ChangePasswordResponse: 
-                  $ref: '../schemas/tokenSchema.yaml#/components/examples/PasswordPolicyResponse'
+                  $ref: '../schemas/tokenSchema.yaml#/components/examples/ChangePasswordDetailsResponse'
 

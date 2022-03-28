@@ -96,14 +96,14 @@ Captcha-Details-Response:
     locale:
       type: string
 
-Password-Policy-Response:
-   title: Password-Policy-Response
+Change-Password-details-Response:
+   title: Change-Password-details-Response
    type: object
    properties:
     passwordPolicy:
        $ref: '#/passwordPolicy'
     userId:
-      type: boolean
+      type: int
     uuid:
       type: string
 
@@ -124,8 +124,8 @@ passwordPolicy:
       type: long
     passwordQualityCheck:
       type: long
-  #  policyRules:
-  #    type: list
+    policyRules:
+      type: list
 
 components:
   examples:
@@ -162,7 +162,7 @@ components:
         siteKey: 6LfIVEkUAAAAAEtqdQcwZU8V6cYGKi0d0Yuz-ISZ-ISZ
         captchaEnabled: false
         locale: en
-    PasswordPolicyResponse:
+    ChangePasswordDetailsResponse:
       value:
         passwordPolicy:
          - lockoutDuration: 10
@@ -172,6 +172,7 @@ components:
            passwordHistory: 1
            minPasswordLength: 7
            passwordQualityCheck: 1
+           policyRules: []
         userId: 121
         uuid: 63e58deb-3ac6-49dc-b51d-f5d8ff728515
     
