@@ -412,4 +412,17 @@
 <entry key="yukon.common.color.WINE">Red</entry>  <!-- The Wine color is what will be presented to users as their option of a "red" color, so calling this Red. -->
 <entry key="yukon.common.color.YELLOW">Yellow</entry>
 
+<entry key="yukon.common.rfnMeters">RFN Meters</entry>
+<entry key="yukon.common.plcMeters">PLC Meters</entry>
+<entry key="yukon.common.wifiMeters">Wifi Meters</entry>
+<entry key="yukon.common.waterMeters">Water Meters</entry>
+<entry key="yukon.common.gasMeters">Gas Meters</entry>
+<entry key="yukon.common.gateways">Gateways</entry>
+<entry key="yukon.common.rfnRelays">RFN Relays</entry>
+<entry key="yukon.common.cellularRelays">Cellular Relays</entry>
+<entry key="yukon.common.lcrs">LCRs</entry>
+<entry key="yukon.common.twoWayPLCLCRs">Two way PLC LCRs</entry>
+<entry key="yukon.common.thermostats">Thermostats</entry>
+<entry key="yukon.common.others">Others</entry>
+
 </properties>
