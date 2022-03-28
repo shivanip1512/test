@@ -99,7 +99,11 @@ public class SearchResults<T> {
      */
     public static <T> SearchResults<T> pageBasedForOffset(YukonJdbcTemplate template, PagingParameters paging,
             SqlStatementBuilder selectSql, SqlStatementBuilder countSql, YukonRowMapper<T> mapper) {
-        selectSql.append("OFFSET").append(paging.getStartIndex()).append("ROWS FETCH NEXT").append(paging.getItemsPerPage()).append("ROWS ONLY");   
+        selectSql.append("OFFSET")
+                 .append(paging.getStartIndex())
+                 .append("ROWS FETCH NEXT")
+                 .append(paging.getItemsPerPage())
+                 .append("ROWS ONLY");   
         SearchResults<T> result = new SearchResults<>();
         result.setResultList(template.query(selectSql, mapper));
         log.debug("paging:{} result count:{} total count:{} sql:{}", paging, result.getResultCount(), result.hitCount, selectSql.getDebugSql());
