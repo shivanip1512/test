@@ -62,7 +62,6 @@
                     <span class="fr cp"><cti:icon icon="icon-help" data-popup="#map-help"/></span>
                     <cti:msg2 var="helpTitle" key=".helpTitle"/>
                     <div id="map-help" class="dn" data-width="715" data-height="200" data-title="${helpTitle}">
-                        <b><i:inline key="yukon.web.modules.operator.comprehensiveMap.deviceTypeLegends"/>:</b>
                         <%@ include file="/WEB-INF/pages/common/mapping/deviceTypeMarkerLenends.jsp" %>
                     </div>
                     <c:if test="${empty dynamic}">

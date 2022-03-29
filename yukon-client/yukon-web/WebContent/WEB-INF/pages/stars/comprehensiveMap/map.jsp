@@ -46,10 +46,9 @@
                                     
                     <span class="fr cp"><cti:icon icon="icon-help" data-popup="#map-help"/></span>
                     <cti:msg2 var="helpTitle" key=".helpTitle"/>
-                    <div id="map-help" class="dn" data-width="715" data-height="360" data-title="${helpTitle}">
+                    <div id="map-help" class="dn" data-width="715" data-height="450" data-title="${helpTitle}">
                         <cti:msg2 key=".helpText"/>
                         <div class="MT10">
-                            <b><i:inline key=".deviceTypeLegends"/>:</b>
                             <%@ include file="/WEB-INF/pages/common/mapping/deviceTypeMarkerLenends.jsp" %>
                         </div>
                     </div><br/>
