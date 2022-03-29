@@ -7,12 +7,11 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RestController;
 
-import com.cannontech.common.exception.PasswordExpiredException;
+import com.cannontech.common.exception.PasswordException;
 import com.cannontech.common.i18n.MessageSourceAccessor;
 import com.cannontech.core.authentication.model.PasswordPolicy;
 import com.cannontech.core.authentication.service.AuthenticationService;
 import com.cannontech.core.authentication.service.PasswordPolicyService;
-import com.cannontech.core.dao.NotFoundException;
 import com.cannontech.database.data.lite.LiteYukonUser;
 import com.cannontech.i18n.YukonUserContextMessageSourceResolver;
 import com.cannontech.user.YukonUserContext;
@@ -27,7 +26,7 @@ public class PasswordPolicyApiController {
     @Autowired private AuthenticationService authService;
 
     @GetMapping("/change-password/{uuid}")
-    public ResponseEntity<Object> getPasswordPolicies(@PathVariable("uuid") String uuid) throws PasswordExpiredException {
+    public ResponseEntity<Object> getPasswordPolicies(@PathVariable("uuid") String uuid){
 
         final PasswordPolicyResponse passwordPolicyResponse = new PasswordPolicyResponse();
         final LiteYukonUser User = passwordResetService.findUserFromPasswordKey(uuid);
@@ -37,13 +36,13 @@ public class PasswordPolicyApiController {
         // if uuid is invalid
         if (User == null) {
             final String invalidUUIDMessage = "yukon.web.modules.passwordPolicyError.INVALID_UUID";
-            throw new NotFoundException(messageSourceAccessor.getMessage(invalidUUIDMessage));
+            throw new PasswordException(messageSourceAccessor.getMessage(invalidUUIDMessage));
         }
 
         // if password is expired
         if (authService.isPasswordExpired(User)) {
             final String passwordExpiredMsg = "yukon.web.login.passwordExpired";
-            throw new PasswordExpiredException(messageSourceAccessor.getMessage(passwordExpiredMsg));
+            throw new PasswordException(messageSourceAccessor.getMessage(passwordExpiredMsg));
         }
 
         final PasswordPolicy passwordPolicy = passwordPolicyService.getPasswordPolicy(User);
