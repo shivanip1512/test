@@ -50,15 +50,17 @@
     </form:form>
     
     <%-- ADD WIDGETS POPUP --%>
-<div class="dn js-add-widgets-popup" data-dialog data-cancel-omit="true" data-max-height="600" data-width="900"
-     data-title="<cti:msg2 key=".addWidgets.label"/>"
-     data-url="<cti:url value="/dashboards/${dashboard.dashboardId}/addWidgets"/>" style="overflow: hidden !important;"></div>
-        
+    <div class="dn js-add-widgets-popup" data-dialog data-cancel-omit="true" data-max-height="600" data-width="900"
+         data-title="<cti:msg2 key=".addWidgets.label"/>"
+         data-url="<cti:url value="/dashboards/${dashboard.dashboardId}/addWidgets"/>" style="overflow: hidden !important; padding-right: 0px;">
+    </div>
+    
     <%-- EDIT DETAILS POPUP --%>
-<div class="dn js-dashboard-details-popup" data-dialog
-     data-title="<cti:msg2 key=".editDetails.label"/>"
-     data-event="yukon:dashboard:details:save" 
-     data-url="<cti:url value="/dashboards/${dashboard.dashboardId}/editDetails"/>"></div>
+    <div class="dn js-dashboard-details-popup" data-dialog
+         data-title="<cti:msg2 key=".editDetails.label"/>"
+         data-event="yukon:dashboard:details:save" 
+         data-url="<cti:url value="/dashboards/${dashboard.dashboardId}/editDetails"/>">
+    </div>
     
     <cti:includeScript link="/resources/js/pages/yukon.dashboards.js"/>
     <cti:includeScript link="/resources/js/pages/yukon.dashboards.edit.js"/>
