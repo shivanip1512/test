@@ -172,7 +172,11 @@ components:
            passwordHistory: 1
            minPasswordLength: 7
            passwordQualityCheck: 1
-           policyRules: []
+           policyRules: [
+              "UPPERCASE_CHARACTERS",
+              "LOWERCASE_CHARACTERS",
+              "BASE_10_DIGITS",
+              "NONALPHANUMERIC_CHARACTERS"]
         userId: 121
         uuid: 63e58deb-3ac6-49dc-b51d-f5d8ff728515
     
