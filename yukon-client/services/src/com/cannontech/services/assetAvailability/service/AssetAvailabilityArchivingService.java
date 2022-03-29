@@ -45,15 +45,15 @@ public class AssetAvailabilityArchivingService {
     
     @PostConstruct
     public void init() {
-        Long elevenPm = LocalDateTime.now().until(LocalDate.now().plusDays(1).atStartOfDay().minusHours(1), ChronoUnit.MINUTES);
+        Long minutesToElevenPm = LocalDateTime.now().until(LocalDate.now().plusDays(1).atStartOfDay().minusHours(1), ChronoUnit.MINUTES);
         // https://www.rocknets.com/calculator/time-and-date/minutes-from-now
         // enter minutes to see what time it will actually run
-        log.info("Scheduling Asset Availability Archiving to run at in {} minutes", elevenPm);
+        log.info("Scheduling Asset Availability Archiving to run at in {} minutes", minutesToElevenPm);
         executor.schedule(() -> {
             executor.scheduleAtFixedRate(() -> {
                 archive();
             }, 0, 1, TimeUnit.DAYS);
-        }, elevenPm, TimeUnit.MINUTES);
+        }, minutesToElevenPm, TimeUnit.MINUTES);
     }
     
     private List<PointData> archive(LiteYukonPAObject pao, Date now) {
