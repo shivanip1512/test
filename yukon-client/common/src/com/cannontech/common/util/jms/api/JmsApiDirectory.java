@@ -146,6 +146,7 @@ import com.cannontech.message.porter.message.MeterProgramValidationResponse;
 import com.cannontech.services.configurationSettingMessage.model.ConfigurationSettings;
 import com.cannontech.services.ecobee.authToken.message.ZeusEcobeeAuthTokenRequest;
 import com.cannontech.services.ecobee.authToken.message.ZeusEcobeeAuthTokenResponse;
+import com.cannontech.simulators.message.request.AssetAvailArchiveSimulatorRequest;
 import com.cannontech.simulators.message.request.EatonCloudDataRetrievalSimulatonRequest;
 import com.cannontech.simulators.message.request.EatonCloudRuntimeCalcSimulatonRequest;
 import com.cannontech.simulators.message.request.EatonCloudSecretRotationSimulationRequest;
@@ -1413,6 +1414,16 @@ public final class JmsApiDirectory {
                   .receiver(YUKON_SERVICE_MANAGER)
                   .build();
 
+    public static final JmsApi<AssetAvailArchiveSimulatorRequest,?,?> ASSET_AVAILABILITY_ARCHIVE_SIM_REQUEST = 
+            JmsApi.builder(AssetAvailArchiveSimulatorRequest.class)
+                  .name("Asset Availability Archive Simulator Request Simulation Request")
+                  .description("WS sends request to SM to start archiving the point data")
+                  .communicationPattern(NOTIFICATION)
+                  .queue(new JmsQueue("yukon.notif.obj.simulator.AssetAvailArchiveSimulatorRequest"))
+                  .requestMessage(AssetAvailArchiveSimulatorRequest.class)
+                  .sender(YUKON_WEBSERVER)
+                  .receiver(YUKON_SERVICE_MANAGER)
+                  .build();
     /*
      * WARNING: JmsApiDirectoryTest will fail if you don't add each new JmsApi to the category map below!
      */
@@ -1534,7 +1545,8 @@ public final class JmsApiDirectory {
                 EATON_CLOUD_SIM_DEVICE_DATA_RETRIEVAL_REQUEST, 
                 EATON_CLOUD_SIM_RUNTIME_CALC_START_REQUEST,
                 ITRON_SIM_RUNTIME_CALC_START_REQUEST,
-                EATON_CLOUD_SIM_SECRET_ROTATION_REQUEST);
+                EATON_CLOUD_SIM_SECRET_ROTATION_REQUEST,
+                ASSET_AVAILABILITY_ARCHIVE_SIM_REQUEST);
 
         return jmsApis;
     }
