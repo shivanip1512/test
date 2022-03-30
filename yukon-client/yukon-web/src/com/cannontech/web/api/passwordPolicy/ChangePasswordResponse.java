@@ -2,7 +2,7 @@ package com.cannontech.web.api.passwordPolicy;
 
 import com.cannontech.core.authentication.model.PasswordPolicy;
 
-public class PasswordPolicyResponse {
+public class ChangePasswordResponse {
     private PasswordPolicy passwordPolicy;
     private Integer userId;
     private String uuid;
