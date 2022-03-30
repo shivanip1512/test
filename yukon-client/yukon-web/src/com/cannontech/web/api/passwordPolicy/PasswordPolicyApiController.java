@@ -26,29 +26,29 @@ public class PasswordPolicyApiController {
     @Autowired private AuthenticationService authService;
 
     @GetMapping("/change-password/{uuid}")
-    public ResponseEntity<Object> getPasswordPolicies(@PathVariable("uuid") String uuid){
+    public ResponseEntity<Object> getPasswordPolicies(@PathVariable("uuid") String uuid) {
 
         final PasswordPolicyResponse passwordPolicyResponse = new PasswordPolicyResponse();
-        final LiteYukonUser User = passwordResetService.findUserFromPasswordKey(uuid);
+        final LiteYukonUser yukonUser = passwordResetService.findUserFromPasswordKey(uuid);
 
         MessageSourceAccessor messageSourceAccessor = messageSourceResolver.getMessageSourceAccessor(YukonUserContext.system);
 
         // if uuid is invalid
-        if (User == null) {
-            final String invalidUUIDMessage = "yukon.web.modules.passwordPolicyError.INVALID_UUID";
-            throw new PasswordException(messageSourceAccessor.getMessage(invalidUUIDMessage));
+        if (yukonUser == null) {
+            final String invalidUUIDMsg = "yukon.web.modules.passwordPolicyError.INVALID_UUID";
+            throw new PasswordException(messageSourceAccessor.getMessage(invalidUUIDMsg));
         }
 
         // if password is expired
-        if (authService.isPasswordExpired(User)) {
+        if (authService.isPasswordExpired(yukonUser)) {
             final String passwordExpiredMsg = "yukon.web.login.passwordExpired";
             throw new PasswordException(messageSourceAccessor.getMessage(passwordExpiredMsg));
         }
 
-        final PasswordPolicy passwordPolicy = passwordPolicyService.getPasswordPolicy(User);
+        final PasswordPolicy passwordPolicy = passwordPolicyService.getPasswordPolicy(yukonUser);
 
         passwordPolicyResponse.setPasswordPolicy(passwordPolicy);
-        passwordPolicyResponse.setUserId(User.getUserID());
+        passwordPolicyResponse.setUserId(yukonUser.getUserID());
         passwordPolicyResponse.setUuid(uuid);
 
         return new ResponseEntity<>(passwordPolicyResponse, HttpStatus.OK);
