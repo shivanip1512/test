@@ -50,14 +50,14 @@ public class EatonCloudConnectionWatcher extends ServiceStatusWatchdogImpl {
             heartbeatTemplate.send(new EatonCloudHeartbeatRequest(), reply);
             EatonCloudHeartbeatResponse response = reply.waitForCompletion();
             if (response.hasError()) {
-                log.error("Unable to send request due to a communication error between Service Manager and Eaton Cloud:{}",
-                        response.getError());
+                log.error("Communication error between Service Manager and Eaton Cloud:{} status:{}",
+                        response.getError(), ServiceStatus.STOPPED);
                 return generateWarning(WatchdogWarningType.YUKON_EATON_CLOUD, ServiceStatus.STOPPED);
             }
-            log.debug("Verified connection between Eaton Cloud and Service Manager");
+            log.info("Connection between Eaton Cloud and Service Manager verified status:{}", ServiceStatus.RUNNING);
             return generateWarning(WatchdogWarningType.YUKON_EATON_CLOUD, ServiceStatus.RUNNING);
         } catch (Exception e) {
-            log.error("Unable to send request due to a communication error", e);
+            log.error("Communication error status:{}", ServiceStatus.STOPPED, e);
             return generateWarning(WatchdogWarningType.YUKON_EATON_CLOUD, ServiceStatus.STOPPED);
         }
     }
