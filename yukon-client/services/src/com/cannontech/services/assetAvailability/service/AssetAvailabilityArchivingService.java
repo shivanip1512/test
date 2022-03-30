@@ -48,7 +48,7 @@ public class AssetAvailabilityArchivingService {
         Long minutesToElevenPm = LocalDateTime.now().until(LocalDate.now().plusDays(1).atStartOfDay().minusHours(1), ChronoUnit.MINUTES);
         // https://www.rocknets.com/calculator/time-and-date/minutes-from-now
         // enter minutes to see what time it will actually run
-        log.info("Scheduling Asset Availability Archiving to run at in {} minutes", minutesToElevenPm);
+        log.info("Scheduling Asset Availability Archiving to run in {} minutes", minutesToElevenPm);
         executor.schedule(() -> {
             executor.scheduleAtFixedRate(() -> {
                 archive();
