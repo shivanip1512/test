@@ -2,6 +2,7 @@ package com.cannontech.web.api.token;
 
 import javax.servlet.http.HttpServletRequest;
 
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -111,15 +112,20 @@ public class PasswordApiController {
     }
 
     @GetMapping("/change-password/{uuid}")
-    public ResponseEntity<Object> getChangePassword(@PathVariable("uuid") String uuid) {
+    public ResponseEntity<Object> changePassword(@PathVariable("uuid") String uuid, YukonUserContext userContext) {
 
+        final MessageSourceAccessor messageSourceAccessor = messageSourceResolver.getMessageSourceAccessor(userContext);
         final ChangePasswordResponse changePasswordResponse = new ChangePasswordResponse();
-        final LiteYukonUser yukonUser = passwordResetService.findUserFromPasswordKey(uuid);
+        LiteYukonUser yukonUser = null;
 
-        MessageSourceAccessor messageSourceAccessor = messageSourceResolver.getMessageSourceAccessor(YukonUserContext.system);
+        uuid = StringUtils.stripToNull(uuid);
+
+        if (uuid != null && !"null".equals(uuid)) {
+            yukonUser = passwordResetService.findUserFromPasswordKey(uuid);
+        }
 
         // if uuid is invalid
-        if (yukonUser == null) {
+        if (uuid == null || yukonUser == null) {
             final String invalidUUIDMsg = "yukon.web.modules.passwordPolicyError.INVALID_UUID";
             throw new PasswordException(messageSourceAccessor.getMessage(invalidUUIDMsg));
         }
