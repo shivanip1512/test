@@ -131,7 +131,7 @@
         <input type="hidden" class="js-device-collection-inputs" data-ids name="idList.ids">
         
         <div id="${id}-id-container"></div>
-        <tags:pickerDialog id="${id}IdPicker" type="devicePicker" multiSelectMode="true" linkType="none"
+        <tags:pickerDialog id="${id}IdPicker" type="dataExportPicker" multiSelectMode="true" linkType="none"
              container="${id}-id-container"/>
     </div>
     
