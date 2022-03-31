@@ -170,6 +170,7 @@
   
 
     <oxm:jaxb2-marshaller id="domainMarshaller" context-path="com.cannontech.msp.beans.v3" />
+    <oxm:jaxb2-marshaller id="domainMarshaller4" context-path="com.cannontech.msp.beans.v4" />
     <bean id="domainMarshallerV5" class="org.springframework.oxm.jaxb.Jaxb2Marshaller">
         <property name="contextPaths"
             value="com.cannontech.msp.beans.v5.cb_server, 

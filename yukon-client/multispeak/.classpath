@@ -33,5 +33,20 @@
             <attribute name="org.eclipse.jst.component.dependency" value="../"/>
         </attributes>
     </classpathentry>
+    <classpathentry kind="lib" path="/third-party/jakarta.xml.bind-api-3.0.1.jar">
+        <attributes>
+            <attribute name="org.eclipse.jst.component.dependency" value="../"/>
+        </attributes>
+    </classpathentry>
+    <classpathentry kind="lib" path="/third-party/jaxb-xjc-3.0.1.jar">
+        <attributes>
+            <attribute name="org.eclipse.jst.component.dependency" value="../"/>
+        </attributes>
+    </classpathentry>
+    <classpathentry kind="lib" path="/third-party/jaxb-impl-3.0.1.jar">
+        <attributes>
+            <attribute name="org.eclipse.jst.component.dependency" value="../"/>
+        </attributes>
+    </classpathentry>
 	<classpathentry kind="output" path="bin"/>
 </classpath>
