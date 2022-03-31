@@ -272,6 +272,7 @@
     </bean>
 
     <bean id="objectFactory" class="com.cannontech.msp.beans.v3.ObjectFactory"/>
+    <bean class="com.cannontech.msp.beans.v4.ObjectFactory"/>
     <bean class="com.cannontech.msp.beans.v5.cd_server.ObjectFactory"/>
     <bean class="com.cannontech.msp.beans.v5.scada_server.ObjectFactory"/>
     <bean id="notObjectFactory" class="com.cannontech.msp.beans.v5.not_server.ObjectFactory"/>
