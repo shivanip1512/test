@@ -1,18 +1,15 @@
 package com.cannontech.web.common.widgets.service.impl;
 
-import java.util.Arrays;
-import java.util.Map;
-
 import org.apache.logging.log4j.Logger;
 import org.joda.time.Duration;
 import org.joda.time.Instant;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import com.cannontech.clientutils.YukonLogManager;
-import com.cannontech.common.pao.PaoIdentifier;
 import com.cannontech.common.pao.attribute.model.BuiltInAttribute;
-import com.cannontech.core.dao.RawPointHistoryDao;
-import com.cannontech.core.dynamic.PointValueQualityHolder;
+import com.cannontech.common.pao.attribute.service.AttributeService;
+import com.cannontech.common.pao.attribute.service.IllegalUseOfAttribute;
+import com.cannontech.database.data.lite.LitePoint;
 import com.cannontech.database.data.lite.LiteYukonPAObject;
 import com.cannontech.dr.assetavailability.AssetAvailabilitySummary;
 import com.cannontech.dr.assetavailability.service.impl.AssetAvailabilityServiceImpl;
@@ -27,7 +24,7 @@ public class AssetAvailabilityWidgetServiceImpl implements AssetAvailabilityWidg
 
     @Autowired private AssetAvailabilityServiceImpl assetAvailabilityService;
     @Autowired private IDatabaseCache cache;
-    @Autowired private RawPointHistoryDao rphDao;
+    @Autowired private AttributeService attributeService;
 
     @Override
     public AssetAvailabilityWidgetSummary getAssetAvailabilitySummary(Integer areaOrLMProgramOrScenarioId, Instant lastUpdateTime) {
@@ -41,30 +38,22 @@ public class AssetAvailabilityWidgetServiceImpl implements AssetAvailabilityWidg
         AssetAvailabilityWidgetSummary summary = new AssetAvailabilityWidgetSummary(lastUpdateTime);
         LiteYukonPAObject drPao = cache.getAllPaosMap().get(areaOrLMProgramOrScenarioId);
         AssetAvailabilitySummary assetAvailabilitySummary = assetAvailabilityService.getAssetAvailabilityFromDrGroup(drPao.getPaoIdentifier());
-        //set initial values - i believe these will be removed once the archiving of point values is complete
         summary.setActive(assetAvailabilitySummary.getActiveSize(), null);
         summary.setInactive(assetAvailabilitySummary.getInactiveSize(), null);
         summary.setUnavailable(assetAvailabilitySummary.getUnavailableSize(), null);
         summary.setOptedOut(assetAvailabilitySummary.getOptedOutSize(), null);
         
-        PointValueQualityHolder activeValue = getMostRecentPointValue(drPao, BuiltInAttribute.LM_ASSET_AVAILABILITY_ACTIVE_DEVICES);
-        if (activeValue != null) {
-            summary.setActive((int)(activeValue.getValue()), activeValue.getId());
-        }
-        
-        PointValueQualityHolder inActiveValue = getMostRecentPointValue(drPao, BuiltInAttribute.LM_ASSET_AVAILABILITY_INACTIVE_DEVICES);
-        if (inActiveValue != null) {
-            summary.setInactive((int)(inActiveValue.getValue()), inActiveValue.getId());
-        }
-        
-        PointValueQualityHolder unavailableValue = getMostRecentPointValue(drPao, BuiltInAttribute.LM_ASSET_AVAILABILITY_UNAVAILABLE_DEVICES);
-        if (unavailableValue != null) {
-            summary.setUnavailable((int)(unavailableValue.getValue()), unavailableValue.getId());
-        }
-        
-        PointValueQualityHolder optedOutValue = getMostRecentPointValue(drPao, BuiltInAttribute.LM_ASSET_AVAILABILITY_OPTED_OUT_DEVICES);
-        if (optedOutValue != null) {
-            summary.setOptedOut((int)(optedOutValue.getValue()), optedOutValue.getId());
+        try {
+            LitePoint activePoint = attributeService.getPointForAttribute(drPao, BuiltInAttribute.LM_ASSET_AVAILABILITY_ACTIVE_DEVICES);
+            summary.setActive(assetAvailabilitySummary.getActiveSize(), activePoint.getPointID());
+            LitePoint inactivePoint = attributeService.getPointForAttribute(drPao, BuiltInAttribute.LM_ASSET_AVAILABILITY_INACTIVE_DEVICES);
+            summary.setInactive(assetAvailabilitySummary.getInactiveSize(), inactivePoint.getPointID());
+            LitePoint unavailablePoint = attributeService.getPointForAttribute(drPao, BuiltInAttribute.LM_ASSET_AVAILABILITY_UNAVAILABLE_DEVICES);
+            summary.setUnavailable(assetAvailabilitySummary.getUnavailableSize(), unavailablePoint.getPointID());
+            LitePoint optedOutPoint = attributeService.getPointForAttribute(drPao, BuiltInAttribute.LM_ASSET_AVAILABILITY_OPTED_OUT_DEVICES);
+            summary.setOptedOut(assetAvailabilitySummary.getOptedOutSize(), optedOutPoint.getPointID());
+        } catch (IllegalUseOfAttribute e) {
+            log.info("Point not found for Asset Availabililty attribute", e);
         }
 
         summary.calculatePrecentages();
@@ -72,12 +61,6 @@ public class AssetAvailabilityWidgetServiceImpl implements AssetAvailabilityWidg
         return summary;
     }
     
-    private PointValueQualityHolder getMostRecentPointValue(LiteYukonPAObject pao, BuiltInAttribute attribute) {
-        Map<PaoIdentifier, PointValueQualityHolder> activePaoPointValue =
-                rphDao.getMostRecentAttributeDataByValue(Arrays.asList(pao), attribute, false, null, null);
-        return activePaoPointValue.get(pao.getPaoIdentifier());
-    }
-
     @Override
     public Instant getNextRefreshTime(Instant lastUpdateTime) {
         return lastUpdateTime.plus(MINUTES_TO_WAIT_BEFORE_NEXT_REFRESH);
