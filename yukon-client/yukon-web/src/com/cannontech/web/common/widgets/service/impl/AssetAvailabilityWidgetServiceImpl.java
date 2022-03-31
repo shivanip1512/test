@@ -49,22 +49,22 @@ public class AssetAvailabilityWidgetServiceImpl implements AssetAvailabilityWidg
         
         PointValueQualityHolder activeValue = getMostRecentPointValue(drPao, BuiltInAttribute.LM_ASSET_AVAILABILITY_ACTIVE_DEVICES);
         if (activeValue != null) {
-            summary.setActive((int)Math.round(activeValue.getValue()), activeValue.getId());
+            summary.setActive((int)(activeValue.getValue()), activeValue.getId());
         }
         
         PointValueQualityHolder inActiveValue = getMostRecentPointValue(drPao, BuiltInAttribute.LM_ASSET_AVAILABILITY_INACTIVE_DEVICES);
         if (inActiveValue != null) {
-            summary.setInactive((int)Math.round(inActiveValue.getValue()), inActiveValue.getId());
+            summary.setInactive((int)(inActiveValue.getValue()), inActiveValue.getId());
         }
         
         PointValueQualityHolder unavailableValue = getMostRecentPointValue(drPao, BuiltInAttribute.LM_ASSET_AVAILABILITY_UNAVAILABLE_DEVICES);
         if (unavailableValue != null) {
-            summary.setUnavailable((int)Math.round(unavailableValue.getValue()), unavailableValue.getId());
+            summary.setUnavailable((int)(unavailableValue.getValue()), unavailableValue.getId());
         }
         
         PointValueQualityHolder optedOutValue = getMostRecentPointValue(drPao, BuiltInAttribute.LM_ASSET_AVAILABILITY_OPTED_OUT_DEVICES);
         if (optedOutValue != null) {
-            summary.setOptedOut((int)Math.round(optedOutValue.getValue()), optedOutValue.getId());
+            summary.setOptedOut((int)(optedOutValue.getValue()), optedOutValue.getId());
         }
 
         summary.calculatePrecentages();
