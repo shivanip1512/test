@@ -286,15 +286,21 @@ public class YukonSecurityController {
             model.addAttribute("blockingError", true);
         }
 
-        try {
-            ZeusEncryptionKey ecobeeZeusEncryptionKey = ecobeeZeusSecurityService.getZeusEncryptionKey();
-            String ecobeeZeusDateGenerated = dateFormattingService.format(ecobeeZeusEncryptionKey.getTimestamp(),
-                    DateFormattingService.DateFormatEnum.DATEHM_12, userContext);
-            model.put("ecobeeKeyZeusGeneratedDateTime", ecobeeZeusDateGenerated);
-        } catch (NoSuchElementException e) {
-            log.debug("Ecobee Zeus Key Creation time is not available, may be it is not generated yet.");
-        } catch (Exception e) {
-            log.error("Error while retrieving Ecobee Zeus encryption keys. ", e);
+        if (StringUtils.isNotEmpty(globalSettingDaoImpl.getString(GlobalSettingType.ECOBEE_PASSWORD)) &&
+                StringUtils.isNotEmpty(globalSettingDaoImpl.getString(GlobalSettingType.ECOBEE_USERNAME)) &&
+                StringUtils.isNotEmpty(globalSettingDaoImpl.getString(GlobalSettingType.ECOBEE_SERVER_URL)) &&
+                StringUtils.isNotEmpty(globalSettingDaoImpl.getString(GlobalSettingType.ECOBEE_PROGRAM_ID))) {
+            try {
+                ZeusEncryptionKey ecobeeZeusEncryptionKey = ecobeeZeusSecurityService.getZeusEncryptionKey();
+                String ecobeeZeusDateGenerated = dateFormattingService.format(ecobeeZeusEncryptionKey.getTimestamp(),
+                        DateFormattingService.DateFormatEnum.DATEHM_12, userContext);
+                model.put("ecobeeKeyZeusGeneratedDateTime", ecobeeZeusDateGenerated);
+            } catch (NoSuchElementException e) {
+                log.debug("Ecobee Zeus Key Creation time is not available, may be it is not generated yet.");
+            } catch (Exception e) {
+                log.error("Error while retrieving Ecobee Zeus encryption keys. ", e);
+            }
+
         }
        
         DynamicPaoInfo dynamicPaoInfo = paoDao.getDynamicPaoInfo(InfoKey.ECOBEEZEUS);
