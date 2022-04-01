@@ -12,6 +12,7 @@ import org.apache.logging.log4j.Logger;
 import org.joda.time.ReadableInstant;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.DataIntegrityViolationException;
+import org.springframework.dao.EmptyResultDataAccessException;
 
 import com.cannontech.clientutils.YukonLogManager;
 import com.cannontech.common.bulk.filter.AbstractRowMapperWithBaseQuery;
@@ -144,7 +145,7 @@ public class EventLogDaoImpl implements EventLogDao {
         sql.append("WHERE EventType").eq(eventLog.getEventType());
         try {
             eventTypeId = jdbcTemplate.queryForInt(sql);
-        } catch (Exception e) {
+        } catch (EmptyResultDataAccessException e) {
             SqlStatementBuilder createSql = new SqlStatementBuilder();
             SqlParameterSink params = createSql.insertInto("EventLogType");
             eventTypeId = nextValueHelper.getNextValue("EventLogType");
@@ -227,7 +228,6 @@ public class EventLogDaoImpl implements EventLogDao {
         SqlStatementBuilder countSql = findAllSqlStatementBuilder(startDate, stopDate, catSql, true, filterString);
 
         SqlStatementBuilder selectSql = findAllSqlStatementBuilder(startDate, stopDate, catSql, false, filterString);
-        System.out.println(selectSql.getDebugSql());
         
         return SearchResults.pageBasedForOffset(jdbcTemplate, paging, selectSql, countSql, eventLogRowMapper);
     }
