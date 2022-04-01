@@ -409,7 +409,13 @@ public abstract class RuntimeCalcSchedulerService {
             log.debug("First Status Instant :{}", firstStatusInstant);
             // Get the entry preceding the range, if the start of the range is defined
             if (logRange.getMin() != null && logRange.getMin().isBefore(firstStatusInstant)) {
-                relayStatuses = Iterables.concat(getPrecedingArchivedValue(firstStatus), relayStatuses);
+                List<PointValueHolder> previousStatus = getPrecedingArchivedValue(firstStatus);
+                log.debug("Previous Status :{}", previousStatus);
+                List<PointValueHolder> previousPreviousStatus = getPrecedingArchivedValue(Iterables.getFirst(previousStatus, null));
+                log.debug("Previous Previous Status :{}", previousPreviousStatus);
+                
+                relayStatuses = Iterables.concat(previousStatus, relayStatuses);
+                relayStatuses = Iterables.concat(previousPreviousStatus, relayStatuses);
             }
         }
         return relayStatuses;
