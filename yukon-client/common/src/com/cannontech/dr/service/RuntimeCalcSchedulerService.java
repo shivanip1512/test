@@ -411,11 +411,13 @@ public abstract class RuntimeCalcSchedulerService {
             if (logRange.getMin() != null && logRange.getMin().isBefore(firstStatusInstant)) {
                 List<PointValueHolder> previousStatus = getPrecedingArchivedValue(firstStatus);
                 log.debug("Previous Status :{}", previousStatus);
-                List<PointValueHolder> previousPreviousStatus = getPrecedingArchivedValue(Iterables.getFirst(previousStatus, null));
-                log.debug("Previous Previous Status :{}", previousPreviousStatus);
-                
                 relayStatuses = Iterables.concat(previousStatus, relayStatuses);
-                relayStatuses = Iterables.concat(previousPreviousStatus, relayStatuses);
+                if (!previousStatus.isEmpty()) {
+                    List<PointValueHolder> previousPreviousStatus = getPrecedingArchivedValue(Iterables.getFirst(previousStatus, null));
+                    log.debug("Previous Previous Status :{}", previousPreviousStatus);
+                    relayStatuses = Iterables.concat(previousPreviousStatus, relayStatuses);
+                }
+
             }
         }
         return relayStatuses;
