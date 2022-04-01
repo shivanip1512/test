@@ -426,7 +426,7 @@ public abstract class RuntimeCalcSchedulerService {
     public List<PointValueHolder> getPrecedingArchivedValue(PointValueHolder firstStatus) {
         int pointId = firstStatus.getId();
         Date centerDate = firstStatus.getPointDataTimeStamp();
-        log.debug("Center Date :{}", centerDate);
+        log.debug("Center Date (first status timestamp):{}", centerDate);
         Range<Date> dateRange = new Range<>(null, true, centerDate, false);
         log.debug("Date Range :{}", dateRange);
         return rphDao.getLimitedPointData(pointId,
