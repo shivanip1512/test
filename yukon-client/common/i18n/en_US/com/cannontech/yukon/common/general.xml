@@ -246,7 +246,9 @@
 <entry key="yukon.common.pleaseSelect">Please select</entry>
 <entry key="yukon.common.plusMore">(+{0} more)</entry>
 <entry key="yukon.common.point">Point</entry>
+<entry key="yukon.common.pointDataNotFound">No data exists for this point.</entry>
 <entry key="yukon.common.pointName">Point Name</entry>
+<entry key="yukon.common.pointNotFound">Point Not Found</entry>
 <entry key="yukon.common.pointOffset">Point Offset</entry>
 <entry key="yukon.common.points.none">No point attached to this object.</entry>
 <entry key="yukon.common.pointType">Point Type</entry>
