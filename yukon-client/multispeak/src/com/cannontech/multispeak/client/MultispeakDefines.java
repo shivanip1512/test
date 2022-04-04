@@ -15,6 +15,7 @@ import org.apache.commons.lang3.tuple.Pair;
 public class MultispeakDefines {
     public static final String NAMESPACE_v3 = "http://www.multispeak.org/Version_3.0";
     public static final String NAMESPACE_v5 = "http://www.multispeak.org/V5.0";
+    public static final String NAMESPACE_v4 = "http://www.multispeak.org/Version_4.1_Release";
     public static final String COMPANY = "Company";
     public static final String APPNAME = "AppName";
     public static final String AMR_VENDOR = "Cannon";
