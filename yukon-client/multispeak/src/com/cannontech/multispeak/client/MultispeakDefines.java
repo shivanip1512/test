@@ -75,6 +75,12 @@ public class MultispeakDefines {
         MSP_SERVER_INTERFACES.add(MultispeakVendor.buildMapKey(DR_Server_STR, MultiSpeakVersion.V5));
         MSP_SERVER_INTERFACES.add(MultispeakVendor.buildMapKey(SCADA_Server_STR, MultiSpeakVersion.V5));
         MSP_SERVER_INTERFACES.add(MultispeakVendor.buildMapKey(NOT_Server_STR, MultiSpeakVersion.V5));
+        MSP_SERVER_INTERFACES.add(MultispeakVendor.buildMapKey(MR_Server_STR, MultiSpeakVersion.V4));
+        MSP_SERVER_INTERFACES.add(MultispeakVendor.buildMapKey(OD_Server_STR, MultiSpeakVersion.V4));
+        MSP_SERVER_INTERFACES.add(MultispeakVendor.buildMapKey(CD_Server_STR, MultiSpeakVersion.V4));
+        MSP_SERVER_INTERFACES.add(MultispeakVendor.buildMapKey(DR_Server_STR, MultiSpeakVersion.V4));
+        MSP_SERVER_INTERFACES.add(MultispeakVendor.buildMapKey(SCADA_Server_STR, MultiSpeakVersion.V4));
+        MSP_SERVER_INTERFACES.add(MultispeakVendor.buildMapKey(NOT_Server_STR, MultiSpeakVersion.V4));
 
         /**
          * These are the Client side interface, the ones that Yukon may call and are

@@ -1,7 +1,7 @@
 /*==============================================================*/
 /* Database name:  YukonDatabase                                */
 /* DBMS name:      Microsoft SQL Server 2005                    */
-/* Created on:     3/1/2022 3:32:28 AM                          */
+/* Created on:     3/31/2022 8:09:59 AM                         */
 /*==============================================================*/
 
 
@@ -7743,6 +7743,13 @@ INSERT INTO MSPInterface VALUES (1, 'MR_Server', 'http://127.0.0.1:8080/multispe
 INSERT INTO MSPInterface VALUES (1, 'OD_Server', 'http://127.0.0.1:8080/multispeak/v5/OD_Server', '5.0', '1', NULL, NULL, NULL, NULL, NULL);
 INSERT INTO MSPInterface VALUES (1, 'CD_Server', 'http://127.0.0.1:8080/multispeak/v5/CD_Server', '5.0', '1', NULL, NULL, NULL, NULL, NULL);
 INSERT INTO MSPInterface VALUES (1, 'NOT_Server', 'http://127.0.0.1:8080/multispeak/v5/NOT_Server', '5.0', '1', NULL, NULL, NULL, NULL, NULL);
+
+INSERT INTO MSPInterface VALUES (1, 'MR_Server', 'http://127.0.0.1:8080/multispeak/v4/MR_Server', '4.1', '1', NULL, NULL, NULL, NULL, NULL);
+INSERT INTO MSPInterface VALUES (1, 'OD_Server', 'http://127.0.0.1:8080/multispeak/v4/OD_Server', '4.1', '1', NULL, NULL, NULL, NULL, NULL);
+INSERT INTO MSPInterface VALUES (1, 'CD_Server', 'http://127.0.0.1:8080/multispeak/v4/CD_Server', '4.1', '1', NULL, NULL, NULL, NULL, NULL);
+INSERT INTO MSPInterface VALUES (1, 'DR_Server', 'http://127.0.0.1:8080/multispeak/v4/DR_Server', '4.1', '1', NULL, NULL, NULL, NULL, NULL);
+INSERT INTO MSPInterface VALUES (1, 'SCADA_Server', 'http://127.0.0.1:8080/multispeak/v4/SCADA_Server', '4.1', '1', NULL, NULL, NULL, NULL, NULL);
+INSERT INTO MSPInterface VALUES (1, 'NOT_Server', 'http://127.0.0.1:8080/multispeak/v4/NOT_Server', '4.1', '1', NULL, NULL, NULL, NULL, NULL);
 
 /*==============================================================*/
 /* Table: MSPVendor                                             */

@@ -22,6 +22,7 @@
     <entry key="yukon.web.modules.adminSetup.multispeak.invalidPaoNameAliasExtension">Invalid Extension Name.  Length must be greater than zero when Use Extension is checked.</entry>
     <entry key="yukon.web.modules.adminSetup.multispeak.version3">Version 3.0</entry>
     <entry key="yukon.web.modules.adminSetup.multispeak.version5">Version 5.0</entry>
+    <entry key="yukon.web.modules.adminSetup.multispeak.version4">Version 4.1</entry>
     <entry key="yukon.web.modules.adminSetup.multispeak.deleted">The interface {0} was deleted.</entry>
     <entry key="yukon.web.modules.adminSetup.multispeak.added">The interface {0} was added.</entry>
     <entry key="yukon.web.modules.adminSetup.multispeak.updated">The interface {0} was updated.</entry>
