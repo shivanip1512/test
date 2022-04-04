@@ -114,19 +114,24 @@ public class PasswordApiController {
     @GetMapping("/change-password/{uuid}")
     public ResponseEntity<Object> changePassword(@PathVariable("uuid") String uuid, YukonUserContext userContext) {
 
-        final MessageSourceAccessor messageSourceAccessor = messageSourceResolver.getMessageSourceAccessor(userContext);
         final ChangePasswordResponse changePasswordResponse = new ChangePasswordResponse();
+
+        final MessageSourceAccessor messageSourceAccessor = messageSourceResolver.getMessageSourceAccessor(userContext);
+        final String invalidUUIDMsg = "yukon.web.modules.passwordPolicyError.INVALID_UUID";
         LiteYukonUser yukonUser = null;
 
         uuid = StringUtils.stripToNull(uuid);
 
-        if (uuid != null && !"null".equals(uuid)) {
-            yukonUser = passwordResetService.findUserFromPasswordKey(uuid);
+        try {
+            if (uuid != null && !"null".equals(uuid)) {
+                yukonUser = passwordResetService.findUserFromPasswordKey(uuid);
+            }
+        } catch (IllegalArgumentException e) {
+            throw new PasswordException(messageSourceAccessor.getMessage(invalidUUIDMsg));
         }
 
         // if uuid is invalid
         if (uuid == null || yukonUser == null) {
-            final String invalidUUIDMsg = "yukon.web.modules.passwordPolicyError.INVALID_UUID";
             throw new PasswordException(messageSourceAccessor.getMessage(invalidUUIDMsg));
         }
 
