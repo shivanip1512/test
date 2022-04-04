@@ -17,7 +17,7 @@ import com.cannontech.multispeak.service.v4.NOT_Server;
 public class NOT_ServerImpl implements NOT_Server {
     @Autowired private MultispeakFuncs multispeakFuncs;
 
-    private final Logger log = YukonLogManager.getLogger(MR_ServerImpl.class);
+    private final Logger log = YukonLogManager.getLogger(NOT_ServerImpl.class);
     private final static String[] methods = new String[] { "PingURL", 
                                                            "GetMethods" };
 

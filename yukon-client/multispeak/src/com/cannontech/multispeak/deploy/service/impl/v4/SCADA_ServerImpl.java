@@ -17,7 +17,7 @@ import com.cannontech.multispeak.service.v4.SCADA_Server;
 public class SCADA_ServerImpl implements SCADA_Server {
     @Autowired private MultispeakFuncs multispeakFuncs;
 
-    private final Logger log = YukonLogManager.getLogger(MR_ServerImpl.class);
+    private final Logger log = YukonLogManager.getLogger(SCADA_ServerImpl.class);
     private final static String[] methods = new String[] { "PingURL", 
                                                            "GetMethods" };
 

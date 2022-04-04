@@ -17,7 +17,7 @@ import com.cannontech.multispeak.service.v4.CD_Server;
 public class CD_ServerImpl implements CD_Server {
     @Autowired private MultispeakFuncs multispeakFuncs;
 
-    private final Logger log = YukonLogManager.getLogger(MR_ServerImpl.class);
+    private final Logger log = YukonLogManager.getLogger(CD_ServerImpl.class);
     private final static String[] methods = new String[] { "PingURL", 
                                                            "GetMethods" };
 

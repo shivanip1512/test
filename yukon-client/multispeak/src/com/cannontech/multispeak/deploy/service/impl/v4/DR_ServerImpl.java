@@ -17,7 +17,7 @@ import com.cannontech.multispeak.service.v4.DR_Server;
 public class DR_ServerImpl implements DR_Server {
     @Autowired private MultispeakFuncs multispeakFuncs;
 
-    private final Logger log = YukonLogManager.getLogger(MR_ServerImpl.class);
+    private final Logger log = YukonLogManager.getLogger(DR_ServerImpl.class);
     private final static String[] methods = new String[] { "PingURL", 
                                                            "GetMethods" };
 
