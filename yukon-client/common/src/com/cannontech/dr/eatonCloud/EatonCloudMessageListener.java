@@ -70,7 +70,7 @@ public class EatonCloudMessageListener {
                 ControlType.EATON_CLOUD,
                 null,
                 controlDurationSeconds,
-                command.getDutyCyclePeriod());
+                command.getDutyCyclePercentage());
     }
     
     public void handleRestoreMessage(LMEatonCloudStopCommand command) {
