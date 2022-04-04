@@ -1436,7 +1436,7 @@ create table CTIDatabase (
 )
 go
 
-insert into CTIDatabase values('9.2', '04-Apr-2022', 'Latest Update', 0, GETDATE() );
+/* __YUKON_VERSION__ */
 
 /*==============================================================*/
 /* Table: CalcPointBaseline                                     */
