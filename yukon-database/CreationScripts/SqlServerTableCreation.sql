@@ -1436,7 +1436,7 @@ create table CTIDatabase (
 )
 go
 
-/* __YUKON_VERSION__ */
+insert into CTIDatabase values('9.2', '04-Apr-2022', 'Latest Update', 0, GETDATE() );
 
 /*==============================================================*/
 /* Table: CalcPointBaseline                                     */
@@ -9701,9 +9701,9 @@ create table StatusPointMonitorProcessor (
 )
 go
 
-INSERT INTO StatusPointMonitorProcessor VALUES (1, 1, 'DIFFERENCE', 1, 'NoResponse');
-INSERT INTO StatusPointMonitorProcessor VALUES (2, 1, 'DIFFERENCE', 0, 'Restoration');
-INSERT INTO StatusPointMonitorProcessor VALUES (3, 1, 'DIFFERENCE', 2, 'Outage');
+INSERT INTO StatusPointMonitorProcessor VALUES (1, 1, 'DIFFERENCE', 1, 'NoResponse', 0);
+INSERT INTO StatusPointMonitorProcessor VALUES (2, 1, 'DIFFERENCE', 0, 'Restoration', 0);
+INSERT INTO StatusPointMonitorProcessor VALUES (3, 1, 'DIFFERENCE', 2, 'Outage', 0);
 
 /*==============================================================*/
 /* Table: StoredProcedureLog                                    */
