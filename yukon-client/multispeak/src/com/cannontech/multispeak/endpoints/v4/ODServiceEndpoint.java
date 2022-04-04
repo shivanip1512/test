@@ -1,6 +1,5 @@
 package com.cannontech.multispeak.endpoints.v4;
 
-import java.util.ArrayList;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -18,6 +17,7 @@ import com.cannontech.msp.beans.v4.PingURL;
 import com.cannontech.msp.beans.v4.PingURLResponse;
 import com.cannontech.multispeak.client.MultispeakDefines;
 import com.cannontech.multispeak.exceptions.MultispeakWebServiceException;
+import com.cannontech.multispeak.service.v4.OD_Server;
 
 /*
  * This class is the OD Service endpoint all requests will be processed from here.
@@ -28,12 +28,13 @@ import com.cannontech.multispeak.exceptions.MultispeakWebServiceException;
 public class ODServiceEndpoint {
 
     @Autowired private ObjectFactory objectFactory;
+    @Autowired private OD_Server od_server;
     private final String OD_V4_ENDPOINT_NAMESPACE = MultispeakDefines.NAMESPACE_v4;
 
     @PayloadRoot(localPart = "PingURL", namespace = OD_V4_ENDPOINT_NAMESPACE)
     public @ResponsePayload PingURLResponse pingURL(@RequestPayload PingURL pingURL) throws MultispeakWebServiceException {
         PingURLResponse response = objectFactory.createPingURLResponse();
-        // TODO
+        od_server.pingURL();
 
         return response;
     }
@@ -42,8 +43,7 @@ public class ODServiceEndpoint {
     public @ResponsePayload GetMethodsResponse getMethods(@RequestPayload GetMethods getMethods) throws MultispeakWebServiceException {
         GetMethodsResponse response = objectFactory.createGetMethodsResponse();
 
-        // TODO
-        List<String> methods = new ArrayList<>();
+        List<String> methods = od_server.getMethods();
         ArrayOfString arrayOfString = objectFactory.createArrayOfString();
         arrayOfString.getString().addAll(methods);
         response.setGetMethodsResult(arrayOfString);
