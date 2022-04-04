@@ -73,6 +73,16 @@
                 <prop key="/v5/OA_Server.wsdl">oa_server_v5</prop>
                 <prop key="/v5/OD_Server.wsdl">od_server_v5</prop>
                 <prop key="/v5/SCADA_Server.wsdl">scada_server_v5</prop>
+                <prop key="/v4/CB_Server.wsdl">cb_server_v4</prop>
+                <prop key="/v4/CD_Server.wsdl">cd_server_v4</prop>
+                <prop key="/v4/DR_Server.wsdl">dr_server_v4</prop>
+                <prop key="/v4/EA_Server.wsdl">ea_server_v4</prop>
+                <prop key="/v4/MDM_Server.wsdl">mdm_server_v4</prop>
+                <prop key="/v4/MR_Server.wsdl">mr_server_v4</prop>
+                <prop key="/v4/NOT_Server.wsdl">not_server_v4</prop>
+                <prop key="/v4/OA_Server.wsdl">oa_server_v4</prop>
+                <prop key="/v4/OD_Server.wsdl">od_server_v4</prop>
+                <prop key="/v4/SCADA_Server.wsdl">scada_server_v4</prop>
             </props>
         </property>
         <property name="defaultHandler" ref="messageDispatcher"/>
@@ -197,6 +207,56 @@
     <bean id="scada_server_v5"
         class="org.springframework.ws.wsdl.wsdl11.SimpleWsdl11Definition">
         <constructor-arg value="classpath:com/cannontech/multispeak/wsdl/v5/SCADA_Server.wsdl" />
+    </bean>
+    
+    <bean id="cb_server_v4"
+        class="org.springframework.ws.wsdl.wsdl11.SimpleWsdl11Definition">
+        <constructor-arg value="classpath:com/cannontech/multispeak/wsdl/v4/CB_Server.wsdl" />
+    </bean>
+    
+    <bean id="cd_server_v4"
+        class="org.springframework.ws.wsdl.wsdl11.SimpleWsdl11Definition">
+        <constructor-arg value="classpath:com/cannontech/multispeak/wsdl/v4/CD_Server.wsdl" />
+    </bean>
+    
+    <bean id="dr_server_v4"
+        class="org.springframework.ws.wsdl.wsdl11.SimpleWsdl11Definition">
+        <constructor-arg value="classpath:com/cannontech/multispeak/wsdl/v4/DR_Server.wsdl" />
+    </bean>
+    
+    <bean id="ea_server_v4"
+        class="org.springframework.ws.wsdl.wsdl11.SimpleWsdl11Definition">
+        <constructor-arg value="classpath:com/cannontech/multispeak/wsdl/v4/EA_Server.wsdl" />
+    </bean>
+    
+    <bean id="mdm_server_v4"
+        class="org.springframework.ws.wsdl.wsdl11.SimpleWsdl11Definition">
+        <constructor-arg value="classpath:com/cannontech/multispeak/wsdl/v4/MDM_Server.wsdl" />
+    </bean>
+    
+    <bean id="mr_server_v4"
+        class="org.springframework.ws.wsdl.wsdl11.SimpleWsdl11Definition">
+        <constructor-arg value="classpath:com/cannontech/multispeak/wsdl/v4/MR_Server.wsdl" />
+    </bean>
+    
+    <bean id="not_server_v4"
+        class="org.springframework.ws.wsdl.wsdl11.SimpleWsdl11Definition">
+        <constructor-arg value="classpath:com/cannontech/multispeak/wsdl/v4/NOT_Server.wsdl" />
+    </bean>
+    
+    <bean id="oa_server_v4"
+        class="org.springframework.ws.wsdl.wsdl11.SimpleWsdl11Definition">
+        <constructor-arg value="classpath:com/cannontech/multispeak/wsdl/v4/OA_Server.wsdl" />
+    </bean>
+    
+    <bean id="od_server_v4"
+        class="org.springframework.ws.wsdl.wsdl11.SimpleWsdl11Definition">
+        <constructor-arg value="classpath:com/cannontech/multispeak/wsdl/v4/OD_Server.wsdl" />
+    </bean>
+    
+    <bean id="scada_server_v4"
+        class="org.springframework.ws.wsdl.wsdl11.SimpleWsdl11Definition">
+        <constructor-arg value="classpath:com/cannontech/multispeak/wsdl/v4/SCADA_Server.wsdl" />
     </bean>
     
     <!-- Exception Handling -->

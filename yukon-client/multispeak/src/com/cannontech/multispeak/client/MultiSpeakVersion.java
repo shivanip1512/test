@@ -16,7 +16,7 @@ public enum MultiSpeakVersion implements DatabaseRepresentationSource {
 
     String version;
     String namespace;
-    private final static ImmutableSet<String> supportedMspVerions = ImmutableSet.of(V3.version, V5.version, V4.version);
+    private final static ImmutableSet<String> supportedMspVerions = ImmutableSet.of(V3.version, V4.version, V5.version);
 
     private MultiSpeakVersion(String version, String namespace) {
         this.version = version;

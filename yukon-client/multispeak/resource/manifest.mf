@@ -9,6 +9,7 @@ Class-Path:
  spring-orm-5.3.8.jar 
  msp-beans-v3.jar
  msp-beans-v5.jar
+ msp-beans-v4.jar
  ../log/ 
  ../export/ 
 

@@ -130,6 +130,7 @@
     <entry key="yukon.web.modules.tools.map.lastChangedTime">LAST_CHANGED_TIME</entry>
     <entry key="yukon.web.modules.tools.map.origin">ORIGIN</entry>
     <entry key="yukon.web.modules.tools.map.na">N/A</entry>
+    <entry key="yukon.web.modules.tools.map.helpTitle">Map Devices Help</entry>
 
     <!-- TDC -->
     <entry key="yukon.web.modules.tools.tdc.displays">Displays</entry>
