@@ -1,6 +1,5 @@
 package com.cannontech.multispeak.endpoints.v4;
 
-import java.util.ArrayList;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -18,6 +17,7 @@ import com.cannontech.msp.beans.v4.PingURL;
 import com.cannontech.msp.beans.v4.PingURLResponse;
 import com.cannontech.multispeak.client.MultispeakDefines;
 import com.cannontech.multispeak.exceptions.MultispeakWebServiceException;
+import com.cannontech.multispeak.service.v4.SCADA_Server;
 
 /*
  * This class is the SCADA Service endpoint all requests will be processed from here.
@@ -28,12 +28,13 @@ import com.cannontech.multispeak.exceptions.MultispeakWebServiceException;
 public class SCADAServiceEndpoint {
 
     @Autowired private ObjectFactory objectFactory;
+    @Autowired private SCADA_Server scada_server;
     private final String SCADA_V4_ENDPOINT_NAMESPACE = MultispeakDefines.NAMESPACE_v4;
 
     @PayloadRoot(localPart = "PingURL", namespace = SCADA_V4_ENDPOINT_NAMESPACE)
     public @ResponsePayload PingURLResponse pingURL(@RequestPayload PingURL pingURL) throws MultispeakWebServiceException {
         PingURLResponse response = objectFactory.createPingURLResponse();
-        // TODO
+        scada_server.pingURL();
 
         return response;
     }
@@ -42,8 +43,7 @@ public class SCADAServiceEndpoint {
     public @ResponsePayload GetMethodsResponse getMethods(@RequestPayload GetMethods getMethods) throws MultispeakWebServiceException {
         GetMethodsResponse response = objectFactory.createGetMethodsResponse();
 
-        // TODO
-        List<String> methods = new ArrayList<>();
+        List<String> methods = scada_server.getMethods();
         ArrayOfString arrayOfString = objectFactory.createArrayOfString();
         arrayOfString.getString().addAll(methods);
         response.setGetMethodsResult(arrayOfString);

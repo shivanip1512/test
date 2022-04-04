@@ -31,8 +31,11 @@
             </map>
     </property>
   </bean>
+    <bean class="com.cannontech.multispeak.deploy.service.impl.v4.MR_ServerImpl" />
+
   <bean class="com.cannontech.multispeak.client.MultispeakFuncs"/>
   <bean id="multispeakFuncsV5" class="com.cannontech.multispeak.client.v5.MultispeakFuncs"/>
+  <bean id="multispeakFuncsV4" class="com.cannontech.multispeak.client.v4.MultispeakFuncs"/>
   <bean class="com.cannontech.multispeak.client.core.CustomWebServiceMsgCallback"/>
   <bean class="com.cannontech.multispeak.client.core.v5.CustomWebServiceMsgCallback"/>
   
