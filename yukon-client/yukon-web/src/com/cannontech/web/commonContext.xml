@@ -83,6 +83,11 @@
             <bean class="com.cannontech.web.search.lucene.criteria.DeviceCriteria"/>
         </property>
     </bean>
+    <bean name="dataExportPicker" parent="abstractPaoPicker" class="com.cannontech.web.picker.PaoPicker">
+        <property name="criteria">
+            <bean class="com.cannontech.web.search.lucene.criteria.DataExportCriteria"/>
+        </property>
+    </bean>
     <bean name="commanderDevicePicker" parent="abstractPaoPicker" class="com.cannontech.web.picker.PaoPicker">
         <property name="criteria">
             <bean class="com.cannontech.web.search.lucene.criteria.CommanderDeviceCriteria"/>
