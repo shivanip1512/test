@@ -6,6 +6,8 @@ import java.io.IOException;
 import java.io.PrintWriter;
 import java.sql.SQLException;
 import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Iterator;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -15,6 +17,7 @@ import javax.servlet.http.HttpServletResponse;
 import javax.validation.ConstraintViolationException;
 
 import org.apache.commons.collections4.CollectionUtils;
+import org.apache.commons.collections4.iterators.ReverseListIterator;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.logging.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -72,7 +75,9 @@ import com.cannontech.web.api.token.AuthenticationException;
 import com.cannontech.web.spring.parameters.exceptions.InvalidPagingParametersException;
 import com.cannontech.web.spring.parameters.exceptions.InvalidSortingParametersException;
 import com.cannontech.web.tools.points.service.PointEditorService.AttachedException;
+import com.fasterxml.jackson.databind.JsonMappingException.Reference;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.exc.InvalidFormatException;
 
 @ControllerAdvice(annotations = RestController.class)
 public class ApiExceptionHandler extends ResponseEntityExceptionHandler {
@@ -388,6 +393,32 @@ public class ApiExceptionHandler extends ResponseEntityExceptionHandler {
             errorMessage = ex.getRootCause().getMessage();
         }
 
+		/*
+		 * For fields having a single enum data, the field name can be fetched by using
+		 * the last index of the list ->
+		 * formatException.getPath().get(formatException.size -1). However for fields
+		 * having List of enums in the API, field name equal to null gets mapped to the
+		 * last index since spring also maps the list of enums to the object and the
+		 * actual fieldName is mapped at the 0th index. Therefore, to cover both cases we
+		 * iterate the list in reverse order and break the loop when we get a non null
+		 * field name.
+		 */
+		if (ex.getRootCause() instanceof InvalidFormatException) {
+			InvalidFormatException formatException = (InvalidFormatException) ex.getRootCause();
+			if (formatException.getTargetType() != null && formatException.getTargetType().isEnum()) {
+				for (Iterator<Reference> iter = new ReverseListIterator<>(formatException.getPath()); iter.hasNext();) {
+					Reference ref = iter.next();
+					if (ref.getFieldName() != null) {
+						errorMessage = String.format(
+								"Invalid enum value: '%s' for the field: '%s'. The value must be one of: %s.",
+								formatException.getValue(), ref.getFieldName(),
+								Arrays.toString(formatException.getTargetType().getEnumConstants()));
+						break;
+					}
+				}
+			}
+		}
+		
         if (isNewApiErrorSupported(request)) {
             ApiErrorModel apiErrorModel = buildGlobalErrorResponse(ApiErrorDetails.BAD_REQUEST, request, uniqueKey);
             apiErrorModel.setDetail(errorMessage);
