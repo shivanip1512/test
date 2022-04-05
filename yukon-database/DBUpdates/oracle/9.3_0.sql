@@ -2,6 +2,70 @@
 /****     Oracle DBupdates             ****/ 
 /******************************************/ 
 
+/* @start YUK-25803 */
+CREATE TABLE EventLogType (
+   EventTypeId          Numeric              NOT NULL,
+   EventType            VARCHAR(255)         NOT NULL,
+   CONSTRAINT PK_EVENTLOGTYPE PRIMARY KEY (EventTypeId));
+
+INSERT INTO EventLogType (EventTypeId, EventType)
+    (SELECT ROW_NUMBER() OVER (ORDER BY MIN(EventLogId) ASC), EventType
+        from EventLog
+        group by EventType);
+
+DROP INDEX INDX_EventLog_EvntTime_EvntLogId_EvntType;
+
+ALTER TABLE EventLogType
+   ADD CONSTRAINT AK_EventLogType_EventType UNIQUE (EventType);
+   
+ALTER TABLE EventLog 
+ADD (tempColumn NUMBER);
+
+UPDATE 
+(SELECT EventLog.tempColumn AS OLD, EventLogType.EventTypeId AS NEW
+ FROM EventLog
+ INNER JOIN EventLogType
+ ON EventLog.EventType = EventLogType.EventType
+) t
+SET t.OLD = t.NEW;
+
+ALTER TABLE EventLog
+MODIFY (EventType NULL);
+
+UPDATE EventLog
+SET EventType = NULL;
+
+ALTER TABLE EventLog 
+MODIFY (EventType NUMBER);
+
+AlTER TABLE EventLog
+RENAME COLUMN EventType to EventTypeId;
+
+UPDATE EventLog
+SET EventTypeId = tempColumn;
+
+ALTER TABLE EventLog
+MODIFY (EventTypeId  NOT NULL);
+
+ALTER TABLE EventLog
+DROP COLUMN tempColumn;
+
+CREATE INDEX INDX_EventLog_EventTypeId_EventTime on EventLog (
+EventTypeId DESC,
+EventTime DESC);
+
+CREATE INDEX INDX_EventLog_EventTypeId_EventTime_EventLogId on EventLog (
+EventTypeId ASC,
+EventTime ASC,
+EventLogId ASC);
+
+ALTER TABLE EventLog
+   ADD CONSTRAINT FK_EventLog_EventLogType FOREIGN KEY (EventTypeId)
+      REFERENCES EventLogType (EventTypeId);
+
+INSERT INTO DBUpdates VALUES ('YUK-25803', '9.3.0', SYSDATE);
+/* @end YUK-25803 */
+
 /* @start YUK-26160 */
 
 INSERT INTO MSPInterface VALUES (1, 'MR_Server', 'http://127.0.0.1:8080/multispeak/v4/MR_Server', '4.1', '1', NULL, NULL, NULL, NULL, NULL);
