@@ -15,6 +15,7 @@ import org.apache.commons.lang3.tuple.Pair;
 public class MultispeakDefines {
     public static final String NAMESPACE_v3 = "http://www.multispeak.org/Version_3.0";
     public static final String NAMESPACE_v5 = "http://www.multispeak.org/V5.0";
+    public static final String NAMESPACE_v4 = "http://www.multispeak.org/Version_4.1_Release";
     public static final String COMPANY = "Company";
     public static final String APPNAME = "AppName";
     public static final String AMR_VENDOR = "Cannon";
@@ -74,6 +75,12 @@ public class MultispeakDefines {
         MSP_SERVER_INTERFACES.add(MultispeakVendor.buildMapKey(DR_Server_STR, MultiSpeakVersion.V5));
         MSP_SERVER_INTERFACES.add(MultispeakVendor.buildMapKey(SCADA_Server_STR, MultiSpeakVersion.V5));
         MSP_SERVER_INTERFACES.add(MultispeakVendor.buildMapKey(NOT_Server_STR, MultiSpeakVersion.V5));
+        MSP_SERVER_INTERFACES.add(MultispeakVendor.buildMapKey(MR_Server_STR, MultiSpeakVersion.V4));
+        MSP_SERVER_INTERFACES.add(MultispeakVendor.buildMapKey(OD_Server_STR, MultiSpeakVersion.V4));
+        MSP_SERVER_INTERFACES.add(MultispeakVendor.buildMapKey(CD_Server_STR, MultiSpeakVersion.V4));
+        MSP_SERVER_INTERFACES.add(MultispeakVendor.buildMapKey(DR_Server_STR, MultiSpeakVersion.V4));
+        MSP_SERVER_INTERFACES.add(MultispeakVendor.buildMapKey(SCADA_Server_STR, MultiSpeakVersion.V4));
+        MSP_SERVER_INTERFACES.add(MultispeakVendor.buildMapKey(NOT_Server_STR, MultiSpeakVersion.V4));
 
         /**
          * These are the Client side interface, the ones that Yukon may call and are

@@ -122,8 +122,10 @@ import com.cannontech.common.smartNotification.model.SmartNotificationEventMulti
 import com.cannontech.common.smartNotification.model.SmartNotificationMessageParametersMulti;
 import com.cannontech.core.dynamic.RichPointData;
 import com.cannontech.dr.dao.LmReportedAddress;
-import com.cannontech.dr.eatonCloud.message.EatonCloudAuthTokenRequestV1;
-import com.cannontech.dr.eatonCloud.message.V1.EatonCloudAuthTokenResponseV1;
+import com.cannontech.dr.eatonCloud.message.EatonCloudHeartbeatRequest;
+import com.cannontech.dr.eatonCloud.message.EatonCloudHeartbeatResponse;
+import com.cannontech.dr.eatonCloud.message.v1.EatonCloudAuthTokenRequestV1;
+import com.cannontech.dr.eatonCloud.message.v1.EatonCloudAuthTokenResponseV1;
 import com.cannontech.dr.rfn.message.archive.RfnLcrArchiveRequest;
 import com.cannontech.dr.rfn.message.archive.RfnLcrArchiveResponse;
 import com.cannontech.dr.rfn.message.archive.RfnLcrReadingArchiveRequest;
@@ -144,6 +146,7 @@ import com.cannontech.message.porter.message.MeterProgramValidationResponse;
 import com.cannontech.services.configurationSettingMessage.model.ConfigurationSettings;
 import com.cannontech.services.ecobee.authToken.message.ZeusEcobeeAuthTokenRequest;
 import com.cannontech.services.ecobee.authToken.message.ZeusEcobeeAuthTokenResponse;
+import com.cannontech.simulators.message.request.AssetAvailArchiveSimulatorRequest;
 import com.cannontech.simulators.message.request.EatonCloudDataRetrievalSimulatonRequest;
 import com.cannontech.simulators.message.request.EatonCloudRuntimeCalcSimulatonRequest;
 import com.cannontech.simulators.message.request.EatonCloudSecretRotationSimulationRequest;
@@ -1397,7 +1400,30 @@ public final class JmsApiDirectory {
             .receiver(YUKON_SERVICE_MANAGER)
             .receiver(YUKON_CLOUD_SERVICE)
             .build();
+    
+    public static final JmsApi<EatonCloudHeartbeatRequest, ?, EatonCloudHeartbeatResponse> EATON_CLOUD_HEARTBEAT = 
+            JmsApi.builder(EatonCloudHeartbeatRequest.class, EatonCloudHeartbeatResponse.class)
+                  .name("Eaton Cloud Heartbeat")
+                  .description("Verifies connection from Service Manager to Eaton Cloud")
+                  .communicationPattern(REQUEST_RESPONSE)
+                  .queue(new JmsQueue("com.cannontech.dr.eatonCloud.message.EatonCloudHeartbeatRequest"))
+                  .responseQueue(JmsQueue.TEMP_QUEUE)
+                  .requestMessage(EatonCloudHeartbeatRequest.class)
+                  .responseMessage(EatonCloudHeartbeatResponse.class)
+                  .sender(YUKON_WATCHDOG)
+                  .receiver(YUKON_SERVICE_MANAGER)
+                  .build();
 
+    public static final JmsApi<AssetAvailArchiveSimulatorRequest,?,?> ASSET_AVAILABILITY_ARCHIVE_SIM_REQUEST = 
+            JmsApi.builder(AssetAvailArchiveSimulatorRequest.class)
+                  .name("Asset Availability Archive Simulator Request Simulation Request")
+                  .description("WS sends request to SM to start archiving the point data")
+                  .communicationPattern(NOTIFICATION)
+                  .queue(new JmsQueue("yukon.notif.obj.simulator.AssetAvailArchiveSimulatorRequest"))
+                  .requestMessage(AssetAvailArchiveSimulatorRequest.class)
+                  .sender(YUKON_WEBSERVER)
+                  .receiver(YUKON_SERVICE_MANAGER)
+                  .build();
     /*
      * WARNING: JmsApiDirectoryTest will fail if you don't add each new JmsApi to the category map below!
      */
@@ -1436,7 +1462,8 @@ public final class JmsApiDirectory {
                 NEW_ALERT_CREATION,
                 ZEUS_ECOBEE_AUTH_TOKEN,
                 DATABASE_CHANGE_EVENT_REQUEST,
-                YUKON_METRIC);
+                YUKON_METRIC,
+                EATON_CLOUD_HEARTBEAT);
         
         addApis(jmsApis, RFN_LCR, 
                 RFN_EXPRESSCOM_BROADCAST, 
@@ -1518,7 +1545,8 @@ public final class JmsApiDirectory {
                 EATON_CLOUD_SIM_DEVICE_DATA_RETRIEVAL_REQUEST, 
                 EATON_CLOUD_SIM_RUNTIME_CALC_START_REQUEST,
                 ITRON_SIM_RUNTIME_CALC_START_REQUEST,
-                EATON_CLOUD_SIM_SECRET_ROTATION_REQUEST);
+                EATON_CLOUD_SIM_SECRET_ROTATION_REQUEST,
+                ASSET_AVAILABILITY_ARCHIVE_SIM_REQUEST);
 
         return jmsApis;
     }

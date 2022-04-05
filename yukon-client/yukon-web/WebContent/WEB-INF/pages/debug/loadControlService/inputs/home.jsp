@@ -422,8 +422,18 @@
                     </tags:nameValueContainer2>
                 </form>
             </td>
-        </tr>                
+        </tr>
+		<tr>
+		<td class="functionality">Asset Availability Archiving Task</td>
+			<td class="inputTest">
+			 <cti:url var="archiveAssetAvailability" value="/debug/loadControlService/inputs/archiveAssetAvailability"/>
+				<form action="${archiveAssetAvailability}" method="post">
+					<cti:csrfToken />
+					<cti:button label="Run" type="submit" />
+				</form> 
+			</td>
+		</tr>
 
-    </table>
+	</table>
     
 </cti:standardPage>

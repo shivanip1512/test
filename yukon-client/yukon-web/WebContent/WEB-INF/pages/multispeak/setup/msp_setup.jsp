@@ -107,6 +107,9 @@
                         <c:if test="${i.index == 5}">
                            <tr style="border-bottom: solid 1px #ccc;"><td colspan="4"><b><i:inline key=".version5"/></b></td></tr>
                         </c:if>
+                        <c:if test="${i.index == 11}">
+                           <tr style="border-bottom: solid 1px #ccc;"><td colspan="4"><b><i:inline key=".version4"/></b></td></tr>
+                        </c:if>
                         <c:if test="${(multispeakInterface.interfaceEnabled && viewMode) || !viewMode}">
                             <tr>
                                 <c:set var="resultsCount" value="${resultsCount + 1}" />

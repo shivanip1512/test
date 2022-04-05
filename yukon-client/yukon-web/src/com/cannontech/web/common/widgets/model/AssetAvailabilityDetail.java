@@ -10,9 +10,11 @@ public class AssetAvailabilityDetail {
     
     private double percentage;
     private int deviceCount;
+    private Integer pointId;
 
-    public AssetAvailabilityDetail(int deviceCount){
+    public AssetAvailabilityDetail(int deviceCount, Integer pointId){
         this.deviceCount = deviceCount;
+        this.pointId = pointId;
     }
     
     public double getPercentage() {
@@ -21,6 +23,10 @@ public class AssetAvailabilityDetail {
     
     public int getDeviceCount() {
         return deviceCount;
+    }
+    
+    public Integer getPointId() {
+        return pointId;
     }
 
     public void calculatePrecentage(int total) {

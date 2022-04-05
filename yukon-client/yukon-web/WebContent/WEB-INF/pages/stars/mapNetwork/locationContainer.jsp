@@ -12,8 +12,9 @@
 <%@ include file="/WEB-INF/pages/stars/mapNetwork/mapPopup.jsp" %>
 <c:if test="${not empty geojson}"><cti:toJson id="geojson" object="${geojson}"/></c:if>
 
-<cti:msg2 var="locationHelp" key=".mapNetwork.location.helpText"/>
-<tags:sectionContainer2 nameKey="location" helpText="${locationHelp}">
+
+<cti:url var="helpTextUrl" value="/stars/mapNetwork/loadHelpText"/>
+<tags:sectionContainer2 nameKey="location" helpUrl="${helpTextUrl}" helpWidth="710">
     <div style="height:500px">
         <div id="map-network-container" style="height:100%;width:100%;background:white;">
             <%@ include file="locationInput.jspf"%>
