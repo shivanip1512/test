@@ -396,7 +396,7 @@ public interface RawPointHistoryDao {
      * and converting the Multimap into a Map (because there will only be one value per key).
      */
     Map<PaoIdentifier, PointValueQualityHolder> getMostRecentAttributeDataByValue(
-            Iterable<? extends YukonPao> paos, Attribute attribute, boolean excludeDisabledPaos, int value,
+            Iterable<? extends YukonPao> paos, Attribute attribute, boolean excludeDisabledPaos, Integer value,
             Set<PointQuality> excludeQualities);
 
     /**

@@ -19,6 +19,7 @@ public enum ManagedService {
     EATON_CLOUD_AUTH_TOKEN("Eaton Cloud Auth Token", ServiceType.CONTEXT_FILE_TYPE, "classpath:com/cannontech/services/eatonCloud/authToken/eatonCloudAuthTokenContext.xml"),
     EATON_CLOUD("Eaton Cloud Message Listener", ServiceType.CONTEXT_FILE_TYPE, "classpath:com/cannontech/services/dr/lmEatonCloudContext.xml"),
     EATON_CLOUD_DEVICE_AUTO_CREATION("Eaton Cloud Device Auto Creation", ServiceType.CONTEXT_FILE_TYPE, "classpath:com/cannontech/services/eatonCloud/creation/eatonCloudDeviceCreationContext.xml"),
+    ASSET_AVAILABILITY_ARCHIVER("Asset Availability Archiving Service", ServiceType.CONTEXT_FILE_TYPE, "classpath:com/cannontech/services/assetAvailability/assetAvailabilityArchiving.xml")
     ;
     private final String name;
     private final ServiceType type;

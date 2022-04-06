@@ -13,6 +13,13 @@
         <property name="connectionFactory" ref="connectionFactory" />
         <property name="messageListener" ref="eatonCloudAuthTokenListener"/>
     </bean>
+    <bean class="org.springframework.jms.listener.SimpleMessageListenerContainer">
+        <property name="destinationName" value="com.cannontech.dr.eatonCloud.message.EatonCloudHeartbeatRequest"/>
+        <property name="pubSubDomain" value="false"/>
+        <property name="concurrentConsumers" value="1"/>
+        <property name="connectionFactory" ref="connectionFactory" />
+        <property name="messageListener" ref="eatonCloudAuthTokenListener"/>
+    </bean>
     <bean id="simulation" class="com.cannontech.services.eatonCloud.secretRotation.service.EatonCloudSecretRotationServiceV1" />
     <jms:listener-container 
         connection-factory="connectionFactory" 

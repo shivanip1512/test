@@ -36,6 +36,7 @@
 <entry key="yukon.web.picker.lmProgramOrScenarioPicker.dialogTitle">Select Program or Scenario</entry>
 <entry key="yukon.web.picker.controlAreaOrProgramOrScenarioPicker.dialogTitle">Select Control Area or Program or Scenario</entry>
 <entry key="yukon.web.picker.devicePicker.dialogTitle">Select Device</entry>
+<entry key="yukon.web.picker.dataExportPicker.dialogTitle">Select Device</entry>
 <entry key="yukon.web.picker.meterPicker.dialogTitle">Select Meter</entry>
 <entry key="yukon.web.picker.meterEventsDevicesPicker.dialogTitle">Select Device</entry>
 <entry key="yukon.web.picker.voltageRegulatorPicker.dialogTitle">Select Regulator</entry>
