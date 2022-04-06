@@ -409,8 +409,9 @@ public class ApiExceptionHandler extends ResponseEntityExceptionHandler {
 				for (Iterator<Reference> iter = new ReverseListIterator<>(formatException.getPath()); iter.hasNext();) {
 					Reference ref = iter.next();
 					if (ref.getFieldName() != null) {
-						errorMessage = String.format(
-								"Invalid enum value: '%s' for the field: '%s'. The value must be one of: %s.",
+						MessageSourceAccessor messageSourceAccessor = messageSourceResolver
+								.getMessageSourceAccessor(YukonUserContext.system);
+						errorMessage = messageSourceAccessor.getMessage("yukon.web.api.error.invalidEnum",
 								formatException.getValue(), ref.getFieldName(),
 								Arrays.toString(formatException.getTargetType().getEnumConstants()));
 						break;
