@@ -154,17 +154,17 @@
 			<attribute name="org.eclipse.jst.component.dependency" value="../"/>
 		</attributes>
 	</classpathentry>
-	<classpathentry kind="lib" path="/third-party/spring-integration-core-5.5.1.jar">
+	<classpathentry kind="lib" path="/third-party/spring-integration-core-5.5.10.jar">
 		<attributes>
 			<attribute name="org.eclipse.jst.component.dependency" value="../"/>
 		</attributes>
 	</classpathentry>
-	<classpathentry kind="lib" path="/third-party/spring-retry-1.3.1.jar">
+	<classpathentry kind="lib" path="/third-party/spring-retry-1.3.2.jar">
 		<attributes>
 			<attribute name="org.eclipse.jst.component.dependency" value="../"/>
 		</attributes>
 	</classpathentry>
-	<classpathentry kind="lib" path="/third-party/spring-integration-jms-5.5.1.jar">
+	<classpathentry kind="lib" path="/third-party/spring-integration-jms-5.5.10.jar">
 		<attributes>
 			<attribute name="org.eclipse.jst.component.dependency" value="../"/>
 		</attributes>
@@ -194,12 +194,12 @@
 			<attribute name="org.eclipse.jst.component.dependency" value="../"/>
 		</attributes>
 	</classpathentry>
-	<classpathentry exported="true" kind="lib" path="/third-party/spring-aop-5.3.8.jar" sourcepath="/third-party/linked-sources/spring-aop-5.3.8-sources.jar">
+	<classpathentry exported="true" kind="lib" path="/third-party/spring-aop-5.3.18.jar" sourcepath="/third-party/linked-sources/spring-aop-5.3.18-sources.jar">
 		<attributes>
 			<attribute name="org.eclipse.jst.component.dependency" value="../"/>
 		</attributes>
 	</classpathentry>
-	<classpathentry exported="true" kind="lib" path="/third-party/spring-aspects-5.3.8.jar" sourcepath="/third-party/linked-sources/spring-aspects-5.3.8-sources.jar">
+	<classpathentry exported="true" kind="lib" path="/third-party/spring-aspects-5.3.18.jar" sourcepath="/third-party/linked-sources/spring-aspects-5.3.18-sources.jar">
 		<attributes>
 			<attribute name="org.eclipse.jst.component.dependency" value="../"/>
 		</attributes>
@@ -209,97 +209,97 @@
 			<attribute name="org.eclipse.jst.component.dependency" value="../"/>
 		</attributes>
 	</classpathentry>
-	<classpathentry exported="true" kind="lib" path="/third-party/spring-beans-5.3.8.jar" sourcepath="/third-party/linked-sources/spring-beans-5.3.8-sources.jar">
+	<classpathentry exported="true" kind="lib" path="/third-party/spring-beans-5.3.18.jar" sourcepath="/third-party/linked-sources/spring-beans-5.3.18-sources.jar">
 		<attributes>
 			<attribute name="org.eclipse.jst.component.dependency" value="../"/>
 		</attributes>
 	</classpathentry>
-	<classpathentry exported="true" kind="lib" path="/third-party/spring-context-5.3.8.jar" sourcepath="/third-party/linked-sources/spring-context-5.3.8-sources.jar">
+	<classpathentry exported="true" kind="lib" path="/third-party/spring-context-5.3.18.jar" sourcepath="/third-party/linked-sources/spring-context-5.3.18-sources.jar">
 		<attributes>
 			<attribute name="org.eclipse.jst.component.dependency" value="../"/>
 		</attributes>
 	</classpathentry>
-	<classpathentry exported="true" kind="lib" path="/third-party/spring-context-support-5.3.8.jar" sourcepath="/third-party/linked-sources/spring-context-support-5.3.8-sources.jar">
+	<classpathentry exported="true" kind="lib" path="/third-party/spring-context-support-5.3.18.jar" sourcepath="/third-party/linked-sources/spring-context-support-5.3.18-sources.jar">
 		<attributes>
 			<attribute name="org.eclipse.jst.component.dependency" value="../"/>
 		</attributes>
 	</classpathentry>
-	<classpathentry exported="true" kind="lib" path="/third-party/spring-core-5.3.8.jar" sourcepath="/third-party/linked-sources/spring-core-5.3.8-sources.jar">
+	<classpathentry exported="true" kind="lib" path="/third-party/spring-core-5.3.18.jar" sourcepath="/third-party/linked-sources/spring-core-5.3.18-sources.jar">
 		<attributes>
 			<attribute name="org.eclipse.jst.component.dependency" value="../"/>
 		</attributes>
 	</classpathentry>
-	<classpathentry exported="true" kind="lib" path="/third-party/spring-expression-5.3.8.jar" sourcepath="/third-party/linked-sources/spring-expression-5.3.8-sources.jar">
+	<classpathentry exported="true" kind="lib" path="/third-party/spring-expression-5.3.18.jar" sourcepath="/third-party/linked-sources/spring-expression-5.3.18-sources.jar">
 		<attributes>
 			<attribute name="org.eclipse.jst.component.dependency" value="../"/>
 		</attributes>
 	</classpathentry>
-	<classpathentry exported="true" kind="lib" path="/third-party/spring-instrument-5.3.8.jar" sourcepath="/third-party/linked-sources/spring-instrument-5.3.8-sources.jar">
+	<classpathentry exported="true" kind="lib" path="/third-party/spring-instrument-5.3.18.jar" sourcepath="/third-party/linked-sources/spring-instrument-5.3.18-sources.jar">
 		<attributes>
 			<attribute name="org.eclipse.jst.component.dependency" value="../"/>
 		</attributes>
 	</classpathentry>
-	<classpathentry exported="true" kind="lib" path="/third-party/spring-jdbc-5.3.8.jar" sourcepath="/third-party/linked-sources/spring-jdbc-5.3.8-sources.jar">
+	<classpathentry exported="true" kind="lib" path="/third-party/spring-jdbc-5.3.18.jar" sourcepath="/third-party/linked-sources/spring-jdbc-5.3.18-sources.jar">
 		<attributes>
 			<attribute name="org.eclipse.jst.component.dependency" value="../"/>
 		</attributes>
 	</classpathentry>
-	<classpathentry exported="true" kind="lib" path="/third-party/spring-jms-5.3.8.jar" sourcepath="/third-party/linked-sources/spring-jms-5.3.8-sources.jar">
+	<classpathentry exported="true" kind="lib" path="/third-party/spring-jms-5.3.18.jar" sourcepath="/third-party/linked-sources/spring-jms-5.3.18-sources.jar">
 		<attributes>
 			<attribute name="org.eclipse.jst.component.dependency" value="../"/>
 		</attributes>
 	</classpathentry>
-	<classpathentry exported="true" kind="lib" path="/third-party/spring-messaging-5.3.8.jar" sourcepath="/third-party/linked-sources/spring-messaging-5.3.8-sources.jar">
+	<classpathentry exported="true" kind="lib" path="/third-party/spring-messaging-5.3.18.jar" sourcepath="/third-party/linked-sources/spring-messaging-5.3.18-sources.jar">
 		<attributes>
 			<attribute name="org.eclipse.jst.component.dependency" value="../"/>
 		</attributes>
 	</classpathentry>
-	<classpathentry exported="true" kind="lib" path="/third-party/spring-orm-5.3.8.jar" sourcepath="/third-party/linked-sources/spring-orm-5.3.8-sources.jar">
+	<classpathentry exported="true" kind="lib" path="/third-party/spring-orm-5.3.18.jar" sourcepath="/third-party/linked-sources/spring-orm-5.3.18-sources.jar">
 		<attributes>
 			<attribute name="org.eclipse.jst.component.dependency" value="../"/>
 		</attributes>
 	</classpathentry>
-	<classpathentry exported="true" kind="lib" path="/third-party/spring-oxm-5.3.8.jar" sourcepath="/third-party/linked-sources/spring-oxm-5.3.8-sources.jar">
+	<classpathentry exported="true" kind="lib" path="/third-party/spring-oxm-5.3.18.jar" sourcepath="/third-party/linked-sources/spring-oxm-5.3.18-sources.jar">
 		<attributes>
 			<attribute name="org.eclipse.jst.component.dependency" value="../"/>
 		</attributes>
 	</classpathentry>
-	<classpathentry exported="true" kind="lib" path="/third-party/spring-test-5.3.8.jar" sourcepath="/third-party/linked-sources/spring-test-5.3.8-sources.jar">
+	<classpathentry exported="true" kind="lib" path="/third-party/spring-test-5.3.18.jar" sourcepath="/third-party/linked-sources/spring-test-5.3.18-sources.jar">
 		<attributes>
 			<attribute name="org.eclipse.jst.component.dependency" value="../"/>
 		</attributes>
 	</classpathentry>
-	<classpathentry exported="true" kind="lib" path="/third-party/spring-tx-5.3.8.jar" sourcepath="/third-party/linked-sources/spring-tx-5.3.8-sources.jar">
+	<classpathentry exported="true" kind="lib" path="/third-party/spring-tx-5.3.18.jar" sourcepath="/third-party/linked-sources/spring-tx-5.3.18-sources.jar">
 		<attributes>
 			<attribute name="org.eclipse.jst.component.dependency" value="../"/>
 		</attributes>
 	</classpathentry>
-	<classpathentry exported="true" kind="lib" path="/third-party/spring-web-5.3.8.jar" sourcepath="/third-party/linked-sources/spring-web-5.3.8-sources.jar">
+	<classpathentry exported="true" kind="lib" path="/third-party/spring-web-5.3.18.jar" sourcepath="/third-party/linked-sources/spring-web-5.3.18-sources.jar">
 		<attributes>
 			<attribute name="org.eclipse.jst.component.dependency" value="../"/>
 		</attributes>
 	</classpathentry>
-	<classpathentry exported="true" kind="lib" path="/third-party/spring-webmvc-5.3.8.jar" sourcepath="/third-party/linked-sources/spring-framework-5.3.8/libs/spring-webmvc-5.3.8-sources.jar">
+	<classpathentry exported="true" kind="lib" path="/third-party/spring-webmvc-5.3.18.jar" sourcepath="/third-party/linked-sources/spring-framework-5.3.18/libs/spring-webmvc-5.3.18-sources.jar">
 		<attributes>
 			<attribute name="org.eclipse.jst.component.dependency" value="../"/>
 		</attributes>
 	</classpathentry>
-	<classpathentry exported="true" kind="lib" path="/third-party/spring-websocket-5.3.8.jar" sourcepath="/third-party/linked-sources/spring-websocket-5.3.8-sources.jar">
+	<classpathentry exported="true" kind="lib" path="/third-party/spring-websocket-5.3.18.jar" sourcepath="/third-party/linked-sources/spring-websocket-5.3.18-sources.jar">
 		<attributes>
 			<attribute name="org.eclipse.jst.component.dependency" value="../"/>
 		</attributes>
 	</classpathentry>
-	<classpathentry exported="true" kind="lib" path="/third-party/spring-context-indexer-5.3.8.jar" sourcepath="/third-party/linked-sources/spring-context-indexer-5.3.8-sources.jar">
+	<classpathentry exported="true" kind="lib" path="/third-party/spring-context-indexer-5.3.18.jar" sourcepath="/third-party/linked-sources/spring-context-indexer-5.3.18-sources.jar">
 		<attributes>
 			<attribute name="org.eclipse.jst.component.dependency" value="../"/>
 		</attributes>
 	</classpathentry>
-	<classpathentry exported="true" kind="lib" path="/third-party/spring-jcl-5.3.8.jar" sourcepath="/third-party/linked-sources/spring-jcl-5.3.8.jar-sources.jar">
+	<classpathentry exported="true" kind="lib" path="/third-party/spring-jcl-5.3.18.jar" sourcepath="/third-party/linked-sources/spring-jcl-5.3.18.jar-sources.jar">
 		<attributes>
 			<attribute name="org.eclipse.jst.component.dependency" value="../"/>
 		</attributes>
 	</classpathentry>
-	<classpathentry exported="true" kind="lib" path="/third-party/spring-webflux-5.3.8.jar" sourcepath="/third-party/linked-sources/spring-webflux-5.3.8-sources.jar">
+	<classpathentry exported="true" kind="lib" path="/third-party/spring-webflux-5.3.18.jar" sourcepath="/third-party/linked-sources/spring-webflux-5.3.18-sources.jar">
 		<attributes>
 			<attribute name="org.eclipse.jst.component.dependency" value="../"/>
 		</attributes>
@@ -329,7 +329,7 @@
 			<attribute name="org.eclipse.jst.component.dependency" value="../"/>
 		</attributes>
 	</classpathentry>
-	<classpathentry exported="true" kind="lib" path="/third-party/spring-xml-3.1.1.jar" sourcepath="/third-party/linked-sources/spring-xml-3.1.1-sources.jar">
+	<classpathentry exported="true" kind="lib" path="/third-party/spring-xml-3.1.3.jar" sourcepath="/third-party/linked-sources/spring-xml-3.1.3-sources.jar">
 		<attributes>
 			<attribute name="org.eclipse.jst.component.dependency" value="../"/>
 		</attributes>
@@ -623,7 +623,7 @@
 			<attribute name="org.eclipse.jst.component.dependency" value="../"/>
 		</attributes>
 	</classpathentry>
-	<classpathentry exported="true" kind="lib" path="/third-party/spring-ws-core-3.1.1.jar">
+	<classpathentry exported="true" kind="lib" path="/third-party/spring-ws-core-3.1.3.jar">
 		<attributes>
 			<attribute name="org.eclipse.jst.component.dependency" value="../"/>
 		</attributes>
