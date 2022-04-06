@@ -46,7 +46,7 @@ public class YukonApiValidationUtils extends ValidationUtils {
             }
         }
     }
-    
+
     public void validateCopyPaoName(String paoName, Errors errors, String fieldName) {
         validateName(paoName, errors, fieldName);
 
@@ -57,15 +57,17 @@ public class YukonApiValidationUtils extends ValidationUtils {
             }
         }
     }
-   /**
-    * Checks whether the Pao name is unique or not
-    */
-   private void validateUniquePaoName(String paoName, PaoType type, Errors errors, String fieldName) {
-       LiteYukonPAObject unique = paoDao.findUnique(paoName, type);
-       if (unique != null) {
-           errors.rejectValue("name", ApiErrorDetails.ALREADY_EXISTS.getCodeString(), new Object[] { fieldName }, "");
-       }
-   }
+
+    /**
+     * Checks whether the Pao name is unique or not
+     */
+    private void validateUniquePaoName(String paoName, PaoType type, Errors errors, String fieldName) {
+        LiteYukonPAObject unique = paoDao.findUnique(paoName, type);
+        if (unique != null) {
+            errors.rejectValue("name", ApiErrorDetails.ALREADY_EXISTS.getCodeString(), new Object[] { fieldName }, "");
+        }
+    }
+
     public boolean checkExceedsMaxLength(Errors errors, String field, String fieldValue, int max) {
         if (YukonValidationUtilsCommon.checkExceedsMaxLength(fieldValue, max)) {
             errors.rejectValue(field, ApiErrorDetails.MAX_LENGTH_EXCEEDED.getCodeString(), new Object[] { max },
