@@ -1,6 +1,7 @@
 package com.cannontech.common.device.creation.impl;
 
 import java.util.Arrays;
+import java.util.Date;
 import java.util.List;
 import java.util.Set;
 
@@ -11,6 +12,8 @@ import org.springframework.dao.IncorrectResultSizeDataAccessException;
 import org.springframework.transaction.annotation.Transactional;
 
 import com.cannontech.clientutils.YukonLogManager;
+import com.cannontech.common.alert.model.AlertType;
+import com.cannontech.common.alert.model.SimpleAlert;
 import com.cannontech.common.config.ConfigurationSource;
 import com.cannontech.common.config.MasterConfigBoolean;
 import com.cannontech.common.config.MasterConfigString;
@@ -29,6 +32,10 @@ import com.cannontech.common.pao.PaoUtils;
 import com.cannontech.common.pao.service.impl.PaoCreationHelper;
 import com.cannontech.common.rfn.message.RfnIdentifier;
 import com.cannontech.common.rfn.model.RfnManufacturerModel;
+import com.cannontech.common.util.ResolvableTemplate;
+import com.cannontech.common.util.jms.YukonJmsTemplate;
+import com.cannontech.common.util.jms.YukonJmsTemplateFactory;
+import com.cannontech.common.util.jms.api.JmsApiDirectory;
 import com.cannontech.common.validator.YukonValidationUtils;
 import com.cannontech.core.dao.DBPersistentDao;
 import com.cannontech.core.dao.DeviceDao;
@@ -50,6 +57,7 @@ import com.cannontech.message.dispatch.message.DbChangeType;
 public class DeviceCreationServiceImpl implements DeviceCreationService {
 
     private static final Logger log = YukonLogManager.getLogger(DeviceCreationServiceImpl.class);
+    private YukonJmsTemplate jmsTemplate;
     
     @Autowired private ConfigurationSource configurationSource;
     @Autowired private DeviceDao deviceDao;
@@ -61,6 +69,7 @@ public class DeviceCreationServiceImpl implements DeviceCreationService {
     @Autowired private PaoCreationHelper paoCreationHelper;
     @Autowired private DBPersistentDao dbPersistentDao;
     @Autowired private DbChangeManager dbChangeManager;
+    @Autowired private YukonJmsTemplateFactory jmsTemplateFactory;
     
     @Override
     @Transactional
@@ -99,6 +108,14 @@ public class DeviceCreationServiceImpl implements DeviceCreationService {
         PaoType paoType = templateDevice.getPaoType();
 
         if ((!YukonValidationUtils.isRfnSerialNumberValid(rfnIdentifier.getSensorSerialNumber()))) {
+            jmsTemplate = jmsTemplateFactory.createTemplate(JmsApiDirectory.NEW_ALERT_CREATION);
+            ResolvableTemplate resolvableTemplate = new ResolvableTemplate("yukon.common.alerts.RFN_DEVICE_CREATION_BLOCKED");
+            resolvableTemplate.addData("sensorSerialNumber", rfnIdentifier.getSensorSerialNumber());
+            resolvableTemplate.addData("sensorManufacturer", rfnIdentifier.getSensorManufacturer());
+            resolvableTemplate.addData("sensorModel", rfnIdentifier.getSensorModel());
+            SimpleAlert simpleAlert = new SimpleAlert(AlertType.RFN_DEVICE_CREATION_BLOCKED, new Date(), resolvableTemplate);
+            jmsTemplate.convertAndSend(simpleAlert);
+            
             throw new DeviceCreationException("Device serial number must be alphanumeric and serial number length must be less than 30",
                                               "maxLength");
 
@@ -199,9 +216,16 @@ public class DeviceCreationServiceImpl implements DeviceCreationService {
         }
 
         if ((!YukonValidationUtils.isRfnSerialNumberValid(rfId.getSensorSerialNumber()))) {
+            jmsTemplate = jmsTemplateFactory.createTemplate(JmsApiDirectory.NEW_ALERT_CREATION);
+            ResolvableTemplate resolvableTemplate = new ResolvableTemplate("yukon.common.alerts.RFN_DEVICE_CREATION_BLOCKED");
+            resolvableTemplate.addData("sensorSerialNumber", rfId.getSensorSerialNumber());
+            resolvableTemplate.addData("sensorManufacturer", rfId.getSensorManufacturer());
+            resolvableTemplate.addData("sensorModel", rfId.getSensorModel());
+            SimpleAlert simpleAlert = new SimpleAlert(AlertType.RFN_DEVICE_CREATION_BLOCKED, new Date(), resolvableTemplate);
+            jmsTemplate.convertAndSend(simpleAlert);
+
             throw new DeviceCreationException("Device serial number must be alphanumeric and serial number length must be less than 30",
                                               "maxLength");
-
         }
         
         newDevice.setPAOName(name);
@@ -396,5 +420,5 @@ public class DeviceCreationServiceImpl implements DeviceCreationService {
             deviceGroupMemberEditorDao.addDevices(templateGroup, newDevice);
         }
     }
-
+    
 }
