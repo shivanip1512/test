@@ -3,6 +3,7 @@ package com.cannontech.common.device.creation.impl;
 import java.util.Arrays;
 import java.util.Date;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 
 import org.apache.commons.lang3.StringUtils;
@@ -108,13 +109,9 @@ public class DeviceCreationServiceImpl implements DeviceCreationService {
         PaoType paoType = templateDevice.getPaoType();
 
         if ((!YukonValidationUtils.isRfnSerialNumberValid(rfnIdentifier.getSensorSerialNumber()))) {
-            jmsTemplate = jmsTemplateFactory.createTemplate(JmsApiDirectory.NEW_ALERT_CREATION);
-            ResolvableTemplate resolvableTemplate = new ResolvableTemplate("yukon.common.alerts.RFN_DEVICE_CREATION_BLOCKED");
-            resolvableTemplate.addData("sensorSerialNumber", rfnIdentifier.getSensorSerialNumber());
-            resolvableTemplate.addData("sensorManufacturer", rfnIdentifier.getSensorManufacturer());
-            resolvableTemplate.addData("sensorModel", rfnIdentifier.getSensorModel());
-            SimpleAlert simpleAlert = new SimpleAlert(AlertType.RFN_DEVICE_CREATION_BLOCKED, new Date(), resolvableTemplate);
-            jmsTemplate.convertAndSend(simpleAlert);
+            createAndSendAlert(AlertType.RFN_DEVICE_CREATION_BLOCKED,
+                    Map.of("sensorSerialNumber", rfnIdentifier.getSensorSerialNumber(), "sensorManufacturer",
+                            rfnIdentifier.getSensorManufacturer(), "sensorModel", rfnIdentifier.getSensorModel()));
             
             throw new DeviceCreationException("Device serial number must be alphanumeric and serial number length must be less than 30",
                                               "maxLength");
@@ -216,13 +213,9 @@ public class DeviceCreationServiceImpl implements DeviceCreationService {
         }
 
         if ((!YukonValidationUtils.isRfnSerialNumberValid(rfId.getSensorSerialNumber()))) {
-            jmsTemplate = jmsTemplateFactory.createTemplate(JmsApiDirectory.NEW_ALERT_CREATION);
-            ResolvableTemplate resolvableTemplate = new ResolvableTemplate("yukon.common.alerts.RFN_DEVICE_CREATION_BLOCKED");
-            resolvableTemplate.addData("sensorSerialNumber", rfId.getSensorSerialNumber());
-            resolvableTemplate.addData("sensorManufacturer", rfId.getSensorManufacturer());
-            resolvableTemplate.addData("sensorModel", rfId.getSensorModel());
-            SimpleAlert simpleAlert = new SimpleAlert(AlertType.RFN_DEVICE_CREATION_BLOCKED, new Date(), resolvableTemplate);
-            jmsTemplate.convertAndSend(simpleAlert);
+            createAndSendAlert(AlertType.RFN_DEVICE_CREATION_BLOCKED,
+                    Map.of("sensorSerialNumber", rfId.getSensorSerialNumber(), "sensorManufacturer",
+                            rfId.getSensorManufacturer(), "sensorModel", rfId.getSensorModel()));
 
             throw new DeviceCreationException("Device serial number must be alphanumeric and serial number length must be less than 30",
                                               "maxLength");
@@ -421,4 +414,11 @@ public class DeviceCreationServiceImpl implements DeviceCreationService {
         }
     }
     
+    private void createAndSendAlert(AlertType type, Map<String, String> data) {
+        jmsTemplate = jmsTemplateFactory.createTemplate(JmsApiDirectory.NEW_ALERT_CREATION);
+        ResolvableTemplate resolvableTemplate = new ResolvableTemplate("yukon.common.alerts." + type);
+        data.forEach((key, value) -> resolvableTemplate.addData(key, value));
+        SimpleAlert simpleAlert = new SimpleAlert(type, new Date(), resolvableTemplate);
+        jmsTemplate.convertAndSend(simpleAlert);
+    }
 }

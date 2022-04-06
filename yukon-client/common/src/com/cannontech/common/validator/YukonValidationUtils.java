@@ -26,7 +26,7 @@ public class YukonValidationUtils extends ValidationUtils {
     public static final String BASIC_URL_PATH_REGEX = "\\A" + BASIC_URL_PATH_FRAGMENT + "\\Z";
     public static final String BASIC_RESTFUL_URL_REGEX = "\\Ahttps?\\://([a-zA-Z0-9_\\-]+\\.)*[a-zA-Z0-9]+(\\:[0-9]+)?"
         + BASIC_URL_PATH_FRAGMENT + "\\Z";
-    public final static String VALID_RFN_SENSOR_SERIAL_NUMBER = "^[a-zA-Z0-9-]+";
+    public final static String VALID_RFN_SENSOR_SERIAL_NUMBER = "^[a-zA-Z0-9-_]+";
 
     public static boolean isUrlPath(String input) {
         if (input == null) {
@@ -37,7 +37,7 @@ public class YukonValidationUtils extends ValidationUtils {
     
     /**
      * Check to ensure that the Serial Number of a RFN device is a valid value that only contains characters from : A-Z, a-z,
-         * 0-9 or -.
+         * 0-9, _ or -.
      **/
     public static boolean isRfnSerialNumberValid(String serialNumber) {
         
