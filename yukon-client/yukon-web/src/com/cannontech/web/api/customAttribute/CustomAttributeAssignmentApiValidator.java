@@ -19,6 +19,7 @@ import com.cannontech.stars.util.ServletUtils;
 public class CustomAttributeAssignmentApiValidator extends SimpleValidator<Assignment> {
 
     @Autowired private AttributeServiceImpl attributeService;
+    @Autowired private YukonApiValidationUtils yukonApiValidationUtils;
 
     public CustomAttributeAssignmentApiValidator() {
         super(Assignment.class);
@@ -30,7 +31,7 @@ public class CustomAttributeAssignmentApiValidator extends SimpleValidator<Assig
         String strattributeAssignmentId = ServletUtils.getPathVariable("attributeAssignmentId");
         Integer attributeAssignmentId = strattributeAssignmentId == null ? null : Integer.valueOf(strattributeAssignmentId);
 
-        YukonApiValidationUtils.checkIsPositiveInt(errors, "attributeAssignmentId", attributeAssignmentId);
+        yukonApiValidationUtils.checkIsPositiveInt(errors, "attributeAssignmentId", attributeAssignmentId);
         if (!attributeService.isValidAttributeId(assignment.getAttributeId())) {
             errors.rejectValue("attributeId", ApiErrorDetails.DOES_NOT_EXISTS.getCodeString(),
                     new Object[] { assignment.getAttributeId() }, "");

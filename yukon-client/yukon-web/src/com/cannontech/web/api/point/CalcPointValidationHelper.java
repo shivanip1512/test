@@ -24,6 +24,7 @@ public class CalcPointValidationHelper {
 
     @Autowired private static IDatabaseCache cache;
     @Autowired private static PointDao pointDao;
+    @Autowired private static YukonApiValidationUtils yukonApiValidationUtils;
 
     public CalcPointValidationHelper(IDatabaseCache cache, PointDao pointDao) {
         CalcPointValidationHelper.cache = cache;
@@ -36,8 +37,8 @@ public class CalcPointValidationHelper {
                 errors.pushNestedPath("calcComponents[" + i + "]");
                 CalculationComponent calcComponent = calcComponents.get(i);
                 if (calcComponent != null) {
-                    YukonApiValidationUtils.checkIfFieldRequired("componentType", errors, calcComponent.getComponentType(), "componentType");
-                    YukonApiValidationUtils.checkIfFieldRequired("operation", errors, calcComponent.getOperation(), "operation");
+                    yukonApiValidationUtils.checkIfFieldRequired("componentType", errors, calcComponent.getComponentType(), "componentType");
+                    yukonApiValidationUtils.checkIfFieldRequired("operation", errors, calcComponent.getOperation(), "operation");
                     if (!errors.hasFieldErrors("operation")) {
                         if (calcComponent.getComponentType() == CalcCompType.OPERATION
                                 || calcComponent.getComponentType() == CalcCompType.CONSTANT) {
@@ -55,7 +56,7 @@ public class CalcPointValidationHelper {
                             }
                         }
                     }
-                    YukonApiValidationUtils.checkIfFieldRequired("operand", errors, calcComponent.getOperand(), "operand");
+                    yukonApiValidationUtils.checkIfFieldRequired("operand", errors, calcComponent.getOperand(), "operand");
                     if (!errors.hasFieldErrors("operand")) {
                         if (calcComponent.getComponentType() == CalcCompType.OPERATION || calcComponent.getComponentType() == CalcCompType.FUNCTION) {
                             try {
@@ -79,7 +80,7 @@ public class CalcPointValidationHelper {
                                                    && 
                                                    component.getOperation() != null && component.getOperation().getCalcOperation().equals(CalcComponentTypes.BASELINE_FUNCTION));
         if (isBaselineAssigned) {
-            YukonApiValidationUtils.checkIfFieldRequired("baselineId", errors, baselineId, "baselineId");
+            yukonApiValidationUtils.checkIfFieldRequired("baselineId", errors, baselineId, "baselineId");
             if (!errors.hasFieldErrors("baselineId")) {
                 List<Integer> baseLineIds = cache.getAllBaselines().stream()
                                                                    .map(LiteBaseline::getBaselineID)

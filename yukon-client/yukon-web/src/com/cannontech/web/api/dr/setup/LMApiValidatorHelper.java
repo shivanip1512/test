@@ -22,12 +22,14 @@ import com.cannontech.yukon.IDatabaseCache;
  */
 public class LMApiValidatorHelper {
     @Autowired private IDatabaseCache serverDatabaseCache;
+    @Autowired private YukonApiValidationUtils yukonApiValidationUtils;
+    
     /**
      * Checks whether the Pao name is unique or not
      */
 
     public void validateRoute(Errors errors, Integer routeId) {
-        YukonApiValidationUtils.checkIfFieldRequired("routeId", errors, routeId, "Route Id");
+        yukonApiValidationUtils.checkIfFieldRequired("routeId", errors, routeId, "Route Id");
         if (!errors.hasFieldErrors("routeId")) {
             LiteYukonPAObject liteRoute = serverDatabaseCache.getAllRoutesMap().get(routeId);
             if (liteRoute == null) {

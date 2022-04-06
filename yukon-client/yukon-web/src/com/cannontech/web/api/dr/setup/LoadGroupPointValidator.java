@@ -25,6 +25,7 @@ public class LoadGroupPointValidator extends LoadGroupSetupValidator<LoadGroupPo
     @Autowired private IDatabaseCache serverDatabaseCache;
     @Autowired private PointDao pointDao;
     @Autowired private StateGroupDao stateGroupDao;
+    @Autowired private YukonApiValidationUtils yukonApiValidationUtils;
 
     public LoadGroupPointValidator() {
         super(LoadGroupPoint.class);
@@ -38,10 +39,10 @@ public class LoadGroupPointValidator extends LoadGroupSetupValidator<LoadGroupPo
     @Override
     protected void doValidation(LoadGroupPoint loadGroup, Errors errors) {
         // Validate Control Device (deviceUsage)
-        YukonApiValidationUtils.checkIfFieldRequired("deviceUsage", errors, loadGroup.getDeviceUsage(), "Control Device Point");
+        yukonApiValidationUtils.checkIfFieldRequired("deviceUsage", errors, loadGroup.getDeviceUsage(), "Control Device Point");
 
         if (!errors.hasFieldErrors("deviceUsage")) {
-            YukonApiValidationUtils.checkIfFieldRequired("deviceUsage.id", errors, loadGroup.getDeviceUsage().getId(),
+            yukonApiValidationUtils.checkIfFieldRequired("deviceUsage.id", errors, loadGroup.getDeviceUsage().getId(),
                     "Control Device Point");
 
             if (!errors.hasFieldErrors("deviceUsage.id")) {
@@ -68,9 +69,9 @@ public class LoadGroupPointValidator extends LoadGroupSetupValidator<LoadGroupPo
 
     private void validatePointUsage(LoadGroupPoint loadGroup, Errors errors, Optional<LiteYukonPAObject> liteYukonPAObject) {
         // Validate Control Point (pointUsage)
-        YukonApiValidationUtils.checkIfFieldRequired("pointUsage", errors, loadGroup.getPointUsage(), "Control Device Point");
+        yukonApiValidationUtils.checkIfFieldRequired("pointUsage", errors, loadGroup.getPointUsage(), "Control Device Point");
         if (!errors.hasFieldErrors("pointUsage")) {
-            YukonApiValidationUtils.checkIfFieldRequired("pointUsage.id", errors, loadGroup.getPointUsage().getId(),
+            yukonApiValidationUtils.checkIfFieldRequired("pointUsage.id", errors, loadGroup.getPointUsage().getId(),
                     "Control Device Point");
 
             if (!errors.hasFieldErrors("pointUsage.id")) {
@@ -103,11 +104,11 @@ public class LoadGroupPointValidator extends LoadGroupSetupValidator<LoadGroupPo
 
     private void validateStartControlRawState(LoadGroupPoint loadGroup, Errors errors, Optional<LitePoint> point) {
         // Validate Control Start State (startControlRawState)
-        YukonApiValidationUtils.checkIfFieldRequired("startControlRawState", errors, loadGroup.getStartControlRawState(),
+        yukonApiValidationUtils.checkIfFieldRequired("startControlRawState", errors, loadGroup.getStartControlRawState(),
                 "Control Start State");
 
         if (!errors.hasFieldErrors("startControlRawState")) {
-            YukonApiValidationUtils.checkIfFieldRequired("startControlRawState.id", errors,
+            yukonApiValidationUtils.checkIfFieldRequired("startControlRawState.id", errors,
                     loadGroup.getStartControlRawState().getId(), "Control Start State");
 
             if (!errors.hasFieldErrors("startControlRawState.id")) {

@@ -47,6 +47,7 @@ public class PointApiValidator<T extends PointBaseModel<?>> extends SimpleValida
     @Autowired protected StateGroupDao stateGroupDao;
     @Autowired private AlarmCatDao alarmCatDao;
     @Autowired private PointDao pointDao;
+    @Autowired private YukonApiValidationUtils yukonApiValidationUtils;
     protected static final String baseKey = "yukon.web.api.error";
     public static final int maxFdrInterfaceTranslations = 5;
 
@@ -65,7 +66,7 @@ public class PointApiValidator<T extends PointBaseModel<?>> extends SimpleValida
         boolean isCreationOperation = target.getPointId() == null ? true : false;
 
         if (target.getPointName() != null) {
-            YukonApiValidationUtils.checkIsBlank(errors, "pointName", target.getPointName(), "Name", false);
+            yukonApiValidationUtils.checkIsBlank(errors, "pointName", target.getPointName(), "Name", false);
         }
         if (target.getPaoId() != null) {
             LiteYukonPAObject liteYukonPAObject = serverDatabaseCache.getAllPaosMap().get(target.getPaoId());
@@ -84,7 +85,7 @@ public class PointApiValidator<T extends PointBaseModel<?>> extends SimpleValida
                 }
 
                 if (target.getPointOffset() != null) {
-                    YukonApiValidationUtils.checkRange(errors, "pointOffset", target.getPointOffset(), 0, 99999999, true);
+                    yukonApiValidationUtils.checkRange(errors, "pointOffset", target.getPointOffset(), 0, 99999999, true);
                     if (!errors.hasFieldErrors("pointOffset")) {
                         pointApiValidationUtil.validatePointOffset(target, "pointOffset", errors, isCreationOperation);
                     }
@@ -225,7 +226,7 @@ public class PointApiValidator<T extends PointBaseModel<?>> extends SimpleValida
         StaleData staleData = target.getStaleData();
         if (staleData != null) {
             if (staleData.getTime() != null) {
-                YukonApiValidationUtils.checkRange(errors, "staleData.time", staleData.getTime(), 0, 99999999, false);
+                yukonApiValidationUtils.checkRange(errors, "staleData.time", staleData.getTime(), 0, 99999999, false);
             }
             if (staleData.getUpdateStyle() != null) {
                 if (!(staleData.getUpdateStyle() == 1 || staleData.getUpdateStyle() == 2)) {

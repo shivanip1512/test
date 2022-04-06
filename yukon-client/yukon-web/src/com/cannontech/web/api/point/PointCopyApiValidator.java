@@ -18,6 +18,7 @@ import com.cannontech.yukon.IDatabaseCache;
 
 public class PointCopyApiValidator extends SimpleValidator<PointCopy> {
 
+    @Autowired private YukonApiValidationUtils yukonApiValidationUtils;
     @Autowired private PointApiValidationUtil pointApiValidationUtil;
     @Autowired private IDatabaseCache serverDatabaseCache;
     protected static final String baseKey = "yukon.web.api.error";
@@ -44,17 +45,17 @@ public class PointCopyApiValidator extends SimpleValidator<PointCopy> {
         }
        
         // Check if point Name is NULL
-        YukonApiValidationUtils.checkIfFieldRequired("pointName", errors, copyPoint.getPointName(), "Point Name");
+        yukonApiValidationUtils.checkIfFieldRequired("pointName", errors, copyPoint.getPointName(), "Point Name");
 
         if (copyPoint.getPointName() != null) {
-            YukonApiValidationUtils.checkIsBlank(errors, "pointName", copyPoint.getPointName(), "Point Name", false);
+            yukonApiValidationUtils.checkIsBlank(errors, "pointName", copyPoint.getPointName(), "Point Name", false);
         }
 
         // Check if pointOffset is NULL
-        YukonApiValidationUtils.checkIfFieldRequired("pointOffset", errors, copyPoint.getPointOffset(), "Point Offset");
+        yukonApiValidationUtils.checkIfFieldRequired("pointOffset", errors, copyPoint.getPointOffset(), "Point Offset");
 
         // Check if paoId is NULL
-        YukonApiValidationUtils.checkIfFieldRequired("paoId", errors, copyPoint.getPaoId(), "PaoId");
+        yukonApiValidationUtils.checkIfFieldRequired("paoId", errors, copyPoint.getPaoId(), "PaoId");
         if (!errors.hasFieldErrors("paoId")) {
             LiteYukonPAObject liteYukonPAObject = serverDatabaseCache.getAllPaosMap().get(copyPoint.getPaoId());
             if (liteYukonPAObject == null) {
@@ -73,7 +74,7 @@ public class PointCopyApiValidator extends SimpleValidator<PointCopy> {
                 }
                 
                 // Check pointOffset range
-                YukonApiValidationUtils.checkRange(errors, "pointOffset", copyPoint.getPointOffset(), 0, 99999999, true);
+                yukonApiValidationUtils.checkRange(errors, "pointOffset", copyPoint.getPointOffset(), 0, 99999999, true);
                 if (!errors.hasFieldErrors("pointOffset")) {
                     pointModel.setPointOffset(copyPoint.getPointOffset());
                     boolean physicalPointOffset = pointModel.getPointOffset() > 0 ? true : false;

@@ -19,6 +19,7 @@ public class PointApiValidationUtil extends ValidationUtils {
 
     @Autowired private PointDao pointDao;
     @Autowired private PointValidationUtilCommon pointValidationUtilCommon;
+    @Autowired private YukonApiValidationUtils yukonApiValidationUtils;
 
     public void validatePointName(LitePointModel pointModel, String fieldName, Errors errors, boolean isCopyOrCreate) {
         validateName(fieldName, errors, pointModel.getPointName());
@@ -30,8 +31,8 @@ public class PointApiValidationUtil extends ValidationUtils {
 
     public void validateName(String fieldName, Errors errors, String pointName) {
 
-        YukonApiValidationUtils.rejectIfEmptyOrWhitespace(errors, fieldName, "yukon.web.error.isBlank");
-        YukonApiValidationUtils.checkExceedsMaxLength(errors, fieldName, pointName, 60);
+        yukonApiValidationUtils.rejectIfEmptyOrWhitespace(errors, fieldName, "yukon.web.error.isBlank");
+        yukonApiValidationUtils.checkExceedsMaxLength(errors, fieldName, pointName, 60);
         if (!pointValidationUtilCommon.validatePaoName(pointName)) {
             errors.rejectValue(fieldName, ApiErrorDetails.ILLEGAL_CHARACTERS.getCodeString(), new Object[] { fieldName }, "");
         }
@@ -42,7 +43,7 @@ public class PointApiValidationUtil extends ValidationUtils {
         String physicalPort = pointValidationUtilCommon.isPointOrPhyicalOffset(pointModel, fieldName, errors);
         if (StringUtils.isNotEmpty(physicalPort)) {
             Range<Integer> range = Range.inclusive(0, 99999999);
-            YukonApiValidationUtils.checkRange(errors, fieldName, physicalPort,
+            yukonApiValidationUtils.checkRange(errors, fieldName, physicalPort,
                     pointModel.getPointOffset(), range, true);
         }
         List<Object> arguments = pointValidationUtilCommon.isValidPointOffset(pointModel, isCopyOrCreate);

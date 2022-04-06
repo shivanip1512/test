@@ -18,6 +18,8 @@ import com.cannontech.web.api.dr.setup.LMApiValidatorHelper;
 
 public class ControlScenarioSetupValidator extends SimpleValidator<ControlScenario> {
     @Autowired LMApiValidatorHelper lmApiValidatorHelper;
+    @Autowired private YukonApiValidationUtils yukonApiValidationUtils;
+
     public ControlScenarioSetupValidator() {
         super(ControlScenario.class);
     }
@@ -25,17 +27,17 @@ public class ControlScenarioSetupValidator extends SimpleValidator<ControlScenar
     @Override
     protected void doValidation(ControlScenario scenario, Errors errors) {
 
-        YukonApiValidationUtils.validateNewPaoName(scenario.getName(), PaoType.LM_SCENARIO, errors, "Name");
+        yukonApiValidationUtils.validateNewPaoName(scenario.getName(), PaoType.LM_SCENARIO, errors, "Name");
 
         if (CollectionUtils.isNotEmpty(scenario.getAllPrograms())) {
             for (int i = 0; i < scenario.getAllPrograms().size(); i++) {
                 ProgramDetails program = scenario.getAllPrograms().get(i);
                 errors.pushNestedPath("allPrograms[" + i + "]");
                 if (program.getProgramId() == null) {
-                    YukonApiValidationUtils.checkIfFieldRequired("programId", errors, program.getProgramId(), "Program Id");
+                    yukonApiValidationUtils.checkIfFieldRequired("programId", errors, program.getProgramId(), "Program Id");
                 }
-                YukonApiValidationUtils.checkRange(errors, "startOffsetInMinutes", program.getStartOffsetInMinutes(), 0, 1439, true);
-                YukonApiValidationUtils.checkRange(errors, "stopOffsetInMinutes", program.getStopOffsetInMinutes(), 0, 1439, true);
+                yukonApiValidationUtils.checkRange(errors, "startOffsetInMinutes", program.getStartOffsetInMinutes(), 0, 1439, true);
+                yukonApiValidationUtils.checkRange(errors, "stopOffsetInMinutes", program.getStopOffsetInMinutes(), 0, 1439, true);
 
                 if (CollectionUtils.isEmpty(program.getGears())) {
                     errors.reject(ApiErrorDetails.FIELD_REQUIRED.getCodeString(), new Object[] { "Start Gear" }, "");
@@ -43,9 +45,9 @@ public class ControlScenarioSetupValidator extends SimpleValidator<ControlScenar
                     errors.reject(ApiErrorDetails.ONLY_ONE_ALLOWED.getCodeString(), new Object[] { 1, "Gear"}, "");
                     //errors.reject(key + "oneGear");
                 } else if (program.getGears().get(0) == null) {
-                    YukonApiValidationUtils.checkIfFieldRequired("gears", errors, program.getGears().get(0), "Gear");
+                    yukonApiValidationUtils.checkIfFieldRequired("gears", errors, program.getGears().get(0), "Gear");
                 } else if(program.getGears().get(0).getGearNumber() == null) {
-                    YukonApiValidationUtils.checkIfFieldRequired("gears[0].gearNumber", errors, program.getGears().get(0).getGearNumber(), "Gear Number");
+                    yukonApiValidationUtils.checkIfFieldRequired("gears[0].gearNumber", errors, program.getGears().get(0).getGearNumber(), "Gear Number");
                 }
                 errors.popNestedPath();
             }
