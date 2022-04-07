@@ -167,7 +167,6 @@ public class EimJavaLibraryTest {
         "tomcat-util.jar",
         "tomcat-websocket.jar",
         "validation-api-2.0.1.Final.jar",
-        "woodstox-core-6.2.6.jar",
         "websocket-api.jar",
         "wrapper.jar",
         "wrapperApp.jar",
