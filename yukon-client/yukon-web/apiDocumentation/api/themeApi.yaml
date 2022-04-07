@@ -1,0 +1,20 @@
+currentTheme:
+  get:
+      tags:
+        - Theme
+      summary: Get current theme details. 
+      description: Get current theme details.
+      requestBody:
+        description: |-
+          Get current theme details themeId, themeName, editable and theme properties. 
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '../schemas/themeSchema.yaml#/Current-Theme-Response'
+              examples:
+                CurrentThemeResponse: 
+                  $ref: '../schemas/themeSchema.yaml#/components/examples/CurrentThemeResponse'
+

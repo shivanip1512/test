@@ -27,6 +27,9 @@ paths:
   /captchaDetails:
      $ref: 'api/tokenApi.yaml#/captchaDetails'
 
+  /admin/config/currentTheme:
+     $ref: 'api/themeApi.yaml#/currentTheme'
+
   /devices/commChannels:
     $ref: 'api/commChannelsApi.yaml#/post-operation'
   /devices/commChannels/{id}:
@@ -135,6 +138,7 @@ components:
       bearerFormat: JWT
 tags:
   - name: Authentication
+  - name: Theme
   - name: Comm Channel
   - name: Trend
   - name: Load Group
