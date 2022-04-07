@@ -26,7 +26,6 @@
     <entry key="yukon.web.login.error.INVALID_CREDENTIALS">Invalid Credentials</entry>
     <entry key="yukon.web.login.error.USER_EXISTS">Username already exists</entry>
     <entry key="yukon.web.login.error.PASSWORD_CHANGE_NOT_SUPPORTED">Password changes are not supported</entry>
-    <entry key="yukon.web.theme.error.NOT_FOUND">Theme Not Found</entry>
     
     <!-- forgotPassword.jsp -->
     <entry key="yukon.web.modules.login.forgotPassword.pageTitle">Energy Services Operations Center</entry>

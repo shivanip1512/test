@@ -12,6 +12,7 @@ import com.cannontech.common.i18n.MessageSourceAccessor;
 import com.cannontech.core.dao.NotFoundException;
 import com.cannontech.i18n.YukonUserContextMessageSourceResolver;
 import com.cannontech.user.YukonUserContext;
+import com.cannontech.util.Validator;
 import com.cannontech.web.admin.theme.dao.ThemeDao;
 import com.cannontech.web.admin.theme.model.Theme;
 
@@ -25,15 +26,18 @@ public class ThemeApiController {
     public ResponseEntity<Object> currentTheme(YukonUserContext context) {
 
         List<Theme> themes = themeDao.getThemes();
-        for (Theme theme : themes) {
-            if (theme.isCurrentTheme()) {
-                return new ResponseEntity<>(theme, HttpStatus.OK);
+
+        if (!Validator.isNull(themes)) {
+            for (Theme theme : themes) {
+                if (theme.isCurrentTheme()) {
+                    return new ResponseEntity<>(theme, HttpStatus.OK);
+                }
             }
         }
 
         final MessageSourceAccessor messageSourceAccessor = messageSourceResolver.getMessageSourceAccessor(context);
-        final String THEME_NOT_FOUND_MSG = "yukon.web.theme.error.NOT_FOUND";
-        throw new NotFoundException(messageSourceAccessor.getMessage(THEME_NOT_FOUND_MSG));
+        final String themeNotFoundMsg = "yukon.web.theme.error.THEME_NOT_FOUND";
+        throw new NotFoundException(messageSourceAccessor.getMessage(themeNotFoundMsg));
     }
 
 }
