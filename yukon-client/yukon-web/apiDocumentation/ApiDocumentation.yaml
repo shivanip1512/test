@@ -29,6 +29,8 @@ paths:
 
   /admin/config/currentTheme:
      $ref: 'api/themeApi.yaml#/currentTheme'
+  /common/images/{id}:
+     $ref: 'api/themeApi.yaml#/image'
 
   /devices/commChannels:
     $ref: 'api/commChannelsApi.yaml#/post-operation'

@@ -2,10 +2,8 @@ currentTheme:
   get:
       tags:
         - Theme
-      summary: Get current theme details. 
-      description: Get current theme details.
-      requestBody:
-        description: |-
+      summary: Retrieve current theme 
+      description: |-
           Get current theme details themeId, themeName, editable and theme properties. 
       responses:
         '200':
@@ -18,3 +16,28 @@ currentTheme:
                 CurrentThemeResponse: 
                   $ref: '../schemas/themeSchema.yaml#/components/examples/CurrentThemeResponse'
 
+image:
+  get:
+      tags:
+        - Theme
+      summary: Retrieve image
+      description: |-
+          API to retrieve an image based on passed id.
+      parameters:
+        - name: id
+          in: path
+          schema:
+           type: integer
+          required: true
+          description: 'Unique identifier for the image.'
+      responses:
+        '200':
+          description: OK
+          content:
+            image/*:    
+             schema: 
+               schema:
+                type: string
+                format: binary
+             examples:
+                externalValue: '../../WebContent/WebConfig/yukon/layout/yukon_background.jpg'
