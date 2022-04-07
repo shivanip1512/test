@@ -236,8 +236,10 @@ public class YukonValidationUtilsTest {
     @Test
     public void isRfnSerialNumberValid_Test() {
         assertTrue(YukonValidationUtils.isRfnSerialNumberValid(null));
+        assertTrue(YukonValidationUtils.isRfnSerialNumberValid(""));
         assertTrue(YukonValidationUtils.isRfnSerialNumberValid("a10kl"));
         assertFalse(YukonValidationUtils.isRfnSerialNumberValid("Morethan30characterrrrrrrrrrrrrrrrrrrrrrrr"));
+        assertFalse(YukonValidationUtils.isRfnSerialNumberValid("1234asb%^&$#$%^"));
     }
 
     @Test

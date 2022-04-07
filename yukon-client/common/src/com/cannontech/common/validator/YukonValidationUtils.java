@@ -37,23 +37,16 @@ public class YukonValidationUtils extends ValidationUtils {
     
     /**
      * Check to ensure that the Serial Number of a RFN device is a valid value that only contains characters from : A-Z, a-z,
-         * 0-9, _ or -.
+     * 0-9, _ or -.
      **/
     public static boolean isRfnSerialNumberValid(String serialNumber) {
-        
         if (StringUtils.isEmpty(serialNumber)) {
             return true;
         }
-        
         if (serialNumber.length() <= 30) {
-            return true;
-        }
-
-        if(serialNumber != null) {
             Matcher isSerialNumberValid = Pattern.compile(VALID_RFN_SENSOR_SERIAL_NUMBER).matcher(serialNumber);
             return isSerialNumberValid.matches();
         }
-
         return false;
     }
 
