@@ -3,8 +3,6 @@ package com.cannontech.common.validator;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
-import java.util.function.Function;
-import java.util.function.Supplier;
 import java.util.stream.Stream;
 
 import org.junit.jupiter.api.Test;
@@ -238,6 +236,7 @@ public class YukonValidationUtilsTest {
         assertTrue(YukonValidationUtils.isRfnSerialNumberValid(null));
         assertTrue(YukonValidationUtils.isRfnSerialNumberValid(""));
         assertTrue(YukonValidationUtils.isRfnSerialNumberValid("a10kl"));
+        assertTrue(YukonValidationUtils.isRfnSerialNumberValid("ABC_abc-123"));
         assertFalse(YukonValidationUtils.isRfnSerialNumberValid("Morethan30characterrrrrrrrrrrrrrrrrrrrrrrr"));
         assertFalse(YukonValidationUtils.isRfnSerialNumberValid("1234asb%^&$#$%^"));
     }
