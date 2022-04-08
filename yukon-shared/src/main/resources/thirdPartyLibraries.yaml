@@ -2073,8 +2073,8 @@ Java :
     license : CC0
     license URLs : "http://creativecommons.org/publicdomain/zero/1.0/"
     maven URL : "https://mvnrepository.com/artifact/org.reactivestreams/reactive-streams/1.0.3"
-    md5 : c8c008e0af6c7d2bd0cba9f9cb3c6d33
-    sha1 : d4aa598552d2051a620766f2d80fd3051b265ced
+    md5 : 69122b098fff1c6b1bf2cd3b355e7e03
+    sha1 : d9fb7a7926ffa635b3dcaa5049fb2bfa25b3e7d0
     updated : 2022-04-08
     jira : YUK-26303
     notes : 
@@ -2087,8 +2087,8 @@ Java :
     license : Apache 2.0
     license URLs : "https://opensource.org/licenses/Apache-2.0"
     maven URL : "https://mvnrepository.com/artifact/io.projectreactor/reactor-core/3.3.22.RELEASE"
-    md5 : 6c5079c6c783a3eff43fe21a31d7635f
-    sha1 : 790c23d41de6d29b6621140d9c4cb2f14beff208
+    md5 : b873644348f2d9f516bdafc954b29bf5
+    sha1 : f7613f8a3deedb3547d04fd3d05565c003f2cb39
     updated : 2022-04-08
     jira : YUK-26303
     notes : 
@@ -2324,7 +2324,7 @@ Java :
     project URL : "https://github.com/spring-projects/spring-framework"
     license : Apache 2.0
     license URLs : "https://opensource.org/licenses/Apache-2.0"
-    maven URL : "https://repo1.maven.org/maven2/org/springframework/integration/spring-integration-core/5.5.10"
+    maven URL : "https://mvnrepository.com/artifact/org.springframework.integration/spring-integration-core/5.5.10"
     md5 : 145fca1ff9ac570e841f214efc6153ab
     sha1 : 4555d831739dfcd15c46d1f46526883ed027ce3e
     updated : 2022-04-08
