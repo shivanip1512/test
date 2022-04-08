@@ -28,6 +28,7 @@ public enum LibraryLicenseType {
     CPL_1_0("CPL 1.0", Attribution.REQUIRED),
     EATON("Eaton-owned", Attribution.NONE),
     EPL_1_0("EPL 1.0", Attribution.REQUIRED),
+    EPL_2_0("Eclipse Public License v2.0", Attribution.REQUIRED),
     GPL("GPL", Attribution.REQUIRED),
     GPL_V2("GPL 2.0", Attribution.REQUIRED),
     GPL_V2_WITH_CPE("GPLv2 with classpath exception", Attribution.REQUIRED),

@@ -203,6 +203,20 @@ Java :
     jira : none
     notes : 
   
+  - filename : aspectjweaver-1.9.7.jar
+    yukon group : Spring
+    project : Spring
+    version : 1.9.7
+    project URL : "https://www.eclipse.org/aspectj/"
+    license : Eclipse Public License v2.0
+    license URLs : "https://www.eclipse.org/org/documents/epl-2.0/EPL-2.0.txt"
+    maven URL : "https://mvnrepository.com/artifact/org.aspectj/aspectjweaver/1.9.7"
+    md5 : a4d97c5a2f94b8b5d132761a769e5eeb
+    sha1 : 158f5c255cd3e4408e795b79f7c3fbae9b53b7ca
+    updated : 2022-04-08
+    jira : YUK-26303
+    notes :
+  
   - filename : axiom-api-1.2.22.jar
     yukon group : Spring Web Services
     project : Apache Axiom
@@ -2051,32 +2065,32 @@ Java :
     jira : YUK-12659
     notes : 
   
-  - filename : reactive-streams-1.0.2.jar
+  - filename : reactive-streams-1.0.3.jar
     yukon group : Spring
     project : Reactive Streams
-    version : 1.0.2
+    version : 1.0.3
     project URL : "http://www.reactive-streams.org/"
     license : CC0
     license URLs : "http://creativecommons.org/publicdomain/zero/1.0/"
-    maven URL : "https://mvnrepository.com/artifact/org.reactivestreams/reactive-streams/1.0.2"
-    md5 : 022ff8ca0101daeb35c8df9b120ff99e
-    sha1 : 323964c36556eb0e6209f65c1cef72b53b461ab8
-    updated : 2018-10-24
-    jira : YUK-18846
+    maven URL : "https://mvnrepository.com/artifact/org.reactivestreams/reactive-streams/1.0.3"
+    md5 : c8c008e0af6c7d2bd0cba9f9cb3c6d33
+    sha1 : d4aa598552d2051a620766f2d80fd3051b265ced
+    updated : 2022-04-08
+    jira : YUK-26303
     notes : 
   
-  - filename : reactor-core-3.2.1.RELEASE.jar
+  - filename : reactor-core-3.3.22.RELEASE.jar
     yukon group : Spring
     project : Reactor - Non-Blocking Reactive Foundation for the JVM
-    version : 3.2.1
+    version : 3.3.22
     project URL : "https://github.com/reactor/reactor-core"
     license : Apache 2.0
     license URLs : "https://opensource.org/licenses/Apache-2.0"
-    maven URL : "https://mvnrepository.com/artifact/io.projectreactor/reactor-core/3.2.1.RELEASE"
-    md5 : 9acd80067bf0ef2a48f4dfed0049b980
-    sha1 : 7560fd565b04cde039611a9647d1bdac3af9897a
-    updated : 2018-10-24
-    jira : YUK-18846
+    maven URL : "https://mvnrepository.com/artifact/io.projectreactor/reactor-core/3.3.22.RELEASE"
+    md5 : 6c5079c6c783a3eff43fe21a31d7635f
+    sha1 : 790c23d41de6d29b6621140d9c4cb2f14beff208
+    updated : 2022-04-08
+    jira : YUK-26303
     notes : 
   
   - filename : saaj.jar
@@ -2177,354 +2191,354 @@ Java :
     jira : YUK-16918
     notes : 
   
-  - filename : spring-aop-5.1.5.RELEASE.jar
+  - filename : spring-aop-5.2.20.RELEASE.jar
     yukon group : Spring
     project : Spring
-    version : 5.1.5
+    version : 5.2.20
     project URL : "https://github.com/spring-projects/spring-framework"
     license : Apache 2.0
     license URLs : "https://opensource.org/licenses/Apache-2.0"
-    maven URL : "https://mvnrepository.com/artifact/org.springframework/spring-aop/5.1.5.RELEASE"
-    md5 : bea7aa8a96cf2d2821e44e73312b6c46
-    sha1 : 5e6ab23bc14369b0e29881afd85ad13b79846a0e
-    updated : 2019-04-03
-    jira : YUK-19578
+    maven URL : "https://mvnrepository.com/artifact/org.springframework/spring-aop/5.2.20.RELEASE"
+    md5 : a90f014fc9b56db29cf85798e14527ae
+    sha1 : 89cc2edf224e9b32ce072512ecfa8bea4ad8e038
+    updated : 2022-04-08
+    jira : YUK-26303
     notes : Spring AOP
   
-  - filename : spring-aspects-5.1.5.RELEASE.jar
+  - filename : spring-aspects-5.2.20.RELEASE.jar
     yukon group : Spring
     project : Spring
-    version : 5.1.5
+    version : 5.2.20
     project URL : "https://github.com/spring-projects/spring-framework"
     license : Apache 2.0
     license URLs : "https://opensource.org/licenses/Apache-2.0"
-    maven URL : "https://mvnrepository.com/artifact/org.springframework/spring-aspects/5.1.5.RELEASE"
-    md5 : f877b04758285e6ab12047f774966946
-    sha1 : 3bb95e05b646ef93e2a4cf0b600924c2979fc723
-    updated : 2019-04-03
-    jira : YUK-19578
+    maven URL : "https://mvnrepository.com/artifact/org.springframework/spring-aspects/5.2.20.RELEASE"
+    md5 : 7a6177d9cee14aa8cca7c069841a9d88
+    sha1 : 82728b331e18d2f538cd9ba36106b6c410d3f4b0
+    updated : 2022-04-08
+    jira : YUK-26303
     notes : Spring Aspects
   
-  - filename : spring-beans-5.1.5.RELEASE.jar
+  - filename : spring-beans-5.2.20.RELEASE.jar
     yukon group : Spring
     project : Spring
-    version : 5.1.5
+    version : 5.2.20
     project URL : "https://github.com/spring-projects/spring-framework"
     license : Apache 2.0
     license URLs : "https://opensource.org/licenses/Apache-2.0"
-    maven URL : "https://mvnrepository.com/artifact/org.springframework/spring-beans/5.1.5.RELEASE"
-    md5 : e6ac01d5b15c48ff45112c13664c7057
-    sha1 : 58b10c61f6bf2362909d884813c4049b657735f5
-    updated : 2019-04-03
-    jira : YUK-19578
+    maven URL : "https://mvnrepository.com/artifact/org.springframework/spring-beans/5.2.20.RELEASE"
+    md5 : c144b2f99de55bdc7163f3c70d800132
+    sha1 : c8fe5b917bb711c390dd826beb953c3cead5407b
+    updated : 2022-04-08
+    jira : YUK-26303
     notes : Spring Beans
   
-  - filename : spring-context-5.1.5.RELEASE.jar
+  - filename : spring-context-5.2.20.RELEASE.jar
     yukon group : Spring
     project : Spring
-    version : 5.1.5
+    version : 5.2.20
     project URL : "https://github.com/spring-projects/spring-framework"
     license : Apache 2.0
     license URLs : "https://opensource.org/licenses/Apache-2.0"
-    maven URL : "https://mvnrepository.com/artifact/org.springframework/spring-context/5.1.5.RELEASE"
-    md5 : 8e681927c1f9932874a2a7c3b32f6952
-    sha1 : d39299241a2c8353d83f0f0c84d3677973da7c57
-    updated : 2019-04-03
-    jira : YUK-19578
+    maven URL : "https://mvnrepository.com/artifact/org.springframework/spring-context/5.2.20.RELEASE"
+    md5 : 475f73db607fb8f0be8f117b2988eb82
+    sha1 : 9bee402974a41fdf2c8e93f63a42d56544a96ed6
+    updated : 2022-04-08
+    jira : YUK-26303
     notes : Spring Context
   
-  - filename : spring-context-indexer-5.1.5.RELEASE.jar
+  - filename : spring-context-indexer-5.2.20.RELEASE.jar
     yukon group : Spring
     project : Spring
-    version : 5.1.5
+    version : 5.2.20
     project URL : "https://github.com/spring-projects/spring-framework"
     license : Apache 2.0
     license URLs : "https://opensource.org/licenses/Apache-2.0"
-    maven URL : "https://mvnrepository.com/artifact/org.springframework/spring-context-indexer/5.1.5.RELEASE"
-    md5 : 47db5ebd0071560989ffdc531057e723
-    sha1 : 212b6ee163619013b04fced78e25452f90995c16
-    updated : 2019-04-03
-    jira : YUK-19578
+    maven URL : "https://mvnrepository.com/artifact/org.springframework/spring-context-indexer/5.2.20.RELEASE"
+    md5 : f420461f17780e2de4c8895cfdd2e10b
+    sha1 : 59ae50d0bb6d0954490f22c5d5956fb11c19d048
+    updated : 2022-04-08
+    jira : YUK-26303
     notes : Spring Context Indexer
   
-  - filename : spring-context-support-5.1.5.RELEASE.jar
+  - filename : spring-context-support-5.2.20.RELEASE.jar
     yukon group : Spring
     project : Spring
-    version : 5.1.5
+    version : 5.2.20
     project URL : "https://github.com/spring-projects/spring-framework"
     license : Apache 2.0
     license URLs : "https://opensource.org/licenses/Apache-2.0"
-    maven URL : "https://mvnrepository.com/artifact/org.springframework/spring-context-support/5.1.5.RELEASE"
-    md5 : 3a7ed652a0fbcba62ac6316763706c92
-    sha1 : b6c4877e5cad1cbf72c3ff2c65eb62f2c89e5e8b
-    updated : 2019-04-03
-    jira : YUK-19578
+    maven URL : "https://mvnrepository.com/artifact/org.springframework/spring-context-support/5.2.20.RELEASE"
+    md5 : 62f60bb2754b694c8228d9354cb64191
+    sha1 : 7f503e182230a6dc5ed66c7f94803e706620ca93
+    updated : 2022-04-08
+    jira : YUK-26303
     notes : Spring Context Support
   
-  - filename : spring-core-5.1.5.RELEASE.jar
+  - filename : spring-core-5.2.20.RELEASE.jar
     yukon group : Spring
     project : Spring
-    version : 5.1.5
+    version : 5.2.20
     project URL : "https://github.com/spring-projects/spring-framework"
     license : Apache 2.0
     license URLs : "https://opensource.org/licenses/Apache-2.0"
-    maven URL : "https://mvnrepository.com/artifact/org.springframework/spring-core/5.1.5.RELEASE"
-    md5 : f9fb0fef81c5301a8b30686bcaa2627b
-    sha1 : aacc4555108f3da913a58114b2aebc819f58cce4
-    updated : 2019-04-03
-    jira : YUK-19578
+    maven URL : "https://mvnrepository.com/artifact/org.springframework/spring-core/5.2.20.RELEASE"
+    md5 : 82c078db4201fc147845fc0a212f94de
+    sha1 : dc30db13da2fbed2fd6a710a431c252c48aed682
+    updated : 2022-04-08
+    jira : YUK-26303
     notes : Spring Core
   
-  - filename : spring-expression-5.1.5.RELEASE.jar
+  - filename : spring-expression-5.2.20.RELEASE.jar
     yukon group : Spring
     project : Spring
-    version : 5.1.5
+    version : 5.2.20
     project URL : "https://github.com/spring-projects/spring-framework"
     license : Apache 2.0
     license URLs : "https://opensource.org/licenses/Apache-2.0"
-    maven URL : "https://mvnrepository.com/artifact/org.springframework/spring-expression/5.1.5.RELEASE"
-    md5 : 4eb211187dc029cccce154ce661681ef
-    sha1 : b728a06924560ee69307a52d100e6b156d9a4a80
-    updated : 2019-04-03
-    jira : YUK-19578
+    maven URL : "https://mvnrepository.com/artifact/org.springframework/spring-expression/5.2.20.RELEASE"
+    md5 : 7a50ef54c545289df35f655890c2f473
+    sha1 : e30e22e11c39767d2017ae36b1b133ed95bf1107
+    updated : 2022-04-08
+    jira : YUK-26303
     notes : Spring Expression Language (SpEL)
   
-  - filename : spring-instrument-5.1.5.RELEASE.jar
+  - filename : spring-instrument-5.2.20.RELEASE.jar
     yukon group : Spring
     project : Spring
-    version : 5.1.5
+    version : 5.2.20
     project URL : "https://github.com/spring-projects/spring-framework"
     license : Apache 2.0
     license URLs : "https://opensource.org/licenses/Apache-2.0"
-    maven URL : "https://mvnrepository.com/artifact/org.springframework/spring-instrument/5.1.5.RELEASE"
-    md5 : d4fb18deeae8388da39c7a9ad6ad1796
-    sha1 : 602baddb57c979ec7af53be1656d83f5d74465c6
-    updated : 2019-04-03
-    jira : YUK-19578
+    maven URL : "https://mvnrepository.com/artifact/org.springframework/spring-instrument/5.2.20.RELEASE"
+    md5 : 144fe01db96dcdf16048c0f0639f69bb
+    sha1 : d59449e105215ab2358c981ad1822a68f8ddb1f5
+    updated : 2022-04-08
+    jira : YUK-26303
     notes : Spring Instrument
   
-  - filename : spring-integration-core-5.1.3.RELEASE.jar
+  - filename : spring-integration-core-5.5.10.jar
     yukon group : Spring
     project : Spring
-    version : 5.1.3
+    version : 5.5.10
     project URL : "https://github.com/spring-projects/spring-framework"
     license : Apache 2.0
     license URLs : "https://opensource.org/licenses/Apache-2.0"
-    maven URL : "https://mvnrepository.com/artifact/org.springframework.integration/spring-integration-core/5.1.3.RELEASE"
-    md5 : ecaad5f2d45d8a2f2e0884d70305382b
-    sha1 : 721ef7e3ed5c44bac2b0c212f002e469736b64f9
-    updated : 2019-04-03
-    jira : YUK-19578
+    maven URL : "https://repo1.maven.org/maven2/org/springframework/integration/spring-integration-core/5.5.10"
+    md5 : 145fca1ff9ac570e841f214efc6153ab
+    sha1 : 4555d831739dfcd15c46d1f46526883ed027ce3e
+    updated : 2022-04-08
+    jira : YUK-26303
     notes : Spring Integration Core
   
-  - filename : spring-integration-jms-5.1.3.RELEASE.jar
+  - filename : spring-integration-jms-5.5.10.jar
     yukon group : Spring
     project : Spring
-    version : 5.1.3
+    version : 5.5.10
     project URL : "https://github.com/spring-projects/spring-framework"
     license : Apache 2.0
     license URLs : "https://opensource.org/licenses/Apache-2.0"
-    maven URL : "https://mvnrepository.com/artifact/org.springframework.integration/spring-integration-jms/5.1.3.RELEASE"
-    md5 : a27244cd2647c80270516aa9a5023044
-    sha1 : 864c76cc3e515333a5fa52d05d5b0466b3fd9680
-    updated : 2019-04-03
-    jira : YUK-19578
+    maven URL : "https://mvnrepository.com/artifact/org.springframework.integration/spring-integration-jms/5.5.10"
+    md5 : 9621c66fb3b9fa9dbc3ce780da6745d4
+    sha1 : a6c92907e3bfacd9c6a634ed23053a6610e235f2
+    updated : 2022-04-08
+    jira : YUK-26303
     notes : Spring Integration JMS Support
   
-  - filename : spring-jcl-5.1.5.RELEASE.jar
+  - filename : spring-jcl-5.2.20.RELEASE.jar
     yukon group : Spring
     project : Spring
-    version : 5.1.5
+    version : 5.2.20
     project URL : "https://github.com/spring-projects/spring-framework"
     license : Apache 2.0
     license URLs : "https://opensource.org/licenses/Apache-2.0"
-    maven URL : "https://mvnrepository.com/artifact/org.springframework/spring-jcl/5.1.5.RELEASE"
-    md5 : 5395be46a9accac156f78c800dbb0b9d
-    sha1 : 5cbd44d11a031c64c788edf1f99706b31c434469
-    updated : 2019-04-03
-    jira : YUK-19578
+    maven URL : "https://mvnrepository.com/artifact/org.springframework/spring-jcl/5.2.20.RELEASE"
+    md5 : b04a46fdf76a6f0f3b98a54859c953bf
+    sha1 : ec770a60d34c30d66803c2710e832f367e6f9f4f
+    updated : 2022-04-08
+    jira : YUK-26303
     notes : Spring Commons Logging Bridge
   
-  - filename : spring-jdbc-5.1.5.RELEASE.jar
+  - filename : spring-jdbc-5.2.20.RELEASE.jar
     yukon group : Spring
     project : Spring
-    version : 5.1.5
+    version : 5.2.20
     project URL : "https://github.com/spring-projects/spring-framework"
     license : Apache 2.0
     license URLs : "https://opensource.org/licenses/Apache-2.0"
-    maven URL : "https://mvnrepository.com/artifact/org.springframework/spring-jdbc/5.1.5.RELEASE"
-    md5 : 2b8095a5313d33d4592531a86d0016ae
-    sha1 : 067a6be20d032276a12a91fce4fe8b13ccc8c95d
-    updated : 2019-04-03
-    jira : YUK-19578
+    maven URL : "https://mvnrepository.com/artifact/org.springframework/spring-jdbc/5.2.20.RELEASE"
+    md5 : c74da9a41d4274fd8ac6e127b095c849
+    sha1 : d3a97b7bb745d92fd86b4dae68371320ceac58b7
+    updated : 2022-04-08
+    jira : YUK-26303
     notes : Spring JDBC
   
-  - filename : spring-jms-5.1.5.RELEASE.jar
+  - filename : spring-jms-5.2.20.RELEASE.jar
     yukon group : Spring
     project : Spring
-    version : 5.1.5
+    version : 5.2.20
     project URL : "https://github.com/spring-projects/spring-framework"
     license : Apache 2.0
     license URLs : "https://opensource.org/licenses/Apache-2.0"
-    maven URL : "https://mvnrepository.com/artifact/org.springframework/spring-jms/5.1.5.RELEASE"
-    md5 : 8733b56ecae754b9ac8907b612e64775
-    sha1 : 9fb8f45bf493812909c77f9f5d7e275fe6a5f84c
-    updated : 2019-04-03
-    jira : YUK-19578
+    maven URL : "https://mvnrepository.com/artifact/org.springframework/spring-jms/5.2.20.RELEASE"
+    md5 : bea4c70add66e88464fc8984be953256
+    sha1 : f80b18357cf22da21ebf60f42ff77a1e847f2ceb
+    updated : 2022-04-08
+    jira : YUK-26303
     notes : Spring JMS
   
-  - filename : spring-messaging-5.1.5.RELEASE.jar
+  - filename : spring-messaging-5.2.20.RELEASE.jar
     yukon group : Spring
     project : Spring
-    version : 5.1.5
+    version : 5.2.20
     project URL : "https://github.com/spring-projects/spring-framework"
     license : Apache 2.0
     license URLs : "https://opensource.org/licenses/Apache-2.0"
-    maven URL : "https://mvnrepository.com/artifact/org.springframework/spring-messaging/5.1.5.RELEASE"
-    md5 : 3292395fb6eb152b804f8619dd7d259e
-    sha1 : 5874e45679c566deaaa00bb09ff786581eb56e26
-    updated : 2019-04-03
-    jira : YUK-19578
+    maven URL : "https://mvnrepository.com/artifact/org.springframework/spring-messaging/5.2.20.RELEASE"
+    md5 : 5fbe2cf41ba54681538462470d3f13d1
+    sha1 : d7cfaab9bfc0a5a140301672a56f45edf8f3c8a0
+    updated : 2022-04-08
+    jira : YUK-26303
     notes : Spring Messaging
   
-  - filename : spring-orm-5.1.5.RELEASE.jar
+  - filename : spring-orm-5.2.20.RELEASE.jar
     yukon group : Spring
     project : Spring
-    version : 5.1.5
+    version : 5.2.20
     project URL : "https://github.com/spring-projects/spring-framework"
     license : Apache 2.0
     license URLs : "https://opensource.org/licenses/Apache-2.0"
-    maven URL : "https://mvnrepository.com/artifact/org.springframework/spring-orm/5.1.5.RELEASE"
-    md5 : c15fb2260f43184b17458865db915386
-    sha1 : 2320c1442ad2d33c4bb0c289d0e48554c7c42ee7
-    updated : 2019-04-03
-    jira : YUK-19578
+    maven URL : "https://mvnrepository.com/artifact/org.springframework/spring-orm/5.2.20.RELEASE"
+    md5 : 395518f169a11cedcd17d76885748133
+    sha1 : 397e4ccc4b44c8e33b75916e6777e3b33553f0ce
+    updated : 2022-04-08
+    jira : YUK-26303
     notes : Spring Object/Relational Mapping
   
-  - filename : spring-oxm-5.1.5.RELEASE.jar
+  - filename : spring-oxm-5.2.20.RELEASE.jar
     yukon group : Spring
     project : Spring
-    version : 5.1.5
+    version : 5.2.20
     project URL : "https://github.com/spring-projects/spring-framework"
     license : Apache 2.0
     license URLs : "https://opensource.org/licenses/Apache-2.0"
-    maven URL : "https://mvnrepository.com/artifact/org.springframework/spring-oxm/5.1.5.RELEASE"
-    md5 : 313ef6987e0ebd58751d10456e6dcb98
-    sha1 : d6394f9019c4b15270aaecb6f8c158e93d72317a
-    updated : 2019-04-03
-    jira : YUK-19578
+    maven URL : "https://mvnrepository.com/artifact/org.springframework/spring-oxm/5.2.20.RELEASE"
+    md5 : 0b2f5aa895eff3e73edbf4f5f36ca937
+    sha1 : 0a6740b05582f024816802536adb076fac0b94a4
+    updated : 2022-04-08
+    jira : YUK-26303
     notes : Spring Object/XML Marshalling
   
-  - filename : spring-test-5.1.5.RELEASE.jar
+  - filename : spring-test-5.2.20.RELEASE.jar
     yukon group : Spring
     project : Spring
-    version : 5.1.5
+    version : 5.2.20
     project URL : "https://github.com/spring-projects/spring-framework"
     license : Apache 2.0
     license URLs : "https://opensource.org/licenses/Apache-2.0"
-    maven URL : "https://mvnrepository.com/artifact/org.springframework/spring-test/5.1.5.RELEASE"
-    md5 : 142b2ed65a982a94c87c53c97581019d
-    sha1 : 0693fac3c64b4617b7c2b207e45e93529f6594bd
-    updated : 2019-04-03
-    jira : YUK-19578
+    maven URL : "https://mvnrepository.com/artifact/org.springframework/spring-test/5.2.20.RELEASE"
+    md5 : a1ca45fd8e6358811cd90de8c9aa7ae3
+    sha1 : 1e23bdc31b72ee9c5eb4adfd0227537134cc0be6
+    updated : 2022-04-08
+    jira : YUK-26303
     notes : Spring TestContext Framework
   
-  - filename : spring-tx-5.1.5.RELEASE.jar
+  - filename : spring-tx-5.2.20.RELEASE.jar
     yukon group : Spring
     project : Spring
-    version : 5.1.5
+    version : 5.2.20
     project URL : "https://github.com/spring-projects/spring-framework"
     license : Apache 2.0
     license URLs : "https://opensource.org/licenses/Apache-2.0"
-    maven URL : "https://mvnrepository.com/artifact/org.springframework/spring-tx/5.1.5.RELEASE"
-    md5 : 3f9105131de928f12339ee966eded1ff
-    sha1 : c2d39bf1f87a7b9f74a199b3aa37ffc8be84b918
-    updated : 2019-04-03
-    jira : YUK-19578
+    maven URL : "https://mvnrepository.com/artifact/org.springframework/spring-tx/5.2.20.RELEASE"
+    md5 : e37f393ce8fa7834f29a3a77384f14df
+    sha1 : 6c99f3cd1b9d812b9476a0d8c378a066b0c562ed
+    updated : 2022-04-08
+    jira : YUK-26303
     notes : Spring Transaction
   
-  - filename : spring-web-5.1.5.RELEASE.jar
+  - filename : spring-web-5.2.20.RELEASE.jar
     yukon group : Spring
     project : Spring
-    version : 5.1.5
+    version : 5.2.20
     project URL : "https://github.com/spring-projects/spring-framework"
     license : Apache 2.0
     license URLs : "https://opensource.org/licenses/Apache-2.0"
-    maven URL : "https://mvnrepository.com/artifact/org.springframework/spring-web/5.1.5.RELEASE"
-    md5 : 48aac340b953d36d1fa9e40ebadf3afa
-    sha1 : c37c4363be4ad6c5f67e3f9f020497e2d599e325
-    updated : 2019-04-03
-    jira : YUK-19578
+    maven URL : "https://mvnrepository.com/artifact/org.springframework/spring-web/5.2.20.RELEASE"
+    md5 : d39352fef5a6969b19f6f903eb93e14a
+    sha1 : 1627626a75b4ea71b0b2881ebed8b56729ba621b
+    updated : 2022-04-08
+    jira : YUK-26303
     notes : Spring Web
   
-  - filename : spring-webflux-5.1.5.RELEASE.jar
+  - filename : spring-webflux-5.2.20.RELEASE.jar
     yukon group : Spring
     project : Spring
-    version : 5.1.5
+    version : 5.2.20
     project URL : "https://github.com/spring-projects/spring-framework"
     license : Apache 2.0
     license URLs : "https://opensource.org/licenses/Apache-2.0"
-    maven URL : "https://mvnrepository.com/artifact/org.springframework/spring-webflux/5.1.5.RELEASE"
-    md5 : bd17dcaf47019e4435d40b10df9983ee
-    sha1 : dd4cb3ebfa7a942aebcf76a9153ce507c30dbecc
-    updated : 2019-04-03
-    jira : YUK-19578
+    maven URL : "https://mvnrepository.com/artifact/org.springframework/spring-webflux/5.2.20.RELEASE"
+    md5 : 168263d70ee131c4b62c1bd4ac13fea1
+    sha1 : 4e78ea82edf968e70415a4ec90f35dcf6abf86ec
+    updated : 2022-04-08
+    jira : YUK-26303
     notes : Spring WebFlux
   
-  - filename : spring-webmvc-5.1.5.RELEASE.jar
+  - filename : spring-webmvc-5.2.20.RELEASE.jar
     yukon group : Spring
     project : Spring
-    version : 5.1.5
+    version : 5.2.20
     project URL : "https://github.com/spring-projects/spring-framework"
     license : Apache 2.0
     license URLs : "https://opensource.org/licenses/Apache-2.0"
-    maven URL : "https://mvnrepository.com/artifact/org.springframework/spring-webmvc/5.1.5.RELEASE"
-    md5 : 5540650b970bb2f2f6ad9b25706a9eea
-    sha1 : 236e3bfdbdc6c86629237a74f0f11414adb4e211
-    updated : 2019-04-03
-    jira : YUK-19578
+    maven URL : "https://mvnrepository.com/artifact/org.springframework/spring-webmvc/5.2.20.RELEASE"
+    md5 : 2d7db828033e2a0c4917f3c0a40c8eaa
+    sha1 : 38a406a75244d23174c2e8307b5a61348c94bd05
+    updated : 2022-04-08
+    jira : YUK-26303
     notes : Spring Web MVC
   
-  - filename : spring-websocket-5.1.5.RELEASE.jar
+  - filename : spring-websocket-5.2.20.RELEASE.jar
     yukon group : Spring
     project : Spring
-    version : 5.1.5
+    version : 5.2.20
     project URL : "https://github.com/spring-projects/spring-framework"
     license : Apache 2.0
     license URLs : "https://opensource.org/licenses/Apache-2.0"
-    maven URL : "https://mvnrepository.com/artifact/org.springframework/spring-websocket/5.1.5.RELEASE"
-    md5 : 3dca0a9f7d41dda62939f06d4c71e990
-    sha1 : 4d150cc48adaf39cf28bc09a88dd68e4f9f007cf
-    updated : 2019-04-03
-    jira : YUK-19578
+    maven URL : "https://mvnrepository.com/artifact/org.springframework/spring-websocket/5.2.20.RELEASE"
+    md5 : aaeb375897c9396571aa29dca563d7ae
+    sha1 : f45f7d1d42fbe275aaea4695d904ce5b400643a7
+    updated : 2022-04-08
+    jira : YUK-26303
     notes : Spring WebSocket
   
-  - filename : spring-ws-core-3.0.7.RELEASE.jar
+  - filename : spring-ws-core-3.1.3.jar
     yukon group : Spring Web Services
     project : Spring Web Services
-    version : 3.0.7
+    version : 3.1.3
     project URL : "https://spring.io/projects/spring-ws"
     license : Apache 2.0
     license URLs : "https://opensource.org/licenses/Apache-2.0"
-    maven URL : "https://mvnrepository.com/artifact/org.springframework.ws/spring-ws-core/3.0.7.RELEASE"
-    md5 : fc8eb7bcfd8cd813ccd7acf8b32aa431
-    sha1 : 46c634e0f546199aa490c9651ea5e3ae22543bb1
-    updated : 2019-04-03
-    jira : YUK-19578
+    maven URL : "https://mvnrepository.com/artifact/org.springframework.ws/spring-ws-core/3.1.3"
+    md5 : ba8abf1db9ff4cb7bfd361d8fbf5e13f
+    sha1 : e7d122371c5990ce547de8f412f427dee67a5120
+    updated : 2022-04-08
+    jira : YUK-26303
     notes : Spring Web Services Core
   
-  - filename : spring-xml-3.0.7.RELEASE.jar
+  - filename : spring-xml-3.1.3.jar
     yukon group : Spring Web Services
     project : Spring Web Services
-    version : 3.0.7
+    version : 3.1.3
     project URL : "https://spring.io/projects/spring-ws"
     license : Apache 2.0
     license URLs : "https://opensource.org/licenses/Apache-2.0"
-    maven URL : "https://mvnrepository.com/artifact/org.springframework.ws/spring-xml/3.0.7.RELEASE"
-    md5 : f8ea556e4b6ca23ab43041dfbf0dd42e
-    sha1 : 4e4420222527527d392cb1f4e740831c7225d95e
-    updated : 2019-04-03
-    jira : YUK-19578
+    maven URL : "https://mvnrepository.com/artifact/org.springframework.ws/spring-xml/3.1.3"
+    md5 : 88b3fe7008cfcc247cf1065d86bc3210
+    sha1 : 1900dc6c2ebde38ad3bc4fd4f103715719d49ae2
+    updated : 2022-04-08
+    jira : YUK-26303
     notes : Spring XML
   
   - filename : sqljdbc42.jar
