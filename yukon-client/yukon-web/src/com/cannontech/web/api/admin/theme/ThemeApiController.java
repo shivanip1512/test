@@ -12,7 +12,6 @@ import com.cannontech.common.i18n.MessageSourceAccessor;
 import com.cannontech.core.dao.NotFoundException;
 import com.cannontech.i18n.YukonUserContextMessageSourceResolver;
 import com.cannontech.user.YukonUserContext;
-import com.cannontech.util.Validator;
 import com.cannontech.web.admin.theme.dao.ThemeDao;
 import com.cannontech.web.admin.theme.model.Theme;
 
@@ -27,7 +26,7 @@ public class ThemeApiController {
 
         List<Theme> themes = themeDao.getThemes();
 
-        if (!Validator.isNull(themes)) {
+        if (themes != null) {
             for (Theme theme : themes) {
                 if (theme.isCurrentTheme()) {
                     return new ResponseEntity<>(theme, HttpStatus.OK);

@@ -15,7 +15,6 @@ import com.cannontech.core.image.dao.YukonImageDao;
 import com.cannontech.database.data.lite.LiteYukonImage;
 import com.cannontech.i18n.YukonUserContextMessageSourceResolver;
 import com.cannontech.user.YukonUserContext;
-import com.cannontech.util.Validator;
 
 @RestController
 public class ImageApiController {
@@ -28,7 +27,7 @@ public class ImageApiController {
 
         LiteYukonImage liteYukonImage = imageDao.getLiteYukonImage(id);
 
-        if (Validator.isNull(liteYukonImage)) {
+        if (liteYukonImage == null) {
             final MessageSourceAccessor messageSourceAccessor = messageSourceResolver.getMessageSourceAccessor(context);
             final String imageNotFoundMsg = "yukon.web.image.error.IMAGE_NOT_FOUND";
             throw new NotFoundException(messageSourceAccessor.getMessage(imageNotFoundMsg));

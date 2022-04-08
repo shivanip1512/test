@@ -277,9 +277,4 @@ public class Validator
         
         return m.matches();
 	}
-	
-	 public static boolean isNull(Object obj) 
-	 {
-             return obj == null;
-         }
 }
