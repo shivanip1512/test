@@ -1,5 +1,6 @@
 package com.cannontech.web.api.dr.gear.setup.fields.validator;
 
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.validation.Errors;
 
 import com.cannontech.api.error.model.ApiErrorDetails;
@@ -16,12 +17,14 @@ import com.cannontech.database.db.device.lm.GearControlMethod;
  * Api Helper class for LM Gear validation
  */
 public class GearApiValidatorHelper {
+    
+    @Autowired private YukonApiValidationUtils yukonApiValidationUtils;
 
     /**
      * Check for How To Stop Control
      */
     public void checkHowToStopControl(HowToStopControl howToStopControl, GearControlMethod gearType, Errors errors) {
-        YukonApiValidationUtils.checkIfFieldRequired("howToStopControl", errors, howToStopControl, "How To Stop Control");
+        yukonApiValidationUtils.checkIfFieldRequired("howToStopControl", errors, howToStopControl, "How To Stop Control");
         if (!errors.hasFieldErrors("howToStopControl")) {
 
             if (gearType == GearControlMethod.SmartCycle || gearType == GearControlMethod.TrueCycle
@@ -49,10 +52,10 @@ public class GearApiValidatorHelper {
      * Check for How To Stop Control and Stop Order
      */
     public void checkStopControlAndOrder(HowToStopControl howToStopControl, StopOrder stopOrder, Errors errors) {
-        YukonApiValidationUtils.checkIfFieldRequired("howToStopControl", errors, howToStopControl, "How To Stop Control");
+        yukonApiValidationUtils.checkIfFieldRequired("howToStopControl", errors, howToStopControl, "How To Stop Control");
         if (!errors.hasFieldErrors("howToStopControl") && (howToStopControl == HowToStopControl.RampOutRestore
             || howToStopControl == HowToStopControl.RampOutTimeIn)) {
-            YukonApiValidationUtils.checkIfFieldRequired("stopOrder", errors, stopOrder, "Stop Order");
+            yukonApiValidationUtils.checkIfFieldRequired("stopOrder", errors, stopOrder, "Stop Order");
             if (!errors.hasFieldErrors("stopOrder")) {
                 if (howToStopControl == HowToStopControl.StopCycle) {
                     errors.rejectValue("howToStopControl", ApiErrorDetails.INVALID_VALUE.getCodeString(),
@@ -67,14 +70,14 @@ public class GearApiValidatorHelper {
      */
     public void checkRampOutPercentAndInterval(Integer rampOutPercent, Integer rampOutIntervalInSeconds,
             Errors errors) {
-        YukonApiValidationUtils.checkIfFieldRequired("rampOutPercent", errors, rampOutPercent, "Ramp Out Percent");
+        yukonApiValidationUtils.checkIfFieldRequired("rampOutPercent", errors, rampOutPercent, "Ramp Out Percent");
         if (!errors.hasFieldErrors("rampOutPercent")) {
-            YukonApiValidationUtils.checkRange(errors, "rampOutPercent", rampOutPercent, 0, 100, false);
+            yukonApiValidationUtils.checkRange(errors, "rampOutPercent", rampOutPercent, 0, 100, false);
         }
-        YukonApiValidationUtils.checkIfFieldRequired("rampOutIntervalInSeconds", errors, rampOutIntervalInSeconds,
+        yukonApiValidationUtils.checkIfFieldRequired("rampOutIntervalInSeconds", errors, rampOutIntervalInSeconds,
             "Ramp Out Interval");
         if (!errors.hasFieldErrors("rampOutIntervalInSeconds")) {
-            YukonApiValidationUtils.checkRange(errors, "rampOutIntervalInSeconds", rampOutIntervalInSeconds, -99999, 99999,
+            yukonApiValidationUtils.checkRange(errors, "rampOutIntervalInSeconds", rampOutIntervalInSeconds, -99999, 99999,
                 false);
         }
     }
@@ -83,17 +86,17 @@ public class GearApiValidatorHelper {
      * Check for Group Capacity Reduction
      */
     public void checkGroupCapacityReduction(Integer groupCapacityReduction, Errors errors) {
-        YukonApiValidationUtils.checkIfFieldRequired("capacityReduction", errors, groupCapacityReduction,
+        yukonApiValidationUtils.checkIfFieldRequired("capacityReduction", errors, groupCapacityReduction,
                 "Group Capacity Reduction");
         if (!errors.hasFieldErrors("capacityReduction")) {
-            YukonApiValidationUtils.checkRange(errors, "capacityReduction", groupCapacityReduction, 0, 100, false);
+            yukonApiValidationUtils.checkRange(errors, "capacityReduction", groupCapacityReduction, 0, 100, false);
         }
     }
 
     public void checkSetpointOffset(Integer setpointOffset, Errors errors) {
-        YukonApiValidationUtils.checkIfFieldRequired("setpointOffset", errors, setpointOffset, "Setpoint Offset");
+        yukonApiValidationUtils.checkIfFieldRequired("setpointOffset", errors, setpointOffset, "Setpoint Offset");
         if (!errors.hasFieldErrors("setpointOffset")) {
-            YukonApiValidationUtils.checkRange(errors, "setpointOffset", setpointOffset, -10, 10, true);
+            yukonApiValidationUtils.checkRange(errors, "setpointOffset", setpointOffset, -10, 10, true);
         }
     }
     
@@ -102,31 +105,31 @@ public class GearApiValidatorHelper {
      */
     public void checkWhenToChange(WhenToChangeFields whenToChange, Errors errors) {
         // Check for When to Change Fields
-        YukonApiValidationUtils.checkIfFieldRequired("whenToChangeFields", errors, whenToChange, "When To Change Fields");
+        yukonApiValidationUtils.checkIfFieldRequired("whenToChangeFields", errors, whenToChange, "When To Change Fields");
 
         if (!errors.hasFieldErrors("whenToChangeFields")) {
             errors.pushNestedPath("whenToChangeFields");
 
             // Check for When to Change
-            YukonApiValidationUtils.checkIfFieldRequired("whenToChange", errors, whenToChange.getWhenToChange(),
+            yukonApiValidationUtils.checkIfFieldRequired("whenToChange", errors, whenToChange.getWhenToChange(),
                 "When To Change");
             if (!errors.hasFieldErrors("whenToChange")) {
                 // Check for Fields for Trigger
                 if (whenToChange.getWhenToChange() == WhenToChange.TriggerOffset) {
 
                     // Check for Trigger Number
-                    YukonApiValidationUtils.checkIfFieldRequired("triggerNumber", errors, whenToChange.getTriggerNumber(),
+                    yukonApiValidationUtils.checkIfFieldRequired("triggerNumber", errors, whenToChange.getTriggerNumber(),
                         "Trigger Number");
                     if (!errors.hasFieldErrors("triggerNumber")) {
-                        YukonApiValidationUtils.checkRange(errors, "triggerNumber", whenToChange.getTriggerNumber(), 1,
+                        yukonApiValidationUtils.checkRange(errors, "triggerNumber", whenToChange.getTriggerNumber(), 1,
                             99999, false);
                     }
 
                     // Check for Trigger Offset
-                    YukonApiValidationUtils.checkIfFieldRequired("triggerOffset", errors, whenToChange.getTriggerOffset(),
+                    yukonApiValidationUtils.checkIfFieldRequired("triggerOffset", errors, whenToChange.getTriggerOffset(),
                         "Trigger Offset");
                     if (!errors.hasFieldErrors("triggerOffset")) {
-                        YukonApiValidationUtils.checkRange(errors, "triggerOffset", whenToChange.getTriggerOffset(),
+                        yukonApiValidationUtils.checkRange(errors, "triggerOffset", whenToChange.getTriggerOffset(),
                             -99999.9999, 99999.9999, false);
                     }
 
@@ -136,10 +139,10 @@ public class GearApiValidatorHelper {
                 if (whenToChange.getWhenToChange() == WhenToChange.Priority) {
 
                     // Check for Change Priority
-                    YukonApiValidationUtils.checkIfFieldRequired("changePriority", errors, whenToChange.getChangePriority(),
+                    yukonApiValidationUtils.checkIfFieldRequired("changePriority", errors, whenToChange.getChangePriority(),
                         "Change Priority");
                     if (!errors.hasFieldErrors("changePriority")) {
-                        YukonApiValidationUtils.checkRange(errors, "changePriority", whenToChange.getChangePriority(), 0,
+                        yukonApiValidationUtils.checkRange(errors, "changePriority", whenToChange.getChangePriority(), 0,
                             9999, false);
                     }
                 }
@@ -148,10 +151,10 @@ public class GearApiValidatorHelper {
                 if (whenToChange.getWhenToChange() == WhenToChange.Duration) {
 
                     // Check for Change Duration
-                    YukonApiValidationUtils.checkIfFieldRequired("changeDurationInMinutes", errors,
+                    yukonApiValidationUtils.checkIfFieldRequired("changeDurationInMinutes", errors,
                         whenToChange.getChangeDurationInMinutes(), "Change Duration");
                     if (!errors.hasFieldErrors("changeDurationInMinutes")) {
-                        YukonApiValidationUtils.checkRange(errors, "changeDurationInMinutes",
+                        yukonApiValidationUtils.checkRange(errors, "changeDurationInMinutes",
                             whenToChange.getChangeDurationInMinutes(), 0, 99999, false);
                     }
                 }
@@ -166,9 +169,9 @@ public class GearApiValidatorHelper {
      * Check for Control Percent
      */
     public void checkControlPercent(Integer controlPercent, Errors errors) {
-        YukonApiValidationUtils.checkIfFieldRequired("controlPercent", errors, controlPercent, "Control Percent");
+        yukonApiValidationUtils.checkIfFieldRequired("controlPercent", errors, controlPercent, "Control Percent");
         if (!errors.hasFieldErrors("controlPercent")) {
-            YukonApiValidationUtils.checkRange(errors, "controlPercent", controlPercent, 5, 100, false);
+            yukonApiValidationUtils.checkRange(errors, "controlPercent", controlPercent, 5, 100, false);
         }
     }
 
@@ -176,12 +179,12 @@ public class GearApiValidatorHelper {
      * Check for Check for Cycle Period
      */
     public void checkCyclePeriod(Integer cyclePeriodInMinutes, GearControlMethod gearType, Errors errors) {
-        YukonApiValidationUtils.checkIfFieldRequired("cyclePeriodInMinutes", errors, cyclePeriodInMinutes, "Cycle Period");
+        yukonApiValidationUtils.checkIfFieldRequired("cyclePeriodInMinutes", errors, cyclePeriodInMinutes, "Cycle Period");
         if (!errors.hasFieldErrors("cyclePeriodInMinutes")) {
             if (gearType != GearControlMethod.MasterCycle) {
-                YukonApiValidationUtils.checkRange(errors, "cyclePeriodInMinutes", cyclePeriodInMinutes, 1, 945, false);
+                yukonApiValidationUtils.checkRange(errors, "cyclePeriodInMinutes", cyclePeriodInMinutes, 1, 945, false);
             } else {
-                YukonApiValidationUtils.checkRange(errors, "cyclePeriodInMinutes", cyclePeriodInMinutes, 5, 945, false);
+                yukonApiValidationUtils.checkRange(errors, "cyclePeriodInMinutes", cyclePeriodInMinutes, 5, 945, false);
             }
 
         }
@@ -191,7 +194,7 @@ public class GearApiValidatorHelper {
      * Check for Command Resend Rate
      */
     public void checkCommandResendRate(Integer sendRate, Errors errors) {
-        YukonApiValidationUtils.checkIfFieldRequired("sendRate", errors, sendRate, "Command Resend Rate");
+        yukonApiValidationUtils.checkIfFieldRequired("sendRate", errors, sendRate, "Command Resend Rate");
         if (!errors.hasFieldErrors("sendRate")) {
             TimeIntervals commandResendRate = TimeIntervals.fromSeconds(sendRate);
             if (!TimeIntervals.getCommandResendRate().contains(commandResendRate)) {
@@ -207,10 +210,10 @@ public class GearApiValidatorHelper {
     public void checkStopCommandRepeat(Integer stopCommandRepeat, GearControlMethod gearType, Errors errors) {
         if (gearType == GearControlMethod.SmartCycle || gearType == GearControlMethod.TrueCycle
                 || gearType == GearControlMethod.TimeRefresh) {
-            YukonApiValidationUtils.checkIfFieldRequired("stopCommandRepeat", errors, stopCommandRepeat,
+            yukonApiValidationUtils.checkIfFieldRequired("stopCommandRepeat", errors, stopCommandRepeat,
                 "Stop Command Repeat");
             if (!errors.hasFieldErrors("stopCommandRepeat")) {
-                YukonApiValidationUtils.checkRange(errors, "stopCommandRepeat", stopCommandRepeat, 0, 5, false);
+                yukonApiValidationUtils.checkRange(errors, "stopCommandRepeat", stopCommandRepeat, 0, 5, false);
             }
         }
     }
@@ -219,7 +222,7 @@ public class GearApiValidatorHelper {
      * Check for Ramp In
      */
     public void checkRampIn(Boolean rampIn, Errors errors) {
-        YukonApiValidationUtils.checkIfFieldRequired("rampIn", errors, rampIn, "Ramp In");
+        yukonApiValidationUtils.checkIfFieldRequired("rampIn", errors, rampIn, "Ramp In");
     }
 
     /**
@@ -227,16 +230,16 @@ public class GearApiValidatorHelper {
      */
     public void checkRampInPercentAndInterval(Integer rampInPercent, Integer rampInIntervalInSeconds, Errors errors) {
         // Check for Ramp In Percent
-        YukonApiValidationUtils.checkIfFieldRequired("rampInPercent", errors, rampInPercent, "Ramp In Percent");
+        yukonApiValidationUtils.checkIfFieldRequired("rampInPercent", errors, rampInPercent, "Ramp In Percent");
         if (!errors.hasFieldErrors("rampInPercent")) {
-            YukonApiValidationUtils.checkRange(errors, "rampInPercent", rampInPercent, 0, 100, false);
+            yukonApiValidationUtils.checkRange(errors, "rampInPercent", rampInPercent, 0, 100, false);
         }
 
         // Check for Ramp In Interval
-        YukonApiValidationUtils.checkIfFieldRequired("rampInIntervalInSeconds", errors, rampInIntervalInSeconds,
+        yukonApiValidationUtils.checkIfFieldRequired("rampInIntervalInSeconds", errors, rampInIntervalInSeconds,
             "Ramp In Interval");
         if (!errors.hasFieldErrors("rampInIntervalInSeconds")) {
-            YukonApiValidationUtils.checkRange(errors, "rampInIntervalInSeconds", rampInIntervalInSeconds, -99999, 99999,
+            yukonApiValidationUtils.checkRange(errors, "rampInIntervalInSeconds", rampInIntervalInSeconds, -99999, 99999,
                 false);
         }
 
@@ -246,16 +249,16 @@ public class GearApiValidatorHelper {
      * Check for Ramp Out
      */
     public void checkRampOut(Boolean rampOut, Errors errors) {
-        YukonApiValidationUtils.checkIfFieldRequired("rampOut", errors, rampOut, "Ramp Out");
+        yukonApiValidationUtils.checkIfFieldRequired("rampOut", errors, rampOut, "Ramp Out");
     }
 
     /**
      * Check for Criticality
      */
     public void checkCriticality(Integer criticality, Errors errors) {
-        YukonApiValidationUtils.checkIfFieldRequired("criticality", errors, criticality, "Criticality");
+        yukonApiValidationUtils.checkIfFieldRequired("criticality", errors, criticality, "Criticality");
         if (!errors.hasFieldErrors("criticality")) {
-            YukonApiValidationUtils.checkRange(errors, "criticality", criticality, 1, 15, false);
+            yukonApiValidationUtils.checkRange(errors, "criticality", criticality, 1, 15, false);
         }
     }
 
@@ -263,9 +266,9 @@ public class GearApiValidatorHelper {
      * Check for No. of Groups
      */
     public void checkNumberOfGroups(Integer numberOfGroups, Errors errors) {
-        YukonApiValidationUtils.checkIfFieldRequired("numberOfGroups", errors, numberOfGroups, "Number Of Groups");
+        yukonApiValidationUtils.checkIfFieldRequired("numberOfGroups", errors, numberOfGroups, "Number Of Groups");
         if (!errors.hasFieldErrors("numberOfGroups")) {
-            YukonApiValidationUtils.checkRange(errors, "numberOfGroups", numberOfGroups, 0, 25, false);
+            yukonApiValidationUtils.checkRange(errors, "numberOfGroups", numberOfGroups, 0, 25, false);
         }
     }
 
@@ -273,7 +276,7 @@ public class GearApiValidatorHelper {
      * Check Group Selection Method
      */
     public void checkGroupSelectionMethod(GroupSelectionMethod groupSelectionMethod, Errors errors) {
-        YukonApiValidationUtils.checkIfFieldRequired("groupSelectionMethod", errors, groupSelectionMethod,
+        yukonApiValidationUtils.checkIfFieldRequired("groupSelectionMethod", errors, groupSelectionMethod,
             "Group Selection Method");
     }
 

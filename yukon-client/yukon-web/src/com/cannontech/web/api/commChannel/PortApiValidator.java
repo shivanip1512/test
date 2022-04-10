@@ -20,6 +20,7 @@ public class PortApiValidator<T extends PortBase<?>> extends SimpleValidator<T> 
 
     @Autowired private PortDao portDao;
     @Autowired private YukonApiValidationHelper yukonApiValidationHelper;
+    @Autowired private YukonApiValidationUtils yukonApiValidationUtils;
   
 
     @SuppressWarnings("unchecked")
@@ -67,7 +68,7 @@ public class PortApiValidator<T extends PortBase<?>> extends SimpleValidator<T> 
                     "Carrier Detect Wait");
 
             if (detailBase.getPortNumber() != null) {
-                YukonApiValidationUtils.validatePort(errors, "portNumber", "Port Number",
+                yukonApiValidationUtils.validatePort(errors, "portNumber", "Port Number",
                         String.valueOf(detailBase.getPortNumber()));
             }
         }

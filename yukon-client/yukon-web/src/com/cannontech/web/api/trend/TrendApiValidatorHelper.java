@@ -21,6 +21,7 @@ public class TrendApiValidatorHelper {
     @Autowired private IDatabaseCache dbCache;
     @Autowired private PointApiValidationUtil pointApiValidationUtil;
     @Autowired private YukonUserContextMessageSourceResolver messageResolver;
+    @Autowired private YukonApiValidationUtils yukonApiValidationUtils;
 
     private MessageSourceAccessor accessor;
 
@@ -38,11 +39,11 @@ public class TrendApiValidatorHelper {
     public void validateTrendName(Errors errors, String trendName, Integer trendId) {
 
         String nameI18nText = accessor.getMessage(commonkey + "name");
-        YukonApiValidationUtils.checkIsBlank(errors, "name", trendName, nameI18nText, false);
+        yukonApiValidationUtils.checkIsBlank(errors, "name", trendName, nameI18nText, false);
 
         if (!errors.hasFieldErrors("name")) {
-            YukonApiValidationUtils.checkExceedsMaxLength(errors, "name", trendName, 40);
-            YukonApiValidationUtils.checkIllegalCharacter(errors, "name", trendName, nameI18nText);
+            yukonApiValidationUtils.checkExceedsMaxLength(errors, "name", trendName, 40);
+            yukonApiValidationUtils.checkIllegalCharacter(errors, "name", trendName, nameI18nText);
             dbCache.getAllGraphDefinitions()
                     .stream()
                     .filter(liteTrend -> liteTrend.getName().equalsIgnoreCase(trendName.trim()))
@@ -64,7 +65,7 @@ public class TrendApiValidatorHelper {
         String dateI18nText = accessor.getMessage(commonkey + "date");
 
         if (trendSeries.getType() == null || !trendSeries.getType().isMarkerType()) {
-            YukonApiValidationUtils.checkIsBlank(errors, "pointId", Objects.toString(trendSeries.getPointId(), null),
+            yukonApiValidationUtils.checkIsBlank(errors, "pointId", Objects.toString(trendSeries.getPointId(), null),
                     pointI18nText,
                     false);
             if (!errors.hasFieldErrors("pointId")) {
@@ -72,13 +73,13 @@ public class TrendApiValidatorHelper {
             }
         }
 
-        YukonApiValidationUtils.checkIsBlank(errors, "label", trendSeries.getLabel(), labelI18nText, false);
+        yukonApiValidationUtils.checkIsBlank(errors, "label", trendSeries.getLabel(), labelI18nText, false);
         if (!errors.hasFieldErrors("label")) {
-            YukonApiValidationUtils.checkExceedsMaxLength(errors, "label", trendSeries.getLabel(), 40);
+            yukonApiValidationUtils.checkExceedsMaxLength(errors, "label", trendSeries.getLabel(), 40);
         }
 
         if (trendSeries.getMultiplier() != null) {
-            YukonApiValidationUtils.checkIsValidDouble(errors, "multiplier", trendSeries.getMultiplier());
+            yukonApiValidationUtils.checkIsValidDouble(errors, "multiplier", trendSeries.getMultiplier());
         }
 
         if (trendSeries.getStyle() != null) {
@@ -88,7 +89,7 @@ public class TrendApiValidatorHelper {
             }
         }
         if (trendSeries.getType() != null && trendSeries.getType().isDateType() && !errors.hasFieldErrors("date")) {
-            YukonApiValidationUtils.checkIsBlank(errors, "date", Objects.toString(trendSeries.getDate(), null), dateI18nText,
+            yukonApiValidationUtils.checkIsBlank(errors, "date", Objects.toString(trendSeries.getDate(), null), dateI18nText,
                     false);
             if (!errors.hasFieldErrors("date") && trendSeries.getDate().isAfterNow()) {
                 errors.rejectValue("date", ApiErrorDetails.PAST_DATE.getCodeString());
