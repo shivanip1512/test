@@ -2,9 +2,7 @@ package com.cannontech.multispeak.dao.impl.v4;
 
 import java.math.BigDecimal;
 import java.math.RoundingMode;
-import java.util.ArrayList;
 import java.util.Calendar;
-import java.util.List;
 import java.util.Map;
 
 import javax.annotation.PostConstruct;
@@ -45,49 +43,20 @@ public class MeterReadingProcessingServiceImpl implements MeterReadingProcessing
         ReadingProcessor usageConverter = new ReadingProcessor() {
             @Override
             public void apply(PointValueHolder value, MeterReading reading) {
-                /*Calendar calendar = Calendar.getInstance();
+
+                Calendar calendar = Calendar.getInstance();
                 calendar.setTime(value.getPointDataTimeStamp());
-                // reading.setReadingValues(MultispeakFuncs.toXMLGregorianCalendar(calendar));
-                // create a nice BigDecimal with unlimited precision
-                BigDecimal exactValue = new BigDecimal(value.getValue());
-                BigDecimal noFractionValue = exactValue.setScale(0, roundingMode);
-                // reading.setPosKWh(noFractionValue.toBigIntegerExact());
-                 */ 
-                   Calendar calendar = Calendar.getInstance();
-                calendar.setTime(value.getPointDataTimeStamp());
-                
+
                 ArrayOfReadingValue readingValues = new ArrayOfReadingValue();
                 ReadingValue readingValue = new ReadingValue();
-                
-                readingValue.setTimeStamp(MultispeakFuncs.toXMLGregorianCalendar(calendar));
 
                 BigDecimal valueWithPrecision = new BigDecimal(value.getValue()).setScale(3, roundingMode).stripTrailingZeros();
                 readingValue.setValue(valueWithPrecision.toString());
+                readingValue.setTimeStamp(MultispeakFuncs.toXMLGregorianCalendar(calendar));
                 readingValue.setFieldName(SyntaxItem.KWH.getMspFieldName());
                 readingValues.getReadingValue().add(readingValue);
-                
-                
                 reading.setReadingValues(readingValues);
-               
-                // Reading Type Code
-                //ReadingTypeCodeItems readingTypeCodeItems = getReadingTypeCodeItems(reading);
-                /*ReadingTypeCodeItem readingTypeCodeItem = new ReadingTypeCodeItem();
-                ReadingTypeCode readingTypeCode = new ReadingTypeCode();
-                
-                if(type.isWaterMeter()) {
-                    readingTypeCode.setFieldName(FieldNameKind.WATER_VOLUME);
-                } else {
-                    readingTypeCode.setFieldName(FieldNameKind.POS_K_WH);
-                }
-
-                readingTypeCodeItem.setReadingTypeCode(readingTypeCode);
-                readingTypeCodeItems.getReadingTypeCodeItem().add(readingTypeCodeItem);
-                reading.setReadingTypeCodeItems(readingTypeCodeItems);
-                
-                ReadingTypeCodeOption option = new ReadingTypeCodeOption();
-                option.setReadingTypeCode(readingTypeCode);
-                readingValue.setReadingTypeCodeOption(option);*/
-           }
+            }
         };
 
         ReadingProcessor peakDemandConverter = new ReadingProcessor() {
@@ -95,23 +64,34 @@ public class MeterReadingProcessingServiceImpl implements MeterReadingProcessing
             public void apply(PointValueHolder value, MeterReading reading) {
                 Calendar calendar = Calendar.getInstance();
                 calendar.setTime(value.getPointDataTimeStamp());
-                
+
                 ArrayOfReadingValue readingValues = new ArrayOfReadingValue();
                 ReadingValue readingValue = new ReadingValue();
-                readingValue.setFieldName(SyntaxItem.LAST_INTERVAL_DEMAND_DATETIME.getMspFieldName()); 
+                readingValue.setFieldName(SyntaxItem.PEAK_DEMAND.getMspFieldName());
                 readingValue.setTimeStamp(MultispeakFuncs.toXMLGregorianCalendar(calendar));
-                 //reading.setKWDateTime(MultispeakFuncs.toXMLGregorianCalendar(calendar));
+
                 BigDecimal valueWithPrecision = new BigDecimal(value.getValue()).setScale(3, roundingMode).stripTrailingZeros();
                 readingValue.setValue(valueWithPrecision.toString());
+                readingValues.getReadingValue().add(readingValue);
                 reading.setReadingValues(readingValues);
-                // reading.setKW((float) value.getValue());
             }
         };
 
         ReadingProcessor blinkConverter = new ReadingProcessor() {
             @Override
             public void apply(PointValueHolder value, MeterReading reading) {
-                // TBD
+                Calendar calendar = Calendar.getInstance();
+                calendar.setTime(value.getPointDataTimeStamp());
+
+                ArrayOfReadingValue readingValues = new ArrayOfReadingValue();
+                ReadingValue readingValue = new ReadingValue();
+                readingValue.setFieldName(SyntaxItem.BLINK_COUNT.getMspFieldName());
+                readingValue.setTimeStamp(MultispeakFuncs.toXMLGregorianCalendar(calendar));
+
+                BigDecimal valueWithPrecision = new BigDecimal(value.getValue()).setScale(3, roundingMode).stripTrailingZeros();
+                readingValue.setValue(valueWithPrecision.toString());
+                readingValues.getReadingValue().add(readingValue);
+                reading.setReadingValues(readingValues);
             }
         };
 

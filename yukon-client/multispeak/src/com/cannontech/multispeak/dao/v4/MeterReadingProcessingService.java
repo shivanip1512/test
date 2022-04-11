@@ -6,7 +6,7 @@ import com.cannontech.core.dynamic.PointValueHolder;
 import com.cannontech.msp.beans.v4.MeterReading;
 
 public interface MeterReadingProcessingService {
-    
+
     /**
      * Simple helper to create a blank MeterReading for a given Meter.
      */
@@ -19,5 +19,5 @@ public interface MeterReadingProcessingService {
      * be shared across threads.
      */
     public void updateMeterReading(MeterReading reading, BuiltInAttribute attribute,
-                         PointValueHolder pointValueHolder);
+            PointValueHolder pointValueHolder);
 }

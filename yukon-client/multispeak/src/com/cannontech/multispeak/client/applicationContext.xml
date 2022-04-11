@@ -114,9 +114,7 @@
   </bean>
   
   <bean id="multispeakDao" class="com.cannontech.multispeak.dao.impl.MultispeakDaoImpl"/>
-  <bean id="multispeakDaov4" class="com.cannontech.multispeak.dao.impl.v4.MultispeakDaoImpl"/>
-  
-  
+ 
   <bean id="mspRawPointHistoryDao" class="com.cannontech.multispeak.dao.impl.MspRawPointHistoryDaoImpl"/>
   <bean id="mspRawPointHistoryDaov4" class="com.cannontech.multispeak.dao.impl.v4.MspRawPointHistoryDaoImpl"/>
   <bean id="mspRawPointHistoryDaov5" class="com.cannontech.multispeak.dao.impl.v5.MspRawPointHistoryDaoImpl"/>
