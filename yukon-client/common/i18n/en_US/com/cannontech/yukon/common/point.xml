@@ -440,7 +440,6 @@
     <entry key="yukon.common.attribute.builtInAttribute.REVERSED_AGGREGATE">Reversed Aggregate</entry>
     <entry key="yukon.common.attribute.builtInAttribute.REVERSED_PHASE_A">Reversed Phase A</entry>
     <entry key="yukon.common.attribute.builtInAttribute.REVERSED_PHASE_C">Reversed Phase C</entry>
-    <entry key="yukon.common.attribute.builtInAttribute.RFN_OUTAGE_BLINK">RFN Outage Count</entry>
     <entry key="yukon.common.attribute.builtInAttribute.RFN_BLINK_COUNT">RFN Blink Count</entry>
     <entry key="yukon.common.attribute.builtInAttribute.RFN_BLINK_REPORTED">RFN Blink Reported</entry>
     <entry key="yukon.common.attribute.builtInAttribute.RFN_BLINK_RESTORE_COUNT">RFN Blink Restore Count</entry>
