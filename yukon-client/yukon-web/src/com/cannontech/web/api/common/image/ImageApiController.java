@@ -36,8 +36,8 @@ public class ImageApiController {
         byte[] byteImageValue = liteYukonImage.getImageValue();
 
         final HttpHeaders headers = new HttpHeaders();
-        headers.setContentType(MediaType.IMAGE_JPEG);
-
+        String contentType = imageDao.getImageContentType(liteYukonImage);
+        headers.setContentType(MediaType.valueOf(contentType));
         return new ResponseEntity<>(byteImageValue, headers, HttpStatus.OK);
     }
 }
