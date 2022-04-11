@@ -33,6 +33,7 @@
         <pointInfo name="Avg Voltage Phase C" attributes="AVERAGE_VOLTAGE_PHASE_C"/>
         <pointInfo name="Bad Upgrade Security Param" attributes="BAD_UPGRADE_SECURITY_PARAM"/>
         <pointInfo name="Blink Count" init="true" attributes="RFN_BLINK_COUNT"/>
+        <pointInfo name="Blink Reported" init="true" attributes="RFN_BLINK_REPORTED"/>
         <pointInfo name="Blink Restore Count" init="true" attributes="RFN_BLINK_RESTORE_COUNT"/>
         <pointInfo name="Clock Error" attributes="CLOCK_ERROR"/>
         <pointInfo name="Current Phase A" attributes="CURRENT_PHASE_A"/>

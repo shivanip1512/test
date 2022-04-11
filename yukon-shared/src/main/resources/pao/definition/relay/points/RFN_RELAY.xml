@@ -95,6 +95,11 @@
         <archive interval="ZERO" type="ON_UPDATE"/>
         <stategroup value="Event Status"/>
     </point>
+    <point offset="69" type="Status">
+        <name>Blink Reported</name>
+        <archive interval="ZERO" type="ON_CHANGE"/>
+        <stategroup value="Event Status"/>
+    </point>
     <point offset="102" type="Status">
         <name>Ultra Capacitor Bad</name>
         <archive interval="ZERO" type="ON_CHANGE"/>

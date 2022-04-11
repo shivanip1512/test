@@ -609,6 +609,7 @@ public enum BuiltInAttribute implements Attribute, DisplayableEnum {
     REVERSED_PHASE_A("Reversed Phase A", AttributeGroup.RFN_METERING_EVENT, false),
     REVERSED_PHASE_C("Reversed Phase C", AttributeGroup.RFN_METERING_EVENT, false),
     RFN_BLINK_COUNT("Rfn Blink Count", AttributeGroup.BLINK_AND_OUTAGE, false),
+    RFN_BLINK_REPORTED("Rfn Blink Reported", AttributeGroup.BLINK_AND_OUTAGE, false),
     RFN_BLINK_RESTORE_COUNT("Rfn Blink Restore Count", AttributeGroup.BLINK_AND_OUTAGE, false),
     RFN_TEMPERATURE_ALARM("RFN High Temperature Alarm", AttributeGroup.RFN_HARDWARE_EVENT, false),
     RFN_OUTAGE_COUNT("Rfn Outage Count", AttributeGroup.BLINK_AND_OUTAGE, false),

@@ -608,6 +608,7 @@ INIT_ATTRIBUTE( ReversedAggregate,                                  "REVERSED_AG
 INIT_ATTRIBUTE( ReversedPhaseA,                                     "REVERSED_PHASE_A" );
 INIT_ATTRIBUTE( ReversedPhaseC,                                     "REVERSED_PHASE_C" );
 INIT_ATTRIBUTE( RfnBlinkCount,                                      "RFN_BLINK_COUNT" );
+INIT_ATTRIBUTE( RfnBlinkReported,                                   "RFN_BLINK_REPORTED" );
 INIT_ATTRIBUTE( RfnBlinkRestoreCount,                               "RFN_BLINK_RESTORE_COUNT" );
 INIT_ATTRIBUTE( RFNHighTemperatureAlarm,                            "RFN_TEMPERATURE_ALARM" );
 INIT_ATTRIBUTE( RfnOutageCount,                                     "RFN_OUTAGE_COUNT" );

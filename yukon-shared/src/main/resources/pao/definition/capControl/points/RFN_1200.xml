@@ -59,6 +59,11 @@
         <name>Time Sync Failed</name>
         <stategroup value="TrueFalse"/>
     </point>
+    <point offset="10" type="Status">
+        <name>Blink Reported</name>
+        <archive interval="ZERO" type="ON_CHANGE"/>
+        <stategroup value="Event Status"/>
+    </point>
     <point offset="1000" type="Status">
         <name>Outage Status</name>
         <archive interval="ZERO" type="ON_CHANGE"/>

@@ -3104,6 +3104,11 @@ Note: Look at BuiltInAttribute as that follows the same convention.
         <archive interval="ZERO" type="ON_CHANGE"/>
         <stategroup value="Event Status"/>
     </point>
+    <point offset="103" type="Status">
+        <name>Blink Reported</name>
+        <archive interval="ZERO" type="ON_CHANGE"/>
+        <stategroup value="Event Status"/>
+    </point>
     <point offset="1000" type="Status">
         <name>Outage Status</name>
         <archive interval="ZERO" type="ON_CHANGE"/>
