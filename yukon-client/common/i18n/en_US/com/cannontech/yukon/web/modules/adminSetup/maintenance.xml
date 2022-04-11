@@ -28,10 +28,11 @@
     </entry>
     <entry key="yukon.web.modules.adminSetup.maintenance.DUPLICATE_POINT_DATA_PRUNING.title">Duplicate Point Data Pruning</entry>
     <entry key="yukon.web.modules.adminSetup.maintenance.DUPLICATE_POINT_DATA_PRUNING.infoText">
-        This task deletes duplicate historical point data. Duplicate point data is defined by having the same timestamp,
-        value, and quality. Point data having archived timestamp within the last 6 months (by default) is evaluated. 
-        (This duration can be modified using the Configuration setting 'RFN Incoming Data Timestamp Limit'). The point 
-        data deleted by this task cannot be recovered and will be permanently deleted from the Yukon system.
+        The Duplicate Data Point Pruning task is responsible for permanently removing the occasional duplicate data point
+        records archived to the history table. To be considered for removal, the targeted data point record must exactly
+        match an existing entry meaning it has the same identifiers, timestamp, value, and data quality. By default, the
+        task evaluates the previous six months of historical data when executed. This time window is configurable using the
+        Endpoint Configuration Setting "RFN Incoming Data Timestamp Limit" if needed.
     </entry>
     <entry key="yukon.web.modules.adminSetup.maintenance.POINT_DATA_PRUNING.title">Point Data Pruning</entry>
     <entry key="yukon.web.modules.adminSetup.maintenance.POINT_DATA_PRUNING.infoText">

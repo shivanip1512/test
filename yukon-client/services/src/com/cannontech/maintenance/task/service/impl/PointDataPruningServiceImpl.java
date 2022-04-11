@@ -66,27 +66,27 @@ public class PointDataPruningServiceImpl implements PointDataPruningService {
         int totalRowsdeleted = 0;
         boolean noLockRequired =
             configurationSource.getBoolean(MasterConfigBoolean.MAINTENANCE_DUPLICATE_POINT_DATA_NOLOCK_REQUIRED, true);
-        Integer daysInDuration =
+        int duplicatePointDeletionLimit =
             configurationSource.getInteger(MasterConfigInteger.MAINTENANCE_DUPLICATE_POINT_DATA_DELETE_DURATION, 60);
-        int noOfMonthsConfigured = globalSettingDao.getInteger(GlobalSettingType.RFN_INCOMING_DATA_TIMESTAMP_LIMIT);
+        int incomingDataLimit = globalSettingDao.getInteger(GlobalSettingType.RFN_INCOMING_DATA_TIMESTAMP_LIMIT);
         // Forcing noOfMonths to max 12 in case user configures above value more than 12 months.
-        int noOfMonths = NumberUtils.min(noOfMonthsConfigured, 12);
+        int incomingDataLimitMonths = NumberUtils.min(incomingDataLimit, 12);
+
         log.debug("Configurations for duplicate point data deletion are - ");
-        log.debug("MAINTENANCE_DUPLICATE_POINT_DATA_DELETE_DURATION : {}", daysInDuration);
         log.debug("MAINTENANCE_DUPLICATE_POINT_DATA_NOLOCK_REQUIRED : {}", noLockRequired);
-        log.debug("No Of Months for which duplicate data is to be deleted : {}", noOfMonths);
+        log.debug("MAINTENANCE_DUPLICATE_POINT_DATA_DELETE_DURATION : {}", duplicatePointDeletionLimit);
+        log.debug("RFN_INCOMING_DATA_TIMESTAMP_LIMIT (max 12 months) : {}", incomingDataLimitMonths);
+
         Instant txnStart = Instant.now(); // Mark start time of the transaction
-        Duration monthInDuration = Period.months(noOfMonths).toDurationTo(txnStart);
         Instant toTimestamp = Instant.now(); // End of deletion interval
-        Duration deletionDuration = Period.days(daysInDuration).toDurationTo(toTimestamp);
-        Instant fromTimestamp = toTimestamp.minus(deletionDuration); // Beginning of deletion interval 
-        Instant limit = txnStart.minus(monthInDuration); // Oldest day deletion could go back to
-        if (fromTimestamp.compareTo(limit) < 0) { // Only delete duplicates within limit
-            fromTimestamp = limit;
-        }
-        log.debug(
-            "Overall duration for which duplicate records should be deleted = From {} To {}", fromTimestamp, toTimestamp);
+        Duration duplicatePointDeletionDuration = Period.days(duplicatePointDeletionLimit).toDurationTo(toTimestamp);
+        Duration incomindDataLimitDuration = Period.months(incomingDataLimitMonths).toDurationTo(toTimestamp);
+        Duration startLimit = duplicatePointDeletionDuration.compareTo(incomindDataLimitDuration) >= 0 ? 
+                duplicatePointDeletionDuration : incomindDataLimitDuration;
+        Instant fromTimestamp = toTimestamp.minus(startLimit); // Beginning of deletion interval 
+
         log.info("Duplicate point data deletion started.");
+        log.info("Duration for which duplicate records should be deleted = From {} To {}", fromTimestamp, toTimestamp);
         while (isEnoughTimeAvailable(processEndTime) && fromTimestamp.compareTo(toTimestamp) < 0) {
             Instant nextTimestamp = fromTimestamp.plus(Duration.standardDays(7));
             if (nextTimestamp.compareTo(toTimestamp) > 0) {
