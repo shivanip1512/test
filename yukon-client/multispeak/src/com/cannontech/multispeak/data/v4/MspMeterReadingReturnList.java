@@ -3,6 +3,7 @@ package com.cannontech.multispeak.data.v4;
 import java.util.List;
 
 import com.cannontech.msp.beans.v4.MeterReading;
+import com.cannontech.multispeak.data.MspReturnList;
 
 public class MspMeterReadingReturnList extends MspReturnList {
 

@@ -63,33 +63,28 @@ public class MspRawPointHistoryDaoImpl implements MspRawPointHistoryDao {
         }
 
         // build the actual MeterReading objects in the order they are to be output getPaoList returns the meters in
-        List<MeterReading> meterReading = Lists.newArrayListWithExpectedSize(estimatedSize);
+        List<MeterReading> meterReadings = Lists.newArrayListWithExpectedSize(estimatedSize);
 
         // loop over meters, results will be returned in whatever order getPaoList returns the meters in
         for (YukonMeter meter : meters) {
             for (BuiltInAttribute attribute : attributesToLoad) {
-                List<PointValueQualityHolder> rawValues = resultsPerAttribute.get(attribute).removeAll(meter.getPaoIdentifier()); // remove
-                                                                                                                                  // to
-                                                                                                                                  // keep
-                                                                                                                                  // our
-                                                                                                                                  // memory
-                                                                                                                                  // consumption
-                                                                                                                                  // somewhat
-                                                                                                                                  // in
-                                                                                                                                  // check
+                List<PointValueQualityHolder> rawValues = resultsPerAttribute.get(attribute).removeAll(meter.getPaoIdentifier()); // remove  to keep our
+                                                                                                                                  // memory consumption
+                                                                                                                                 // somewhat in check
+
                 for (PointValueQualityHolder pointValueQualityHolder : rawValues) {
-                    MeterReading meterRead = meterReadProcessingService.createMeterReading(meter);
-                    meterReadProcessingService.updateMeterReading(meterRead, attribute, pointValueQualityHolder);
-                    meterReading.add(meterRead);
+                    MeterReading meterReading = meterReadProcessingService.createMeterReading(meter);
+                    meterReadProcessingService.updateMeterReading(meterReading, attribute, pointValueQualityHolder);
+                    meterReadings.add(meterReading);
                 }
             }
         }
 
         MspMeterReadingReturnList mspMeterReadingReturn = new MspMeterReadingReturnList();
-        mspMeterReadingReturn.setMeterReading(meterReading);
+        mspMeterReadingReturn.setMeterReading(meterReadings);
         mspMeterReadingReturn.setReturnFields(meters, maxRecords);
 
-        log.debug("Retrieved " + meterReading.size() + " MeterReading. (" + (new Date().getTime() - timerStart.getTime()) * .001
+        log.debug("Retrieved " + meterReadings.size() + " MeterReading. (" + (new Date().getTime() - timerStart.getTime()) * .001
                 + " secs)");
 
         return mspMeterReadingReturn;

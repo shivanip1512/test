@@ -29,7 +29,7 @@ import com.cannontech.multispeak.client.MultispeakFuncsBase;
 import com.cannontech.multispeak.client.MultispeakVendor;
 import com.cannontech.multispeak.client.YukonMultispeakMsgHeader;
 import com.cannontech.multispeak.dao.MultispeakDao;
-import com.cannontech.multispeak.data.v4.MspReturnList;
+import com.cannontech.multispeak.data.MspReturnList;
 import com.cannontech.multispeak.exceptions.MultispeakWebServiceException;
 
 public class MultispeakFuncs extends MultispeakFuncsBase {

@@ -1,6 +1,7 @@
 package com.cannontech.multispeak.deploy.service.impl.v4;
 
 import java.util.Arrays;
+import java.util.Calendar;
 import java.util.List;
 
 import org.apache.logging.log4j.Logger;
@@ -45,9 +46,10 @@ public class MR_ServerImpl implements MR_Server {
     }
     
     @Override
-    public List<MeterReading> getReadingsByDate(java.util.Calendar startDate, java.util.Calendar endDate, java.lang.String lastReceived) throws MultispeakWebServiceException {
+    public List<MeterReading> getReadingsByDate(Calendar startDate, Calendar endDate, String lastReceived)
+            throws MultispeakWebServiceException {
         init();
-        
+
         MultispeakVendor vendor = multispeakFuncs.getMultispeakVendorFromHeader();
         multispeakEventLogService.methodInvoked("GetReadingsByDate", vendor.getCompanyName());
         
@@ -61,7 +63,7 @@ public class MR_ServerImpl implements MR_Server {
         multispeakFuncs.updateResponseHeader(mspMeterReadingReturnList);
         List<MeterReading> meterReading = mspMeterReadingReturnList.getMeterReading();
         log.info("Returning " + meterReading.size() + " Readings By Date.");
-        multispeakEventLogService.returnObjects(meterReading.size(), mspMeterReadingReturnList.getObjectsRemaining(), "MeterRead",
+        multispeakEventLogService.returnObjects(meterReading.size(), mspMeterReadingReturnList.getObjectsRemaining(), "MeterReading",
                 mspMeterReadingReturnList.getLastSent(), "GetReadingsByDate", vendor.getCompanyName());
 
         return meterReading;

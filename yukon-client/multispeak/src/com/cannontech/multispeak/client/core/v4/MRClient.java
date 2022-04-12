@@ -8,7 +8,6 @@ import org.springframework.ws.client.core.WebServiceTemplate;
 
 import com.cannontech.multispeak.client.v4.MultispeakFuncs;
 import com.cannontech.multispeak.client.MultispeakVendor;
-import com.cannontech.multispeak.client.core.CustomWebServiceMsgCallback;
 
 import com.cannontech.msp.beans.v4.GetReadingsByDate;
 import com.cannontech.msp.beans.v4.GetReadingsByDateResponse;

@@ -4,6 +4,8 @@ import java.util.List;
 
 import com.cannontech.msp.beans.v4.MeterReading;
 import com.cannontech.multispeak.exceptions.MultispeakWebServiceException;
+import java.util.Calendar;
+import java.lang.String;
 
 public interface MR_Server {
 
@@ -32,7 +34,7 @@ public interface MR_Server {
      * @return the readings by date
      * @throws MultispeakWebServiceException the multispeak web service exception
      */
-    public List<MeterReading> getReadingsByDate(java.util.Calendar startDate, java.util.Calendar endDate,
-            java.lang.String lastReceived) throws MultispeakWebServiceException;
+    public List<MeterReading> getReadingsByDate(Calendar startDate, Calendar endDate,
+            String lastReceived) throws MultispeakWebServiceException;
 
 }
