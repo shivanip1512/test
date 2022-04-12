@@ -195,4 +195,16 @@ public final class YukonImageDaoImpl implements YukonImageDao {
         return template.queryForObject(sql, mapper);
     }
     
+    @Override
+    public String getImageContentType(LiteYukonImage image) {
+        String ext = getImageExtension(image);
+        String contentType = "image/" + (ext.equals("jpg") ? "jpeg" : ext);
+        return contentType;
+    }
+
+    private String getImageExtension(LiteYukonImage image) {
+        String name = image.getImageName();
+        String ext = name.substring(name.lastIndexOf('.') + 1);
+        return ext;
+    }
 }
