@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 
@@ -11,10 +12,12 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.EmptyResultDataAccessException;
 
 import com.cannontech.capcontrol.ControlAlgorithm;
+import com.cannontech.capcontrol.PointToZoneMapping;
 import com.cannontech.capcontrol.dao.CapbankDao;
 import com.cannontech.capcontrol.dao.FeederDao;
 import com.cannontech.capcontrol.dao.StrategyDao;
 import com.cannontech.capcontrol.dao.ZoneDao;
+import com.cannontech.capcontrol.model.Zone;
 import com.cannontech.cbc.cache.CapControlCache;
 import com.cannontech.cbc.util.CapControlUtils;
 import com.cannontech.common.pao.PaoIdentifier;
@@ -217,6 +220,32 @@ public class FeederServiceImpl implements FeederService {
 
                 if (!Collections.disjoint(subBusCapbankIds, feederCapBankIds)) {
                     return true;
+                }
+            }
+        }
+
+        return false;
+    }
+    
+    @Override
+    public boolean isFeederAssignedToVoltagePointForZone(int feederId) throws EmptyResultDataAccessException {
+
+        Integer substationBusId = feederDao.getParentSubBusID(feederId);
+        Map<Season, LiteCapControlStrategy> seasonToStrat = strategyService.getSeasonStrategyAssignments(substationBusId);
+
+        LiteCapControlStrategy liteCapControlStrategy = new ArrayList<LiteCapControlStrategy>(seasonToStrat.values()).get(0);
+
+        if (liteCapControlStrategy != null) {
+            CapControlStrategy strategy = strategyDao.getForId(liteCapControlStrategy.getId());
+            if (strategy.getAlgorithm() == ControlAlgorithm.INTEGRATED_VOLT_VAR) {
+                List<Zone> zones = zoneDao.getZonesBySubBusId(substationBusId);
+                for (Zone zone: zones) {
+                    List<PointToZoneMapping> pointMappings = zoneDao.getPointToZoneMappingByZoneId(zone.getId());
+                    Optional<PointToZoneMapping> feederPoint = pointMappings.stream()
+                            .filter(point -> point.getFeederId().equals(feederId)).findFirst();
+                    if (feederPoint.isPresent()) {
+                        return true;
+                    }
                 }
             }
         }
