@@ -555,7 +555,6 @@ public class MultispeakController {
             new ArrayList<>(Arrays.asList(MultiSpeakVersion.V5, MultiSpeakVersion.V4));
         List<MultiSpeakVersion> mspVersion5 = new ArrayList<>(Arrays.asList(MultiSpeakVersion.V5));
         List<MultiSpeakVersion> mspVersion3 = new ArrayList<>(Arrays.asList(MultiSpeakVersion.V3));
-        List<MultiSpeakVersion> mspVersion4 = new ArrayList<>(Arrays.asList(MultiSpeakVersion.V4));
         map.addAttribute("mspVendor", mspVendor);
         map.addAttribute("mspVendorList", multispeakDao.getMultispeakVendors(ignoreCannon));
         map.addAttribute("mspCISVendorList", multispeakDao.getMultispeakCISVendors());
@@ -596,7 +595,6 @@ public class MultispeakController {
         map.addAttribute("notMspVersionList", notMspVersionList);
         map.addAttribute("mspVersion5", mspVersion5);
         map.addAttribute("mspVersion3", mspVersion3);
-        map.addAttribute("mspVersion4", mspVersion4);
         multispeak.setMspVendor(mspVendor);
 
         map.addAttribute("noVendorsExist", noVendorsExist);
