@@ -77,9 +77,9 @@ public class MRServiceEndPoint {
                                                                  lastReceived);
 
         
-        ArrayOfMeterReading1 arrayOfMeterRead = objectFactory.createArrayOfMeterReading1();
-        arrayOfMeterRead.getMeterReading().addAll(meterReading);
-        response.setGetReadingsByDateResult(arrayOfMeterRead);
+        ArrayOfMeterReading1 arrayOfMeterReading = objectFactory.createArrayOfMeterReading1();
+        arrayOfMeterReading.getMeterReading().addAll(meterReading);
+        response.setGetReadingsByDateResult(arrayOfMeterReading);
         return response;
     }
 }
