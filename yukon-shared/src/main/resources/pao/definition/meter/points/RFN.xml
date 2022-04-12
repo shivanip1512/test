@@ -13,7 +13,7 @@ Note: Look at BuiltInAttribute as that follows the same convention.
         <analog offset="515"/>
         <calcAnalog offset="0"/>
         <demandAccumulator offset="251"/>
-        <status offset="102"/>
+        <status offset="103"/>
         <systemStatus offset="2000"/>
     </highestOffsets>
     <!--- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -Analog- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -->
