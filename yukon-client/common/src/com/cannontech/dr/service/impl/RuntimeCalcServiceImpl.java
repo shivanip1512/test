@@ -84,12 +84,10 @@ public class RuntimeCalcServiceImpl implements RuntimeCalcService {
         
         DateTime startOfCurrentInterval = interval.start(currentStatus.getDate());
         DateTime startOfRuntimePeriod = previousStatus.getDate();
-        
-        log.debug("Previous Status: {}", previousStatus);
-        log.debug("Current Status: {}", currentStatus);
-        log.debug("Start of current Interval: {}", startOfCurrentInterval);
-        log.debug("Start of Runtime Period: {}", startOfRuntimePeriod);
-        
+
+        log.debug("\nPrevious Status: {} \nCurrent Status: {} \nStart of current Interval: {} \nStart of Runtime Period: {}",
+                previousStatus, currentStatus, startOfCurrentInterval, startOfRuntimePeriod);
+
         if (startOfRuntimePeriod.isBefore(startOfCurrentInterval)) {
             // This period crosses interval boundaries and must be split
             intervalRelaySeconds = calculateActiveTimeAcrossIntervals(isActive, startOfRuntimePeriod, currentStatus.getDate(), interval);
@@ -99,9 +97,7 @@ public class RuntimeCalcServiceImpl implements RuntimeCalcService {
             //add runtime as interval-ending
             intervalRelaySeconds.put(interval.end(currentStatus.getDate()), runtimeSeconds);
         }
-        
-        log.debug("IntervalActiveSeconds: {}", intervalRelaySeconds);
-        
+
         return intervalRelaySeconds;
     }
     

@@ -319,16 +319,12 @@ public abstract class RuntimeCalcSchedulerService {
             Map<BuiltInAttribute, RelayLogInterval> intervals,
             Map<PaoPointIdentifier, Integer> relayStatusIdLookup,
             Map<PaoPointIdentifier, Integer> dataLogIdLookup) {
-        
-        log.debug("Device:{}", device);
-        log.debug("logRange:{}", logRange);
-        log.debug("relayStatusData:{}", relayStatusData);
-        log.debug("relayStatusAttribute:{}", relayStatusAttribute);
-        log.debug("isRuntime:{}", isRuntime);
-        log.debug("relayNumber:{}", relayNumber);
-        log.debug("intervals:{}", intervals);
-        log.debug("relayStatusIdLookup:{}", relayStatusIdLookup);
-        log.debug("dataLogIdLookup:{}", dataLogIdLookup);
+
+        log.debug("\nLog Range: {} \nRelay Status Data: {} \nIs Runtime?: {} \nRelay Number: {}",
+                logRange, relayStatusData, isRuntime, relayNumber);
+
+        log.trace("\nRelay Status Attribute: {} \nRelay Status Id Lookup: {} \nData Log Id Lookup: {}",
+                relayStatusAttribute, relayStatusIdLookup, dataLogIdLookup);
 
         // Map of point ID to its RelayLogInterval
         Map<Integer, RelayLogInterval> dataLogIntervals = intervals.entrySet().stream()
@@ -359,7 +355,7 @@ public abstract class RuntimeCalcSchedulerService {
                     Iterable<PointValueHolder> relayStatuses = addBoundaryValues(relayStatusData.get(relayStatusPointId),
                             logRange);
 
-                    log.debug("Relay Statuses after boundry values :{}", relayStatuses);
+                    log.trace("Relay Statuses after boundry values :{}", relayStatuses);
                     
                     if (isRuntime) {
                         // Transform the raw relay state data into runtime status
@@ -393,7 +389,7 @@ public abstract class RuntimeCalcSchedulerService {
      */
     public Iterable<PointValueHolder> addBoundaryValues(Iterable<PointValueHolder> relayStatuses, Range<Instant> logRange) {
 
-        log.debug("Relay Statuses before boundry values :{}", relayStatuses);
+        log.trace("Relay Statuses before boundry values :{}", relayStatuses);
         relayStatuses = addPrecedingValue(relayStatuses, logRange);
 
         relayStatuses = addTrailingValue(relayStatuses, logRange);
@@ -403,18 +399,17 @@ public abstract class RuntimeCalcSchedulerService {
 
     private Iterable<PointValueHolder> addPrecedingValue(Iterable<PointValueHolder> relayStatuses, Range<Instant> logRange) {
         PointValueHolder firstStatus = Iterables.getFirst(relayStatuses, null);
-        log.debug("First Status :{}", firstStatus);
+        log.trace("First Status :{}", firstStatus);
         if (firstStatus != null) {
             var firstStatusInstant = new Instant(firstStatus.getPointDataTimeStamp().getTime());
-            log.debug("First Status Instant :{}", firstStatusInstant);
             // Get the entry preceding the range, if the start of the range is defined
             if (logRange.getMin() != null && logRange.getMin().isBefore(firstStatusInstant)) {
                 List<PointValueHolder> previousStatus = getPrecedingArchivedValue(firstStatus);
-                log.debug("Previous Status :{}", previousStatus);
+                log.trace("Previous Status :{}", previousStatus);
                 relayStatuses = Iterables.concat(previousStatus, relayStatuses);
                 if (!previousStatus.isEmpty()) {
                     List<PointValueHolder> previousPreviousStatus = getPrecedingArchivedValue(Iterables.getFirst(previousStatus, null));
-                    log.debug("Previous Previous Status :{}", previousPreviousStatus);
+                    log.trace("Previous Previous Status :{}", previousPreviousStatus);
                     relayStatuses = Iterables.concat(previousPreviousStatus, relayStatuses);
                 }
 
@@ -426,9 +421,7 @@ public abstract class RuntimeCalcSchedulerService {
     public List<PointValueHolder> getPrecedingArchivedValue(PointValueHolder firstStatus) {
         int pointId = firstStatus.getId();
         Date centerDate = firstStatus.getPointDataTimeStamp();
-        log.debug("Center Date (first status timestamp):{}", centerDate);
         Range<Date> dateRange = new Range<>(null, true, centerDate, false);
-        log.debug("Date Range :{}", dateRange);
         return rphDao.getLimitedPointData(pointId,
                 dateRange.translate(CtiUtilities.INSTANT_FROM_DATE)
                 /* Clusivity.INCLUSIVE_EXCLUSIVE */, false,
@@ -530,7 +523,7 @@ public abstract class RuntimeCalcSchedulerService {
                 .collect(Collectors.toList());
         try {
             asyncDynamicDataSource.putValues(pointDatas);
-            log.trace("Inserting point data to async cache, Data: {}", pointDatas);
+            log.trace("Inserting point data to async cache {}", pointDatas);
         } catch (DispatchNotConnectedException e) {
             log.error("Unable to insert data logs for " + device.getPaoIdentifier()
                     + " - no dispatch connection.  Will attempt to recalculate on next execution.", e);
