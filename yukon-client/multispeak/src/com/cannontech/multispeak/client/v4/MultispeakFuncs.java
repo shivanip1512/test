@@ -1,11 +1,13 @@
 package com.cannontech.multispeak.client.v4;
 
+import javax.annotation.Resource;
 import javax.xml.namespace.QName;
 import javax.xml.soap.MimeHeaders;
 import javax.xml.soap.SOAPException;
 import javax.xml.soap.SOAPMessage;
 
 import org.apache.logging.log4j.Logger;
+import org.springframework.oxm.jaxb.Jaxb2Marshaller;
 import org.springframework.ws.WebServiceMessage;
 import org.springframework.ws.context.MessageContext;
 import org.springframework.ws.soap.AbstractSoapMessage;
@@ -20,7 +22,6 @@ import com.cannontech.core.dao.NotFoundException;
 import com.cannontech.database.data.lite.LiteYukonUser;
 import com.cannontech.multispeak.client.MessageContextHolder;
 import com.cannontech.multispeak.client.MultiSpeakVersion;
-import com.cannontech.multispeak.client.v4.MultispeakFuncs;
 import com.cannontech.multispeak.client.MultispeakFuncsBase;
 import com.cannontech.multispeak.client.YukonMultispeakMsgHeader;
 import com.cannontech.multispeak.exceptions.MultispeakWebServiceException;
@@ -28,6 +29,8 @@ import com.cannontech.multispeak.exceptions.MultispeakWebServiceException;
 public class MultispeakFuncs extends MultispeakFuncsBase {
     private final static Logger log = YukonLogManager.getLogger(MultispeakFuncs.class);
 
+    @Resource(name="domainMarshallerV4") Jaxb2Marshaller jaxb2Marshaller;
+    
     @Override
     public MultiSpeakVersion version() {
         return MultiSpeakVersion.V4;
