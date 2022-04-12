@@ -15,12 +15,12 @@ import com.cannontech.multispeak.client.MultispeakVendor;
 import com.cannontech.multispeak.client.v4.MultispeakFuncs;
 import com.cannontech.multispeak.exceptions.MultispeakWebServiceClientException;
 
-public class MRClient implements IMRClient{
+public class MRClient implements IMRClient {
 
     @Autowired private MultispeakFuncs multispeakFuncs;
     @Autowired private CustomWebServiceMsgCallback customWebServiceMsgCallback;
     private WebServiceTemplate webServiceTemplate;
-    
+
     /**
      * MR Client Constructor
      * 
@@ -38,7 +38,7 @@ public class MRClient implements IMRClient{
             multispeakFuncs.setMsgSender(webServiceTemplate, mspVendor);
 
             return (PingURLResponse) webServiceTemplate.marshalSendAndReceive(uri, pingURL,
-                customWebServiceMsgCallback.addRequestHeader(mspVendor, MultispeakDefines.MR_Server_STR));
+                    customWebServiceMsgCallback.addRequestHeader(mspVendor, MultispeakDefines.MR_Server_STR));
         } catch (WebServiceException | XmlMappingException ex) {
             throw new MultispeakWebServiceClientException(ex.getMessage());
         }
@@ -51,7 +51,7 @@ public class MRClient implements IMRClient{
             multispeakFuncs.setMsgSender(webServiceTemplate, mspVendor);
 
             return (GetMethodsResponse) webServiceTemplate.marshalSendAndReceive(uri, getMethods,
-                customWebServiceMsgCallback.addRequestHeader(mspVendor, MultispeakDefines.MR_Server_STR));
+                    customWebServiceMsgCallback.addRequestHeader(mspVendor, MultispeakDefines.MR_Server_STR));
         } catch (WebServiceException | XmlMappingException ex) {
             throw new MultispeakWebServiceClientException(ex.getMessage());
         }

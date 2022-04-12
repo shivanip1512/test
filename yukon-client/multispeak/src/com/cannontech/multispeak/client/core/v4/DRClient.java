@@ -37,7 +37,7 @@ public class DRClient implements IDRClient {
             multispeakFuncs.setMsgSender(webServiceTemplate, mspVendor);
 
             return (PingURLResponse) webServiceTemplate.marshalSendAndReceive(uri, pingURL,
-                customWebServiceMsgCallback.addRequestHeader(mspVendor, MultispeakDefines.DR_Server_STR));
+                    customWebServiceMsgCallback.addRequestHeader(mspVendor, MultispeakDefines.DR_Server_STR));
         } catch (WebServiceException | XmlMappingException ex) {
             throw new MultispeakWebServiceClientException(ex.getMessage());
         }
@@ -50,11 +50,10 @@ public class DRClient implements IDRClient {
             multispeakFuncs.setMsgSender(webServiceTemplate, mspVendor);
 
             return (GetMethodsResponse) webServiceTemplate.marshalSendAndReceive(uri, getMethods,
-                customWebServiceMsgCallback.addRequestHeader(mspVendor, MultispeakDefines.DR_Server_STR));
+                    customWebServiceMsgCallback.addRequestHeader(mspVendor, MultispeakDefines.DR_Server_STR));
         } catch (WebServiceException | XmlMappingException ex) {
             throw new MultispeakWebServiceClientException(ex.getMessage());
         }
     }
-    
-}
 
+}
