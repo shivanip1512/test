@@ -203,11 +203,14 @@
                                                 </td>
                                                 <td>
                                                     <c:set var="versionOptions" value="${mspVersionList}" />
-                                                    <c:if test="${currentInterface.mspInterface =='NOT_Server' || currentInterface.mspInterface == 'NOT_Server_DR'}">
+                                                    <c:if test="${currentInterface.mspInterface == 'NOT_Server_DR'}">
                                                         <c:set var="versionOptions" value="${mspVersion5}" />
                                                     </c:if>
                                                     <c:if test="${currentInterface.mspInterface=='CB_CD'}">
                                                         <c:set var="versionOptions" value="${mspVersion3}" />
+                                                    </c:if>
+                                                    <c:if test="${currentInterface.mspInterface == 'NOT_Server'}">
+                                                        <c:set var="versionOptions" value="${notMspVersionList}" />
                                                     </c:if>
                                                     <tags:selectWithItems id="select${currentInterface.mspInterface}"
                                                         path="mspInterfaceList[${indexValue}].version"

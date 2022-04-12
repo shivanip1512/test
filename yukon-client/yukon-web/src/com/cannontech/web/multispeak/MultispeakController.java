@@ -481,7 +481,9 @@ public class MultispeakController {
         }
         multispeak.setMspVendor(defaultMspVendor);
         List<MultiSpeakVersion> mspVersionList =
-            new ArrayList<>(Arrays.asList(MultiSpeakVersion.V3, MultiSpeakVersion.V5));
+            new ArrayList<>(Arrays.asList(MultiSpeakVersion.V3, MultiSpeakVersion.V5, MultiSpeakVersion.V4));
+        List<MultiSpeakVersion> notMspVersionList =
+                new ArrayList<>(Arrays.asList(MultiSpeakVersion.V5, MultiSpeakVersion.V4));
         if (mspVendor != null) {
             map.addAttribute("mspVendorId", mspVendor.getVendorID());
             showRoleProperties = (defaultMspVendor.getCompanyName().equals(mspVendor.getCompanyName()));
@@ -531,6 +533,7 @@ public class MultispeakController {
         MultispeakMeterLookupFieldEnum mspMeterLookupField = multispeakFuncs.getMeterLookupField();
         multispeak.setMeterLookupField(mspMeterLookupField);
         map.addAttribute("mspVersionList", mspVersionList);
+        map.addAttribute("notMspVersionList", notMspVersionList);
         map.addAttribute("multispeak", multispeak);
     }
 
@@ -547,10 +550,11 @@ public class MultispeakController {
             multispeak = new MultispeakModel();
         }
         List<MultiSpeakVersion> mspVersionList =
-            new ArrayList<>(Arrays.asList(MultiSpeakVersion.V3, MultiSpeakVersion.V5));
+            new ArrayList<>(Arrays.asList(MultiSpeakVersion.V3, MultiSpeakVersion.V5, MultiSpeakVersion.V4));
+        List<MultiSpeakVersion> notMspVersionList =
+            new ArrayList<>(Arrays.asList(MultiSpeakVersion.V5, MultiSpeakVersion.V4));
         List<MultiSpeakVersion> mspVersion5 = new ArrayList<>(Arrays.asList(MultiSpeakVersion.V5));
         List<MultiSpeakVersion> mspVersion3 = new ArrayList<>(Arrays.asList(MultiSpeakVersion.V3));
-
         map.addAttribute("mspVendor", mspVendor);
         map.addAttribute("mspVendorList", multispeakDao.getMultispeakVendors(ignoreCannon));
         map.addAttribute("mspCISVendorList", multispeakDao.getMultispeakCISVendors());
@@ -588,6 +592,7 @@ public class MultispeakController {
             multispeakFuncs.getMeterLookupField()));
 
         map.addAttribute("mspVersionList", mspVersionList);
+        map.addAttribute("notMspVersionList", notMspVersionList);
         map.addAttribute("mspVersion5", mspVersion5);
         map.addAttribute("mspVersion3", mspVersion3);
         multispeak.setMspVendor(mspVendor);
