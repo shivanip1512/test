@@ -17,6 +17,10 @@ public class PortApiValidatorHelper {
 
     @Autowired private static YukonApiValidationUtils yukonApiValidationUtils;
 
+    public PortApiValidatorHelper(YukonApiValidationUtils yukonApiValidationUtils) {
+        PortApiValidatorHelper.yukonApiValidationUtils = yukonApiValidationUtils;
+    }
+
     public static void validatePortTimingFields(Errors errors, PortTiming timing) {
         if (!errors.hasFieldErrors("timing.preTxWait")) {
             Range<Integer> range = Range.inclusive(0, 10000000);
