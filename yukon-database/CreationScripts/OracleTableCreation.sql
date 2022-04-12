@@ -1,7 +1,7 @@
 /*==============================================================*/
 /* Database name:  YukonDatabase                                */
 /* DBMS name:      ORACLE Version 9i                            */
-/* Created on:     4/4/2022 8:53:10 AM                          */
+/* Created on:     4/12/2022 9:18:38 AM                         */
 /*==============================================================*/
 
 
@@ -8156,6 +8156,7 @@ create table PointToZoneMapping  (
    GraphPositionOffset  FLOAT,
    Distance             FLOAT,
    Ignore               VARCHAR2(1)                     not null,
+   FeederId             NUMBER,
    constraint PK_PointZoneMap primary key (PointId)
 );
 
@@ -14394,3 +14395,4 @@ alter table Zone
 alter table Zone
    add constraint FK_Zone_Zone foreign key (ParentId)
       references Zone (ZoneId);
+
