@@ -81,7 +81,7 @@ public class PointDataPruningServiceImpl implements PointDataPruningService {
         Instant toTimestamp = Instant.now(); // End of deletion interval
         Duration duplicatePointDeletionDuration = Period.days(duplicatePointDeletionLimit).toDurationTo(toTimestamp);
         Duration incomindDataLimitDuration = Period.months(incomingDataLimitMonths).toDurationTo(toTimestamp);
-        Duration startLimit = duplicatePointDeletionDuration.compareTo(incomindDataLimitDuration) >= 0 ? 
+        Duration startLimit = duplicatePointDeletionDuration.isLongerThan(incomindDataLimitDuration) ? 
                 duplicatePointDeletionDuration : incomindDataLimitDuration;
         Instant fromTimestamp = toTimestamp.minus(startLimit); // Beginning of deletion interval 
 
