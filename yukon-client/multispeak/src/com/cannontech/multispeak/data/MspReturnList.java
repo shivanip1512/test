@@ -85,8 +85,11 @@ public abstract class MspReturnList {
         } else if (lastObject instanceof MspObject) {
             return ((MspObject) lastObject).getObjectID();
         
-        } else if (lastObject instanceof com.cannontech.msp.beans.v4.MeterBase) {
-            return ((com.cannontech.msp.beans.v4.MeterBase) lastObject).getMeterID().getMeterNo();
+        } else if (lastObject instanceof com.cannontech.msp.beans.v4.MspObject) {
+            return ((com.cannontech.msp.beans.v4.MspObject) lastObject).getObjectID();
+        
+        } else if (lastObject instanceof com.cannontech.msp.beans.v4.MeterID) {
+            return ((com.cannontech.msp.beans.v4.MeterID) lastObject).getMeterNo();
         
         } else if (lastObject instanceof com.cannontech.msp.beans.v5.multispeak.MspObject) {
             return ((com.cannontech.msp.beans.v5.multispeak.MspObject) lastObject).getPrimaryIdentifier().getValue();
