@@ -7,6 +7,7 @@ import org.joda.time.ReadableInstant;
 import com.cannontech.common.bulk.filter.UiFilter;
 import com.cannontech.common.events.model.EventCategory;
 import com.cannontech.common.events.model.EventLog;
+import com.cannontech.common.model.PagingParameters;
 import com.cannontech.common.search.result.SearchResults;
 import com.cannontech.user.YukonUserContext;
 
@@ -43,8 +44,7 @@ public interface EventLogUIService {
                 getFilteredPagedSearchResultByCategories(Iterable<EventCategory> eventCategories,
                                                          ReadableInstant startDate,
                                                          ReadableInstant stopDate,
-                                                         Integer start,
-                                                         Integer pageCount,
+                                                         PagingParameters paging,
                                                          String filterText,
                                                          YukonUserContext userContext);
 

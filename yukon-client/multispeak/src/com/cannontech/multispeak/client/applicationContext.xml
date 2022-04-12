@@ -115,11 +115,13 @@
   </bean>
   
   <bean id="multispeakDao" class="com.cannontech.multispeak.dao.impl.MultispeakDaoImpl"/>
-  
+ 
   <bean id="mspRawPointHistoryDao" class="com.cannontech.multispeak.dao.impl.MspRawPointHistoryDaoImpl"/>
+  <bean id="mspRawPointHistoryDaov4" class="com.cannontech.multispeak.dao.impl.v4.MspRawPointHistoryDaoImpl"/>
   <bean id="mspRawPointHistoryDaov5" class="com.cannontech.multispeak.dao.impl.v5.MspRawPointHistoryDaoImpl"/>
   
   <bean class="com.cannontech.multispeak.dao.impl.MeterReadProcessingServiceImpl"/>
+  <bean class="com.cannontech.multispeak.dao.impl.v4.MeterReadingProcessingServiceImpl"/>
   <bean class="com.cannontech.multispeak.dao.impl.v5.MeterReadProcessingServiceImpl"/>
   
   <bean id="blockProcessingService" class="com.cannontech.multispeak.dao.impl.FormattedBlockProcessingServiceImpl" abstract="true"/>
