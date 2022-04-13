@@ -4,17 +4,36 @@ import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Map;
 
+import org.apache.logging.log4j.Logger;
 import org.joda.time.DateTime;
 import org.joda.time.Seconds;
 
-import com.cannontech.dr.service.RuntimeCalcService;
+import com.cannontech.clientutils.YukonLogManager;
 import com.cannontech.dr.service.RelayLogInterval;
+import com.cannontech.dr.service.RuntimeCalcService;
 
 public class RuntimeCalcServiceImpl implements RuntimeCalcService {
+    
+    private static final Logger log = YukonLogManager.getLogger(RuntimeCalcServiceImpl.class);
     
     @Override
     public Map<DateTime, Integer> getHourlyRuntimeSeconds(Iterable<DatedRuntimeStatus> statuses) {
         return getIntervalRelayLogs(statuses, RelayLogInterval.LOG_60_MINUTE);
+    }
+    
+    @Override
+    public Map<DateTime, Integer> get30MinuteRuntimeSeconds(Iterable<DatedRuntimeStatus> statuses) {
+        return getIntervalRelayLogs(statuses, RelayLogInterval.LOG_30_MINUTE);
+    }
+    
+    @Override
+    public Map<DateTime, Integer> get15MinuteRuntimeSeconds(Iterable<DatedRuntimeStatus> statuses) {
+        return getIntervalRelayLogs(statuses, RelayLogInterval.LOG_15_MINUTE);
+    }
+    
+    @Override
+    public Map<DateTime, Integer> get5MinuteRuntimeSeconds(Iterable<DatedRuntimeStatus> statuses) {
+        return getIntervalRelayLogs(statuses, RelayLogInterval.LOG_5_MINUTE);
     }
     
     @Override
@@ -65,7 +84,10 @@ public class RuntimeCalcServiceImpl implements RuntimeCalcService {
         
         DateTime startOfCurrentInterval = interval.start(currentStatus.getDate());
         DateTime startOfRuntimePeriod = previousStatus.getDate();
-        
+
+        log.debug("\nPrevious Status: {} \nCurrent Status: {} \nStart of current Interval: {} \nStart of Runtime Period: {}",
+                previousStatus, currentStatus, startOfCurrentInterval, startOfRuntimePeriod);
+
         if (startOfRuntimePeriod.isBefore(startOfCurrentInterval)) {
             // This period crosses interval boundaries and must be split
             intervalRelaySeconds = calculateActiveTimeAcrossIntervals(isActive, startOfRuntimePeriod, currentStatus.getDate(), interval);
@@ -75,7 +97,7 @@ public class RuntimeCalcServiceImpl implements RuntimeCalcService {
             //add runtime as interval-ending
             intervalRelaySeconds.put(interval.end(currentStatus.getDate()), runtimeSeconds);
         }
-        
+
         return intervalRelaySeconds;
     }
     
