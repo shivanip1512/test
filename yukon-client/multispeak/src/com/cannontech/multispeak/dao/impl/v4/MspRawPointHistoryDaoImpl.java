@@ -4,6 +4,7 @@ import java.util.Date;
 import java.util.EnumMap;
 import java.util.EnumSet;
 import java.util.List;
+import java.util.Map;
 
 import org.apache.commons.lang3.StringUtils;
 import org.apache.logging.log4j.Logger;
@@ -22,7 +23,6 @@ import com.cannontech.core.dao.RawPointHistoryDao.Order;
 import com.cannontech.core.dynamic.PointValueQualityHolder;
 import com.cannontech.database.YukonJdbcTemplate;
 import com.cannontech.msp.beans.v4.MeterReading;
-
 import com.cannontech.multispeak.dao.v4.MeterReadingProcessingService;
 import com.cannontech.multispeak.dao.v4.MspRawPointHistoryDao;
 import com.cannontech.multispeak.data.v4.MspMeterReadingReturnList;
@@ -33,7 +33,7 @@ import com.google.common.collect.Maps;
 public class MspRawPointHistoryDaoImpl implements MspRawPointHistoryDao {
     private final Logger log = YukonLogManager.getLogger(MspRawPointHistoryDaoImpl.class);
 
-    @Autowired private MeterReadingProcessingService meterReadProcessingService;
+    @Autowired private MeterReadingProcessingService meterReadingProcessingService;
     @Autowired private MeterRowMapper meterRowMapper;
     @Autowired private RawPointHistoryDao rawPointHistoryDao;
     @Autowired private YukonJdbcTemplate yukonJdbcTemplate;
@@ -73,8 +73,8 @@ public class MspRawPointHistoryDaoImpl implements MspRawPointHistoryDao {
                                                                                                                                  // somewhat in check
 
                 for (PointValueQualityHolder pointValueQualityHolder : rawValues) {
-                    MeterReading meterReading = meterReadProcessingService.createMeterReading(meter);
-                    meterReadProcessingService.updateMeterReading(meterReading, attribute, pointValueQualityHolder);
+                    MeterReading meterReading = meterReadingProcessingService.createMeterReading(meter);
+                    meterReadingProcessingService.updateMeterReading(meterReading, attribute, pointValueQualityHolder);
                     meterReadings.add(meterReading);
                 }
             }
@@ -89,6 +89,58 @@ public class MspRawPointHistoryDaoImpl implements MspRawPointHistoryDao {
 
         return mspMeterReadingReturn;
 
+    } 
+    
+    @Override
+    public MspMeterReadingReturnList retrieveLatestMeterReading(ReadBy readBy, String readByValue, String lastReceived, int maxRecords) {
+
+        List<YukonMeter> meters = getPaoList(readBy, readByValue, lastReceived, maxRecords);
+        
+        final Date timerStart = new Date();
+        
+        EnumMap<BuiltInAttribute, Map<PaoIdentifier, PointValueQualityHolder>> resultsPerAttribute = Maps.newEnumMap(BuiltInAttribute.class);
+
+        int estimatedSize = 0;
+
+        EnumSet<BuiltInAttribute> attributesToLoad = EnumSet.of(BuiltInAttribute.USAGE, BuiltInAttribute.PEAK_DEMAND);
+        // load up results for each attribute
+        for (BuiltInAttribute attribute : attributesToLoad) {
+            Map<PaoIdentifier, PointValueQualityHolder> resultsForAttribute = rawPointHistoryDao.getSingleAttributeData(meters, attribute, false, null);
+            resultsPerAttribute.put(attribute, resultsForAttribute);
+            estimatedSize += resultsForAttribute.size();
+        }
+
+        List<MeterReading> meterReadings = Lists.newArrayListWithExpectedSize(estimatedSize);
+        // loop over meters, results will be returned in whatever order getPaoList returns the meters in
+        // attempt to group all attributes for one meter together, because we know we only have one pointValue per meter per attribute. 
+        for (YukonMeter meter : meters) {
+
+            MeterReading meterReading = meterReadingProcessingService.createMeterReading(meter);
+            boolean hasReadings = false; 
+            
+            for (BuiltInAttribute attribute : attributesToLoad) { 
+                
+                PointValueQualityHolder pointValueQualityHolder = 
+                    resultsPerAttribute.get(attribute).remove(meter.getPaoIdentifier()); // remove to keep our memory consumption somewhat in check
+                
+                if (pointValueQualityHolder != null) {
+                    meterReadingProcessingService.updateMeterReading(meterReading, attribute, pointValueQualityHolder);
+                    hasReadings = true;
+                }
+            }
+            
+            if (hasReadings) {  // only add to the return list if we have actual readings.
+                meterReadings.add(meterReading);
+            }
+        }
+
+        MspMeterReadingReturnList mspMeterReadingReturn = new MspMeterReadingReturnList();
+        mspMeterReadingReturn.setMeterReading(meterReadings);
+        mspMeterReadingReturn.setReturnFields(meters, maxRecords);
+        
+        log.debug("Retrieved " + meterReadings.size() + " Latest MeterReads. (" + (new Date().getTime() - timerStart.getTime())*.001 + " secs)");
+        
+        return mspMeterReadingReturn;
     }
 
     /**
@@ -105,7 +157,7 @@ public class MspRawPointHistoryDaoImpl implements MspRawPointHistoryDao {
             int maxRecords) {
         final Date timerStart = new Date();
 
-        // get the paos we want, using readBy, readByValue, and lastReceived
+// get the paos we want, using readBy, readByValue, and lastReceived
         SqlStatementBuilder sql = new SqlStatementBuilder();
         sql.append(meterRowMapper.getSql());
         if (readBy == ReadBy.METER_NUMBER) {

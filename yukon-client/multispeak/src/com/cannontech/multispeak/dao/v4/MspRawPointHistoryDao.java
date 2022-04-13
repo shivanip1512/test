@@ -1,7 +1,6 @@
 package com.cannontech.multispeak.dao.v4;
 
 import java.util.Date;
-
 import com.cannontech.multispeak.data.v4.MspMeterReadingReturnList;
 
 
@@ -21,10 +20,24 @@ public interface MspRawPointHistoryDao {
      * @param lastReceived - Results are retrieved for meterNumber > lastReceived. LastReceived == null means start from beginning.
      * @param maxRecords - Max results returned (NOTE: If maxRecords is exceeded over the same meterNumber, all results for
      *                  that meterNumber will still be included. Meaning meterRead[].length > maxRecords is possible).
-     * @return MspMeterRead
+     * @return MspMeterReading
      */
     public MspMeterReadingReturnList retrieveMeterReading(ReadBy readBy, String readByValue, Date startDate,
                                               Date endDate, String lastReceived, int maxRecords);
 
+    /**
+     * Returns a MspMeterReading object with kW and kWh MeterReadings for ReadBy value.
+     * Similar to retrieveMeterReading except that it returns only the latest archived reading for kWh
+     * and kW elements of MeterRead.
+     * The readings will be grouped together such that there is only one MeterRead per meter
+     * @param readBy - readings collected for ReadBy value (ReadBy = NONE then ReadBy option not used).
+     * @param readByValue
+     * @param lastReceived - Results are retrieved for meterNumber > lastReceived. LastReceived == null means start from beginning.
+     * @param maxRecords - Max results returned (NOTE: If maxRecords is exceeded over the same meterNumber, all results for
+     *            that meterNumber will still be included. Meaning meterReading[].length > maxRecordsis possible).
+     * @return MspMeterReading
+     */
+    public MspMeterReadingReturnList retrieveLatestMeterReading(ReadBy readBy, String readByValue,
+                                                    String lastReceived, int maxRecords);
 
  }

@@ -4,7 +4,10 @@ import java.util.Iterator;
 
 import javax.xml.namespace.QName;
 import javax.xml.soap.MimeHeaders;
+import javax.xml.soap.SOAPElement;
 import javax.xml.soap.SOAPException;
+import javax.xml.soap.SOAPHeader;
+import javax.xml.soap.SOAPHeaderElement;
 import javax.xml.soap.SOAPMessage;
 
 import org.apache.commons.lang3.StringUtils;
@@ -225,6 +228,48 @@ public class MultispeakFuncs extends MultispeakFuncsBase {
         }
 
         return attributeValue;
+    }
+    
+    /**
+     * Helper method to update responseHeader.resultIdentifier.replyCodeCategory
+     * 
+     * @throws MultispeakWebServiceException
+     */
+    public void updateResultIdentifierInResponseHeader(String value) throws MultispeakWebServiceException {
+        try {
+            SOAPHeader header = getResponseSOAPMessage().getSOAPPart().getEnvelope().getHeader();
+
+            Iterator<?> headerElements = header.examineAllHeaderElements();
+            while (headerElements.hasNext()) {
+                SOAPHeaderElement headerElement = (SOAPHeaderElement) headerElements.next();
+
+                SOAPElement resultElement = headerElement.addChildElement("Result", "res");
+                SOAPElement resultIdentifierElement = resultElement.addChildElement("resultIdentifier", "com");
+                SOAPElement replyCodeCategoryElement =
+                    resultIdentifierElement.addChildElement("replyCodeCategory", "com");
+                replyCodeCategoryElement.addTextNode(value);
+
+            }
+        } catch (SOAPException e) {
+            throw new MultispeakWebServiceException("Unable to add result object in response", e);
+        }
+    }
+    
+    /**
+     * Returns response soap message
+     * 
+     * @return SOAPMessage
+     * @throws javax.xml.soap.SOAPException
+     */
+    private SOAPMessage getResponseSOAPMessage() throws SOAPException {
+
+        MessageContext ctx = MessageContextHolder.getMessageContext();
+        WebServiceMessage responseMessage = ctx.getResponse();
+        AbstractSoapMessage abstractSoapMessage = (AbstractSoapMessage) responseMessage;
+        SaajSoapMessage saajSoapMessage = (SaajSoapMessage) abstractSoapMessage;
+        SOAPMessage soapMessage = saajSoapMessage.getSaajMessage();
+        return soapMessage;
+
     }
 
 }

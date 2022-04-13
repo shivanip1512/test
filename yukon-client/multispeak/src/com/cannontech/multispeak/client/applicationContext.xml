@@ -47,6 +47,8 @@
     <property name="porterConnection" ref="porterConnection"/>
   </bean>
   
+  <bean class="com.cannontech.multispeak.service.impl.v4.MultispeakMeterServiceImpl"></bean>
+  
   <bean class="com.cannontech.multispeak.service.impl.v5.MultispeakMeterServiceImpl">
     <property name="porterConnection" ref="porterConnection" />
   </bean>
@@ -152,7 +154,7 @@
   
   <bean id="mspValidationService" class="com.cannontech.multispeak.service.impl.MspValidationServiceImpl">
   </bean>
-  
+  <bean id="mspValidationServicev4" class="com.cannontech.multispeak.service.impl.v4.MspValidationServiceImpl"/>
   <bean id="mspValidationServicev5" class="com.cannontech.multispeak.service.impl.v5.MspValidationServiceImpl"/>
   
   <bean id="mspIdentifiablePaoService" class="com.cannontech.multispeak.service.impl.MspIdentifiablePaoServiceImpl">
