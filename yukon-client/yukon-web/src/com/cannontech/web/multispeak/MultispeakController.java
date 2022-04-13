@@ -512,9 +512,9 @@ public class MultispeakController {
         }
         multispeak.setMspVendor(defaultMspVendor);
         List<MultiSpeakVersion> mspVersionList =
-            new ArrayList<>(Arrays.asList(MultiSpeakVersion.V3, MultiSpeakVersion.V5, MultiSpeakVersion.V4));
+            new ArrayList<>(Arrays.asList(MultiSpeakVersion.V3, MultiSpeakVersion.V4, MultiSpeakVersion.V5));
         List<MultiSpeakVersion> notMspVersionList =
-                new ArrayList<>(Arrays.asList(MultiSpeakVersion.V5, MultiSpeakVersion.V4));
+            new ArrayList<>(Arrays.asList(MultiSpeakVersion.V4, MultiSpeakVersion.V5));
         if (mspVendor != null) {
             map.addAttribute("mspVendorId", mspVendor.getVendorID());
             showRoleProperties = (defaultMspVendor.getCompanyName().equals(mspVendor.getCompanyName()));
@@ -581,9 +581,9 @@ public class MultispeakController {
             multispeak = new MultispeakModel();
         }
         List<MultiSpeakVersion> mspVersionList =
-            new ArrayList<>(Arrays.asList(MultiSpeakVersion.V3, MultiSpeakVersion.V5, MultiSpeakVersion.V4));
+            new ArrayList<>(Arrays.asList(MultiSpeakVersion.V3, MultiSpeakVersion.V4, MultiSpeakVersion.V5));
         List<MultiSpeakVersion> notMspVersionList =
-            new ArrayList<>(Arrays.asList(MultiSpeakVersion.V5, MultiSpeakVersion.V4));
+            new ArrayList<>(Arrays.asList(MultiSpeakVersion.V4, MultiSpeakVersion.V5));
         List<MultiSpeakVersion> mspVersion5 = new ArrayList<>(Arrays.asList(MultiSpeakVersion.V5));
         List<MultiSpeakVersion> mspVersion3 = new ArrayList<>(Arrays.asList(MultiSpeakVersion.V3));
         map.addAttribute("mspVendor", mspVendor);
