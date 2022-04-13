@@ -171,6 +171,7 @@ public class ItronRuntimeCalcServiceImplTest {
         DateTime rangeStart = DateTime.parse("2019-03-20T11:13:27.000Z");
         DateTime rangeEnd = rangeStart.plusMinutes(76);
 
+        var value0 = buildPvqh(lcr6600s_relay1_relayState, rangeStart.minusMinutes(6), 9.0);
         var value1 = buildPvqh(lcr6600s_relay1_relayState, rangeStart.plusMinutes(22), 6.0);
         var value2 = buildPvqh(lcr6600s_relay1_relayState, rangeStart.plusMinutes(44), 171.0);
         
@@ -180,16 +181,20 @@ public class ItronRuntimeCalcServiceImplTest {
         
         expect(itronRuntimeCalcService.getPrecedingArchivedValue(value1))
             .andReturn(List.of(buildPvqh(lcr6600s_relay1_relayState, rangeStart.minusMinutes(6), 9.0)));
+        
+        expect(itronRuntimeCalcService.getPrecedingArchivedValue(value0))
+        .andReturn(List.of(buildPvqh(lcr6600s_relay1_relayState, rangeStart.minusMinutes(20), 10.0)));
+        
         replay(itronRuntimeCalcService);
 
         Iterable<PointValueHolder> results = itronRuntimeCalcService.addBoundaryValues(relayStatuses, logRange); 
         
-        assertThat("boundary values added", Iterables.size(results), equalTo(4));
+        assertThat("boundary values added", Iterables.size(results), equalTo(5));
         
         PointValueHolder first = Iterables.getFirst(results, null);
         
-        assertThat("preceding boundary value", first.getValue(), equalTo(9.0));
-        assertThat("preceding boundary timestamp", first.getPointDataTimeStamp().getTime(), equalTo(rangeStart.minusMinutes(6).getMillis()));
+        assertThat("preceding boundary value", first.getValue(), equalTo(10.0));
+        assertThat("preceding boundary timestamp", first.getPointDataTimeStamp().getTime(), equalTo(rangeStart.minusMinutes(20).getMillis()));
         assertThat("preceding boundary id", first.getId(), equalTo(lcr6600s_relay1_relayState.getPointID()));
 
         PointValueHolder last = Iterables.getLast(results, null);
@@ -239,6 +244,7 @@ public class ItronRuntimeCalcServiceImplTest {
         DateTime rangeStart = DateTime.parse("2019-03-20T11:13:27.000Z");
         DateTime rangeEnd = rangeStart.plusMinutes(76);
 
+        var value0 = buildPvqh(lcr6600s_relay1_relayState, rangeStart.minusMinutes(6), 9.0);
         var value1 = buildPvqh(lcr6600s_relay1_relayState, rangeStart.plusMinutes(22), 6.0);
         var value2 = buildPvqh(lcr6600s_relay1_relayState, rangeEnd, 171.0);
         
@@ -248,16 +254,19 @@ public class ItronRuntimeCalcServiceImplTest {
         
         expect(itronRuntimeCalcService.getPrecedingArchivedValue(value1))
             .andReturn(List.of(buildPvqh(lcr6600s_relay1_relayState, rangeStart.minusMinutes(6), 9.0)));
+        
+        expect(itronRuntimeCalcService.getPrecedingArchivedValue(value0))
+        .andReturn(List.of(buildPvqh(lcr6600s_relay1_relayState, rangeStart.minusMinutes(20), 10.0)));
         replay(itronRuntimeCalcService);
     
         Iterable<PointValueHolder> results = itronRuntimeCalcService.addBoundaryValues(relayStatuses, logRange); 
         
-        assertThat("boundary values added", Iterables.size(results), equalTo(3));
+        assertThat("boundary values added", Iterables.size(results), equalTo(4));
         
         PointValueHolder first = Iterables.getFirst(results, null);
         
-        assertThat("preceding boundary value", first.getValue(), equalTo(9.0));
-        assertThat("preceding boundary timestamp", first.getPointDataTimeStamp().getTime(), equalTo(rangeStart.minusMinutes(6).getMillis()));
+        assertThat("preceding boundary value", first.getValue(), equalTo(10.0));
+        assertThat("preceding boundary timestamp", first.getPointDataTimeStamp().getTime(), equalTo(rangeStart.minusMinutes(20).getMillis()));
         assertThat("preceding boundary id", first.getId(), equalTo(lcr6600s_relay1_relayState.getPointID()));
 
         PointValueHolder last = Iterables.getLast(results, null);
