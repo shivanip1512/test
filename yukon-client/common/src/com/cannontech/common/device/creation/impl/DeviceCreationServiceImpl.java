@@ -213,10 +213,6 @@ public class DeviceCreationServiceImpl implements DeviceCreationService {
         }
 
         if ((!YukonValidationUtils.isRfnSerialNumberValid(rfId.getSensorSerialNumber()))) {
-            createAndSendAlert(AlertType.RFN_DEVICE_CREATION_BLOCKED,
-                    Map.of("sensorSerialNumber", rfId.getSensorSerialNumber(), "sensorManufacturer",
-                            rfId.getSensorManufacturer(), "sensorModel", rfId.getSensorModel()));
-
             throw new DeviceCreationException("Device serial number must be alphanumeric and serial number length must be less than 30",
                                               "maxLength");
         }
