@@ -26,6 +26,9 @@ paths:
      $ref: 'api/tokenApi.yaml#/forgottenPassword'
   /captchaDetails:
      $ref: 'api/tokenApi.yaml#/captchaDetails'
+  /change-password/{uuid}:
+     $ref: 'api/tokenApi.yaml#/changePassword'  
+  
 
   /admin/config/currentTheme:
      $ref: 'api/themeApi.yaml#/currentTheme'
