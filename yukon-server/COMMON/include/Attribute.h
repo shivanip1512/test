@@ -599,6 +599,7 @@ public:
     static const Attribute  ReversedPhaseA;
     static const Attribute  ReversedPhaseC;
     static const Attribute  RfnBlinkCount;
+    static const Attribute  RfnBlinkReported;
     static const Attribute  RfnBlinkRestoreCount;
     static const Attribute  RFNHighTemperatureAlarm;
     static const Attribute  RfnOutageCount;
