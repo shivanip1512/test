@@ -26,9 +26,10 @@ public class CalcPointValidationHelper {
     @Autowired private static PointDao pointDao;
     @Autowired private static YukonApiValidationUtils yukonApiValidationUtils;
 
-    public CalcPointValidationHelper(IDatabaseCache cache, PointDao pointDao) {
+    public CalcPointValidationHelper(IDatabaseCache cache, PointDao pointDao, YukonApiValidationUtils yukonApiValidationUtils) {
         CalcPointValidationHelper.cache = cache;
         CalcPointValidationHelper.pointDao = pointDao;
+        CalcPointValidationHelper.yukonApiValidationUtils = yukonApiValidationUtils;
     }
 
     public static void ValidateCalcComponent(List<CalculationComponent> calcComponents, Errors errors) {

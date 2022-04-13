@@ -2,26 +2,32 @@ package com.cannontech.web.api.token;
 
 import javax.servlet.http.HttpServletRequest;
 
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
 
-import com.cannontech.common.exception.BadRequestException;
-import com.cannontech.common.exception.PasswordChangeException;
+import com.cannontech.common.exception.PasswordException;
 import com.cannontech.common.i18n.MessageSourceAccessor;
 import com.cannontech.common.user.UserAuthenticationInfo;
+import com.cannontech.core.authentication.model.PasswordPolicy;
 import com.cannontech.core.authentication.service.AuthenticationService;
+import com.cannontech.core.authentication.service.PasswordPolicyService;
 import com.cannontech.core.dao.NotFoundException;
 import com.cannontech.core.dao.YukonUserDao;
+import com.cannontech.database.data.lite.LiteYukonUser;
 import com.cannontech.i18n.YukonUserContextMessageSourceResolver;
 import com.cannontech.stars.core.login.model.PasswordResetInfo;
 import com.cannontech.system.GlobalSettingType;
 import com.cannontech.system.dao.GlobalSettingDao;
 import com.cannontech.tools.email.EmailException;
 import com.cannontech.user.YukonUserContext;
+import com.cannontech.web.api.passwordPolicy.ChangePasswordResponse;
 import com.cannontech.web.common.captcha.model.Captcha;
 import com.cannontech.web.common.captcha.model.CaptchaResponse;
 import com.cannontech.web.common.captcha.service.CaptchaService;
@@ -38,6 +44,7 @@ public class PasswordApiController {
     @Autowired private AuthenticationService authService;
     @Autowired private YukonUserContextResolver contextResolver;
     @Autowired private YukonUserContextMessageSourceResolver messageSourceResolver;
+    @Autowired private PasswordPolicyService passwordPolicyService;
 
     private static final String baseKey = "yukon.web.modules.login.";
 
@@ -59,7 +66,7 @@ public class PasswordApiController {
                 // The Captcha failed. return the user the forgotten password page
                 if (captchaResponse.isError()) {
                     String captchaResponseMessage = captchaResponse.getError().getFormatKey();
-                    throw new PasswordChangeException(messageSourceAccessor.getMessage(captchaResponseMessage));
+                    throw new PasswordException(messageSourceAccessor.getMessage(captchaResponseMessage));
                 }
             }
 
@@ -69,7 +76,7 @@ public class PasswordApiController {
             // Validate the request.
             if (!passwordResetInfo.isPasswordResetInfoValid()) {
                 String invalidPasswordInfoMessage = baseKey + "forgottenPassword.invalidProvidedInformation";
-                throw new PasswordChangeException(messageSourceAccessor.getMessage(invalidPasswordInfoMessage));
+                throw new PasswordException(messageSourceAccessor.getMessage(invalidPasswordInfoMessage));
             }
 
             // Are we allowed to set this password?
@@ -100,7 +107,46 @@ public class PasswordApiController {
             forgotPasswordResponse.setMessage(messageSourceAccessor.getMessage(emailSentMessage));
             return new ResponseEntity<>(forgotPasswordResponse, HttpStatus.OK);
         } else {
-            throw new PasswordChangeException("Email, Username, or Account Number are not provided.");
+            throw new PasswordException("Email, Username, or Account Number are not provided.");
         }
+    }
+
+    @GetMapping("/change-password/{uuid}")
+    public ResponseEntity<Object> changePassword(@PathVariable("uuid") String uuid, YukonUserContext userContext) {
+
+        final ChangePasswordResponse changePasswordResponse = new ChangePasswordResponse();
+
+        final MessageSourceAccessor messageSourceAccessor = messageSourceResolver.getMessageSourceAccessor(userContext);
+        final String invalidUUIDMsg = "yukon.web.modules.passwordPolicyError.INVALID_UUID";
+        LiteYukonUser yukonUser = null;
+
+        uuid = StringUtils.stripToNull(uuid);
+
+        try {
+            if (uuid != null && !"null".equals(uuid)) {
+                yukonUser = passwordResetService.findUserFromPasswordKey(uuid);
+            }
+        } catch (IllegalArgumentException e) {
+            throw new PasswordException(messageSourceAccessor.getMessage(invalidUUIDMsg));
+        }
+
+        // if uuid is invalid
+        if (uuid == null || yukonUser == null) {
+            throw new PasswordException(messageSourceAccessor.getMessage(invalidUUIDMsg));
+        }
+
+        // if password is expired
+        if (authService.isPasswordExpired(yukonUser)) {
+            final String passwordExpiredMsg = "yukon.web.login.passwordExpired";
+            throw new PasswordException(messageSourceAccessor.getMessage(passwordExpiredMsg));
+        }
+
+        final PasswordPolicy passwordPolicy = passwordPolicyService.getPasswordPolicy(yukonUser);
+
+        changePasswordResponse.setPasswordPolicy(passwordPolicy);
+        changePasswordResponse.setUserId(yukonUser.getUserID());
+        changePasswordResponse.setUuid(uuid);
+
+        return new ResponseEntity<>(changePasswordResponse, HttpStatus.OK);
     }
 }

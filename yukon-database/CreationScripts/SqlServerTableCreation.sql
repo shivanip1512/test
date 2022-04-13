@@ -1,7 +1,7 @@
 /*==============================================================*/
 /* Database name:  YukonDatabase                                */
 /* DBMS name:      Microsoft SQL Server 2005                    */
-/* Created on:     3/31/2022 8:09:59 AM                         */
+/* Created on:     4/12/2022 9:33:44 AM                         */
 /*==============================================================*/
 
 
@@ -5851,7 +5851,7 @@ go
 /*==============================================================*/
 create table EventLog (
    EventLogId           numeric              not null,
-   EventType            varchar(250)         not null,
+   EventTypeId          numeric              not null,
    EventTime            datetime             null,
    String1              varchar(2000)        null,
    String2              varchar(2000)        null,
@@ -5870,13 +5870,36 @@ create table EventLog (
 go
 
 /*==============================================================*/
-/* Index: INDX_EventLog_EvntTime_EvntLogId_EvntType             */
+/* Index: INDX_EventLog_EventTypeId_EventTime                   */
 /*==============================================================*/
-create index INDX_EventLog_EvntTime_EvntLogId_EvntType on EventLog (
-EventTime DESC,
-EventLogId DESC,
-EventType ASC
+create index INDX_EventLog_EventTypeId_EventTime on EventLog (
+EventTypeId DESC,
+EventTime DESC
 )
+go
+
+/*==============================================================*/
+/* Index: INDX_EventLog_EventTypeId_EventTime_EventLogId        */
+/*==============================================================*/
+create index INDX_EventLog_EventTypeId_EventTime_EventLogId on EventLog (
+EventTypeId ASC,
+EventTime ASC,
+EventLogId ASC
+)
+go
+
+/*==============================================================*/
+/* Table: EventLogType                                          */
+/*==============================================================*/
+create table EventLogType (
+   EventTypeId          numeric              not null,
+   EventType            varchar(255)         not null,
+   constraint PK_EVENTLOGTYPE primary key (EventTypeId)
+)
+go
+
+alter table EventLogType
+   add constraint AK_EventLogType_EventType unique (EventType)
 go
 
 /*==============================================================*/
@@ -8647,6 +8670,7 @@ create table PointToZoneMapping (
    GraphPositionOffset  float                null,
    Distance             float                null,
    Ignore               varchar(1)           not null,
+   FeederId             numeric              null,
    constraint PK_PointZoneMap primary key (PointId)
 )
 go
@@ -13994,6 +14018,11 @@ alter table EventInventory
       references InventoryBase (InventoryID)
 go
 
+alter table EventLog
+   add constraint FK_EventLog_EventLogType foreign key (EventTypeId)
+      references EventLogType (EventTypeId)
+go
+
 alter table EventWorkOrder
    add constraint FK_EVENTWO_EVNTBSE foreign key (EventID)
       references EventBase (EventID)
@@ -15849,5 +15878,4 @@ INSERT INTO StoredProcedureLog VALUES (
             'sp_SmartIndexMaintenance', 
             GETDATE(), 'Smart Index Maintenance Complete');
 go
-
 

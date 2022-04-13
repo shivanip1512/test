@@ -108,6 +108,16 @@
                 <li>Relay outage event – Warning condition produced when a ‘Last Gasp’ outage notification is received from a relay. This condition will automatically clear when the relay’s restoration notification is received.</li>
                 <li>PLC CCU communication status – Warning condition produced when ten consecutive messages targeting the specified CCU fail to be delivered. This may indicate a bulk communication problem between the Yukon software and the device.</li>
                 <li>PLC Repeater communication status - Warning condition produced when ten consecutive messages targeting the specified Repeater fail to be delivered. This indicates a communication problem between the Yukon software and the device.</li>
+                <li>AC power failure – Warning provided when the gateway loses AC power.</li>
+                <li>Certificate expired – Warning condition that a gateway’s certificate will expire in the next 60 days.</li>
+                <li>Door open – Warning provided when a gateway’s door is opened.</li>
+                <li>High disk usage – Warning provided when the gateway’s available disk storage drops below 20%.</li>
+                <li>Power failure – Warning provided when the gateway loses power.</li>
+                <li>Radio failure – Warning provided when a gateway’s radio goes down for more than 60 seconds.</li>
+                <li>RTC battery failure – Warning provided when it is time to replace the coin cell battery in the gateway.</li>
+                <li>Security alarm – Warning provided when the SSH service is enabled on the gateway.</li>
+                <li>UPS battery voltage low – Warning condition that a gateway’s UPS battery is failing.</li>
+                <li>Time sync failed – Warning provided when a gateway has gone 24 hours without a successful synchronization with the NTP server.</li>
             </ul>
     ]]></entry>
 </properties>
