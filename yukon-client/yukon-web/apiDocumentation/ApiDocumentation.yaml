@@ -140,7 +140,8 @@ components:
       bearerFormat: JWT
 tags:
   - name: Authentication
-  - name: Theme
+  - name: Admin
+  - name: Common
   - name: Comm Channel
   - name: Trend
   - name: Load Group
