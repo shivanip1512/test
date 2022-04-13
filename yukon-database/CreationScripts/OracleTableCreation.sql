@@ -1,7 +1,7 @@
 /*==============================================================*/
 /* Database name:  YukonDatabase                                */
 /* DBMS name:      ORACLE Version 9i                            */
-/* Created on:     3/31/2022 8:12:22 AM                         */
+/* Created on:     4/4/2022 8:53:10 AM                          */
 /*==============================================================*/
 
 
@@ -5546,7 +5546,7 @@ create table EventInventory  (
 /*==============================================================*/
 create table EventLog  (
    EventLogId           NUMBER                          not null,
-   EventType            VARCHAR2(250)                   not null,
+   EventTypeId          NUMBER                          not null,
    EventTime            DATE,
    String1              VARCHAR2(2000),
    String2              VARCHAR2(2000),
@@ -5564,13 +5564,33 @@ create table EventLog  (
 );
 
 /*==============================================================*/
-/* Index: INDX_EventLog_EvntTime_EvntLogId_EvntType             */
+/* Index: INDX_EventLog_EventTypeId_EventTime                   */
 /*==============================================================*/
-create index INDX_EventLog_EvntTime_EvntLogId_EvntType on EventLog (
-   EventTime DESC,
-   EventLogId DESC,
-   EventType ASC
+create index INDX_EventLog_EventTypeId_EventTime on EventLog (
+   EventTypeId DESC,
+   EventTime DESC
 );
+
+/*==============================================================*/
+/* Index: INDX_EventLog_EventTypeId_EventTime_EventLogId        */
+/*==============================================================*/
+create index INDX_EventLog_EventTypeId_EventTime_EventLogId on EventLog (
+   EventTypeId ASC,
+   EventTime ASC,
+   EventLogId ASC
+);
+
+/*==============================================================*/
+/* Table: EventLogType                                          */
+/*==============================================================*/
+create table EventLogType  (
+   EventTypeId          NUMBER                          not null,
+   EventType            VARCHAR2(255)                   not null,
+   constraint PK_EVENTLOGTYPE primary key (EventTypeId)
+);
+
+alter table EventLogType
+   add constraint AK_EventLogType_EventType unique (EventType);
 
 /*==============================================================*/
 /* Table: EventWorkOrder                                        */
@@ -12969,6 +12989,10 @@ alter table EventInventory
    add constraint FK_EVENTINV_INVENBSE foreign key (InventoryID)
       references InventoryBase (InventoryID);
 
+alter table EventLog
+   add constraint FK_EventLog_EventLogType foreign key (EventTypeId)
+      references EventLogType (EventTypeId);
+
 alter table EventWorkOrder
    add constraint FK_EVENTWO_EVNTBSE foreign key (EventID)
       references EventBase (EventID);
@@ -14370,4 +14394,3 @@ alter table Zone
 alter table Zone
    add constraint FK_Zone_Zone foreign key (ParentId)
       references Zone (ZoneId);
-

@@ -18,6 +18,7 @@ public class LoadGroupMCTValidator extends LoadGroupSetupValidator<LoadGroupMCT>
     
     @Autowired private LMApiValidatorHelper lmApiValidatorHelper;
     @Autowired private IDatabaseCache serverDatabaseCache;
+    @Autowired private YukonApiValidationUtils yukonApiValidationUtils;
 
     public LoadGroupMCTValidator() {
         super(LoadGroupMCT.class);
@@ -32,18 +33,18 @@ public class LoadGroupMCTValidator extends LoadGroupSetupValidator<LoadGroupMCT>
     protected void doValidation(LoadGroupMCT loadGroup, Errors errors) {
 
         lmApiValidatorHelper.validateRoute(errors, loadGroup.getRouteId());
-        YukonApiValidationUtils.checkIfFieldRequired("level", errors, loadGroup.getLevel(), "Address level");
+        yukonApiValidationUtils.checkIfFieldRequired("level", errors, loadGroup.getLevel(), "Address level");
         // Validate address.
         if (loadGroup.getLevel() == AddressLevel.MCT_ADDRESS) {
-            YukonApiValidationUtils.checkIfFieldRequired("mctDeviceId", errors, loadGroup.getMctDeviceId(), "MCT Address");
+            yukonApiValidationUtils.checkIfFieldRequired("mctDeviceId", errors, loadGroup.getMctDeviceId(), "MCT Address");
             if (!errors.hasFieldErrors("mctDeviceId") && !isValidMCTDeviceId(loadGroup.getMctDeviceId())) {
                 errors.rejectValue("mctDeviceId", ApiErrorDetails.DOES_NOT_EXISTS.getCodeString(), new Object[] {loadGroup.getMctDeviceId()}, "");
             }
         } else {
             // Check for valid range of addresses.
-            YukonApiValidationUtils.checkIfFieldRequired("address", errors, loadGroup.getAddress(), "Address");
+            yukonApiValidationUtils.checkIfFieldRequired("address", errors, loadGroup.getAddress(), "Address");
             if (!errors.hasFieldErrors("address")) {
-                YukonApiValidationUtils.checkRange(errors, "address", loadGroup.getAddress(), 1, Integer.MAX_VALUE, true);
+                yukonApiValidationUtils.checkRange(errors, "address", loadGroup.getAddress(), 1, Integer.MAX_VALUE, true);
             }
         }
     }

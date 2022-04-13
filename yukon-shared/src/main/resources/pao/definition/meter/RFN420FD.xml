@@ -35,6 +35,7 @@
         <pointInfo name="Avg Volts Phase A"/>
         <pointInfo name="Bad Upgrade Security Param" attributes="BAD_UPGRADE_SECURITY_PARAM"/>
         <pointInfo name="Blink Count" init="true" attributes="RFN_BLINK_COUNT"/>
+        <pointInfo name="Blink Reported" init="true" attributes="RFN_BLINK_REPORTED"/>
         <pointInfo name="Blink Restore Count" init="true" attributes="RFN_BLINK_RESTORE_COUNT"/>
         <pointInfo name="Configuration Error" attributes="CONFIGURATION_ERROR"/>
         <pointInfo name="Daily Max Volts" init="true" attributes="MAXIMUM_VOLTAGE_DAILY,MAXIMUM_VOLTAGE"/>

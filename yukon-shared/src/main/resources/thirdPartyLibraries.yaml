@@ -959,46 +959,46 @@ Java :
     jira : YUK-25377
     notes : Pentaho reporting latest version is dependent on this
     
-  - filename : jackson-annotations-2.12.6.jar
+  - filename : jackson-annotations-2.13.0.jar
     yukon group : Jackson
     project : Jackson
-    version : 2.12.6
+    version : 2.13.0
     project URL : "https://github.com/FasterXML/jackson"
     license : Apache 2.0
     license URLs : "https://opensource.org/licenses/Apache-2.0"
-    maven URL : "https://mvnrepository.com/artifact/com.fasterxml.jackson.core/jackson-annotations/2.12.6"
-    md5 : 9c936122eb418ee985b195d183623618
-    sha1 : 9487231edd6b0b1f14692c9cba9e0462809215d1
-    updated : 2022-03-04
-    jira : YUK-25929
+    maven URL : "https://mvnrepository.com/artifact/com.fasterxml.jackson.core/jackson-annotations/2.13.0"
+    md5 : 9b8bb9a5e1f2af431ad919252c643cbc
+    sha1 : 15be89db6609bd6fda3dc309bacf0318a312c03f
+    updated : 2022-01-07
+    jira : YUK-25692
     notes : Jackson Annotations
 
-  - filename : jackson-core-2.12.6.jar
+  - filename : jackson-core-2.13.0.jar
     yukon group : Jackson
     project : Jackson
-    version : 2.12.6
+    version : 2.13.0
     project URL : "https://github.com/FasterXML/jackson"
     license : Apache 2.0
     license URLs : "https://opensource.org/licenses/Apache-2.0"
-    maven URL : "https://mvnrepository.com/artifact/com.fasterxml.jackson.core/jackson-core/2.12.6"
-    md5 : 3976126e023f2969b4267963fe841f43
-    sha1 : 5bf206c0b5982cfcd868b3d9349dc5190db8bab5
-    updated : 2022-03-04
-    jira : YUK-25929
+    maven URL : "https://mvnrepository.com/artifact/com.fasterxml.jackson.core/jackson-core/2.13.0"
+    md5 : 94e04abccab99e295a3f4f57f6e387c8
+    sha1 : e957ec5442966e69cef543927bdc80e5426968bb
+    updated : 2022-01-07
+    jira : YUK-25692
     notes : Jackson Core
 
-  - filename : jackson-databind-2.12.6.jar
+  - filename : jackson-databind-2.13.0.jar
     yukon group : Jackson
     project : Jackson
-    version : 2.12.6
+    version : 2.13.0
     project URL : "https://github.com/FasterXML/jackson"
     license : Apache 2.0
     license URLs : "https://opensource.org/licenses/Apache-2.0"
-    maven URL : "https://mvnrepository.com/artifact/com.fasterxml.jackson.core/jackson-databind/2.12.6"
-    md5 : a618e883f32dd2ea37e06195971e7f32
-    sha1 : fac216b606c1086e36acea6e572ee61572ad1670
-    updated : 2022-03-04
-    jira : YUK-25929
+    maven URL : "https://mvnrepository.com/artifact/com.fasterxml.jackson.core/jackson-databind/2.13.0"
+    md5 : 309228a89a5a9da89174114b1e681def
+    sha1 : 889672a1721d6d85b2834fcd29d3fda92c8c8891
+    updated : 2022-01-07
+    jira : YUK-25692
     notes : Jackson Databind
 
   - filename : jackson-dataformat-csv-2.9.6.jar
@@ -1029,46 +1029,32 @@ Java :
     jira : YUK-24554
     notes :    
 
-  - filename : jackson-dataformat-xml-2.12.6.jar
+  - filename : jackson-dataformat-xml-2.13.0.jar
     yukon group : Azure
     project : Microsoft Azure SDK
-    version : 2.12.6
+    version : 2.13.0
     project URL : "https://github.com/Azure/azure-sdk-for-java"
     license : Apache 2.0
     license URLs : "https://www.apache.org/licenses/LICENSE-2.0.txt"
-    maven URL : "https://mvnrepository.com/artifact/com.fasterxml.jackson.dataformat/jackson-dataformat-xml/2.12.6"
-    md5 : a1f72cb2498c32bc6472f385864ed2f2
-    sha1 : fecb8514c3a89102bd619b6c624f906a6098b588
-    updated : 2022-03-04
-    jira : YUK-25929
+    maven URL : "https://mvnrepository.com/artifact/com.fasterxml.jackson.dataformat/jackson-dataformat-xml/2.13.0"
+    md5 : b00a072102430c1efbd9d4be63e102dd
+    sha1 : 396634365e8439b27794fa94b571fdc03b4cf7be
+    updated : 2022-01-07
+    jira : YUK-25692
     notes :
 
-  - filename : jackson-datatype-jsr310-2.12.6.jar
+  - filename : jackson-datatype-jsr310-2.13.0.jar
     yukon group : Azure
     project : Microsoft Azure SDK
-    version : 2.12.6
+    version : 2.13.0
     project URL : "https://github.com/Azure/azure-sdk-for-java"
     license : Apache 2.0
     license URLs : "https://www.apache.org/licenses/LICENSE-2.0.txt"
-    maven URL : "https://mvnrepository.com/artifact/com.fasterxml.jackson.datatype/jackson-datatype-jsr310/2.12.6"
-    md5 : 0dcce05f281b2f8bc0e7d422eebb8f7c
-    sha1 : 0f7d0d854f24c4254885c275a09fb885ef578b48
-    updated : 2022-03-04
-    jira : YUK-25929
-    notes :
-
-  - filename : jackson-module-jaxb-annotations-2.12.6.jar
-    yukon group : Azure
-    project : Microsoft Azure SDK
-    version : 2.12.6
-    project URL : "https://github.com/Azure/azure-sdk-for-java"
-    license : Apache 2.0
-    license URLs : "https://www.apache.org/licenses/LICENSE-2.0.txt"
-    maven URL : "https://mvnrepository.com/artifact/com.fasterxml.jackson.module/jackson-module-jaxb-annotations/2.12.6"
-    md5 : 471323308a1743b1d3c9c848aadeb466
-    sha1 : a0bea2c6f98eb0dc24208b54a53da80ea459c156
-    updated : 2022-03-04
-    jira : YUK-25929
+    maven URL : "https://mvnrepository.com/artifact/com.fasterxml.jackson.datatype/jackson-datatype-jsr310/2.13.0"
+    md5 : 44c4fb74c4f5a0966b9655bfbc86af4e
+    sha1 : 4c143877fc733befe6189151c8b95d84acd06941
+    updated : 2022-01-07
+    jira : YUK-25692
     notes :
 
   - filename : jakarta.activation-api-2.0.1.jar

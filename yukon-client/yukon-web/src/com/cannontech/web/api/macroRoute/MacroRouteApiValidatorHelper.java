@@ -17,6 +17,7 @@ import com.cannontech.yukon.IDatabaseCache;
 public class MacroRouteApiValidatorHelper {
     @Autowired private IDatabaseCache serverDatabaseCache;
     @Autowired private YukonUserContextMessageSourceResolver messageResolver;
+    @Autowired private YukonApiValidationUtils yukonApiValidationUtils;
 
 
     private MessageSourceAccessor accessor;
@@ -34,11 +35,11 @@ public class MacroRouteApiValidatorHelper {
     public void validateMacroRouteName(Errors errors, String routeName, Integer id) {
 
         String nameI18nText = accessor.getMessage(commonkey + "name");
-        YukonApiValidationUtils.checkIsBlank(errors, "deviceName", routeName, nameI18nText, false);
+        yukonApiValidationUtils.checkIsBlank(errors, "deviceName", routeName, nameI18nText, false);
 
         if (!errors.hasFieldErrors("deviceName")) {
-            YukonApiValidationUtils.checkExceedsMaxLength(errors, "deviceName", routeName, 60);
-            YukonApiValidationUtils.checkIllegalCharacter(errors, "deviceName", routeName, nameI18nText);
+            yukonApiValidationUtils.checkExceedsMaxLength(errors, "deviceName", routeName, 60);
+            yukonApiValidationUtils.checkIllegalCharacter(errors, "deviceName", routeName, nameI18nText);
             serverDatabaseCache.getAllRoutes()
                     .stream()
                     .filter(liteRoute -> liteRoute.getPaoName().equalsIgnoreCase(routeName.trim()))

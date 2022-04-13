@@ -188,6 +188,9 @@
       <sequence name="EventLog">
         <table name="EventLog" identitycolumn="EventLogId" initsequence="false"/>
       </sequence>
+      <sequence name="EventLogType">
+        <table name="EventLogType" identitycolumn="EventTypeId" initsequence="true"/>
+      </sequence>
       <sequence name="OutageMonitor">
         <table name="OutageMonitor" identitycolumn="OutageMonitorId" initsequence="true"/>
       </sequence>
