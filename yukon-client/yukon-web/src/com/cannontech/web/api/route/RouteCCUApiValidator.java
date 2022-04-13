@@ -19,6 +19,7 @@ import com.cannontech.yukon.IDatabaseCache;
 
 public class RouteCCUApiValidator<T extends CCURouteModel<?>> extends RouteApiValidator<T> {
     @Autowired private YukonUserContextMessageSourceResolver messageResolver;
+    @Autowired private YukonApiValidationUtils yukonApiValidationUtils;
 
     private MessageSourceAccessor accessor;
     private final static String basekey = "yukon.web.error.repeater850Message";
@@ -78,13 +79,13 @@ public class RouteCCUApiValidator<T extends CCURouteModel<?>> extends RouteApiVa
                 errors.rejectValue("repeaters[" + count + "].repeaterId", ApiErrorDetails.INVALID_VALUE.getCodeString(),
                         new Object[] { repeaterId }, "");
             } else {
-                YukonApiValidationUtils.checkIfFieldRequired("repeaters[" + count + "].variableBits", errors,
+                yukonApiValidationUtils.checkIfFieldRequired("repeaters[" + count + "].variableBits", errors,
                         repeaterRouteModel.getVariableBits(), "VariableBits");
                 if (!errors.hasFieldErrors("variableBits")) {
                     int variableBits = repeaterRouteModel.getVariableBits();
                     if (!lastRepeater) {
                         // non last Repeater can have variable bits from 1 to 6
-                        YukonApiValidationUtils.checkRange(errors, "repeaters[" + count + "].variableBits", variableBits, 1, 6,
+                        yukonApiValidationUtils.checkRange(errors, "repeaters[" + count + "].variableBits", variableBits, 1, 6,
                                 false);
                         // 1st 6 cant be of type REPEATER_850
                         if (liteYukonPAObject.getPaoType() == PaoType.REPEATER_850) {
@@ -103,15 +104,15 @@ public class RouteCCUApiValidator<T extends CCURouteModel<?>> extends RouteApiVa
     }
 
     private void validateCcuVariableBits(Integer ccuVariableBits, Errors errors) {
-        YukonApiValidationUtils.checkRange(errors, "carrierRoute.ccuVariableBits", ccuVariableBits, 0, 6, false);
+        yukonApiValidationUtils.checkRange(errors, "carrierRoute.ccuVariableBits", ccuVariableBits, 0, 6, false);
     }
 
     private void validateCcuFixBits(Integer ccuFixBits, Errors errors) {
-        YukonApiValidationUtils.checkRange(errors, "carrierRoute.ccuFixBits", ccuFixBits, 0, 31, false);
+        yukonApiValidationUtils.checkRange(errors, "carrierRoute.ccuFixBits", ccuFixBits, 0, 31, false);
 
     }
 
     private void validateBusNumber(Integer busNumber, Errors errors) {
-        YukonApiValidationUtils.checkRange(errors, "carrierRoute.busNumber", busNumber, 1, 8, false);
+        yukonApiValidationUtils.checkRange(errors, "carrierRoute.busNumber", busNumber, 1, 8, false);
     }
 }

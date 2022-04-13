@@ -38,6 +38,7 @@
   <bean id="multispeakFuncsV4" class="com.cannontech.multispeak.client.v4.MultispeakFuncs"/>
   <bean class="com.cannontech.multispeak.client.core.CustomWebServiceMsgCallback"/>
   <bean class="com.cannontech.multispeak.client.core.v5.CustomWebServiceMsgCallback"/>
+  <bean class="com.cannontech.multispeak.client.core.v4.CustomWebServiceMsgCallback"/>
   
   <bean class="com.cannontech.multispeak.dao.impl.MspLMInterfaceMappingDaoImpl"/>
 
@@ -114,11 +115,13 @@
   </bean>
   
   <bean id="multispeakDao" class="com.cannontech.multispeak.dao.impl.MultispeakDaoImpl"/>
-  
+ 
   <bean id="mspRawPointHistoryDao" class="com.cannontech.multispeak.dao.impl.MspRawPointHistoryDaoImpl"/>
+  <bean id="mspRawPointHistoryDaov4" class="com.cannontech.multispeak.dao.impl.v4.MspRawPointHistoryDaoImpl"/>
   <bean id="mspRawPointHistoryDaov5" class="com.cannontech.multispeak.dao.impl.v5.MspRawPointHistoryDaoImpl"/>
   
   <bean class="com.cannontech.multispeak.dao.impl.MeterReadProcessingServiceImpl"/>
+  <bean class="com.cannontech.multispeak.dao.impl.v4.MeterReadingProcessingServiceImpl"/>
   <bean class="com.cannontech.multispeak.dao.impl.v5.MeterReadProcessingServiceImpl"/>
   
   <bean id="blockProcessingService" class="com.cannontech.multispeak.dao.impl.FormattedBlockProcessingServiceImpl" abstract="true"/>
@@ -147,6 +150,8 @@
   </bean>
 
   <bean id="mspObjectDaov5" class="com.cannontech.multispeak.dao.impl.v5.MspObjectDaoImpl"/>
+  
+  <bean id="mspObjectDaov4" class="com.cannontech.multispeak.dao.impl.v4.MspObjectDaoImpl"/>
   
   <bean id="mspValidationService" class="com.cannontech.multispeak.service.impl.MspValidationServiceImpl">
   </bean>
@@ -285,6 +290,18 @@
             </list>
         </property>
     </bean>
+    
+    <bean id="webServiceTemplateV4" class="org.springframework.ws.client.core.WebServiceTemplate">
+        <qualifier value="webServiceTemplateV4" />
+        <constructor-arg ref="soap11MessageFactory" />
+        <property name="marshaller" ref="domainMarshallerV4" />
+        <property name="unmarshaller" ref="domainMarshallerV4" />
+        <property name="interceptors">
+            <list>
+                <ref bean="clientInterceptor" />
+            </list>
+        </property>
+    </bean>
 
     <bean id="objectFactory" class="com.cannontech.msp.beans.v3.ObjectFactory"/>
     <bean class= "com.cannontech.msp.beans.v4.xlink.ObjectFactory"/>
@@ -326,6 +343,11 @@
     <bean id="mdmClientV5" class="com.cannontech.multispeak.client.core.v5.MDMClient" />
     <bean id="oaClientV5" class="com.cannontech.multispeak.client.core.v5.OAClient" />
     <bean id="mrClientV5" class="com.cannontech.multispeak.client.core.v5.MRClient" />
+    <bean id="drClientV4" class="com.cannontech.multispeak.client.core.v4.DRClient" />
+    <bean id="odClientV4" class="com.cannontech.multispeak.client.core.v4.ODClient" />
+    <bean id="cdClientV4" class="com.cannontech.multispeak.client.core.v4.CDClient" />
+    <bean id="mrClientV4" class="com.cannontech.multispeak.client.core.v4.MRClient" />
+    <bean id="scadaClientV4" class="com.cannontech.multispeak.client.core.v4.SCADAClient" />
     <!-- Multispeak Clients Ends -->
 
 </beans>

@@ -18,6 +18,7 @@
     <pointInfos>
         <pointInfo name="Amps Phase A" init="true" attributes="CURRENT_PHASE_A"/>
         <pointInfo name="Blink Count" init="true" attributes="RFN_BLINK_COUNT"/>
+        <pointInfo name="Blink Reported" init="true" attributes="RFN_BLINK_REPORTED"/>
         <pointInfo name="Blink Restore Count" init="true" attributes="RFN_BLINK_RESTORE_COUNT"/>
         <pointInfo name="Current Angle Phase A" attributes="CURRENT_ANGLE_PHASE_A"/>
         <pointInfo name="Delivered kWh" init="true" attributes="USAGE"/>

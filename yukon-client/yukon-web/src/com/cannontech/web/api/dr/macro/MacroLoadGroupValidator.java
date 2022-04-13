@@ -21,6 +21,7 @@ import com.cannontech.web.api.dr.setup.LMApiValidatorHelper;
 public class MacroLoadGroupValidator extends SimpleValidator<MacroLoadGroup> {
 
     @Autowired private LMApiValidatorHelper lmApiValidatorHelper;
+    @Autowired private YukonApiValidationUtils yukonApiValidationUtils;
 
     public MacroLoadGroupValidator() {
         super(MacroLoadGroup.class);
@@ -29,8 +30,8 @@ public class MacroLoadGroupValidator extends SimpleValidator<MacroLoadGroup> {
     @Override
     protected void doValidation(MacroLoadGroup loadGroup, Errors errors) {
 
-        YukonApiValidationUtils.checkIfFieldRequired("type", errors, loadGroup.getType(), "Type");
-        YukonApiValidationUtils.validateNewPaoName(loadGroup.getName(), loadGroup.getType(), errors, "Name");
+        yukonApiValidationUtils.checkIfFieldRequired("type", errors, loadGroup.getType(), "Type");
+        yukonApiValidationUtils.validateNewPaoName(loadGroup.getName(), loadGroup.getType(), errors, "Name");
 
         if (!errors.hasFieldErrors("type")) {
             if (loadGroup.getType() != PaoType.MACRO_GROUP) {

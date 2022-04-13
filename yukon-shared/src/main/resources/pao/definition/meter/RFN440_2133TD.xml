@@ -21,6 +21,7 @@
         <pointInfo name="Amps Phase B" init="true" attributes="CURRENT_PHASE_B"/>
         <pointInfo name="Amps Phase C" init="true" attributes="CURRENT_PHASE_C"/>
         <pointInfo name="Blink Count" init="true" attributes="RFN_BLINK_COUNT"/>
+        <pointInfo name="Blink Reported" init="true" attributes="RFN_BLINK_REPORTED"/>
         <pointInfo name="Blink Restore Count" init="true" attributes="RFN_BLINK_RESTORE_COUNT"/>
         <pointInfo name="Current Angle Phase A" attributes="CURRENT_ANGLE_PHASE_A"/>
         <pointInfo name="Current Angle Phase B" attributes="CURRENT_ANGLE_PHASE_B"/>

@@ -15,6 +15,7 @@ public class LoadGroupVersacomValidator extends LoadGroupSetupValidator<LoadGrou
     
 
     @Autowired private LMApiValidatorHelper lmApiValidatorHelper;
+    @Autowired private YukonApiValidationUtils yukonApiValidationUtils;
 
 
     public LoadGroupVersacomValidator() {
@@ -32,15 +33,15 @@ public class LoadGroupVersacomValidator extends LoadGroupSetupValidator<LoadGrou
         lmApiValidatorHelper.validateRoute(errors, loadGroup.getRouteId());
 
         // Validate addressUsage string contains other that U, S, C and D
-        YukonApiValidationUtils.checkIfFieldRequired("utilityAddress", errors, loadGroup.getUtilityAddress(), "Utility Address");
+        yukonApiValidationUtils.checkIfFieldRequired("utilityAddress", errors, loadGroup.getUtilityAddress(), "Utility Address");
         if (!errors.hasFieldErrors("utilityAddress")) {
-            YukonApiValidationUtils.checkRange(errors, "utilityAddress", loadGroup.getUtilityAddress(), 1, 254, true);
+            yukonApiValidationUtils.checkRange(errors, "utilityAddress", loadGroup.getUtilityAddress(), 1, 254, true);
         }
         
         if (loadGroup.getAddressUsage().contains(VersacomAddressUsage.SECTION)) {
-            YukonApiValidationUtils.checkIfFieldRequired("sectionAddress", errors, loadGroup.getSectionAddress(), "Section Address");
+            yukonApiValidationUtils.checkIfFieldRequired("sectionAddress", errors, loadGroup.getSectionAddress(), "Section Address");
             if (!errors.hasFieldErrors("sectionAddress")) {
-                YukonApiValidationUtils.checkRange(errors, "sectionAddress", loadGroup.getSectionAddress(), 0, 256, true);
+                yukonApiValidationUtils.checkRange(errors, "sectionAddress", loadGroup.getSectionAddress(), 0, 256, true);
             }
         }
         
@@ -51,9 +52,9 @@ public class LoadGroupVersacomValidator extends LoadGroupSetupValidator<LoadGrou
             if (loadGroup.getClassAddress() != null) {
                 classAddress = StringUtils.convertBinaryToInteger(loadGroup.getClassAddress());
             }
-            YukonApiValidationUtils.checkIfFieldRequired("classAddress", errors, classAddress, "Class Address" );
+            yukonApiValidationUtils.checkIfFieldRequired("classAddress", errors, classAddress, "Class Address" );
             if (!errors.hasFieldErrors("classAddress")) {
-                YukonApiValidationUtils.checkRange(errors, "classAddress", classAddress, 0, 65535, true);
+                yukonApiValidationUtils.checkRange(errors, "classAddress", classAddress, 0, 65535, true);
             }
         }
         
@@ -64,20 +65,20 @@ public class LoadGroupVersacomValidator extends LoadGroupSetupValidator<LoadGrou
             if (loadGroup.getDivisionAddress() != null) {
                 divisionAddress = StringUtils.convertBinaryToInteger(loadGroup.getDivisionAddress());
             }
-            YukonApiValidationUtils.checkIfFieldRequired("divisionAddress", errors,  divisionAddress, "Division Address");
+            yukonApiValidationUtils.checkIfFieldRequired("divisionAddress", errors,  divisionAddress, "Division Address");
             if (!errors.hasFieldErrors("divisionAddress")) {
-                YukonApiValidationUtils.checkRange(errors, "divisionAddress", divisionAddress, 0, 65535, true);
+                yukonApiValidationUtils.checkRange(errors, "divisionAddress", divisionAddress, 0, 65535, true);
             }
         }
         
         // serialAddress
         if (loadGroup.getAddressUsage().contains(VersacomAddressUsage.SERIAL)) {
-            YukonApiValidationUtils.checkIfFieldRequired("serialAddress", errors, loadGroup.getSerialAddress(),
+            yukonApiValidationUtils.checkIfFieldRequired("serialAddress", errors, loadGroup.getSerialAddress(),
                 "Serial Address");
             if (!errors.hasFieldErrors("serialAddress")) {
                 try {
                     Integer serialAddress = Integer.valueOf(loadGroup.getSerialAddress());
-                    YukonApiValidationUtils.checkRange(errors, "serialAddress", serialAddress, 1, 99999, true);
+                    yukonApiValidationUtils.checkRange(errors, "serialAddress", serialAddress, 1, 99999, true);
                 } catch (NumberFormatException e) {
                     // Reject value with invalid format message
                     errors.rejectValue("serialAddress", ApiErrorDetails.DOES_NOT_EXISTS.getCodeString(), new Object[] {"Serial Address"},"");

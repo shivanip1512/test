@@ -455,6 +455,8 @@
     </bean>
     
     
+    <bean name="yukonApiValidationUtils" class="com.cannontech.common.validator.YukonApiValidationUtils"/>
+    <bean name="portApiValidatorHelper" class="com.cannontech.common.validator.PortApiValidatorHelper"/>
     <bean name="pointValidationUtil" class="com.cannontech.web.tools.points.validators.PointValidationUtil"/>
     <bean name="pointApiValidationUtil" class="com.cannontech.web.tools.points.validators.PointApiValidationUtil"/>
     <bean name="pointValidationUtilCommon" class="com.cannontech.web.tools.points.validators.PointValidationUtilCommon"/>

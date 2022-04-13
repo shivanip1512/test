@@ -19,6 +19,7 @@ public class RouteApiValidatorHelper {
     @Autowired private YukonUserContextMessageSourceResolver messageResolver;
     @Autowired private RouteService routeService;
     @Autowired private RouteHelper routeHelper;
+    @Autowired private YukonApiValidationUtils yukonApiValidationUtils;
 
     private MessageSourceAccessor accessor;
 
@@ -35,11 +36,11 @@ public class RouteApiValidatorHelper {
     public void validateRouteName(Errors errors, String routeName, Integer id) {
 
         String nameI18nText = accessor.getMessage(commonkey + "name");
-        YukonApiValidationUtils.checkIsBlank(errors, "deviceName", routeName, nameI18nText, false);
+        yukonApiValidationUtils.checkIsBlank(errors, "deviceName", routeName, nameI18nText, false);
 
         if (!errors.hasFieldErrors("deviceName")) {
-            YukonApiValidationUtils.checkExceedsMaxLength(errors, "deviceName", routeName, 60);
-            YukonApiValidationUtils.checkIllegalCharacter(errors, "deviceName", routeName, nameI18nText);
+            yukonApiValidationUtils.checkExceedsMaxLength(errors, "deviceName", routeName, 60);
+            yukonApiValidationUtils.checkIllegalCharacter(errors, "deviceName", routeName, nameI18nText);
             dbCache.getAllRoutes()
                     .stream()
                     .filter(liteRoute -> liteRoute.getPaoName().equalsIgnoreCase(routeName.trim()))

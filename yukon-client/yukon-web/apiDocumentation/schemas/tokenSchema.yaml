@@ -95,7 +95,38 @@ Captcha-Details-Response:
       type: boolean
     locale:
       type: string
-      
+
+Change-Password-details-Response:
+   title: Change-Password-details-Response
+   type: object
+   properties:
+    passwordPolicy:
+       $ref: '#/passwordPolicy'
+    userId:
+      type: int
+    uuid:
+      type: string
+
+passwordPolicy:
+   type: object
+   properties:
+    lockoutDuration:
+       type: long
+    lockoutThreshold:
+      type: long
+    maxPasswordAge:
+      type: long
+    minPasswordAge:
+      type: long
+    passwordHistory:
+      type: long
+    minPasswordLength:
+      type: long
+    passwordQualityCheck:
+      type: long
+    policyRules:
+      type: list
+
 components:
   examples:
     Login:
@@ -131,4 +162,21 @@ components:
         siteKey: 6LfIVEkUAAAAAEtqdQcwZU8V6cYGKi0d0Yuz-ISZ-ISZ
         captchaEnabled: false
         locale: en
+    ChangePasswordDetailsResponse:
+      value:
+        passwordPolicy:
+         - lockoutDuration: 10
+           lockoutThreshold: 3
+           maxPasswordAge: 90
+           minPasswordAge: 1
+           passwordHistory: 1
+           minPasswordLength: 7
+           passwordQualityCheck: 1
+           policyRules: [
+              "UPPERCASE_CHARACTERS",
+              "LOWERCASE_CHARACTERS",
+              "BASE_10_DIGITS",
+              "NONALPHANUMERIC_CHARACTERS"]
+        userId: 121
+        uuid: 63e58deb-3ac6-49dc-b51d-f5d8ff728515
     

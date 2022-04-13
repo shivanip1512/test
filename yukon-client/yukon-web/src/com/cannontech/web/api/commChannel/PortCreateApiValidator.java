@@ -1,5 +1,6 @@
 package com.cannontech.web.api.commChannel;
 
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.validation.Errors;
 
@@ -11,7 +12,9 @@ import com.cannontech.common.validator.SimpleValidator;
 import com.cannontech.common.validator.YukonApiValidationUtils;
 
 @Service
-public class PortCreateApiValidator <T extends PortBase<?>> extends SimpleValidator<T> {
+public class PortCreateApiValidator<T extends PortBase<?>> extends SimpleValidator<T> {
+
+    @Autowired private YukonApiValidationUtils yukonApiValidationUtils;
 
     @SuppressWarnings("unchecked")
     public PortCreateApiValidator() {
@@ -25,25 +28,25 @@ public class PortCreateApiValidator <T extends PortBase<?>> extends SimpleValida
     @Override
     protected void doValidation(T port, Errors errors) {
         // Check if type is NULL
-        YukonApiValidationUtils.checkIfFieldRequired("deviceType", errors, port.getDeviceType(), "Type");
+        yukonApiValidationUtils.checkIfFieldRequired("deviceType", errors, port.getDeviceType(), "Type");
         // Check if name is NULL
-        YukonApiValidationUtils.checkIfFieldRequired("deviceName", errors, port.getDeviceName(), "Name");
+        yukonApiValidationUtils.checkIfFieldRequired("deviceName", errors, port.getDeviceName(), "Name");
         // Check if baudRate is NULL
-        YukonApiValidationUtils.checkIfFieldRequired("baudRate", errors, port.getBaudRate(), "Baud Rate");
+        yukonApiValidationUtils.checkIfFieldRequired("baudRate", errors, port.getBaudRate(), "Baud Rate");
 
         if (port instanceof TerminalServerPortDetailBase) {
             TerminalServerPortDetailBase<?> serverPortDetailBase = (TerminalServerPortDetailBase<?>) port;
-            YukonApiValidationUtils.validatePort(errors, "portNumber", "Port Number",
+            yukonApiValidationUtils.validatePort(errors, "portNumber", "Port Number",
                     String.valueOf(serverPortDetailBase.getPortNumber()));
 
             if (port instanceof TcpSharedPortDetail) {
                 TcpSharedPortDetail tcpSharedPortDetail = (TcpSharedPortDetail) port;
-                YukonApiValidationUtils.checkIfFieldRequired("ipAddress", errors, tcpSharedPortDetail.getIpAddress(), "IP Address");
+                yukonApiValidationUtils.checkIfFieldRequired("ipAddress", errors, tcpSharedPortDetail.getIpAddress(), "IP Address");
             }
         }
 
         if (port instanceof LocalSharedPortDetail) {
-            YukonApiValidationUtils.checkIfFieldRequired("physicalPort", errors, ((LocalSharedPortDetail) port).getPhysicalPort(),
+            yukonApiValidationUtils.checkIfFieldRequired("physicalPort", errors, ((LocalSharedPortDetail) port).getPhysicalPort(),
                     "Physical Port");
         }
     }

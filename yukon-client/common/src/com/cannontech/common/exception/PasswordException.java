@@ -4,12 +4,14 @@ import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.ResponseStatus;
 
 @ResponseStatus(HttpStatus.BAD_REQUEST)
-public class PasswordChangeException extends RuntimeException {
+public class PasswordException extends RuntimeException {
 
-    public PasswordChangeException() {
+    private static final long serialVersionUID = 1L;
+
+    public PasswordException() {
     }
 
-    public PasswordChangeException(String message) {
+    public PasswordException(String message) {
         super(message);
     }
 

@@ -17,6 +17,7 @@ import com.cannontech.common.events.model.EventCategory;
 import com.cannontech.common.events.model.EventLog;
 import com.cannontech.common.events.service.EventLogUIService;
 import com.cannontech.common.i18n.MessageSourceAccessor;
+import com.cannontech.common.model.PagingParameters;
 import com.cannontech.common.search.result.SearchResults;
 import com.cannontech.common.util.CtiUtilities;
 import com.cannontech.common.util.SqlBuilder;
@@ -99,8 +100,7 @@ public class EventLogUIServiceImpl implements EventLogUIService {
                 getFilteredPagedSearchResultByCategories(Iterable<EventCategory> eventCategories, 
                                                          ReadableInstant startDate, 
                                                          ReadableInstant stopDate, 
-                                                         Integer start, 
-                                                         Integer pageCount,
+                                                         PagingParameters paging, 
                                                          String filterText,
                                                          YukonUserContext userContext) {
        
@@ -109,8 +109,7 @@ public class EventLogUIServiceImpl implements EventLogUIService {
             eventLogDao.getFilteredPagedSearchResultByCategories(eventCategories, 
                                                                  startDate, 
                                                                  stopDate, 
-                                                                 start, 
-                                                                 pageCount,
+                                                                 paging,
                                                                  filterText);
         
         return pagedSearchResultByCategories;

@@ -34,6 +34,7 @@
         <pointInfo name="Average Received Power Factor" attributes="AVERAGE_RECEIVED_POWER_FACTOR"/>
         <pointInfo name="Bad Upgrade Security Param" attributes="BAD_UPGRADE_SECURITY_PARAM"/>
         <pointInfo name="Blink Count" init="true" attributes="RFN_BLINK_COUNT"/>
+        <pointInfo name="Blink Reported" init="true" attributes="RFN_BLINK_REPORTED"/>
         <pointInfo name="Blink Restore Count" init="true" attributes="RFN_BLINK_RESTORE_COUNT"/>
         <pointInfo name="Clock Error" attributes="CLOCK_ERROR"/>
         <pointInfo name="Coincident Cumulative Peak kVAr"/>
