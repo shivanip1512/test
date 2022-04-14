@@ -20,7 +20,7 @@
     <td>${fn:escapeXml(row.device)}</td>
     <td>
         <select name="pointAssignments[${itemIndex}].feederId" >
-            <option>${noneSelected}</option>
+            <option value>${noneSelected}</option>
             <c:forEach var="feeder" items="${feederList}">
                 <option value="${feeder.ccId}">
                     ${feeder.ccName}

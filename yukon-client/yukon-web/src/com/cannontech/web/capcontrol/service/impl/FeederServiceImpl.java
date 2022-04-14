@@ -3,7 +3,6 @@ package com.cannontech.web.capcontrol.service.impl;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
-import java.util.Map;
 import java.util.Optional;
 import java.util.function.Function;
 import java.util.stream.Collectors;
@@ -15,7 +14,6 @@ import com.cannontech.capcontrol.ControlAlgorithm;
 import com.cannontech.capcontrol.PointToZoneMapping;
 import com.cannontech.capcontrol.dao.CapbankDao;
 import com.cannontech.capcontrol.dao.FeederDao;
-import com.cannontech.capcontrol.dao.StrategyDao;
 import com.cannontech.capcontrol.dao.ZoneDao;
 import com.cannontech.capcontrol.model.Zone;
 import com.cannontech.cbc.cache.CapControlCache;
@@ -30,9 +28,6 @@ import com.cannontech.database.TransactionType;
 import com.cannontech.database.data.capcontrol.CapControlFeeder;
 import com.cannontech.database.data.lite.LiteYukonPAObject;
 import com.cannontech.database.db.capcontrol.CCFeederBankList;
-import com.cannontech.database.db.capcontrol.CapControlStrategy;
-import com.cannontech.database.db.capcontrol.LiteCapControlStrategy;
-import com.cannontech.database.model.Season;
 import com.cannontech.message.DbChangeManager;
 import com.cannontech.message.capcontrol.streamable.CapBankDevice;
 import com.cannontech.message.capcontrol.streamable.Feeder;
@@ -41,7 +36,6 @@ import com.cannontech.message.dispatch.message.DbChangeType;
 import com.cannontech.web.capcontrol.models.CapBankAssignment;
 import com.cannontech.web.capcontrol.models.ViewableCapBank;
 import com.cannontech.web.capcontrol.service.FeederService;
-import com.cannontech.web.capcontrol.service.StrategyService;
 import com.cannontech.web.capcontrol.util.service.CapControlWebUtilsService;
 import com.cannontech.yukon.IDatabaseCache;
 
@@ -53,11 +47,9 @@ public class FeederServiceImpl implements FeederService {
     @Autowired private CapbankDao capBankDao;
     @Autowired private FeederDao feederDao;
     @Autowired private ZoneDao zoneDao;
-    @Autowired private StrategyDao strategyDao;
     @Autowired private IDatabaseCache dbCache;
     @Autowired private PaoPersistenceService paoPersistenceService;
     @Autowired private DBPersistentDao dbPersistentDao;
-    @Autowired private StrategyService strategyService;
 
     @Override
     public CapControlFeeder get(int id) {
@@ -204,23 +196,17 @@ public class FeederServiceImpl implements FeederService {
     public boolean isCapBanksAssignedToZone(int feederId) throws EmptyResultDataAccessException {
 
         Integer substationBusId = feederDao.getParentSubBusID(feederId);
-        Map<Season, LiteCapControlStrategy> seasonToStrat = strategyService.getSeasonStrategyAssignments(substationBusId);
+        SubBus bus = ccCache.getSubBus(substationBusId);
+        if (bus.getAlgorithm() == ControlAlgorithm.INTEGRATED_VOLT_VAR) {
+            List<CapBankAssignment> capBankAssignments = getAssignedCapBanksForFeeder(feederId);
+            List<Integer> feederCapBankIds = capBankAssignments.stream()
+                                                               .map(e -> e.getId())
+                                                               .collect(Collectors.toList());
 
-        LiteCapControlStrategy liteCapControlStrategy = new ArrayList<LiteCapControlStrategy>(seasonToStrat.values()).get(0);
+            List<Integer> subBusCapbankIds = zoneDao.getCapBankIdsBySubBusId(substationBusId);
 
-        if (liteCapControlStrategy != null) {
-            CapControlStrategy strategy = strategyDao.getForId(liteCapControlStrategy.getId());
-            if (strategy.getAlgorithm() == ControlAlgorithm.INTEGRATED_VOLT_VAR) {
-                List<CapBankAssignment> capBankAssignments = getAssignedCapBanksForFeeder(feederId);
-                List<Integer> feederCapBankIds = capBankAssignments.stream()
-                                                                   .map(e -> e.getId())
-                                                                   .collect(Collectors.toList());
-
-                List<Integer> subBusCapbankIds = zoneDao.getCapBankIdsBySubBusId(substationBusId);
-
-                if (!Collections.disjoint(subBusCapbankIds, feederCapBankIds)) {
-                    return true;
-                }
+            if (!Collections.disjoint(subBusCapbankIds, feederCapBankIds)) {
+                return true;
             }
         }
 
@@ -231,21 +217,15 @@ public class FeederServiceImpl implements FeederService {
     public boolean isFeederAssignedToVoltagePointForZone(int feederId) throws EmptyResultDataAccessException {
 
         Integer substationBusId = feederDao.getParentSubBusID(feederId);
-        Map<Season, LiteCapControlStrategy> seasonToStrat = strategyService.getSeasonStrategyAssignments(substationBusId);
-
-        LiteCapControlStrategy liteCapControlStrategy = new ArrayList<LiteCapControlStrategy>(seasonToStrat.values()).get(0);
-
-        if (liteCapControlStrategy != null) {
-            CapControlStrategy strategy = strategyDao.getForId(liteCapControlStrategy.getId());
-            if (strategy.getAlgorithm() == ControlAlgorithm.INTEGRATED_VOLT_VAR) {
-                List<Zone> zones = zoneDao.getZonesBySubBusId(substationBusId);
-                for (Zone zone: zones) {
-                    List<PointToZoneMapping> pointMappings = zoneDao.getPointToZoneMappingByZoneId(zone.getId());
-                    Optional<PointToZoneMapping> feederPoint = pointMappings.stream()
-                            .filter(point -> point.getFeederId().equals(feederId)).findFirst();
-                    if (feederPoint.isPresent()) {
-                        return true;
-                    }
+        SubBus bus = ccCache.getSubBus(substationBusId);
+        if (bus.getAlgorithm() == ControlAlgorithm.INTEGRATED_VOLT_VAR) {
+            List<Zone> zones = zoneDao.getZonesBySubBusId(substationBusId);
+            for (Zone zone: zones) {
+                List<PointToZoneMapping> pointMappings = zoneDao.getPointToZoneMappingByZoneId(zone.getId());
+                Optional<PointToZoneMapping> feederPoint = pointMappings.stream()
+                        .filter(point -> point.getFeederId().equals(feederId)).findFirst();
+                if (feederPoint.isPresent()) {
+                    return true;
                 }
             }
         }
