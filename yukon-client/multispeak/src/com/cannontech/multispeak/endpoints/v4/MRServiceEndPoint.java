@@ -95,11 +95,16 @@ public class MRServiceEndPoint {
 
         XMLGregorianCalendar startDate = getReadingsByMeterID.getStartDate();
         XMLGregorianCalendar endDate = getReadingsByMeterID.getEndDate();
+        
+        if (getReadingsByMeterID.getMeterID() == null) {
+            throw new MultispeakWebServiceException("Missing MeterID or MeterNo in request");
+        }
         String meterNo = getReadingsByMeterID.getMeterID().getMeterNo();
 
         if (startDate == null || endDate == null) {
             throw new MultispeakWebServiceException("Invalid date/time.");
         }
+        
         List<MeterReading> meterReading = mr_server.getReadingsByMeterID(meterNo,
                 startDate.toGregorianCalendar(),
                 endDate.toGregorianCalendar());
@@ -129,9 +134,14 @@ public class MRServiceEndPoint {
         GetLatestReadingByMeterIDResponse getLatestReadingByMeterIDResponse = objectFactory
                 .createGetLatestReadingByMeterIDResponse();
 
+        if (getLatestReadingByMeterId.getMeterID() == null) {
+            throw new MultispeakWebServiceException("Missing MeterID or MeterNo in request");
+        }
+        
         String meterNo = getLatestReadingByMeterId.getMeterID().getMeterNo();
         MeterReading meterReading = mr_server.getLatestReadingByMeterID(meterNo);
         getLatestReadingByMeterIDResponse.setGetLatestReadingByMeterIDResult(meterReading);
+
         return getLatestReadingByMeterIDResponse;
     }
 }
