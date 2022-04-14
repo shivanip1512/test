@@ -1,12 +1,9 @@
 package com.cannontech.multispeak.service.v4;
 
+import java.util.Calendar;
 import java.util.List;
-
-import com.cannontech.msp.beans.v4.MeterID;
 import com.cannontech.msp.beans.v4.MeterReading;
 import com.cannontech.multispeak.exceptions.MultispeakWebServiceException;
-import java.util.Calendar;
-import java.lang.String;
 
 public interface MR_Server {
 

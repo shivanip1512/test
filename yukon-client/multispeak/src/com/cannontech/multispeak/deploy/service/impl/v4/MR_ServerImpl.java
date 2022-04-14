@@ -104,8 +104,7 @@ public class MR_ServerImpl implements MR_Server {
 
         // Validate the meterNo is a Yukon meterNumber
         mspValidationService.isYukonMeterNumber(meterNo);
-        
-        
+
         MspMeterReadingReturnList mspMeterReadingReturnList = mspRawPointHistoryDao.retrieveMeterReading(ReadBy.METER_NUMBER,
                                                                                                 meterNo,
                                                                                                 startDate.getTime(),
@@ -149,7 +148,7 @@ public class MR_ServerImpl implements MR_Server {
         init(); //init is already performed on the call to isAMRMeter()
 
         MultispeakVendor vendor = multispeakFuncs.getMultispeakVendorFromHeader();
-        multispeakEventLogService.methodInvoked("GetLatestReadingByMeterId", vendor.getCompanyName());
+        multispeakEventLogService.methodInvoked("GetLatestReadingByMeterID", vendor.getCompanyName());
         
         //Validate the meterNo is a Yukon meterNumber
         YukonMeter meter = mspValidationService.isYukonMeterNumber(meterNo);

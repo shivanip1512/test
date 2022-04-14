@@ -157,7 +157,7 @@ public class MspRawPointHistoryDaoImpl implements MspRawPointHistoryDao {
             int maxRecords) {
         final Date timerStart = new Date();
 
-// get the paos we want, using readBy, readByValue, and lastReceived
+        // get the paos we want, using readBy, readByValue, and lastReceived
         SqlStatementBuilder sql = new SqlStatementBuilder();
         sql.append(meterRowMapper.getSql());
         if (readBy == ReadBy.METER_NUMBER) {

@@ -28,8 +28,8 @@ public interface MspRawPointHistoryDao {
     /**
      * Returns a MspMeterReading object with kW and kWh MeterReadings for ReadBy value.
      * Similar to retrieveMeterReading except that it returns only the latest archived reading for kWh
-     * and kW elements of MeterRead.
-     * The readings will be grouped together such that there is only one MeterRead per meter
+     * and kW elements of MeterReading.
+     * The readings will be grouped together such that there is only one MeterReading per meter
      * @param readBy - readings collected for ReadBy value (ReadBy = NONE then ReadBy option not used).
      * @param readByValue
      * @param lastReceived - Results are retrieved for meterNumber > lastReceived. LastReceived == null means start from beginning.
