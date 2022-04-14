@@ -216,7 +216,7 @@ public class EventLogDaoImpl implements EventLogDao {
 
             catSql.append(")");
         }*/
-        if (eventCategories != null && IterableUtils.size(eventCategories) > 0
+        if (!IterableUtils.isEmpty(eventCategories)
                 && !Sets.newHashSet(eventCategories).containsAll(getAllCategories())) {
             Set<EventCategory> slimEventCategories = removeDuplicates(eventCategories);
             catSql = new SqlStatementBuilder();
