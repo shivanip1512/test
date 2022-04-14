@@ -189,8 +189,6 @@
 												</c:when>
 												<c:when
 													test="${mspPossibleInterfacev3.mspInterface=='NOT_Server' }">
-													<c:out
-														value="NOT SERVER - ${mspPossibleInterfacev3.mspInterface }"></c:out>
 													<c:set var="currentInterface"
 														value="${mspPossibleInterfacev3}" />
 													<c:set var="indexValue" value="${status.index}" />
