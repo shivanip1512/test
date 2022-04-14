@@ -6,7 +6,6 @@ import java.util.Map;
 
 import org.apache.logging.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
-
 import com.cannontech.amr.meter.model.YukonMeter;
 import com.cannontech.clientutils.YukonLogManager;
 import com.cannontech.database.data.device.DeviceTypesFuncs;
@@ -14,8 +13,8 @@ import com.cannontech.message.porter.message.Request;
 import com.cannontech.msp.beans.v4.MeterReading;
 import com.cannontech.multispeak.client.MultispeakVendor;
 import com.cannontech.multispeak.dao.MspObjectDao;
-import com.cannontech.multispeak.event.MeterReadEvent;
-import com.cannontech.multispeak.event.MultispeakEvent;
+import com.cannontech.multispeak.event.v4.MeterReadEvent;
+import com.cannontech.multispeak.event.v4.MultispeakEvent;
 import com.cannontech.multispeak.service.MultispeakMeterServiceBase;
 import com.cannontech.multispeak.service.v4.MultispeakMeterService;
 import com.cannontech.yukon.BasicServerConnection;
@@ -92,7 +91,7 @@ public class MultispeakMeterServiceImpl extends MultispeakMeterServiceBase imple
 
         final String meterNumber = meter.getMeterNumber();
         log.info("Received " + meterNumber + " for LatestReadingInterrogate from " + mspVendor.getCompanyName());
-        multispeakEventLogService.initiateMeterRead(meterNumber, meter, "N/A", "GetLatestReadingByMeterNo", mspVendor.getCompanyName());
+        multispeakEventLogService.initiateMeterRead(meterNumber, meter, "N/A", "GetLatestReadingByMeterID", mspVendor.getCompanyName());
 
         // Writes a request to pil for the meter and commandStr using the id for mspVendor.
         commandStr += " update noqueue";
@@ -100,19 +99,19 @@ public class MultispeakMeterServiceImpl extends MultispeakMeterServiceBase imple
         pilRequest.setPriority(13);
         porterConnection.write(pilRequest);
 
-        systemLog("GetLatestReadingByMeterNo", "(ID:" + meter.getPaoIdentifier().getPaoId() + ") MeterNumber (" + meterNumber + ") - " + commandStr, mspVendor);
+        systemLog("GetLatestReadingByMeterID", "(ID:" + meter.getPaoIdentifier().getPaoId() + ") MeterNumber (" + meterNumber + ") - " + commandStr, mspVendor);
 
         synchronized (event) {
             boolean timeout = !waitOnEvent(event, mspVendor.getRequestMessageTimeout());
             if (timeout) {
-                mspObjectDao.logMSPActivity("GetLatestReadingByMeterNo",
+                mspObjectDao.logMSPActivity("GetLatestReadingByMeterID",
                                             "MeterNumber (" + meterNumber + ") - Reading Timed out after " + 
                                             (mspVendor.getRequestMessageTimeout() / 1000) + " seconds.  No reading collected.",
                                             mspVendor.getCompanyName());
             }
         }
 
-        return event.getDeviceV4().getMeterReading();
+        return event.getDevice().getMeterReading();
     }
     /**
      * Extra SystemLog logging that will be completely removed upon completion of MultiSpeak EventLogs.

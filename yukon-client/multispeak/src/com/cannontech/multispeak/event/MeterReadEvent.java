@@ -36,7 +36,6 @@ public class MeterReadEvent extends MultispeakEvent {
     private final CBClient cbClient = YukonSpringHook.getBean("cbClient", CBClient.class);
     
     private ReadableDevice device = null;
-    private com.cannontech.multispeak.data.v4.ReadableDevice deviceV4 = null;
     
     /**
      * @param mspVendor_
@@ -70,15 +69,6 @@ public class MeterReadEvent extends MultispeakEvent {
     public void setDevice(ReadableDevice device) {
         this.device = device;
     }
-    
-    public com.cannontech.multispeak.data.v4.ReadableDevice getDeviceV4() {
-        return deviceV4;
-    }
-
-    public void setDevice1(com.cannontech.multispeak.data.v4.ReadableDevice deviceV4) {
-        this.deviceV4 = deviceV4;
-    }
-
 
     /**
      * Send an ReadingChangedNotification to the CB webservice containing meterReadEvents
