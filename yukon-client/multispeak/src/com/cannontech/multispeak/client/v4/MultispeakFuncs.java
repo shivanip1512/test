@@ -2,7 +2,6 @@ package com.cannontech.multispeak.client.v4;
 
 import java.util.Iterator;
 
-import javax.annotation.Resource;
 import javax.xml.namespace.QName;
 import javax.xml.soap.MimeHeaders;
 import javax.xml.soap.SOAPException;
@@ -11,7 +10,6 @@ import javax.xml.soap.SOAPMessage;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.logging.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.oxm.jaxb.Jaxb2Marshaller;
 import org.springframework.ws.WebServiceMessage;
 import org.springframework.ws.context.MessageContext;
 import org.springframework.ws.soap.AbstractSoapMessage;
@@ -38,8 +36,6 @@ public class MultispeakFuncs extends MultispeakFuncsBase {
     private final static Logger log = YukonLogManager.getLogger(MultispeakFuncs.class);
     @Autowired public MultispeakDao multispeakDao;
 
-    @Resource(name="domainMarshallerV4") Jaxb2Marshaller jaxb2Marshaller;
-    
     @Override
     public MultiSpeakVersion version() {
         return MultiSpeakVersion.V4;

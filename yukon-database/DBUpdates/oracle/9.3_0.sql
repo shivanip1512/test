@@ -78,6 +78,13 @@ INSERT INTO MSPInterface VALUES (1, 'NOT_Server', 'http://127.0.0.1:8080/multisp
 INSERT INTO DBUpdates VALUES ('YUK-26160', '9.3.0', SYSDATE);
 /* @end YUK-26160 */
 
+/* @start YUK-26097 */
+ALTER TABLE PointToZoneMapping
+ADD (FeederId NUMBER);
+
+INSERT INTO DBUpdates VALUES ('YUK-26097', '9.3.0', SYSDATE);
+/* @end YUK-26097 */
+
 /***********************************************************************************/
 /* VERSION INFO                                                                    */
 /* Inserted when update script is run, stays commented out until the release build */

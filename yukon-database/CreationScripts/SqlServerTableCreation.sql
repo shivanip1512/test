@@ -1,7 +1,7 @@
 /*==============================================================*/
 /* Database name:  YukonDatabase                                */
 /* DBMS name:      Microsoft SQL Server 2005                    */
-/* Created on:     4/4/2022 8:55:24 AM                          */
+/* Created on:     4/12/2022 9:33:44 AM                         */
 /*==============================================================*/
 
 
@@ -8670,6 +8670,7 @@ create table PointToZoneMapping (
    GraphPositionOffset  float                null,
    Distance             float                null,
    Ignore               varchar(1)           not null,
+   FeederId             numeric              null,
    constraint PK_PointZoneMap primary key (PointId)
 )
 go

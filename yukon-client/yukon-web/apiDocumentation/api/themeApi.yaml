@@ -1,7 +1,7 @@
 currentTheme:
   get:
       tags:
-        - Theme
+        - Admin
       summary: Retrieve current theme 
       description: |-
           Get current theme details themeId, themeName, editable and theme properties. 
@@ -19,7 +19,7 @@ currentTheme:
 image:
   get:
       tags:
-        - Theme
+        - Common
       summary: Retrieve image
       description: |-
           API to retrieve an image based on passed id.

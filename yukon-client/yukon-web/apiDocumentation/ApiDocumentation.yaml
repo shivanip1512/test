@@ -26,6 +26,9 @@ paths:
      $ref: 'api/tokenApi.yaml#/forgottenPassword'
   /captchaDetails:
      $ref: 'api/tokenApi.yaml#/captchaDetails'
+  /change-password/{uuid}:
+     $ref: 'api/tokenApi.yaml#/changePassword'  
+  
 
   /admin/config/currentTheme:
      $ref: 'api/themeApi.yaml#/currentTheme'
@@ -140,7 +143,8 @@ components:
       bearerFormat: JWT
 tags:
   - name: Authentication
-  - name: Theme
+  - name: Admin
+  - name: Common
   - name: Comm Channel
   - name: Trend
   - name: Load Group
