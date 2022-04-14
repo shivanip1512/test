@@ -20,6 +20,7 @@ public class OAClient implements IOAClient {
     private WebServiceTemplate webServiceTemplate;
     @Autowired CustomWebServiceMsgCallback customWebServiceMsgCallback;
     @Autowired private MultispeakFuncs multispeakFuncs;
+
     /**
      * OAClient Constructor
      * 
@@ -29,7 +30,7 @@ public class OAClient implements IOAClient {
     public OAClient(@Qualifier("webServiceTemplateV4") WebServiceTemplate webServiceTemplate) {
         this.webServiceTemplate = webServiceTemplate;
     }
-    
+
     @Override
     public PingURLResponse pingURL(MultispeakVendor mspVendor, String uri, PingURL pingURL)
             throws MultispeakWebServiceClientException {
@@ -38,11 +39,11 @@ public class OAClient implements IOAClient {
             multispeakFuncs.setMsgSender(webServiceTemplate, mspVendor);
 
             return (PingURLResponse) webServiceTemplate.marshalSendAndReceive(uri, pingURL,
-                customWebServiceMsgCallback.addRequestHeader(mspVendor, MultispeakDefines.OA_Server_STR));
+                    customWebServiceMsgCallback.addRequestHeader(mspVendor, MultispeakDefines.OA_Server_STR));
         } catch (WebServiceException | XmlMappingException e) {
             throw new MultispeakWebServiceClientException(e.getMessage());
         }
-    
+
     }
 
     @Override
@@ -51,14 +52,11 @@ public class OAClient implements IOAClient {
         try {
             multispeakFuncs.setMsgSender(webServiceTemplate, mspVendor);
             return (GetMethodsResponse) webServiceTemplate.marshalSendAndReceive(uri, getMethods,
-                customWebServiceMsgCallback.addRequestHeader(mspVendor, MultispeakDefines.OA_Server_STR));
+                    customWebServiceMsgCallback.addRequestHeader(mspVendor, MultispeakDefines.OA_Server_STR));
         } catch (WebServiceException | XmlMappingException e) {
             throw new MultispeakWebServiceClientException(e.getMessage());
         }
-    
+
     }
 
-
-
-    
 }

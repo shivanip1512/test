@@ -76,16 +76,15 @@ public class MspObjectDaoImpl implements MspObjectDao {
             response = scadaClient.pingURL(mspVendor, endpointUrl, pingURL);
         } else if (service.contains(MultispeakDefines.CB_Server_STR)) {
             response = cbClient.pingURL(mspVendor, endpointUrl, pingURL);
-        }else if (service.contains(MultispeakDefines.EA_Server_STR)) {
+        } else if (service.contains(MultispeakDefines.EA_Server_STR)) {
             response = eaClient.pingURL(mspVendor, endpointUrl, pingURL);
-        }else if (service.contains(MultispeakDefines.OA_Server_STR)) {
+        } else if (service.contains(MultispeakDefines.OA_Server_STR)) {
             response = oaClient.pingURL(mspVendor, endpointUrl, pingURL);
-        }else if (service.contains(MultispeakDefines.MDM_Server_STR)) {
+        } else if (service.contains(MultispeakDefines.MDM_Server_STR)) {
             response = mdmClient.pingURL(mspVendor, endpointUrl, pingURL);
         } else if (service.contains(MultispeakDefines.NOT_Server_STR)) {
             response = notClient.pingURL(mspVendor, endpointUrl, pingURL);
-        }
-        else {
+        } else {
             ErrorObject obj = new ErrorObject();
             obj.setObjectID("-100");
             obj.setErrorString("No server for " + service);
@@ -125,16 +124,15 @@ public class MspObjectDaoImpl implements MspObjectDao {
             response = scadaClient.getMethods(mspVendor, endpointUrl, getMethods);
         } else if (service.equalsIgnoreCase(MultispeakDefines.CB_Server_STR)) {
             response = cbClient.getMethods(mspVendor, endpointUrl, getMethods);
-        }else if (service.equalsIgnoreCase(MultispeakDefines.EA_Server_STR)) {
+        } else if (service.equalsIgnoreCase(MultispeakDefines.EA_Server_STR)) {
             response = eaClient.getMethods(mspVendor, endpointUrl, getMethods);
-        }else if (service.equalsIgnoreCase(MultispeakDefines.OA_Server_STR)) {
+        } else if (service.equalsIgnoreCase(MultispeakDefines.OA_Server_STR)) {
             response = oaClient.getMethods(mspVendor, endpointUrl, getMethods);
-        }else if (service.equalsIgnoreCase(MultispeakDefines.MDM_Server_STR)) {
+        } else if (service.equalsIgnoreCase(MultispeakDefines.MDM_Server_STR)) {
             response = mdmClient.getMethods(mspVendor, endpointUrl, getMethods);
         } else if (service.equalsIgnoreCase(MultispeakDefines.NOT_Server_STR)) {
             response = notClient.getMethods(mspVendor, endpointUrl, getMethods);
-        }
-        else {
+        } else {
             String string = "No server for " + service;
             return Lists.newArrayList(string);
         }

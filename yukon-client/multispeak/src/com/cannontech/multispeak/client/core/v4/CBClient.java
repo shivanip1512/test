@@ -21,6 +21,7 @@ public class CBClient implements ICBClient {
     private WebServiceTemplate webServiceTemplate;
     @Autowired CustomWebServiceMsgCallback customWebServiceMsgCallback;
     @Autowired private MultispeakFuncs multispeakFuncs;
+
     /**
      * CBClient Constructor
      * 
@@ -30,7 +31,7 @@ public class CBClient implements ICBClient {
     public CBClient(@Qualifier("webServiceTemplateV4") WebServiceTemplate webServiceTemplate) {
         this.webServiceTemplate = webServiceTemplate;
     }
-    
+
     @Override
     public PingURLResponse pingURL(MultispeakVendor mspVendor, String uri, PingURL pingURL)
             throws MultispeakWebServiceClientException {
@@ -39,11 +40,11 @@ public class CBClient implements ICBClient {
             multispeakFuncs.setMsgSender(webServiceTemplate, mspVendor);
 
             return (PingURLResponse) webServiceTemplate.marshalSendAndReceive(uri, pingURL,
-                customWebServiceMsgCallback.addRequestHeader(mspVendor, MultispeakDefines.CB_Server_STR));
+                    customWebServiceMsgCallback.addRequestHeader(mspVendor, MultispeakDefines.CB_Server_STR));
         } catch (WebServiceException | XmlMappingException e) {
             throw new MultispeakWebServiceClientException(e.getMessage());
         }
-    
+
     }
 
     @Override
@@ -52,11 +53,11 @@ public class CBClient implements ICBClient {
         try {
             multispeakFuncs.setMsgSender(webServiceTemplate, mspVendor);
             return (GetMethodsResponse) webServiceTemplate.marshalSendAndReceive(uri, getMethods,
-                customWebServiceMsgCallback.addRequestHeader(mspVendor, MultispeakDefines.CB_Server_STR));
+                    customWebServiceMsgCallback.addRequestHeader(mspVendor, MultispeakDefines.CB_Server_STR));
         } catch (WebServiceException | XmlMappingException e) {
             throw new MultispeakWebServiceClientException(e.getMessage());
         }
-    
+
     }
 
 }

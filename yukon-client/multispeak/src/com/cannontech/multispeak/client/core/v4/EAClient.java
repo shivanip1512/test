@@ -20,6 +20,7 @@ public class EAClient implements IEAClient {
     private WebServiceTemplate webServiceTemplate;
     @Autowired CustomWebServiceMsgCallback customWebServiceMsgCallback;
     @Autowired private MultispeakFuncs multispeakFuncs;
+
     /**
      * EAClient Constructor
      * 
@@ -29,7 +30,7 @@ public class EAClient implements IEAClient {
     public EAClient(@Qualifier("webServiceTemplateV4") WebServiceTemplate webServiceTemplate) {
         this.webServiceTemplate = webServiceTemplate;
     }
-    
+
     @Override
     public PingURLResponse pingURL(MultispeakVendor mspVendor, String uri, PingURL pingURL)
             throws MultispeakWebServiceClientException {
@@ -38,11 +39,11 @@ public class EAClient implements IEAClient {
             multispeakFuncs.setMsgSender(webServiceTemplate, mspVendor);
 
             return (PingURLResponse) webServiceTemplate.marshalSendAndReceive(uri, pingURL,
-                customWebServiceMsgCallback.addRequestHeader(mspVendor, MultispeakDefines.EA_Server_STR));
+                    customWebServiceMsgCallback.addRequestHeader(mspVendor, MultispeakDefines.EA_Server_STR));
         } catch (WebServiceException | XmlMappingException e) {
             throw new MultispeakWebServiceClientException(e.getMessage());
         }
-    
+
     }
 
     @Override
@@ -51,12 +52,11 @@ public class EAClient implements IEAClient {
         try {
             multispeakFuncs.setMsgSender(webServiceTemplate, mspVendor);
             return (GetMethodsResponse) webServiceTemplate.marshalSendAndReceive(uri, getMethods,
-                customWebServiceMsgCallback.addRequestHeader(mspVendor, MultispeakDefines.EA_Server_STR));
+                    customWebServiceMsgCallback.addRequestHeader(mspVendor, MultispeakDefines.EA_Server_STR));
         } catch (WebServiceException | XmlMappingException e) {
             throw new MultispeakWebServiceClientException(e.getMessage());
         }
-    
-    }
 
+    }
 
 }

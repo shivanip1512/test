@@ -8,30 +8,29 @@ import com.cannontech.multispeak.client.MultispeakVendor;
 import com.cannontech.multispeak.exceptions.MultispeakWebServiceClientException;
 
 public interface INOTClient {
-    
+
     /**
      * Pings the URL.
      * 
-     * @param MSP vendor details
-     * @param String the URI of the NOT Server
+     * @param MSP     vendor details
+     * @param String  the URI of the NOT Server
      * @param PingURL the PingURL used as input.
      * @return PingURLResponse
      * @throws MultispeakWebServiceClientException
      */
     public PingURLResponse pingURL(MultispeakVendor mspVendor, String uri, PingURL pingURL)
             throws MultispeakWebServiceClientException;
-    
+
     /**
      * Get all the supported methods.
      * 
-     * @param MSP vendor details
-     * @param String the URI of the NOT Server
+     * @param MSP        vendor details
+     * @param String     the URI of the NOT Server
      * @param GetMethods the GetMethods used as input.
      * @return GetMethodsResponse
      * @throws MultispeakWebServiceClientException
      */
     public GetMethodsResponse getMethods(MultispeakVendor mspVendor, String uri, GetMethods getMethods)
             throws MultispeakWebServiceClientException;
-
 
 }

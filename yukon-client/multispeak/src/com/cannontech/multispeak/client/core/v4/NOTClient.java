@@ -20,7 +20,7 @@ public class NOTClient implements INOTClient {
     private WebServiceTemplate webServiceTemplate;
     @Autowired CustomWebServiceMsgCallback customWebServiceMsgCallback;
     @Autowired private MultispeakFuncs multispeakFuncs;
-    
+
     /**
      * NOTClient Constructor
      * 
@@ -30,7 +30,7 @@ public class NOTClient implements INOTClient {
     public NOTClient(@Qualifier("webServiceTemplateV4") WebServiceTemplate webServiceTemplate) {
         this.webServiceTemplate = webServiceTemplate;
     }
-    
+
     @Override
     public PingURLResponse pingURL(MultispeakVendor mspVendor, String uri, PingURL pingURL)
             throws MultispeakWebServiceClientException {
@@ -39,11 +39,11 @@ public class NOTClient implements INOTClient {
             multispeakFuncs.setMsgSender(webServiceTemplate, mspVendor);
 
             return (PingURLResponse) webServiceTemplate.marshalSendAndReceive(uri, pingURL,
-                customWebServiceMsgCallback.addRequestHeader(mspVendor, MultispeakDefines.NOT_Server_STR));
+                    customWebServiceMsgCallback.addRequestHeader(mspVendor, MultispeakDefines.NOT_Server_STR));
         } catch (WebServiceException | XmlMappingException e) {
             throw new MultispeakWebServiceClientException(e.getMessage());
         }
-    
+
     }
 
     @Override
@@ -52,13 +52,11 @@ public class NOTClient implements INOTClient {
         try {
             multispeakFuncs.setMsgSender(webServiceTemplate, mspVendor);
             return (GetMethodsResponse) webServiceTemplate.marshalSendAndReceive(uri, getMethods,
-                customWebServiceMsgCallback.addRequestHeader(mspVendor, MultispeakDefines.NOT_Server_STR));
+                    customWebServiceMsgCallback.addRequestHeader(mspVendor, MultispeakDefines.NOT_Server_STR));
         } catch (WebServiceException | XmlMappingException e) {
             throw new MultispeakWebServiceClientException(e.getMessage());
         }
-    
+
     }
-
-
 
 }
