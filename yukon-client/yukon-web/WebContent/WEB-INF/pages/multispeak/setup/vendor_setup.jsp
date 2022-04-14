@@ -175,21 +175,10 @@
                                                     <c:set var="currentInterface"
                                                         value="${mspPossibleInterfacev3}" />
                                                     <c:set var="indexValue" value="${status.index}" />
-                                                    <c:set var="mspPossibleInterfacev4"
-                                                        value="${multispeak.mspInterfaceList[status.index]}" />
                                                     <c:set var="mspPossibleInterfacev5"
                                                         value="${multispeak.mspInterfaceList[status.index+1]}" />
-                                                    <c:set var="enabledV3"
-                                                        value="${mspPossibleInterfacev3.interfaceEnabled}" />
-                                                    <c:set var="enabledV4"
-                                                        value="${mspPossibleInterfacev4.interfaceEnabled}" />
                                                     <c:set var="enabledV5"
                                                         value="${mspPossibleInterfacev5.interfaceEnabled}" />
-                                                    <c:if test="${enabledV4}">
-                                                        <c:set var="currentInterface"
-                                                            value="${mspPossibleInterfacev4}" />
-                                                        <c:set var="indexValue" value="${status.index}" />
-                                                    </c:if>
                                                     <c:if test="${enabledV5}">
                                                         <c:set var="currentInterface"
                                                             value="${mspPossibleInterfacev5}" />
