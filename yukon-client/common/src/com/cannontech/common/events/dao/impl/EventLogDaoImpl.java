@@ -7,6 +7,7 @@ import java.util.List;
 import java.util.Set;
 import java.util.concurrent.atomic.AtomicInteger;
 
+import org.apache.commons.collections4.IterableUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.logging.log4j.Logger;
 import org.joda.time.ReadableInstant;
@@ -32,6 +33,7 @@ import com.cannontech.database.TypeRowMapper;
 import com.cannontech.database.YukonJdbcTemplate;
 import com.cannontech.database.YukonResultSet;
 import com.cannontech.database.incrementer.NextValueHelper;
+import com.google.common.collect.Lists;
 import com.google.common.collect.Sets;
 
 public class EventLogDaoImpl implements EventLogDao {
@@ -214,7 +216,8 @@ public class EventLogDaoImpl implements EventLogDao {
 
             catSql.append(")");
         }*/
-        if (!Sets.newHashSet(eventCategories).containsAll(getAllCategories())) {
+        if (eventCategories != null && IterableUtils.size(eventCategories) > 0
+                && !Sets.newHashSet(eventCategories).containsAll(getAllCategories())) {
             Set<EventCategory> slimEventCategories = removeDuplicates(eventCategories);
             catSql = new SqlStatementBuilder();
             catSql.append("AND (");
