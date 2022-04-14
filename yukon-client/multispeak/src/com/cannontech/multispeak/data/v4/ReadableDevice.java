@@ -1,8 +1,5 @@
 package com.cannontech.multispeak.data.v4;
 
-import java.util.Date;
-
-import com.cannontech.common.pao.definition.model.PointIdentifier;
 import com.cannontech.msp.beans.v4.MeterReading;
 
 /**
@@ -21,29 +18,11 @@ public interface ReadableDevice {
      * @param meterNumber
      */
     public void setMeterNumber(String meterNumber);
-    /**
-     * Method to load the (MSP) MeterRead object with data collected from the database or physical reads.
-     * @param pointIdentifer
-     * @param uomID - the point's unit of measure id
-     * @param dateTime - the Date of the reading for the point.
-     * @param value - the value of the reading for the point
-     */
-    public void populate(PointIdentifier pointIdentifier, Date dateTime, Double value);
-
-    /**
-     * Method to load the (MSP) MeterRead object with the data in PointData cache..
-     * @param deviceID
-     */
-    public void populateWithPointData(int deviceID);
+    
     /**
      * Returns true if any read data has been populated
      * @return
      */
     public boolean isPopulated();
-    
-    /**
-     * Set the value of populated
-     * @param value
-     */
-    public void setPopulated(boolean value);
+
 }

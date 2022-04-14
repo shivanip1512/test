@@ -25,7 +25,6 @@ public interface MspEvent{
      */
     public boolean messageReceived(Return returnMsg);
     
-    public void eventNotification();
-    
     public boolean isPopulated();
+
 }

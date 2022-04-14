@@ -40,26 +40,15 @@ public class MeterReadEvent extends MultispeakEvent {
         this.device = device;
     }
 
-    /**
-     * Send an ReadingChangedNotification to the CB webservice containing meterReadEvents
-     * 
-     * @param odEvents
-     */
-    @Override
-    public void eventNotification() {
-
-        // TODO
-    }
-
     @Override
     public boolean messageReceived(Return returnMsg) {
-
-        //TODO
+        // TODO 
         return false;
     }
-
+    
     @Override
     public boolean isPopulated() {
         return getDevice().isPopulated();
     }
+
 }
