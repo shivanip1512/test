@@ -1,11 +1,11 @@
 package com.cannontech.message.service;
 
 import java.io.IOException;
-
 import org.apache.activemq.broker.BrokerService;
 import org.apache.activemq.broker.region.policy.PolicyEntry;
 import org.apache.activemq.broker.region.policy.PolicyMap;
 import org.apache.activemq.command.ActiveMQTempQueue;
+import org.apache.http.client.utils.URIBuilder;
 import org.apache.logging.log4j.Logger;
 
 import com.cannontech.clientutils.YukonLogManager;
@@ -52,13 +52,16 @@ public class Broker {
             broker.setUseJmx(true);
             broker.getManagementContext().setConnectorPort(JmxHelper.getApplicationJmxPort(applicationId));
 
-            broker.addConnector(listenerHost);
+            var listenerUri = new URIBuilder(listenerHost).addParameter("transformer", "jms").build();
+            broker.addConnector(listenerUri);
+
             if (!listenerHost.startsWith(anyhostConnector) && !listenerHost.startsWith(localhostConnector)) {
                 log.info("Specified listener (" + listenerHost + ") doesn't include localhost:61616, adding localhost to broker.");
                 // They didn't specify a listener for localhost:61616, so we
                 // will
                 try {
-                    broker.addConnector(localhostConnector);
+                    var localhostUri = new URIBuilder(localhostConnector).addParameter("transformer", "jms").build();
+                    broker.addConnector(localhostUri);
                 } catch (IOException e) {
                     log.error("Unable to add localhost JMS listener (localhost:61616). The specified host and port in global settings might already be bound to this address. listenerHost: (" + listenerHost + ")",
                               e);
