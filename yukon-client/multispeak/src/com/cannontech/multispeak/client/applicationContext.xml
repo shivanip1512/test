@@ -48,6 +48,8 @@
     <property name="porterConnection" ref="porterConnection"/>
   </bean>
   
+  <bean class="com.cannontech.multispeak.service.impl.v4.MultispeakMeterServiceImpl"></bean>
+  
   <bean class="com.cannontech.multispeak.service.impl.v5.MultispeakMeterServiceImpl">
     <property name="porterConnection" ref="porterConnection" />
   </bean>
@@ -155,7 +157,7 @@
   
   <bean id="mspValidationService" class="com.cannontech.multispeak.service.impl.MspValidationServiceImpl">
   </bean>
-  
+  <bean id="mspValidationServicev4" class="com.cannontech.multispeak.service.impl.v4.MspValidationServiceImpl"/>
   <bean id="mspValidationServicev5" class="com.cannontech.multispeak.service.impl.v5.MspValidationServiceImpl"/>
   
   <bean id="mspIdentifiablePaoService" class="com.cannontech.multispeak.service.impl.MspIdentifiablePaoServiceImpl">
@@ -348,6 +350,12 @@
     <bean id="cdClientV4" class="com.cannontech.multispeak.client.core.v4.CDClient" />
     <bean id="mrClientV4" class="com.cannontech.multispeak.client.core.v4.MRClient" />
     <bean id="scadaClientV4" class="com.cannontech.multispeak.client.core.v4.SCADAClient" />
+    <bean id="cbClientV4" class="com.cannontech.multispeak.client.core.v4.CBClient" />
+    <bean id="eaClientV4" class="com.cannontech.multispeak.client.core.v4.EAClient" />
+    <bean id="mdmClientV4" class="com.cannontech.multispeak.client.core.v4.MDMClient" />
+    <bean id="notClientV4" class="com.cannontech.multispeak.client.core.v4.NOTClient" />
+    <bean id="oaClientV4" class="com.cannontech.multispeak.client.core.v4.OAClient" />
+    
     <!-- Multispeak Clients Ends -->
 
 </beans>
