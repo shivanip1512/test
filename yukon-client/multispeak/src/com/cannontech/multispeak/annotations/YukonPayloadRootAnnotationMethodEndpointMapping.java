@@ -73,7 +73,15 @@ public class YukonPayloadRootAnnotationMethodEndpointMapping extends AbstractAnn
         DR_ServerSoap_v5("v5/DR_Server", "/multispeak/v5/DR_Server"),
         SCADA_ServerSoap_v5("v5/SCADA_Server", "/multispeak/v5/SCADA_Server"),
         OD_ServerSoap_v5("v5/OD_Server", "/multispeak/v5/OD_Server"),
-        MR_ServerSoap_v5("v5/MR_Server", "/multispeak/v5/MR_Server");
+        MR_ServerSoap_v5("v5/MR_Server", "/multispeak/v5/MR_Server"),
+        
+        // MSP Version 4.0 support
+        CD_ServerSoap_v4("v4/CD_Server", "/multispeak/v4/CD_Server"),
+        NOT_ServerSoap_v4("v4/NOT_Server", "/multispeak/v4/NOT_Server"),
+        DR_ServerSoap_v4("v4/DR_Server", "/multispeak/v4/DR_Server"),
+        SCADA_ServerSoap_v4("v4/SCADA_Server", "/multispeak/v4/SCADA_Server"),
+        OD_ServerSoap_v4("v4/OD_Server", "/multispeak/v4/OD_Server"),
+        MR_ServerSoap_v4("v4/MR_Server", "/multispeak/v4/MR_Server");
         
         private static final ImmutableMap<String, String> endPointMappingMap;
         private final String url;

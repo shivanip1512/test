@@ -57,7 +57,7 @@
     <!-- Filter Inputs -->
     <hr>
         <div class="filter-section">
-            <div class="vat dib"><i:inline key="yukon.common.filterBy"/></div>
+            <div class="vat dib MT10"><i:inline key="yukon.common.filterBy"/></div>
             <div class="dib">
                 <cti:url value="/dr/setup/filter" var="filterUrl"/>
                 <form:form id="setupFilter" method="get" modelAttribute="lmSetupFilter" action="${filterUrl}">
@@ -88,7 +88,7 @@
                         <tags:selectWithItems items="${gearTypes}" path="gearTypes" dataPlaceholder="${selectLbl}"
                                                                id="js-gear-types"/>
                     </div>
-                    <div class="js-program-container dib vat ${displayGearFilters} MR5">
+                    <div class="js-program-container dib vat ${displayGearFilters} MR5 MT5">
                             <form:hidden path="programIds" id="js-programIds"/>
                            <tags:pickerDialog id="programPicker"
                                                             type="programPicker"

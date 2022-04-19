@@ -302,7 +302,8 @@ public enum PaoType implements DisplayableEnum, DatabaseRepresentationSource {
     RFW201(DeviceTypes.RFW201, "RFW-201", PaoCategory.DEVICE, PaoClass.RFMESH),
     
     RFG201(DeviceTypes.RFG201, "RFG-201", PaoCategory.DEVICE, PaoClass.RFMESH),
-    RFG301(DeviceTypes.RFG301, "RFG-301", PaoCategory.DEVICE, PaoClass.RFMESH),
+    RFG301A(DeviceTypes.RFG301A, "RFG-301A", PaoCategory.DEVICE, PaoClass.RFMESH),
+    RFG301R(DeviceTypes.RFG301R, "RFG-301R", PaoCategory.DEVICE, PaoClass.RFMESH),
     
     NEST(DeviceTypes.NEST, "Nest", PaoCategory.DEVICE, PaoClass.THERMOSTAT),
     
@@ -549,7 +550,8 @@ public enum PaoType implements DisplayableEnum, DatabaseRepresentationSource {
             RFWMETER,
             RFW201,
             RFG201,
-            RFG301,
+            RFG301A,
+            RFG301R,
             SENTINEL,
             SIXNET,
             TRANSDATA_MARKV,
@@ -605,7 +607,8 @@ public enum PaoType implements DisplayableEnum, DatabaseRepresentationSource {
             RFWMETER,
             RFW201,
             RFG201,
-            RFG301,
+            RFG301A,
+            RFG301R,
             RFN_1200,
             LCR6200_RFN,
             LCR6600_RFN,
@@ -795,7 +798,8 @@ public enum PaoType implements DisplayableEnum, DatabaseRepresentationSource {
         	);
         gasMeterTypes = ImmutableSet.of(
             RFG201,
-            RFG301
+            RFG301A,
+            RFG301R
             );
 
         loadGroupSupportingRoute = ImmutableSet.of(
@@ -827,7 +831,8 @@ public enum PaoType implements DisplayableEnum, DatabaseRepresentationSource {
         batteryAnalysisTypes = ImmutableSet.of(
             RFW201,
             RFG201,
-            RFG301
+            RFG301A,
+            RFG301R
           );
         
         rfElectricTypes = Sets.difference(rfMeterTypes, Sets.union(waterMeterTypes, gasMeterTypes)).immutableCopy();

@@ -5,9 +5,11 @@ import org.springframework.validation.Errors;
 
 import com.cannontech.common.dr.setup.LMCopy;
 import com.cannontech.common.validator.SimpleValidator;
+import com.cannontech.common.validator.YukonApiValidationUtils;
 
 public class LMCopyValidator extends SimpleValidator<LMCopy> {
-    @Autowired private LMValidatorHelper lmValidatorHelper;
+    @Autowired private LMApiValidatorHelper lmApiValidatorHelper;
+    @Autowired private YukonApiValidationUtils yukonApiValidationUtils;
 
     public LMCopyValidator() {
         super(LMCopy.class);
@@ -17,9 +19,9 @@ public class LMCopyValidator extends SimpleValidator<LMCopy> {
     protected void doValidation(LMCopy lmCopy, Errors errors) {
 
         // Group Name
-        lmValidatorHelper.validateCopyPaoName(lmCopy.getName(), errors, "Name");
+        yukonApiValidationUtils.validateCopyPaoName(lmCopy.getName(), errors, "Name");
 
         // Validate routeId if present.
-        lmValidatorHelper.validateRouteId(lmCopy, errors, "RouteId");
+        lmApiValidatorHelper.validateRouteId(lmCopy, errors, "RouteId");
     }
 }

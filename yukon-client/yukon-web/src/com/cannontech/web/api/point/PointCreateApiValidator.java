@@ -1,5 +1,6 @@
 package com.cannontech.web.api.point;
 
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.validation.Errors;
 
 import com.cannontech.common.validator.SimpleValidator;
@@ -8,6 +9,8 @@ import com.cannontech.web.tools.points.model.PointBaseModel;
 import com.cannontech.web.tools.points.model.ScalarPointModel;
 
 public class PointCreateApiValidator<T extends PointBaseModel<?>> extends SimpleValidator<T> {
+
+    @Autowired private YukonApiValidationUtils yukonApiValidationUtils;
 
     @SuppressWarnings("unchecked")
     public PointCreateApiValidator() {
@@ -21,19 +24,20 @@ public class PointCreateApiValidator<T extends PointBaseModel<?>> extends Simple
     @Override
     protected void doValidation(T pointBase, Errors errors) {
         // Check if point Type is NULL
-        YukonApiValidationUtils.checkIfFieldRequired("pointType", errors, pointBase.getPointType(), "Point Type");
+        yukonApiValidationUtils.checkIfFieldRequired("pointType", errors, pointBase.getPointType(), "Point Type");
         // Check if point Name is NULL
-        YukonApiValidationUtils.checkIfFieldRequired("pointName", errors, pointBase.getPointName(), "Name");
+        yukonApiValidationUtils.checkIfFieldRequired("pointName", errors, pointBase.getPointName(), "Name");
         // Check if pointOffset is NULL
-        YukonApiValidationUtils.checkIfFieldRequired("pointOffset", errors, pointBase.getPointOffset(), "Point Offset");
+        yukonApiValidationUtils.checkIfFieldRequired("pointOffset", errors, pointBase.getPointOffset(), "Point Offset");
         // Check if paoId is NULL
-        YukonApiValidationUtils.checkIfFieldRequired("paoId", errors, pointBase.getPaoId(), "PaoId");
+        yukonApiValidationUtils.checkIfFieldRequired("paoId", errors, pointBase.getPaoId(), "PaoId");
 
         if (pointBase instanceof ScalarPointModel) {
             ScalarPointModel<?> scalarPointModel = (ScalarPointModel<?>) pointBase;
-            YukonApiValidationUtils.checkIfFieldRequired("pointUnit", errors, scalarPointModel.getPointUnit(), "Point Unit");
+            yukonApiValidationUtils.checkIfFieldRequired("pointUnit", errors, scalarPointModel.getPointUnit(), "Point Unit");
             if (!errors.hasFieldErrors("pointUnit")) {
-                YukonApiValidationUtils.checkIfFieldRequired("pointUnit.uomId", errors, scalarPointModel.getPointUnit().getUomId(), "pointUnit.uomId");
+                yukonApiValidationUtils.checkIfFieldRequired("pointUnit.uomId", errors,
+                        scalarPointModel.getPointUnit().getUomId(), "pointUnit.uomId");
             }
         }
 

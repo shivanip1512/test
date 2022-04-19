@@ -6,7 +6,9 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.validation.Errors;
 
+import com.cannontech.api.error.model.ApiErrorDetails;
 import com.cannontech.common.dr.setup.LoadGroupPoint;
+import com.cannontech.common.validator.YukonApiValidationUtils;
 import com.cannontech.core.dao.PointDao;
 import com.cannontech.core.dao.StateGroupDao;
 import com.cannontech.database.data.lite.LitePoint;
@@ -20,11 +22,10 @@ import com.cannontech.yukon.IDatabaseCache;
 
 @Service
 public class LoadGroupPointValidator extends LoadGroupSetupValidator<LoadGroupPoint> {
-    private final static String key = "yukon.web.modules.dr.setup.loadGroup.error.";
     @Autowired private IDatabaseCache serverDatabaseCache;
-    @Autowired private LMValidatorHelper lmValidatorHelper;
     @Autowired private PointDao pointDao;
     @Autowired private StateGroupDao stateGroupDao;
+    @Autowired private YukonApiValidationUtils yukonApiValidationUtils;
 
     public LoadGroupPointValidator() {
         super(LoadGroupPoint.class);
@@ -38,10 +39,10 @@ public class LoadGroupPointValidator extends LoadGroupSetupValidator<LoadGroupPo
     @Override
     protected void doValidation(LoadGroupPoint loadGroup, Errors errors) {
         // Validate Control Device (deviceUsage)
-        lmValidatorHelper.checkIfFieldRequired("deviceUsage", errors, loadGroup.getDeviceUsage(), "Control Device Point");
+        yukonApiValidationUtils.checkIfFieldRequired("deviceUsage", errors, loadGroup.getDeviceUsage(), "Control Device Point");
 
         if (!errors.hasFieldErrors("deviceUsage")) {
-            lmValidatorHelper.checkIfFieldRequired("deviceUsage.id", errors, loadGroup.getDeviceUsage().getId(),
+            yukonApiValidationUtils.checkIfFieldRequired("deviceUsage.id", errors, loadGroup.getDeviceUsage().getId(),
                     "Control Device Point");
 
             if (!errors.hasFieldErrors("deviceUsage.id")) {
@@ -56,10 +57,11 @@ public class LoadGroupPointValidator extends LoadGroupSetupValidator<LoadGroupPo
                         validatePointUsage(loadGroup, errors, liteYukonPAObject);
 
                     } else {
-                        errors.rejectValue("deviceUsage.id", key + "invalidDeviceType");
+                        errors.rejectValue("deviceUsage.id", ApiErrorDetails.INVALID_VALUE.getCodeString(),
+                                new Object[] { "MCT, RTU, CBC, or ION" }, "");
                     }
                 } else {
-                    errors.rejectValue("deviceUsage.id", key + "invalidValue");
+                    errors.rejectValue("deviceUsage.id", ApiErrorDetails.DOES_NOT_EXISTS.getCodeString(), new Object[] {""}, "");
                 }
             }
         }
@@ -67,9 +69,9 @@ public class LoadGroupPointValidator extends LoadGroupSetupValidator<LoadGroupPo
 
     private void validatePointUsage(LoadGroupPoint loadGroup, Errors errors, Optional<LiteYukonPAObject> liteYukonPAObject) {
         // Validate Control Point (pointUsage)
-        lmValidatorHelper.checkIfFieldRequired("pointUsage", errors, loadGroup.getPointUsage(), "Control Device Point");
+        yukonApiValidationUtils.checkIfFieldRequired("pointUsage", errors, loadGroup.getPointUsage(), "Control Device Point");
         if (!errors.hasFieldErrors("pointUsage")) {
-            lmValidatorHelper.checkIfFieldRequired("pointUsage.id", errors, loadGroup.getPointUsage().getId(),
+            yukonApiValidationUtils.checkIfFieldRequired("pointUsage.id", errors, loadGroup.getPointUsage().getId(),
                     "Control Device Point");
 
             if (!errors.hasFieldErrors("pointUsage.id")) {
@@ -85,13 +87,15 @@ public class LoadGroupPointValidator extends LoadGroupSetupValidator<LoadGroupPo
                         if (dbPoint.getPointStatusControl().hasControl()) {
                             validateStartControlRawState(loadGroup, errors, point);
                         } else {
-                            errors.rejectValue("pointUsage.id", key + "invalidPoint");
+                            errors.rejectValue("pointUsage.id", ApiErrorDetails.INVALID_VALUE.getCodeString(),
+                                    new Object[] { "Status point with control enabled" }, "");
                         }
                     } else {
-                        errors.rejectValue("pointUsage.id", key + "invalidPoint");
+                        errors.rejectValue("pointUsage.id", ApiErrorDetails.INVALID_VALUE.getCodeString(),
+                                new Object[] { "Status point with control enabled" }, "");
                     }
                 } else {
-                    errors.rejectValue("pointUsage.id", key + "invalidValue");
+                    errors.rejectValue("pointUsage.id",  ApiErrorDetails.INVALID_VALUE.getCodeString());
                 }
 
             }
@@ -100,11 +104,11 @@ public class LoadGroupPointValidator extends LoadGroupSetupValidator<LoadGroupPo
 
     private void validateStartControlRawState(LoadGroupPoint loadGroup, Errors errors, Optional<LitePoint> point) {
         // Validate Control Start State (startControlRawState)
-        lmValidatorHelper.checkIfFieldRequired("startControlRawState", errors, loadGroup.getStartControlRawState(),
+        yukonApiValidationUtils.checkIfFieldRequired("startControlRawState", errors, loadGroup.getStartControlRawState(),
                 "Control Start State");
 
         if (!errors.hasFieldErrors("startControlRawState")) {
-            lmValidatorHelper.checkIfFieldRequired("startControlRawState.id", errors,
+            yukonApiValidationUtils.checkIfFieldRequired("startControlRawState.id", errors,
                     loadGroup.getStartControlRawState().getId(), "Control Start State");
 
             if (!errors.hasFieldErrors("startControlRawState.id")) {
@@ -116,7 +120,7 @@ public class LoadGroupPointValidator extends LoadGroupSetupValidator<LoadGroupPo
                         .findFirst();
 
                 if (liteState.isEmpty()) {
-                    errors.rejectValue("startControlRawState.id", key + "invalidValue");
+                    errors.rejectValue("startControlRawState.id",  ApiErrorDetails.INVALID_VALUE.getCodeString());
                 }
             }
         }

@@ -196,6 +196,13 @@ public class HighChartServiceImpl implements HighChartService {
                     map.put(HighChartOptionKey.DATA_LABELS.getKey(), dataLabel);
                 }
                 
+                if (point.isOverrideStrategy()) {
+                    Map<String, Object> marker = Maps.newHashMap();
+                    marker.put("symbol", "diamond");
+                    marker.put("radius", 5);
+                    map.put(HighChartOptionKey.MARKER.getKey(), marker);
+                }
+
                 map.put(HighChartOptionKey.POINT_TOOLTIP.getKey(), point.getDescription());
                 map.put("ignore", point.isIgnore());
                 linesArray.add(map);

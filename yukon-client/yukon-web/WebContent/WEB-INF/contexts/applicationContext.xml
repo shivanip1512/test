@@ -1427,7 +1427,6 @@
     <bean class="com.cannontech.web.api.ApiRequestHelper"/>
     <bean class="com.cannontech.web.api.dr.setup.LMValidatorHelper"/>
     <bean class="com.cannontech.web.api.dr.setup.LMApiValidatorHelper"/>
-    <bean class="com.cannontech.common.validator.YukonApiValidationUtils"/>
     <bean class="com.cannontech.common.validator.YukonValidationUtilsCommon"/>
     <bean class="com.cannontech.dr.controlscenario.service.impl.ControlScenarioServiceImpl">
         <qualifier value="controlScenario" />
@@ -1561,4 +1560,5 @@
     <bean class="com.cannontech.web.api.macroRoute.service.impl.MacroRouteServiceImpl"/>
     
     <bean class="com.cannontech.web.dr.eatonCloud.service.impl.v1.EatonCloudSecretRotationServiceImplV1"/>
+    
 </beans>

@@ -13,7 +13,7 @@ Note: Look at BuiltInAttribute as that follows the same convention.
         <analog offset="515"/>
         <calcAnalog offset="0"/>
         <demandAccumulator offset="251"/>
-        <status offset="102"/>
+        <status offset="103"/>
         <systemStatus offset="2000"/>
     </highestOffsets>
     <!--- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -Analog- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -->
@@ -3101,6 +3101,11 @@ Note: Look at BuiltInAttribute as that follows the same convention.
     </point>
     <point offset="102" type="Status">
         <name>Ultra Capacitor Bad</name>
+        <archive interval="ZERO" type="ON_CHANGE"/>
+        <stategroup value="Event Status"/>
+    </point>
+    <point offset="103" type="Status">
+        <name>Blink Reported</name>
         <archive interval="ZERO" type="ON_CHANGE"/>
         <stategroup value="Event Status"/>
     </point>

@@ -60,4 +60,9 @@ public interface FeederService {
      * Returns whether the capbank is assigned to zone.
      */
     boolean isCapBanksAssignedToZone(List<Integer> availableCapBanksIds);
+    
+    /**
+     * Returns whether the feeder is assigned to a voltage point for a zone.
+     */
+    boolean isFeederAssignedToVoltagePointForZone(int feederId) throws EmptyResultDataAccessException;
 }

@@ -4,7 +4,6 @@ import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 import java.util.Map;
@@ -29,7 +28,7 @@ import com.google.common.collect.Multiset;
 
 public abstract class ServiceStatusWatchdogImpl extends WatchdogBase implements ServiceStatusWatchdog {
     Logger log = YukonLogManager.getLogger(ServiceStatusWatchdogImpl.class);
-    @Autowired private @Qualifier("main") ThreadCachingScheduledExecutorService executor;
+    @Autowired protected @Qualifier("main") ThreadCachingScheduledExecutorService executor;
 
     public static final String WARNING_TYPE = "WarningType";
     public static final String SERVICE_STATUS = "Status";

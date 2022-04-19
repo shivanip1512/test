@@ -14,11 +14,12 @@ public class YukonApiValidationHelper {
 
     @Autowired private IDatabaseCache serverDatabaseCache;
     @Autowired private YukonValidationHelperCommon yukonValidationHelperCommon;
+    @Autowired private YukonApiValidationUtils yukonApiValidationUtils;
 
     public void validatePaoName(String paoName, PaoType type, Errors errors, String fieldName, String paoId) {
         if (StringUtils.hasText(paoName)) {
             String paoNameWithoutSpace = paoName.trim();
-            YukonApiValidationUtils.checkExceedsMaxLength(errors, "deviceName", paoNameWithoutSpace, 60);
+            yukonApiValidationUtils.checkExceedsMaxLength(errors, "deviceName", paoNameWithoutSpace, 60);
             if (!PaoUtils.isValidPaoName(paoNameWithoutSpace)) {
                 errors.rejectValue("deviceName", ApiErrorDetails.ILLEGAL_CHARACTERS.getCodeString(), new Object[] { "Name" }, "");
             }

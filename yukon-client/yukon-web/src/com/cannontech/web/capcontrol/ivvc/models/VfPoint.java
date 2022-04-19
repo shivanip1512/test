@@ -4,7 +4,8 @@ import com.cannontech.common.model.Phase;
 
 public class VfPoint {
     
-	private String description;
+	private Integer pointId;
+    private String description;
 	private String zoneName;
 	private Phase phase;
 	private boolean regulator;
@@ -12,16 +13,20 @@ public class VfPoint {
     private Double y;
     private Integer seriesId;
     private boolean ignore;
+    private boolean overrideStrategy;
+    private double lowerLimit;
+    private double upperLimit;
     
     public VfPoint(Double x, Double y, Integer seriesId) {
-        this(null, null, null, false, x, y, seriesId, false);
+        this(null, null, null, null, false, x, y, seriesId, false);
     }
     
-    public VfPoint(String description, String zoneName, Phase phase, boolean regulator, Double x, Double y, boolean ignore) {
-        this(description, zoneName, phase, regulator, x, y, null, ignore);
+    public VfPoint(Integer pointId, String description, String zoneName, Phase phase, boolean regulator, Double x, Double y, boolean ignore) {
+        this(pointId, description, zoneName, phase, regulator, x, y, null, ignore);
     }
     
-    public VfPoint(String description, String zoneName, Phase phase, boolean regulator, Double x, Double y, Integer seriesId, boolean ignore) {
+    public VfPoint(Integer pointId, String description, String zoneName, Phase phase, boolean regulator, Double x, Double y, Integer seriesId, boolean ignore) {
+        this.pointId = pointId;
         this.description = description;
         this.zoneName = zoneName;
         this.phase = phase;
@@ -94,6 +99,38 @@ public class VfPoint {
 
     public void setIgnore(boolean ignore) {
         this.ignore = ignore;
+    }
+
+    public boolean isOverrideStrategy() {
+        return overrideStrategy;
+    }
+
+    public void setOverrideStrategy(boolean overrideStrategy) {
+        this.overrideStrategy = overrideStrategy;
+    }
+
+    public double getLowerLimit() {
+        return lowerLimit;
+    }
+
+    public void setLowerLimit(double lowerLimit) {
+        this.lowerLimit = lowerLimit;
+    }
+
+    public double getUpperLimit() {
+        return upperLimit;
+    }
+
+    public void setUpperLimit(double upperLimit) {
+        this.upperLimit = upperLimit;
+    }
+
+    public Integer getPointId() {
+        return pointId;
+    }
+
+    public void setPointId(Integer pointId) {
+        this.pointId = pointId;
     }
 
 }

@@ -58,6 +58,9 @@ public class PointMappingIcd {
     @JsonProperty("Next Gen Water Node")
     public List<Named<WaterNodePointDefinition>> nextGenWaterNode;
 
+    @JsonProperty("Gas Node")
+    public List<Named<ModelPointDefinition>> gasNode;
+
     @JsonProperty("Metric IDs")
     public Map<Integer, MetricDefinition> metricIds;
 }

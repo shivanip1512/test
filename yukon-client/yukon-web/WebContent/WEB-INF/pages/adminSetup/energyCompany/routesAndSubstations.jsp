@@ -48,7 +48,11 @@
 	                                    <tbody>
 	                                        <c:forEach items="${ecRoutes}" var="route" >
 	                                            <tr>
-	                                                <td><spring:escapeBody htmlEscape="true">${route.key.paoName}</spring:escapeBody></td>
+	                                                <td>
+	                                                   <span class="wrbw">
+	                                                       <spring:escapeBody htmlEscape="true">${route.key.paoName}</spring:escapeBody>
+	                                                   </span>
+	                                                </td>
 	                                                <c:if test="${not isSingleEnergyCompany}">
 	                                                    <c:if test="${not route.value.deletable}">
 	                                                        <td class="remove-column">
@@ -74,7 +78,7 @@
 	                    <div>
 	                        <c:if test="${not empty availableRoutes}">
 	                            <span class="action-area" style="float: right;">
-	                                <select name="routeId">
+	                                <select name="routeId" style="max-width: 40%">
 	                                    <c:forEach items="${availableRoutes}" var="routeCandidate">
 	                                        <option value="${routeCandidate.yukonID}"><spring:escapeBody htmlEscape="true">${routeCandidate.paoName}</spring:escapeBody></option>
 	                                    </c:forEach>

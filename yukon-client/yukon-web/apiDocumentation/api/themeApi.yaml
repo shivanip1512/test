@@ -1,0 +1,38 @@
+currentTheme:
+  get:
+      tags:
+        - Admin
+      summary: Retrieve current theme 
+      description: |-
+          Get current theme details themeId, themeName, editable and theme properties. 
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '../schemas/themeSchema.yaml#/Current-Theme-Response'
+              examples:
+                CurrentThemeResponse: 
+                  $ref: '../schemas/themeSchema.yaml#/components/examples/CurrentThemeResponse'
+
+image:
+  get:
+      tags:
+        - Common
+      summary: Retrieve image
+      description: |-
+          API to retrieve an image based on passed id.
+      parameters:
+        - name: id
+          in: path
+          schema:
+           type: integer
+          required: true
+          description: 'Unique identifier for the image.'
+      responses:
+        '200':
+          description:  |
+               OK 
+                <br><br><img alt="Example" src="/common/images/-2" />
+         

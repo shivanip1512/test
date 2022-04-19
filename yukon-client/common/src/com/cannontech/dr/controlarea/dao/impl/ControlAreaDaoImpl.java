@@ -14,12 +14,17 @@ import org.springframework.jdbc.core.RowMapper;
 
 import com.cannontech.common.pao.PaoIdentifier;
 import com.cannontech.common.pao.PaoType;
+import com.cannontech.common.util.ChunkingSqlTemplate;
 import com.cannontech.common.util.SqlStatementBuilder;
 import com.cannontech.database.TypeRowMapper;
 import com.cannontech.database.YukonJdbcTemplate;
+import com.cannontech.database.YukonResultSet;
+import com.cannontech.database.YukonRowCallbackHandler;
 import com.cannontech.dr.controlarea.dao.ControlAreaDao;
 import com.cannontech.dr.controlarea.model.ControlArea;
 import com.cannontech.dr.controlarea.model.ControlAreaTrigger;
+import com.google.common.collect.HashMultimap;
+import com.google.common.collect.Multimap;
 import com.google.common.collect.Sets;
 
 public class ControlAreaDaoImpl implements ControlAreaDao {
@@ -91,6 +96,27 @@ public class ControlAreaDaoImpl implements ControlAreaDao {
         
         List<Integer> programIdList = jdbcTemplate.query(sql, TypeRowMapper.INTEGER);
         return Sets.newHashSet(programIdList);
+    }
+    
+    
+    @Override
+    public  Multimap<Integer, Integer> getGroupIdsByControlAreaId(Set<Integer> controlAreaIds) {
+        ChunkingSqlTemplate template = new ChunkingSqlTemplate(jdbcTemplate);
+        Multimap<Integer, Integer> result = HashMultimap.create();
+        template.query(e -> {
+            SqlStatementBuilder sql = new SqlStatementBuilder();
+            sql.append("SELECT lca.DeviceId, ldg.LMGroupDeviceId");
+            sql.append("FROM LMControlAreaProgram lca");
+            sql.append("JOIN LMProgramDirectGroup ldg ON ldg.DeviceId=lca.lmProgramDeviceId");
+            sql.append("WHERE lca.DeviceId").in(controlAreaIds);
+            return sql;
+        }, controlAreaIds, new YukonRowCallbackHandler() {
+            @Override
+            public void processRow(YukonResultSet rs) throws SQLException {
+                result.put(rs.getInt("DeviceId"), rs.getInt("LMGroupDeviceId"));
+            }
+        });
+        return result;
     }
 
     private Map<Integer, List<ControlAreaTrigger>> getControlAreaTriggers(int controlAreaId) {

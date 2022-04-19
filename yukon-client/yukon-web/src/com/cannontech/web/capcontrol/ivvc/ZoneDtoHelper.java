@@ -201,6 +201,7 @@ public class ZoneDtoHelper {
         row.setId(pointId);        
         row.setName(point.getPointName());
         row.setDevice(pao.getPaoName());
+        row.setFeederId(pointToZone.getFeederId());
         row.setGraphPositionOffset(pointToZone.getGraphPositionOffset());
         row.setDistance(pointToZone.getDistance());
         row.setPhase(pointToZone.getPhase());

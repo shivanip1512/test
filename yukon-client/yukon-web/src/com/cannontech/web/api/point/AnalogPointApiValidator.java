@@ -1,5 +1,6 @@
 package com.cannontech.web.api.point;
 
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.validation.Errors;
 
 import com.cannontech.api.error.model.ApiErrorDetails;
@@ -10,6 +11,8 @@ import com.cannontech.web.tools.points.model.PointAnalog;
 import com.cannontech.web.tools.points.model.PointAnalogControl;
 
 public class AnalogPointApiValidator extends ScalarPointApiValidator<AnalogPointModel> {
+
+    @Autowired private YukonApiValidationUtils yukonApiValidationUtils;
 
     public AnalogPointApiValidator() {
         super();
@@ -37,15 +40,15 @@ public class AnalogPointApiValidator extends ScalarPointApiValidator<AnalogPoint
         if (pointAnalog != null) {
 
             if (pointAnalog.getDeadband() != null) {
-                YukonApiValidationUtils.checkRange(errors, "pointAnalog.deadband", pointAnalog.getDeadband(), -1.0, 99999999.0, false);
+                yukonApiValidationUtils.checkRange(errors, "pointAnalog.deadband", pointAnalog.getDeadband(), -1.0, 99999999.0, false);
             }
 
             if (pointAnalog.getMultiplier() != null) {
-                YukonApiValidationUtils.checkRange(errors, "pointAnalog.multiplier", pointAnalog.getMultiplier(), -99999999.0, 99999999.0, false);
+                yukonApiValidationUtils.checkRange(errors, "pointAnalog.multiplier", pointAnalog.getMultiplier(), -99999999.0, 99999999.0, false);
             }
 
             if (pointAnalog.getDataOffset() != null) {
-                YukonApiValidationUtils.checkRange(errors, "pointAnalog.dataOffset", pointAnalog.getDataOffset(), -99999999.0, 99999999.0, false);
+                yukonApiValidationUtils.checkRange(errors, "pointAnalog.dataOffset", pointAnalog.getDataOffset(), -99999999.0, 99999999.0, false);
             }
         }
     }
@@ -58,7 +61,7 @@ public class AnalogPointApiValidator extends ScalarPointApiValidator<AnalogPoint
             if (pointAnalogControl.getControlType() != null) {
 
                 if (pointAnalogControl.getControlType() == AnalogControlType.NORMAL && pointAnalogControl.getControlOffset() != null) {
-                    YukonApiValidationUtils.checkRange(errors,
+                    yukonApiValidationUtils.checkRange(errors,
                                                     "pointAnalogControl.controlOffset",
                                                     pointAnalogControl.getControlOffset(),
                                                     -99999999,

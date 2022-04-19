@@ -135,7 +135,11 @@ var yg = {
         nextRefresh: '<cti:msg2 key="yukon.web.widgets.nextRefresh"/>',
         remove: '<cti:msg2 key="yukon.web.components.ajaxConfirm.confirmRemove.ok"/>',
         confirmRemoveMessage: '<cti:msg2 key="yukon.web.components.ajaxConfirm.confirmRemove.message"/>',
-        confirmRemoveTitle: '<cti:msg2 key="yukon.web.components.ajaxConfirm.confirmRemove.title"/>'
+        confirmRemoveTitle: '<cti:msg2 key="yukon.web.components.ajaxConfirm.confirmRemove.title"/>',
+        noData : '<cti:msg2 key="yukon.common.chart.noData"/>',
+        exceedsDataLimit : '<cti:msg2 key="yukon.common.chart.exceedsDataLimit"/>',
+        pointNotFound : '<cti:msg2 key="yukon.common.pointNotFound"/>',
+        pointDataNotFound: '<cti:msg2 key="yukon.common.pointDataNotFound"/>'
     },
     
     iconSvg: {

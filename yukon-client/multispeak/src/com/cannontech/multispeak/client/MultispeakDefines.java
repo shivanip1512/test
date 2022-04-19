@@ -15,15 +15,16 @@ import org.apache.commons.lang3.tuple.Pair;
 public class MultispeakDefines {
     public static final String NAMESPACE_v3 = "http://www.multispeak.org/Version_3.0";
     public static final String NAMESPACE_v5 = "http://www.multispeak.org/V5.0";
+    public static final String NAMESPACE_v4 = "http://www.multispeak.org/Version_4.1_Release";
     public static final String COMPANY = "Company";
     public static final String APPNAME = "AppName";
     public static final String AMR_VENDOR = "Cannon";
     public static final String MSP_VENDOR = "MSP_VENDOR";
     public static final String MSP_RESULT_MSG = "MSP_RESULT_MSG";
-    
+
     public static final String MSP_COMPANY_YUKON = "Cannon";
     public static final String MSP_APPNAME_YUKON = "Yukon";
-    
+
     public static final String REGISTERED_NAME = "Eaton";
     public static final String FACILITY_NAME = "facilityName";
 
@@ -50,7 +51,7 @@ public class MultispeakDefines {
     public static final String MDM_Server_STR = "MDM_Server";
     public static final String CB_CD_STR = "CB_CD"; // Still need to use this
                                                     // legacy guy.
-    public static final String CUSTOMER_ID = "CustomerId"; 
+    public static final String CUSTOMER_ID = "CustomerId";
     public static final String ACCOUNT_ID = "AccountId";
     // TODO : TO be tested if the SERVICE_LOCATION_ID carries a valid value
     public static final String SERVICE_LOCATION_ID = "ServiceLocationId";
@@ -74,6 +75,12 @@ public class MultispeakDefines {
         MSP_SERVER_INTERFACES.add(MultispeakVendor.buildMapKey(DR_Server_STR, MultiSpeakVersion.V5));
         MSP_SERVER_INTERFACES.add(MultispeakVendor.buildMapKey(SCADA_Server_STR, MultiSpeakVersion.V5));
         MSP_SERVER_INTERFACES.add(MultispeakVendor.buildMapKey(NOT_Server_STR, MultiSpeakVersion.V5));
+        MSP_SERVER_INTERFACES.add(MultispeakVendor.buildMapKey(MR_Server_STR, MultiSpeakVersion.V4));
+        MSP_SERVER_INTERFACES.add(MultispeakVendor.buildMapKey(OD_Server_STR, MultiSpeakVersion.V4));
+        MSP_SERVER_INTERFACES.add(MultispeakVendor.buildMapKey(CD_Server_STR, MultiSpeakVersion.V4));
+        MSP_SERVER_INTERFACES.add(MultispeakVendor.buildMapKey(DR_Server_STR, MultiSpeakVersion.V4));
+        MSP_SERVER_INTERFACES.add(MultispeakVendor.buildMapKey(SCADA_Server_STR, MultiSpeakVersion.V4));
+        MSP_SERVER_INTERFACES.add(MultispeakVendor.buildMapKey(NOT_Server_STR, MultiSpeakVersion.V4));
 
         /**
          * These are the Client side interface, the ones that Yukon may call and are
@@ -81,14 +88,19 @@ public class MultispeakDefines {
          */
         MSP_CLIENT_INTERFACES = new ArrayList<>();
         MSP_CLIENT_INTERFACES.add(MultispeakVendor.buildMapKey(CB_Server_STR, MultiSpeakVersion.V3));
+        MSP_CLIENT_INTERFACES.add(MultispeakVendor.buildMapKey(CB_Server_STR, MultiSpeakVersion.V4));
         MSP_CLIENT_INTERFACES.add(MultispeakVendor.buildMapKey(CB_Server_STR, MultiSpeakVersion.V5));
         MSP_CLIENT_INTERFACES.add(MultispeakVendor.buildMapKey(OA_Server_STR, MultiSpeakVersion.V3));
+        MSP_CLIENT_INTERFACES.add(MultispeakVendor.buildMapKey(OA_Server_STR, MultiSpeakVersion.V4));
         MSP_CLIENT_INTERFACES.add(MultispeakVendor.buildMapKey(OA_Server_STR, MultiSpeakVersion.V5));
         MSP_CLIENT_INTERFACES.add(MultispeakVendor.buildMapKey(EA_Server_STR, MultiSpeakVersion.V3));
+        MSP_CLIENT_INTERFACES.add(MultispeakVendor.buildMapKey(EA_Server_STR, MultiSpeakVersion.V4));
         MSP_CLIENT_INTERFACES.add(MultispeakVendor.buildMapKey(EA_Server_STR, MultiSpeakVersion.V5));
         MSP_CLIENT_INTERFACES.add(MultispeakVendor.buildMapKey(MDM_Server_STR, MultiSpeakVersion.V3));
+        MSP_CLIENT_INTERFACES.add(MultispeakVendor.buildMapKey(MDM_Server_STR, MultiSpeakVersion.V4));
         MSP_CLIENT_INTERFACES.add(MultispeakVendor.buildMapKey(MDM_Server_STR, MultiSpeakVersion.V5));
         MSP_CLIENT_INTERFACES.add(MultispeakVendor.buildMapKey(CB_CD_STR, MultiSpeakVersion.V3));
+        MSP_CLIENT_INTERFACES.add(MultispeakVendor.buildMapKey(NOT_Server_STR, MultiSpeakVersion.V4));
         MSP_CLIENT_INTERFACES.add(MultispeakVendor.buildMapKey(NOT_Server_STR, MultiSpeakVersion.V5));
         MSP_CLIENT_INTERFACES.add(MultispeakVendor.buildMapKey(NOT_Server_DR_STR, MultiSpeakVersion.V5));
     }
@@ -104,7 +116,7 @@ public class MultispeakDefines {
     public static List<Pair<String, MultiSpeakVersion>> getPossibleInterfaces(MultispeakVendor mspVendor) {
 
         if (mspVendor != null && mspVendor.getVendorID() != null
-            && mspVendor.getVendorID() == MultispeakVendor.CANNON_MSP_VENDORID) {
+                && mspVendor.getVendorID() == MultispeakVendor.CANNON_MSP_VENDORID) {
             return MultispeakDefines.MSP_SERVER_INTERFACES;
         } else {
             return MultispeakDefines.MSP_CLIENT_INTERFACES;

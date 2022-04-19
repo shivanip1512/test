@@ -7,6 +7,7 @@ import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 import java.util.Map.Entry;
 import java.util.Set;
 import java.util.concurrent.atomic.AtomicInteger;
@@ -22,9 +23,11 @@ import org.springframework.beans.factory.annotation.Autowired;
 import com.cannontech.capcontrol.CapBankToZoneMapping;
 import com.cannontech.capcontrol.PointToZoneMapping;
 import com.cannontech.capcontrol.RegulatorPointMapping;
+import com.cannontech.capcontrol.dao.CcMonitorBankListDao;
 import com.cannontech.capcontrol.dao.StrategyDao;
 import com.cannontech.capcontrol.model.AbstractZone;
 import com.cannontech.capcontrol.model.RegulatorToZoneMapping;
+import com.cannontech.capcontrol.model.VoltageLimitedDeviceInfo;
 import com.cannontech.capcontrol.model.Zone;
 import com.cannontech.capcontrol.service.ZoneService;
 import com.cannontech.cbc.cache.CapControlCache;
@@ -86,7 +89,8 @@ public class VoltageFlatnessGraphServiceImpl implements VoltageFlatnessGraphServ
     @Autowired private YukonUserContextMessageSourceResolver messageSourceResolver;
     @Autowired private ConfigurationSource configurationSource;
     @Autowired private ZoneDtoHelper zoneDtoHelper;
-    
+    @Autowired private CcMonitorBankListDao ccMonitorBankListDao;
+
     private static final Logger log = YukonLogManager.getLogger(VoltageFlatnessGraphService.class);
     
     private int bucketResolution;
@@ -463,6 +467,7 @@ public class VoltageFlatnessGraphServiceImpl implements VoltageFlatnessGraphServ
         List<CapBankToZoneMapping> banksToZone = zoneService.getCapBankToZoneMapping(zone.getId());
         List<PointToZoneMapping> pointsToZone = zoneService.getPointToZoneMapping(zone.getId());
         double graphStartPosition = getGraphStartPositionForZone(zone);
+        List<VoltageLimitedDeviceInfo> infos = ccMonitorBankListDao.getDeviceInfoByZoneId(zone.getId());
 
         for (RegulatorToZoneMapping regulatorToZone: zone.getRegulators()) {
             //Add the regulator (three for a threePhaseZone)
@@ -495,6 +500,22 @@ public class VoltageFlatnessGraphServiceImpl implements VoltageFlatnessGraphServ
         }
         
         for (VfPoint vfPoint: points) {
+            //check for strategy override
+            Optional<VoltageLimitedDeviceInfo> voltageInfo = infos.stream()
+                    .filter(info -> info.getPointId() == vfPoint.getPointId()).findFirst();
+            if (voltageInfo.isPresent()) {
+                VoltageLimitedDeviceInfo info = voltageInfo.get();
+                if (info.isOverrideStrategy()) {
+                    vfPoint.setOverrideStrategy(info.isOverrideStrategy());
+                    vfPoint.setLowerLimit(info.getLowerLimit());
+                    vfPoint.setUpperLimit(info.getUpperLimit());
+                    //add tooltip text
+                    MessageSourceAccessor messageSourceAccessor = messageSourceResolver.getMessageSourceAccessor(userContext);
+                    String overrideStategyText = messageSourceAccessor.getMessage("yukon.web.modules.capcontrol.ivvc.voltProfileGraph.strategyOverrideText", info.getLowerLimit(), info.getUpperLimit());
+                    String description = vfPoint.getDescription() + overrideStategyText;
+                    vfPoint.setDescription(description);
+                }
+            }
             if (vfPoint.isIgnore()){
                 ignoredPoints.add(vfPoint);
             } else {
@@ -604,12 +625,14 @@ public class VoltageFlatnessGraphServiceImpl implements VoltageFlatnessGraphServ
         YukonPao regulatorPao = paoDao.getYukonPao(paoId);
         DisplayablePao displayablePao = paoLoadingService.getDisplayablePao(regulatorPao);
         PointValueQualityHolder pointValue;
+
         if (isRegulator) {
             LitePoint regulatorPoint = getRegulatorVoltagePoint(paoId);
             if (regulatorPoint == null) {
                 throw new IllegalUseOfAttribute("Voltage point not found on regulator: " + paoId);
             }
             pointValue = asyncDynamicDataSource.getPointValue(regulatorPoint.getLiteID());
+            pointId = regulatorPoint.getLiteID();
         } else {
             pointValue = asyncDynamicDataSource.getPointValue(pointId);
         }
@@ -627,7 +650,7 @@ public class VoltageFlatnessGraphServiceImpl implements VoltageFlatnessGraphServ
         String phaseString = settings.getPhaseString(phase);
         String description = getBalloonText(settings, userContext, pointValueString, phaseString, 
                                             pointName, nameString, timestamp, zoneName, distanceString, BooleanUtils.toStringTrueFalse(ignore));
-        VfPoint graphPoint = new VfPoint(description, zoneName, phase, isRegulator, xPosition, 
+        VfPoint graphPoint = new VfPoint(pointId, description, zoneName, phase, isRegulator, xPosition, 
                                          pointValue.getValue(), ignore);
         return graphPoint;
     }

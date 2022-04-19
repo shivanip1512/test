@@ -396,8 +396,11 @@ public class DeviceDataMonitorCalculationServiceImpl implements DeviceDataMonito
     }
 
     private boolean isValidDataForMonitorAlarmOnlySetting(DeviceDataMonitor monitor, PointValueQualityTagHolder pointData) {
-        if (monitor.isNotifyOnAlarmOnly()) {
-            return pointData.isTagsUnsolicited();
+        boolean isMonitorNotifyOnAlarmOnly = monitor.isNotifyOnAlarmOnly();
+        if (isMonitorNotifyOnAlarmOnly) {
+            boolean isUnsolicited = pointData.isTagsUnsolicited();
+            log.debug("Monitor notify on alarms only: {}, Unsolicited data: {}", isMonitorNotifyOnAlarmOnly, isUnsolicited);
+            return isUnsolicited;
         }
         return true;
     }
@@ -491,18 +494,24 @@ public class DeviceDataMonitorCalculationServiceImpl implements DeviceDataMonito
 
         Set<Integer> enteringViolationDeviceIds = new HashSet<>(newViolatingDeviceIds);
         enteringViolationDeviceIds.removeAll(oldViolatingDeviceIds);
+        log.debug("{} newly violating devices.", enteringViolationDeviceIds.size());
         if (monitor.isNotifyOnAlarmOnly()) {
             enteringViolationDeviceIds = enteringViolationDeviceIds.stream()
                     .filter(alarmOnlyDeviceIds::contains)
                     .collect(Collectors.toSet());
+            log.debug("Notify on alarm only: {} devices included in notification for entering violation.", 
+                   enteringViolationDeviceIds.size());
         }
         
         Set<Integer> exitingViolationDeviceIds = new HashSet<>(oldViolatingDeviceIds);
         exitingViolationDeviceIds.removeAll(newViolatingDeviceIds);
+        log.debug("{} devices exiting violation.", exitingViolationDeviceIds.size());
         if (monitor.isNotifyOnAlarmOnly()) {
             exitingViolationDeviceIds = exitingViolationDeviceIds.stream()
                     .filter(alarmOnlyDeviceIds::contains)
                     .collect(Collectors.toSet());
+            log.debug("Notify on alarm only: {} devices included in notification for exiting violation.", 
+                    exitingViolationDeviceIds.size());
         }
 
         List<SmartNotificationEvent> events = Lists.newArrayList(

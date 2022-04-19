@@ -6,7 +6,6 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
 
-import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.jdbc.core.RowCallbackHandler;
@@ -271,5 +270,13 @@ public class EcobeeZeusGroupDaoImpl implements EcobeeZeusGroupDao {
         zeusGroupInventoryMappingSql.append("UPDATE ZeusGroupInventoryMapping");
         zeusGroupInventoryMappingSql.append(updateSql);
         jdbcTemplate.update(zeusGroupInventoryMappingSql);
+    }
+
+    @Override
+    public List<Integer> getProgramIdsByGroupId(Integer lmGroupId) {
+        SqlStatementBuilder sql = new SqlStatementBuilder();
+        sql.append("SELECT ProgramID FROM LMGroupZeusMapping");
+        sql.append("WHERE YukonGroupId").eq(lmGroupId);
+        return jdbcTemplate.query(sql, TypeRowMapper.INTEGER);
     }
 }

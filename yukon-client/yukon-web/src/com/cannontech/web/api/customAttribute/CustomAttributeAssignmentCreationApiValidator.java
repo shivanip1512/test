@@ -17,6 +17,7 @@ import com.cannontech.database.data.point.PointType;
 public class CustomAttributeAssignmentCreationApiValidator extends SimpleValidator<Assignment> {
 
     @Autowired private AttributeServiceImpl attributeService;
+    @Autowired private YukonApiValidationUtils yukonApiValidationUtils;
 
     public CustomAttributeAssignmentCreationApiValidator() {
         super(Assignment.class);
@@ -24,15 +25,15 @@ public class CustomAttributeAssignmentCreationApiValidator extends SimpleValidat
 
     @Override
     protected void doValidation(Assignment assignment, Errors errors) {
-        YukonApiValidationUtils.checkIfFieldRequired("attributeId", errors, assignment.getAttributeId(), "AttributeId");
-        YukonApiValidationUtils.checkIfFieldRequired("paoType", errors, assignment.getPaoType(), "PaoType");
-        YukonApiValidationUtils.checkIfFieldRequired("offset", errors, assignment.getOffset(), "Offset");
-        YukonApiValidationUtils.checkIfFieldRequired("pointType", errors, assignment.getPointType(), "PointType");
+        yukonApiValidationUtils.checkIfFieldRequired("attributeId", errors, assignment.getAttributeId(), "AttributeId");
+        yukonApiValidationUtils.checkIfFieldRequired("paoType", errors, assignment.getPaoType(), "PaoType");
+        yukonApiValidationUtils.checkIfFieldRequired("offset", errors, assignment.getOffset(), "Offset");
+        yukonApiValidationUtils.checkIfFieldRequired("pointType", errors, assignment.getPointType(), "PointType");
 
-        YukonApiValidationUtils.checkIsFieldValueGreaterThenTargetValueInt("attributeId", assignment.getAttributeId(), 0, errors);
+        yukonApiValidationUtils.checkIsFieldValueGreaterThenTargetValueInt("attributeId", assignment.getAttributeId(), 0, errors);
 
         int min = assignment.getPointType() == PointType.CalcAnalog || assignment.getPointType() == PointType.CalcStatus ? 0 : 1;
-        YukonApiValidationUtils.checkRange(errors, "offset", assignment.getOffset(), min, 99999999, true);
+        yukonApiValidationUtils.checkRange(errors, "offset", assignment.getOffset(), min, 99999999, true);
         if (!attributeService.isValidAttributeId(assignment.getAttributeId())) {
             errors.rejectValue("attributeId", ApiErrorDetails.DOES_NOT_EXISTS.getCodeString(), new Object[] { assignment.getAttributeId() }, "");
         }

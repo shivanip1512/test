@@ -29,6 +29,7 @@ public class YukonLoggersApiValidator extends SimpleValidator<YukonLogger> {
 
     @Autowired private YukonUserContextMessageSourceResolver messageResolver;
     @Autowired private YukonLoggerService loggerService;
+    @Autowired private YukonApiValidationUtils yukonApiValidationUtils;
 
     private MessageSourceAccessor accessor;
 
@@ -64,7 +65,7 @@ public class YukonLoggersApiValidator extends SimpleValidator<YukonLogger> {
             validateLoggerName(errors, logger, accessor.getMessage(basekey + "loggerName"), loggerId, loggers);
             if (!errors.hasFieldErrors("loggerName")) {
                 // validate logger type
-                YukonApiValidationUtils.checkIfFieldRequired("loggerType", errors, logger.getLoggerType(),
+                yukonApiValidationUtils.checkIfFieldRequired("loggerType", errors, logger.getLoggerType(),
                         accessor.getMessage(basekey + "loggerType"));
                 if (!errors.hasFieldErrors("loggerType")) {
                     if (logger.getLoggerType() == LoggerType.SYSTEM_LOGGER) {
@@ -91,7 +92,7 @@ public class YukonLoggersApiValidator extends SimpleValidator<YukonLogger> {
                 }
             }
             // validate logger level
-            YukonApiValidationUtils.checkIfFieldRequired("level", errors, logger.getLevel(),
+            yukonApiValidationUtils.checkIfFieldRequired("level", errors, logger.getLevel(),
                     accessor.getMessage(basekey + "loggerLevel"));
             // validate expiration date
             if (logger.getExpirationDate() != null) {
@@ -99,7 +100,7 @@ public class YukonLoggersApiValidator extends SimpleValidator<YukonLogger> {
             }
             // validate notes
             if (logger.getNotes() != null) {
-                YukonApiValidationUtils.checkExceedsMaxLength(errors, "notes", logger.getNotes(),
+                yukonApiValidationUtils.checkExceedsMaxLength(errors, "notes", logger.getNotes(),
                         255);
             }
         }
@@ -107,12 +108,12 @@ public class YukonLoggersApiValidator extends SimpleValidator<YukonLogger> {
     }
 
     public void validateLoggerName(Errors errors, YukonLogger logger, String i18Text, Integer loggerId, List<YukonLogger> loggers) {
-        YukonApiValidationUtils.checkIfFieldRequired("loggerName", errors, logger.getLoggerName(), i18Text);
+        yukonApiValidationUtils.checkIfFieldRequired("loggerName", errors, logger.getLoggerName(), i18Text);
         if (!errors.hasFieldErrors("loggerName")) {
-            YukonApiValidationUtils.checkExceedsMaxLength(errors, "loggerName", logger.getLoggerName(), 200);
+            yukonApiValidationUtils.checkExceedsMaxLength(errors, "loggerName", logger.getLoggerName(), 200);
         }
         if (!errors.hasFieldErrors("loggerName")) {
-            YukonApiValidationUtils.checkWhitelistedCharacter(errors, "loggerName", logger.getLoggerName(), i18Text);
+            yukonApiValidationUtils.checkWhitelistedCharacter(errors, "loggerName", logger.getLoggerName(), i18Text);
         }
         if (!errors.hasFieldErrors("loggerName")) {
             if (logger.getLoggerName().startsWith(".") || logger.getLoggerName().endsWith(".")) {

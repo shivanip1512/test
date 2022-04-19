@@ -32,7 +32,7 @@
             legendOptionsJSON = {
                 labelFormatter : function(point) {
                     var legendValueText = '<span class="js-legend-value dn">' + this.name + '</span>', 
-                        spanText = '<span class="badge" style="margin:2px;width:60px;color:white;background-color:' + this.color + '">'
+                        spanText = '<span class="badge" style="margin:2px;padding:4px;width:60px;color:white;background-color:' + this.color + '">'
                                     + this.x + '</span> ';
                     return legendValueText + spanText + this.name + ': ' + this.displayPercentage;
                 },
