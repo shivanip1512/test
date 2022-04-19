@@ -23,10 +23,12 @@ import com.cannontech.msp.beans.v4.GetReadingsByDate;
 import com.cannontech.msp.beans.v4.GetReadingsByDateResponse;
 import com.cannontech.msp.beans.v4.GetReadingsByMeterID;
 import com.cannontech.msp.beans.v4.GetReadingsByMeterIDResponse;
+import com.cannontech.msp.beans.v4.IsAMRMeterResponse;
 import com.cannontech.msp.beans.v4.MeterReading;
 import com.cannontech.msp.beans.v4.ObjectFactory;
 import com.cannontech.msp.beans.v4.PingURL;
 import com.cannontech.msp.beans.v4.PingURLResponse;
+import com.cannontech.msp.beans.v4.IsAMRMeter;
 import com.cannontech.multispeak.client.MultispeakDefines;
 import com.cannontech.multispeak.exceptions.MultispeakWebServiceException;
 import com.cannontech.multispeak.service.v4.MR_Server;
@@ -52,7 +54,8 @@ public class MRServiceEndPoint {
     }
 
     @PayloadRoot(localPart = "GetMethods", namespace = MR_V4_ENDPOINT_NAMESPACE)
-    public @ResponsePayload GetMethodsResponse getMethods(@RequestPayload GetMethods getMethods) throws MultispeakWebServiceException {
+    public @ResponsePayload GetMethodsResponse getMethods(@RequestPayload GetMethods getMethods)
+            throws MultispeakWebServiceException {
         GetMethodsResponse response = objectFactory.createGetMethodsResponse();
 
         List<String> methods = mr_server.getMethods();
@@ -62,10 +65,9 @@ public class MRServiceEndPoint {
         response.setGetMethodsResult(arrayOfString);
         return response;
     }
-    
+
     @PayloadRoot(localPart = "GetReadingsByDate", namespace = MR_V4_ENDPOINT_NAMESPACE)
-    public @ResponsePayload
-    GetReadingsByDateResponse getReadingsByDate(@RequestPayload GetReadingsByDate getReadingsByDate)
+    public @ResponsePayload GetReadingsByDateResponse getReadingsByDate(@RequestPayload GetReadingsByDate getReadingsByDate)
             throws MultispeakWebServiceException {
         GetReadingsByDateResponse response = objectFactory.createGetReadingsByDateResponse();
 
@@ -77,8 +79,8 @@ public class MRServiceEndPoint {
         }
 
         List<MeterReading> meterReading = mr_server.getReadingsByDate(startDate.toGregorianCalendar(),
-                                                                 endDate.toGregorianCalendar(),
-                                                                 lastReceived);
+                endDate.toGregorianCalendar(),
+                lastReceived);
 
         
         ArrayOfMeterReading1 arrayOfMeterReading = objectFactory.createArrayOfMeterReading1();
@@ -86,7 +88,7 @@ public class MRServiceEndPoint {
         response.setGetReadingsByDateResult(arrayOfMeterReading);
         return response;
     }
-    
+
     @PayloadRoot(localPart = "GetReadingsByMeterID", namespace = MultispeakDefines.NAMESPACE_v4)
     public @ResponsePayload GetReadingsByMeterIDResponse getReadingsByMeterID(
             @RequestPayload GetReadingsByMeterID getReadingsByMeterID)
@@ -95,7 +97,7 @@ public class MRServiceEndPoint {
 
         XMLGregorianCalendar startDate = getReadingsByMeterID.getStartDate();
         XMLGregorianCalendar endDate = getReadingsByMeterID.getEndDate();
-        
+
         if (getReadingsByMeterID.getMeterID() == null) {
             throw new MultispeakWebServiceException("Missing MeterID or MeterNo in request");
         }
@@ -104,7 +106,7 @@ public class MRServiceEndPoint {
         if (startDate == null || endDate == null) {
             throw new MultispeakWebServiceException("Invalid date/time.");
         }
-        
+
         List<MeterReading> meterReading = mr_server.getReadingsByMeterID(meterNo,
                 startDate.toGregorianCalendar(),
                 endDate.toGregorianCalendar());
@@ -137,11 +139,23 @@ public class MRServiceEndPoint {
         if (getLatestReadingByMeterId.getMeterID() == null) {
             throw new MultispeakWebServiceException("Missing MeterID or MeterNo in request");
         }
-        
+
         String meterNo = getLatestReadingByMeterId.getMeterID().getMeterNo();
         MeterReading meterReading = mr_server.getLatestReadingByMeterID(meterNo);
         getLatestReadingByMeterIDResponse.setGetLatestReadingByMeterIDResult(meterReading);
 
         return getLatestReadingByMeterIDResponse;
     }
+
+    @PayloadRoot(localPart = "IsAMRMeter", namespace = MultispeakDefines.NAMESPACE_v4)
+    public @ResponsePayload IsAMRMeterResponse isAMRMeter(@RequestPayload IsAMRMeter isAMRMeter)
+            throws MultispeakWebServiceException {
+        IsAMRMeterResponse isAMRMeterResponse = objectFactory.createIsAMRMeterResponse();
+
+        String meterNo = isAMRMeter.getMeterID().getMeterNo();
+        boolean response = mr_server.isAMRMeter(meterNo);
+        isAMRMeterResponse.setIsAMRMeterResult(response);
+        return isAMRMeterResponse;
+    }
+
 }

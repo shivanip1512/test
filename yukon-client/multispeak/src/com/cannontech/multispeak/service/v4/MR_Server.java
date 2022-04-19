@@ -65,5 +65,15 @@ public interface MR_Server {
      * @throws MultispeakWebServiceException the multispeak web service exception
      */
     public MeterReading getLatestReadingByMeterID(String meterNo) throws MultispeakWebServiceException;
+    
+    
+    /**
+     * is AMR Meter.
+     * @param meterNo the meter no
+     * @return true, if is AMR meter
+     * @throws MultispeakWebServiceException the multispeak web service
+     *             exception
+     */
+    public boolean isAMRMeter(String meterNo) throws MultispeakWebServiceException;
 
 }
