@@ -14,7 +14,6 @@ import org.w3c.dom.Node;
 
 import com.cannontech.clientutils.YukonLogManager;
 import com.cannontech.multispeak.client.Credentials;
-
 import com.cannontech.multispeak.client.MultispeakVendor;
 import com.cannontech.multispeak.client.v4.MultispeakFuncs;
 
@@ -51,5 +50,4 @@ public class CustomWebServiceMsgCallback {
             }
         };
     }
-
 }

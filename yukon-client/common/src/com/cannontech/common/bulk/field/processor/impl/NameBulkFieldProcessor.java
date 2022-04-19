@@ -19,10 +19,17 @@ public class NameBulkFieldProcessor extends BulkYukonDeviceFieldProcessor {
             deviceDao.changeName(device, value.getName());
         }
         catch (DataAccessException e) {
-            throw new ProcessingException("Could not change name of device with id: " + device.getDeviceId(),
-                                          "changeDeviceName",
-                                          e,
-                                          device.getDeviceId());
+            String errorMessage;
+            String key;
+            SimpleDevice existingDevice = deviceDao.findYukonDeviceObjectByName(value.getName());
+            if (existingDevice != null) {
+                key = "changeDeviceNameAlreadyExists";
+                errorMessage = "Could not change name of device with id: " + device.getDeviceId() + ". Another device with this name already exists";
+            } else {
+                key = "changeDeviceName";
+                errorMessage = "Could not change name of device with id: " + device.getDeviceId();
+            }
+            throw new ProcessingException(errorMessage, key, e, device.getDeviceId());
         }
     }
     
