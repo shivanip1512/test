@@ -2,6 +2,9 @@ package com.cannontech.multispeak.service.v4;
 
 import java.util.Calendar;
 import java.util.List;
+
+import com.cannontech.msp.beans.v4.ErrorObject;
+import com.cannontech.msp.beans.v4.MeterID;
 import com.cannontech.msp.beans.v4.MeterReading;
 import com.cannontech.multispeak.exceptions.MultispeakWebServiceException;
 
@@ -75,5 +78,14 @@ public interface MR_Server {
      *             exception
      */
     public boolean isAMRMeter(String meterNo) throws MultispeakWebServiceException;
+
+    /**
+     * initiate Usage Monitoring.
+     * 
+     * @param meterIDs the meter IDs
+     * @return the error object[]
+     * @throws MultispeakWebServiceException the multispeak web service exception
+     */
+    public List<ErrorObject> initiateUsageMonitoring(List<MeterID> meterIDs) throws MultispeakWebServiceException;
 
 }

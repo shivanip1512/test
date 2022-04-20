@@ -4,6 +4,7 @@ import java.util.List;
 
 import javax.xml.datatype.XMLGregorianCalendar;
 
+import org.apache.commons.collections4.ListUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.ws.server.endpoint.annotation.Endpoint;
@@ -11,8 +12,11 @@ import org.springframework.ws.server.endpoint.annotation.PayloadRoot;
 import org.springframework.ws.server.endpoint.annotation.RequestPayload;
 import org.springframework.ws.server.endpoint.annotation.ResponsePayload;
 
+import com.cannontech.msp.beans.v4.ArrayOfErrorObject;
+import com.cannontech.msp.beans.v4.ArrayOfMeterID1;
 import com.cannontech.msp.beans.v4.ArrayOfMeterReading1;
 import com.cannontech.msp.beans.v4.ArrayOfString;
+import com.cannontech.msp.beans.v4.ErrorObject;
 import com.cannontech.msp.beans.v4.GetLatestReadingByMeterID;
 import com.cannontech.msp.beans.v4.GetLatestReadingByMeterIDResponse;
 import com.cannontech.msp.beans.v4.GetLatestReadings;
@@ -23,12 +27,15 @@ import com.cannontech.msp.beans.v4.GetReadingsByDate;
 import com.cannontech.msp.beans.v4.GetReadingsByDateResponse;
 import com.cannontech.msp.beans.v4.GetReadingsByMeterID;
 import com.cannontech.msp.beans.v4.GetReadingsByMeterIDResponse;
+import com.cannontech.msp.beans.v4.InitiateUsageMonitoring;
+import com.cannontech.msp.beans.v4.InitiateUsageMonitoringResponse;
+import com.cannontech.msp.beans.v4.IsAMRMeter;
 import com.cannontech.msp.beans.v4.IsAMRMeterResponse;
+import com.cannontech.msp.beans.v4.MeterID;
 import com.cannontech.msp.beans.v4.MeterReading;
 import com.cannontech.msp.beans.v4.ObjectFactory;
 import com.cannontech.msp.beans.v4.PingURL;
 import com.cannontech.msp.beans.v4.PingURLResponse;
-import com.cannontech.msp.beans.v4.IsAMRMeter;
 import com.cannontech.multispeak.client.MultispeakDefines;
 import com.cannontech.multispeak.exceptions.MultispeakWebServiceException;
 import com.cannontech.multispeak.service.v4.MR_Server;
@@ -156,6 +163,23 @@ public class MRServiceEndPoint {
         boolean response = mr_server.isAMRMeter(meterNo);
         isAMRMeterResponse.setIsAMRMeterResult(response);
         return isAMRMeterResponse;
+    }
+
+    @PayloadRoot(localPart = "InitiateUsageMonitoring", namespace = MultispeakDefines.NAMESPACE_v4)
+    public @ResponsePayload InitiateUsageMonitoringResponse initiateUsageMonitoring(
+            @RequestPayload InitiateUsageMonitoring initiateUsageMonitoring) throws MultispeakWebServiceException {
+        InitiateUsageMonitoringResponse response = objectFactory.createInitiateUsageMonitoringResponse();
+
+        ArrayOfMeterID1 ArrOfMeterIDs = initiateUsageMonitoring.getMeterIDs();
+        List<MeterID> meterIDs = (null != ArrOfMeterIDs.getMeterID()) ? ArrOfMeterIDs.getMeterID() : null;
+        List<ErrorObject> errorObjects = mr_server.initiateUsageMonitoring(ListUtils.emptyIfNull(meterIDs));
+
+        if (errorObjects != null && !errorObjects.isEmpty()) {
+            ArrayOfErrorObject arrayOfErrorObject = objectFactory.createArrayOfErrorObject();
+            arrayOfErrorObject.getErrorObject().addAll(errorObjects);
+            response.setInitiateUsageMonitoringResult(arrayOfErrorObject);
+        }
+        return response;
     }
 
 }

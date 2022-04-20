@@ -1,10 +1,16 @@
 package com.cannontech.multispeak.dao.impl.v4;
 
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 
+import org.apache.logging.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 
+import com.cannontech.clientutils.YukonLogManager;
+import com.cannontech.database.data.point.PointTypes;
+import com.cannontech.database.db.point.SystemLog;
+import com.cannontech.message.dispatch.message.SystemLogHelper;
 import com.cannontech.msp.beans.v4.ErrorObject;
 import com.cannontech.msp.beans.v4.GetMethods;
 import com.cannontech.msp.beans.v4.GetMethodsResponse;
@@ -24,11 +30,14 @@ import com.cannontech.multispeak.client.core.v4.OAClient;
 import com.cannontech.multispeak.client.core.v4.ODClient;
 import com.cannontech.multispeak.client.core.v4.SCADAClient;
 import com.cannontech.multispeak.client.v4.MultispeakFuncs;
+import com.cannontech.multispeak.dao.impl.v4.MspObjectDaoImpl;
 import com.cannontech.multispeak.dao.v4.MspObjectDao;
 import com.cannontech.multispeak.exceptions.MultispeakWebServiceClientException;
 import com.google.common.collect.Lists;
 
 public class MspObjectDaoImpl implements MspObjectDao {
+    private static final Logger log = YukonLogManager.getLogger(MspObjectDaoImpl.class);
+
     @Autowired private ObjectFactory objectFactory;
     @Autowired private MultispeakFuncs multispeakFuncs;
 
@@ -42,6 +51,14 @@ public class MspObjectDaoImpl implements MspObjectDao {
     @Autowired private OAClient oaClient;
     @Autowired private MDMClient mdmClient;
     @Autowired private NOTClient notClient;
+    private SystemLogHelper _systemLogHelper = null;
+
+    private SystemLogHelper getSystemLogHelper() {
+        if (_systemLogHelper == null) {
+            _systemLogHelper = new SystemLogHelper(PointTypes.SYS_PID_MULTISPEAK);
+        }
+        return _systemLogHelper;
+    }
 
     @Override
     public ErrorObject[] toErrorObject(List<ErrorObject> errorObjects) {
@@ -143,4 +160,40 @@ public class MspObjectDaoImpl implements MspObjectDao {
 
         return methods;
     }
+
+    @Override
+    public void logMSPActivity(String method, String description, String userName) {
+        getSystemLogHelper().log(PointTypes.SYS_PID_MULTISPEAK, method, description, userName,
+                SystemLog.TYPE_MULTISPEAK);
+        log.debug("MSP Activity (Method: " + method + "-" + description + " )");
+    }
+
+    @Override
+    public ErrorObject getNotFoundErrorObject(String objectID, String notFoundObjectType, String nounType,
+            String method, String userName, String exceptionMessage) {
+        ErrorObject errorObject = getErrorObject(objectID, notFoundObjectType + ": " + objectID + " - " + exceptionMessage + ".",
+                nounType,
+                method, userName);
+        return errorObject;
+    }
+
+    @Override
+    public ErrorObject getErrorObject(String objectID, String errorMessage, String nounType, String method,
+            String userName) {
+        ErrorObject errorObject = new ErrorObject();
+
+        errorObject.setEventTime(MultispeakFuncs.toXMLGregorianCalendar(new Date()));
+
+        errorObject.setObjectID(objectID);
+        errorObject.setErrorString(errorMessage);
+        errorObject.setNounType(nounType);
+
+        String description = "ErrorObject: (ObjId:" + errorObject.getObjectID() + " Noun:" + errorObject.getNounType()
+                + " Message:"
+                + errorObject.getErrorString() + ")";
+        logMSPActivity(method, description, userName);
+
+        return errorObject;
+    }
+
 }

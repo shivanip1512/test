@@ -21,6 +21,8 @@ import com.cannontech.core.dynamic.AsyncDynamicDataSource;
 import com.cannontech.core.dynamic.PointValueQualityHolder;
 import com.cannontech.core.dynamic.exception.DynamicDataAccessException;
 import com.cannontech.database.data.lite.LitePoint;
+import com.cannontech.msp.beans.v4.ErrorObject;
+import com.cannontech.msp.beans.v4.MeterID;
 import com.cannontech.msp.beans.v4.MeterReading;
 import com.cannontech.multispeak.client.MultispeakDefines;
 import com.cannontech.multispeak.client.MultispeakVendor;
@@ -212,6 +214,16 @@ public class MR_ServerImpl implements MR_Server {
         }
         log.debug("IsAMRMeter " + isAmrMeter + " for " + meterNo + ".");
         return isAmrMeter;
+    }
+    
+    @Override
+    public List<ErrorObject> initiateUsageMonitoring(List<MeterID> meterIDs) throws MultispeakWebServiceException {
+        init();
+        MultispeakVendor vendor = multispeakFuncs.getMultispeakVendorFromHeader();
+        multispeakEventLogService.methodInvoked("InitiateUsageMonitoring", vendor.getCompanyName());
+        
+        List<ErrorObject> errorObject = multispeakMeterService.initiateUsageMonitoring(vendor, meterIDs);
+        return errorObject;
     }
 
 }
