@@ -403,7 +403,7 @@ public abstract class RuntimeCalcSchedulerService {
         if (firstStatus != null) {
             var firstStatusInstant = new Instant(firstStatus.getPointDataTimeStamp().getTime());
             // Get the entry preceding the range, if the start of the range is defined
-            if (logRange.getMin() != null && logRange.getMin().isBefore(firstStatusInstant)) {
+            if (logRange.getMin() != null) {
                 List<PointValueHolder> previousStatus = getPrecedingArchivedValue(firstStatus);
                 log.trace("Previous Status :{}", previousStatus);
                 relayStatuses = Iterables.concat(previousStatus, relayStatuses);
