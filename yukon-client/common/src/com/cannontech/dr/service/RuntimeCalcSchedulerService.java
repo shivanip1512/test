@@ -401,7 +401,6 @@ public abstract class RuntimeCalcSchedulerService {
         PointValueHolder firstStatus = Iterables.getFirst(relayStatuses, null);
         log.trace("First Status :{}", firstStatus);
         if (firstStatus != null) {
-            var firstStatusInstant = new Instant(firstStatus.getPointDataTimeStamp().getTime());
             // Get the entry preceding the range, if the start of the range is defined
             if (logRange.getMin() != null) {
                 List<PointValueHolder> previousStatus = getPrecedingArchivedValue(firstStatus);
