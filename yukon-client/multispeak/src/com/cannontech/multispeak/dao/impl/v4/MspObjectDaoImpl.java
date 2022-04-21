@@ -196,4 +196,11 @@ public class MspObjectDaoImpl implements MspObjectDao {
         return errorObject;
     }
 
+    @Override
+    public ErrorObject getNotFoundErrorObject(String objectID, String notFoundObjectType, String nounType,
+            String method, String userName) {
+        return getNotFoundErrorObject(objectID, notFoundObjectType, nounType, method, userName,
+                "Was NOT found in Yukon");
+    }
+
 }

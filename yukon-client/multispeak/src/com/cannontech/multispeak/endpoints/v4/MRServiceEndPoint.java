@@ -12,6 +12,8 @@ import org.springframework.ws.server.endpoint.annotation.PayloadRoot;
 import org.springframework.ws.server.endpoint.annotation.RequestPayload;
 import org.springframework.ws.server.endpoint.annotation.ResponsePayload;
 
+import com.cannontech.msp.beans.v4.CancelUsageMonitoring;
+import com.cannontech.msp.beans.v4.CancelUsageMonitoringResponse;
 import com.cannontech.msp.beans.v4.ArrayOfErrorObject;
 import com.cannontech.msp.beans.v4.ArrayOfMeterID1;
 import com.cannontech.msp.beans.v4.ArrayOfMeterReading1;
@@ -180,6 +182,23 @@ public class MRServiceEndPoint {
             response.setInitiateUsageMonitoringResult(arrayOfErrorObject);
         }
         return response;
+    }
+
+    @PayloadRoot(localPart = "CancelUsageMonitoring", namespace = MultispeakDefines.NAMESPACE_v4)
+    public @ResponsePayload CancelUsageMonitoringResponse cancelUsageMonitoring(
+            @RequestPayload CancelUsageMonitoring cancelUsageMonitoring)
+            throws MultispeakWebServiceException {
+        CancelUsageMonitoringResponse cancelUsageMonitoringResponse = objectFactory.createCancelUsageMonitoringResponse();
+
+        ArrayOfMeterID1 ArrOfMeterIDs = cancelUsageMonitoring.getMeterIDs();
+        List<MeterID> meterIDs = null != ArrOfMeterIDs.getMeterID() ? ArrOfMeterIDs.getMeterID() : null;
+
+        List<ErrorObject> errorObjects = mr_server.cancelUsageMonitoring(ListUtils.emptyIfNull(meterIDs));
+
+        ArrayOfErrorObject arrayOfErrorObject = objectFactory.createArrayOfErrorObject();
+        arrayOfErrorObject.getErrorObject().addAll(errorObjects);
+        cancelUsageMonitoringResponse.setCancelUsageMonitoringResult(arrayOfErrorObject);
+        return cancelUsageMonitoringResponse;
     }
 
 }

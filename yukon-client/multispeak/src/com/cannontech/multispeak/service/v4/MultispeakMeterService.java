@@ -23,4 +23,9 @@ public interface MultispeakMeterService {
      * Add MeterNos to SystemGroupEnum.USAGEMONITORING Device Group.
      */
     public List<ErrorObject> initiateUsageMonitoring(MultispeakVendor mspVendor, List<MeterID> meterIDs);
+    
+    /**
+     * Remove MeterNos from SystemGroupEnum.USAGEMONITORING Device Group.
+     */
+    public List<ErrorObject> cancelUsageMonitoring(MultispeakVendor mspVendor, List<MeterID> meterIDs);
 }

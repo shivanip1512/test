@@ -55,7 +55,9 @@ public class MR_ServerImpl implements MR_Server {
             "GetReadingsByMeterID",
             "GetLatestReadings",
             "GetLatestReadingByMeterID",
-            "IsAMRMeter" };
+            "IsAMRMeter",
+            "InitiateUsageMonitoring",
+            "CancelUsageMonitoring"};
 
     private void init() throws MultispeakWebServiceException {
         multispeakFuncs.init();
@@ -215,14 +217,23 @@ public class MR_ServerImpl implements MR_Server {
         log.debug("IsAMRMeter " + isAmrMeter + " for " + meterNo + ".");
         return isAmrMeter;
     }
-    
+
     @Override
     public List<ErrorObject> initiateUsageMonitoring(List<MeterID> meterIDs) throws MultispeakWebServiceException {
         init();
         MultispeakVendor vendor = multispeakFuncs.getMultispeakVendorFromHeader();
         multispeakEventLogService.methodInvoked("InitiateUsageMonitoring", vendor.getCompanyName());
-        
+
         List<ErrorObject> errorObject = multispeakMeterService.initiateUsageMonitoring(vendor, meterIDs);
+        return errorObject;
+    }
+
+    @Override
+    public List<ErrorObject> cancelUsageMonitoring(List<MeterID> meterIDs) throws MultispeakWebServiceException {
+        init();
+        MultispeakVendor vendor = multispeakFuncs.getMultispeakVendorFromHeader();
+        multispeakEventLogService.methodInvoked("CancelUsageMonitoring", vendor.getCompanyName());
+        List<ErrorObject> errorObject = multispeakMeterService.cancelUsageMonitoring(vendor, meterIDs);
         return errorObject;
     }
 

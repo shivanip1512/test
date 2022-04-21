@@ -180,5 +180,52 @@ public class MultispeakMeterServiceImpl extends MultispeakMeterServiceBase imple
         }
         return errorObjects;
     }
+    
+    @Override
+    public List<ErrorObject> cancelUsageMonitoring(MultispeakVendor mspVendor, List<MeterID> meterIDs) {
+        
+        List<String> mspMeters = meterIDs.stream().map(meterID -> meterID.getMeterNo()).collect(Collectors.toList());
+        
+        return removeMetersFromGroup(mspMeters, SystemGroupEnum.USAGE_MONITORING, "CancelUsageMonitoring", mspVendor);
+    }
+    
+    /**
+     * Helper method to remove meterNos from systemGroup
+     */
+    private List<ErrorObject> removeMetersFromGroup(List<String> meterNos, SystemGroupEnum systemGroup, String mspMethod,
+            MultispeakVendor mspVendor) {
+        return removeMetersFromGroupAndEnable(meterNos, systemGroup, mspMethod, mspVendor, false);
+    }
+    
+    /**
+     * Helper method to remove meterNos from systemGroup
+     * @param disable - when true, the meter will be enabled. Else no change.
+     */
+    private List<ErrorObject> removeMetersFromGroupAndEnable(List<String> meterNos, SystemGroupEnum systemGroup, String mspMethod,
+            MultispeakVendor mspVendor, boolean enable) {
+
+        ArrayList<ErrorObject> errorObjects = new ArrayList<>();
+
+        for (String meterNumber : meterNos) {
+            try {
+                YukonMeter meter = meterDao.getForMeterNumber(meterNumber);
+                if (enable && meter.isDisabled()) {
+                    deviceDao.enableDevice(meter);
+                }
+                removeFromGroup(meter, systemGroup, mspMethod, mspVendor);
+            } catch (NotFoundException e) {
+                multispeakEventLogService.meterNotFound(meterNumber, mspMethod, mspVendor.getCompanyName());
+                ErrorObject err = mspObjectDao.getNotFoundErrorObject(meterNumber,
+                                                                      "MeterNumber",
+                                                                      "MeterID",
+                                                                      "removeFromGroup",
+                                                                      mspVendor.getCompanyName());
+                errorObjects.add(err);
+                log.error(e);
+            }
+        }
+
+        return errorObjects;
+    }
 
 }

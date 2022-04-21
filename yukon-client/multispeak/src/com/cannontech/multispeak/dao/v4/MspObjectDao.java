@@ -26,6 +26,18 @@ public interface MspObjectDao {
             String userName);
     
     /**
+     * Creates a new (MSP) ErrorObject
+     * 
+     * @param objectID The Multispeak objectID
+     * @param nounType The object type
+     * @param notFoundObjectType The objectID type
+     * @param exceptionMessage An alternative message to return.
+     * @return
+     */
+    public ErrorObject getNotFoundErrorObject(String objectID, String notFoundObjectType, String nounType,
+            String method, String userName);
+    
+    /**
      * Creates an entry in the System log and prints a debug statement.
      * TODO All of this logging (SystemLog) can be removed following completion of MultiSpeak EventLogs.
      * 
