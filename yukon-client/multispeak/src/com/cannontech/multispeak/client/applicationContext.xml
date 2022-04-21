@@ -147,6 +147,7 @@
   </bean>
   <bean class="com.cannontech.multispeak.dao.impl.ScadaAnalogProcessingServiceImpl"/>
   <bean class="com.cannontech.multispeak.dao.impl.v5.ScadaAnalogProcessingServiceImpl"/>
+  <bean class="com.cannontech.multispeak.dao.impl.v4.ScadaAnalogProcessingServiceImpl"/>
     
   <bean id="mspObjectDao" class="com.cannontech.multispeak.dao.impl.MspObjectDaoImpl">
   </bean>

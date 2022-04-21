@@ -5,6 +5,7 @@ import java.util.EnumMap;
 import java.util.EnumSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 import org.apache.commons.lang3.StringUtils;
 import org.apache.logging.log4j.Logger;
@@ -14,18 +15,31 @@ import com.cannontech.amr.meter.dao.impl.MeterRowMapper;
 import com.cannontech.amr.meter.model.YukonMeter;
 import com.cannontech.clientutils.YukonLogManager;
 import com.cannontech.common.pao.PaoIdentifier;
+import com.cannontech.common.pao.PaoType;
 import com.cannontech.common.pao.attribute.model.BuiltInAttribute;
+import com.cannontech.common.pao.attribute.service.AttributeService;
+import com.cannontech.common.pao.definition.dao.PaoDefinitionDao;
+import com.cannontech.common.pao.definition.model.PaoTag;
 import com.cannontech.common.util.CtiUtilities;
 import com.cannontech.common.util.Range;
 import com.cannontech.common.util.SqlStatementBuilder;
+import com.cannontech.core.authorization.service.PaoAuthorizationService;
+import com.cannontech.core.authorization.support.Permission;
+import com.cannontech.core.dao.PaoDao;
 import com.cannontech.core.dao.RawPointHistoryDao;
 import com.cannontech.core.dao.RawPointHistoryDao.Order;
 import com.cannontech.core.dynamic.PointValueQualityHolder;
 import com.cannontech.database.YukonJdbcTemplate;
+import com.cannontech.database.data.lite.LitePoint;
+import com.cannontech.database.data.lite.LiteYukonPAObject;
+import com.cannontech.database.data.lite.LiteYukonUser;
 import com.cannontech.msp.beans.v4.MeterReading;
+import com.cannontech.msp.beans.v4.ScadaAnalog;
 import com.cannontech.multispeak.dao.v4.MeterReadingProcessingService;
 import com.cannontech.multispeak.dao.v4.MspRawPointHistoryDao;
 import com.cannontech.multispeak.data.v4.MspMeterReadingReturnList;
+import com.cannontech.multispeak.data.v4.MspScadaAnalogReturnList;
+import com.google.common.collect.BiMap;
 import com.google.common.collect.ListMultimap;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
@@ -33,7 +47,12 @@ import com.google.common.collect.Maps;
 public class MspRawPointHistoryDaoImpl implements MspRawPointHistoryDao {
     private final Logger log = YukonLogManager.getLogger(MspRawPointHistoryDaoImpl.class);
 
+    @Autowired private AttributeService attributeService;
+    @Autowired private PaoDao paoDao;
+    @Autowired private PaoDefinitionDao paoDefinitionDao;
+    @Autowired private PaoAuthorizationService paoAuthorizationService;
     @Autowired private MeterReadingProcessingService meterReadingProcessingService;
+    @Autowired private ScadaAnalogProcessingServiceImpl scadaAnalogProcessingServiceImpl;
     @Autowired private MeterRowMapper meterRowMapper;
     @Autowired private RawPointHistoryDao rawPointHistoryDao;
     @Autowired private YukonJdbcTemplate yukonJdbcTemplate;
@@ -68,9 +87,15 @@ public class MspRawPointHistoryDaoImpl implements MspRawPointHistoryDao {
         // loop over meters, results will be returned in whatever order getPaoList returns the meters in
         for (YukonMeter meter : meters) {
             for (BuiltInAttribute attribute : attributesToLoad) {
-                List<PointValueQualityHolder> rawValues = resultsPerAttribute.get(attribute).removeAll(meter.getPaoIdentifier()); // remove  to keep our
-                                                                                                                                  // memory consumption
-                                                                                                                                 // somewhat in check
+                List<PointValueQualityHolder> rawValues = resultsPerAttribute.get(attribute).removeAll(meter.getPaoIdentifier()); // remove
+                                                                                                                                  // to
+                                                                                                                                  // keep
+                                                                                                                                  // our
+                                                                                                                                  // memory
+                                                                                                                                  // consumption
+                                                                                                                                  // somewhat
+                                                                                                                                  // in
+                                                                                                                                  // check
 
                 for (PointValueQualityHolder pointValueQualityHolder : rawValues) {
                     MeterReading meterReading = meterReadingProcessingService.createMeterReading(meter);
@@ -89,47 +114,90 @@ public class MspRawPointHistoryDaoImpl implements MspRawPointHistoryDao {
 
         return mspMeterReadingReturn;
 
-    } 
-    
+    }
+
     @Override
-    public MspMeterReadingReturnList retrieveLatestMeterReading(ReadBy readBy, String readByValue, String lastReceived, int maxRecords) {
+    public MspScadaAnalogReturnList retrieveLatestScadaAnalogs(LiteYukonUser user) {
+
+        final Date timerStart = new Date();
+
+        List<LiteYukonPAObject> programs = getAuthorizedProgramsList(user);
+        EnumSet<BuiltInAttribute> attributesToLoad = EnumSet.of(BuiltInAttribute.CONNECTED_LOAD,
+                BuiltInAttribute.DIVERSIFIED_LOAD,
+                BuiltInAttribute.MAX_LOAD_REDUCTION,
+                BuiltInAttribute.AVAILABLE_LOAD_REDUCTION);
+        List<ScadaAnalog> scadaAnalogs = Lists.newArrayListWithExpectedSize(4 * programs.size());
+
+        // loop over programs, results will be returned in whatever order getProgramList returns the programs in
+        for (BuiltInAttribute attribute : attributesToLoad) {
+            BiMap<PaoIdentifier, LitePoint> programToPoint = attributeService.getPoints(programs, attribute);
+            Map<PaoIdentifier, PointValueQualityHolder> resultsForAttribute = rawPointHistoryDao.getSingleAttributeData(programs,
+                    attribute, false, null);
+            for (LiteYukonPAObject program : programs) {
+                LitePoint litePoint = programToPoint.get(program.getPaoIdentifier());
+                PointValueQualityHolder pointValueQualityHolder = resultsForAttribute.remove(program.getPaoIdentifier());
+
+                if (pointValueQualityHolder != null) {
+                    ScadaAnalog scadaAnalog = scadaAnalogProcessingServiceImpl.createScadaAnalog(program, litePoint,
+                            pointValueQualityHolder);
+                    scadaAnalogs.add(scadaAnalog);
+                }
+            }
+        }
+
+        MspScadaAnalogReturnList mspScadaAnalogs = new MspScadaAnalogReturnList();
+        mspScadaAnalogs.setScadaAnalogs(scadaAnalogs);
+        mspScadaAnalogs.setReturnFields(scadaAnalogs, scadaAnalogs.size() + 1);
+
+        log.debug("Retrieved " + scadaAnalogs.size() + " Latest ScadaAnalogs. ("
+                + (new Date().getTime() - timerStart.getTime()) * .001 + " secs)");
+
+        return mspScadaAnalogs;
+    }
+
+    @Override
+    public MspMeterReadingReturnList retrieveLatestMeterReading(ReadBy readBy, String readByValue, String lastReceived,
+            int maxRecords) {
 
         List<YukonMeter> meters = getPaoList(readBy, readByValue, lastReceived, maxRecords);
-        
+
         final Date timerStart = new Date();
-        
-        EnumMap<BuiltInAttribute, Map<PaoIdentifier, PointValueQualityHolder>> resultsPerAttribute = Maps.newEnumMap(BuiltInAttribute.class);
+
+        EnumMap<BuiltInAttribute, Map<PaoIdentifier, PointValueQualityHolder>> resultsPerAttribute = Maps
+                .newEnumMap(BuiltInAttribute.class);
 
         int estimatedSize = 0;
 
         EnumSet<BuiltInAttribute> attributesToLoad = EnumSet.of(BuiltInAttribute.USAGE, BuiltInAttribute.PEAK_DEMAND);
         // load up results for each attribute
         for (BuiltInAttribute attribute : attributesToLoad) {
-            Map<PaoIdentifier, PointValueQualityHolder> resultsForAttribute = rawPointHistoryDao.getSingleAttributeData(meters, attribute, false, null);
+            Map<PaoIdentifier, PointValueQualityHolder> resultsForAttribute = rawPointHistoryDao.getSingleAttributeData(meters,
+                    attribute, false, null);
             resultsPerAttribute.put(attribute, resultsForAttribute);
             estimatedSize += resultsForAttribute.size();
         }
 
         List<MeterReading> meterReadings = Lists.newArrayListWithExpectedSize(estimatedSize);
         // loop over meters, results will be returned in whatever order getPaoList returns the meters in
-        // attempt to group all attributes for one meter together, because we know we only have one pointValue per meter per attribute. 
+        // attempt to group all attributes for one meter together, because we know we only have one pointValue per meter per
+        // attribute.
         for (YukonMeter meter : meters) {
 
             MeterReading meterReading = meterReadingProcessingService.createMeterReading(meter);
-            boolean hasReadings = false; 
-            
-            for (BuiltInAttribute attribute : attributesToLoad) { 
-                
-                PointValueQualityHolder pointValueQualityHolder = 
-                    resultsPerAttribute.get(attribute).remove(meter.getPaoIdentifier()); // remove to keep our memory consumption somewhat in check
-                
+            boolean hasReadings = false;
+
+            for (BuiltInAttribute attribute : attributesToLoad) {
+
+                PointValueQualityHolder pointValueQualityHolder = resultsPerAttribute.get(attribute)
+                        .remove(meter.getPaoIdentifier()); // remove to keep our memory consumption somewhat in check
+
                 if (pointValueQualityHolder != null) {
                     meterReadingProcessingService.updateMeterReading(meterReading, attribute, pointValueQualityHolder);
                     hasReadings = true;
                 }
             }
-            
-            if (hasReadings) {  // only add to the return list if we have actual readings.
+
+            if (hasReadings) { // only add to the return list if we have actual readings.
                 meterReadings.add(meterReading);
             }
         }
@@ -137,9 +205,10 @@ public class MspRawPointHistoryDaoImpl implements MspRawPointHistoryDao {
         MspMeterReadingReturnList mspMeterReadingReturn = new MspMeterReadingReturnList();
         mspMeterReadingReturn.setMeterReading(meterReadings);
         mspMeterReadingReturn.setReturnFields(meters, maxRecords);
-        
-        log.debug("Retrieved " + meterReadings.size() + " Latest MeterReads. (" + (new Date().getTime() - timerStart.getTime())*.001 + " secs)");
-        
+
+        log.debug("Retrieved " + meterReadings.size() + " Latest MeterReads. ("
+                + (new Date().getTime() - timerStart.getTime()) * .001 + " secs)");
+
         return mspMeterReadingReturn;
     }
 
@@ -172,5 +241,15 @@ public class MspRawPointHistoryDaoImpl implements MspRawPointHistoryDao {
         log.debug("Retrieved " + result.size() + " paos to process. (" + (new Date().getTime() - timerStart.getTime()) * .001
                 + " secs)");
         return result;
+    }
+
+    private List<LiteYukonPAObject> getAuthorizedProgramsList(LiteYukonUser user) {
+        Set<PaoType> paoTypes = paoDefinitionDao.getPaoTypesThatSupportTag(PaoTag.LM_PROGRAM);
+        List<LiteYukonPAObject> programs = Lists.newArrayList();
+        for (PaoType paoType : paoTypes) {
+            List<LiteYukonPAObject> toFilter = paoDao.getLiteYukonPAObjectByType(paoType);
+            programs.addAll(paoAuthorizationService.filterAuthorized(user, toFilter, Permission.LM_VISIBLE));
+        }
+        return programs;
     }
 }
