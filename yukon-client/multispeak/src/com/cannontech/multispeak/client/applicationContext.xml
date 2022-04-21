@@ -106,7 +106,9 @@
       </list>
     </property>
   </bean>
-  
+
+  <bean id="multispeakLMServicev4" class="com.cannontech.multispeak.service.impl.v4.MultispeakLMServiceImpl"/>
+
   <bean id="multispeakLMServicev5" class="com.cannontech.multispeak.service.impl.v5.MultispeakLMServiceImpl">
    <property name="strategiesToExcludeInReport">
       <list>

@@ -1,6 +1,5 @@
 package com.cannontech.multispeak.endpoints.v4;
 
-import java.util.ArrayList;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -16,9 +15,12 @@ import com.cannontech.msp.beans.v4.GetMethodsResponse;
 import com.cannontech.msp.beans.v4.ObjectFactory;
 import com.cannontech.msp.beans.v4.PingURL;
 import com.cannontech.msp.beans.v4.PingURLResponse;
+import com.cannontech.msp.beans.v4.SCADAAnalogChangedNotification;
+import com.cannontech.msp.beans.v4.SCADAAnalogChangedNotificationResponse;
+import com.cannontech.msp.beans.v4.ScadaAnalog;
 import com.cannontech.multispeak.client.MultispeakDefines;
+import com.cannontech.multispeak.client.v4.MultispeakFuncs;
 import com.cannontech.multispeak.exceptions.MultispeakWebServiceException;
-import com.cannontech.multispeak.service.v4.CD_Server;
 import com.cannontech.multispeak.service.v4.DR_Server;
 
 /*
@@ -30,6 +32,8 @@ import com.cannontech.multispeak.service.v4.DR_Server;
 public class DRServiceEndpoint {
 
     @Autowired private ObjectFactory objectFactory;
+    @Autowired private MultispeakFuncs multispeakFuncs;
+
     @Autowired private DR_Server dr_server;
     private final String DR_V4_ENDPOINT_NAMESPACE = MultispeakDefines.NAMESPACE_v4;
 
@@ -49,6 +53,20 @@ public class DRServiceEndpoint {
         ArrayOfString arrayOfString = objectFactory.createArrayOfString();
         arrayOfString.getString().addAll(methods);
         response.setGetMethodsResult(arrayOfString);
+        return response;
+    }
+
+    @PayloadRoot(localPart = "SCADAAnalogChangedNotification", namespace = MultispeakDefines.NAMESPACE_v4)
+    public @ResponsePayload SCADAAnalogChangedNotificationResponse SCADAAnalogChangedNotification(
+            @RequestPayload SCADAAnalogChangedNotification SCADAAnalogChangedNotification)
+            throws MultispeakWebServiceException {
+        SCADAAnalogChangedNotificationResponse response = objectFactory.createSCADAAnalogChangedNotificationResponse();
+        List<ScadaAnalog> scadaAnalogs = (null != SCADAAnalogChangedNotification
+                .getScadaAnalogs()) ? SCADAAnalogChangedNotification.getScadaAnalogs().getScadaAnalog() : null;
+
+        response.setSCADAAnalogChangedNotificationResult(
+                multispeakFuncs.toArrayOfErrorObject(dr_server.SCADAAnalogChangedNotification(scadaAnalogs)));
+
         return response;
     }
 }
