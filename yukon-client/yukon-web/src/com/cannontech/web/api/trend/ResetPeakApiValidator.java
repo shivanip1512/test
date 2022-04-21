@@ -28,11 +28,12 @@ public class ResetPeakApiValidator extends SimpleValidator<ResetPeakModel> {
 
     @PostConstruct
     public void init() {
-        accessor = messageResolver.getMessageSourceAccessor(YukonUserContext.system);
+        
     }
 
     @Override
-    protected void doValidation(ResetPeakModel resetPeakModel, Errors errors) {
+    protected void doValidation(ResetPeakModel resetPeakModel, Errors errors, YukonUserContext yukonUserContext) {
+        accessor = messageResolver.getMessageSourceAccessor(yukonUserContext);
         String dateI18nText = accessor.getMessage("yukon.common.date");
         if (!errors.hasFieldErrors("startDate")) {
             yukonApiValidationUtils.checkIsBlank(errors, "startDate", Objects.toString(resetPeakModel.getStartDate(), null),
