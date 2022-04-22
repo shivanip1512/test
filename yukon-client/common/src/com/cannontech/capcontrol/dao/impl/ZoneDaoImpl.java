@@ -127,7 +127,7 @@ public class ZoneDaoImpl implements ZoneDao {
             PointToZoneMapping pointToZone = new PointToZoneMapping();
             pointToZone.setPointId(rs.getInt("PointId"));
             pointToZone.setZoneId(rs.getInt("ZoneId"));
-            pointToZone.setFeederId(rs.getInt("FeederId"));
+            pointToZone.setFeederId(rs.getNullableInt("FeederId"));
             pointToZone.setGraphPositionOffset(rs.getDouble("GraphPositionOffset"));
             pointToZone.setDistance(rs.getDouble("Distance"));
             pointToZone.setPhase(rs.getEnum("Phase", Phase.class));
