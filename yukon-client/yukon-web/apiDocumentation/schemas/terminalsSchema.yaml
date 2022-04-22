@@ -1,0 +1,711 @@
+PAGING_TAP_TERMINAL:
+  title: PAGING_TAP_TERMINAL
+  required:
+    - name
+    - type
+    - pageNumber
+    - commChannel
+  type: object
+  properties:
+    name:
+      type: string
+      maxLength: 60
+      description: 'Name for the terminal.'
+    type:
+      type: string
+      description: 'Type of terminal.'
+      enum:
+        - ROUTE_TAP_PAGING
+        - ROUTE_SNPP_TERMINAL
+        - ROUTE_TNPP_TERMINAL
+        - ROUTE_WCTP_TERMINAL
+    enabled:
+      type: boolean
+      default: true
+      description: 'Flag to enable terminal.'
+    password:
+      type: string
+      maxLength: 20
+      description: 'Password of terminal.'
+    commChannel:
+      type: array
+      items:
+        required:
+          - id
+        type: object
+        properties:
+          id:
+            type: integer
+            description: 'Id of Communication Channel.'
+    pageNumber:
+      type: string
+      maxLength: 20
+      description: 'Pager number of terminal.'
+
+
+SNPP_TERMINAL:
+  title: SNPP_TERMINAL
+  required:
+    - name
+    - type
+    - pageNumber
+    - commChannel
+  type: object
+  properties:
+    name:
+      type: string
+      maxLength: 60
+      description: 'Name for the terminal.'
+    type:
+      type: string
+      description: 'Type of terminal.'
+      enum:
+        - ROUTE_TAP_PAGING
+        - ROUTE_SNPP_TERMINAL
+        - ROUTE_TNPP_TERMINAL
+        - ROUTE_WCTP_TERMINAL
+    enabled:
+      type: boolean
+      default: true
+      description: 'Flag to enable terminal.'
+    pageNumber:
+      type: string
+      maxLength: 20
+      description: 'Pager number of terminal.'
+    commChannel:
+      type: array
+      items:
+        required:
+          - id
+        type: object
+        properties:
+          id:
+            type: integer
+            description: 'Id of Communication Channel.'
+    login:
+      type: string
+      maxLength: 64
+      description: 'Login of terminal.'
+    password:
+      type: string
+      maxLength: 20
+      description: 'Password of terminal.'
+
+TNPP_TERMINAL:
+  title: TNPP_TERMINAL
+  required:
+    - name
+    - type
+    - password
+    - commChannel
+    - originAddress
+    - destinationAddress
+    - inertia
+    - protocol
+    - dataFormat
+    - identifierFormat
+    - pagerId
+    - channel
+    - functionCode
+    - zone
+  type: object
+  properties:
+    name:
+      type: string
+      maxLength: 60
+      description: 'Name of TNPP terminal.'
+    type:
+      type: string
+      description: 'Type of terminal.'
+      enum:
+        - ROUTE_TAP_PAGING
+        - ROUTE_SNPP_TERMINAL
+        - ROUTE_TNPP_TERMINAL
+        - ROUTE_WCTP_TERMINAL
+    enabled:
+      type: boolean
+      default: true
+      description: 'Flag to enable terminal.'
+    password:
+      type: string
+      maxLength: 20
+      description: 'Password of terminal.'
+    commChannel:
+      type: array
+      items:
+        required:
+          - id
+        type: object
+        properties:
+          id:
+            type: integer
+            description: 'Id of Communication Channel.'
+    originAddress:
+      type: integer
+      minimum: 0
+      maximum: 65535
+      description: 'Origin Address of TNPP terminal.'
+    destinationAddress:
+      type: integer
+      minimum: 0
+      maximum: 65535
+      description: 'Destination Address of TNPP terminal.'
+    inertia:
+      type: integer
+      minimum: -999999999
+      maximum: 999999999
+      description: 'Inertia of TNPP terminal.'
+    protocol:
+      type: string
+      description: 'Protocol used for TNPP terminal.'
+      enum:
+        - FLEX
+        - Golay_Sequential_Code
+        - POCSAG_512_baud
+        - POCSAG_1200_baud
+        - POCSAG_2400_baud
+    dataFormat:
+      type: string
+      description: 'Data format for TNPP terminal.'
+      enum:
+        - ALPHANUMERIC_DISPLAY
+        - BEEP_ONLY
+        - NUMERIC_DISPLAY
+    identifierFormat:
+      type: string
+      description: 'Identifier format for TNPP terminal.'
+      enum:
+        - CAP_PAGE
+        - ID_PAGE
+    pagerId:
+      type: integer
+      minimum: -9999999
+      maximum: 99999999
+      description: 'Pager Id of TNPP terminal. This field is depends on identifierFormat. For Cap Page range : -9999999 to 99999999. For Id Page , it can be string with range: Maximum 10 characters allowed.'
+    channel:
+      type: integer
+      minimum: 0
+      maximum: 63
+      description: 'Channel of TNPP terminal.'
+    functionCode:
+      type: integer
+      minimum: 0
+      maximum: 63
+      description: 'Function code of TNPP terminal.'
+    zone:
+      type: integer
+      minimum: 0
+      maximum: 63
+      description: 'Zone of TNPP terminal.'
+
+WCTP_TERMINAL:
+  title: WCTP_TERMINAL
+  required:
+    - name
+    - type
+    - pageNumber
+    - commChannel
+    - sender
+    - securityCode
+  type: object
+  properties:
+    name:
+      type: string
+      maxLength: 60
+      description: 'Name of WCTP terminal.'
+    type:
+      type: string
+      description: 'Type of terminal.'
+      enum:
+        - ROUTE_TAP_PAGING
+        - ROUTE_SNPP_TERMINAL
+        - ROUTE_TNPP_TERMINAL
+        - ROUTE_WCTP_TERMINAL
+    enabled:
+      type: boolean
+      default: true
+      description: 'Flag to enable terminal.'
+    password:
+      type: string
+      maxLength: 20
+      description: 'Password of terminal.'
+    commChannel:
+      type: array
+      items:
+        required:
+          - id
+        type: object
+        properties:
+          id:
+            type: integer
+            description: 'Id of Communication Channel.'
+    pageNumber:
+      type: string
+      maxLength: 20
+      description: 'Pager number of terminal.'
+    sender:
+      type: string
+      maxLength: 64
+      description: 'Sender email address of terminal.'
+    securityCode:
+      type: string
+      maxLength: 64
+      description: 'Security code for WCTP terminal.'
+
+
+PAGING_TAP_TERMINAL Response Schema:
+  title: PAGING_TAP_TERMINAL
+  type: object
+  properties:
+    id:
+      type: integer
+      description: 'Unique identifier of the terminal.'
+    name:
+      type: string
+      maxLength: 60
+      description: 'Name for the terminal.'
+    type:
+      type: string
+      description: 'Type of terminal.'
+      enum:
+        - ROUTE_TAP_PAGING
+        - ROUTE_SNPP_TERMINAL
+        - ROUTE_TNPP_TERMINAL
+        - ROUTE_WCTP_TERMINAL
+    enabled:
+      type: boolean
+      default: true
+      description: 'Flag to enable terminal.'
+    pageNumber:
+      type: string
+      maxLength: 20
+      description: 'Pager number of terminal.'
+    password:
+      type: string
+      maxLength: 20
+      description: 'Password of terminal.'
+    commChannel:
+      type: array
+      items:
+        required:
+          - id
+        type: object
+        properties:
+          id:
+            type: integer
+            description: 'Id of Communication Channel.'
+          name:
+            type: string
+            maxLength: 60
+            description: 'Name of Communication Channel.'
+
+SNPP_TERMINAL Response Schema:
+  title: SNPP_TERMINAL
+  type: object
+  properties:
+    id:
+      type: integer
+      description: 'Unique identifier of the terminal.'
+    name:
+      type: string
+      maxLength: 60
+      description: 'Name for the terminal.'
+    type:
+      type: string
+      description: 'Type of terminal.'
+      enum:
+        - ROUTE_TAP_PAGING
+        - ROUTE_SNPP_TERMINAL
+        - ROUTE_TNPP_TERMINAL
+        - ROUTE_WCTP_TERMINAL
+    enabled:
+      type: boolean
+      default: true
+      description: 'Flag to enable terminal.'
+    pageNumber:
+      type: string
+      maxLength: 20
+      description: 'Pager number of terminal.'
+    commChannel:
+      type: array
+      items:
+        required:
+          - id
+        type: object
+        properties:
+          id:
+            type: integer
+            description: 'Id of Communication Channel.'
+          name:
+            type: string
+            maxLength: 60
+            description: 'Name of Communication Channel.'
+    login:
+      type: string
+      maxLength: 64
+      description: 'Login of terminal.'
+    password:
+      type: string
+      maxLength: 20
+      description: 'Password of terminal.'
+
+TNPP_TERMINAL Response Schema:
+  title: TNPP_TERMINAL
+  type: object
+  properties:
+    id:
+      type: integer
+      description: 'Unique identifier of the terminal.'
+    name:
+      type: string
+      maxLength: 60
+      description: 'Name for the terminal.'
+    type:
+      type: string
+      description: 'Type of terminal.'
+      enum:
+        - ROUTE_TAP_PAGING
+        - ROUTE_SNPP_TERMINAL
+        - ROUTE_TNPP_TERMINAL
+        - ROUTE_WCTP_TERMINAL
+    enabled:
+      type: boolean
+      default: true
+      description: 'Flag to enable terminal.'
+    password:
+      type: string
+      maxLength: 20
+      description: 'Password of terminal.'
+    commChannel:
+      type: array
+      items:
+        required:
+          - id
+        type: object
+        properties:
+          id:
+            type: integer
+            description: 'Id of Communication Channel.'
+          name:
+            type: string
+            maxLength: 60
+            description: 'Name of Communication Channel.'
+    originAddress:
+      type: integer
+      minimum: 0
+      maximum: 65535
+      description: 'Origin Address of TNPP terminal.'
+    destinationAddress:
+      type: integer
+      minimum: 0
+      maximum: 65535
+      description: 'Destination Address of TNPP terminal.'
+    inertia:
+      type: integer
+      minimum: -999999999
+      maximum: 999999999
+      description: 'Inertia of TNPP terminal.'
+    protocol:
+      type: string
+      description: 'Protocol used for TNPP terminal.'
+      enum:
+        - FLEX
+        - Golay_Sequential_Code
+        - POCSAG_512_baud
+        - POCSAG_1200_baud
+        - POCSAG_2400_baud
+    dataFormat:
+      type: string
+      description: 'Data format for TNPP terminal.'
+      enum:
+        - ALPHANUMERIC_DISPLAY
+        - BEEP_ONLY
+        - NUMERIC_DISPLAY
+    identifierFormat:
+      type: string
+      description: 'Identifier format for TNPP terminal.'
+      enum:
+        - CAP_PAGE
+        - ID_PAGE
+    pagerId:
+      type: integer
+      minimum: -9999999
+      maximum: 99999999
+      description: 'Pager Id of TNPP terminal. This field is depends on identifierFormat. For Cap Page range : -9999999 to 99999999. For Id Page , it can be string with range: Maximum 10 characters allowed.'
+    channel:
+      type: integer
+      minimum: 0
+      maximum: 63
+      description: 'Channel of TNPP terminal.'
+    functionCode:
+      type: integer
+      minimum: 0
+      maximum: 63
+      description: 'Function code of TNPP terminal.'
+    zone:
+      type: integer
+      minimum: 0
+      maximum: 63
+      description: 'Zone of TNPP terminal.'
+
+
+WCTP_TERMINAL Response Schema:
+  title: WCTP_TERMINAL
+  type: object
+  properties:
+    id:
+      type: integer
+      description: 'Unique identifier of the terminal.'
+    name:
+      type: string
+      maxLength: 60
+      description: 'Name for the terminal.'
+    type:
+      type: string
+      description: 'Type of terminal.'
+      enum:
+        - ROUTE_TAP_PAGING
+        - ROUTE_SNPP_TERMINAL
+        - ROUTE_TNPP_TERMINAL
+        - ROUTE_WCTP_TERMINAL
+    enabled:
+      type: boolean
+      default: true
+      description: 'Flag to enable terminal.'
+    password:
+      type: string
+      maxLength: 20
+      description: 'Password of terminal.'
+    commChannel:
+      type: array
+      items:
+        required:
+          - id
+        type: object
+        properties:
+          id:
+            type: integer
+            description: 'Id of Communication Channel.'
+          name:
+            type: string
+            maxLength: 60
+            description: 'Name of Communication Channel.'
+    pageNumber:
+      type: string
+      maxLength: 20
+      description: 'Pager number of terminal.'
+    sender:
+      type: string
+      maxLength: 64
+      description: 'Sender email address of terminal.'
+    securityCode:
+      type: string
+      maxLength: 64
+      description: 'Security code for WCTP terminal.'
+
+TERMINAL_COPY:
+  title: TERMINAL_COPY
+  required:
+    - name
+    - copyPoints
+  type: object
+  properties:
+    name:
+      type: string
+      maxLength: 60
+      description: 'Name for the load program.'
+    copyPoints:
+      type: boolean
+      description: 'Flag to copy points of terminal.'
+
+id:
+  required:
+    - id
+  type: object
+  properties:
+    id:
+      type: integer
+      description: 'Unique identifier of the Terminal.'
+
+components:
+  examples:
+    Paging Tap Terminal Request: 
+      value:
+        type: ROUTE_TAP_PAGING
+        name: Test Paging Tap Terminal
+        enabled: true
+        password: PasswordForTerminal
+        pageNumber: 77676
+        commChannel:
+          id: 1234
+
+    Paging Tap Terminal Response: 
+      value:
+        id: 151
+        type: ROUTE_TAP_PAGING
+        name: Test Paging Tap Terminal
+        enabled: true
+        password: PasswordForTerminal
+        pageNumber: 77676
+        commChannel:
+          id: 1234
+          name: Test Comm channel
+
+    SNPP Terminal Request: 
+      value:
+        type: ROUTE_SNPP_TERMINAL
+        name: Test SNPP Terminal
+        enabled: true
+        pageNumber: 77676
+        commChannel:
+          id: 1234
+        login: Login for SNPP
+        password: PasswordForTerminal
+
+    SNPP Terminal Response: 
+      value:
+        id: 151
+        type: ROUTE_SNPP_TERMINAL
+        name: Test SNPP Terminal
+        enabled: true
+        pageNumber: 77676
+        commChannel:
+          id: 1234
+          name: Test Comm channel
+        login: Login for SNPP
+        password: PasswordForTerminal
+
+    TNPP Terminal Request: 
+      value:
+        type: ROUTE_TNPP_TERMINAL
+        name: Test TNPP Terminal
+        enabled: true
+        password: PasswordForTerminal
+        commChannel:
+          id: 1234
+        originAddress: 2345
+        destinationAddress: 3455
+        inertia: 564
+        protocol: FLEX
+        dataFormat: BEEP_ONLY
+        identifierFormat: CAP_PAGE
+        pagerId: 1234
+        channel: 4
+        functionCode: 5
+        zone: 6
+
+    TNPP Terminal Response: 
+      value:
+        id: 151
+        type: ROUTE_TNPP_TERMINAL
+        name: Test TNPP Terminal
+        enabled: true
+        password: PasswordForTerminal
+        commChannel:
+          id: 1234
+          name: Test Comm channel
+        originAddress: 2345
+        destinationAddress: 3455
+        inertia: 564
+        protocol: FLEX
+        dataFormat: BEEP_ONLY
+        identifierFormat: CAP_PAGE
+        pagerId: 1234
+        channel: 4
+        functionCode: 5
+        zone: 6
+
+    WCTP Terminal Request: 
+      value:
+        type: ROUTE_WCTP_TERMINAL
+        name: Test WCTP Terminal
+        enabled: true
+        password: PasswordForTerminal
+        commChannel:
+          id: 1234
+        pageNumber: 77676
+        sender: yukonserver@cannontech.com
+        securityCode: security code for WCTP
+
+    WCTP Terminal Response: 
+      value:
+        id: 151
+        type: ROUTE_WCTP_TERMINAL
+        name: Test WCTP Terminal
+        enabled: true
+        password: PasswordForTerminal
+        commChannel:
+          id: 1234
+          name: Test Comm channel
+        pageNumber: 77676
+        sender: yukonserver@cannontech.com
+        securityCode: security code for WCTP
+
+    id:
+      value:
+        id: 39223
+
+    TerminalCopy:
+      value:
+        name: Copy of Test Terminal
+        copyPoints: true
+
+    Paging Tap Terminal Copy Response:
+      value:
+        id: 152
+        type: ROUTE_TAP_PAGING
+        name: Copy of Test Terminal
+        enabled: true
+        password: PasswordForTerminal
+        pageNumber: 77676
+        commChannel:
+          id: 1234
+          name: Test Comm channel
+
+    SNPP Terminal Copy Response: 
+      value:
+        id: 152
+        type: ROUTE_SNPP_TERMINAL
+        name: Copy of Test Terminal
+        enabled: true
+        pageNumber: 77676
+        commChannel:
+          id: 1234
+          name: Test Comm channel
+        login: Login for SNPP
+        password: PasswordForTerminal
+
+    TNPP Terminal Copy Response: 
+      value:
+        id: 152
+        type: ROUTE_TNPP_TERMINAL
+        name: Copy of Test Terminal
+        enabled: true
+        password: PasswordForTerminal
+        commChannel:
+          id: 1234
+          name: Test Comm channel
+        originAddress: 2345
+        destinationAddress: 3455
+        inertia: 564
+        protocol: FLEX
+        dataFormat: BEEP_ONLY
+        identifierFormat: CAP_PAGE
+        pagerId: 1234
+        channel: 4
+        functionCode: 5
+        zone: 6
+
+    WCTP Terminal Copy Response: 
+      value:
+        id: 152
+        type: ROUTE_WCTP_TERMINAL
+        name: Copy of Test Terminal
+        enabled: true
+        password: PasswordForTerminal
+        commChannel:
+          id: 1234
+          name: Test Comm channel
+        pageNumber: 77676
+        sender: yukonserver@cannontech.com
+        securityCode: security code for WCTP

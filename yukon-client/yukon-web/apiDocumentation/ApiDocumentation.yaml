@@ -133,7 +133,12 @@ paths:
   /macroRoutes/{id}:
     $ref: 'api/macroRoutesApi.yaml#/get-update-delete-operation'
 
-
+  /terminals:
+    $ref: 'api/terminalsApi.yaml#/post-operation'
+  /terminals/{id}:
+    $ref: 'api/terminalsApi.yaml#/get-update-delete-operation'
+  /terminals/{id}/copy:
+    $ref: 'api/terminalsApi.yaml#/copy-operation'
 
 components:
   securitySchemes:
@@ -161,4 +166,5 @@ tags:
   - name: Route
   - name: Logger
   - name: Macro Route
+  - name: Terminals
 
