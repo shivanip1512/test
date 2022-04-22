@@ -85,13 +85,9 @@ public class RoleListHelper {
         /* Add available roles */
         Set<YukonRole> availableRolesSet = Sets.difference(Sets.newHashSet(YukonRole.values()), roles);
         
-        /* Filter out System roles and RESIDENTIAL_CUSTOMER role */
-        Set<YukonRole> filteredRoles = Sets.filter(availableRolesSet, new Predicate<YukonRole>() {
-            @Override
-            public boolean apply(YukonRole role) {
-                return !role.getCategory().isSystem() && role.getRoleId() != YukonRoleCategory.Consumer.baseRoleId;
-            }
-        });
+        /* Filter out RESIDENTIAL_CUSTOMER role */
+        Set<YukonRole> filteredRoles = Sets.filter(availableRolesSet, 
+                role -> role.getRoleId() != YukonRoleCategory.Consumer.baseRoleId);
         
         Multimap<YukonRoleCategory, YukonRole> availableRolesMap = sortRolesByCategory(filteredRoles);
         model.addAttribute("availableRolesMap", availableRolesMap.asMap());
