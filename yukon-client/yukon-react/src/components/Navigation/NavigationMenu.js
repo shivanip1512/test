@@ -3,7 +3,7 @@ import { useTranslation } from "react-i18next";
 import { useSelector } from "react-redux";
 
 import { useSecurityActions } from "@brightlayer-ui/react-auth-shared";
-import { LocalStorage } from "../../store/local-storage";
+import { CookieStorage } from "../../store/cookie-storage";
 
 import { UserMenu, Spacer } from "@brightlayer-ui/react-components";
 import { useTheme } from "@material-ui/core/styles";
@@ -83,7 +83,7 @@ const NavigationMenu = (props) => {
         axios
             .post("/api/logout", {})
             .then((response) => {
-                LocalStorage.clearAuthCredentials();
+                CookieStorage.clearAuthCredentials();
                 securityHelper.onUserNotAuthenticated();
             })
             .catch((error) => {

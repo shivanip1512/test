@@ -25,53 +25,30 @@ const useStyles = makeStyles((theme) => ({
     },
 }));
 
-/**
- * By-pass the authentication process for rendering the menu if the application is running in development mode.
- */
-function renderNavigationMenu(props) {
-    //TODO: Remove this later.
-    console.log("Mode: " + process.env.NODE_ENV);
+const NavigationContainer = (props) => {
+    const theme = useTheme();
     const classes = useStyles();
 
-    if (process.env.NODE_ENV == "development") {
-        //TODO: Remove this later.
-        console.warn("Application is running in development. Skipped the authentication for Navigation menu");
-        return (
-            <I18nextProvider i18n={yukoni18n}>
-                <DrawerLayout drawer={<NavigationDrawer yukonPath={props.path} reactPath={props.reactPath} />} classes={{ drawer: classes.drawer }}>
-                    <NavigationMenu yukonPath={props.path} reactPath={props.reactPath} />
-                    <div id="page-contents"></div>
-                </DrawerLayout>
-            </I18nextProvider>
-        );
-    } else {
-        //TODO: Remove this later.
-        console.log("Application is not running in development mode. Current mode is " + process.env.NODE_ENV);
-        return (
-            <AuthUIConfiguration>
-                <AuthNavigationContainer routeConfig={routes}>
-                    <I18nextProvider i18n={yukoni18n}>
-                        <DrawerLayout
-                            drawer={<NavigationDrawer yukonPath={props.path} reactPath={props.reactPath} />}
-                            classes={{ drawer: classes.drawer }}
-                        >
-                            <NavigationMenu yukonPath={props.path} reactPath={props.reactPath} />
-                            <div id="page-contents"></div>
-                        </DrawerLayout>
-                    </I18nextProvider>
-                </AuthNavigationContainer>
-            </AuthUIConfiguration>
-        );
-    }
-}
-
-const NavigationContainer = (props) => {
     return (
         <Provider store={store}>
             <I18nextProvider i18n={i18n}>
                 <ThemeProvider theme={createTheme(PXBThemes.blue)}>
                     <Suspense fallback={<div></div>}>
-                        <SecurityContextProvider>{renderNavigationMenu(props)}</SecurityContextProvider>
+                        <SecurityContextProvider>
+                            <AuthUIConfiguration>
+                                <AuthNavigationContainer routeConfig={routes}>
+                                    <I18nextProvider i18n={yukoni18n}>
+                                        <DrawerLayout
+                                            drawer={<NavigationDrawer yukonPath={props.path} reactPath={props.reactPath} />}
+                                            classes={{ drawer: classes.drawer }}
+                                        >
+                                            <NavigationMenu yukonPath={props.path} reactPath={props.reactPath} />
+                                            <div id="page-contents"></div>
+                                        </DrawerLayout>
+                                    </I18nextProvider>
+                                </AuthNavigationContainer>
+                            </AuthUIConfiguration>
+                        </SecurityContextProvider>
                     </Suspense>
                 </ThemeProvider>
             </I18nextProvider>

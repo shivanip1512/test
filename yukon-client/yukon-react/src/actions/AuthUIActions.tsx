@@ -1,7 +1,7 @@
 /* eslint-disable @typescript-eslint/no-unused-vars */
-import { AuthUIActions, SecurityContextActions } from '@brightlayer-ui/react-auth-workflow';
-import { LocalStorage } from '../store/local-storage';
-import axios from '../axiosConfig';
+import { AuthUIActions, SecurityContextActions } from "@brightlayer-ui/react-auth-workflow";
+import { CookieStorage } from "../store/cookie-storage";
+import axios from "../axiosConfig";
 
 const sleep = (ms: number): Promise<void> => new Promise((resolve) => setTimeout(resolve, ms));
 
@@ -15,11 +15,10 @@ function isRandomFailure(): boolean {
 }
 
 const getRefreshToken = async () => {
-    await   axios.post('/api/refreshToken', {
-    }).catch((error:any) => {
+    await axios.post("/api/refreshToken", {}).catch((error: any) => {
         console.warn("error in refreshing token");
-    })
-}
+    });
+};
 
 type AuthUIActionsFunction = () => AuthUIActions;
 type AuthUIActionsWithSecurity = (securityHelper: SecurityContextActions) => AuthUIActionsFunction;
@@ -47,7 +46,7 @@ export const ProjectAuthUIActions: AuthUIActionsWithSecurity = (securityHelper) 
         let authData;
 
         try {
-            authData = await LocalStorage.readAuthData();
+            authData = await CookieStorage.readAuthData();
         } catch (e) {
             // Restoring token failed
         }
@@ -59,7 +58,7 @@ export const ProjectAuthUIActions: AuthUIActionsWithSecurity = (securityHelper) 
         if (authData?.email !== undefined) {
             securityHelper.onUserAuthenticated({
                 email: authData?.email,
-                userId: authData.userId ?? '',
+                userId: authData.userId ?? "",
                 rememberMe: authData?.rememberMeData.rememberMe,
             });
         } else {
@@ -77,8 +76,8 @@ export const ProjectAuthUIActions: AuthUIActionsWithSecurity = (securityHelper) 
      *
      * For example:
      * ```
-     * LocalStorage.saveAuthCredentials(email, email);
-     * LocalStorage.saveRememberMeData(email, rememberMe);
+     * CookieStorage.saveAuthCredentials(email, email);
+     * CookieStorage.saveRememberMeData(email, rememberMe);
      *
      * securityHelper.onUserAuthenticated({ email: email, userId: email, rememberMe: rememberMe });
      * ```
@@ -92,27 +91,30 @@ export const ProjectAuthUIActions: AuthUIActionsWithSecurity = (securityHelper) 
      * @returns Resolve if code is credentials are valid, otherwise reject.
      */
     logIn: async (email: string, password: string, rememberMe: boolean): Promise<void> => {
-        //fetch access token 
-    await   axios.post('/api/token', {
-                     username: email,
-                     password: password
-            }).then((response: any) => {
-                LocalStorage.saveAuthCredentials(email, email);
-                LocalStorage.saveRememberMeData(email, rememberMe);
+        //fetch access token
+        await axios
+            .post("/api/token", {
+                username: email,
+                password: password,
+            })
+            .then((response: any) => {
+                CookieStorage.saveAuthCredentials(email, email);
+                CookieStorage.saveRememberMeData(email, rememberMe);
                 //refresh just one minute before expiry
-                const expiresIn = (response.data.expiresIn);
+                const expiresIn = response.data.expiresIn;
                 const refreshIn = expiresIn - 60000;
                 setInterval(getRefreshToken, refreshIn);
-            }).catch((error:any) => {
-                console.warn(error.response.data.detail);
-                throw new Error('LOGIN.INVALID_CREDENTIALS');
-                // uncomment this line to check custom error from API
-                //throw new Error (error.response.data.detail) 
             })
+            .catch((error: any) => {
+                console.warn(error.response.data.detail);
+                throw new Error("LOGIN.INVALID_CREDENTIALS");
+                // uncomment this line to check custom error from API
+                //throw new Error (error.response.data.detail)
+            });
 
         //get the theme and store in browser local storage
         //storing in react store gets cleared after every old yukon page since it's counted as a refresh
-/*      axios.get('/api/theme')
+        /*      axios.get('/api/theme')
             .then(themeJson => {
                 if (themeJson) {
                     //don't change theme if default theme is used
@@ -149,7 +151,7 @@ export const ProjectAuthUIActions: AuthUIActionsWithSecurity = (securityHelper) 
     forgotPassword: async (email: string): Promise<void> => {
         await sleep(500);
         if (isRandomFailure()) {
-            throw new Error('Sorry, there was a problem sending your request.');
+            throw new Error("Sorry, there was a problem sending your request.");
         }
 
         return;
@@ -168,7 +170,7 @@ export const ProjectAuthUIActions: AuthUIActionsWithSecurity = (securityHelper) 
     verifyResetCode: async (code: string, email?: string): Promise<void> => {
         await sleep(500);
         if (isRandomFailure()) {
-            throw new Error('Sorry, there was a problem sending your request.');
+            throw new Error("Sorry, there was a problem sending your request.");
         }
 
         return;
@@ -190,7 +192,7 @@ export const ProjectAuthUIActions: AuthUIActionsWithSecurity = (securityHelper) 
     setPassword: async (code: string, password: string, email?: string): Promise<void> => {
         await sleep(500);
         if (isRandomFailure()) {
-            throw new Error('Sorry, there was a problem sending your request.');
+            throw new Error("Sorry, there was a problem sending your request.");
         }
 
         return;
@@ -210,7 +212,7 @@ export const ProjectAuthUIActions: AuthUIActionsWithSecurity = (securityHelper) 
         await sleep(1000);
 
         if (isRandomFailure()) {
-            throw new Error('Sorry, there was a problem sending your request.');
+            throw new Error("Sorry, there was a problem sending your request.");
         }
 
         return;
