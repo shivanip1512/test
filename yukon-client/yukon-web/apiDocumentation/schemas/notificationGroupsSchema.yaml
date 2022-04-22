@@ -1,0 +1,233 @@
+Notification Group:
+  title: Notification Group
+  required:
+    - name
+    - disabled
+  type: object
+  properties:
+    name:
+      type: string
+      maxLength: 40
+      description: 'Name of the notification group.'
+    disabled:
+      type: boolean
+      description: 'Disable the notification group.'
+    cICustomers:
+      description: 'Customers that can be assigned to the notification group.'
+      $ref: '#/cICustomers'
+    unassignedContacts:
+      description: 'Contacts that can be assigned to the notification group.'
+      $ref: '#/unassignedContacts'
+
+Notification Group Response Schema:
+  type: object
+  properties:
+    id:
+      type: integer
+      description: 'Unique identifier of the notification group.'
+    name:
+      type: string
+      maxLength: 40
+      description: 'Name of the notification group.'
+    disabled:
+      type: boolean
+      description: 'Disable the notification group.'
+    cICustomers:
+       description: 'Customers that can be assigned to the notification group.'
+       $ref: '#/cICustomers'
+    unassignedContacts:
+       description: 'Contacts that can be assigned to the notification group.'
+       $ref: '#/unassignedContacts'
+      
+cICustomers:
+  type: Object
+    properties:
+      id:
+        type: integer
+        description: 'Unique identifier of the customer.'
+      emailEnabled:
+        type: boolean
+        description: 'Enable/Disable the email notification for this customer.'
+      phoneCallEnabled:
+        type: boolean
+        description: 'Enable/Disable the phone call notification for this customer.'
+      selected:
+        type: boolean
+        description: 'Select this customer for Notification Group.'
+      contacts:
+        description: 'Contacts associated with this customer.'
+        $ref: '#/contacts'
+      
+contacts:
+  type: Object
+    properties:
+      id:
+        type: integer
+        description: 'Unique identifier of the contact.'
+      emailEnabled:
+        type: boolean
+        description: 'Enable/Disable the email notification for this contact.'
+      phoneCallEnabled:
+        type: boolean
+        description: 'Enable/Disable the phone call notification for this contact.'
+      selected:
+        type: boolean
+        description: 'Select this contact for Notification Group.'
+      notifications:
+        description: 'Notifications associated with this contact.'
+        $ref: '#/notifications'
+        
+notifications:
+    type: Object
+    properties:
+      id:
+        type: integer
+        description: 'Unique identifier of the contact notification.'
+      emailEnabled:
+        type: boolean
+        description: 'Enable/Disable the email notification.'
+      phoneCallEnabled:
+        type: boolean
+        description: 'Enable/Disable the phone call notification.'
+      selected:
+        type: boolean
+        description: 'Select this notification.'
+        
+
+Notification Groups List:
+  type: object
+  properties:
+    items:
+      type: array
+      items:
+        type: object
+        properties:
+            $ref: '#/Notification Group Response Schema'
+            
+                                     
+components:
+  examples:
+    Notification Group Request:
+      value:
+        name: Test Notification Group
+        disabled: false
+        cICustomers:
+            id: 10
+            emailEnabled: true
+            phoneCallEnabled: false
+            selected: false
+            contacts: 
+              id: 110
+              emailEnabled: true
+              phoneCallEnabled: false
+              selected: false
+              notifications:
+                id: 1110
+                emailEnabled: true
+                phoneCallEnabled: false
+                selected: false
+        unassignedContacts:
+            id: 11110
+            emailEnabled: true
+            phoneCallEnabled: false
+            selected: false
+            notifications:
+               id: 111110
+               emailEnabled: true
+               phoneCallenabled: false
+               selected: false
+
+    Notification Group Response:
+      value:
+        id: 1
+        name: Test Notification Group
+        disabled: false
+        cICustomers:
+            id: 10
+            emailEnabled: true
+            phoneCallEnabled: false
+            selected: false
+            contacts: 
+              id: 110
+              emailEnabled: true
+              phoneCallEnabled: false
+              selected: false
+              notifications:
+                id: 1110
+                emailEnabled: true
+                phoneCallEnabled: false
+                selected: false
+        unassignedContacts:
+            id: 11110
+            emailEnabled: true
+            phoneCallEnabled: false
+            selected: false
+            notifications:
+               id: 111110
+               emailEnabled: true
+               phoneCallenabled: false
+               selected: false
+               
+    NotificationGroupId
+      value:
+        id: 1
+        
+    List of Notification Groups:
+      value:
+        items:
+          id: 1
+          name: Test Notification Group 1
+          disabled: false
+          cICustomers:
+            id: 10
+            emailEnabled: true
+            phoneCallEnabled: false
+            selected: false
+            contacts: 
+              id: 110
+              emailEnabled: true
+              phoneCallEnabled: false
+              selected: false
+              notifications:
+                id: 1110
+                emailEnabled: true
+                phoneCallEnabled: false
+                selected: false
+          unassignedContacts:
+            id: 11110
+            emailEnabled: true
+            phoneCallEnabled: false
+            selected: false
+            notifications:
+               id: 111110
+               emailEnabled: true
+               phoneCallenabled: false
+               selected: false
+          id: 2
+          name: Test Notification Group 2
+          disabled: false
+          cICustomers:
+            id: 10
+            emailEnabled: true
+            phoneCallEnabled: false
+            selected: false
+            contacts: 
+               id: 110
+               emailEnabled: true
+               phoneCallEnabled: false
+               selected: false
+               notifications:
+                 id: 1110
+                 emailEnabled: true
+                 phoneCallEnabled: false
+                 selected: false
+          unassignedContacts:
+             id: 11110
+             emailEnabled: true
+             phoneCallEnabled: false
+             selected: false
+             notifications:
+               id: 111110
+               emailEnabled: true
+               phoneCallenabled: false
+               selected: false

@@ -133,6 +133,10 @@ paths:
   /macroRoutes/{id}:
     $ref: 'api/macroRoutesApi.yaml#/get-update-delete-operation'
 
+  /notificationGroups:
+    $ref: 'api/notificationGroupsApi.yaml#/post-get-all-operation'
+  /notificationGroups/{id}:
+    $ref: 'api/notificationGroupsApi.yaml#/get-update-delete-operation'
 
 
 components:
@@ -161,4 +165,5 @@ tags:
   - name: Route
   - name: Logger
   - name: Macro Route
+  - name: Notification Group
 
