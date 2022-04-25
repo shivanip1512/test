@@ -3,6 +3,7 @@ package com.cannontech.multispeak.service.v4;
 import java.util.Calendar;
 import java.util.List;
 
+import com.cannontech.msp.beans.v4.Meters;
 import com.cannontech.msp.beans.v4.ErrorObject;
 import com.cannontech.msp.beans.v4.MeterID;
 import com.cannontech.msp.beans.v4.MeterReading;
@@ -96,5 +97,14 @@ public interface MR_Server {
      * @throws MultispeakWebServiceException the multispeak web service exception
      */
     public List<ErrorObject> cancelUsageMonitoring(List<MeterID> meterIDs) throws MultispeakWebServiceException;
+    
+    
+    /**
+     * get AMR Supported Meters.
+     * 
+     * @param lastReceived
+     * @return
+     */
+    public Meters getAMRSupportedMeters(String lastReceived) throws MultispeakWebServiceException;
 
 }

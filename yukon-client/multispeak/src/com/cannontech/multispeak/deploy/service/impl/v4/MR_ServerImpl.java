@@ -2,11 +2,13 @@ package com.cannontech.multispeak.deploy.service.impl.v4;
 
 import java.util.Arrays;
 import java.util.Calendar;
+import java.util.Date;
 import java.util.EnumSet;
 import java.util.List;
 
 import org.apache.logging.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
 
 import com.cannontech.amr.meter.model.YukonMeter;
 import com.cannontech.clientutils.YukonLogManager;
@@ -24,13 +26,16 @@ import com.cannontech.database.data.lite.LitePoint;
 import com.cannontech.msp.beans.v4.ErrorObject;
 import com.cannontech.msp.beans.v4.MeterID;
 import com.cannontech.msp.beans.v4.MeterReading;
+import com.cannontech.msp.beans.v4.Meters;
 import com.cannontech.multispeak.client.MultispeakDefines;
 import com.cannontech.multispeak.client.MultispeakVendor;
 import com.cannontech.multispeak.client.v4.MultispeakFuncs;
+import com.cannontech.multispeak.dao.MspMeterDao;
 import com.cannontech.multispeak.dao.v4.MeterReadingProcessingService;
 import com.cannontech.multispeak.dao.v4.MspRawPointHistoryDao;
 import com.cannontech.multispeak.dao.v4.MspRawPointHistoryDao.ReadBy;
 import com.cannontech.multispeak.data.v4.MspMeterReadingReturnList;
+import com.cannontech.multispeak.data.v4.MspMeterReturnList;
 import com.cannontech.multispeak.exceptions.MultispeakWebServiceException;
 import com.cannontech.multispeak.service.v4.MR_Server;
 import com.cannontech.multispeak.service.v4.MspValidationService;
@@ -47,6 +52,7 @@ public class MR_ServerImpl implements MR_Server {
     @Autowired private MspValidationService mspValidationService;
     @Autowired private MultispeakMeterService multispeakMeterService;
     @Autowired private PaoDefinitionDao paoDefinitionDao;
+    @Autowired @Qualifier("mspMeterDaoV4") private MspMeterDao mspMeterDao;
 
     private final Logger log = YukonLogManager.getLogger(MR_ServerImpl.class);
     private final static String[] methods = new String[] { "PingURL",
@@ -236,5 +242,25 @@ public class MR_ServerImpl implements MR_Server {
         List<ErrorObject> errorObject = multispeakMeterService.cancelUsageMonitoring(vendor, meterIDs);
         return errorObject;
     }
+
+    @Override
+    public Meters getAMRSupportedMeters(String lastReceived) throws MultispeakWebServiceException {
+        init();
+        MultispeakVendor vendor = multispeakFuncs.getMultispeakVendorFromHeader();
+        multispeakEventLogService.methodInvoked("GetAMRSupportedMeters", vendor.getCompanyName());
+
+        Date timerStart = new Date();
+        MspMeterReturnList meterList = (MspMeterReturnList) mspMeterDao.getAMRSupportedMeters(lastReceived, vendor.getMaxReturnRecords());
+
+        multispeakFuncs.updateResponseHeader(meterList);
+
+        log.info("Returning " + meterList.getSize() + " AMR Supported Meters. ("
+            + (new Date().getTime() - timerStart.getTime()) * .001 + " secs)");
+        multispeakEventLogService.returnObjects(meterList.getSize(), meterList.getObjectsRemaining(), "Meter",
+            meterList.getLastSent(), "GetAMRSupportedMeters", vendor.getCompanyName());
+
+        return meterList.getMeters();
+    }
+    
 
 }

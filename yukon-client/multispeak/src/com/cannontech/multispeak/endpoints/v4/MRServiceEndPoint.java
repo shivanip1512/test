@@ -12,13 +12,15 @@ import org.springframework.ws.server.endpoint.annotation.PayloadRoot;
 import org.springframework.ws.server.endpoint.annotation.RequestPayload;
 import org.springframework.ws.server.endpoint.annotation.ResponsePayload;
 
-import com.cannontech.msp.beans.v4.CancelUsageMonitoring;
-import com.cannontech.msp.beans.v4.CancelUsageMonitoringResponse;
 import com.cannontech.msp.beans.v4.ArrayOfErrorObject;
 import com.cannontech.msp.beans.v4.ArrayOfMeterID1;
 import com.cannontech.msp.beans.v4.ArrayOfMeterReading1;
 import com.cannontech.msp.beans.v4.ArrayOfString;
+import com.cannontech.msp.beans.v4.CancelUsageMonitoring;
+import com.cannontech.msp.beans.v4.CancelUsageMonitoringResponse;
 import com.cannontech.msp.beans.v4.ErrorObject;
+import com.cannontech.msp.beans.v4.GetAMRSupportedMeters;
+import com.cannontech.msp.beans.v4.GetAMRSupportedMetersResponse;
 import com.cannontech.msp.beans.v4.GetLatestReadingByMeterID;
 import com.cannontech.msp.beans.v4.GetLatestReadingByMeterIDResponse;
 import com.cannontech.msp.beans.v4.GetLatestReadings;
@@ -35,6 +37,7 @@ import com.cannontech.msp.beans.v4.IsAMRMeter;
 import com.cannontech.msp.beans.v4.IsAMRMeterResponse;
 import com.cannontech.msp.beans.v4.MeterID;
 import com.cannontech.msp.beans.v4.MeterReading;
+import com.cannontech.msp.beans.v4.Meters;
 import com.cannontech.msp.beans.v4.ObjectFactory;
 import com.cannontech.msp.beans.v4.PingURL;
 import com.cannontech.msp.beans.v4.PingURLResponse;
@@ -199,6 +202,19 @@ public class MRServiceEndPoint {
         arrayOfErrorObject.getErrorObject().addAll(errorObjects);
         cancelUsageMonitoringResponse.setCancelUsageMonitoringResult(arrayOfErrorObject);
         return cancelUsageMonitoringResponse;
+    }
+
+    @PayloadRoot(localPart = "GetAMRSupportedMeters", namespace = MultispeakDefines.NAMESPACE_v4)
+    public @ResponsePayload GetAMRSupportedMetersResponse getAMRSupportedMeters(
+            @RequestPayload GetAMRSupportedMeters getAMRSupportedMeters)
+            throws MultispeakWebServiceException {
+        GetAMRSupportedMetersResponse response = objectFactory.createGetAMRSupportedMetersResponse();
+
+        String lastReceived = getAMRSupportedMeters.getLastReceived();
+        Meters meters = null;
+        meters = mr_server.getAMRSupportedMeters(lastReceived);
+        response.setGetAMRSupportedMetersResult(meters);
+        return response;
     }
 
 }
