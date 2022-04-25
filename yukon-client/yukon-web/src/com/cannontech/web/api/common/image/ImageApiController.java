@@ -23,12 +23,13 @@ public class ImageApiController {
     @Autowired private YukonUserContextMessageSourceResolver messageSourceResolver;
 
     @GetMapping("/common/images/{id}")
-    public ResponseEntity<Object> imageFromId(@PathVariable("id") Integer id, YukonUserContext context) {
+    public ResponseEntity<Object> imageFromId(@PathVariable("id") Integer id) {
 
         LiteYukonImage liteYukonImage = imageDao.getLiteYukonImage(id);
 
         if (liteYukonImage == null) {
-            final MessageSourceAccessor messageSourceAccessor = messageSourceResolver.getMessageSourceAccessor(context);
+            final MessageSourceAccessor messageSourceAccessor = messageSourceResolver
+                    .getMessageSourceAccessor(YukonUserContext.system);
             final String imageNotFoundMsg = "yukon.web.image.error.IMAGE_NOT_FOUND";
             throw new NotFoundException(messageSourceAccessor.getMessage(imageNotFoundMsg));
         }
