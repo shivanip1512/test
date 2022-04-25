@@ -149,7 +149,7 @@ public class YukonLoggersApiValidator extends SimpleValidator<YukonLogger> {
             }
         } else {
             errors.rejectValue("expirationDate", ApiErrorDetails.FIELD_NOT_SUPPORTED.getCodeString(),
-                    new Object[] { logger.getExpirationDate() }, "");
+                    new Object[] { "expirationDate" }, "");
         }
     }
 }
