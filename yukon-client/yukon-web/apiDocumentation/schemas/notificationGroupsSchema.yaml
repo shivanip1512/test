@@ -1,10 +1,10 @@
 Notification Group:
-  title: Notification Group
-  required:
-    - name
-    - disabled
-  type: object
-  properties:
+   title: Notification Group
+   required:
+     name
+     disabled
+   type: object
+   properties:
     name:
       type: string
       maxLength: 40
@@ -40,7 +40,7 @@ Notification Group Response Schema:
        $ref: '#/unassignedContacts'
       
 cICustomers:
-  type: Object
+    type: Object
     properties:
       id:
         type: integer
@@ -59,7 +59,7 @@ cICustomers:
         $ref: '#/contacts'
       
 contacts:
-  type: Object
+    type: Object
     properties:
       id:
         type: integer
@@ -168,14 +168,11 @@ components:
                phoneCallenabled: false
                selected: false
                
-    NotificationGroupId
-      value:
-        id: 1
         
     List of Notification Groups:
       value:
         items:
-          id: 1
+        - id: 1
           name: Test Notification Group 1
           disabled: false
           cICustomers:
@@ -203,7 +200,7 @@ components:
                emailEnabled: true
                phoneCallenabled: false
                selected: false
-          id: 2
+        - id: 2
           name: Test Notification Group 2
           disabled: false
           cICustomers:
@@ -231,3 +228,7 @@ components:
                emailEnabled: true
                phoneCallenabled: false
                selected: false
+               
+    NotificationGroupId:
+      value:
+        - id: 1
