@@ -10,6 +10,7 @@ import org.apache.lucene.search.BooleanQuery;
 import org.apache.lucene.search.Query;
 import org.apache.lucene.search.TermQuery;
 
+import com.cannontech.common.model.Direction;
 import com.cannontech.common.search.result.SearchResults;
 import com.cannontech.user.YukonUserContext;
 import com.cannontech.web.search.lucene.criteria.YukonObjectCriteria;
@@ -21,6 +22,8 @@ public abstract class LucenePicker<T> extends BasePicker<T> {
     
     protected YukonObjectCriteria criteria = null;
     protected Searcher<T> searcher;
+    protected Direction direction;
+    protected String sortBy;
     
     @JsonDeserialize(as = YukonObjectCriteriaHelper.class)
     public YukonObjectCriteria getCriteria() {
@@ -39,6 +42,20 @@ public abstract class LucenePicker<T> extends BasePicker<T> {
             hits = searcher.search(ss, combinedCriteria, start , count);
         }
         return hits;
+    }
+    
+    @Override
+    public SearchResults<T> search(String ss, int start, int count,
+            String extraArgs, String sortBy, Direction direction, YukonUserContext userContext) { 
+        YukonObjectCriteria combinedCriteria = combineCriteria(criteria, userContext, extraArgs);
+        return searcher.search(ss, combinedCriteria, start , count, sortBy, direction);
+        
+    }
+    
+    @Override
+    public SearchResults<T> search(Collection<Integer> initialIds, String extraArgs, String sortBy,
+            Direction direction, YukonUserContext userContext) {
+       throw new UnsupportedOperationException();
     }
     
     @Override
@@ -101,6 +118,5 @@ public abstract class LucenePicker<T> extends BasePicker<T> {
     
     public void setSearcher(Searcher<T> searcher) {
         this.searcher = searcher;
-    }
-    
+    }    
 }

@@ -10,6 +10,7 @@ import com.cannontech.common.bulk.filter.RowMapperWithBaseQuery;
 import com.cannontech.common.bulk.filter.SqlFilter;
 import com.cannontech.common.bulk.filter.UiFilter;
 import com.cannontech.common.bulk.filter.service.FilterDao;
+import com.cannontech.common.model.Direction;
 import com.cannontech.common.search.result.SearchResults;
 import com.cannontech.common.util.SqlFragmentCollection;
 import com.cannontech.common.util.SqlFragmentSource;
@@ -120,6 +121,19 @@ public abstract class DatabasePicker<T> extends BasePicker<T> {
         SearchResults<T> dbResults =
             filterDao.filter(filter, null, start, count, rowMapper);
         return dbResults;
+    }
+    
+    @Override
+    public SearchResults<T> search(Collection<Integer> initialIds, String extraArgs, String sortBy,
+            Direction direction, YukonUserContext userContext) {
+       throw new UnsupportedOperationException();
+    }
+    
+    
+    @Override
+    public SearchResults<T> search(String ss, int start, int count,
+            String extraArgs, String sortBy, Direction direction, YukonUserContext userContext) {
+       throw new UnsupportedOperationException();
     }
     
     @Override

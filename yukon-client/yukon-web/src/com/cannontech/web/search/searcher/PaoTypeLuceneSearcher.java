@@ -69,4 +69,5 @@ public class PaoTypeLuceneSearcher extends AbstractLuceneSearcher<UltraLightPao>
             throw new RuntimeException(e);
         }
     }
+
 }

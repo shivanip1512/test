@@ -33,6 +33,7 @@ import org.apache.lucene.index.IndexWriterConfig.OpenMode;
 import org.apache.lucene.index.Term;
 import org.apache.lucene.search.IndexSearcher;
 import org.apache.lucene.search.Query;
+import org.apache.lucene.search.Sort;
 import org.apache.lucene.search.TopDocs;
 import org.apache.lucene.store.Directory;
 import org.apache.lucene.store.SimpleFSDirectory;
@@ -234,6 +235,12 @@ public abstract class AbstractIndexManager implements IndexManager, DBChangeList
         @Override
         public <R> R doCallBackSearch(Query query, TopDocsCallbackHandler<R> handler, final int maxResults)
                 throws IOException {
+            return doCallBackSearch(query, handler, maxResults, null);
+        }
+
+        @Override
+        public <R> R doCallBackSearch(Query query, TopDocsCallbackHandler<R> handler, int maxResults, Sort sort)
+                throws IOException {
             // Make sure there are currently no issues with the index
             checkAndRebuildIndex();
 
@@ -245,14 +252,15 @@ public abstract class AbstractIndexManager implements IndexManager, DBChangeList
             // Make sure we don't search while someone is updating the index
             try (IndexReader indexReader = DirectoryReader.open(indexLocation)) {
                 IndexSearcher indexSearcher = new IndexSearcher(indexReader);
-                TopDocs topDocs = indexSearcher.search(query, maxResults);
+                TopDocs topDocs = sort == null ? indexSearcher.search(query, maxResults) : indexSearcher.search(query, maxResults,
+                        sort);
                 return handler.processHits(topDocs, indexSearcher);
             }
         }
 
         @Override
         public <R> R doCallBackSearch(Query query, TopDocsCallbackHandler<R> handler) throws IOException {
-            return doCallBackSearch(query, handler, Integer.MAX_VALUE);
+            return doCallBackSearch(query, handler, Integer.MAX_VALUE, null);
         }
     }
 

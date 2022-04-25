@@ -8,6 +8,7 @@ import java.util.Set;
 
 import org.springframework.beans.factory.annotation.Autowired;
 
+import com.cannontech.common.model.Direction;
 import com.cannontech.common.search.result.SearchResults;
 import com.cannontech.core.dao.NotificationGroupDao;
 import com.cannontech.database.data.lite.LiteNotificationGroup;
@@ -75,5 +76,18 @@ public class NotificationGroupPicker extends BasePicker<UltraLightNotificationGr
 
         Collections.sort(notificationGroups);
         return notificationGroups;
+    }
+    
+    @Override
+    public SearchResults<UltraLightNotificationGroup> search(Collection<Integer> initialIds, String extraArgs, String sortBy,
+            Direction direction, YukonUserContext userContext) {
+       throw new UnsupportedOperationException();
+    }  
+    
+    
+    @Override
+    public SearchResults<UltraLightNotificationGroup> search(String ss, int start, int count,
+            String extraArgs, String sortBy, Direction direction, YukonUserContext userContext) {
+       throw new UnsupportedOperationException();
     }
 }

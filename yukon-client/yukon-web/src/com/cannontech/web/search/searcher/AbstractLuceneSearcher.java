@@ -15,8 +15,11 @@ import org.apache.lucene.search.BooleanQuery;
 import org.apache.lucene.search.IndexSearcher;
 import org.apache.lucene.search.MatchAllDocsQuery;
 import org.apache.lucene.search.Query;
+import org.apache.lucene.search.Sort;
+import org.apache.lucene.search.SortField;
 import org.apache.lucene.search.TopDocs;
 
+import com.cannontech.common.model.Direction;
 import com.cannontech.common.search.result.SearchResults;
 import com.cannontech.common.util.CtiUtilities;
 import com.cannontech.web.search.lucene.TopDocsCallbackHandler;
@@ -45,6 +48,62 @@ public abstract class AbstractLuceneSearcher<E> {
         }
     }
     
+
+    public SearchResults<E> search(String queryString, YukonObjectCriteria criteria, int start, int count,
+            String sortBy, Direction direction) {
+        try {
+            Query query = createQuery(queryString, criteria);
+            return doSearch(query, start, count, sortBy, direction);
+        } catch (Exception e) {
+            throw new RuntimeException(e);
+        }
+    }
+
+    protected final SearchResults<E> doSearch(final Query query, final int start, final int count, String sortBy,
+            Direction direction) throws IOException {
+        // We can't use count here because Lucene will just give us the first number of items. Here we are
+        // paging the results so we need enough items to populate the current
+        // page. Hence (count + start) instead of just count
+
+        SortField field = new SortField(sortBy, SortField.Type.STRING, direction == Direction.asc? false : true);
+
+        Sort sort = new Sort(field);
+
+        // We can't use count here because Lucene will just give us the first number of items. Here we are
+        // paging the results so we need enough items to populate the current
+        // page. Hence (count + start) instead of just count
+        int maxResults = CtiUtilities.addNoOverflow(count, start);
+        final SearchResults<E> result = getIndexManager().getSearchTemplate().doCallBackSearch(query,
+                new TopDocsCallbackHandler<SearchResults<E>>() {
+
+                    @Override
+                    public SearchResults<E> processHits(TopDocs topDocs, IndexSearcher indexSearcher)
+                            throws IOException {
+                        // In version 8.3 totalHits become TotalHits object. The total hit count is now stored in value
+                        // field of type long. We're assuming here that we will never get 2,147,483,647 or more hit counts
+                        // so converted it to int.
+                        int totalHitsInInt = Math.toIntExact(topDocs.totalHits.value);
+                        final int stop = Math.min(start + count, totalHitsInInt);
+                        final List<E> list = Lists.newArrayListWithCapacity(stop - start);
+
+                        for (int i = start; i < stop; ++i) {
+                            int docId = topDocs.scoreDocs[i].doc;
+                            Document document = indexSearcher.doc(docId);
+                            list.add(buildResults(document));
+                        }
+
+                        SearchResults<E> result = new SearchResults<>();
+                        result.setBounds(start, count, totalHitsInInt);
+                        result.setResultList(list);
+                        return result;
+                    }
+                }, maxResults, sort);
+
+        return result;
+    }
+
+        
+        
     protected final SearchResults<E> doSearch(final Query query, final int start, final int count) throws IOException {
         // We can't use count here because Lucene will just give us the first number of items. Here we are
         // paging the results so we need enough items to populate the current 

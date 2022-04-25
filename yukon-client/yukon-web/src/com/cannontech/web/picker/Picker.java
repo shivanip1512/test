@@ -5,6 +5,7 @@ import java.util.List;
 
 import org.springframework.context.MessageSourceResolvable;
 
+import com.cannontech.common.model.Direction;
 import com.cannontech.common.search.result.SearchResults;
 import com.cannontech.i18n.YukonMessageSourceResolvable;
 import com.cannontech.user.YukonUserContext;
@@ -97,10 +98,16 @@ public interface Picker<T> {
      */
     public SearchResults<T> search(String ss, int start, int count,
             String extraArgs, YukonUserContext userContext);
+    
+    public SearchResults<T> search(String ss, int start, int count,
+            String extraArgs, String sortBy, Direction direction, YukonUserContext userContext);
+
 
     /**
      * Perform a search for the specific ids requested.  This is used to
      * populate the picker if there were previously saved results.
      */
     public SearchResults<T> search(Collection<Integer> initialIds, String extraArgs, YukonUserContext userContext);
+    
+    public SearchResults<T> search(Collection<Integer> initialIds, String extraArgs, String sortBy, Direction direction, YukonUserContext userContext);
 }

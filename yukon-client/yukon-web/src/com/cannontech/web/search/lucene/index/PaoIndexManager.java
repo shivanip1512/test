@@ -7,8 +7,12 @@ import java.util.List;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.lucene.document.Document;
 import org.apache.lucene.document.Field;
+import org.apache.lucene.document.SortedDocValuesField;
+import org.apache.lucene.document.StoredField;
+import org.apache.lucene.document.StringField;
 import org.apache.lucene.document.TextField;
 import org.apache.lucene.index.Term;
+import org.apache.lucene.util.BytesRef;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import com.cannontech.common.pao.DisplayablePao;
@@ -70,7 +74,8 @@ public class PaoIndexManager extends SimpleIndexManager {
         doc.add(new Field("paoid", paoIdStr, TYPE_STORED));
 
         String paoName = rs.getString("paoName");
-        doc.add(new TextField("pao", paoName, Field.Store.YES));
+        doc.add(new SortedDocValuesField ("pao", new BytesRef(paoName) ));
+        doc.add(new StringField("pao", paoName, Field.Store.YES));
 
         String type = rs.getString("type");
         doc.add(new Field("type", type, TYPE_STORED));

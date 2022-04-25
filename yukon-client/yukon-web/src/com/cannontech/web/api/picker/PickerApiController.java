@@ -21,6 +21,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.cannontech.common.i18n.ObjectFormattingService;
+import com.cannontech.common.model.Direction;
 import com.cannontech.common.search.result.SearchResults;
 import com.cannontech.user.YukonUserContext;
 import com.cannontech.web.picker.Picker;
@@ -65,7 +66,7 @@ public class PickerApiController {
 
         Picker<?> picker = pickerFactory.getPicker(searchCriteria.getType());
         SearchResults<?> searchResult = picker.search(searchCriteria.getQueryString(), searchCriteria.getStartCount(),
-                searchCriteria.getCount(), searchCriteria.getExtraArgs(), userContext);
+                searchCriteria.getCount(), searchCriteria.getExtraArgs(), "pao", Direction.asc, userContext);
 
         searchResult = resolveDisplayables(searchResult, userContext);
 
