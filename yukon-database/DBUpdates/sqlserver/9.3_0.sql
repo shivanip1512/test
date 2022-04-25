@@ -72,6 +72,12 @@ ADD FeederId NUMERIC NULL;
 INSERT INTO DBUpdates VALUES ('YUK-26097', '9.3.0', GETDATE());
 /* @end YUK-26097 */
 
+/* @start YUK-26210 */
+INSERT INTO YukonRoleProperty VALUES (-90050,-900,'SETO Access','false','Allows access to SETO');
+
+INSERT INTO DBUpdates VALUES ('YUK-26210', '9.3.0', GETDATE());
+/* @end YUK-26210 */
+
 /***********************************************************************************/
 /* VERSION INFO                                                                    */
 /* Inserted when update script is run, stays commented out until the release build */

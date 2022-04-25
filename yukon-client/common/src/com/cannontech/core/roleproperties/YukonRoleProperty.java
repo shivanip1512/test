@@ -160,6 +160,7 @@ public enum YukonRoleProperty {
     ALLOW_CHANGE_GEARS(DEMAND_RESPONSE, DEMAND_RESPONSE.getBasePropertyId() - 48, booleanType()),
     ENABLE_DISABLE_PROGRAM(DEMAND_RESPONSE, DEMAND_RESPONSE.getBasePropertyId() - 47, booleanType()),
     DR_SETUP_PERMISSION(DEMAND_RESPONSE, DEMAND_RESPONSE.getBasePropertyId() - 49, InputTypeFactory.permissionType(OWNER, CREATE, UPDATE, VIEW, NO_ACCESS)),
+    SETO_ACCESS(DEMAND_RESPONSE, DEMAND_RESPONSE.getBasePropertyId() - 50, booleanType()),
     
     ALLOW_LOAD_GROUP_CONTROL(DEMAND_RESPONSE, DEMAND_RESPONSE.getBasePropertyId() - 45, booleanType()),
     DR_VIEW_CONTROL_AREA_TRIGGER_INFO(DEMAND_RESPONSE, DEMAND_RESPONSE.getBasePropertyId() - 21, booleanType()),
