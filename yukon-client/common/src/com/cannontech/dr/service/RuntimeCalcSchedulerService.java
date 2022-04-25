@@ -252,6 +252,10 @@ public abstract class RuntimeCalcSchedulerService {
         
         log.debug("Start Range:{}", startOfRange);
 
+        if (startOfRange == endOfRange) {
+            throw new IllegalArgumentException("log range is 0");
+        }
+
         // Limit the range of data calculated. Default: 30 days back.
         // So if the latest initialized timestamp is older, ignore it, and limit the range to e.g. 30 days.
         startOfRange = getLimitedStartOfRange(startOfRange, historyLimitDays, DateTime.now());
@@ -402,7 +406,8 @@ public abstract class RuntimeCalcSchedulerService {
         log.trace("First Status :{}", firstStatus);
         if (firstStatus != null) {
             // Get the entry preceding the range, if the start of the range is defined
-            if (logRange.getMin() != null) {
+            var firstStatusInstant = new Instant(firstStatus.getPointDataTimeStamp().getTime());
+            if (logRange.getMin() != null && logRange.getMin().isBefore(firstStatusInstant)) {
                 List<PointValueHolder> previousStatus = getPrecedingArchivedValue(firstStatus);
                 log.trace("Previous Status :{}", previousStatus);
                 relayStatuses = Iterables.concat(previousStatus, relayStatuses);
