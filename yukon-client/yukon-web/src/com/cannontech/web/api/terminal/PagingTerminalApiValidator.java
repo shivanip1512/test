@@ -125,6 +125,17 @@ public class PagingTerminalApiValidator<T extends TerminalBase<?>> extends Simpl
 
                 String pagerIdI18nText = accessor.getMessage(pagingTerminalKey + "pagerId");
                 yukonApiValidationUtils.checkIfFieldRequired("pagerId", errors, terminal.getPagerId(), pagerIdI18nText);
+
+                String protocolI18nText = accessor.getMessage(pagingTerminalKey + "protocol");
+                yukonApiValidationUtils.checkIfFieldRequired("protocol", errors, terminal.getProtocol(), protocolI18nText);
+
+                String dataFormatI18nText = accessor.getMessage(pagingTerminalKey + "dataFormat");
+                yukonApiValidationUtils.checkIfFieldRequired("dataFormat", errors, terminal.getDataFormat(), dataFormatI18nText);
+
+                String identifierFormatI18nText = accessor.getMessage(pagingTerminalKey + "identifierFormat");
+                yukonApiValidationUtils.checkIfFieldRequired("identifierFormat", errors, terminal.getIdentifierFormat(),
+                        identifierFormatI18nText);
+
                 if (!errors.hasFieldErrors("pagerId")) {
                     if (terminal.getIdentifierFormat() == IdentifierFormat.CAP_PAGE) {
                         try {
