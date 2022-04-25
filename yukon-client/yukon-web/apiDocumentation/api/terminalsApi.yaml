@@ -1,4 +1,4 @@
-post-operation:
+post-get-all-operation:
   post:
     tags:
       - Terminals
@@ -50,6 +50,31 @@ post-operation:
                   $ref: '../schemas/terminalsSchema.yaml#/components/examples/TNPP Terminal Response' 
                 WCTP Terminal:
                   $ref: '../schemas/terminalsSchema.yaml#/components/examples/WCTP Terminal Response' 
+
+  get:
+    tags:
+      - Terminals
+    summary: Retrieve all Terminals 
+    description: |-
+      API to retrieve all the terminals. 
+      Below are the supported Terminals.
+      - Paging Tap Terminal
+      - SNPP Terminal
+      - TNPP Terminal
+      - WCTP Terminal
+    
+    responses:
+      '200':
+        description: OK
+        content:
+          application/json:
+            schema:
+              $ref: '../schemas/terminalsSchema.yaml#/Terminals Response List'
+            
+            examples:
+              List Attributes:
+                $ref: '../schemas/terminalsSchema.yaml#/components/examples/List of Terminals' 
+
 get-update-delete-operation:
   get:
     tags:
@@ -203,7 +228,7 @@ copy-operation:
             $ref: '../schemas/terminalsSchema.yaml#/TERMINAL_COPY'
              
           examples:
-            Load Program Copy:
+            Terminal Copy:
               $ref: '../schemas/terminalsSchema.yaml#/components/examples/TerminalCopy' 
            
       required: true

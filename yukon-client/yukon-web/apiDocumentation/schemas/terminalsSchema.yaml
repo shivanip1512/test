@@ -1,5 +1,5 @@
 PAGING_TAP_TERMINAL:
-  title: PAGING_TAP_TERMINAL
+  title: Paging Tap Terminal
   required:
     - name
     - type
@@ -15,10 +15,10 @@ PAGING_TAP_TERMINAL:
       type: string
       description: 'Type of terminal.'
       enum:
-        - ROUTE_TAP_PAGING
-        - ROUTE_SNPP_TERMINAL
-        - ROUTE_TNPP_TERMINAL
-        - ROUTE_WCTP_TERMINAL
+        - TAPTERMINAL
+        - SNPP_TERMINAL
+        - TNPP_TERMINAL
+        - WCTP_TERMINAL
     enabled:
       type: boolean
       default: true
@@ -44,7 +44,7 @@ PAGING_TAP_TERMINAL:
 
 
 SNPP_TERMINAL:
-  title: SNPP_TERMINAL
+  title: SNPP Terminal
   required:
     - name
     - type
@@ -60,10 +60,10 @@ SNPP_TERMINAL:
       type: string
       description: 'Type of terminal.'
       enum:
-        - ROUTE_TAP_PAGING
-        - ROUTE_SNPP_TERMINAL
-        - ROUTE_TNPP_TERMINAL
-        - ROUTE_WCTP_TERMINAL
+        - TAPTERMINAL
+        - SNPP_TERMINAL
+        - TNPP_TERMINAL
+        - WCTP_TERMINAL
     enabled:
       type: boolean
       default: true
@@ -92,7 +92,7 @@ SNPP_TERMINAL:
       description: 'Password of terminal.'
 
 TNPP_TERMINAL:
-  title: TNPP_TERMINAL
+  title: TNPP Terminal
   required:
     - name
     - type
@@ -118,10 +118,10 @@ TNPP_TERMINAL:
       type: string
       description: 'Type of terminal.'
       enum:
-        - ROUTE_TAP_PAGING
-        - ROUTE_SNPP_TERMINAL
-        - ROUTE_TNPP_TERMINAL
-        - ROUTE_WCTP_TERMINAL
+        - TAPTERMINAL
+        - SNPP_TERMINAL
+        - TNPP_TERMINAL
+        - WCTP_TERMINAL
     enabled:
       type: boolean
       default: true
@@ -160,10 +160,10 @@ TNPP_TERMINAL:
       description: 'Protocol used for TNPP terminal.'
       enum:
         - FLEX
-        - Golay_Sequential_Code
-        - POCSAG_512_baud
-        - POCSAG_1200_baud
-        - POCSAG_2400_baud
+        - GOLAY_SEQUENTIAL_CODE
+        - POCSAG_512_BAUD_CCIR_1
+        - POCSAG_1200_BAUD
+        - POCSAG_2400_BAUD
     dataFormat:
       type: string
       description: 'Data format for TNPP terminal.'
@@ -199,7 +199,7 @@ TNPP_TERMINAL:
       description: 'Zone of TNPP terminal.'
 
 WCTP_TERMINAL:
-  title: WCTP_TERMINAL
+  title: WCTP Terminal
   required:
     - name
     - type
@@ -217,10 +217,10 @@ WCTP_TERMINAL:
       type: string
       description: 'Type of terminal.'
       enum:
-        - ROUTE_TAP_PAGING
-        - ROUTE_SNPP_TERMINAL
-        - ROUTE_TNPP_TERMINAL
-        - ROUTE_WCTP_TERMINAL
+        - TAPTERMINAL
+        - SNPP_TERMINAL
+        - TNPP_TERMINAL
+        - WCTP_TERMINAL
     enabled:
       type: boolean
       default: true
@@ -254,7 +254,7 @@ WCTP_TERMINAL:
 
 
 PAGING_TAP_TERMINAL Response Schema:
-  title: PAGING_TAP_TERMINAL
+  title: Paging Tap Terminal
   type: object
   properties:
     id:
@@ -268,10 +268,10 @@ PAGING_TAP_TERMINAL Response Schema:
       type: string
       description: 'Type of terminal.'
       enum:
-        - ROUTE_TAP_PAGING
-        - ROUTE_SNPP_TERMINAL
-        - ROUTE_TNPP_TERMINAL
-        - ROUTE_WCTP_TERMINAL
+        - TAPTERMINAL
+        - SNPP_TERMINAL
+        - TNPP_TERMINAL
+        - WCTP_TERMINAL
     enabled:
       type: boolean
       default: true
@@ -287,8 +287,6 @@ PAGING_TAP_TERMINAL Response Schema:
     commChannel:
       type: array
       items:
-        required:
-          - id
         type: object
         properties:
           id:
@@ -300,7 +298,7 @@ PAGING_TAP_TERMINAL Response Schema:
             description: 'Name of Communication Channel.'
 
 SNPP_TERMINAL Response Schema:
-  title: SNPP_TERMINAL
+  title: SNPP Terminal
   type: object
   properties:
     id:
@@ -314,10 +312,10 @@ SNPP_TERMINAL Response Schema:
       type: string
       description: 'Type of terminal.'
       enum:
-        - ROUTE_TAP_PAGING
-        - ROUTE_SNPP_TERMINAL
-        - ROUTE_TNPP_TERMINAL
-        - ROUTE_WCTP_TERMINAL
+        - TAPTERMINAL
+        - SNPP_TERMINAL
+        - TNPP_TERMINAL
+        - WCTP_TERMINAL
     enabled:
       type: boolean
       default: true
@@ -329,8 +327,6 @@ SNPP_TERMINAL Response Schema:
     commChannel:
       type: array
       items:
-        required:
-          - id
         type: object
         properties:
           id:
@@ -350,7 +346,7 @@ SNPP_TERMINAL Response Schema:
       description: 'Password of terminal.'
 
 TNPP_TERMINAL Response Schema:
-  title: TNPP_TERMINAL
+  title: TNPP Terminal
   type: object
   properties:
     id:
@@ -364,10 +360,10 @@ TNPP_TERMINAL Response Schema:
       type: string
       description: 'Type of terminal.'
       enum:
-        - ROUTE_TAP_PAGING
-        - ROUTE_SNPP_TERMINAL
-        - ROUTE_TNPP_TERMINAL
-        - ROUTE_WCTP_TERMINAL
+        - TAPTERMINAL
+        - SNPP_TERMINAL
+        - TNPP_TERMINAL
+        - WCTP_TERMINAL
     enabled:
       type: boolean
       default: true
@@ -379,8 +375,6 @@ TNPP_TERMINAL Response Schema:
     commChannel:
       type: array
       items:
-        required:
-          - id
         type: object
         properties:
           id:
@@ -410,10 +404,10 @@ TNPP_TERMINAL Response Schema:
       description: 'Protocol used for TNPP terminal.'
       enum:
         - FLEX
-        - Golay_Sequential_Code
-        - POCSAG_512_baud
-        - POCSAG_1200_baud
-        - POCSAG_2400_baud
+        - GOLAY_SEQUENTIAL_CODE
+        - POCSAG_512_BAUD_CCIR_1
+        - POCSAG_1200_BAUD
+        - POCSAG_2400_BAUD
     dataFormat:
       type: string
       description: 'Data format for TNPP terminal.'
@@ -450,7 +444,7 @@ TNPP_TERMINAL Response Schema:
 
 
 WCTP_TERMINAL Response Schema:
-  title: WCTP_TERMINAL
+  title: WCTP Terminal
   type: object
   properties:
     id:
@@ -464,10 +458,10 @@ WCTP_TERMINAL Response Schema:
       type: string
       description: 'Type of terminal.'
       enum:
-        - ROUTE_TAP_PAGING
-        - ROUTE_SNPP_TERMINAL
-        - ROUTE_TNPP_TERMINAL
-        - ROUTE_WCTP_TERMINAL
+        - TAPTERMINAL
+        - SNPP_TERMINAL
+        - TNPP_TERMINAL
+        - WCTP_TERMINAL
     enabled:
       type: boolean
       default: true
@@ -479,8 +473,6 @@ WCTP_TERMINAL Response Schema:
     commChannel:
       type: array
       items:
-        required:
-          - id
         type: object
         properties:
           id:
@@ -504,7 +496,7 @@ WCTP_TERMINAL Response Schema:
       description: 'Security code for WCTP terminal.'
 
 TERMINAL_COPY:
-  title: TERMINAL_COPY
+  title: Terminal Copy
   required:
     - name
     - copyPoints
@@ -513,10 +505,38 @@ TERMINAL_COPY:
     name:
       type: string
       maxLength: 60
-      description: 'Name for the load program.'
+      description: 'Name for the terminal.'
     copyPoints:
       type: boolean
       description: 'Flag to copy points of terminal.'
+
+Terminals Response List:
+  type: object
+  properties:
+    pageNumber:
+      type: integer
+      default: 1
+      description: 'Number of Pages for the terminals.'
+    itemsPerPage: 
+      type: integer
+      default: 250
+      description: 'Total number of items per page for the terminals.'
+    totalItems:
+      type: integer
+      description: 'Total items or (number ) of the terminals present in the system.'
+    items:
+      type: array
+      items:
+        type: object
+        properties:
+          Paging Tap Terminal:
+            $ref: '#/PAGING_TAP_TERMINAL Response Schema'
+          SNPP Terminal:
+            $ref: '#/SNPP_TERMINAL Response Schema'
+          TNPP Terminal:
+            $ref: '#/TNPP_TERMINAL Response Schema'
+          WCTP Terminal:
+            $ref: '#/WCTP_TERMINAL Response Schema'
 
 id:
   required:
@@ -531,7 +551,7 @@ components:
   examples:
     Paging Tap Terminal Request: 
       value:
-        type: ROUTE_TAP_PAGING
+        type: TAPTERMINAL
         name: Test Paging Tap Terminal
         enabled: true
         password: PasswordForTerminal
@@ -542,7 +562,7 @@ components:
     Paging Tap Terminal Response: 
       value:
         id: 151
-        type: ROUTE_TAP_PAGING
+        type: TAPTERMINAL
         name: Test Paging Tap Terminal
         enabled: true
         password: PasswordForTerminal
@@ -553,7 +573,7 @@ components:
 
     SNPP Terminal Request: 
       value:
-        type: ROUTE_SNPP_TERMINAL
+        type: SNPP_TERMINAL
         name: Test SNPP Terminal
         enabled: true
         pageNumber: 77676
@@ -565,7 +585,7 @@ components:
     SNPP Terminal Response: 
       value:
         id: 151
-        type: ROUTE_SNPP_TERMINAL
+        type: SNPP_TERMINAL
         name: Test SNPP Terminal
         enabled: true
         pageNumber: 77676
@@ -577,7 +597,7 @@ components:
 
     TNPP Terminal Request: 
       value:
-        type: ROUTE_TNPP_TERMINAL
+        type: TNPP_TERMINAL
         name: Test TNPP Terminal
         enabled: true
         password: PasswordForTerminal
@@ -597,7 +617,7 @@ components:
     TNPP Terminal Response: 
       value:
         id: 151
-        type: ROUTE_TNPP_TERMINAL
+        type: TNPP_TERMINAL
         name: Test TNPP Terminal
         enabled: true
         password: PasswordForTerminal
@@ -617,7 +637,7 @@ components:
 
     WCTP Terminal Request: 
       value:
-        type: ROUTE_WCTP_TERMINAL
+        type: WCTP_TERMINAL
         name: Test WCTP Terminal
         enabled: true
         password: PasswordForTerminal
@@ -630,7 +650,7 @@ components:
     WCTP Terminal Response: 
       value:
         id: 151
-        type: ROUTE_WCTP_TERMINAL
+        type: WCTP_TERMINAL
         name: Test WCTP Terminal
         enabled: true
         password: PasswordForTerminal
@@ -645,6 +665,70 @@ components:
       value:
         id: 39223
 
+    List of Terminals:
+      value:
+        pageNumber: 1
+        itemsPerPage: 250
+        totalItems: 5
+        items:
+          - id: 151
+            type: TAPTERMINAL
+            name: Test Paging Tap Terminal
+            enabled: true
+            password: PasswordPagingTap
+            pageNumber: 779
+            commChannel:
+              id: 1234
+              name: Test Comm channel
+          - id: 152
+            type: SNPP_TERMINAL
+            name: Test SNPP Terminal
+            enabled: true
+            pageNumber: 778
+            commChannel:
+              id: 1234
+              name: Test Comm channel
+            login: Login for SNPP
+            password: PasswordForSNPP
+          - id: 153
+            type: TNPP_TERMINAL
+            name: Test TNPP Terminal
+            enabled: true
+            password: PasswordForTNPP
+            commChannel:
+              id: 1234
+              name: Test Comm channel
+            originAddress: 2345
+            destinationAddress: 3455
+            inertia: 564
+            protocol: FLEX
+            dataFormat: BEEP_ONLY
+            identifierFormat: CAP_PAGE
+            pagerId: 1234
+            channel: 4
+            functionCode: 5
+            zone: 6
+          - id: 154
+            type: WCTP_TERMINAL
+            name: Test WCTP Terminal
+            enabled: true
+            password: PasswordForWCTP
+            commChannel:
+              id: 1234
+              name: Test Comm channel
+            pageNumber: 77676
+            sender: yukonserver@cannontech.com
+            securityCode: security code for WCTP
+          - id: 155
+            type: TAPTERMINAL
+            name: Test Paging Tap Terminal2
+            enabled: true
+            password: PasswordForPaging2
+            pageNumber: 776
+            commChannel:
+              id: 1234
+              name: Test Comm channel
+
     TerminalCopy:
       value:
         name: Copy of Test Terminal
@@ -653,7 +737,7 @@ components:
     Paging Tap Terminal Copy Response:
       value:
         id: 152
-        type: ROUTE_TAP_PAGING
+        type: TAPTERMINAL
         name: Copy of Test Terminal
         enabled: true
         password: PasswordForTerminal
@@ -665,7 +749,7 @@ components:
     SNPP Terminal Copy Response: 
       value:
         id: 152
-        type: ROUTE_SNPP_TERMINAL
+        type: SNPP_TERMINAL
         name: Copy of Test Terminal
         enabled: true
         pageNumber: 77676
@@ -678,7 +762,7 @@ components:
     TNPP Terminal Copy Response: 
       value:
         id: 152
-        type: ROUTE_TNPP_TERMINAL
+        type: TNPP_TERMINAL
         name: Copy of Test Terminal
         enabled: true
         password: PasswordForTerminal
@@ -699,7 +783,7 @@ components:
     WCTP Terminal Copy Response: 
       value:
         id: 152
-        type: ROUTE_WCTP_TERMINAL
+        type: WCTP_TERMINAL
         name: Copy of Test Terminal
         enabled: true
         password: PasswordForTerminal
