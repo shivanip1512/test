@@ -1,5 +1,7 @@
 package com.cannontech.multispeak.client.core.v4;
 
+import com.cannontech.msp.beans.v4.GetAllSubstationLoadControlStatuses;
+import com.cannontech.msp.beans.v4.GetAllSubstationLoadControlStatusesResponse;
 import com.cannontech.msp.beans.v4.GetMethods;
 import com.cannontech.msp.beans.v4.GetMethodsResponse;
 import com.cannontech.msp.beans.v4.PingURL;
@@ -24,6 +26,19 @@ public interface IDRClient {
      * @param String the URI of the DR Server
      */
     public GetMethodsResponse getMethods(final MultispeakVendor mspVendor, String uri, GetMethods getMethods)
+            throws MultispeakWebServiceClientException;
+
+    /**
+     * Get All Substation Load Control Statuses
+     * 
+     * @param mspVendor
+     * @param url
+     * @param getAllSubstationLoadControlStatuses
+     * @return
+     * @throws MultispeakWebServiceClientException
+     */
+    GetAllSubstationLoadControlStatusesResponse getAllSubstationLoadControlStatuses(MultispeakVendor mspVendor,
+            String url, GetAllSubstationLoadControlStatuses getAllSubstationLoadControlStatuses)
             throws MultispeakWebServiceClientException;
 
 }

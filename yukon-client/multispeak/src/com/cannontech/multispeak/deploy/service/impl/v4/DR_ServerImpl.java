@@ -11,6 +11,7 @@ import com.cannontech.clientutils.YukonLogManager;
 import com.cannontech.database.data.lite.LiteYukonUser;
 import com.cannontech.msp.beans.v4.ErrorObject;
 import com.cannontech.msp.beans.v4.ScadaAnalog;
+import com.cannontech.msp.beans.v4.SubstationLoadControlStatus;
 import com.cannontech.multispeak.client.MultispeakDefines;
 import com.cannontech.multispeak.client.v4.MultispeakFuncs;
 import com.cannontech.multispeak.exceptions.MultispeakWebServiceException;
@@ -42,7 +43,8 @@ public class DR_ServerImpl implements DR_Server {
         String[] methods = new String[] {
                 "PingURL",
                 "GetMethods",
-                "SCADAAnalogChangedNotification" };
+                "SCADAAnalogChangedNotification",
+                "GetAllSubstationLoadControlStatuses"};
 
         return multispeakFuncs.getMethods(MultispeakDefines.DR_Server_STR, Arrays.asList(methods));
     }
@@ -65,5 +67,13 @@ public class DR_ServerImpl implements DR_Server {
             }
         }
         return errorObjects;
+    }
+    
+    @Override
+    public List<SubstationLoadControlStatus> getAllSubstationLoadControlStatuses() throws MultispeakWebServiceException {
+        init();
+        multispeakFuncs.authenticateMsgHeader();
+        multispeakFuncs.getMultispeakVendorFromHeader();
+        return multispeakLMService.getActiveLoadControlStatus();
     }
 }

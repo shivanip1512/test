@@ -4,6 +4,7 @@ import java.util.List;
 
 import com.cannontech.msp.beans.v4.ErrorObject;
 import com.cannontech.msp.beans.v4.ScadaAnalog;
+import com.cannontech.msp.beans.v4.SubstationLoadControlStatus;
 import com.cannontech.multispeak.exceptions.MultispeakWebServiceException;
 
 public interface DR_Server {
@@ -32,5 +33,14 @@ public interface DR_Server {
      */
     public List<ErrorObject> SCADAAnalogChangedNotification(List<ScadaAnalog> scadaAnalogs)
             throws MultispeakWebServiceException;
+
+    /**
+     * get All Substation Load Control Statuses.
+     * 
+     * @return the all substation load control statuses
+     * @throws MultispeakWebServiceException
+     *         the multispeak web service exception
+     */
+    public List<SubstationLoadControlStatus> getAllSubstationLoadControlStatuses() throws MultispeakWebServiceException;
 
 }

@@ -6,6 +6,8 @@ import org.springframework.oxm.XmlMappingException;
 import org.springframework.ws.WebServiceException;
 import org.springframework.ws.client.core.WebServiceTemplate;
 
+import com.cannontech.msp.beans.v4.GetAllSubstationLoadControlStatuses;
+import com.cannontech.msp.beans.v4.GetAllSubstationLoadControlStatusesResponse;
 import com.cannontech.msp.beans.v4.GetMethods;
 import com.cannontech.msp.beans.v4.GetMethodsResponse;
 import com.cannontech.msp.beans.v4.PingURL;
@@ -51,6 +53,21 @@ public class DRClient implements IDRClient {
 
             return (GetMethodsResponse) webServiceTemplate.marshalSendAndReceive(uri, getMethods,
                     customWebServiceMsgCallback.addRequestHeader(mspVendor, MultispeakDefines.DR_Server_STR));
+        } catch (WebServiceException | XmlMappingException ex) {
+            throw new MultispeakWebServiceClientException(ex.getMessage());
+        }
+    }
+
+    @Override
+    public GetAllSubstationLoadControlStatusesResponse getAllSubstationLoadControlStatuses(
+            final MultispeakVendor mspVendor, String uri,
+            GetAllSubstationLoadControlStatuses getAllSubstationLoadControlStatuses)
+            throws MultispeakWebServiceClientException {
+        try {
+            multispeakFuncs.setMsgSender(webServiceTemplate, mspVendor);
+
+            return (GetAllSubstationLoadControlStatusesResponse) webServiceTemplate.marshalSendAndReceive(uri,
+                getAllSubstationLoadControlStatuses, customWebServiceMsgCallback.addRequestHeader(mspVendor, MultispeakDefines.LM_Server_STR));
         } catch (WebServiceException | XmlMappingException ex) {
             throw new MultispeakWebServiceClientException(ex.getMessage());
         }

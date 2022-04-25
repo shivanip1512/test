@@ -10,6 +10,9 @@ import org.springframework.ws.server.endpoint.annotation.RequestPayload;
 import org.springframework.ws.server.endpoint.annotation.ResponsePayload;
 
 import com.cannontech.msp.beans.v4.ArrayOfString;
+import com.cannontech.msp.beans.v4.ArrayOfSubstationLoadControlStatus;
+import com.cannontech.msp.beans.v4.GetAllSubstationLoadControlStatuses;
+import com.cannontech.msp.beans.v4.GetAllSubstationLoadControlStatusesResponse;
 import com.cannontech.msp.beans.v4.GetMethods;
 import com.cannontech.msp.beans.v4.GetMethodsResponse;
 import com.cannontech.msp.beans.v4.ObjectFactory;
@@ -18,6 +21,7 @@ import com.cannontech.msp.beans.v4.PingURLResponse;
 import com.cannontech.msp.beans.v4.SCADAAnalogChangedNotification;
 import com.cannontech.msp.beans.v4.SCADAAnalogChangedNotificationResponse;
 import com.cannontech.msp.beans.v4.ScadaAnalog;
+import com.cannontech.msp.beans.v4.SubstationLoadControlStatus;
 import com.cannontech.multispeak.client.MultispeakDefines;
 import com.cannontech.multispeak.client.v4.MultispeakFuncs;
 import com.cannontech.multispeak.exceptions.MultispeakWebServiceException;
@@ -33,6 +37,7 @@ public class DRServiceEndpoint {
 
     @Autowired private ObjectFactory objectFactory;
     @Autowired private MultispeakFuncs multispeakFuncs;
+    @Autowired private DR_Server dr_Server;
 
     @Autowired private DR_Server dr_server;
     private final String DR_V4_ENDPOINT_NAMESPACE = MultispeakDefines.NAMESPACE_v4;
@@ -67,6 +72,22 @@ public class DRServiceEndpoint {
         response.setSCADAAnalogChangedNotificationResult(
                 multispeakFuncs.toArrayOfErrorObject(dr_server.SCADAAnalogChangedNotification(scadaAnalogs)));
 
+        return response;
+    }
+
+    @PayloadRoot(localPart = "GetAllSubstationLoadControlStatuses", namespace = MultispeakDefines.NAMESPACE_v4)
+    public @ResponsePayload
+    GetAllSubstationLoadControlStatusesResponse getAllSubstationLoadControlStatuses(
+            @RequestPayload GetAllSubstationLoadControlStatuses getAllSubstationLoadControlStatuses)
+            throws MultispeakWebServiceException {
+        GetAllSubstationLoadControlStatusesResponse response =
+            objectFactory.createGetAllSubstationLoadControlStatusesResponse();
+        List<SubstationLoadControlStatus> substationLoadControlStatus =
+            dr_Server.getAllSubstationLoadControlStatuses();
+        
+        ArrayOfSubstationLoadControlStatus arrayOfSubstationLoadControlStatus = objectFactory.createArrayOfSubstationLoadControlStatus();
+        arrayOfSubstationLoadControlStatus.getSubstationLoadControlStatus().addAll(substationLoadControlStatus);
+        response.setGetAllSubstationLoadControlStatusesResult(arrayOfSubstationLoadControlStatus);
         return response;
     }
 }
