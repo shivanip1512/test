@@ -1,8 +1,8 @@
 Notification Group:
    title: Notification Group
    required:
-     name
-     disabled
+     - name
+     - disabled
    type: object
    properties:
     name:
@@ -13,6 +13,7 @@ Notification Group:
       type: boolean
       description: 'Disable the notification group.'
     cICustomers:
+      type: array
       description: 'Customers that can be assigned to the notification group.'
       $ref: '#/cICustomers'
     unassignedContacts:
@@ -27,7 +28,6 @@ Notification Group Response Schema:
       description: 'Unique identifier of the notification group.'
     name:
       type: string
-      maxLength: 40
       description: 'Name of the notification group.'
     disabled:
       type: boolean
@@ -38,47 +38,70 @@ Notification Group Response Schema:
     unassignedContacts:
        description: 'Contacts that can be assigned to the notification group.'
        $ref: '#/unassignedContacts'
-      
+
+unassignedContacts:
+    type: array
+    items:
+      properties:
+        id:
+          type: integer
+          description: 'Unique identifier of the contact.'
+        emailEnabled:
+          type: boolean
+          description: 'Enable/Disable the email notification for this contact.'
+        phoneCallEnabled:
+          type: boolean
+          description: 'Enable/Disable the phone call notification for this contact.'
+        selected:
+          type: boolean
+          description: 'Select this contact for Notification Group.'
+        notifications:
+          description: 'Notifications associated with this contact.'
+          $ref: '#/notifications'
+        
 cICustomers:
-    type: Object
-    properties:
-      id:
-        type: integer
-        description: 'Unique identifier of the customer.'
-      emailEnabled:
-        type: boolean
-        description: 'Enable/Disable the email notification for this customer.'
-      phoneCallEnabled:
-        type: boolean
-        description: 'Enable/Disable the phone call notification for this customer.'
-      selected:
-        type: boolean
-        description: 'Select this customer for Notification Group.'
-      contacts:
-        description: 'Contacts associated with this customer.'
-        $ref: '#/contacts'
+    type: array
+    items:
+      properties:
+        id:
+          type: integer
+          description: 'Unique identifier of the customer.'
+        emailEnabled:
+          type: boolean
+          description: 'Enable/Disable the email notification for this customer.'
+        phoneCallEnabled:
+          type: boolean
+          description: 'Enable/Disable the phone call notification for this customer.'
+        selected:
+          type: boolean
+          description: 'Select this customer for Notification Group.'
+        contacts:
+          description: 'Contacts associated with this customer.'
+          $ref: '#/contacts'
       
 contacts:
-    type: Object
-    properties:
-      id:
-        type: integer
-        description: 'Unique identifier of the contact.'
-      emailEnabled:
-        type: boolean
-        description: 'Enable/Disable the email notification for this contact.'
-      phoneCallEnabled:
-        type: boolean
-        description: 'Enable/Disable the phone call notification for this contact.'
-      selected:
-        type: boolean
-        description: 'Select this contact for Notification Group.'
-      notifications:
-        description: 'Notifications associated with this contact.'
-        $ref: '#/notifications'
+    type: array
+    items:
+      properties:
+        id:
+          type: integer
+          description: 'Unique identifier of the contact.'
+        emailEnabled:
+          type: boolean
+          description: 'Enable/Disable the email notification for this contact.'
+        phoneCallEnabled:
+          type: boolean
+          description: 'Enable/Disable the phone call notification for this contact.'
+        selected:
+          type: boolean
+          description: 'Select this contact for Notification Group.'
+        notifications:
+           description: 'Notifications associated with this contact.'
+           $ref: '#/notifications'
         
 notifications:
-    type: Object
+    type: object
+    items:
     properties:
       id:
         type: integer
@@ -94,17 +117,15 @@ notifications:
         description: 'Select this notification.'
         
 
-Notification Groups List:
+id:
+  title: id
   type: object
   properties:
-    items:
-      type: array
-      items:
-        type: object
-        properties:
-            $ref: '#/Notification Group Response Schema'
-            
-                                     
+    id:
+      type: integer
+      description: 'Unique identifier for Notification Group.'
+      
+      
 components:
   examples:
     Notification Group Request:
@@ -171,7 +192,6 @@ components:
         
     List of Notification Groups:
       value:
-        items:
         - id: 1
           name: Test Notification Group 1
           disabled: false
@@ -232,3 +252,5 @@ components:
     NotificationGroupId:
       value:
         - id: 1
+
+  

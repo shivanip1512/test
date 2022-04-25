@@ -26,7 +26,7 @@ post-get-all-operation:
     
   get:
     tags:
-      - Notification Groups
+      - Notification Group
     summary: Retrieve all the Notification Groups 
     description: |-
       API to retrieve all type of Notification Groups. 
@@ -37,7 +37,7 @@ post-get-all-operation:
         content:
           application/json:
             schema:
-              $ref: '../schemas/notificationGroupsSchema.yaml#/Notification Groups List'
+              $ref: '../schemas/notificationGroupsSchema.yaml#/Notification Group Response Schema'
              
             examples:
               Notification Groups List:
@@ -82,7 +82,7 @@ get-update-delete-operation:
       content:
         application/json:
           schema:
-            $ref: '../schemas/notificationGroupsSchema.yaml#/NotificationGroup'
+            $ref: '../schemas/notificationGroupsSchema.yaml#/Notification Group'
           examples:
             NotificationGroup:
               $ref: '../schemas/notificationGroupsSchema.yaml#/components/examples/Notification Group Request'
