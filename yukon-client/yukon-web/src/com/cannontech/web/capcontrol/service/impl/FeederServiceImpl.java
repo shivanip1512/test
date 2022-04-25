@@ -193,7 +193,7 @@ public class FeederServiceImpl implements FeederService {
     }
 
     @Override
-    public boolean isCapBanksAssignedToZone(int feederId) throws EmptyResultDataAccessException {
+    public boolean isCapBanksAssignedToZone(int feederId) throws EmptyResultDataAccessException, NotFoundException {
 
         Integer substationBusId = feederDao.getParentSubBusID(feederId);
         SubBus bus = ccCache.getSubBus(substationBusId);
@@ -214,7 +214,7 @@ public class FeederServiceImpl implements FeederService {
     }
     
     @Override
-    public boolean isFeederAssignedToVoltagePointForZone(int feederId) throws EmptyResultDataAccessException {
+    public boolean isFeederAssignedToVoltagePointForZone(int feederId) throws EmptyResultDataAccessException, NotFoundException {
 
         Integer substationBusId = feederDao.getParentSubBusID(feederId);
         SubBus bus = ccCache.getSubBus(substationBusId);
