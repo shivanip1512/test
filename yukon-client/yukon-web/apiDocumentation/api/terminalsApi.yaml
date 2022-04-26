@@ -115,7 +115,7 @@ get-update-delete-operation:
                 $ref: '../schemas/terminalsSchema.yaml#/components/examples/TNPP Terminal Response'
               WCTP Terminal:
                 $ref: '../schemas/terminalsSchema.yaml#/components/examples/WCTP Terminal Response'
-  patch:
+  put:
     tags:
       - Terminals
     summary: Update Terminal
