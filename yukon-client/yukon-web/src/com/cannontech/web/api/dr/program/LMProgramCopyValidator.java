@@ -15,6 +15,7 @@ import com.cannontech.yukon.IDatabaseCache;
 public class LMProgramCopyValidator extends SimpleValidator<LoadProgramCopy> {
 
     @Autowired private IDatabaseCache serverDatabaseCache;
+    @Autowired private YukonApiValidationUtils yukonApiValidationUtils;
 
     public LMProgramCopyValidator() {
         super(LoadProgramCopy.class);
@@ -23,16 +24,16 @@ public class LMProgramCopyValidator extends SimpleValidator<LoadProgramCopy> {
     @Override
     protected void doValidation(LoadProgramCopy loadProgramCopy, Errors errors) {
         // Name validation
-        YukonApiValidationUtils.validateCopyPaoName(loadProgramCopy.getName(), errors, "Name");
+        yukonApiValidationUtils.validateCopyPaoName(loadProgramCopy.getName(), errors, "Name");
 
-        YukonApiValidationUtils.checkIfFieldRequired("operationalState", errors, loadProgramCopy.getOperationalState(),
+        yukonApiValidationUtils.checkIfFieldRequired("operationalState", errors, loadProgramCopy.getOperationalState(),
                 "Operational State");
 
-        YukonApiValidationUtils.checkIfFieldRequired("constraint", errors, loadProgramCopy.getConstraint(), "Program Constraint");
+        yukonApiValidationUtils.checkIfFieldRequired("constraint", errors, loadProgramCopy.getConstraint(), "Program Constraint");
 
         if (!errors.hasFieldErrors("constraint")) {
             Integer constraintId = loadProgramCopy.getConstraint().getConstraintId();
-            YukonApiValidationUtils.checkIfFieldRequired("constraint.constraintId", errors, constraintId, "Constraint");
+            yukonApiValidationUtils.checkIfFieldRequired("constraint.constraintId", errors, constraintId, "Constraint");
             if (!errors.hasFieldErrors("constraint.constraintId")) {
                 Set<Integer> constraintIds = serverDatabaseCache.getAllLMProgramConstraints().stream()
                                                                                              .map(lmConstraint -> lmConstraint.getConstraintID())
