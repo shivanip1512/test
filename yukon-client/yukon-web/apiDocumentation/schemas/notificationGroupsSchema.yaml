@@ -2,16 +2,16 @@ Notification Group:
    title: Notification Group
    required:
      - name
-     - disabled
+     - enabled
    type: object
    properties:
     name:
       type: string
       maxLength: 40
       description: 'Name of the notification group.'
-    disabled:
+    enabled:
       type: boolean
-      description: 'Disable the notification group.'
+      description: 'Enable the notification group.'
     cICustomers:
       type: array
       description: 'Customers that can be assigned to the notification group.'
@@ -29,9 +29,9 @@ Notification Group Response Schema:
     name:
       type: string
       description: 'Name of the notification group.'
-    disabled:
+    enabled:
       type: boolean
-      description: 'Disable the notification group.'
+      description: 'Enable the notification group.'
     cICustomers:
        description: 'Customers that can be assigned to the notification group.'
        $ref: '#/cICustomers'
@@ -131,7 +131,7 @@ components:
     Notification Group Request:
       value:
         name: Test Notification Group
-        disabled: false
+        enabled: true
         cICustomers:
             id: 10
             emailEnabled: true
@@ -162,7 +162,7 @@ components:
       value:
         id: 1
         name: Test Notification Group
-        disabled: false
+        enabled: true
         cICustomers:
             id: 10
             emailEnabled: true
@@ -194,7 +194,7 @@ components:
       value:
         - id: 1
           name: Test Notification Group 1
-          disabled: false
+          enabled: true
           cICustomers:
             id: 10
             emailEnabled: true
@@ -222,7 +222,7 @@ components:
                selected: false
         - id: 2
           name: Test Notification Group 2
-          disabled: false
+          enabled: true
           cICustomers:
             id: 10
             emailEnabled: true
