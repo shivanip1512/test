@@ -30,7 +30,7 @@ post-get-all-operation:
               $ref: '../schemas/terminalsSchema.yaml#/components/examples/WCTP Terminal Request'
       required: true
     responses:
-        '200':
+        '201':
           description: 'Created'
           content:
             application/json:
@@ -72,7 +72,7 @@ post-get-all-operation:
               $ref: '../schemas/terminalsSchema.yaml#/Terminals Response List'
             
             examples:
-              List Attributes:
+              List Terminals:
                 $ref: '../schemas/terminalsSchema.yaml#/components/examples/List of Terminals' 
 
 get-update-delete-operation:

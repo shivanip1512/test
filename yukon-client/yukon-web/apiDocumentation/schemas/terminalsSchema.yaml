@@ -3,8 +3,9 @@ PAGING_TAP_TERMINAL:
   required:
     - name
     - type
-    - pageNumber
+    - pagerNumber
     - commChannel
+    - password
   type: object
   properties:
     name:
@@ -22,11 +23,11 @@ PAGING_TAP_TERMINAL:
     enabled:
       type: boolean
       default: true
-      description: 'Flag to enable terminal.'
+      description: 'Status of terminal.'
     password:
       type: string
       maxLength: 20
-      description: 'Password of terminal.'
+      description: 'Password of terminal. This field can be empty but cannot be null. It should have some valid string.'
     commChannel:
       type: array
       items:
@@ -37,7 +38,7 @@ PAGING_TAP_TERMINAL:
           id:
             type: integer
             description: 'Id of Communication Channel.'
-    pageNumber:
+    pagerNumber:
       type: string
       maxLength: 20
       description: 'Pager number of terminal.'
@@ -48,8 +49,9 @@ SNPP_TERMINAL:
   required:
     - name
     - type
-    - pageNumber
+    - pagerNumber
     - commChannel
+    - password
   type: object
   properties:
     name:
@@ -67,8 +69,8 @@ SNPP_TERMINAL:
     enabled:
       type: boolean
       default: true
-      description: 'Flag to enable terminal.'
-    pageNumber:
+      description: 'Status of terminal.'
+    pagerNumber:
       type: string
       maxLength: 20
       description: 'Pager number of terminal.'
@@ -89,7 +91,7 @@ SNPP_TERMINAL:
     password:
       type: string
       maxLength: 20
-      description: 'Password of terminal.'
+      description: 'Password of terminal. This field can be empty but cannot be null. It should have some valid string.'
 
 TNPP_TERMINAL:
   title: TNPP Terminal
@@ -125,11 +127,11 @@ TNPP_TERMINAL:
     enabled:
       type: boolean
       default: true
-      description: 'Flag to enable terminal.'
+      description: 'Status of terminal.'
     password:
       type: string
       maxLength: 20
-      description: 'Password of terminal.'
+      description: 'Password of terminal. This field can be empty but cannot be null. It should have some valid string.'
     commChannel:
       type: array
       items:
@@ -203,8 +205,9 @@ WCTP_TERMINAL:
   required:
     - name
     - type
-    - pageNumber
+    - pagerNumber
     - commChannel
+    - password
     - sender
     - securityCode
   type: object
@@ -224,11 +227,11 @@ WCTP_TERMINAL:
     enabled:
       type: boolean
       default: true
-      description: 'Flag to enable terminal.'
+      description: 'Status of terminal.'
     password:
       type: string
       maxLength: 20
-      description: 'Password of terminal.'
+      description: 'Password of terminal. This field can be empty but cannot be null. It should have some valid string.'
     commChannel:
       type: array
       items:
@@ -239,14 +242,14 @@ WCTP_TERMINAL:
           id:
             type: integer
             description: 'Id of Communication Channel.'
-    pageNumber:
+    pagerNumber:
       type: string
       maxLength: 20
       description: 'Pager number of terminal.'
     sender:
       type: string
       maxLength: 64
-      description: 'Sender email address of terminal.'
+      description: 'Sender of terminal.'
     securityCode:
       type: string
       maxLength: 64
@@ -275,15 +278,15 @@ PAGING_TAP_TERMINAL Response Schema:
     enabled:
       type: boolean
       default: true
-      description: 'Flag to enable terminal.'
-    pageNumber:
+      description: 'Status of terminal.'
+    pagerNumber:
       type: string
       maxLength: 20
       description: 'Pager number of terminal.'
     password:
       type: string
       maxLength: 20
-      description: 'Password of terminal.'
+      description: 'Password of terminal. This field can be empty but cannot be null. It should have some valid string.'
     commChannel:
       type: array
       items:
@@ -319,8 +322,8 @@ SNPP_TERMINAL Response Schema:
     enabled:
       type: boolean
       default: true
-      description: 'Flag to enable terminal.'
-    pageNumber:
+      description: 'Status of terminal.'
+    pagerNumber:
       type: string
       maxLength: 20
       description: 'Pager number of terminal.'
@@ -343,7 +346,7 @@ SNPP_TERMINAL Response Schema:
     password:
       type: string
       maxLength: 20
-      description: 'Password of terminal.'
+      description: 'Password of terminal. This field can be empty but cannot be null. It should have some valid string.'
 
 TNPP_TERMINAL Response Schema:
   title: TNPP Terminal
@@ -367,11 +370,11 @@ TNPP_TERMINAL Response Schema:
     enabled:
       type: boolean
       default: true
-      description: 'Flag to enable terminal.'
+      description: 'Status of terminal.'
     password:
       type: string
       maxLength: 20
-      description: 'Password of terminal.'
+      description: 'Password of terminal. This field can be empty but cannot be null. It should have some valid string.'
     commChannel:
       type: array
       items:
@@ -465,11 +468,11 @@ WCTP_TERMINAL Response Schema:
     enabled:
       type: boolean
       default: true
-      description: 'Flag to enable terminal.'
+      description: 'Status of terminal.'
     password:
       type: string
       maxLength: 20
-      description: 'Password of terminal.'
+      description: 'Password of terminal. This field can be empty but cannot be null. It should have some valid string.'
     commChannel:
       type: array
       items:
@@ -482,14 +485,14 @@ WCTP_TERMINAL Response Schema:
             type: string
             maxLength: 60
             description: 'Name of Communication Channel.'
-    pageNumber:
+    pagerNumber:
       type: string
       maxLength: 20
       description: 'Pager number of terminal.'
     sender:
       type: string
       maxLength: 64
-      description: 'Sender email address of terminal.'
+      description: 'Sender of terminal.'
     securityCode:
       type: string
       maxLength: 64
@@ -513,7 +516,7 @@ TERMINAL_COPY:
 Terminals Response List:
   type: object
   properties:
-    pageNumber:
+    pagerNumber:
       type: integer
       default: 1
       description: 'Number of Pages for the terminals.'
@@ -555,7 +558,7 @@ components:
         name: Test Paging Tap Terminal
         enabled: true
         password: PasswordForTerminal
-        pageNumber: 77676
+        pagerNumber: 77676
         commChannel:
           id: 1234
 
@@ -566,7 +569,7 @@ components:
         name: Test Paging Tap Terminal
         enabled: true
         password: PasswordForTerminal
-        pageNumber: 77676
+        pagerNumber: 77676
         commChannel:
           id: 1234
           name: Test Comm channel
@@ -576,7 +579,7 @@ components:
         type: SNPP_TERMINAL
         name: Test SNPP Terminal
         enabled: true
-        pageNumber: 77676
+        pagerNumber: 77676
         commChannel:
           id: 1234
         login: Login for SNPP
@@ -588,7 +591,7 @@ components:
         type: SNPP_TERMINAL
         name: Test SNPP Terminal
         enabled: true
-        pageNumber: 77676
+        pagerNumber: 77676
         commChannel:
           id: 1234
           name: Test Comm channel
@@ -643,7 +646,7 @@ components:
         password: PasswordForTerminal
         commChannel:
           id: 1234
-        pageNumber: 77676
+        pagerNumber: 77676
         sender: yukonserver@cannontech.com
         securityCode: security code for WCTP
 
@@ -657,7 +660,7 @@ components:
         commChannel:
           id: 1234
           name: Test Comm channel
-        pageNumber: 77676
+        pagerNumber: 77676
         sender: yukonserver@cannontech.com
         securityCode: security code for WCTP
 
@@ -667,7 +670,7 @@ components:
 
     List of Terminals:
       value:
-        pageNumber: 1
+        pagerNumber: 1
         itemsPerPage: 250
         totalItems: 5
         items:
@@ -676,7 +679,7 @@ components:
             name: Test Paging Tap Terminal
             enabled: true
             password: PasswordPagingTap
-            pageNumber: 779
+            pagerNumber: 779
             commChannel:
               id: 1234
               name: Test Comm channel
@@ -684,7 +687,7 @@ components:
             type: SNPP_TERMINAL
             name: Test SNPP Terminal
             enabled: true
-            pageNumber: 778
+            pagerNumber: 778
             commChannel:
               id: 1234
               name: Test Comm channel
@@ -716,7 +719,7 @@ components:
             commChannel:
               id: 1234
               name: Test Comm channel
-            pageNumber: 77676
+            pagerNumber: 77676
             sender: yukonserver@cannontech.com
             securityCode: security code for WCTP
           - id: 155
@@ -724,7 +727,7 @@ components:
             name: Test Paging Tap Terminal2
             enabled: true
             password: PasswordForPaging2
-            pageNumber: 776
+            pagerNumber: 776
             commChannel:
               id: 1234
               name: Test Comm channel
@@ -741,7 +744,7 @@ components:
         name: Copy of Test Terminal
         enabled: true
         password: PasswordForTerminal
-        pageNumber: 77676
+        pagerNumber: 77676
         commChannel:
           id: 1234
           name: Test Comm channel
@@ -752,7 +755,7 @@ components:
         type: SNPP_TERMINAL
         name: Copy of Test Terminal
         enabled: true
-        pageNumber: 77676
+        pagerNumber: 77676
         commChannel:
           id: 1234
           name: Test Comm channel
@@ -790,6 +793,6 @@ components:
         commChannel:
           id: 1234
           name: Test Comm channel
-        pageNumber: 77676
+        pagerNumber: 77676
         sender: yukonserver@cannontech.com
         securityCode: security code for WCTP
