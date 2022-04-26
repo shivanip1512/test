@@ -42,10 +42,12 @@ Notification Group Response Schema:
 unassignedContacts:
     type: array
     items:
+      required:
+        - id
       properties:
         id:
           type: integer
-          description: 'Unique identifier of the contact.'
+          description: 'Unique identifier of the contact. Mandatory if unassigned contacts are added.' 
         emailEnabled:
           type: boolean
           description: 'Enable/Disable the email notification for this contact.'
@@ -62,10 +64,12 @@ unassignedContacts:
 cICustomers:
     type: array
     items:
+      required:
+        - id
       properties:
         id:
           type: integer
-          description: 'Unique identifier of the customer.'
+          description: 'Unique identifier of the customer. Mandatory if CI Customers are added.'
         emailEnabled:
           type: boolean
           description: 'Enable/Disable the email notification for this customer.'
@@ -82,10 +86,12 @@ cICustomers:
 contacts:
     type: array
     items:
+      required:
+        - id
       properties:
         id:
           type: integer
-          description: 'Unique identifier of the contact.'
+          description: 'Unique identifier of the contact. Mandatory if contacts are added.'
         emailEnabled:
           type: boolean
           description: 'Enable/Disable the email notification for this contact.'
@@ -102,10 +108,12 @@ contacts:
 notifications:
     type: object
     items:
+    required:
+        - id
     properties:
       id:
         type: integer
-        description: 'Unique identifier of the contact notification.'
+        description: 'Unique identifier of the contact notification. Mandatory if notifications are added.'
       emailEnabled:
         type: boolean
         description: 'Enable/Disable the email notification.'
