@@ -15,6 +15,7 @@ import com.cannontech.stars.util.ServletUtils;
 public class VirtualDeviceApiValidator <T extends VirtualDeviceBaseModel> extends SimpleValidator<T> {
 
     @Autowired private YukonApiValidationHelper yukonApiValidationHelper;
+    @Autowired private YukonApiValidationUtils yukonApiValidationUtils;
 
     public VirtualDeviceApiValidator() {
         super((Class<T>) VirtualDeviceBaseModel.class);
@@ -29,8 +30,8 @@ public class VirtualDeviceApiValidator <T extends VirtualDeviceBaseModel> extend
         if (virtualDevice instanceof VirtualMeterModel)
         {
             VirtualMeterModel meter = (VirtualMeterModel) virtualDevice;
-            YukonApiValidationUtils.checkIsBlank(errors, "meterNumber", meter.getMeterNumber(), "Meter Number", true);
-            YukonApiValidationUtils.checkExceedsMaxLength(errors, "meterNumber", meter.getMeterNumber(), 50);
+            yukonApiValidationUtils.checkIsBlank(errors, "meterNumber", meter.getMeterNumber(), "Meter Number", true);
+            yukonApiValidationUtils.checkExceedsMaxLength(errors, "meterNumber", meter.getMeterNumber(), 50);
         }
     }
 }

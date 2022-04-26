@@ -599,6 +599,7 @@ public:
     static const Attribute  ReversedPhaseA;
     static const Attribute  ReversedPhaseC;
     static const Attribute  RfnBlinkCount;
+    static const Attribute  RfnBlinkReported;
     static const Attribute  RfnBlinkRestoreCount;
     static const Attribute  RFNHighTemperatureAlarm;
     static const Attribute  RfnOutageCount;
@@ -690,7 +691,12 @@ public:
     static const Attribute  LMSeasonHistory;
     static const Attribute  LMAnnualHistory;
     static const Attribute  LMControlCountdown;
-    
+    static const Attribute  AssetAvailabilityActiveDevices;
+    static const Attribute  AssetAvailabilityOptedOutDevices;
+    static const Attribute  AssetAvailabilityInactiveDevices;
+    static const Attribute  AssetAvailabilityUnavailableDevices;
+    static const Attribute  AssetAvailabilityTotalDevices;	
+
     static const Attribute  ConnectedLoad;
     static const Attribute  DiversifiedLoad;
     static const Attribute  MaxLoadReduction;

@@ -1,7 +1,7 @@
 /*==============================================================*/
 /* Database name:  YukonDatabase                                */
 /* DBMS name:      ORACLE Version 9i                            */
-/* Created on:     3/1/2022 3:31:32 AM                          */
+/* Created on:     4/12/2022 9:18:38 AM                         */
 /*==============================================================*/
 
 
@@ -5546,7 +5546,7 @@ create table EventInventory  (
 /*==============================================================*/
 create table EventLog  (
    EventLogId           NUMBER                          not null,
-   EventType            VARCHAR2(250)                   not null,
+   EventTypeId          NUMBER                          not null,
    EventTime            DATE,
    String1              VARCHAR2(2000),
    String2              VARCHAR2(2000),
@@ -5564,13 +5564,33 @@ create table EventLog  (
 );
 
 /*==============================================================*/
-/* Index: INDX_EventLog_EvntTime_EvntLogId_EvntType             */
+/* Index: INDX_EventLog_EventTypeId_EventTime                   */
 /*==============================================================*/
-create index INDX_EventLog_EvntTime_EvntLogId_EvntType on EventLog (
-   EventTime DESC,
-   EventLogId DESC,
-   EventType ASC
+create index INDX_EventLog_EventTypeId_EventTime on EventLog (
+   EventTypeId DESC,
+   EventTime DESC
 );
+
+/*==============================================================*/
+/* Index: INDX_EventLog_EventTypeId_EventTime_EventLogId        */
+/*==============================================================*/
+create index INDX_EventLog_EventTypeId_EventTime_EventLogId on EventLog (
+   EventTypeId ASC,
+   EventTime ASC,
+   EventLogId ASC
+);
+
+/*==============================================================*/
+/* Table: EventLogType                                          */
+/*==============================================================*/
+create table EventLogType  (
+   EventTypeId          NUMBER                          not null,
+   EventType            VARCHAR2(255)                   not null,
+   constraint PK_EVENTLOGTYPE primary key (EventTypeId)
+);
+
+alter table EventLogType
+   add constraint AK_EventLogType_EventType unique (EventType);
 
 /*==============================================================*/
 /* Table: EventWorkOrder                                        */
@@ -7299,6 +7319,13 @@ INSERT INTO MSPInterface VALUES (1, 'OD_Server', 'http://127.0.0.1:8080/multispe
 INSERT INTO MSPInterface VALUES (1, 'CD_Server', 'http://127.0.0.1:8080/multispeak/v5/CD_Server', '5.0', '1', NULL, NULL, NULL, NULL, NULL);
 INSERT INTO MSPInterface VALUES (1, 'NOT_Server', 'http://127.0.0.1:8080/multispeak/v5/NOT_Server', '5.0', '1', NULL, NULL, NULL, NULL, NULL);
 
+INSERT INTO MSPInterface VALUES (1, 'MR_Server', 'http://127.0.0.1:8080/multispeak/v4/MR_Server', '4.1', '1', NULL, NULL, NULL, NULL, NULL);
+INSERT INTO MSPInterface VALUES (1, 'OD_Server', 'http://127.0.0.1:8080/multispeak/v4/OD_Server', '4.1', '1', NULL, NULL, NULL, NULL, NULL);
+INSERT INTO MSPInterface VALUES (1, 'CD_Server', 'http://127.0.0.1:8080/multispeak/v4/CD_Server', '4.1', '1', NULL, NULL, NULL, NULL, NULL);
+INSERT INTO MSPInterface VALUES (1, 'DR_Server', 'http://127.0.0.1:8080/multispeak/v4/DR_Server', '4.1', '1', NULL, NULL, NULL, NULL, NULL);
+INSERT INTO MSPInterface VALUES (1, 'SCADA_Server', 'http://127.0.0.1:8080/multispeak/v4/SCADA_Server', '4.1', '1', NULL, NULL, NULL, NULL, NULL);
+INSERT INTO MSPInterface VALUES (1, 'NOT_Server', 'http://127.0.0.1:8080/multispeak/v4/NOT_Server', '4.1', '1', NULL, NULL, NULL, NULL, NULL);
+
 /*==============================================================*/
 /* Table: MSPVendor                                             */
 /*==============================================================*/
@@ -8129,6 +8156,7 @@ create table PointToZoneMapping  (
    GraphPositionOffset  FLOAT,
    Distance             FLOAT,
    Ignore               VARCHAR2(1)                     not null,
+   FeederId             NUMBER,
    constraint PK_PointZoneMap primary key (PointId)
 );
 
@@ -9119,9 +9147,9 @@ create table StatusPointMonitorProcessor  (
    constraint PK_StatPointMonProcId primary key (StatusPointMonitorProcessorId)
 );
 
-INSERT INTO StatusPointMonitorProcessor VALUES (1, 1, 'DIFFERENCE', 1, 'NoResponse');
-INSERT INTO StatusPointMonitorProcessor VALUES (2, 1, 'DIFFERENCE', 0, 'Restoration');
-INSERT INTO StatusPointMonitorProcessor VALUES (3, 1, 'DIFFERENCE', 2, 'Outage');
+INSERT INTO StatusPointMonitorProcessor VALUES (1, 1, 'DIFFERENCE', 1, 'NoResponse', 0);
+INSERT INTO StatusPointMonitorProcessor VALUES (2, 1, 'DIFFERENCE', 0, 'Restoration', 0);
+INSERT INTO StatusPointMonitorProcessor VALUES (3, 1, 'DIFFERENCE', 2, 'Outage', 0);
 
 /*==============================================================*/
 /* Table: StoredProcedureLog                                    */
@@ -12961,6 +12989,10 @@ alter table EventInventory
 alter table EventInventory
    add constraint FK_EVENTINV_INVENBSE foreign key (InventoryID)
       references InventoryBase (InventoryID);
+
+alter table EventLog
+   add constraint FK_EventLog_EventLogType foreign key (EventTypeId)
+      references EventLogType (EventTypeId);
 
 alter table EventWorkOrder
    add constraint FK_EVENTWO_EVNTBSE foreign key (EventID)

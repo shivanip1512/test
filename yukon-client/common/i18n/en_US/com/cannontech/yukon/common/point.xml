@@ -441,6 +441,7 @@
     <entry key="yukon.common.attribute.builtInAttribute.REVERSED_PHASE_A">Reversed Phase A</entry>
     <entry key="yukon.common.attribute.builtInAttribute.REVERSED_PHASE_C">Reversed Phase C</entry>
     <entry key="yukon.common.attribute.builtInAttribute.RFN_BLINK_COUNT">RFN Blink Count</entry>
+    <entry key="yukon.common.attribute.builtInAttribute.RFN_BLINK_REPORTED">RFN Blink Reported</entry>
     <entry key="yukon.common.attribute.builtInAttribute.RFN_BLINK_RESTORE_COUNT">RFN Blink Restore Count</entry>
     <entry key="yukon.common.attribute.builtInAttribute.RFN_OUTAGE_COUNT">RFN Outage Count</entry>
     <entry key="yukon.common.attribute.builtInAttribute.RFN_OUTAGE_RESTORE_COUNT">RFN Outage Restore Count</entry>
@@ -683,6 +684,11 @@
     <entry key="yukon.common.attribute.builtInAttribute.LM_SEASON_HISTORY">Season History</entry>
     <entry key="yukon.common.attribute.builtInAttribute.LM_ANNUAL_HISTORY">Annual History</entry>
     <entry key="yukon.common.attribute.builtInAttribute.LM_CONTROL_COUNTDOWN">Control Countdown</entry>
+    <entry key="yukon.common.attribute.builtInAttribute.LM_ASSET_AVAILABILITY_ACTIVE_DEVICES">Asset Availability Active Devices</entry>
+    <entry key="yukon.common.attribute.builtInAttribute.LM_ASSET_AVAILABILITY_OPTED_OUT_DEVICES">Asset Availability Opted Out Devices</entry>
+    <entry key="yukon.common.attribute.builtInAttribute.LM_ASSET_AVAILABILITY_INACTIVE_DEVICES">Asset Availability Inactive Devices</entry>
+    <entry key="yukon.common.attribute.builtInAttribute.LM_ASSET_AVAILABILITY_UNAVAILABLE_DEVICES">Asset Availability Unavailable Devices</entry>
+    <entry key="yukon.common.attribute.builtInAttribute.LM_ASSET_AVAILABILITY_TOTAL_DEVICES">Asset Availability Total Devices</entry>
 
     <entry key="yukon.common.attribute.builtInAttribute.CONNECTED_LOAD">Connected Load</entry>
     <entry key="yukon.common.attribute.builtInAttribute.DIVERSIFIED_LOAD">Diversified Load</entry>

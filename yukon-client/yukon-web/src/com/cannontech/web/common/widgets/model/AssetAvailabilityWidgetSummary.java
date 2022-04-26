@@ -23,32 +23,32 @@ public class AssetAvailabilityWidgetSummary {
         return active;
     }
 
-    public void setActive(int deviceCount) {
-        this.active = new AssetAvailabilityDetail(deviceCount);
+    public void setActive(int deviceCount, Integer pointId) {
+        this.active = new AssetAvailabilityDetail(deviceCount, pointId);
     }
 
     public AssetAvailabilityDetail getUnavailable() {
         return unavailable;
     }
 
-    public void setUnavailable(int deviceCount) {
-        this.unavailable = new AssetAvailabilityDetail(deviceCount);
+    public void setUnavailable(int deviceCount, Integer pointId) {
+        this.unavailable = new AssetAvailabilityDetail(deviceCount, pointId);
     }
 
     public AssetAvailabilityDetail getInactive() {
         return inactive;
     }
 
-    public void setInactive(int deviceCount) {
-        this.inactive = new AssetAvailabilityDetail(deviceCount);
+    public void setInactive(int deviceCount, Integer pointId) {
+        this.inactive = new AssetAvailabilityDetail(deviceCount, pointId);
     }
 
     public AssetAvailabilityDetail getOptedOut() {
         return optedOut;
     }
 
-    public void setOptedOut(int deviceCount) {
-        this.optedOut = new AssetAvailabilityDetail(deviceCount);
+    public void setOptedOut(int deviceCount, Integer pointId) {
+        this.optedOut = new AssetAvailabilityDetail(deviceCount, pointId);
     }
 
     public Instant getCollectionTime() {

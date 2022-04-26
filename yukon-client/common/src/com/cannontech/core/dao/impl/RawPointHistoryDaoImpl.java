@@ -1214,7 +1214,7 @@ public class RawPointHistoryDaoImpl implements RawPointHistoryDao {
 
     private ListMultimap<PaoIdentifier, PointValueQualityHolder> getMostRecentAttributeDataByValue(
             Iterable<? extends YukonPao> displayableDevices, Attribute attribute, boolean excludeDisabledPaos,
-            final Order order, final OrderBy orderBy, int value, Set<PointQuality> excludeQualities) {
+            final Order order, final OrderBy orderBy, Integer value, Set<PointQuality> excludeQualities) {
         Stopwatch stopwatch = null;
         if (log.isDebugEnabled()) {
             stopwatch = Stopwatch.createStarted();
@@ -1246,7 +1246,9 @@ public class RawPointHistoryDaoImpl implements RawPointHistoryDao {
                         if (excludeQualities != null && !excludeQualities.isEmpty()) {
                             sql.append("AND rph.Quality").notIn(excludeQualities);
                         }
-                        sql.append("AND rph.Value").eq_k(value);
+                        if (value != null) {
+                            sql.append("AND rph.Value").eq_k(value);
+                        }
                         sql.append(") numberedRows");
                         sql.append("WHERE numberedRows.rn").lte(1);
                         sql.append("ORDER BY numberedRows.pointid, numberedRows.rn");
@@ -1273,7 +1275,7 @@ public class RawPointHistoryDaoImpl implements RawPointHistoryDao {
     @Override
     public Map<PaoIdentifier, PointValueQualityHolder> getMostRecentAttributeDataByValue(
             Iterable<? extends YukonPao> displayableDevices, Attribute attribute, boolean excludeDisabledPaos,
-            int value, Set<PointQuality> excludeQualities) {
+            Integer value, Set<PointQuality> excludeQualities) {
 
         ListMultimap<PaoIdentifier, PointValueQualityHolder> limitedStuff =
             getMostRecentAttributeDataByValue(displayableDevices, attribute, excludeDisabledPaos, Order.REVERSE,

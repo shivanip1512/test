@@ -155,7 +155,8 @@
     <entry key="yukon.web.modules.capcontrol.ivvc.zoneWizard.table.ignore">Ignore</entry>
     <entry key="yukon.web.modules.capcontrol.ivvc.zoneWizard.table.phase">Phase</entry>
     <entry key="yukon.web.modules.capcontrol.ivvc.zoneWizard.table.point.name">Name</entry>
-    <entry key="yukon.web.modules.capcontrol.ivvc.zoneWizard.table.point.device">Device</entry>    
+    <entry key="yukon.web.modules.capcontrol.ivvc.zoneWizard.table.point.device">Device</entry>
+    <entry key="yukon.web.modules.capcontrol.ivvc.zoneWizard.table.point.feeder">Feeder</entry>  
     <entry key="yukon.web.modules.capcontrol.ivvc.zoneWizard.picker.hoverText">Click To Select Regulator</entry>
     <entry key="yukon.web.modules.capcontrol.ivvc.zoneWizard.delete.hoverText">Click to remove</entry>
     <entry key="yukon.web.modules.capcontrol.ivvc.zoneWizard.error.required.zoneName">A zone name is required.</entry>
@@ -200,6 +201,7 @@
     <entry key="yukon.web.modules.capcontrol.ivvc.voltProfileGraph.showZoneTransitionText.busGraph">true</entry>
     <entry key="yukon.web.modules.capcontrol.ivvc.voltProfileGraph.showZoneTransitionText.zoneGraph">false</entry>
     <entry key="yukon.web.modules.capcontrol.ivvc.voltProfileGraph.balloonText"><![CDATA[<div>{0}</div><div>{1}</div><div>{2}</div><div>{3}</div><div>{4}</div><div>{5}</div><div>{6}</div><div>Ignore: {7}</div>]]></entry>
+    <entry key="yukon.web.modules.capcontrol.ivvc.voltProfileGraph.strategyOverrideText"><![CDATA[<div>Override Lower: {0}</div><div>Override Upper: {1}</div>]]></entry>
 
     <!-- Shared Keys for bus & zone detail views -->
     <entry key="yukon.web.modules.capcontrol.ivvc.voltagePoints.pageName">Voltage Points</entry>

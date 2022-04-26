@@ -8,11 +8,13 @@ import org.apache.commons.collections4.CollectionUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.transaction.annotation.Transactional;
 
+import com.cannontech.common.device.model.SimpleDevice;
 import com.cannontech.common.dr.setup.ControlScenario;
 import com.cannontech.common.dr.setup.LMCopy;
 import com.cannontech.common.dr.setup.LMServiceHelper;
 import com.cannontech.common.events.loggers.DemandResponseEventLogService;
 import com.cannontech.common.pao.PaoType;
+import com.cannontech.common.pao.service.impl.PaoCreationHelper;
 import com.cannontech.core.dao.DBPersistentDao;
 import com.cannontech.core.dao.NotFoundException;
 import com.cannontech.database.TransactionType;
@@ -24,6 +26,8 @@ import com.cannontech.database.data.lite.LiteYukonUser;
 import com.cannontech.database.data.pao.YukonPAObject;
 import com.cannontech.database.db.device.lm.LMControlScenarioProgram;
 import com.cannontech.dr.setup.service.LMSetupService;
+import com.cannontech.message.DbChangeManager;
+import com.cannontech.message.dispatch.message.DbChangeType;
 import com.cannontech.yukon.IDatabaseCache;
 
 public class ControlScenarioServiceImpl implements LMSetupService <ControlScenario, LMCopy> {
@@ -32,6 +36,8 @@ public class ControlScenarioServiceImpl implements LMSetupService <ControlScenar
     @Autowired private LMServiceHelper lmServiceHelper;
     @Autowired private DemandResponseEventLogService logService;
     @Autowired private IDatabaseCache dbCache;
+    @Autowired private PaoCreationHelper paoCreationHelper;
+    @Autowired private DbChangeManager dbChangeManager;
 
     @Override
     @Transactional
@@ -42,6 +48,11 @@ public class ControlScenarioServiceImpl implements LMSetupService <ControlScenar
         LMScenario lmScenario = getDBPersistent(controlScenario);
         controlScenario.buildDBPersistent(lmScenario);
         dbPersistentDao.performDBChange(lmScenario, TransactionType.INSERT);
+        
+        SimpleDevice device = SimpleDevice.of(lmScenario.getPAObjectID(), lmScenario.getPaoType());
+        paoCreationHelper.addDefaultPointsToPao(device);
+        dbChangeManager.processPaoDbChange(device, DbChangeType.UPDATE);
+        
         controlScenario.buildModel(lmScenario);
         controlScenario.getAllPrograms().stream().forEach(program -> {
             program.setGears(lmServiceHelper.getGearsforModel(program.getProgramId(), program.getGears()));

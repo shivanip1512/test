@@ -39,6 +39,7 @@ public class ControlAreaSetupValidator extends SimpleValidator<ControlArea> {
     @Autowired private PointApiValidationUtil pointApiValidationUtil;
     @Autowired private StateGroupDao stateGroupDao;
     @Autowired private ControlAreaDao controlAreaDao;
+    @Autowired private YukonApiValidationUtils yukonApiValidationUtils;
 
     public ControlAreaSetupValidator() {
         super(ControlArea.class);
@@ -47,26 +48,26 @@ public class ControlAreaSetupValidator extends SimpleValidator<ControlArea> {
     @Override
     protected void doValidation(ControlArea controlArea, Errors errors) {
 
-        YukonApiValidationUtils.validateNewPaoName(controlArea.getName(), PaoType.LM_CONTROL_AREA, errors, "Name");
-        YukonApiValidationUtils.checkIfFieldRequired("allTriggersActiveFlag", errors, controlArea.getAllTriggersActiveFlag(), "All Triggers Active Flag");
-        YukonApiValidationUtils.checkIfFieldRequired("controlInterval", errors, controlArea.getControlInterval(), "Control Interval");
+        yukonApiValidationUtils.validateNewPaoName(controlArea.getName(), PaoType.LM_CONTROL_AREA, errors, "Name");
+        yukonApiValidationUtils.checkIfFieldRequired("allTriggersActiveFlag", errors, controlArea.getAllTriggersActiveFlag(), "All Triggers Active Flag");
+        yukonApiValidationUtils.checkIfFieldRequired("controlInterval", errors, controlArea.getControlInterval(), "Control Interval");
         if (!errors.hasFieldErrors("controlInterval")) {
             TimeIntervals controlInterval = TimeIntervals.fromSeconds(controlArea.getControlInterval());
             if (!TimeIntervals.getControlAreaInterval().contains(controlInterval)) {
                 errors.rejectValue("controlInterval", ApiErrorDetails.INVALID_VALUE.getCodeString(), new Object[] { "Control Interval" }, "");
             }
         }
-        YukonApiValidationUtils.checkIfFieldRequired("minResponseTime", errors, controlArea.getMinResponseTime(), "Min Response Time");
+        yukonApiValidationUtils.checkIfFieldRequired("minResponseTime", errors, controlArea.getMinResponseTime(), "Min Response Time");
         if (!errors.hasFieldErrors("minResponseTime")) {
             TimeIntervals minResponse = TimeIntervals.fromSeconds(controlArea.getMinResponseTime());
             if (!TimeIntervals.getControlAreaInterval().contains(minResponse)) {
                 errors.rejectValue("minResponseTime", ApiErrorDetails.INVALID_VALUE.getCodeString(), new Object[] { "Min Response Time" }, "");
             }
         }
-        YukonApiValidationUtils.checkIfFieldRequired("dailyDefaultState", errors, controlArea.getDailyDefaultState(), "Daily Default State");
+        yukonApiValidationUtils.checkIfFieldRequired("dailyDefaultState", errors, controlArea.getDailyDefaultState(), "Daily Default State");
 
-        YukonApiValidationUtils.checkRange(errors, "dailyStartTimeInMinutes", controlArea.getDailyStartTimeInMinutes(), 0, 1439, false);
-        YukonApiValidationUtils.checkRange(errors, "dailyStopTimeInMinutes", controlArea.getDailyStopTimeInMinutes(), 0, 1439, false);
+        yukonApiValidationUtils.checkRange(errors, "dailyStartTimeInMinutes", controlArea.getDailyStartTimeInMinutes(), 0, 1439, false);
+        yukonApiValidationUtils.checkRange(errors, "dailyStopTimeInMinutes", controlArea.getDailyStopTimeInMinutes(), 0, 1439, false);
 
         if (!errors.hasFieldErrors("dailyStartTimeInMinutes") && !errors.hasFieldErrors("dailyStopTimeInMinutes")) {
             if (controlArea.getDailyStartTimeInMinutes() != null && controlArea.getDailyStopTimeInMinutes() != null) {
@@ -75,11 +76,11 @@ public class ControlAreaSetupValidator extends SimpleValidator<ControlArea> {
                 }
             } else if (controlArea.getDailyStartTimeInMinutes() == null
                 && controlArea.getDailyStopTimeInMinutes() != null) {
-                YukonApiValidationUtils.checkIfFieldRequired("dailyStartTimeInMinutes", errors,
+                yukonApiValidationUtils.checkIfFieldRequired("dailyStartTimeInMinutes", errors,
                     controlArea.getDailyStartTimeInMinutes(), "Daily Start Time");
             } else if (controlArea.getDailyStopTimeInMinutes() == null
                 && controlArea.getDailyStartTimeInMinutes() != null) {
-                YukonApiValidationUtils.checkIfFieldRequired("dailyStopTimeInMinutes", errors,
+                yukonApiValidationUtils.checkIfFieldRequired("dailyStopTimeInMinutes", errors,
                     controlArea.getDailyStopTimeInMinutes(), "Daily Stop Time");
             }
         }
@@ -91,8 +92,8 @@ public class ControlAreaSetupValidator extends SimpleValidator<ControlArea> {
                 for (int i = 0; i < controlArea.getTriggers().size(); i++) {
                     errors.pushNestedPath("triggers[" + i + "]");
                     ControlAreaTrigger trigger = controlArea.getTriggers().get(i);
-                    YukonApiValidationUtils.checkIfFieldRequired("triggerType", errors, trigger.getTriggerType(), "Trigger Type");
-                    YukonApiValidationUtils.checkIfFieldRequired("triggerPointId", errors, trigger.getTriggerPointId(), "Trigger Point Id");
+                    yukonApiValidationUtils.checkIfFieldRequired("triggerType", errors, trigger.getTriggerType(), "Trigger Type");
+                    yukonApiValidationUtils.checkIfFieldRequired("triggerPointId", errors, trigger.getTriggerPointId(), "Trigger Point Id");
                     if (!errors.hasFieldErrors("triggerPointId")) {
                         pointApiValidationUtil.validatePointId(errors, "triggerPointId", trigger.getTriggerPointId(),
                                 "triggerPointId");
@@ -102,7 +103,7 @@ public class ControlAreaSetupValidator extends SimpleValidator<ControlArea> {
                         
                         if (trigger.getTriggerType().getTriggerTypeValue().equalsIgnoreCase(IlmDefines.TYPE_STATUS)) {
                             
-                            YukonApiValidationUtils.checkIfFieldRequired("normalState", errors, trigger.getNormalState(), "Normal State");
+                            yukonApiValidationUtils.checkIfFieldRequired("normalState", errors, trigger.getNormalState(), "Normal State");
                             if (!errors.hasFieldErrors("normalState")) {
 
                                 LitePoint litePoint = pointdao.getLitePoint(trigger.getTriggerPointId());
@@ -114,7 +115,7 @@ public class ControlAreaSetupValidator extends SimpleValidator<ControlArea> {
                                 }
                             }
                         } else {
-                            YukonApiValidationUtils.checkRange(errors, "minRestoreOffset", trigger.getMinRestoreOffset(), -99999.9999, 99999.9999, false);
+                            yukonApiValidationUtils.checkRange(errors, "minRestoreOffset", trigger.getMinRestoreOffset(), -99999.9999, 99999.9999, false);
 
                             if (trigger.getPeakPointId() != null) {
                                 pointApiValidationUtil.validatePointId(errors, "peakPointId", trigger.getPeakPointId(),
@@ -122,32 +123,32 @@ public class ControlAreaSetupValidator extends SimpleValidator<ControlArea> {
                             }
 
                             if ((trigger.getTriggerType().getTriggerTypeValue()).equalsIgnoreCase( IlmDefines.TYPE_THRESHOLD_POINT)) {
-                                YukonApiValidationUtils.checkIfFieldRequired("thresholdPointId", errors, trigger.getThresholdPointId(), "Threshold Point Id");
+                                yukonApiValidationUtils.checkIfFieldRequired("thresholdPointId", errors, trigger.getThresholdPointId(), "Threshold Point Id");
                                 if (!errors.hasFieldErrors("thresholdPointId")) { 
                                     pointApiValidationUtil.validatePointId(errors, "thresholdPointId", trigger.getThresholdPointId(),
                                             "peakPointId");
                                 }
                             } else {
-                                YukonApiValidationUtils.checkIfFieldRequired("threshold", errors, trigger.getThreshold(), "Threshold");
+                                yukonApiValidationUtils.checkIfFieldRequired("threshold", errors, trigger.getThreshold(), "Threshold");
                                 if (!errors.hasFieldErrors("threshold")) {
-                                    YukonApiValidationUtils.checkRange(errors, "threshold", trigger.getThreshold(), -999999.99999999, 999999.99999999, false);
+                                    yukonApiValidationUtils.checkRange(errors, "threshold", trigger.getThreshold(), -999999.99999999, 999999.99999999, false);
                                 }
 
                                 if (trigger.getAtku() != null) {
-                                    YukonApiValidationUtils.checkRange(errors, "atku", trigger.getAtku(), -2147483648,
+                                    yukonApiValidationUtils.checkRange(errors, "atku", trigger.getAtku(), -2147483648,
                                         2147483647, false);
                                 }
 
-                                YukonApiValidationUtils.checkIfFieldRequired("controlAreaProjection", errors, trigger.getControlAreaProjection(), "Control Area Projection");
+                                yukonApiValidationUtils.checkIfFieldRequired("controlAreaProjection", errors, trigger.getControlAreaProjection(), "Control Area Projection");
                                 if (!errors.hasFieldErrors("controlAreaProjection")) {
-                                    YukonApiValidationUtils.checkIfFieldRequired("controlAreaProjection.projectionType", errors, trigger.getControlAreaProjection().getProjectionType(), "Projection Type");
+                                    yukonApiValidationUtils.checkIfFieldRequired("controlAreaProjection.projectionType", errors, trigger.getControlAreaProjection().getProjectionType(), "Projection Type");
 
                                     if(trigger.getControlAreaProjection().getProjectionType() != ControlAreaProjectionType.NONE ) {
-                                        YukonApiValidationUtils.checkIfFieldRequired("controlAreaProjection.projectionPoint", errors, trigger.getControlAreaProjection().getProjectionPoint(), "Projection Point");
+                                        yukonApiValidationUtils.checkIfFieldRequired("controlAreaProjection.projectionPoint", errors, trigger.getControlAreaProjection().getProjectionPoint(), "Projection Point");
                                     if (!errors.hasFieldErrors("controlAreaProjection.projectionPoint")) {
-                                        YukonApiValidationUtils.checkRange(errors, "controlAreaProjection.projectionPoint", trigger.getControlAreaProjection().getProjectionPoint(), 2, 12, false);
+                                        yukonApiValidationUtils.checkRange(errors, "controlAreaProjection.projectionPoint", trigger.getControlAreaProjection().getProjectionPoint(), 2, 12, false);
                                     }
-                                    YukonApiValidationUtils.checkIfFieldRequired("controlAreaProjection.projectAheadDuration", errors, trigger.getControlAreaProjection().getProjectAheadDuration(), "Projection Ahead Duration");
+                                    yukonApiValidationUtils.checkIfFieldRequired("controlAreaProjection.projectAheadDuration", errors, trigger.getControlAreaProjection().getProjectAheadDuration(), "Projection Ahead Duration");
                                     if (!errors.hasFieldErrors("controlAreaProjection.projectAheadDuration")) { 
                                         if(!TimeIntervals.getProjectionAheadDuration().contains(TimeIntervals.fromSeconds(trigger.getControlAreaProjection().getProjectAheadDuration()))) {
                                             errors.rejectValue("controlAreaProjection.projectAheadDuration", ApiErrorDetails.INVALID_VALUE.getCodeString(), new Object[] { "Project Ahead Duration" }, "");
@@ -167,7 +168,7 @@ public class ControlAreaSetupValidator extends SimpleValidator<ControlArea> {
             for (int i = 0; i < controlArea.getProgramAssignment().size(); i++) {
                 errors.pushNestedPath("programAssignment[" + i + "]");
                 ControlAreaProgramAssignment programAssignment = controlArea.getProgramAssignment().get(i);
-                YukonApiValidationUtils.checkIfFieldRequired("programId", errors, programAssignment.getProgramId(), "Program Id");
+                yukonApiValidationUtils.checkIfFieldRequired("programId", errors, programAssignment.getProgramId(), "Program Id");
                 Integer areaId = null;
                 if (!errors.hasFieldErrors("programId")) {
                     Set<Integer> unassignedPrograms = new LinkedHashSet<>(LMProgram.getUnassignedPrograms());
@@ -186,13 +187,13 @@ public class ControlAreaSetupValidator extends SimpleValidator<ControlArea> {
                     }
                 }
 
-                YukonApiValidationUtils.checkIfFieldRequired("startPriority", errors, programAssignment.getStartPriority(), "Start Priority");
+                yukonApiValidationUtils.checkIfFieldRequired("startPriority", errors, programAssignment.getStartPriority(), "Start Priority");
                 if (!errors.hasFieldErrors("startPriority")) {
-                    YukonApiValidationUtils.checkRange(errors, "startPriority", programAssignment.getStartPriority(), 1, 1024, false);
+                    yukonApiValidationUtils.checkRange(errors, "startPriority", programAssignment.getStartPriority(), 1, 1024, false);
                 }
-                YukonApiValidationUtils.checkIfFieldRequired("stopPriority", errors, programAssignment.getStopPriority(), "Stop Priority");
+                yukonApiValidationUtils.checkIfFieldRequired("stopPriority", errors, programAssignment.getStopPriority(), "Stop Priority");
                 if (!errors.hasFieldErrors("stopPriority")) {
-                    YukonApiValidationUtils.checkRange(errors, "stopPriority", programAssignment.getStopPriority(), 1,1024, false);
+                    yukonApiValidationUtils.checkRange(errors, "stopPriority", programAssignment.getStopPriority(), 1,1024, false);
                 }
                 errors.popNestedPath();
             }

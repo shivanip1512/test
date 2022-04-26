@@ -17,13 +17,16 @@ import org.springframework.web.client.RestTemplate;
 import com.cannontech.clientutils.YukonLogManager;
 import com.cannontech.common.util.jms.YukonJmsTemplate;
 import com.cannontech.core.dynamic.AsyncDynamicDataSource;
-import com.cannontech.dr.eatonCloud.message.EatonCloudAuthTokenRequestV1;
-import com.cannontech.dr.eatonCloud.message.V1.EatonCloudAuthTokenResponseV1;
+import com.cannontech.dr.eatonCloud.message.EatonCloudHeartbeatRequest;
+import com.cannontech.dr.eatonCloud.message.EatonCloudHeartbeatResponse;
+import com.cannontech.dr.eatonCloud.message.v1.EatonCloudAuthTokenRequestV1;
+import com.cannontech.dr.eatonCloud.message.v1.EatonCloudAuthTokenResponseV1;
 import com.cannontech.dr.eatonCloud.model.EatonCloudRetrievalUrl;
 import com.cannontech.dr.eatonCloud.model.v1.EatonCloudCommunicationExceptionV1;
 import com.cannontech.dr.eatonCloud.model.v1.EatonCloudCredentialsV1;
 import com.cannontech.dr.eatonCloud.model.v1.EatonCloudErrorHandlerV1;
 import com.cannontech.dr.eatonCloud.model.v1.EatonCloudTokenV1;
+import com.cannontech.dr.eatonCloud.service.v1.EatonCloudCommunicationServiceV1;
 import com.cannontech.message.dispatch.message.DatabaseChangeEvent;
 import com.cannontech.message.dispatch.message.DbChangeCategory;
 import com.cannontech.services.eatonCloud.authToken.service.EatonCloudAuthTokenServiceV1;
@@ -41,6 +44,7 @@ public class EatonCloudAuthTokenServiceImplV1 implements EatonCloudAuthTokenServ
     @Autowired private YukonJmsTemplate jmsTemplate;
     @Autowired private MappingJackson2HttpMessageConverter mappingJackson2HttpMessageConverter;
     @Autowired private AsyncDynamicDataSource asyncDynamicDataSource;
+    @Autowired private EatonCloudCommunicationServiceV1 eatonCloudCommunicationService;
     private RestTemplate restTemplate;
     
     @PostConstruct
@@ -79,7 +83,16 @@ public class EatonCloudAuthTokenServiceImplV1 implements EatonCloudAuthTokenServ
         if (message instanceof ObjectMessage) {
             ObjectMessage objMessage = (ObjectMessage) message;
             try {
-                if (objMessage.getObject() instanceof EatonCloudAuthTokenRequestV1) {
+                if (objMessage.getObject() instanceof EatonCloudHeartbeatRequest) {
+                    try {
+                        //Message from Watchdog to verify connection to Eaton Cloud
+                        eatonCloudCommunicationService.getServiceAccountDetail();
+                        jmsTemplate.convertAndSend(message.getJMSReplyTo(), new EatonCloudHeartbeatResponse());
+                    } catch (EatonCloudCommunicationExceptionV1 e) {
+                        jmsTemplate.convertAndSend(message.getJMSReplyTo(), new EatonCloudHeartbeatResponse(e.getMessage()));
+                    }
+                }
+                else if (objMessage.getObject() instanceof EatonCloudAuthTokenRequestV1) {
                     String serviceAccountId = settingDao.getString(GlobalSettingType.EATON_CLOUD_SERVICE_ACCOUNT_ID);
                     if (((EatonCloudAuthTokenRequestV1) objMessage.getObject()).isClearCache()) {
                         log.info("Recieved message from the simulator to invalidate Eaton Cloud token cache");

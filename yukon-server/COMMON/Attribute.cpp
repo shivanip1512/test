@@ -608,6 +608,7 @@ INIT_ATTRIBUTE( ReversedAggregate,                                  "REVERSED_AG
 INIT_ATTRIBUTE( ReversedPhaseA,                                     "REVERSED_PHASE_A" );
 INIT_ATTRIBUTE( ReversedPhaseC,                                     "REVERSED_PHASE_C" );
 INIT_ATTRIBUTE( RfnBlinkCount,                                      "RFN_BLINK_COUNT" );
+INIT_ATTRIBUTE( RfnBlinkReported,                                   "RFN_BLINK_REPORTED" );
 INIT_ATTRIBUTE( RfnBlinkRestoreCount,                               "RFN_BLINK_RESTORE_COUNT" );
 INIT_ATTRIBUTE( RFNHighTemperatureAlarm,                            "RFN_TEMPERATURE_ALARM" );
 INIT_ATTRIBUTE( RfnOutageCount,                                     "RFN_OUTAGE_COUNT" );
@@ -699,6 +700,11 @@ INIT_ATTRIBUTE( LMMonthHistory,                                     "LM_MONTH_HI
 INIT_ATTRIBUTE( LMSeasonHistory,                                    "LM_SEASON_HISTORY" );
 INIT_ATTRIBUTE( LMAnnualHistory,                                    "LM_ANNUAL_HISTORY" );
 INIT_ATTRIBUTE( LMControlCountdown,                                 "LM_CONTROL_COUNTDOWN" );
+INIT_ATTRIBUTE( AssetAvailabilityActiveDevices,                     "LM_ASSET_AVAILABILITY_ACTIVE_DEVICES" );
+INIT_ATTRIBUTE( AssetAvailabilityOptedOutDevices,                   "LM_ASSET_AVAILABILITY_OPTED_OUT_DEVICES" );
+INIT_ATTRIBUTE( AssetAvailabilityInactiveDevices,                   "LM_ASSET_AVAILABILITY_INACTIVE_DEVICES" );
+INIT_ATTRIBUTE( AssetAvailabilityUnavailableDevices,                "LM_ASSET_AVAILABILITY_UNAVAILABLE_DEVICES" );
+INIT_ATTRIBUTE( AssetAvailabilityTotalDevices,                      "LM_ASSET_AVAILABILITY_TOTAL_DEVICES" );
 
 INIT_ATTRIBUTE( ConnectedLoad,                                      "CONNECTED_LOAD" );
 INIT_ATTRIBUTE( DiversifiedLoad,                                    "DIVERSIFIED_LOAD" );

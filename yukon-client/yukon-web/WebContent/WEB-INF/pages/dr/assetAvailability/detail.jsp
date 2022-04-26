@@ -14,6 +14,7 @@
         <cti:crumbLink url="${paoDetailsUri}" title="${paoName}" />
         <cti:crumbLink title="${assetAvailability}" />
     </cti:breadCrumbs>
+    <div data-dialog class="js-point-data-dialog"></div>
     <cti:toJson id="js-asset-availability-summary" object="${summary}"/>
     <c:forEach var="status" items="${statusTypes}">
         <input type="hidden" class="js-asset-${status}" value="<cti:msg2 key=".assetDetails.status.${status}"/>"/>

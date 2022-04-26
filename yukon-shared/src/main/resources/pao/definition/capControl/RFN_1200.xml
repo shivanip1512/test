@@ -13,6 +13,7 @@
     <pointInfos>
         <pointInfo name="Bad Upgrade Security Param" init="true"/>
         <pointInfo name="Blink Count" init="true" attributes="RFN_BLINK_COUNT"/>
+        <pointInfo name="Blink Reported" init="true" attributes="RFN_BLINK_REPORTED"/>
         <pointInfo name="Blink Restore Count" init="true" attributes="RFN_BLINK_RESTORE_COUNT"/>
         <pointInfo name="DNP3 Address Changed" init="true" attributes="DNP3_ADDRESS_CHANGED"/>
         <pointInfo name="Failed Upgrade Signature Verification" init="true"/>

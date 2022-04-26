@@ -94,4 +94,8 @@
     <entry key="yukon.web.error.101115">{0} must only contain the following characters : A-Z a-z 0-9 . $ _ and must not start or end with '.' character.</entry>
     <entry key="yukon.web.error.101116">{0} must have future date.</entry>
     
+    <!-- Theme and Image Validation -->
+    <entry key="yukon.web.theme.error.THEME_NOT_FOUND">Theme Not Found</entry>
+    <entry key="yukon.web.image.error.IMAGE_NOT_FOUND">Image Not Found</entry>
+    
 </properties>

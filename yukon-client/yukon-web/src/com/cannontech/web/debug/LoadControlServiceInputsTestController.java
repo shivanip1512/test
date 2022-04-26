@@ -4,10 +4,12 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
+import javax.annotation.PostConstruct;
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import org.apache.logging.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.ServletRequestUtils;
@@ -15,24 +17,30 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.servlet.ModelAndView;
 
+import com.cannontech.clientutils.YukonLogManager;
+import com.cannontech.common.util.jms.YukonJmsTemplate;
+import com.cannontech.common.util.jms.YukonJmsTemplateFactory;
+import com.cannontech.common.util.jms.api.JmsApiDirectory;
 import com.cannontech.core.dao.NotFoundException;
 import com.cannontech.core.dao.ProgramNotFoundException;
-
 import com.cannontech.core.service.DateFormattingService;
 import com.cannontech.dr.model.ProgramOriginSource;
 import com.cannontech.dr.program.service.ProgramService;
+import com.cannontech.i18n.YukonMessageSourceResolvable;
 import com.cannontech.loadcontrol.dao.LoadControlProgramDao;
 import com.cannontech.loadcontrol.service.LoadControlService;
 import com.cannontech.loadcontrol.service.data.ProgramStatus;
 import com.cannontech.loadcontrol.service.data.ScenarioProgramStartingGears;
 import com.cannontech.loadcontrol.service.data.ScenarioStatus;
 import com.cannontech.servlet.YukonUserContextUtils;
+import com.cannontech.simulators.message.request.AssetAvailArchiveSimulatorRequest;
 import com.cannontech.stars.dr.enrollment.model.EnrollmentEnum;
 import com.cannontech.stars.dr.enrollment.model.EnrollmentHelper;
 import com.cannontech.stars.dr.enrollment.service.EnrollmentHelperService;
 import com.cannontech.stars.ws.LmDeviceDto;
 import com.cannontech.stars.ws.StarsControllableDeviceHelper;
 import com.cannontech.user.YukonUserContext;
+import com.cannontech.web.common.flashScope.FlashScope;
 
 @Controller
 @RequestMapping("/loadControlService/inputs/*")
@@ -44,6 +52,16 @@ public class LoadControlServiceInputsTestController {
     @Autowired private StarsControllableDeviceHelper starsControllableDeviceHelper;
     @Autowired private ProgramService programService;
     @Autowired private LoadControlProgramDao loadControlProgramDao;
+    @Autowired private YukonJmsTemplateFactory jmsTemplateFactory;
+    private YukonJmsTemplate jmsTemplate;
+    
+    
+    private static final Logger log = YukonLogManager.getLogger(LoadControlServiceInputsTestController.class);
+    
+    @PostConstruct
+    public void init() {
+        jmsTemplate = jmsTemplateFactory.createTemplate(JmsApiDirectory.ASSET_AVAILABILITY_ARCHIVE_SIM_REQUEST);
+    }
     
     @RequestMapping(value = "home", method = RequestMethod.GET)
     public ModelAndView home(HttpServletRequest request, HttpServletResponse response) throws ServletException {
@@ -385,5 +403,18 @@ public class LoadControlServiceInputsTestController {
         }
         
         return date;
+    }
+    
+    
+    @RequestMapping("archiveAssetAvailability")
+    public String archiveAssetAvailability(FlashScope flashScope) {
+        try {
+            jmsTemplate.convertAndSend(new AssetAvailArchiveSimulatorRequest());
+            flashScope.setConfirm(YukonMessageSourceResolvable.createDefaultWithoutCode("Request sent. See SM log for details."));
+        } catch (Exception e) {
+            log.error("Error", e);
+        }
+        return "redirect:home";
+        
     }
 }

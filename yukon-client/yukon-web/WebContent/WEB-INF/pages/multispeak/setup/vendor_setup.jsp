@@ -158,30 +158,58 @@
                                     </tr>
                                 </thead>
                                 <tbody>
-                                    <c:forEach var="mspPossibleInterfacev3" items="${multispeak.mspInterfaceList}"
-                                        varStatus="status" begin="0">
+                                   <c:forEach var="mspPossibleInterfacev3"
+                                      items="${multispeak.mspInterfaceList}" varStatus="status"
+                                        begin="0">
                                         <c:if
-                                            test="${status.index % 2 == 0 || mspPossibleInterfacev3.mspInterface=='NOT_Server'}">
+                                            test="${status.index % 3 == 0 || (mspPossibleInterfacev3.mspInterface=='NOT_Server' && status.index % 3 == 1)}">
                                             <c:choose>
                                                 <c:when
-                                                    test="${mspPossibleInterfacev3.mspInterface=='NOT_Server' || mspPossibleInterfacev3.mspInterface=='CB_CD'}">
-                                                    <c:set var="currentInterface" value="${mspPossibleInterfacev3}" />
+                                                    test="${mspPossibleInterfacev3.mspInterface=='CB_CD'}">
+                                                    <c:set var="currentInterface"
+                                                        value="${mspPossibleInterfacev3}" />
                                                     <c:set var="indexValue" value="${status.index}" />
                                                 </c:when>
-                                                <c:otherwise>
+                                                <c:when
+                                                    test="${mspPossibleInterfacev3.mspInterface=='NOT_Server' }">
+                                                    <c:set var="currentInterface"
+                                                        value="${mspPossibleInterfacev3}" />
+                                                    <c:set var="indexValue" value="${status.index}" />
                                                     <c:set var="mspPossibleInterfacev5"
                                                         value="${multispeak.mspInterfaceList[status.index+1]}" />
-                                                    <c:set var="enabledV3"
-                                                        value="${mspPossibleInterfacev3.interfaceEnabled}" />
                                                     <c:set var="enabledV5"
                                                         value="${mspPossibleInterfacev5.interfaceEnabled}" />
-                                                    <c:set var="currentInterface" value="${mspPossibleInterfacev3}" />
-                                                    <c:set var="indexValue" value="${status.index}" />
                                                     <c:if test="${enabledV5}">
-                                                        <c:set var="currentInterface" value="${mspPossibleInterfacev5}" />
+                                                        <c:set var="currentInterface"
+                                                            value="${mspPossibleInterfacev5}" />
+                                                       <c:set var="indexValue" value="${status.index + 1}" />
+                                                   </c:if>
+                                                 </c:when>
+                                                <c:otherwise>
+                                                    <c:set var="mspPossibleInterfacev4"
+                                                        value="${multispeak.mspInterfaceList[status.index+1]}" />
+                                                    <c:set var="mspPossibleInterfacev5"
+                                                        value="${multispeak.mspInterfaceList[status.index+2]}" />
+                                                    <c:set var="enabledV3"
+                                                        value="${mspPossibleInterfacev3.interfaceEnabled}" />
+                                                    <c:set var="enabledV4"
+                                                        value="${mspPossibleInterfacev4.interfaceEnabled}" />
+                                                    <c:set var="enabledV5"
+                                                        value="${mspPossibleInterfacev5.interfaceEnabled}" />
+                                                    <c:set var="currentInterface"
+                                                        value="${mspPossibleInterfacev3}" />
+                                                    <c:set var="indexValue" value="${status.index}" />
+                                                    <c:if test="${enabledV4}">
+                                                        <c:set var="currentInterface"
+                                                             value="${mspPossibleInterfacev4}" />
                                                         <c:set var="indexValue" value="${status.index + 1}" />
-                                                    </c:if>
-                                                </c:otherwise>
+                                                   </c:if>
+                                                   <c:if test="${enabledV5}">
+                                                       <c:set var="currentInterface"
+                                                           value="${mspPossibleInterfacev5}" />
+                                                       <c:set var="indexValue" value="${status.index + 2}" />
+                                                 </c:if>
+                                               </c:otherwise>
                                             </c:choose>
                                             <tr data-id="${indexValue}">
                                                 <td class="wsnw">
@@ -203,11 +231,14 @@
                                                 </td>
                                                 <td>
                                                     <c:set var="versionOptions" value="${mspVersionList}" />
-                                                    <c:if test="${currentInterface.mspInterface =='NOT_Server' || currentInterface.mspInterface == 'NOT_Server_DR'}">
+                                                    <c:if test="${currentInterface.mspInterface == 'NOT_Server_DR'}">
                                                         <c:set var="versionOptions" value="${mspVersion5}" />
                                                     </c:if>
                                                     <c:if test="${currentInterface.mspInterface=='CB_CD'}">
                                                         <c:set var="versionOptions" value="${mspVersion3}" />
+                                                    </c:if>
+                                                    <c:if test="${currentInterface.mspInterface == 'NOT_Server'}">
+                                                        <c:set var="versionOptions" value="${notMspVersionList}" />
                                                     </c:if>
                                                     <tags:selectWithItems id="select${currentInterface.mspInterface}"
                                                         path="mspInterfaceList[${indexValue}].version"
@@ -260,7 +291,7 @@
                                 <tbody>
                                     <tr>
                                         <c:set var="interfaceListLength"
-                                            value="${fn:length(multispeak.mspInterfaceList)/2}" />
+                                            value="${fn:length(multispeak.mspInterfaceList)/3}" />
                                         <td rowspan='${interfaceListLength+3}'><textarea cols="40"
                                                 rows="${interfaceListLength*3+1}" name="Results" id="results" readonly
                                                 wrap="VIRTUAL" style='color:<c:out value="${resultColor}"/>'>${MSP_RESULT_MSG}</textarea>

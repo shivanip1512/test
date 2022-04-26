@@ -4,6 +4,7 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 import org.apache.commons.lang3.StringUtils;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.validation.Errors;
 
 import com.cannontech.api.error.model.ApiErrorDetails;
@@ -17,6 +18,7 @@ import com.cannontech.web.tools.points.model.PointStatusControl;
 import com.cannontech.web.tools.points.model.StatusPointModel;
 
 public class StatusPointApiValidator<T extends StatusPointModel<?>> extends PointApiValidator<T> {
+    @Autowired private YukonApiValidationUtils yukonApiValidationUtils;
 
     public StatusPointApiValidator() {
         super();
@@ -52,20 +54,20 @@ public class StatusPointApiValidator<T extends StatusPointModel<?>> extends Poin
 
         if(pointStatusControl.getControlType() != null && pointStatusControl.getControlType() != StatusControlType.NONE) {
 
-            YukonApiValidationUtils.checkRange(errors, "pointStatusControl.controlOffset", pointStatusControl.getControlOffset(), -99999999, 99999999, false);
+            yukonApiValidationUtils.checkRange(errors, "pointStatusControl.controlOffset", pointStatusControl.getControlOffset(), -99999999, 99999999, false);
 
-            YukonApiValidationUtils.checkRange(errors, "pointStatusControl.closeTime1", pointStatusControl.getCloseTime1(), 0, 9999, false);
+            yukonApiValidationUtils.checkRange(errors, "pointStatusControl.closeTime1", pointStatusControl.getCloseTime1(), 0, 9999, false);
 
-            YukonApiValidationUtils.checkRange(errors, "pointStatusControl.closeTime2", pointStatusControl.getCloseTime2(), 0, 9999, false);
+            yukonApiValidationUtils.checkRange(errors, "pointStatusControl.closeTime2", pointStatusControl.getCloseTime2(), 0, 9999, false);
 
-            YukonApiValidationUtils.checkRange(errors, "pointStatusControl.commandTimeOut", pointStatusControl.getCommandTimeOut(), 0, 9999999, false);
+            yukonApiValidationUtils.checkRange(errors, "pointStatusControl.commandTimeOut", pointStatusControl.getCommandTimeOut(), 0, 9999999, false);
 
             if (pointStatusControl.getCloseCommand() != null) {
-                YukonApiValidationUtils.checkExceedsMaxLength(errors, "pointStatusControl.closeCommand", pointStatusControl.getCloseCommand(), 100);
+                yukonApiValidationUtils.checkExceedsMaxLength(errors, "pointStatusControl.closeCommand", pointStatusControl.getCloseCommand(), 100);
             }
 
             if (pointStatusControl.getOpenCommand() != null) {
-                YukonApiValidationUtils.checkExceedsMaxLength(errors, "pointStatusControl.openCommand", pointStatusControl.getOpenCommand(), 100);
+                yukonApiValidationUtils.checkExceedsMaxLength(errors, "pointStatusControl.openCommand", pointStatusControl.getOpenCommand(), 100);
             }
         }
 

@@ -1,0 +1,77 @@
+Current-Theme-Response:
+   title: Current-Theme-Response
+   type: object
+   properties:
+    themeId:
+      type: int
+    name:
+      type: string
+    editable:
+      type: boolean
+    currentTheme:
+      type: boolean
+    properties:
+      $ref: '#/themeProperties'
+
+themeProperties:
+   type: object
+   properties:
+    BUTTON_COLOR:
+       type: string
+    BUTTON_COLOR_BORDER:
+      type: string
+    BUTTON_COLOR_HOVER:
+      type: string
+    LOGIN_BACKGROUND:
+      type: string
+    LOGIN_FONT_COLOR:
+      type: string
+    LOGIN_FONT_SHADOW:
+      type: string
+    LOGIN_TAGLINE_MARGIN:
+      type: string
+    LOGO:
+      type: string
+    LOGO_LEFT:
+      type: string
+    LOGO_TOP:
+      type: string
+    LOGO_WIDTH:
+      type: string
+    PAGE_BACKGROUND:
+      type: string
+    PAGE_BACKGROUND_FONT_COLOR:
+      type: string
+    PAGE_BACKGROUND_SHADOW:
+      type: string
+    PRIMARY_COLOR:
+      type: string
+    VISITED_COLOR:
+      type: string
+      
+components:
+  examples:
+    CurrentThemeResponse:
+      value:
+         themeId: 2
+         name: test
+         editable: true
+         currentTheme: true
+         properties: 
+          -  BUTTON_COLOR: #007bc1
+             BUTTON_COLOR_BORDER: #007bc1
+             BUTTON_COLOR_HOVER: #4da3d4
+             LOGIN_BACKGROUND: 2
+             LOGIN_FONT_COLOR: #fff
+             LOGIN_FONT_SHADOW: #980000
+             LOGIN_TAGLINE_MARGIN: 35
+             LOGO: 32
+             LOGO_LEFT: 0
+             LOGO_TOP: 17
+             LOGO_WIDTH: 163
+             PAGE_BACKGROUND: #727e84
+             PAGE_BACKGROUND_FONT_COLOR: #FFF
+             PAGE_BACKGROUND_SHADOW: #727e84
+             PRIMARY_COLOR: #ff9900
+             VISITED_COLOR: #ead1dc
+    

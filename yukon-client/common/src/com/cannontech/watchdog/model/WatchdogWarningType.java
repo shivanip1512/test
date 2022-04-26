@@ -16,7 +16,8 @@ public enum WatchdogWarningType {
     YUKON_REAL_TIME_SCAN_SERVICE("Yukon Real-Time Scan Service", Watchdogs.SERVICE_STATUS),
     YUKON_NETWORK_MANAGER("Yukon and Network Manager Connection", Watchdogs.SERVICE_STATUS),
     YUKON_ITRON_SERVICE("Yukon Itron Service", Watchdogs.SERVICE_STATUS),
-    YUKON_DATABASE("Yukon Database", Watchdogs.DB_CONNECTION);
+    YUKON_DATABASE("Yukon Database", Watchdogs.DB_CONNECTION),
+    YUKON_EATON_CLOUD("Yukon to Eaton Cloud Connection", Watchdogs.SERVICE_STATUS);
 
     private final Watchdogs watchdogName;
 

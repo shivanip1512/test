@@ -15,7 +15,8 @@ public enum YukonServices {
     CALCLOGIC(2),
     NETWORKMANAGER(2),
     ITRON(2),
-    DATABASE(0);
+    DATABASE(0),
+    EATON_CLOUD(2);
 
     private Integer failedPollThreshold;
 

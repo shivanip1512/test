@@ -149,11 +149,13 @@ yukon.da.zone.wizard = (function () {
         },
         
         addPointHandler : function(selectedPointInfo, picker) {
-            var args = mod.buildArgs(yukon.url('/capcontrol/ivvc/wizard/addVoltagePoint'));
-            var zoneType = $('#zoneType').val();
-            var regulatorPhase = $('#regulatorPhase').val();
+            var args = mod.buildArgs(yukon.url('/capcontrol/ivvc/wizard/addVoltagePoint')),
+                zoneType = $('#zoneType').val(),
+                regulatorPhase = $('#regulatorPhase').val(),
+                subBusId = $('#selectedBusId').val();
             for(var i = 0; i < selectedPointInfo.length; i++) {
                 var request = mod.buildRequest(selectedPointInfo[i].pointId);
+                request.extraParameters.subBusId = subBusId;
                 if (zoneType != 'THREE_PHASE' && regulatorPhase != null) {
                     request.extraParameters.phase = regulatorPhase;
                 }

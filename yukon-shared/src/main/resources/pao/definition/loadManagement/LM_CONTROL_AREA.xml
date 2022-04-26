@@ -12,5 +12,10 @@
         <pointInfo name="Diversified Load" attributes="DIVERSIFIED_LOAD"/>
         <pointInfo name="Max Load Reduction" attributes="MAX_LOAD_REDUCTION"/>
         <pointInfo name="Status" init="true" attributes="CONTROL_STATUS"/>
+        <pointInfo name="Asset Availability Active Devices" init="true" attributes="LM_ASSET_AVAILABILITY_ACTIVE_DEVICES"/>
+        <pointInfo name="Asset Availability Opted Out Devices" init="true" attributes="LM_ASSET_AVAILABILITY_OPTED_OUT_DEVICES"/>
+        <pointInfo name="Asset Availability Inactive Devices" init="true" attributes="LM_ASSET_AVAILABILITY_INACTIVE_DEVICES"/>
+        <pointInfo name="Asset Availability Unavailable Devices" init="true" attributes="LM_ASSET_AVAILABILITY_UNAVAILABLE_DEVICES"/>
+        <pointInfo name="Asset Availability Total Devices" init="true" attributes="LM_ASSET_AVAILABILITY_TOTAL_DEVICES"/>
     </pointInfos>
 </pao>

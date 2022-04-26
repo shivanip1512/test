@@ -206,11 +206,13 @@
                 id="pointTable" addItemParameters="${addItemParameters}"  addButtonClass="pointAddItem"
                 noBlockOnAdd="true" >
                 <div class="scroll-md">
+                    <cti:msg2 var="noneSelected" key="yukon.web.components.button.selectionPicker.label"/>
                     <table class="compact-results-table">
                         <thead>
                             <tr>
                                 <th><i:inline key=".table.point.name"/></th>
                                 <th><i:inline key=".table.point.device"/></th>
+                                <th><i:inline key=".table.point.feeder"/></th>
                                 <th><i:inline key=".table.phase"/></th>
                                 <th><i:inline key=".table.position"/></th>
                                 <th><i:inline key=".table.distance"/></th>
@@ -230,6 +232,10 @@
                                     </td>
                                     <td>
                                         ${fn:escapeXml(row.device)}
+                                    </td>
+                                    <td>
+                                        <tags:selectWithItems path="pointAssignments[${status.index}].feederId" items="${feederList}"
+                                            itemLabel="ccName" itemValue="ccId" defaultItemLabel="${noneSelected}"/>
                                     </td>
                                     <td>
                                         <c:choose>
