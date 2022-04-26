@@ -1,5 +1,10 @@
-import { ToggleButton } from "@material-ui/lab";
+import ToggleButtons from "../../../components/controls/ToggleButtons"
 import ReactDOM from "react-dom";
+
+const statusButtons = [
+  { label: 'Disabled', value: false },
+  { label: 'Enabled', value: true }
+];
 
 jest.mock("react-redux", () => ({
   useSelector: jest.fn((fn) => fn()),
@@ -8,7 +13,7 @@ jest.mock("react-redux", () => ({
 it("render Toggle Button without crashing", () => {
   const div = document.createElement("div");
   ReactDOM.render(
-    <ToggleButton value={true} name="enabled" label="Status"></ToggleButton>,
+    <ToggleButtons value={true} name="enabled" label="Status" buttons={statusButtons}></ToggleButtons>,
     div
   );
 });
