@@ -22,7 +22,7 @@ public class ThemeApiController {
     @Autowired private YukonUserContextMessageSourceResolver messageSourceResolver;
 
     @GetMapping("/admin/config/currentTheme")
-    public ResponseEntity<Object> currentTheme(YukonUserContext context) {
+    public ResponseEntity<Object> currentTheme() {
 
         List<Theme> themes = themeDao.getThemes();
 
@@ -34,7 +34,7 @@ public class ThemeApiController {
             }
         }
 
-        final MessageSourceAccessor messageSourceAccessor = messageSourceResolver.getMessageSourceAccessor(context);
+        final MessageSourceAccessor messageSourceAccessor = messageSourceResolver.getMessageSourceAccessor(YukonUserContext.system);
         final String themeNotFoundMsg = "yukon.web.theme.error.THEME_NOT_FOUND";
         throw new NotFoundException(messageSourceAccessor.getMessage(themeNotFoundMsg));
     }
