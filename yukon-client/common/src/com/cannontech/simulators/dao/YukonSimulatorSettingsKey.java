@@ -63,6 +63,7 @@ public enum YukonSimulatorSettingsKey {
     //RFN Meter Simulator Settings (SimulatorSettings)
     RFN_METER_SIMULATOR_METER_TYPE("ALL RFN Type", InputTypeFactory.stringType(), SimulatorType.RFN_METER),
     RFN_METER_SIMULATOR_DUPLICATE_PERCENTAGE(10, InputTypeFactory.integerType(), SimulatorType.RFN_METER),
+    RFN_METER_SIMULATOR_RECORDING_INTERVAL("RECORDING_INTERVAL_15_MINUTES", InputTypeFactory.stringType(), SimulatorType.RFN_METER),
     RFN_METER_SIMULATOR_REPORTING_INTERVAL("REPORTING_INTERVAL_1_HOURS", InputTypeFactory.stringType(), SimulatorType.RFN_METER),
     RFN_METER_SIMULATOR_RUN_ON_STARTUP(false, InputTypeFactory.booleanType(), SimulatorType.RFN_METER),
 
