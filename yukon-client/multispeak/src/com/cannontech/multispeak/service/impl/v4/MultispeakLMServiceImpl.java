@@ -2,6 +2,7 @@ package com.cannontech.multispeak.service.impl.v4;
 
 import java.math.BigInteger;
 import java.util.ArrayList;
+import java.util.Calendar;
 import java.util.Collections;
 import java.util.Date;
 import java.util.HashSet;
@@ -9,9 +10,12 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
+import org.apache.logging.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import com.cannontech.clientutils.CTILogger;
+import com.cannontech.clientutils.YukonLogManager;
+import com.cannontech.common.exception.NotAuthorizedException;
 import com.cannontech.common.fdr.FdrDirection;
 import com.cannontech.common.fdr.FdrInterfaceType;
 import com.cannontech.common.fdr.FdrTranslation;
@@ -27,26 +31,37 @@ import com.cannontech.database.data.point.PointType;
 import com.cannontech.loadcontrol.LoadControlClientConnection;
 import com.cannontech.loadcontrol.data.LMGroupBase;
 import com.cannontech.loadcontrol.data.LMProgramBase;
+import com.cannontech.loadcontrol.service.data.ProgramStatus;
+import com.cannontech.loadcontrol.service.data.ScenarioStatus;
 import com.cannontech.message.dispatch.message.PointData;
+import com.cannontech.message.util.BadServerResponseException;
 import com.cannontech.message.util.ConnectionException;
+import com.cannontech.message.util.TimeoutException;
 import com.cannontech.msp.beans.v4.ArrayOfControlItem;
+import com.cannontech.msp.beans.v4.ControlEventType;
 import com.cannontech.msp.beans.v4.ControlItem;
+import com.cannontech.msp.beans.v4.Duration;
 import com.cannontech.msp.beans.v4.ErrorObject;
+import com.cannontech.msp.beans.v4.LoadManagementEvent;
+import com.cannontech.msp.beans.v4.ObjectRef;
 import com.cannontech.msp.beans.v4.ScadaAnalog;
 import com.cannontech.msp.beans.v4.SubstationLoadControlStatus;
-import com.cannontech.multispeak.dao.v4.MspObjectDao;
+import com.cannontech.multispeak.client.MultispeakVendor;
 import com.cannontech.multispeak.dao.MspLMGroupDao;
 import com.cannontech.multispeak.dao.MspLmInterfaceMappingDao;
+import com.cannontech.multispeak.dao.v4.MspObjectDao;
 import com.cannontech.multispeak.db.MspLMGroupCommunications;
 import com.cannontech.multispeak.db.MspLMGroupCommunications.MspLMGroupStatus;
 import com.cannontech.multispeak.db.MspLMGroupCommunications.MspLMProgramMode;
 import com.cannontech.multispeak.db.MspLmMapping;
 import com.cannontech.multispeak.db.MspLmMappingColumn;
 import com.cannontech.multispeak.db.MspLmMappingComparator;
+import com.cannontech.multispeak.db.v4.MspLoadControl;
 import com.cannontech.multispeak.service.impl.MultispeakLMServiceBase;
 import com.cannontech.multispeak.service.v4.MultispeakLMService;
 import com.cannontech.stars.dr.enrollment.dao.EnrollmentDao;
 import com.cannontech.yukon.IDatabaseCache;
+import com.google.common.collect.Lists;
 
 public class MultispeakLMServiceImpl extends MultispeakLMServiceBase implements MultispeakLMService {
 
@@ -60,6 +75,8 @@ public class MultispeakLMServiceImpl extends MultispeakLMServiceBase implements 
     private List<? extends String> strategiesToExcludeInReport;
     @Autowired private EnrollmentDao enrollmentDao;
     @Autowired private MspLmInterfaceMappingDao mspLMInterfaceMappingDao;
+
+    private static Logger log = YukonLogManager.getLogger(MultispeakLMServiceImpl.class);
 
     @Override
     public PointData buildPointData(int pointId, ScadaAnalog scadaAnalog, String userName) {
@@ -108,8 +125,6 @@ public class MultispeakLMServiceImpl extends MultispeakLMServiceBase implements 
         SubstationLoadControlStatus substationLoadControlStatus = new SubstationLoadControlStatus();
         substationLoadControlStatus.setObjectID(substationName);
         substationLoadControlStatus.setSubstationName(substationName);
-        ControlItem[] controlledItemsArray = new ControlItem[controlledItemsList.size()];
-        controlledItemsArray = controlledItemsList.toArray(controlledItemsArray);
         ArrayOfControlItem controlledItems = new ArrayOfControlItem();
         List<ControlItem> controlItems = controlledItems.getControlItem();
         controlItems.addAll(controlledItemsList);
@@ -203,7 +218,7 @@ public class MultispeakLMServiceImpl extends MultispeakLMServiceBase implements 
     }
 
     /**
-     * Builds a SubstationLaodControlStatusControlledItemsControlItem for the strategyName and program information provided.
+     * Builds a SubstationLoadControlStatusControlledItems for the strategyName and program information provided.
      * Includes loading of the itemCount and controlledItemCounts.
      * @param strategyName
      * @param lmProgramBases
@@ -224,5 +239,105 @@ public class MultispeakLMServiceImpl extends MultispeakLMServiceBase implements 
         Integer controlledCount = getActiveControlledCount(lmProgramBases, programCounts);
         controlledItem.setNumberOfControlledItems(BigInteger.valueOf(controlledCount));
         return controlledItem;
+    }
+
+    @Override
+    public List<ErrorObject> buildMspLoadControl(LoadManagementEvent loadManagementEvent, MspLoadControl mspLoadControl,
+            MultispeakVendor vendor) {
+
+        // Set the start date
+        Calendar scheduleDateTime = loadManagementEvent.getScheduleDateTime().toGregorianCalendar();
+        Date startTime = new Date(); // default to now.
+        if (scheduleDateTime != null) {
+            startTime.setTime(scheduleDateTime.getTimeInMillis());
+        }
+        mspLoadControl.setStartTime(startTime);
+
+        // Set the stop date
+        Date stopTime = null; // default to null, will act as a never end
+        Duration duration = loadManagementEvent.getDuration();
+        if (scheduleDateTime != null && duration != null) {
+            int paddedDuration = (int) duration.getValue();
+            scheduleDateTime.add(Calendar.MINUTE, paddedDuration);
+            stopTime = new Date(scheduleDateTime.getTimeInMillis());
+        }
+        mspLoadControl.setStopTime(stopTime);
+        CTILogger.info("Start: " + mspLoadControl.getStartTime() + "  -  Stop:" + mspLoadControl.getStopTime());
+
+        // Set the control event type
+        mspLoadControl.setControlEventType(loadManagementEvent.getControlEventType());
+
+        // build the mspLMInterfaceMapping from strategy and substation names
+        String strategyName = loadManagementEvent.getStrategy().getStrategyName();
+        List<MspLmMapping> lmInterfaces = new ArrayList<MspLmMapping>();
+        List<ObjectRef> substations = loadManagementEvent.getStrategy().getApplicationPointList().getApplicationPoint();
+
+        List<ErrorObject> errorObjects = Lists.newArrayList();
+        for (ObjectRef substationRef : substations) {
+            String substationName = substationRef.getName();
+            MspLmMapping lmInterface = new MspLmMapping();
+            try {
+                lmInterface = mspLMInterfaceMappingDao.getForStrategyAndSubstation(strategyName, substationName);
+                lmInterfaces.add(lmInterface);
+            } catch (NotFoundException e) {
+                mspObjectDao.logMSPActivity("buildMspLoadControl", e.getMessage(), vendor.getCompanyName());
+                ErrorObject err = mspObjectDao.getErrorObject(loadManagementEvent.getObjectID(), e.getMessage(),
+                        "loadManagementEvent", "buildMspLoadControl", vendor.getCompanyName());
+                errorObjects.add(err);
+            }
+        }
+        mspLoadControl.setMspLmInterfaceMappings(lmInterfaces);
+
+        return errorObjects;
+    }
+
+    @Override
+    public ErrorObject control(MspLoadControl mspLoadControl, LiteYukonUser liteYukonUser) {
+        ErrorObject errorObject = null;
+        for (MspLmMapping mspLMInterfaceMapping : mspLoadControl.getMspLmInterfaceMappings()) {
+            try {
+                LiteYukonPAObject liteYukonPAObject = databaseCache.getAllPaosMap().get(mspLMInterfaceMapping.getPaobjectId());
+                if (paoDefinitionDao.isTagSupported(liteYukonPAObject.getPaoType(), PaoTag.LM_PROGRAM)) {
+                    String programName = liteYukonPAObject.getPaoName();
+                    ProgramStatus programStatus = null;
+                    if (mspLoadControl.getControlEventType() == ControlEventType.INITIATE) {
+                        programStatus = startControlByProgramName(programName, mspLoadControl.getStartTime(),
+                                mspLoadControl.getStopTime(), liteYukonUser);
+                    } else if (mspLoadControl.getControlEventType() == ControlEventType.RESTORE) {
+                        programStatus = stopControlByProgramName(programName, mspLoadControl.getStopTime(), liteYukonUser);
+                    }
+                    CTILogger.info("Control Status: " + programStatus.toString());
+                } else if (liteYukonPAObject.getPaoType() == PaoType.LM_SCENARIO) {
+                    String scenarioName = liteYukonPAObject.getPaoName();
+                    ScenarioStatus scenarioStatus = null;
+                    if (mspLoadControl.getControlEventType() == ControlEventType.INITIATE) {
+                        scenarioStatus = startControlByControlScenario(scenarioName, mspLoadControl.getStartTime(),
+                                mspLoadControl.getStopTime(), liteYukonUser);
+                    } else if (mspLoadControl.getControlEventType() == ControlEventType.RESTORE) {
+                        scenarioStatus = stopControlByControlScenario(scenarioName, mspLoadControl.getStopTime(), liteYukonUser);
+                    }
+                    CTILogger.info("Control Status: " + scenarioStatus.toString());
+                }
+            } catch (TimeoutException e) {
+                errorObject = mspObjectDao.getErrorObject(null,
+                        mspLMInterfaceMapping.getSubstationName() + "/" + mspLMInterfaceMapping.getStrategyName() + " - "
+                                + e.getMessage() +
+                                ". TimeoutException. Verify the scheduedStartTime (" + mspLoadControl.getStartTime()
+                                + ") is not in the past.",
+                        "LoadManagementEvent", "control", liteYukonUser.getUsername());
+            } catch (NotAuthorizedException | NotFoundException | BadServerResponseException | ConnectionException e) {
+                errorObject = mspObjectDao.getErrorObject(null,
+                        mspLMInterfaceMapping.getSubstationName() + "/" + mspLMInterfaceMapping.getStrategyName() + " - "
+                                + e.getMessage(),
+                        "LoadManagementEvent", "control", liteYukonUser.getUsername());
+            } catch (Exception e) {
+                errorObject = mspObjectDao.getErrorObject(null,
+                        mspLMInterfaceMapping.getSubstationName() + "/" + mspLMInterfaceMapping.getStrategyName() + " - "
+                                + e.getMessage(),
+                        "LoadManagementEvent", "control", liteYukonUser.getUsername());
+                log.error(e.getMessage(), e);
+            }
+        }
+        return errorObject;
     }
 }

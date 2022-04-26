@@ -7,8 +7,11 @@ import com.cannontech.database.data.lite.LiteYukonUser;
 import com.cannontech.message.dispatch.message.PointData;
 import com.cannontech.message.util.ConnectionException;
 import com.cannontech.msp.beans.v4.ErrorObject;
+import com.cannontech.msp.beans.v4.LoadManagementEvent;
 import com.cannontech.msp.beans.v4.ScadaAnalog;
 import com.cannontech.msp.beans.v4.SubstationLoadControlStatus;
+import com.cannontech.multispeak.client.MultispeakVendor;
+import com.cannontech.multispeak.db.v4.MspLoadControl;
 
 public interface MultispeakLMService {
 
@@ -35,4 +38,22 @@ public interface MultispeakLMService {
      * 2way load control switches.
      */
     public List<SubstationLoadControlStatus> getActiveLoadControlStatus() throws ConnectionException, NotFoundException;
+
+    /**
+     * Build a Yukon MspLoadControl object from the loadManagementEvent.
+     * If a startDate is not supplied, now will be used.
+     * If a duration is not supplied, no stop time will be calculated (null will be used).
+     * The substation name and strategy name values are used to lookup and return the
+     * corresponding MspLMInterfaceMapping values. If combination not found, ErrorObject is returned for each occurrence.
+     */
+    public List<ErrorObject> buildMspLoadControl(LoadManagementEvent loadManagementEvent, MspLoadControl mspLoadControl,
+            MultispeakVendor vendor);
+
+    /**
+     * Start (ControlEventType.INITIATE) or Stop (ControlEventType.RESTORE) control for the "controllable"
+     * paobjectId for the MspLoadControl object.
+     * Returns an ErrorObject for control operations that failed.
+     */
+    public ErrorObject control(MspLoadControl mspLoadControl, LiteYukonUser liteYukonUser);
+
 }

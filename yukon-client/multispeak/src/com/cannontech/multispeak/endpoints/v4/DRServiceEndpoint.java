@@ -11,10 +11,16 @@ import org.springframework.ws.server.endpoint.annotation.ResponsePayload;
 
 import com.cannontech.msp.beans.v4.ArrayOfString;
 import com.cannontech.msp.beans.v4.ArrayOfSubstationLoadControlStatus;
+import com.cannontech.msp.beans.v4.ErrorObject;
 import com.cannontech.msp.beans.v4.GetAllSubstationLoadControlStatuses;
 import com.cannontech.msp.beans.v4.GetAllSubstationLoadControlStatusesResponse;
 import com.cannontech.msp.beans.v4.GetMethods;
 import com.cannontech.msp.beans.v4.GetMethodsResponse;
+import com.cannontech.msp.beans.v4.InitiateLoadManagementEvent;
+import com.cannontech.msp.beans.v4.InitiateLoadManagementEventResponse;
+import com.cannontech.msp.beans.v4.InitiateLoadManagementEvents;
+import com.cannontech.msp.beans.v4.InitiateLoadManagementEventsResponse;
+import com.cannontech.msp.beans.v4.LoadManagementEvent;
 import com.cannontech.msp.beans.v4.ObjectFactory;
 import com.cannontech.msp.beans.v4.PingURL;
 import com.cannontech.msp.beans.v4.PingURLResponse;
@@ -51,7 +57,8 @@ public class DRServiceEndpoint {
     }
 
     @PayloadRoot(localPart = "GetMethods", namespace = DR_V4_ENDPOINT_NAMESPACE)
-    public @ResponsePayload GetMethodsResponse getMethods(@RequestPayload GetMethods getMethods) throws MultispeakWebServiceException {
+    public @ResponsePayload GetMethodsResponse getMethods(@RequestPayload GetMethods getMethods)
+            throws MultispeakWebServiceException {
         GetMethodsResponse response = objectFactory.createGetMethodsResponse();
 
         List<String> methods = dr_server.getMethods();
@@ -76,19 +83,41 @@ public class DRServiceEndpoint {
     }
 
     @PayloadRoot(localPart = "GetAllSubstationLoadControlStatuses", namespace = MultispeakDefines.NAMESPACE_v4)
-    public @ResponsePayload
-    GetAllSubstationLoadControlStatusesResponse getAllSubstationLoadControlStatuses(
+    public @ResponsePayload GetAllSubstationLoadControlStatusesResponse getAllSubstationLoadControlStatuses(
             @RequestPayload GetAllSubstationLoadControlStatuses getAllSubstationLoadControlStatuses)
             throws MultispeakWebServiceException {
-        GetAllSubstationLoadControlStatusesResponse response =
-            objectFactory.createGetAllSubstationLoadControlStatusesResponse();
-        List<SubstationLoadControlStatus> substationLoadControlStatus =
-            dr_Server.getAllSubstationLoadControlStatuses();
-        
-        ArrayOfSubstationLoadControlStatus arrayOfSubstationLoadControlStatus = objectFactory.createArrayOfSubstationLoadControlStatus();
+        GetAllSubstationLoadControlStatusesResponse response = objectFactory.createGetAllSubstationLoadControlStatusesResponse();
+        List<SubstationLoadControlStatus> substationLoadControlStatus = dr_Server.getAllSubstationLoadControlStatuses();
+
+        ArrayOfSubstationLoadControlStatus arrayOfSubstationLoadControlStatus = objectFactory
+                .createArrayOfSubstationLoadControlStatus();
         arrayOfSubstationLoadControlStatus.getSubstationLoadControlStatus().addAll(substationLoadControlStatus);
         response.setGetAllSubstationLoadControlStatusesResult(arrayOfSubstationLoadControlStatus);
         return response;
     }
-}
 
+    @PayloadRoot(localPart = "InitiateLoadManagementEvent", namespace = MultispeakDefines.NAMESPACE_v4)
+    public @ResponsePayload InitiateLoadManagementEventResponse initiateLoadManagementEvent(
+            @RequestPayload InitiateLoadManagementEvent initiateLoadManagementEvent)
+            throws MultispeakWebServiceException {
+        InitiateLoadManagementEventResponse response = objectFactory.createInitiateLoadManagementEventResponse();
+        List<ErrorObject> errorObjectList = dr_Server.initiateLoadManagementEvent(initiateLoadManagementEvent.getTheLMEvent());
+        response.setInitiateLoadManagementEventResult(multispeakFuncs.toArrayOfErrorObject(errorObjectList));
+        return response;
+    }
+
+    @PayloadRoot(localPart = "InitiateLoadManagementEvents", namespace = MultispeakDefines.NAMESPACE_v4)
+    public @ResponsePayload InitiateLoadManagementEventsResponse initiateLoadManagementEvents(
+            @RequestPayload InitiateLoadManagementEvents initiateLoadManagementEvents)
+            throws MultispeakWebServiceException {
+        InitiateLoadManagementEventsResponse response = objectFactory.createInitiateLoadManagementEventsResponse();
+
+        List<LoadManagementEvent> loadManagementEvents = (null != initiateLoadManagementEvents
+                .getTheLMEvents()) ? initiateLoadManagementEvents.getTheLMEvents().getLoadManagementEvent() : null;
+
+        response.setInitiateLoadManagementEventsResult(
+                multispeakFuncs.toArrayOfErrorObject(dr_Server.initiateLoadManagementEvents(loadManagementEvents)));
+
+        return response;
+    }
+}

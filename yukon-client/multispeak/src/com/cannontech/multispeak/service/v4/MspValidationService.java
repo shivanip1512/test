@@ -2,6 +2,7 @@ package com.cannontech.multispeak.service.v4;
 
 import com.cannontech.amr.meter.model.YukonMeter;
 import com.cannontech.msp.beans.v4.ErrorObject;
+import com.cannontech.msp.beans.v4.LoadManagementEvent;
 import com.cannontech.msp.beans.v4.ScadaAnalog;
 import com.cannontech.multispeak.exceptions.MultispeakWebServiceException;
 
@@ -20,5 +21,13 @@ public interface MspValidationService {
      * @return
      */
     public ErrorObject isValidScadaAnalog(ScadaAnalog scadaAnalog);
+
+    /**
+     * Returns an ErrorObject when the LoadMangementEvent does not have all required information
+     * to process in Yukon.
+     * @param loadManagementEvent
+     * @return
+     */
+    public ErrorObject isValidLoadManagementEvent(LoadManagementEvent loadManagementEvent);
 
 }
