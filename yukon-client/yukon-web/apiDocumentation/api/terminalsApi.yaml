@@ -1,0 +1,255 @@
+post-get-all-operation:
+  post:
+    tags:
+      - Terminals
+    summary: Create Terminal 
+    description: |-
+      API to create any type of terminal. 
+      Below are the supported terminals.
+      - Paging Tap Terminal 
+      - SNPP Terminal
+      - TNPP Terminal
+      - WCTP Terminal
+    requestBody:
+      content:
+        application/json:
+          schema:
+            oneOf:
+              - $ref: '../schemas/terminalsSchema.yaml#/PAGING_TAP_TERMINAL'
+              - $ref: '../schemas/terminalsSchema.yaml#/SNPP_TERMINAL'
+              - $ref: '../schemas/terminalsSchema.yaml#/TNPP_TERMINAL'
+              - $ref: '../schemas/terminalsSchema.yaml#/WCTP_TERMINAL'
+          examples:
+            Paging Tap Terminal:
+              $ref: '../schemas/terminalsSchema.yaml#/components/examples/Paging Tap Terminal Request'
+            SNPP Terminal:
+              $ref: '../schemas/terminalsSchema.yaml#/components/examples/SNPP Terminal Request'
+            TNPP Terminal:
+              $ref: '../schemas/terminalsSchema.yaml#/components/examples/TNPP Terminal Request'
+            WCTP Terminal:
+              $ref: '../schemas/terminalsSchema.yaml#/components/examples/WCTP Terminal Request'
+      required: true
+    responses:
+        '201':
+          description: 'Created'
+          content:
+            application/json:
+              schema:
+                oneOf:
+                  - $ref: '../schemas/terminalsSchema.yaml#/PAGING_TAP_TERMINAL Response Schema'
+                  - $ref: '../schemas/terminalsSchema.yaml#/SNPP_TERMINAL Response Schema'
+                  - $ref: '../schemas/terminalsSchema.yaml#/TNPP_TERMINAL Response Schema'
+                  - $ref: '../schemas/terminalsSchema.yaml#/WCTP_TERMINAL Response Schema'
+
+              examples:
+                Paging Tap Terminal:
+                  $ref: '../schemas/terminalsSchema.yaml#/components/examples/Paging Tap Terminal Response'
+                SNPP Terminal:
+                  $ref: '../schemas/terminalsSchema.yaml#/components/examples/SNPP Terminal Response' 
+                TNPP Terminal:
+                  $ref: '../schemas/terminalsSchema.yaml#/components/examples/TNPP Terminal Response' 
+                WCTP Terminal:
+                  $ref: '../schemas/terminalsSchema.yaml#/components/examples/WCTP Terminal Response' 
+
+  get:
+    tags:
+      - Terminals
+    summary: Retrieve all Terminals 
+    description: |-
+      API to retrieve all the terminals. 
+      Below are the supported Terminals.
+      - Paging Tap Terminal
+      - SNPP Terminal
+      - TNPP Terminal
+      - WCTP Terminal
+    
+    responses:
+      '200':
+        description: OK
+        content:
+          application/json:
+            schema:
+              $ref: '../schemas/terminalsSchema.yaml#/Terminals Response List'
+            
+            examples:
+              List Terminals:
+                $ref: '../schemas/terminalsSchema.yaml#/components/examples/List of Terminals' 
+
+get-update-delete-operation:
+  get:
+    tags:
+      - Terminals
+    summary: Retrieve Terminal
+    description: |-
+      API to retrieve any type of terminal based on passed id.
+      Below are the supported terminal.
+      - Paging Tap Terminal 
+      - SNPP Terminal 
+      - TNPP Terminal
+      - WCTP Terminal
+    parameters:
+      - name: id
+        in: path
+        schema:
+          type: integer
+        required: true
+        description: 'Unique identifier for the terminal.'
+     
+    responses:
+      '200':
+        description: OK
+        content:
+          application/json:
+            schema:
+                oneOf:
+                  - $ref: '../schemas/terminalsSchema.yaml#/PAGING_TAP_TERMINAL Response Schema'
+                  - $ref: '../schemas/terminalsSchema.yaml#/SNPP_TERMINAL Response Schema'
+                  - $ref: '../schemas/terminalsSchema.yaml#/TNPP_TERMINAL Response Schema'
+                  - $ref: '../schemas/terminalsSchema.yaml#/WCTP_TERMINAL Response Schema'
+            examples:
+              Paging Tap Terminal:
+                $ref: '../schemas/terminalsSchema.yaml#/components/examples/Paging Tap Terminal Response' 
+              SNPP Terminal:
+                $ref: '../schemas/terminalsSchema.yaml#/components/examples/SNPP Terminal Response'
+              TNPP Terminal:
+                $ref: '../schemas/terminalsSchema.yaml#/components/examples/TNPP Terminal Response'
+              WCTP Terminal:
+                $ref: '../schemas/terminalsSchema.yaml#/components/examples/WCTP Terminal Response'
+  put:
+    tags:
+      - Terminals
+    summary: Update Terminal
+    description: |-
+      API to update any type of terminal based on passed id.
+      Below are the supported terminals.
+      - Paging Tap Terminal
+      - SNPP Terminal
+      - TNPP Terminal
+      - WCTP Terminal
+    parameters:
+      - name: id
+        in: path
+        schema:
+          type: integer
+        required: true
+        description: 'Unique identifier for the terminal.'
+    requestBody:
+      content:
+        application/json:
+          schema:
+            oneOf:
+              - $ref: '../schemas/terminalsSchema.yaml#/PAGING_TAP_TERMINAL'
+              - $ref: '../schemas/terminalsSchema.yaml#/SNPP_TERMINAL'
+              - $ref: '../schemas/terminalsSchema.yaml#/TNPP_TERMINAL'
+              - $ref: '../schemas/terminalsSchema.yaml#/WCTP_TERMINAL'
+          examples:
+            Paging Tap Terminal:
+              $ref: '../schemas/terminalsSchema.yaml#/components/examples/Paging Tap Terminal Request' 
+            SNPP Terminal:
+              $ref: '../schemas/terminalsSchema.yaml#/components/examples/SNPP Terminal Request'
+            TNPP Terminal:
+              $ref: '../schemas/terminalsSchema.yaml#/components/examples/TNPP Terminal Request'
+            WCTP Terminal:
+              $ref: '../schemas/terminalsSchema.yaml#/components/examples/WCTP Terminal Request'
+      required: true
+    responses:
+      '200':
+        description: OK
+        content:
+          application/json:
+            schema:
+              oneOf:
+               - $ref: '../schemas/terminalsSchema.yaml#/PAGING_TAP_TERMINAL Response Schema'
+               - $ref: '../schemas/terminalsSchema.yaml#/SNPP_TERMINAL Response Schema'
+               - $ref: '../schemas/terminalsSchema.yaml#/TNPP_TERMINAL Response Schema'
+               - $ref: '../schemas/terminalsSchema.yaml#/WCTP_TERMINAL Response Schema'
+            examples:
+              Paging Tap Terminal:
+                $ref: '../schemas/terminalsSchema.yaml#/components/examples/Paging Tap Terminal Response' 
+              SNPP Terminal:
+                $ref: '../schemas/terminalsSchema.yaml#/components/examples/SNPP Terminal Response'
+              TNPP Terminal:
+                $ref: '../schemas/terminalsSchema.yaml#/components/examples/TNPP Terminal Response'
+              WCTP Terminal:
+                $ref: '../schemas/terminalsSchema.yaml#/components/examples/WCTP Terminal Response'
+  delete:
+    tags:
+      - Terminals
+    summary: Delete terminal
+    description: |-
+      API to delete any type of terminal based on passed id.
+      Below are the supported terminals.
+      - Paging Tap Terminal 
+      - SNPP Terminal 
+      - TNPP Terminal
+      - WCTP Terminal
+    parameters:
+      - name: id
+        in: path
+        schema:
+          type: integer
+        required: true
+        description: 'Unique identifier for the terminal.'
+    responses:
+      '200':
+        description: OK
+        content:
+          application/json:
+            schema:
+              $ref: '../schemas/terminalsSchema.yaml#/id'
+            examples:
+              terminal Id:
+                $ref: '../schemas/terminalsSchema.yaml#/components/examples/id'
+copy-operation:
+  post:
+    tags:
+      - Terminals 
+    summary: Copy Terminal
+    description: |-
+      API to copy any type of terminal based on passed id.
+      Below are the supported terminals.
+      - Paging Tap Terminal 
+      - SNPP Terminal 
+      - TNPP Terminal
+      - WCTP Terminal
+      
+    parameters:
+      - name: id
+        in: path
+        schema:
+          type: integer
+        required: true
+        description: 'Unique identifier for the terminal to be copied.'
+    
+    requestBody:
+      content:
+        application/json:
+          schema:
+            $ref: '../schemas/terminalsSchema.yaml#/TERMINAL_COPY'
+             
+          examples:
+            Terminal Copy:
+              $ref: '../schemas/terminalsSchema.yaml#/components/examples/TerminalCopy' 
+           
+      required: true
+    responses:
+      '200':
+        description: OK
+        content:
+          application/json:
+            schema:
+                oneOf:
+                  - $ref: '../schemas/terminalsSchema.yaml#/PAGING_TAP_TERMINAL Response Schema'
+                  - $ref: '../schemas/terminalsSchema.yaml#/SNPP_TERMINAL Response Schema'
+                  - $ref: '../schemas/terminalsSchema.yaml#/TNPP_TERMINAL Response Schema'
+                  - $ref: '../schemas/terminalsSchema.yaml#/WCTP_TERMINAL Response Schema'
+
+            examples:
+              Paging Tap Terminal:
+                $ref: '../schemas/terminalsSchema.yaml#/components/examples/Paging Tap Terminal Copy Response' 
+              SNPP Terminal:
+                $ref: '../schemas/terminalsSchema.yaml#/components/examples/SNPP Terminal Copy Response'
+              TNPP Terminal:
+                $ref: '../schemas/terminalsSchema.yaml#/components/examples/TNPP Terminal Copy Response'
+              WCTP Terminal: 
+                $ref: '../schemas/terminalsSchema.yaml#/components/examples/WCTP Terminal Copy Response' 
