@@ -34,7 +34,7 @@
   
   <bean class="com.cannontech.multispeak.deploy.service.impl.v4.MR_ServerImpl">
   <property name="porterConnection" ref="porterConnection" />
-    <property name="readingTypesMap">
+    <property name="formattedBlockMap">
             <map>
                 <entry key="Load" value-ref="loadBlockProcessingServicev4" />
                 <entry key="Outage" value-ref="outageBlockProcessingServicev4" />
