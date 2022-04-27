@@ -75,10 +75,10 @@ public class DRServiceEndpoint {
         SCADAAnalogChangedNotificationResponse response = objectFactory.createSCADAAnalogChangedNotificationResponse();
         List<ScadaAnalog> scadaAnalogs = (null != SCADAAnalogChangedNotification
                 .getScadaAnalogs()) ? SCADAAnalogChangedNotification.getScadaAnalogs().getScadaAnalog() : null;
-
-        response.setSCADAAnalogChangedNotificationResult(
-                multispeakFuncs.toArrayOfErrorObject(dr_server.SCADAAnalogChangedNotification(scadaAnalogs)));
-
+        if (scadaAnalogs != null && !scadaAnalogs.isEmpty()) {
+            response.setSCADAAnalogChangedNotificationResult(
+                    multispeakFuncs.toArrayOfErrorObject(dr_server.SCADAAnalogChangedNotification(scadaAnalogs)));
+        }
         return response;
     }
 

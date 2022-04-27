@@ -204,15 +204,14 @@ public class MultispeakLMServiceImpl extends MultispeakLMServiceBase implements 
         }
 
         // add the last object
-        if (!controlledItemsList.isEmpty()) {
-            if (prevSubstationName != null) {
-                SubstationLoadControlStatus substationLoadControlStatus = buildSubstationLoadControlStatus(prevSubstationName, controlledItemsList);
-                // Get unique/master status
-                substationLoadControlStatus.setStatus(mspLMGroupDao.getMasterStatus(allStatus).toString());
-                // Get unique/master mode
-                substationLoadControlStatus.setMode(mspLMGroupDao.getMasterMode(allModes).toString());
-                substationLoadControlStatusList.add(substationLoadControlStatus);
-            }
+        if (!controlledItemsList.isEmpty() && prevSubstationName != null) {
+            SubstationLoadControlStatus substationLoadControlStatus = buildSubstationLoadControlStatus(prevSubstationName,
+                    controlledItemsList);
+            // Get unique/master status
+            substationLoadControlStatus.setStatus(mspLMGroupDao.getMasterStatus(allStatus).toString());
+            // Get unique/master mode
+            substationLoadControlStatus.setMode(mspLMGroupDao.getMasterMode(allModes).toString());
+            substationLoadControlStatusList.add(substationLoadControlStatus);
         }
         return substationLoadControlStatusList;
     }
