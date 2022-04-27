@@ -99,7 +99,6 @@ public class MRServiceEndPoint {
                 endDate.toGregorianCalendar(),
                 lastReceived);
 
-        
         ArrayOfMeterReading1 arrayOfMeterReading = objectFactory.createArrayOfMeterReading1();
         arrayOfMeterReading.getMeterReading().addAll(meterReading);
         response.setGetReadingsByDateResult(arrayOfMeterReading);
@@ -212,8 +211,7 @@ public class MRServiceEndPoint {
         GetAMRSupportedMetersResponse response = objectFactory.createGetAMRSupportedMetersResponse();
 
         String lastReceived = getAMRSupportedMeters.getLastReceived();
-        Meters meters = null;
-        meters = mr_server.getAMRSupportedMeters(lastReceived);
+        Meters meters = mr_server.getAMRSupportedMeters(lastReceived);
         response.setGetAMRSupportedMetersResult(meters);
         return response;
     }
@@ -222,7 +220,9 @@ public class MRServiceEndPoint {
     public @ResponsePayload GetSupportedFieldNamesResponse getSupportedFieldNames(
             @RequestPayload GetSupportedFieldNames getSupportedFieldNames) throws MultispeakWebServiceException {
         GetSupportedFieldNamesResponse response = objectFactory.createGetSupportedFieldNamesResponse();
+        
         List<String> supportedFieldNames = mr_server.getSupportedFieldNames();
+        
         ArrayOfString18 arrOfSupportedFieldNames = objectFactory.createArrayOfString18();
         arrOfSupportedFieldNames.getVal().addAll(supportedFieldNames);
         response.setGetSupportedFieldNamesResult(arrOfSupportedFieldNames);
