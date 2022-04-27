@@ -14,10 +14,12 @@ import com.cannontech.database.AbstractRowCallbackHandler;
 import com.cannontech.database.MaxRowCalbackHandlerRse;
 import com.cannontech.database.YukonResultSet;
 import com.cannontech.database.YukonRowMapper;
+import com.cannontech.msp.beans.v4.ArrayOfModule;
 import com.cannontech.msp.beans.v4.ElectricMeter;
 import com.cannontech.msp.beans.v4.Module;
 import com.cannontech.msp.beans.v4.ModuleList;
 import com.cannontech.msp.beans.v4.MspMeter;
+import com.cannontech.msp.beans.v4.ObjectFactory;
 import com.cannontech.msp.beans.v4.UtilityInfo;
 import com.cannontech.msp.beans.v4.WaterMeter;
 import com.cannontech.multispeak.client.MultispeakDefines;
@@ -80,10 +82,10 @@ public final class MspMeterDaoImpl extends MspMeterDaoBase {
                 electricMeters.add((ElectricMeter) mspMeter);
             }
         }, maxRecords));
-        
+
         MspMeter lastProcessedMeter = null;
-        if(CollectionUtils.isNotEmpty(electricMeters)) {
-            lastProcessedMeter = electricMeters.get(electricMeters.size()-1);
+        if (CollectionUtils.isNotEmpty(electricMeters)) {
+            lastProcessedMeter = electricMeters.get(electricMeters.size() - 1);
         }
         mspMeters.setElectricMeters(electricMeters);
         mspMeters.setReturnFields(lastProcessedMeter, mspMeters.getSize(), maxRecords);
@@ -92,12 +94,12 @@ public final class MspMeterDaoImpl extends MspMeterDaoBase {
 
     /**
      * Creates a new (MSP) Meter object.
-     * The information commented out is being used for in-line documentation of available MultiSpeak fields. 
-     * @param rset The YukonResultSet to pull data values from. View actual method to see required column names. 
+     * The information commented out is being used for in-line documentation of available MultiSpeak fields.
+     * 
+     * @param rset The YukonResultSet to pull data values from. View actual method to see required column names.
      * @return Meter
      */
-    private static MspMeter createMeter(YukonResultSet rset) throws SQLException
-    {
+    private static MspMeter createMeter(YukonResultSet rset) throws SQLException {
         PaoIdentifier paoIdentifier = rset.getPaoIdentifier("paobjectid", "type");
         String paoName = rset.getString("PaoName");
         String meterNumber = rset.getString("meternumber");
@@ -105,8 +107,7 @@ public final class MspMeterDaoImpl extends MspMeterDaoBase {
         String discCollarAddress = rset.getString("disconnectaddress");
         String rfnSerialNumber = rset.getString("serialnumber");
         String rfnManufacturer = rset.getString("manufacturer");
-        String rfnModel = rset.getString("model");
-        
+
         MspMeter meter = null;
         if (paoIdentifier.getPaoType().isWaterMeter()) {
             meter = new WaterMeter();
@@ -115,49 +116,51 @@ public final class MspMeterDaoImpl extends MspMeterDaoBase {
         }
         meter.setObjectID(meterNumber);
         meter.setComments("Device Name: " + paoName);
-       
+
         meter.setMeterNo(meterNumber);
-        meter.setMeterType(paoIdentifier.getPaoType().getPaoTypeName());  //Meter type/model. Always use paoType
-        
+        meter.setMeterType(paoIdentifier.getPaoType().getPaoTypeName()); // Meter type/model. Always use paoType
+
         if (StringUtils.isNotBlank(rfnManufacturer)) {
-            meter.setManufacturer(rfnManufacturer);    //Meter manufacturer.
+            meter.setManufacturer(rfnManufacturer); // Meter manufacturer.
         }
-        
-//        meter.setAMRDeviceType(paoType);	//This is the Yukon Template Field, Yukon doesn't store what this meter used as it's template.
-        
+
         meter.setAMRVendor(MultispeakDefines.AMR_VENDOR);
-        
+
         // For RF meters, set serialNumber and transponderId; for PLC set only transponderId
         if (StringUtils.isNotBlank(carrierAddress)) {
 //            meter.setNameplate(getNameplate(meterNumber, carrierAddress));
         } else if (StringUtils.isNotBlank(rfnSerialNumber)) {
 //            meter.setNameplate(getNameplate(meterNumber, rfnSerialNumber));
-            meter.setSerialNumber(rfnSerialNumber);    //Meter serial number. This is the original number assigned to the meter by the manufacturer.
+            meter.setSerialNumber(rfnSerialNumber); // Meter serial number. This is the original number assigned to the meter by
+                                                    // the manufacturer.
         }
-        
-        //Add Module for Disconnect information
-        if( discCollarAddress != null) {
+
+        // Add Module for Disconnect information
+        if (discCollarAddress != null) {
             Module discModule = new Module();
             ModuleList moduleList = new ModuleList();
             List<Module> listOfModules = moduleList.getModule();
             discModule.setObjectID(discCollarAddress);
             discModule.setModuleType("Disconnect Collar");
             listOfModules.add(discModule);
-//            meter.setModuleList(moduleList); 
+            ArrayOfModule arrayOfModule = new ObjectFactory().createArrayOfModule();
+            if (listOfModules != null) {
+                arrayOfModule.getModule().addAll(listOfModules);
+            }
+            meter.setModuleList(arrayOfModule);
         }
-        
+
         return meter;
     }
 
-    
     /**
      * Creates a new (MSP) UtilityInfo object
-     * The information commented out is being used for in-line documentation of available MultiSpeak fields. 
+     * The information commented out is being used for in-line documentation of available MultiSpeak fields.
+     * 
      * @param meterNumber The Multispeak objectID
      * @return
      */
-    public static UtilityInfo getUtilityInfo(String meterNumber)
-    {
+    public static UtilityInfo getUtilityInfo(String meterNumber) {
         UtilityInfo utilityInfo = new UtilityInfo();
         return utilityInfo;
     }
