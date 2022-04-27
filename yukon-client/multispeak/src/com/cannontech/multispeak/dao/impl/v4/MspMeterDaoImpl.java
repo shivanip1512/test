@@ -128,9 +128,10 @@ public final class MspMeterDaoImpl extends MspMeterDaoBase {
 
         // For RF meters, set serialNumber and transponderId; for PLC set only transponderId
         if (StringUtils.isNotBlank(carrierAddress)) {
-//            meter.setNameplate(getNameplate(meterNumber, carrierAddress));
+            setMeterCommAddress(meter, carrierAddress);
+
         } else if (StringUtils.isNotBlank(rfnSerialNumber)) {
-//            meter.setNameplate(getNameplate(meterNumber, rfnSerialNumber));
+            setMeterCommAddress(meter, rfnSerialNumber);
             meter.setSerialNumber(rfnSerialNumber); // Meter serial number. This is the original number assigned to the meter by
                                                     // the manufacturer.
         }
@@ -163,6 +164,14 @@ public final class MspMeterDaoImpl extends MspMeterDaoBase {
     public static UtilityInfo getUtilityInfo(String meterNumber) {
         UtilityInfo utilityInfo = new UtilityInfo();
         return utilityInfo;
+    }
+
+    private static void setMeterCommAddress(MspMeter meter, String address) {
+        if (meter instanceof WaterMeter) {
+            ((WaterMeter) meter).setMeterCommAddress(address);
+        } else {
+            ((ElectricMeter) meter).setMeterCommAddress(address);
+        }
     }
 
     @Override
