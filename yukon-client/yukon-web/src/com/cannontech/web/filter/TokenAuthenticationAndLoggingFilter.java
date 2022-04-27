@@ -47,7 +47,9 @@ public class TokenAuthenticationAndLoggingFilter extends OncePerRequestFilter {
     public void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain chain)
             throws IOException, ServletException {
 
-        boolean apiLoginRequest = ServletUtil.isPathMatch(request, Lists.newArrayList("/api/token","/api/refreshToken", "/api/logout", "/api/forgottenPassword"));
+        boolean apiLoginRequest = ServletUtil.isPathMatch(request, Lists.newArrayList("/api/token", "/api/refreshToken",
+                "/api/logout", "/api/forgottenPassword", "/api/admin/config/currentTheme", "/api/common/images/*"));
+
         long before = System.currentTimeMillis();
         ContentCachingRequestWrapper requestWrapper = new ContentCachingRequestWrapper(request);
         ContentCachingResponseWrapper responseWrapper = new ContentCachingResponseWrapper(response);
