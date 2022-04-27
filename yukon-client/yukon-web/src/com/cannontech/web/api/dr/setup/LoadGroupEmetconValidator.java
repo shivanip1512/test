@@ -13,6 +13,7 @@ import com.cannontech.common.validator.YukonApiValidationUtils;
 public class LoadGroupEmetconValidator extends LoadGroupSetupValidator<LoadGroupEmetcon> {
 
     @Autowired private LMApiValidatorHelper lmApiValidatorHelper;
+    @Autowired private YukonApiValidationUtils yukonApiValidationUtils;
 
     public LoadGroupEmetconValidator() {
         super(LoadGroupEmetcon.class);
@@ -26,19 +27,19 @@ public class LoadGroupEmetconValidator extends LoadGroupSetupValidator<LoadGroup
     @Override
     protected void doValidation(LoadGroupEmetcon loadGroup, Errors errors) {
 
-        YukonApiValidationUtils.checkIfFieldRequired("addressUsage", errors, loadGroup.getAddressUsage(), "Address Usage");
+        yukonApiValidationUtils.checkIfFieldRequired("addressUsage", errors, loadGroup.getAddressUsage(), "Address Usage");
 
-        YukonApiValidationUtils.checkIfFieldRequired("relayUsage", errors, loadGroup.getRelayUsage(), "Relay Usage");
+        yukonApiValidationUtils.checkIfFieldRequired("relayUsage", errors, loadGroup.getRelayUsage(), "Relay Usage");
 
-        YukonApiValidationUtils.checkIfFieldRequired("goldAddress", errors, loadGroup.getGoldAddress(), "Gold Address");
+        yukonApiValidationUtils.checkIfFieldRequired("goldAddress", errors, loadGroup.getGoldAddress(), "Gold Address");
 
-        YukonApiValidationUtils.checkIfFieldRequired("silverAddress", errors, loadGroup.getSilverAddress(), "Silver Address");
+        yukonApiValidationUtils.checkIfFieldRequired("silverAddress", errors, loadGroup.getSilverAddress(), "Silver Address");
 
         // Validate routeID
         lmApiValidatorHelper.validateRoute(errors, loadGroup.getRouteId());
 
         if (!errors.hasFieldErrors("goldAddress")) {
-            YukonApiValidationUtils.checkRange(errors, "goldAddress", loadGroup.getGoldAddress(), 0, 4, true);
+            yukonApiValidationUtils.checkRange(errors, "goldAddress", loadGroup.getGoldAddress(), 0, 4, true);
         }
 
         if (!errors.hasFieldErrors("goldAddress") && loadGroup.getAddressUsage() != null) {
@@ -48,7 +49,7 @@ public class LoadGroupEmetconValidator extends LoadGroupSetupValidator<LoadGroup
         }
 
         if (!errors.hasFieldErrors("silverAddress")) {
-            YukonApiValidationUtils.checkRange(errors, "silverAddress", loadGroup.getSilverAddress(), 0, 60, true);
+            yukonApiValidationUtils.checkRange(errors, "silverAddress", loadGroup.getSilverAddress(), 0, 60, true);
         }
 
         if (!errors.hasFieldErrors("silverAddress") && loadGroup.getAddressUsage() != null) {

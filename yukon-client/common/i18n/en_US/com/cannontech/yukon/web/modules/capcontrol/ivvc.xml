@@ -155,7 +155,8 @@
     <entry key="yukon.web.modules.capcontrol.ivvc.zoneWizard.table.ignore">Ignore</entry>
     <entry key="yukon.web.modules.capcontrol.ivvc.zoneWizard.table.phase">Phase</entry>
     <entry key="yukon.web.modules.capcontrol.ivvc.zoneWizard.table.point.name">Name</entry>
-    <entry key="yukon.web.modules.capcontrol.ivvc.zoneWizard.table.point.device">Device</entry>    
+    <entry key="yukon.web.modules.capcontrol.ivvc.zoneWizard.table.point.device">Device</entry>
+    <entry key="yukon.web.modules.capcontrol.ivvc.zoneWizard.table.point.feeder">Feeder</entry>  
     <entry key="yukon.web.modules.capcontrol.ivvc.zoneWizard.picker.hoverText">Click To Select Regulator</entry>
     <entry key="yukon.web.modules.capcontrol.ivvc.zoneWizard.delete.hoverText">Click to remove</entry>
     <entry key="yukon.web.modules.capcontrol.ivvc.zoneWizard.error.required.zoneName">A zone name is required.</entry>

@@ -14,6 +14,7 @@
 <entry key="yukon.exception.processingException.disableDevice">Could not disable device with id: {0}.</entry>
 <entry key="yukon.exception.processingException.changeMeterNumber">Could not change meter number of device with id: {0}.</entry>
 <entry key="yukon.exception.processingException.changeDeviceName">Could not change name of device with id: {0}.</entry>
+<entry key="yukon.exception.processingException.changeDeviceNameAlreadyExists">Could not change name of device with id: {0}. Another device with that name already exists.</entry>
 <entry key="yukon.exception.processingException.changeRfnDevice">Could not change serial number, manufacturer, model of device with id: {0}.</entry>
 <entry key="yukon.exception.processingException.changeRoute">Could not change route of device with id: {0}, and value: {2}.</entry>
 <entry key="yukon.exception.processingException.pointOffsetInUse">Point offset {0} on device {1} is already in use.</entry>
@@ -100,6 +101,7 @@
 <entry key="yukon.exception.objectMappingException.invalidAddress">Device with address: {0} not found.</entry>
 <entry key="yukon.exception.objectMappingException.nonNumericAddress">Address {0} is not a valid address. Must be numeric.</entry>
 <entry key="yukon.exception.objectMappingException.invalidMeterNumber">Device with meter number: {0} not found.</entry>
+<entry key="yukon.exception.objectMappingException.duplicateMeterNumber">More than one device with meter number: {0} was found.</entry>
 <entry key="yukon.exception.objectMappingException.invalidId">Device with id: {0} not found.</entry>
 <entry key="yukon.exception.objectMappingException.invalidName">Device with name {0} not found.</entry>
 <entry key="yukon.exception.objectMappingException.invalidValue">Contains invalid value {0}</entry>

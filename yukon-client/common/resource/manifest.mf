@@ -104,15 +104,14 @@ Class-Path: ./
  guava-18.0.jar 
  httpclient-4.5.6.jar 
  httpcore-4.4.10.jar 
- jackson-annotations-2.12.6.jar 
- jackson-core-2.12.6.jar 
- jackson-databind-2.12.6.jar 
+ jackson-annotations-2.13.0.jar 
+ jackson-core-2.13.0.jar 
+ jackson-databind-2.13.0.jar 
  jackson-dataformat-csv-2.9.6.jar 
  jakarta.mail-2.0.1.jar 
  jackson-datatype-joda-2.12.3.jar 
- jackson-dataformat-xml-2.12.6.jar 
- jackson-datatype-jsr310-2.12.6.jar 
- jackson-module-jaxb-annotations-2.12.6.jar 
+ jackson-dataformat-xml-2.13.0.jar 
+ jackson-datatype-jsr310-2.13.0.jar 
  jakarta.activation-api-2.0.1.jar 
  netty-buffer-4.1.70.Final.jar 
  netty-codec-4.1.70.Final.jar 

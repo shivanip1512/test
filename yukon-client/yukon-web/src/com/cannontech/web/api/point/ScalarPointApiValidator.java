@@ -5,6 +5,7 @@ import java.util.stream.Collectors;
 
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.validation.Errors;
 
 import com.cannontech.api.error.model.ApiErrorDetails;
@@ -19,6 +20,8 @@ import com.cannontech.web.tools.points.model.PointUnit;
 import com.cannontech.web.tools.points.model.ScalarPointModel;
 
 public class ScalarPointApiValidator<T extends ScalarPointModel<?>> extends PointApiValidator<T> {
+
+    @Autowired private YukonApiValidationUtils yukonApiValidationUtils;
 
     public ScalarPointApiValidator() {
         super();
@@ -58,20 +61,20 @@ public class ScalarPointApiValidator<T extends ScalarPointModel<?>> extends Poin
             }
 
             if (highReasonabilityLimit != null && highReasonabilityLimit != CtiUtilities.INVALID_MAX_DOUBLE) {
-                YukonApiValidationUtils.checkRange(errors, "pointUnit.highReasonabilityLimit", highReasonabilityLimit, -999999.999999, 999999.999999, true);
+                yukonApiValidationUtils.checkRange(errors, "pointUnit.highReasonabilityLimit", highReasonabilityLimit, -999999.999999, 999999.999999, true);
             }
 
             if (lowReasonabilityLimit != null && lowReasonabilityLimit != CtiUtilities.INVALID_MIN_DOUBLE) {
-                YukonApiValidationUtils.checkRange(errors, "pointUnit.lowReasonabilityLimit", lowReasonabilityLimit, -999999.999999, 999999.999999, true);
+                yukonApiValidationUtils.checkRange(errors, "pointUnit.lowReasonabilityLimit", lowReasonabilityLimit, -999999.999999, 999999.999999, true);
 
             }
 
             if (pointUnit.getDecimalPlaces() != null) {
-                YukonApiValidationUtils.checkRange(errors, "pointUnit.decimalPlaces", pointUnit.getDecimalPlaces(), 0, 10, true);
+                yukonApiValidationUtils.checkRange(errors, "pointUnit.decimalPlaces", pointUnit.getDecimalPlaces(), 0, 10, true);
             }
 
             if (pointUnit.getMeterDials() != null) {
-                YukonApiValidationUtils.checkRange(errors, "pointUnit.meterDials", pointUnit.getMeterDials(), 0, 10, true);
+                yukonApiValidationUtils.checkRange(errors, "pointUnit.meterDials", pointUnit.getMeterDials(), 0, 10, true);
             }
         }
 
@@ -97,7 +100,7 @@ public class ScalarPointApiValidator<T extends ScalarPointModel<?>> extends Poin
                                     new Object[] { "less than Upper Limit" }, "");
                         }
 
-                        YukonApiValidationUtils.checkIfFieldRequired("limitNumber", errors, pointLimit.getLimitNumber(), "limitNumber");
+                        yukonApiValidationUtils.checkIfFieldRequired("limitNumber", errors, pointLimit.getLimitNumber(), "limitNumber");
                         if (!errors.hasFieldErrors("limitNumber")) {
 
                             if (!(pointLimit.getLimitNumber() == 1 || pointLimit.getLimitNumber() == 2)) {
@@ -114,14 +117,14 @@ public class ScalarPointApiValidator<T extends ScalarPointModel<?>> extends Poin
                         }
 
                         if (pointLimit.getHighLimit() != null) {
-                            YukonApiValidationUtils.checkRange(errors, "highLimit", pointLimit.getHighLimit(), -99999999.0, 99999999.0, false);
+                            yukonApiValidationUtils.checkRange(errors, "highLimit", pointLimit.getHighLimit(), -99999999.0, 99999999.0, false);
                         }
 
                         if (pointLimit.getLowLimit() != null) {
-                            YukonApiValidationUtils.checkRange(errors, "lowLimit", pointLimit.getLowLimit(), -99999999.0, 99999999.0, false);
+                            yukonApiValidationUtils.checkRange(errors, "lowLimit", pointLimit.getLowLimit(), -99999999.0, 99999999.0, false);
                         }
                         if (pointLimit.getLimitDuration() != null) {
-                            YukonApiValidationUtils.checkRange(errors, "limitDuration", pointLimit.getLimitDuration(), 0, 99999999, false);
+                            yukonApiValidationUtils.checkRange(errors, "limitDuration", pointLimit.getLimitDuration(), 0, 99999999, false);
                         }
                     }
                     errors.popNestedPath();

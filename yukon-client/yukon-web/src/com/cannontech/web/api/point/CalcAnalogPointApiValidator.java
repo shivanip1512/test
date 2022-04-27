@@ -1,6 +1,7 @@
 package com.cannontech.web.api.point;
 
 import org.apache.commons.lang3.StringUtils;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.validation.Errors;
 
 import com.cannontech.api.error.model.ApiErrorDetails;
@@ -11,6 +12,7 @@ import com.cannontech.web.tools.points.model.CalcAnalogPointModel;
 import com.cannontech.web.tools.points.model.CalcUpdateType;
 
 public class CalcAnalogPointApiValidator extends ScalarPointApiValidator<CalcAnalogPointModel> {
+    @Autowired private YukonApiValidationUtils yukonApiValidationUtils;
     
     public CalcAnalogPointApiValidator() {
         super();
@@ -36,7 +38,7 @@ public class CalcAnalogPointApiValidator extends ScalarPointApiValidator<CalcAna
             if (calcAnalogBase != null) {
                 if (calcAnalogBase.getUpdateType() != null) {
                     if (calcAnalogBase.getUpdateType() == CalcUpdateType.ON_TIMER || calcAnalogBase.getUpdateType() == CalcUpdateType.ON_TIMER_AND_CHANGE) {
-                        YukonApiValidationUtils.checkIfFieldRequired("calcAnalogBase.periodicRate", errors, calcAnalogBase.getPeriodicRate(), "calcAnalogBase.periodicRate");
+                        yukonApiValidationUtils.checkIfFieldRequired("calcAnalogBase.periodicRate", errors, calcAnalogBase.getPeriodicRate(), "calcAnalogBase.periodicRate");
                         if (!errors.hasFieldErrors("calcAnalogBase.periodicRate")) {
                             TimeIntervals periodicRate = TimeIntervals.fromSeconds(calcAnalogBase.getPeriodicRate());
                         if (!TimeIntervals.getUpdateAndScanRate().contains(periodicRate)) {

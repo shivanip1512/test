@@ -30,6 +30,7 @@
         <pointInfo name="Minimum Power Factor Frozen" attributes="MINIMUM_POWER_FACTOR_FROZEN"></pointInfo>
         <pointInfo name="Bad Upgrade Security Param" attributes="BAD_UPGRADE_SECURITY_PARAM"/>
         <pointInfo name="Blink Count" init="true" attributes="RFN_BLINK_COUNT"/>
+        <pointInfo name="Blink Reported" init="true" attributes="RFN_BLINK_REPORTED"/>
         <pointInfo name="Blink Restore Count" init="true" attributes="RFN_BLINK_RESTORE_COUNT"/>
         <pointInfo name="Coincident Power Factor" attributes="POWER_FACTOR_COIN"/>
         <pointInfo name="Current Angle Phase A" attributes="CURRENT_ANGLE_PHASE_A"/>

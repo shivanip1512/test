@@ -17,6 +17,7 @@ import com.cannontech.database.data.lite.LiteYukonUser;
 public class LoadGroupRippleValidator extends LoadGroupSetupValidator<LoadGroupRipple> {
 
     @Autowired private LMApiValidatorHelper lmApiValidatorHelper;
+    @Autowired private YukonApiValidationUtils yukonApiValidationUtils;
     @Autowired private RolePropertyDao rolePropertyDao;
     private final static String zeroOnePattern = "^[01]+$";
     public static final Integer SHOW_SPECIAL_RIPPLE = 0x10000000;
@@ -38,11 +39,11 @@ public class LoadGroupRippleValidator extends LoadGroupSetupValidator<LoadGroupR
         // Route ID is mandatory for Ripple Load Group and should exists
         lmApiValidatorHelper.validateRoute(errors, loadGroup.getRouteId());
 
-        YukonApiValidationUtils.checkIfFieldRequired("shedTime", errors, loadGroup.getShedTime(), "Shed Time");
+        yukonApiValidationUtils.checkIfFieldRequired("shedTime", errors, loadGroup.getShedTime(), "Shed Time");
 
-        YukonApiValidationUtils.checkIfFieldRequired("control", errors, loadGroup.getControl(), "Control");
+        yukonApiValidationUtils.checkIfFieldRequired("control", errors, loadGroup.getControl(), "Control");
 
-        YukonApiValidationUtils.checkIfFieldRequired("restore", errors, loadGroup.getRestore(), "Restore");
+        yukonApiValidationUtils.checkIfFieldRequired("restore", errors, loadGroup.getRestore(), "Restore");
 
         if (!errors.hasFieldErrors("shedTime")) {
             TimeIntervals shedTime = TimeIntervals.fromSeconds(loadGroup.getShedTime());
@@ -66,24 +67,24 @@ public class LoadGroupRippleValidator extends LoadGroupSetupValidator<LoadGroupR
         if (!errors.hasFieldErrors("control")) {
 
             if ((specialRipple & SHOW_SPECIAL_RIPPLE) != 0) {
-                YukonApiValidationUtils.checkExactLength("control", errors, loadGroup.getControl(), "Control", 34);
+                yukonApiValidationUtils.checkExactLength("control", errors, loadGroup.getControl(), "Control", 34);
             } else {
-                YukonApiValidationUtils.checkExactLength("control", errors, loadGroup.getControl(), "Control", 50);
+                yukonApiValidationUtils.checkExactLength("control", errors, loadGroup.getControl(), "Control", 50);
             }
         }
 
         if (!errors.hasFieldErrors("restore")) {
 
             if ((specialRipple & SHOW_SPECIAL_RIPPLE) != 0) {
-                YukonApiValidationUtils.checkExactLength("restore", errors, loadGroup.getRestore(), "Restore", 34);
+                yukonApiValidationUtils.checkExactLength("restore", errors, loadGroup.getRestore(), "Restore", 34);
             } else {
-                YukonApiValidationUtils.checkExactLength("restore", errors, loadGroup.getRestore(), "Restore", 50);
+                yukonApiValidationUtils.checkExactLength("restore", errors, loadGroup.getRestore(), "Restore", 50);
             }
         }
 
         if ((specialRipple & SHOW_SPECIAL_RIPPLE) != 0) {
-            YukonApiValidationUtils.checkIfFieldRequired("group", errors, loadGroup.getGroup(), "Group");
-            YukonApiValidationUtils.checkIfFieldRequired("areaCode", errors, loadGroup.getAreaCode(), "Area Code");
+            yukonApiValidationUtils.checkIfFieldRequired("group", errors, loadGroup.getGroup(), "Group");
+            yukonApiValidationUtils.checkIfFieldRequired("areaCode", errors, loadGroup.getAreaCode(), "Area Code");
         } else if (loadGroup.getGroup() != null || loadGroup.getAreaCode() != null) {
             errors.reject(ApiErrorDetails.BAD_REQUEST.getCodeString());
         }
