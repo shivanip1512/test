@@ -7,7 +7,6 @@ import java.util.concurrent.atomic.AtomicInteger;
 import javax.annotation.PostConstruct;
 import javax.annotation.PreDestroy;
 
-import org.apache.logging.log4j.Logger;
 import org.joda.time.Instant;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.jmx.export.annotation.ManagedAttribute;
@@ -16,7 +15,6 @@ import org.springframework.jmx.export.annotation.ManagedResource;
 import com.cannontech.amr.rfn.message.alarm.RfnAlarmArchiveRequest;
 import com.cannontech.amr.rfn.message.alarm.RfnAlarmArchiveResponse;
 import com.cannontech.amr.rfn.service.RfnMeterEventService;
-import com.cannontech.clientutils.YukonLogManager;
 import com.cannontech.common.rfn.model.RfnDevice;
 import com.cannontech.common.util.jms.YukonJmsTemplate;
 import com.cannontech.common.util.jms.YukonJmsTemplateFactory;
@@ -27,7 +25,6 @@ import com.google.common.collect.Lists;
 
 @ManagedResource
 public class AlarmArchiveRequestListener extends ArchiveRequestListenerBase<RfnAlarmArchiveRequest> {
-    private static final Logger log = YukonLogManager.getLogger(AlarmArchiveRequestListener.class);
 
     @Autowired private RfnMeterEventService rfnMeterEventService;
     @Autowired private YukonJmsTemplateFactory jmsTemplateFactory;
@@ -35,7 +32,7 @@ public class AlarmArchiveRequestListener extends ArchiveRequestListenerBase<RfnA
     private YukonJmsTemplate jmsTemplate;
     private List<Worker> workers;
     private AtomicInteger processedAlarmArchiveRequest = new AtomicInteger();
-
+   
     public class Worker extends ConverterBase {
         public Worker(int workerNumber, int queueSize) {
             super("AlarmArchiveConverter", workerNumber, queueSize);
