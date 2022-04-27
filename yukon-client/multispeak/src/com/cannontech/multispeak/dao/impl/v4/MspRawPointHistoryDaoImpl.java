@@ -24,7 +24,6 @@ import com.cannontech.core.dynamic.PointValueQualityHolder;
 import com.cannontech.database.YukonJdbcTemplate;
 import com.cannontech.msp.beans.v4.MeterReading;
 import com.cannontech.multispeak.block.v4.Block;
-import com.cannontech.multispeak.dao.MspRawPointHistoryDao.ReadBy;
 import com.cannontech.multispeak.dao.v4.FormattedBlockProcessingService;
 import com.cannontech.multispeak.dao.v4.MeterReadingProcessingService;
 import com.cannontech.multispeak.dao.v4.MspRawPointHistoryDao;

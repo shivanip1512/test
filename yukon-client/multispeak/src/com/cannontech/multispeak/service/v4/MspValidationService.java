@@ -15,8 +15,8 @@ public interface MspValidationService {
      */
     public YukonMeter isYukonMeterNumber(String meterNumber) throws MultispeakWebServiceException;
 
-    FormattedBlockProcessingService<Block> getProcessingServiceByReadingType(
-            Map<String, FormattedBlockProcessingService<Block>> readingTypesMap, String readingType)
+    FormattedBlockProcessingService<Block> getProcessingServiceByFormattedBlockTemplate(
+            Map<String, FormattedBlockProcessingService<Block>> formattedBlockMap, String formattedBlockTemplateName)
             throws MultispeakWebServiceException;
 
 

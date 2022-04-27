@@ -39,12 +39,12 @@ public class MspValidationServiceImpl implements MspValidationService {
     }
     
     @Override
-    public FormattedBlockProcessingService<Block> getProcessingServiceByReadingType(
-            Map<String, FormattedBlockProcessingService<Block>> readingTypesMap,
-            String readingType) throws MultispeakWebServiceException {
-        FormattedBlockProcessingService<Block> formattedBlock = readingTypesMap.get(readingType);
+    public FormattedBlockProcessingService<Block> getProcessingServiceByFormattedBlockTemplate(
+            Map<String, FormattedBlockProcessingService<Block>> formattedBlockMap,
+            String formattedBlockTemplateName) throws MultispeakWebServiceException {
+        FormattedBlockProcessingService<Block> formattedBlock = formattedBlockMap.get(formattedBlockTemplateName);
         if (formattedBlock == null) {
-            String message = readingType + " is NOT a supported ReadingType.";
+            String message = formattedBlockTemplateName + " is NOT a supported ReadingType.";
             log.error(message);
             throw new MultispeakWebServiceException(message);
         }

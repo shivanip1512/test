@@ -53,7 +53,7 @@ public class MR_ServerImpl implements MR_Server {
     @Autowired private MspValidationService mspValidationService;
     @Autowired private MultispeakMeterService multispeakMeterService;
     @Autowired private PaoDefinitionDao paoDefinitionDao;
-    private Map<String, FormattedBlockProcessingService<Block>> readingTypesMap;
+    private Map<String, FormattedBlockProcessingService<Block>> formattedBlockMap;
     private BasicServerConnection porterConnection;
    
     private final Logger log = YukonLogManager.getLogger(MR_ServerImpl.class);
@@ -211,7 +211,7 @@ public class MR_ServerImpl implements MR_Server {
         multispeakEventLogService.methodInvoked("getReadingsByDateAndFieldName", vendor.getCompanyName());
 
         FormattedBlockProcessingService<Block> formattedBlockProcessingService = mspValidationService
-                .getProcessingServiceByReadingType(readingTypesMap, formattedBlockTemplateName);
+                .getProcessingServiceByFormattedBlockTemplate(formattedBlockMap, formattedBlockTemplateName);
 
         MspBlockReturnList mspBlockReturnList = mspRawPointHistoryDao.retrieveBlock(ReadBy.NONE, null,
                                                                                     formattedBlockProcessingService,
@@ -236,8 +236,8 @@ public class MR_ServerImpl implements MR_Server {
 
     @Required
     public void setReadingTypesMap(
-            Map<String, FormattedBlockProcessingService<Block>> readingTypesMap) {
-        this.readingTypesMap = readingTypesMap;
+            Map<String, FormattedBlockProcessingService<Block>> formattedBlockMap) {
+        this.formattedBlockMap = formattedBlockMap;
     }
 
 }
