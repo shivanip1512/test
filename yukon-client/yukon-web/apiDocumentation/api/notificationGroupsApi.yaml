@@ -1,7 +1,7 @@
 post-get-all-operation:
   post:
     tags:
-     - Notification Group
+     - Notification Groups
     summary: 'Create Notification Group'
     description: 'API to create notification group.'
     requestBody:
@@ -26,7 +26,7 @@ post-get-all-operation:
     
   get:
     tags:
-      - Notification Group
+      - Notification Groups
     summary: Retrieve all the Notification Groups 
     description: |-
       API to retrieve all type of Notification Groups. 
@@ -46,7 +46,7 @@ post-get-all-operation:
 get-update-delete-operation:
   get:
     tags:
-     - Notification Group
+     - Notification Groups
     summary: 'Retrieve Notification Group'
     description: 'API to retrieve notification group based on passed notification group id.'
     parameters:
@@ -68,7 +68,7 @@ get-update-delete-operation:
                 $ref: '../schemas/notificationGroupsSchema.yaml#/components/examples/Notification Group Response'
   put:
     tags:
-     - Notification Group
+     - Notification Groups
     summary: 'Update Notification Group'
     description: 'API to update notification group based on passed notification group id.'
     parameters:
@@ -99,7 +99,7 @@ get-update-delete-operation:
                 $ref: '../schemas/notificationGroupsSchema.yaml#/components/examples/Notification Group Response'
   delete:
     tags:
-     - Notification Group
+     - Notification Groups
     summary: 'Delete Notification Group'
     description: 'API to delete notification group based on passed notification group id.'
     parameters:
