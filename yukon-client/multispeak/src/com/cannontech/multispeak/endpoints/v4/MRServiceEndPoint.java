@@ -16,6 +16,7 @@ import com.cannontech.msp.beans.v4.ArrayOfErrorObject;
 import com.cannontech.msp.beans.v4.ArrayOfMeterID1;
 import com.cannontech.msp.beans.v4.ArrayOfMeterReading1;
 import com.cannontech.msp.beans.v4.ArrayOfString;
+import com.cannontech.msp.beans.v4.ArrayOfString18;
 import com.cannontech.msp.beans.v4.CancelUsageMonitoring;
 import com.cannontech.msp.beans.v4.CancelUsageMonitoringResponse;
 import com.cannontech.msp.beans.v4.ErrorObject;
@@ -31,6 +32,8 @@ import com.cannontech.msp.beans.v4.GetReadingsByDate;
 import com.cannontech.msp.beans.v4.GetReadingsByDateResponse;
 import com.cannontech.msp.beans.v4.GetReadingsByMeterID;
 import com.cannontech.msp.beans.v4.GetReadingsByMeterIDResponse;
+import com.cannontech.msp.beans.v4.GetSupportedFieldNames;
+import com.cannontech.msp.beans.v4.GetSupportedFieldNamesResponse;
 import com.cannontech.msp.beans.v4.InitiateUsageMonitoring;
 import com.cannontech.msp.beans.v4.InitiateUsageMonitoringResponse;
 import com.cannontech.msp.beans.v4.IsAMRMeter;
@@ -214,6 +217,17 @@ public class MRServiceEndPoint {
         Meters meters = null;
         meters = mr_server.getAMRSupportedMeters(lastReceived);
         response.setGetAMRSupportedMetersResult(meters);
+        return response;
+    }
+
+    @PayloadRoot(localPart = "GetSupportedFieldNames", namespace = MultispeakDefines.NAMESPACE_v4)
+    public @ResponsePayload GetSupportedFieldNamesResponse getSupportedFieldNames(
+            @RequestPayload GetSupportedFieldNames getSupportedFieldNames) throws MultispeakWebServiceException {
+        GetSupportedFieldNamesResponse response = objectFactory.createGetSupportedFieldNamesResponse();
+        List<String> supportedFieldNames = mr_server.getSupportedFieldNames();
+        ArrayOfString18 arrOfSupportedFieldNames = objectFactory.createArrayOfString18();
+        arrOfSupportedFieldNames.getVal().addAll(supportedFieldNames);
+        response.setGetSupportedFieldNamesResult(arrOfSupportedFieldNames);
         return response;
     }
 

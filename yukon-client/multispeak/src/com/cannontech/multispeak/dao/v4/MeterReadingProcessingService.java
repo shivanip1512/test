@@ -1,5 +1,7 @@
 package com.cannontech.multispeak.dao.v4;
 
+import java.util.Set;
+
 import com.cannontech.amr.meter.model.YukonMeter;
 import com.cannontech.common.pao.attribute.model.BuiltInAttribute;
 import com.cannontech.core.dynamic.PointValueHolder;
@@ -20,4 +22,10 @@ public interface MeterReadingProcessingService {
      */
     public void updateMeterReading(MeterReading reading, BuiltInAttribute attribute,
             PointValueHolder pointValueHolder);
+    
+    /**
+     * to get supported field names
+     * @return list of attrinute fields
+     */
+    public Set<BuiltInAttribute> getAttributeFieldNames();
 }

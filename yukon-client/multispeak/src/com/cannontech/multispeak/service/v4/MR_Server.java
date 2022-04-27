@@ -107,4 +107,11 @@ public interface MR_Server {
      */
     public Meters getAMRSupportedMeters(String lastReceived) throws MultispeakWebServiceException;
 
+    
+    /**
+     * get Supported Field names against attributes
+     * @return list of FieldNames
+     */
+    public List<String> getSupportedFieldNames() throws MultispeakWebServiceException;
+    
 }

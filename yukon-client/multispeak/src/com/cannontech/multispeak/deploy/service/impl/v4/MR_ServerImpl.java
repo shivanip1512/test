@@ -5,6 +5,8 @@ import java.util.Calendar;
 import java.util.Date;
 import java.util.EnumSet;
 import java.util.List;
+import java.util.Set;
+import java.util.stream.Collectors;
 
 import org.apache.logging.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -34,6 +36,7 @@ import com.cannontech.multispeak.dao.MspMeterDao;
 import com.cannontech.multispeak.dao.v4.MeterReadingProcessingService;
 import com.cannontech.multispeak.dao.v4.MspRawPointHistoryDao;
 import com.cannontech.multispeak.dao.v4.MspRawPointHistoryDao.ReadBy;
+import com.cannontech.multispeak.data.v4.FieldNamesMspV4;
 import com.cannontech.multispeak.data.v4.MspMeterReadingReturnList;
 import com.cannontech.multispeak.data.v4.MspMeterReturnList;
 import com.cannontech.multispeak.exceptions.MultispeakWebServiceException;
@@ -63,7 +66,9 @@ public class MR_ServerImpl implements MR_Server {
             "GetLatestReadingByMeterID",
             "IsAMRMeter",
             "InitiateUsageMonitoring",
-            "CancelUsageMonitoring"};
+            "CancelUsageMonitoring",
+            "GetAMRSupportedMeters",
+            "GetSupportedFieldNames"};
 
     private void init() throws MultispeakWebServiceException {
         multispeakFuncs.init();
@@ -250,17 +255,33 @@ public class MR_ServerImpl implements MR_Server {
         multispeakEventLogService.methodInvoked("GetAMRSupportedMeters", vendor.getCompanyName());
 
         Date timerStart = new Date();
-        MspMeterReturnList meterList = (MspMeterReturnList) mspMeterDao.getAMRSupportedMeters(lastReceived, vendor.getMaxReturnRecords());
+        MspMeterReturnList meterList = (MspMeterReturnList) mspMeterDao.getAMRSupportedMeters(lastReceived,
+                vendor.getMaxReturnRecords());
 
         multispeakFuncs.updateResponseHeader(meterList);
 
         log.info("Returning " + meterList.getSize() + " AMR Supported Meters. ("
-            + (new Date().getTime() - timerStart.getTime()) * .001 + " secs)");
+                + (new Date().getTime() - timerStart.getTime()) * .001 + " secs)");
         multispeakEventLogService.returnObjects(meterList.getSize(), meterList.getObjectsRemaining(), "Meter",
-            meterList.getLastSent(), "GetAMRSupportedMeters", vendor.getCompanyName());
+                meterList.getLastSent(), "GetAMRSupportedMeters", vendor.getCompanyName());
 
         return meterList.getMeters();
     }
     
+
+    @Override
+    public List<String> getSupportedFieldNames() throws MultispeakWebServiceException {
+        init();
+        MultispeakVendor vendor = multispeakFuncs.getMultispeakVendorFromHeader();
+        multispeakEventLogService.methodInvoked("GetSupportedFieldNames", vendor.getCompanyName());
+
+        Set<BuiltInAttribute> attributeFieldNames = meterReadingProcessingService.getAttributeFieldNames();
+
+        List<String> fieldNames = attributeFieldNames.stream()
+                                                     .map(attributeFieldName -> FieldNamesMspV4.getFieldNamesMspV4ByAttribute(attributeFieldName).getFieldName())
+                                                     .collect(Collectors.toList());
+
+        return fieldNames;
+    }
 
 }
