@@ -87,15 +87,9 @@ public class MspRawPointHistoryDaoImpl implements MspRawPointHistoryDao {
         // loop over meters, results will be returned in whatever order getPaoList returns the meters in
         for (YukonMeter meter : meters) {
             for (BuiltInAttribute attribute : attributesToLoad) {
-                List<PointValueQualityHolder> rawValues = resultsPerAttribute.get(attribute).removeAll(meter.getPaoIdentifier()); // remove
-                                                                                                                                  // to
-                                                                                                                                  // keep
-                                                                                                                                  // our
-                                                                                                                                  // memory
-                                                                                                                                  // consumption
-                                                                                                                                  // somewhat
-                                                                                                                                  // in
-                                                                                                                                  // check
+                List<PointValueQualityHolder> rawValues = resultsPerAttribute.get(attribute).removeAll(meter.getPaoIdentifier()); // remove  to keep our
+                                                                                                                                  // memory consumption
+                                                                                                                                 // somewhat in check
 
                 for (PointValueQualityHolder pointValueQualityHolder : rawValues) {
                     MeterReading meterReading = meterReadingProcessingService.createMeterReading(meter);
