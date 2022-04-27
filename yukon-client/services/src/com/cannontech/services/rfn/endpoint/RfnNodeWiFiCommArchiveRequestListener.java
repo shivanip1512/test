@@ -146,7 +146,6 @@ public class RfnNodeWiFiCommArchiveRequestListener implements RfnArchiveProcesso
         if (!referenceIds.isEmpty()) {
             RfnNodeWiFiCommArchiveResponse response = new RfnNodeWiFiCommArchiveResponse();
             response.setReferenceIDs(referenceIds);
-            log.debug("{} acknowledged ids {}", processor, response.getReferenceIDs());
             log.info(">>> {}", response.toString());
             jmsTemplate.convertAndSend(response);
         }
