@@ -14,12 +14,11 @@ import com.cannontech.database.AbstractRowCallbackHandler;
 import com.cannontech.database.MaxRowCalbackHandlerRse;
 import com.cannontech.database.YukonResultSet;
 import com.cannontech.database.YukonRowMapper;
-import com.cannontech.msp.beans.v3.Module;
-import com.cannontech.msp.beans.v3.ModuleList;
-import com.cannontech.msp.beans.v3.Nameplate;
-import com.cannontech.msp.beans.v3.UtilityInfo;
 import com.cannontech.msp.beans.v4.ElectricMeter;
+import com.cannontech.msp.beans.v4.Module;
+import com.cannontech.msp.beans.v4.ModuleList;
 import com.cannontech.msp.beans.v4.MspMeter;
+import com.cannontech.msp.beans.v4.UtilityInfo;
 import com.cannontech.msp.beans.v4.WaterMeter;
 import com.cannontech.multispeak.client.MultispeakDefines;
 import com.cannontech.multispeak.dao.MspMeterDaoBase;
@@ -150,19 +149,6 @@ public final class MspMeterDaoImpl extends MspMeterDaoBase {
         return meter;
     }
 
-    /**
-     * Creates a new (MSP) Nameplate object
-     * The information commented out is being used for in-line documentation of available MultiSpeak fields. 
-     * @param meterNumber The multispeak objectID
-     * @param address The meter's transponderID (Physical Address)
-     * @return
-     */
-    public static Nameplate getNameplate(String meterNumber, String address)
-    {
-        Nameplate nameplate = new Nameplate();
-        nameplate.setTransponderID(address);
-        return nameplate;
-    }
     
     /**
      * Creates a new (MSP) UtilityInfo object

@@ -262,7 +262,7 @@ public class MR_ServerImpl implements MR_Server {
 
         log.info("Returning " + meterList.getSize() + " AMR Supported Meters. ("
                 + (new Date().getTime() - timerStart.getTime()) * .001 + " secs)");
-        multispeakEventLogService.returnObjects(meterList.getSize(), meterList.getObjectsRemaining(), "Meter",
+        multispeakEventLogService.returnObjects(meterList.getSize(), meterList.getObjectsRemaining(), "MspMeter",
                 meterList.getLastSent(), "GetAMRSupportedMeters", vendor.getCompanyName());
 
         return meterList.getMeters();
