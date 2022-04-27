@@ -56,19 +56,19 @@ public class MR_ServerImpl implements MR_Server {
     @Autowired private MultispeakMeterService multispeakMeterService;
     @Autowired private PaoDefinitionDao paoDefinitionDao;
     @Autowired @Qualifier("mspMeterDaoV4") private MspMeterDao mspMeterDao;
-
+   
     private final Logger log = YukonLogManager.getLogger(MR_ServerImpl.class);
-    private final static String[] methods = new String[] { "PingURL",
-            "GetMethods",
-            "GetReadingsByDate",
-            "GetReadingsByMeterID",
-            "GetLatestReadings",
-            "GetLatestReadingByMeterID",
-            "IsAMRMeter",
-            "InitiateUsageMonitoring",
-            "CancelUsageMonitoring",
-            "GetAMRSupportedMeters",
-            "GetSupportedFieldNames"};
+    private final static String[] methods = new String[] { "PingURL", 
+                                                           "GetMethods",
+                                                           "GetReadingsByDate",
+                                                           "GetReadingsByMeterID",
+                                                           "GetLatestReadings",
+                                                           "GetLatestReadingByMeterID",
+                                                           "IsAMRMeter",
+                                                           "InitiateUsageMonitoring",
+                                                           "CancelUsageMonitoring",
+                                                           "GetAMRSupportedMeters",
+                                                           "GetSupportedFieldNames"};
 
     private void init() throws MultispeakWebServiceException {
         multispeakFuncs.init();
@@ -84,7 +84,7 @@ public class MR_ServerImpl implements MR_Server {
         init();
         return multispeakFuncs.getMethods(MultispeakDefines.MR_Server_STR, Arrays.asList(methods));
     }
-
+    
     @Override
     public List<MeterReading> getReadingsByDate(Calendar startDate, Calendar endDate, String lastReceived)
             throws MultispeakWebServiceException {
@@ -94,11 +94,11 @@ public class MR_ServerImpl implements MR_Server {
         multispeakEventLogService.methodInvoked("GetReadingsByDate", vendor.getCompanyName());
 
         MspMeterReadingReturnList mspMeterReadingReturnList = mspRawPointHistoryDao.retrieveMeterReading(ReadBy.NONE,
-                null, // get all
-                startDate.getTime(),
-                endDate.getTime(),
-                lastReceived,
-                vendor.getMaxReturnRecords());
+                                                                                            null, // get all
+                                                                                            startDate.getTime(),
+                                                                                            endDate.getTime(),
+                                                                                            lastReceived,
+                                                                                            vendor.getMaxReturnRecords());
 
         multispeakFuncs.updateResponseHeader(mspMeterReadingReturnList);
         List<MeterReading> meterReading = mspMeterReadingReturnList.getMeterReading();
@@ -122,11 +122,11 @@ public class MR_ServerImpl implements MR_Server {
         mspValidationService.isYukonMeterNumber(meterNo);
 
         MspMeterReadingReturnList mspMeterReadingReturnList = mspRawPointHistoryDao.retrieveMeterReading(ReadBy.METER_NUMBER,
-                meterNo,
-                startDate.getTime(),
-                endDate.getTime(),
-                null,
-                vendor.getMaxReturnRecords());
+                                                                                                meterNo,
+                                                                                                startDate.getTime(),
+                                                                                                endDate.getTime(),
+                                                                                                null,
+                                                                                                vendor.getMaxReturnRecords());
 
         // There is only one MeterNo in the response, so does it make sense to update the header with lastSent?
         List<MeterReading> meterReading = mspMeterReadingReturnList.getMeterReading();
@@ -134,7 +134,7 @@ public class MR_ServerImpl implements MR_Server {
         multispeakEventLogService.returnObjects(meterReading.size(), mspMeterReadingReturnList.getObjectsRemaining(),
                 "MeterReading",
                 mspMeterReadingReturnList.getLastSent(), "GetReadingsByMeterID", vendor.getCompanyName());
-
+    
         return meterReading;
     }
 
@@ -161,42 +161,40 @@ public class MR_ServerImpl implements MR_Server {
 
     @Override
     public MeterReading getLatestReadingByMeterID(String meterNo) throws MultispeakWebServiceException {
-        init(); // init is already performed on the call to isAMRMeter()
+        init(); //init is already performed on the call to isAMRMeter()
 
         MultispeakVendor vendor = multispeakFuncs.getMultispeakVendorFromHeader();
         multispeakEventLogService.methodInvoked("GetLatestReadingByMeterID", vendor.getCompanyName());
-
-        // Validate the meterNo is a Yukon meterNumber
+        
+        //Validate the meterNo is a Yukon meterNumber
         YukonMeter meter = mspValidationService.isYukonMeterNumber(meterNo);
-
-        boolean canInitiatePorterRequest = paoDefinitionDao.isTagSupported(meter.getPaoIdentifier().getPaoType(),
-                PaoTag.PORTER_COMMAND_REQUESTS);
-
-        // Custom hack put in only for SEDC. Performs an actual meter read instead of simply replying from the database.
-        if (vendor.getCompanyName().equalsIgnoreCase("SEDC") && canInitiatePorterRequest) {
-
+        
+        boolean canInitiatePorterRequest = paoDefinitionDao.isTagSupported(meter.getPaoIdentifier().getPaoType(), PaoTag.PORTER_COMMAND_REQUESTS);
+        
+        //Custom hack put in only for SEDC.  Performs an actual meter read instead of simply replying from the database.
+        if ( vendor.getCompanyName().equalsIgnoreCase("SEDC") && canInitiatePorterRequest) {
+            
             // Don't know the responseURL as it's not provided in this method (by definition!) Using default for SEDC.
             String responseUrl = multispeakFuncs.getResponseUrl(vendor, null, MultispeakDefines.CB_Server_STR);
             MeterReading meterReading = multispeakMeterService.getLatestReadingInterrogate(vendor, meter, responseUrl);
             multispeakEventLogService.returnObject("MeterReading", meterNo, "GetLatestReadingByMeterID", vendor.getCompanyName());
             return meterReading;
-        } else { // THIS SHOULD BE WHERE EVERYONE ELSE GOES!!!
+        } else { //THIS SHOULD BE WHERE EVERYONE ELSE GOES!!!
             try {
                 MeterReading meterReading = meterReadingProcessingService.createMeterReading(meter);
-
+                
                 EnumSet<BuiltInAttribute> attributesToLoad = EnumSet.of(BuiltInAttribute.USAGE, BuiltInAttribute.PEAK_DEMAND);
-
+    
                 for (BuiltInAttribute attribute : attributesToLoad) {
                     try {
                         LitePoint litePoint = attributeService.getPointForAttribute(meter, attribute);
-                        PointValueQualityHolder pointValueQualityHolder = asyncDynamicDataSource
-                                .getPointValue(litePoint.getPointID());
-                        if (pointValueQualityHolder != null &&
+                        PointValueQualityHolder pointValueQualityHolder = asyncDynamicDataSource.getPointValue(litePoint.getPointID());
+                        if( pointValueQualityHolder != null && 
                                 pointValueQualityHolder.getPointQuality() != PointQuality.Uninitialized) {
                             meterReadingProcessingService.updateMeterReading(meterReading, attribute, pointValueQualityHolder);
                         }
                     } catch (IllegalUseOfAttribute e) {
-                        // it's okay...just skip
+                        //it's okay...just skip
                     }
                 }
                 multispeakEventLogService.returnObject("MeterReading", meterNo, "GetLatestReadingByMeterID",
@@ -267,7 +265,6 @@ public class MR_ServerImpl implements MR_Server {
 
         return meterList.getMeters();
     }
-    
 
     @Override
     public List<String> getSupportedFieldNames() throws MultispeakWebServiceException {
@@ -278,8 +275,8 @@ public class MR_ServerImpl implements MR_Server {
         Set<BuiltInAttribute> attributes = meterReadingProcessingService.getAttributes();
 
         List<String> fieldNames = attributes.stream()
-                                                     .map(attribute -> FieldNamesMspV4.getFieldNamesMspV4ByAttribute(attribute).getFieldName())
-                                                     .collect(Collectors.toList());
+                .map(attribute -> FieldNamesMspV4.getFieldNamesMspV4ByAttribute(attribute).getFieldName())
+                .collect(Collectors.toList());
 
         return fieldNames;
     }

@@ -154,18 +154,6 @@ public final class MspMeterDaoImpl extends MspMeterDaoBase {
         return meter;
     }
 
-    /**
-     * Creates a new (MSP) UtilityInfo object
-     * The information commented out is being used for in-line documentation of available MultiSpeak fields.
-     * 
-     * @param meterNumber The Multispeak objectID
-     * @return
-     */
-    public static UtilityInfo getUtilityInfo(String meterNumber) {
-        UtilityInfo utilityInfo = new UtilityInfo();
-        return utilityInfo;
-    }
-
     private static void setMeterCommAddress(MspMeter meter, String address) {
         if (meter instanceof WaterMeter) {
             ((WaterMeter) meter).setMeterCommAddress(address);
