@@ -15,7 +15,7 @@
     <entry key="yukon.web.modules.operator.pagingTerminal.protocol.POCSAG_2400_BAUD">POCSAG - 2400 baud</entry>
 
     <entry key="yukon.web.modules.operator.pagingTerminal.commChannel">Communication Channel</entry>
-    <entry key="yukon.web.modules.operator.pagingTerminal.pageNumber">Page Number</entry>
+    <entry key="yukon.web.modules.operator.pagingTerminal.pagerNumber">Pager Number</entry>
     <entry key="yukon.web.modules.operator.pagingTerminal.pagerId">Pager Id</entry>
     <entry key="yukon.web.modules.operator.pagingTerminal.securityCode">Security Code</entry>
     <entry key="yukon.web.modules.operator.pagingTerminal.sender">Sender</entry>

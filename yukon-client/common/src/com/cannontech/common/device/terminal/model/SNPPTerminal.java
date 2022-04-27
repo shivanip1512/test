@@ -4,19 +4,19 @@ import org.apache.commons.lang3.StringUtils;
 
 public class SNPPTerminal extends TerminalBase<com.cannontech.database.data.device.SNPPTerminal> {
 
-    private String pageNumber;
+    private String pagerNumber;
     private String login = StringUtils.EMPTY;
 
     public SNPPTerminal() {
         super();
     }
 
-    public String getPageNumber() {
-        return pageNumber;
+    public String getPagerNumber() {
+        return pagerNumber;
     }
 
-    public void setPageNumber(String pageNumber) {
-        this.pageNumber = pageNumber;
+    public void setPagerNumber(String pagerNumber) {
+        this.pagerNumber = pagerNumber;
     }
 
     public String getLogin() {
@@ -30,7 +30,7 @@ public class SNPPTerminal extends TerminalBase<com.cannontech.database.data.devi
     @Override
     public void buildDBPersistent(com.cannontech.database.data.device.SNPPTerminal iEDBase) {
         super.buildDBPersistent(iEDBase);
-        iEDBase.getDeviceTapPagingSettings().setPagerNumber(getPageNumber());
+        iEDBase.getDeviceTapPagingSettings().setPagerNumber(getPagerNumber());
         iEDBase.getDeviceTapPagingSettings().setDeviceID(getId());
         iEDBase.getDeviceTapPagingSettings().setSender(getLogin());
         iEDBase.getDeviceTapPagingSettings().setSecurityCode(getPassword());
@@ -39,7 +39,7 @@ public class SNPPTerminal extends TerminalBase<com.cannontech.database.data.devi
     @Override
     public void buildModel(com.cannontech.database.data.device.SNPPTerminal iEDBase) {
         super.buildModel(iEDBase);
-        setPageNumber(iEDBase.getDeviceTapPagingSettings().getPagerNumber());
+        setPagerNumber(iEDBase.getDeviceTapPagingSettings().getPagerNumber());
         setLogin(iEDBase.getDeviceTapPagingSettings().getSender());
         setPassword(iEDBase.getDeviceTapPagingSettings().getSecurityCode());
     }

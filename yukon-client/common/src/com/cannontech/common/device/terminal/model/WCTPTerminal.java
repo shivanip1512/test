@@ -3,7 +3,7 @@ package com.cannontech.common.device.terminal.model;
 import org.apache.commons.lang3.StringUtils;
 
 public class WCTPTerminal extends TerminalBase<com.cannontech.database.data.device.WCTPTerminal> {
-    private String pageNumber;
+    private String pagerNumber;
     private String sender = "yukonserver@cannontech.com";
     private String securityCode = "(none)";
 
@@ -11,12 +11,12 @@ public class WCTPTerminal extends TerminalBase<com.cannontech.database.data.devi
         super();
     }
 
-    public String getPageNumber() {
-        return pageNumber;
+    public String getPagerNumber() {
+        return pagerNumber;
     }
 
-    public void setPageNumber(String pageNumber) {
-        this.pageNumber = pageNumber;
+    public void setPagerNumber(String pagerNumber) {
+        this.pagerNumber = pagerNumber;
     }
 
     public String getSender() {
@@ -38,7 +38,7 @@ public class WCTPTerminal extends TerminalBase<com.cannontech.database.data.devi
     @Override
     public void buildDBPersistent(com.cannontech.database.data.device.WCTPTerminal iEDBase) {
         super.buildDBPersistent(iEDBase);
-        iEDBase.getDeviceTapPagingSettings().setPagerNumber(getPageNumber());
+        iEDBase.getDeviceTapPagingSettings().setPagerNumber(getPagerNumber());
         iEDBase.getDeviceTapPagingSettings().setSender(getSender());
         iEDBase.getDeviceTapPagingSettings().setSecurityCode(getSecurityCode());
         if (StringUtils.isNotBlank(getPassword())) {
@@ -52,7 +52,7 @@ public class WCTPTerminal extends TerminalBase<com.cannontech.database.data.devi
     @Override
     public void buildModel(com.cannontech.database.data.device.WCTPTerminal iEDBase) {
         super.buildModel(iEDBase);
-        setPageNumber(iEDBase.getDeviceTapPagingSettings().getPagerNumber());
+        setPagerNumber(iEDBase.getDeviceTapPagingSettings().getPagerNumber());
         setSecurityCode(iEDBase.getDeviceTapPagingSettings().getSecurityCode());
         setSender(iEDBase.getDeviceTapPagingSettings().getSender());
         setPassword(iEDBase.getDeviceTapPagingSettings().getPOSTPath());

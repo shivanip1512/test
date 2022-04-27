@@ -22,7 +22,7 @@ public class TerminalBase<T extends IEDBase> implements DBPersistentConverter<T>
     private Integer id;
     private String name;
     private PaoType type;
-    private boolean enabled;
+    private boolean enabled = true;
     private String password = StringUtils.EMPTY;
     private LMDto commChannel;
 

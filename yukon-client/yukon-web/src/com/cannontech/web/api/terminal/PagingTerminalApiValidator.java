@@ -88,23 +88,23 @@ public class PagingTerminalApiValidator<T extends TerminalBase<?>> extends Simpl
                         new Object[] { "PAO type RFN_1200 or PAO category PORT device Id" }, null);
             }
 
-            String pageNumberI18nText = accessor.getMessage(pagingTerminalKey + "pageNumber");
+            String pagerNumberI18nText = accessor.getMessage(pagingTerminalKey + "pagerNumber");
 
             // validate PagingTapTerminal fields
             if (terminalBase instanceof PagingTapTerminal) {
                 PagingTapTerminal terminal = (PagingTapTerminal) terminalBase;
-                yukonApiValidationUtils.checkIfFieldRequired("pageNumber", errors, terminal.getPageNumber(), pageNumberI18nText);
-                if (!errors.hasFieldErrors("pageNumber")) {
-                    yukonApiValidationUtils.checkExceedsMaxLength(errors, "pageNumber", terminal.getPageNumber(), 20);
+                yukonApiValidationUtils.checkIfFieldRequired("pagerNumber", errors, terminal.getPagerNumber(), pagerNumberI18nText);
+                if (!errors.hasFieldErrors("pagerNumber")) {
+                    yukonApiValidationUtils.checkExceedsMaxLength(errors, "pagerNumber", terminal.getPagerNumber(), 20);
                 }
             }
 
             // validate SNPPTerminal fields
             if (terminalBase instanceof SNPPTerminal) {
                 SNPPTerminal terminal = (SNPPTerminal) terminalBase;
-                yukonApiValidationUtils.checkIfFieldRequired("pageNumber", errors, terminal.getPageNumber(), pageNumberI18nText);
-                if (!errors.hasFieldErrors("pageNumber")) {
-                    yukonApiValidationUtils.checkExceedsMaxLength(errors, "pageNumber", terminal.getPageNumber(), 20);
+                yukonApiValidationUtils.checkIfFieldRequired("pagerNumber", errors, terminal.getPagerNumber(), pagerNumberI18nText);
+                if (!errors.hasFieldErrors("pagerNumber")) {
+                    yukonApiValidationUtils.checkExceedsMaxLength(errors, "pagerNumber", terminal.getPagerNumber(), 20);
                 }
                 if (terminal.getLogin() == null) {
                     errors.rejectValue("login", ApiErrorDetails.INVALID_VALUE.getCodeString(),
@@ -157,9 +157,9 @@ public class PagingTerminalApiValidator<T extends TerminalBase<?>> extends Simpl
             // validate WCTPTerminal fields
             if (terminalBase instanceof WCTPTerminal) {
                 WCTPTerminal terminal = (WCTPTerminal) terminalBase;
-                yukonApiValidationUtils.checkIfFieldRequired("pageNumber", errors, terminal.getPageNumber(), pageNumberI18nText);
-                if (!errors.hasFieldErrors("pageNumber")) {
-                    yukonApiValidationUtils.checkExceedsMaxLength(errors, "pageNumber", terminal.getPageNumber(), 20);
+                yukonApiValidationUtils.checkIfFieldRequired("pagerNumber", errors, terminal.getPagerNumber(), pagerNumberI18nText);
+                if (!errors.hasFieldErrors("pagerNumber")) {
+                    yukonApiValidationUtils.checkExceedsMaxLength(errors, "pagerNumber", terminal.getPagerNumber(), 20);
                 }
                 String senderI18nText = accessor.getMessage(pagingTerminalKey + "sender");
                 yukonApiValidationUtils.checkIfFieldRequired("sender", errors, terminal.getSender(), senderI18nText);
