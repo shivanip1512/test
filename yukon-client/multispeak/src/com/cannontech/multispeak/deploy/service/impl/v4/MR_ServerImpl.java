@@ -235,7 +235,7 @@ public class MR_ServerImpl implements MR_Server {
     }
 
     @Required
-    public void setReadingTypesMap(
+    public void setFormattedBlockMap(
             Map<String, FormattedBlockProcessingService<Block>> formattedBlockMap) {
         this.formattedBlockMap = formattedBlockMap;
     }
