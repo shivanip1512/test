@@ -45,6 +45,7 @@ import com.cannontech.msp.beans.v4.ObjectFactory;
 import com.cannontech.msp.beans.v4.PingURL;
 import com.cannontech.msp.beans.v4.PingURLResponse;
 import com.cannontech.multispeak.client.MultispeakDefines;
+import com.cannontech.multispeak.client.v4.MultispeakFuncs;
 import com.cannontech.multispeak.exceptions.MultispeakWebServiceException;
 import com.cannontech.multispeak.service.v4.MR_Server;
 
@@ -58,6 +59,7 @@ public class MRServiceEndPoint {
 
     @Autowired private ObjectFactory objectFactory;
     @Autowired private MR_Server mr_server;
+    @Autowired private MultispeakFuncs multispeakFuncs;
     private final String MR_V4_ENDPOINT_NAMESPACE = MultispeakDefines.NAMESPACE_v4;
 
     @PayloadRoot(localPart = "PingURL", namespace = MR_V4_ENDPOINT_NAMESPACE)
@@ -182,11 +184,8 @@ public class MRServiceEndPoint {
         List<MeterID> meterIDs = (null != ArrOfMeterIDs.getMeterID()) ? ArrOfMeterIDs.getMeterID() : null;
         List<ErrorObject> errorObjects = mr_server.initiateUsageMonitoring(ListUtils.emptyIfNull(meterIDs));
 
-        if (errorObjects != null && !errorObjects.isEmpty()) {
-            ArrayOfErrorObject arrayOfErrorObject = objectFactory.createArrayOfErrorObject();
-            arrayOfErrorObject.getErrorObject().addAll(errorObjects);
-            response.setInitiateUsageMonitoringResult(arrayOfErrorObject);
-        }
+        ArrayOfErrorObject arrayOfErrorObject = multispeakFuncs.toArrayOfErrorObject(errorObjects);
+        response.setInitiateUsageMonitoringResult(arrayOfErrorObject);
         return response;
     }
 
@@ -201,8 +200,7 @@ public class MRServiceEndPoint {
 
         List<ErrorObject> errorObjects = mr_server.cancelUsageMonitoring(ListUtils.emptyIfNull(meterIDs));
 
-        ArrayOfErrorObject arrayOfErrorObject = objectFactory.createArrayOfErrorObject();
-        arrayOfErrorObject.getErrorObject().addAll(errorObjects);
+        ArrayOfErrorObject arrayOfErrorObject = multispeakFuncs.toArrayOfErrorObject(errorObjects);
         cancelUsageMonitoringResponse.setCancelUsageMonitoringResult(arrayOfErrorObject);
         return cancelUsageMonitoringResponse;
     }
