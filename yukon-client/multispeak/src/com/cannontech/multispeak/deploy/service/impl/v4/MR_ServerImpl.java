@@ -275,10 +275,10 @@ public class MR_ServerImpl implements MR_Server {
         MultispeakVendor vendor = multispeakFuncs.getMultispeakVendorFromHeader();
         multispeakEventLogService.methodInvoked("GetSupportedFieldNames", vendor.getCompanyName());
 
-        Set<BuiltInAttribute> attributeFieldNames = meterReadingProcessingService.getAttributeFieldNames();
+        Set<BuiltInAttribute> attributes = meterReadingProcessingService.getAttributes();
 
-        List<String> fieldNames = attributeFieldNames.stream()
-                                                     .map(attributeFieldName -> FieldNamesMspV4.getFieldNamesMspV4ByAttribute(attributeFieldName).getFieldName())
+        List<String> fieldNames = attributes.stream()
+                                                     .map(attribute -> FieldNamesMspV4.getFieldNamesMspV4ByAttribute(attribute).getFieldName())
                                                      .collect(Collectors.toList());
 
         return fieldNames;

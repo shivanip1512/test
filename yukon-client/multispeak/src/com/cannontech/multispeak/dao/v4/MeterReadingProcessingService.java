@@ -27,5 +27,5 @@ public interface MeterReadingProcessingService {
      * to get supported field names
      * @return list of attrinute fields
      */
-    public Set<BuiltInAttribute> getAttributeFieldNames();
+    public Set<BuiltInAttribute> getAttributes();
 }

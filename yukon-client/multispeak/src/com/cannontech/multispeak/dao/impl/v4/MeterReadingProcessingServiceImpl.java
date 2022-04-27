@@ -125,7 +125,7 @@ public class MeterReadingProcessingServiceImpl implements MeterReadingProcessing
     }
 
     @Override
-    public Set<BuiltInAttribute> getAttributeFieldNames() {
+    public Set<BuiltInAttribute> getAttributes() {
         return attributesToLoad.keySet();
     }
 
