@@ -65,18 +65,20 @@ public class DR_ServerImpl implements DR_Server {
         LiteYukonUser liteYukonUser = multispeakFuncs.authenticateMsgHeader();
 
         List<ErrorObject> errorObjects = Lists.newArrayList();
-        for (ScadaAnalog scadaAnalog : scadaAnalogs) {
-            ErrorObject errorObject = mspValidationService.isValidScadaAnalog(scadaAnalog);
-            if (errorObject == null) {
-                errorObject = multispeakLMService.writeAnalogPointData(scadaAnalog, liteYukonUser);
-            }
-            if (errorObject != null) {
-                errorObjects.add(errorObject);
+        if (errorObjects != null && !errorObjects.isEmpty()) {
+            for (ScadaAnalog scadaAnalog : scadaAnalogs) {
+                ErrorObject errorObject = mspValidationService.isValidScadaAnalog(scadaAnalog);
+                if (errorObject == null) {
+                    errorObject = multispeakLMService.writeAnalogPointData(scadaAnalog, liteYukonUser);
+                }
+                if (errorObject != null) {
+                    errorObjects.add(errorObject);
+                }
             }
         }
         return errorObjects;
     }
-    
+
     @Override
     public List<SubstationLoadControlStatus> getAllSubstationLoadControlStatuses() throws MultispeakWebServiceException {
         init();
@@ -129,8 +131,10 @@ public class DR_ServerImpl implements DR_Server {
                 // If errorObjects are returned, we still continue on and control what we can.
                 List<ErrorObject> errorObject2 = multispeakLMService.buildMspLoadControl(loadManagementEvent, mspLoadControl,
                         vendor);
-                for (ErrorObject err : errorObject2) {
-                    errorObjects.add(err);
+                if (errorObject2 != null && !errorObject2.isEmpty()) {
+                    for (ErrorObject err : errorObject2) {
+                        errorObjects.add(err);
+                    }
                 }
                 errorObject = multispeakLMService.control(mspLoadControl, liteYukonUser);
             }
