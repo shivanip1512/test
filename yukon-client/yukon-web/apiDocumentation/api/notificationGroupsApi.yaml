@@ -37,7 +37,7 @@ post-get-all-operation:
         content:
           application/json:
             schema:
-              $ref: '../schemas/notificationGroupsSchema.yaml#/Notification Group Response Schema'
+              $ref: '../schemas/notificationGroupsSchema.yaml#/Notification Group List Response Schema'
              
             examples:
               Notification Groups List:
