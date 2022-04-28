@@ -31,6 +31,7 @@
 <entry key="yukon.web.api.error.invalidUpdateType">Invalid UpdateType when Point Type is Calc Status.</entry>
 <entry key="yukon.web.api.error.invalidPointId">Invalid Point Id {0}.</entry>
 <entry key="yukon.web.api.error.invalidDevicesOrDeviceGroup">Invalid device selection. Please select either a device group or individual devices.</entry>
+<entry key="yukon.web.api.error.invalidEnum">Invalid enum value: ''{0}'' for the field: {1}. The value must be one of: {2}.</entry>
 
 <entry key="yukon.web.api.save.error">{0} could not be saved. Error: {1}</entry>
 <entry key="yukon.web.api.delete.error">{0} could not be deleted. Error: {1}</entry>
