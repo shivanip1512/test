@@ -243,6 +243,14 @@ public class MultispeakFuncs extends MultispeakFuncsBase {
 
         return attributeValue;
     }
+    
+    public ArrayOfErrorObject toArrayOfErrorObject(List<ErrorObject> errorObjects) {
+        ArrayOfErrorObject arrayOfErrorObject = objectFactory.createArrayOfErrorObject();
+        if (errorObjects != null) {
+            arrayOfErrorObject.getErrorObject().addAll(errorObjects);
+        }
+        return arrayOfErrorObject;
+    }
 
     public ArrayOfErrorObject toArrayOfErrorObject(List<ErrorObject> errorObjects) {
         ArrayOfErrorObject arrayOfErrorObject = objectFactory.createArrayOfErrorObject();

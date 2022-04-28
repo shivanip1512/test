@@ -14,14 +14,28 @@ public interface MspObjectDao {
      * @return
      */
     public ErrorObject[] toErrorObject(List<ErrorObject> errorObjects);
-    
+
     /**
-     * Creates a new (MSP) ErrorObject 
-     * @param objectID: The Multispeak objectID
-     * @param errorMessage
+     * Creates a new (MSP) ErrorObject
+     * 
+     * @param objectID The Multispeak objectID
+     * @param errorMessage The error message.
      * @return
      */
-    public ErrorObject getErrorObject(String objectID, String errorMessage, String nounType, String method, String userName);
+    public ErrorObject getErrorObject(String objectID, String errorMessage, String nounType, String method,
+            String userName);
+    
+    /**
+     * Creates a new (MSP) ErrorObject
+     * 
+     * @param objectID The Multispeak objectID
+     * @param nounType The object type
+     * @param notFoundObjectType The objectID type
+     * @param exceptionMessage An alternative message to return.
+     * @return
+     */
+    public ErrorObject getNotFoundErrorObject(String objectID, String notFoundObjectType, String nounType,
+            String method, String userName);
     
     /**
      * Utility to implement the pingURL method for the service.
@@ -45,6 +59,19 @@ public interface MspObjectDao {
      */
     public List<String> getMethods(MultispeakVendor mspVendor, String service, String endpointUrl)
             throws MultispeakWebServiceClientException;
+    
+    
+    /**
+     * Creates a new (MSP) ErrorObject
+     * 
+     * @param objectID The Multispeak objectID
+     * @param nounType The object type
+     * @param notFoundObjectType The objectID type
+     * @param exceptionMessage An alternative message to return.
+     * @return
+     */
+    public ErrorObject getNotFoundErrorObject(String objectID, String notFoundObjectType, String nounType,
+            String method, String userName, String exceptionMessage);
 
     /**
      * Creates an entry in the System log and prints a debug statement.

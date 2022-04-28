@@ -36,7 +36,7 @@ import com.google.common.collect.Lists;
 
 public class MspObjectDaoImpl implements MspObjectDao {
     private static final Logger log = YukonLogManager.getLogger(MspObjectDaoImpl.class);
-    
+
     @Autowired private ObjectFactory objectFactory;
     @Autowired private MultispeakFuncs multispeakFuncs;
 
@@ -50,7 +50,6 @@ public class MspObjectDaoImpl implements MspObjectDao {
     @Autowired private OAClient oaClient;
     @Autowired private MDMClient mdmClient;
     @Autowired private NOTClient notClient;
-
     private SystemLogHelper _systemLogHelper = null;
 
     private SystemLogHelper getSystemLogHelper() {
@@ -59,7 +58,7 @@ public class MspObjectDaoImpl implements MspObjectDao {
         }
         return _systemLogHelper;
     }
-    
+
     @Override
     public ErrorObject[] toErrorObject(List<ErrorObject> errorObjects) {
 
@@ -82,9 +81,10 @@ public class MspObjectDaoImpl implements MspObjectDao {
         errorObject.setErrorString(errorMessage);
         errorObject.setNounType(nounType);
 
-        String description = "ErrorObject: (ObjId:" + errorObject.getObjectID() + " Noun:" + errorObject.getNounType() + " Message:" + errorObject.getErrorString() + ")";
+        String description = "ErrorObject: (ObjId:" + errorObject.getObjectID() + " Noun:" + errorObject.getNounType()
+                + " Message:" + errorObject.getErrorString() + ")";
         logMSPActivity(method, description, userName);
-       
+
         return errorObject;
     }
 
@@ -177,11 +177,28 @@ public class MspObjectDaoImpl implements MspObjectDao {
 
         return methods;
     }
-    
+
     @Override
     public void logMSPActivity(String method, String description, String userName) {
         getSystemLogHelper().log(PointTypes.SYS_PID_MULTISPEAK, method, description, userName,
-            SystemLog.TYPE_MULTISPEAK);
+                SystemLog.TYPE_MULTISPEAK);
         log.debug("MSP Activity (Method: " + method + "-" + description + " )");
     }
+
+    @Override
+    public ErrorObject getNotFoundErrorObject(String objectID, String notFoundObjectType, String nounType,
+            String method, String userName, String exceptionMessage) {
+        ErrorObject errorObject = getErrorObject(objectID, notFoundObjectType + ": " + objectID + " - " + exceptionMessage + ".",
+                nounType,
+                method, userName);
+        return errorObject;
+    }
+
+    @Override
+    public ErrorObject getNotFoundErrorObject(String objectID, String notFoundObjectType, String nounType,
+            String method, String userName) {
+        return getNotFoundErrorObject(objectID, notFoundObjectType, nounType, method, userName,
+                "Was NOT found in Yukon");
+    }
+
 }

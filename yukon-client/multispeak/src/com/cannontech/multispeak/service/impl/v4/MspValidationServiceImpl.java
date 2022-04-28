@@ -1,6 +1,7 @@
 package com.cannontech.multispeak.service.impl.v4;
 
 import java.util.List;
+import java.util.Map;
 
 import org.apache.commons.lang3.StringUtils;
 import org.apache.logging.log4j.Logger;
@@ -15,7 +16,9 @@ import com.cannontech.msp.beans.v4.LoadManagementEvent;
 import com.cannontech.msp.beans.v4.ObjectRef;
 import com.cannontech.msp.beans.v4.ScadaAnalog;
 import com.cannontech.msp.beans.v4.Strategy;
+import com.cannontech.multispeak.block.v4.Block;
 import com.cannontech.multispeak.dao.MspMeterDao;
+import com.cannontech.multispeak.dao.v4.FormattedBlockProcessingService;
 import com.cannontech.multispeak.dao.v4.MspObjectDao;
 import com.cannontech.multispeak.exceptions.MultispeakWebServiceException;
 import com.cannontech.multispeak.service.v4.MspValidationService;
@@ -43,6 +46,19 @@ public class MspValidationServiceImpl implements MspValidationService {
             throw new MultispeakWebServiceException(errorMessage);
         }
         return yukonMeter;
+    }
+    
+    @Override
+    public FormattedBlockProcessingService<Block> getProcessingServiceByFormattedBlockTemplate(
+            Map<String, FormattedBlockProcessingService<Block>> formattedBlockMap,
+            String formattedBlockTemplateName) throws MultispeakWebServiceException {
+        FormattedBlockProcessingService<Block> formattedBlock = formattedBlockMap.get(formattedBlockTemplateName);
+        if (formattedBlock == null) {
+            String message = formattedBlockTemplateName + " is NOT a supported formattedBlockTemplateName.";
+            log.error(message);
+            throw new MultispeakWebServiceException(message);
+        }
+        return formattedBlock;
     }
 
     @Override

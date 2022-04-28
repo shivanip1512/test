@@ -2,6 +2,12 @@ package com.cannontech.multispeak.service.v4;
 
 import java.util.Calendar;
 import java.util.List;
+
+import com.cannontech.msp.beans.v4.Meters;
+import com.cannontech.msp.beans.v4.ErrorObject;
+import com.cannontech.msp.beans.v4.MeterID;
+
+import com.cannontech.msp.beans.v4.FormattedBlock;
 import com.cannontech.msp.beans.v4.MeterReading;
 import com.cannontech.multispeak.exceptions.MultispeakWebServiceException;
 
@@ -38,9 +44,9 @@ public interface MR_Server {
     /**
      * get Readings By Meter Id.
      * 
-     * @param meterId the Meter Id
+     * @param meterId   the Meter Id
      * @param startDate the start date
-     * @param endDate the end date
+     * @param endDate   the end date
      * @return the readings by Meter Id
      * @throws MultispeakWebServiceException the multispeak web service exception
      */
@@ -56,7 +62,6 @@ public interface MR_Server {
      */
     public List<MeterReading> getLatestReadings(String lastReceived) throws MultispeakWebServiceException;
 
-    
     /**
      * get Latest Reading By Meter Id.
      * 
@@ -65,5 +70,62 @@ public interface MR_Server {
      * @throws MultispeakWebServiceException the multispeak web service exception
      */
     public MeterReading getLatestReadingByMeterID(String meterNo) throws MultispeakWebServiceException;
+
+    /**
+     * is AMR Meter.
+     * 
+     * @param meterNo the meter no
+     * @return true, if is AMR meter
+     * @throws MultispeakWebServiceException the multispeak web service
+     *                                       exception
+     */
+    public boolean isAMRMeter(String meterNo) throws MultispeakWebServiceException;
+
+    /**
+     * initiate Usage Monitoring.
+     * 
+     * @param meterIDs the meter IDs
+     * @return the error object[]
+     * @throws MultispeakWebServiceException the multispeak web service exception
+     */
+    public List<ErrorObject> initiateUsageMonitoring(List<MeterID> meterIDs) throws MultispeakWebServiceException;
+
+    /**
+     * cancel Usage Monitoring.
+     * 
+     * @param meterIDs the meter IDs
+     * @return the error object[]
+     * @throws MultispeakWebServiceException the multispeak web service exception
+     */
+    public List<ErrorObject> cancelUsageMonitoring(List<MeterID> meterIDs) throws MultispeakWebServiceException;
+
+    /**
+     * get AMR Supported Meters.
+     * 
+     * @param lastReceived
+     * @return
+     */
+    public Meters getAMRSupportedMeters(String lastReceived) throws MultispeakWebServiceException;
+
+    /**
+     * get Supported Field names against attributes
+     * 
+     * @return list of FieldNames
+     */
+    public List<String> getSupportedFieldNames() throws MultispeakWebServiceException;
+
+    /**
+     * get Readings By Date And FieldName.
+     * 
+     * @param startDate                  the start date
+     * @param endDate                    the end date
+     * @param lastReceived               the last received
+     * @param formattedBlockTemplateName the formatted block template name
+     * @return the readings by date and FieldName
+     * @throws MultispeakWebServiceException the multispeak web service exception
+     */
+    public List<FormattedBlock> getReadingsByDateAndFieldName(Calendar startDate, Calendar endDate, String lastReceived,
+            String formattedBlockTemplateName)
+            throws MultispeakWebServiceException;
 
 }

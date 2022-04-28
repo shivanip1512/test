@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
+import org.apache.commons.collections4.CollectionUtils;
 import org.apache.logging.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -52,7 +53,7 @@ public class DR_ServerImpl implements DR_Server {
                 "SCADAAnalogChangedNotification",
                 "GetAllSubstationLoadControlStatuses",
                 "InitiateLoadManagementEvent",
-                "InitiateLoadManagementEvents"};
+                "InitiateLoadManagementEvents" };
 
         return multispeakFuncs.getMethods(MultispeakDefines.DR_Server_STR, Arrays.asList(methods));
     }
@@ -65,7 +66,7 @@ public class DR_ServerImpl implements DR_Server {
         LiteYukonUser liteYukonUser = multispeakFuncs.authenticateMsgHeader();
 
         List<ErrorObject> errorObjects = Lists.newArrayList();
-        if (errorObjects != null && !errorObjects.isEmpty()) {
+        if (CollectionUtils.isNotEmpty(scadaAnalogs)) {
             for (ScadaAnalog scadaAnalog : scadaAnalogs) {
                 ErrorObject errorObject = mspValidationService.isValidScadaAnalog(scadaAnalog);
                 if (errorObject == null) {
@@ -124,22 +125,24 @@ public class DR_ServerImpl implements DR_Server {
 
         List<ErrorObject> errorObjects = Lists.newArrayList();
 
-        for (LoadManagementEvent loadManagementEvent : theLMEvents) {
-            ErrorObject errorObject = mspValidationService.isValidLoadManagementEvent(loadManagementEvent);
-            if (errorObject == null) {
-                MspLoadControl mspLoadControl = new MspLoadControl();
-                // If errorObjects are returned, we still continue on and control what we can.
-                List<ErrorObject> errorObject2 = multispeakLMService.buildMspLoadControl(loadManagementEvent, mspLoadControl,
-                        vendor);
-                if (errorObject2 != null && !errorObject2.isEmpty()) {
-                    for (ErrorObject err : errorObject2) {
-                        errorObjects.add(err);
+        if (CollectionUtils.isNotEmpty(theLMEvents)) {
+            for (LoadManagementEvent loadManagementEvent : theLMEvents) {
+                ErrorObject errorObject = mspValidationService.isValidLoadManagementEvent(loadManagementEvent);
+                if (errorObject == null) {
+                    MspLoadControl mspLoadControl = new MspLoadControl();
+                    // If errorObjects are returned, we still continue on and control what we can.
+                    List<ErrorObject> errorObject2 = multispeakLMService.buildMspLoadControl(loadManagementEvent, mspLoadControl,
+                            vendor);
+                    if (CollectionUtils.isNotEmpty(errorObject2)) {
+                        for (ErrorObject err : errorObject2) {
+                            errorObjects.add(err);
+                        }
                     }
+                    errorObject = multispeakLMService.control(mspLoadControl, liteYukonUser);
                 }
-                errorObject = multispeakLMService.control(mspLoadControl, liteYukonUser);
-            }
-            if (errorObject != null) {
-                errorObjects.add(errorObject);
+                if (errorObject != null) {
+                    errorObjects.add(errorObject);
+                }
             }
         }
         return errorObjects;
