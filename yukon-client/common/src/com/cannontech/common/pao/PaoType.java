@@ -305,6 +305,8 @@ public enum PaoType implements DisplayableEnum, DatabaseRepresentationSource {
     RFG301A(DeviceTypes.RFG301A, "RFG-301A", PaoCategory.DEVICE, PaoClass.RFMESH),
     RFG301R(DeviceTypes.RFG301R, "RFG-301R", PaoCategory.DEVICE, PaoClass.RFMESH),
     
+    SETO_EDGE_METER(DeviceTypes.SETO_EDGE_METER, "SETO Edge Meter", PaoCategory.DEVICE, PaoClass.RFMESH),
+    
     NEST(DeviceTypes.NEST, "Nest", PaoCategory.DEVICE, PaoClass.THERMOSTAT),
     
     // WHEN ADDING A NEW PAO TYPE, REMEMBER TO ADD A NEW I18N ENTRY TO 
@@ -556,7 +558,8 @@ public enum PaoType implements DisplayableEnum, DatabaseRepresentationSource {
             SIXNET,
             TRANSDATA_MARKV,
             VECTRON,
-            VIRTUAL_METER
+            VIRTUAL_METER,
+            SETO_EDGE_METER
             );
         
         rfTypes = ImmutableSet.of(

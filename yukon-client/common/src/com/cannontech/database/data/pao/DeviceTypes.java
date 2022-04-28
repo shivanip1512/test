@@ -299,4 +299,6 @@ public interface DeviceTypes extends TypeBase
     
     public final static int RFG301A = DEVICE_OFFSET + 229;
     public final static int RFG301R = DEVICE_OFFSET + 230;
+    
+    public final static int SETO_EDGE_METER = DEVICE_OFFSET + 231;
 }

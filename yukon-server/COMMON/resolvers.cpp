@@ -307,6 +307,9 @@ static const std::map<std::string, DeviceTypes> device_lookups
     //  --- RF Cellular IPLink Relays ---
     { "crly-856",           TYPE_CRLY856 },
 
+    //  --- SETO Devices ---
+    { "edge meter",           TYPE_SETO_EDGE_METER },
+
     //  --- RTU devices ---
     { "rtu-dart",           TYPE_DARTRTU },
     { "rtu-dnp",            TYPE_DNPRTU },

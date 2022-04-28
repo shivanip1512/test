@@ -181,6 +181,9 @@ enum DeviceTypes {
     TYPE_FCI,
     TYPE_NEUTRAL_MONITOR,
 
+	// SETO Devices
+	TYPE_SETO_EDGE_METER,
+
     // Group type devices...
     TYPE_LMGROUP_EMETCON,
     TYPE_LMGROUP_VERSACOM,

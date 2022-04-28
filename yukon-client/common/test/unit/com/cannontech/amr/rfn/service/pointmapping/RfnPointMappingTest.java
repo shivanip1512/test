@@ -291,6 +291,9 @@ public class RfnPointMappingTest {
         //  RFN-430kV unmapped in yukonPointMapping
         rfnPointMapping.remove(PaoType.RFN430KV);
 
+        // SETO Edge Meter is unmapped in yukonPointMapping
+        rfnPointMapping.remove(PaoType.SETO_EDGE_METER);
+
         
         rfnPointMapping.entrySet().stream()
             .forEach(e -> fail(e.getKey() + " has " + e.getValue().size() + " points in rfnPointMapping that are not in yukonPointMappingIcd." 

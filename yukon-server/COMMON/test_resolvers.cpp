@@ -258,6 +258,9 @@ BOOST_AUTO_TEST_CASE(test_resolveDeviceType)
     //  --- RF Cellular IPLink Relays ---
     BOOST_CHECK_EQUAL(resolveDeviceType("crly-856"),    TYPE_CRLY856);
 
+    //  --- SETO Devices ---
+    BOOST_CHECK_EQUAL(resolveDeviceType("edge meter"),    TYPE_SETO_EDGE_METER);
+
     //  --- RTU devices ---
     BOOST_CHECK_EQUAL(resolveDeviceType("rtu-dart"),    TYPE_DARTRTU);
     BOOST_CHECK_EQUAL(resolveDeviceType("rtu-dnp"),     TYPE_DNPRTU);

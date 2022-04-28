@@ -553,6 +553,9 @@ public final class DeviceFactory {
         case VIRTUAL_METER:
             returnDevice = new VirtualMeter();
             break;
+        case SETO_EDGE_METER:
+            returnDevice = new EdgeMeter();
+            break;
         default:
             CTILogger.error("PaoType " + paoType + " is undefined for DeviceFactory");
             throw new IllegalArgumentException("PaoType " + paoType + " is undefined for DeviceFactory");
