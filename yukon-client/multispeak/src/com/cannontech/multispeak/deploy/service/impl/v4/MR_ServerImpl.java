@@ -2,15 +2,18 @@ package com.cannontech.multispeak.deploy.service.impl.v4;
 
 import java.util.Arrays;
 import java.util.Calendar;
+import java.util.Collections;
 import java.util.Date;
 import java.util.EnumSet;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 import java.util.stream.Collectors;
 
 import org.apache.logging.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
+import org.springframework.beans.factory.annotation.Required;
 
 import com.cannontech.amr.meter.model.YukonMeter;
 import com.cannontech.clientutils.YukonLogManager;
@@ -26,23 +29,28 @@ import com.cannontech.core.dynamic.PointValueQualityHolder;
 import com.cannontech.core.dynamic.exception.DynamicDataAccessException;
 import com.cannontech.database.data.lite.LitePoint;
 import com.cannontech.msp.beans.v4.ErrorObject;
+import com.cannontech.msp.beans.v4.FormattedBlock;
 import com.cannontech.msp.beans.v4.MeterID;
 import com.cannontech.msp.beans.v4.MeterReading;
 import com.cannontech.msp.beans.v4.Meters;
+import com.cannontech.multispeak.block.v4.Block;
 import com.cannontech.multispeak.client.MultispeakDefines;
 import com.cannontech.multispeak.client.MultispeakVendor;
 import com.cannontech.multispeak.client.v4.MultispeakFuncs;
 import com.cannontech.multispeak.dao.MspMeterDao;
+import com.cannontech.multispeak.dao.v4.FormattedBlockProcessingService;
 import com.cannontech.multispeak.dao.v4.MeterReadingProcessingService;
 import com.cannontech.multispeak.dao.v4.MspRawPointHistoryDao;
 import com.cannontech.multispeak.dao.v4.MspRawPointHistoryDao.ReadBy;
 import com.cannontech.multispeak.data.v4.FieldNamesMspV4;
+import com.cannontech.multispeak.data.v4.MspBlockReturnList;
 import com.cannontech.multispeak.data.v4.MspMeterReadingReturnList;
 import com.cannontech.multispeak.data.v4.MspMeterReturnList;
 import com.cannontech.multispeak.exceptions.MultispeakWebServiceException;
 import com.cannontech.multispeak.service.v4.MR_Server;
 import com.cannontech.multispeak.service.v4.MspValidationService;
 import com.cannontech.multispeak.service.v4.MultispeakMeterService;
+import com.cannontech.yukon.BasicServerConnection;
 
 public class MR_ServerImpl implements MR_Server {
 
@@ -56,6 +64,8 @@ public class MR_ServerImpl implements MR_Server {
     @Autowired private MultispeakMeterService multispeakMeterService;
     @Autowired private PaoDefinitionDao paoDefinitionDao;
     @Autowired @Qualifier("mspMeterDaoV4") private MspMeterDao mspMeterDao;
+    private Map<String, FormattedBlockProcessingService<Block>> formattedBlockMap;
+    private BasicServerConnection porterConnection;
    
     private final Logger log = YukonLogManager.getLogger(MR_ServerImpl.class);
     private final static String[] methods = new String[] { "PingURL", 
@@ -68,7 +78,9 @@ public class MR_ServerImpl implements MR_Server {
                                                            "InitiateUsageMonitoring",
                                                            "CancelUsageMonitoring",
                                                            "GetAMRSupportedMeters",
-                                                           "GetSupportedFieldNames"};
+                                                           "GetSupportedFieldNames",
+                                                           "GetLatestReadingByMeterID",
+                                                           "GetReadingsByDateAndFieldName"};
 
     private void init() throws MultispeakWebServiceException {
         multispeakFuncs.init();
@@ -206,6 +218,43 @@ public class MR_ServerImpl implements MR_Server {
                 throw new MultispeakWebServiceException(message);
             }
         }
+    }
+    
+    @Override
+    public List<FormattedBlock> getReadingsByDateAndFieldName(Calendar startDate,
+            Calendar endDate, String lastReceived, String formattedBlockTemplateName) throws MultispeakWebServiceException {
+        init();
+        MultispeakVendor vendor = multispeakFuncs.getMultispeakVendorFromHeader();
+        multispeakEventLogService.methodInvoked("getReadingsByDateAndFieldName", vendor.getCompanyName());
+
+        FormattedBlockProcessingService<Block> formattedBlockProcessingService = mspValidationService
+                .getProcessingServiceByFormattedBlockTemplate(formattedBlockMap, formattedBlockTemplateName);
+
+        MspBlockReturnList mspBlockReturnList = mspRawPointHistoryDao.retrieveBlock(ReadBy.NONE, null,
+                                                                                    formattedBlockProcessingService,
+                                                                                    startDate.getTime(),
+                                                                                    endDate.getTime(),
+                                                                                    lastReceived,
+                                                                                    vendor.getMaxReturnRecords());
+        multispeakFuncs.updateResponseHeader(mspBlockReturnList);
+
+        FormattedBlock formattedBlock = formattedBlockProcessingService.createMspFormattedBlock(mspBlockReturnList.getBlocks());
+
+        multispeakEventLogService.returnObjects(1, mspBlockReturnList.getObjectsRemaining(), "FormattedBlock",
+                mspBlockReturnList.getLastSent(), "getReadingsByDateAndFieldName", vendor.getCompanyName());
+
+        return Collections.singletonList(formattedBlock);
+    }
+
+    @Required
+    public void setPorterConnection(BasicServerConnection porterConnection) {
+        this.porterConnection = porterConnection;
+    }
+
+    @Required
+    public void setFormattedBlockMap(
+            Map<String, FormattedBlockProcessingService<Block>> formattedBlockMap) {
+        this.formattedBlockMap = formattedBlockMap;
     }
 
     @Override

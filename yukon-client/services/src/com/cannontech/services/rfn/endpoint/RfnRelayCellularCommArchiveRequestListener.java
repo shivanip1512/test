@@ -42,7 +42,7 @@ public class RfnRelayCellularCommArchiveRequestListener implements RfnArchivePro
     @Autowired private AsyncDynamicDataSource asyncDynamicDataSource;
     @Autowired private YukonJmsTemplateFactory jmsTemplateFactory;
 
-    private Logger log = YukonLogManager.getRfnLogger(RfnRelayCellularCommArchiveRequestListener.class);
+    private Logger log = YukonLogManager.getRfnLogger();
     private YukonJmsTemplate jmsTemplate;
 
     @PostConstruct
