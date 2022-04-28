@@ -57,6 +57,9 @@
   <bean id="yukonGroupService" class="com.cannontech.core.service.impl.YukonGroupServiceImpl"/>
 
   <bean id="rphDao" class="com.cannontech.core.dao.impl.RawPointHistoryDaoImpl"/>
+  
+  <bean id="mrphDao" class="com.cannontech.core.dao.impl.MspRawPointHistoryBaseDaoImpl"/>
+  
   <bean id="databaseManagementDao" class="com.cannontech.core.dao.impl.DatabaseManagementDaoImpl"/>
   
   <bean id="pointDataPruningDaoImpl" class="com.cannontech.maintenance.task.dao.impl.PointDataPruningDaoImpl"/>

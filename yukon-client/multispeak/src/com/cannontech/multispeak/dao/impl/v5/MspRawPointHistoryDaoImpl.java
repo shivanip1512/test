@@ -6,7 +6,6 @@ import java.util.EnumMap;
 import java.util.EnumSet;
 import java.util.List;
 import java.util.Map;
-import java.util.Set;
 
 import org.apache.logging.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -16,17 +15,12 @@ import com.cannontech.amr.meter.dao.impl.MeterRowMapper;
 import com.cannontech.amr.meter.model.YukonMeter;
 import com.cannontech.clientutils.YukonLogManager;
 import com.cannontech.common.pao.PaoIdentifier;
-import com.cannontech.common.pao.PaoType;
 import com.cannontech.common.pao.attribute.model.BuiltInAttribute;
 import com.cannontech.common.pao.attribute.service.AttributeService;
-import com.cannontech.common.pao.definition.dao.PaoDefinitionDao;
-import com.cannontech.common.pao.definition.model.PaoTag;
 import com.cannontech.common.util.CtiUtilities;
 import com.cannontech.common.util.Range;
 import com.cannontech.common.util.SqlStatementBuilder;
-import com.cannontech.core.authorization.service.PaoAuthorizationService;
-import com.cannontech.core.authorization.support.Permission;
-import com.cannontech.core.dao.PaoDao;
+import com.cannontech.core.dao.MspRawPointHistoryBaseDao;
 import com.cannontech.core.dao.RawPointHistoryDao;
 import com.cannontech.core.dao.RawPointHistoryDao.Order;
 import com.cannontech.core.dynamic.PointValueQualityHolder;
@@ -53,9 +47,7 @@ public class MspRawPointHistoryDaoImpl implements MspRawPointHistoryDao
 	private final Logger log = YukonLogManager.getLogger(MspRawPointHistoryDaoImpl.class);
 	
     @Autowired private AttributeService attributeService;
-    @Autowired private PaoDao paoDao;
-    @Autowired private PaoDefinitionDao paoDefinitionDao;
-    @Autowired private PaoAuthorizationService paoAuthorizationService;
+    @Autowired private MspRawPointHistoryBaseDao mspRawPointHistoryBaseDao;
     @Autowired private RawPointHistoryDao rawPointHistoryDao;
     @Autowired private ScadaAnalogProcessingServiceImpl scadaAnalogProcessingServiceImpl;
     @Autowired private MeterDao meterDao;
@@ -68,7 +60,7 @@ public class MspRawPointHistoryDaoImpl implements MspRawPointHistoryDao
 
         final Date timerStart = new Date();
 
-        List<LiteYukonPAObject> programs = getAuthorizedProgramsList(user);
+        List<LiteYukonPAObject> programs = mspRawPointHistoryBaseDao.getAuthorizedProgramsList(user);
         EnumSet<BuiltInAttribute> attributesToLoad =
             EnumSet.of(BuiltInAttribute.CONNECTED_LOAD, BuiltInAttribute.DIVERSIFIED_LOAD,
                 BuiltInAttribute.MAX_LOAD_REDUCTION, BuiltInAttribute.AVAILABLE_LOAD_REDUCTION);
@@ -101,20 +93,6 @@ public class MspRawPointHistoryDaoImpl implements MspRawPointHistoryDao
             + (new Date().getTime() - timerStart.getTime()) * .001 + " secs)");
 
         return mspScadaAnalogs;
-    }
-
-    /**
-     * Returns a list of paObjects for PaoTag.LM_PROGRAM that user has permission to access.
-     * @return
-     */
-    private List<LiteYukonPAObject> getAuthorizedProgramsList(LiteYukonUser user) {
-        Set<PaoType> paoTypes = paoDefinitionDao.getPaoTypesThatSupportTag(PaoTag.LM_PROGRAM);
-        List<LiteYukonPAObject> programs = Lists.newArrayList();
-        for (PaoType paoType : paoTypes) {
-            List<LiteYukonPAObject> toFilter = paoDao.getLiteYukonPAObjectByType(paoType);
-            programs.addAll(paoAuthorizationService.filterAuthorized(user, toFilter, Permission.LM_VISIBLE));
-        }
-        return programs;
     }
     
     @Override
