@@ -82,4 +82,40 @@ public interface MR_Server {
             String formattedBlockTemplateName)
             throws MultispeakWebServiceException;
 
+    /**
+     * get Latest Reading By FieldName.
+     * 
+     * @param lastReceived               the last received
+     * @param formattedBlockTemplateName the formatted block template name
+     * @return the latest reading by FieldName
+     * @throws MultispeakWebServiceException the multispeak web service exception
+     */
+    List<FormattedBlock> getLatestReadingByFieldName(String lastReceived, String formattedBlockTemplateName)
+            throws MultispeakWebServiceException;
+
+    /**
+     * get Latest Reading By Meter No And FieldName.
+     * 
+     * @param meterNo                    the meter no
+     * @param formattedBlockTemplateName the formatted block template name
+     * @return the latest reading by meter no and FieldName
+     * @throws MultispeakWebServiceException the multispeak web service exception
+     */
+    FormattedBlock getLatestReadingByMeterIDAndFieldName(String meterNo, String formattedBlockTemplateName)
+            throws MultispeakWebServiceException;
+
+    /**
+     * get Readings By Meter No And FieldName.
+     * 
+     * @param meterNo                    the meter no
+     * @param startDate                  the start date
+     * @param endDate                    the end date
+     * @param lastReceived               the last received
+     * @param formattedBlockTemplateName the formatted block template name
+     * @return the readings by meter no and FieldName
+     * @throws MultispeakWebServiceException the multispeak web service exception
+     */
+    List<FormattedBlock> getReadingsByMeterIDAndFieldName(String meterNo, Calendar startDate, Calendar endDate,
+            String lastReceived, String formattedBlockTemplateName) throws MultispeakWebServiceException;
+
 }

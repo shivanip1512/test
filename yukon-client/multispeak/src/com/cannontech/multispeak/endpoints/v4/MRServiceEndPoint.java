@@ -15,7 +15,11 @@ import com.cannontech.msp.beans.v4.ArrayOfFormattedBlock;
 import com.cannontech.msp.beans.v4.ArrayOfMeterReading1;
 import com.cannontech.msp.beans.v4.ArrayOfString;
 import com.cannontech.msp.beans.v4.FormattedBlock;
+import com.cannontech.msp.beans.v4.GetLatestReadingByFieldName;
+import com.cannontech.msp.beans.v4.GetLatestReadingByFieldNameResponse;
 import com.cannontech.msp.beans.v4.GetLatestReadingByMeterID;
+import com.cannontech.msp.beans.v4.GetLatestReadingByMeterIDAndFieldName;
+import com.cannontech.msp.beans.v4.GetLatestReadingByMeterIDAndFieldNameResponse;
 import com.cannontech.msp.beans.v4.GetLatestReadingByMeterIDResponse;
 import com.cannontech.msp.beans.v4.GetLatestReadings;
 import com.cannontech.msp.beans.v4.GetLatestReadingsResponse;
@@ -26,6 +30,8 @@ import com.cannontech.msp.beans.v4.GetReadingsByDateAndFieldName;
 import com.cannontech.msp.beans.v4.GetReadingsByDateAndFieldNameResponse;
 import com.cannontech.msp.beans.v4.GetReadingsByDateResponse;
 import com.cannontech.msp.beans.v4.GetReadingsByMeterID;
+import com.cannontech.msp.beans.v4.GetReadingsByMeterIDAndFieldName;
+import com.cannontech.msp.beans.v4.GetReadingsByMeterIDAndFieldNameResponse;
 import com.cannontech.msp.beans.v4.GetReadingsByMeterIDResponse;
 import com.cannontech.msp.beans.v4.MeterReading;
 import com.cannontech.msp.beans.v4.ObjectFactory;
@@ -171,6 +177,77 @@ public class MRServiceEndPoint {
         arrayOfFormattedBlock.getFormattedBlock().addAll(formattedBlocks);
         response.setGetReadingsByDateAndFieldNameResult(arrayOfFormattedBlock);
         return response;
+    }
+    
+    @PayloadRoot(localPart = "GetReadingsByMeterIDAndFieldName", namespace = MultispeakDefines.NAMESPACE_v4)
+    public @ResponsePayload
+    GetReadingsByMeterIDAndFieldNameResponse getReadingsByMeterIDAndFieldName(
+            @RequestPayload GetReadingsByMeterIDAndFieldName getReadingsByMeterIDAndFieldName)
+            throws MultispeakWebServiceException {
+        GetReadingsByMeterIDAndFieldNameResponse getReadingsByMeterIDAndFieldNameResponse =
+            objectFactory.createGetReadingsByMeterIDAndFieldNameResponse();
+        XMLGregorianCalendar endDate = getReadingsByMeterIDAndFieldName.getEndDate();
+        XMLGregorianCalendar startDate = getReadingsByMeterIDAndFieldName.getStartDate();
+        
+        if (getReadingsByMeterIDAndFieldName.getMeterID() == null) {
+            throw new MultispeakWebServiceException("Missing MeterID or MeterNo in request");
+        }
+        
+        String meterNo = getReadingsByMeterIDAndFieldName.getMeterID().getMeterNo();
+        String formattedBlockTemplateName = getReadingsByMeterIDAndFieldName.getFormattedBlockTemplateName();
+        String lastReceived = getReadingsByMeterIDAndFieldName.getLastReceived();
+        
+        if (startDate == null || endDate == null) {
+            throw new MultispeakWebServiceException("Invalid date/time.");
+        }
+
+        List<FormattedBlock> formattedBlocks = mr_server.getReadingsByMeterIDAndFieldName(meterNo,
+                                                                                     startDate.toGregorianCalendar(),
+                                                                                     endDate.toGregorianCalendar(),
+                                                                                     lastReceived, formattedBlockTemplateName);
+        
+        ArrayOfFormattedBlock arrayOfFormattedBlock = objectFactory.createArrayOfFormattedBlock();
+        arrayOfFormattedBlock.getFormattedBlock().addAll(formattedBlocks);
+        getReadingsByMeterIDAndFieldNameResponse.setGetReadingsByMeterIDAndFieldNameResult(arrayOfFormattedBlock);
+        return getReadingsByMeterIDAndFieldNameResponse;
+    }
+    
+    @PayloadRoot(localPart = "GetLatestReadingByMeterIDAndFieldName", namespace = MultispeakDefines.NAMESPACE_v4)
+    public @ResponsePayload
+    GetLatestReadingByMeterIDAndFieldNameResponse getLatestReadingByMeterIDAndFieldName(
+            @RequestPayload GetLatestReadingByMeterIDAndFieldName getLatestReadingByMeterIDAndFieldName)
+            throws MultispeakWebServiceException {
+        GetLatestReadingByMeterIDAndFieldNameResponse response =
+            objectFactory.createGetLatestReadingByMeterIDAndFieldNameResponse();
+        
+        if (getLatestReadingByMeterIDAndFieldName.getMeterID() == null) {
+            throw new MultispeakWebServiceException("Missing MeterID or MeterNo in request");
+        }
+
+        String meterNo = getLatestReadingByMeterIDAndFieldName.getMeterID().getMeterNo();
+        String formattedBlockTemplateName = getLatestReadingByMeterIDAndFieldName.getFormattedBlockTemplateName();
+        FormattedBlock formattedBlock = mr_server.getLatestReadingByMeterIDAndFieldName(meterNo, 
+                                                                                        formattedBlockTemplateName);
+        response.setGetLatestReadingByMeterIDAndFieldNameResult(formattedBlock);
+        return response;
+    }
+    
+    @PayloadRoot(localPart = "GetLatestReadingByFieldName", namespace = MultispeakDefines.NAMESPACE_v4)
+    public @ResponsePayload
+    GetLatestReadingByFieldNameResponse getLatestReadingByFieldName(@RequestPayload GetLatestReadingByFieldName getLatestReadingByFieldName)
+            throws MultispeakWebServiceException {
+        GetLatestReadingByFieldNameResponse getLatestReadingByFieldNameResponse =
+            objectFactory.createGetLatestReadingByFieldNameResponse();
+
+        String lastReceived = getLatestReadingByFieldName.getLastReceived();
+        String formattedBlockTemplateName = getLatestReadingByFieldName.getFormattedBlockTemplateName();
+        List<FormattedBlock> formattedBlocks = mr_server.getLatestReadingByFieldName(lastReceived, 
+                                                                                     formattedBlockTemplateName);
+
+        ArrayOfFormattedBlock arrayOfFormattedBlock = objectFactory.createArrayOfFormattedBlock();
+        arrayOfFormattedBlock.getFormattedBlock().addAll(formattedBlocks);
+        getLatestReadingByFieldNameResponse.setGetLatestReadingByFieldNameResult(arrayOfFormattedBlock);
+        return getLatestReadingByFieldNameResponse;
     }
 
 }
