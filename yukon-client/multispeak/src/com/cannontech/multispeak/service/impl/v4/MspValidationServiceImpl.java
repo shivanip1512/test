@@ -44,7 +44,7 @@ public class MspValidationServiceImpl implements MspValidationService {
             String formattedBlockTemplateName) throws MultispeakWebServiceException {
         FormattedBlockProcessingService<Block> formattedBlock = formattedBlockMap.get(formattedBlockTemplateName);
         if (formattedBlock == null) {
-            String message = formattedBlockTemplateName + " is NOT a supported ReadingType.";
+            String message = formattedBlockTemplateName + " is NOT a supported formattedBlockTemplateName.";
             log.error(message);
             throw new MultispeakWebServiceException(message);
         }
