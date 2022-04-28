@@ -4,6 +4,7 @@ import java.math.BigDecimal;
 import java.math.RoundingMode;
 import java.util.Calendar;
 import java.util.Map;
+import java.util.Set;
 
 import javax.annotation.PostConstruct;
 
@@ -121,6 +122,11 @@ public class MeterReadingProcessingServiceImpl implements MeterReadingProcessing
         meterID.setMeterNo(meter.getMeterNumber());
         reading.setMeterID(meterID);
         return reading;
+    }
+
+    @Override
+    public Set<BuiltInAttribute> getAttributes() {
+        return attributesToLoad.keySet();
     }
 
 }
