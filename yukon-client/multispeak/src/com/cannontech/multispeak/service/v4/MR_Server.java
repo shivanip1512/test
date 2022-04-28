@@ -2,6 +2,8 @@ package com.cannontech.multispeak.service.v4;
 
 import java.util.Calendar;
 import java.util.List;
+
+import com.cannontech.msp.beans.v4.FormattedBlock;
 import com.cannontech.msp.beans.v4.MeterReading;
 import com.cannontech.multispeak.exceptions.MultispeakWebServiceException;
 
@@ -65,5 +67,19 @@ public interface MR_Server {
      * @throws MultispeakWebServiceException the multispeak web service exception
      */
     public MeterReading getLatestReadingByMeterID(String meterNo) throws MultispeakWebServiceException;
+    
+    /**
+     * get Readings By Date And FieldName.
+     * 
+     * @param startDate the start date
+     * @param endDate the end date
+     * @param lastReceived the last received
+     * @param formattedBlockTemplateName the formatted block template name
+     * @return the readings by date and FieldName
+     * @throws MultispeakWebServiceException the multispeak web service exception
+     */
+    public List<FormattedBlock> getReadingsByDateAndFieldName(Calendar startDate, Calendar endDate, String lastReceived,
+            String formattedBlockTemplateName)
+            throws MultispeakWebServiceException;
 
 }

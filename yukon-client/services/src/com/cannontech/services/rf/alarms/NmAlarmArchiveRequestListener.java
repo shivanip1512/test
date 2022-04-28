@@ -7,13 +7,11 @@ import java.util.concurrent.atomic.AtomicInteger;
 import javax.annotation.PostConstruct;
 import javax.annotation.PreDestroy;
 
-import org.apache.logging.log4j.Logger;
 import org.joda.time.Instant;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.jmx.export.annotation.ManagedAttribute;
 import org.springframework.jmx.export.annotation.ManagedResource;
 
-import com.cannontech.clientutils.YukonLogManager;
 import com.cannontech.common.rfn.message.RfnIdentifier;
 import com.cannontech.common.rfn.message.alarm.AlarmArchiveRequest;
 import com.cannontech.common.rfn.message.alarm.AlarmArchiveResponse;
@@ -34,7 +32,6 @@ import com.google.common.collect.ImmutableList;
 
 @ManagedResource
 public class NmAlarmArchiveRequestListener extends ArchiveRequestListenerBase<AlarmArchiveRequest> {
-    private static final Logger log = YukonLogManager.getLogger(NmAlarmArchiveRequestListener.class);
 
     @Autowired RfnDeviceLookupService rfnDeviceLookupService;
     @Autowired RfnGatewayService rfnGatewayService;
