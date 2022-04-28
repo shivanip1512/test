@@ -265,6 +265,8 @@
     <bean id="clientInterceptor" class="com.cannontech.multispeak.client.ClientMessageContextHolderInterceptor" />
     
     <bean  class="com.cannontech.multispeak.client.MultispeakLoggingHelper" />
+    
+     <bean  class="com.cannontech.multispeak.client.MspRawPointHistoryHelper" />
 
     <bean id="payloadTransform" class="com.cannontech.multispeak.client.PayloadTransformingInterceptor" >
        <property name="requestXslt" value="classpath:com/cannontech/multispeak/client/oldRequest.xsl" />

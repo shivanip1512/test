@@ -19,7 +19,6 @@ import com.cannontech.common.pao.attribute.service.AttributeService;
 import com.cannontech.common.util.CtiUtilities;
 import com.cannontech.common.util.Range;
 import com.cannontech.common.util.SqlStatementBuilder;
-import com.cannontech.core.dao.MspRawPointHistoryBaseDao;
 import com.cannontech.core.dao.RawPointHistoryDao;
 import com.cannontech.core.dao.RawPointHistoryDao.Order;
 import com.cannontech.core.dynamic.PointValueQualityHolder;
@@ -29,6 +28,7 @@ import com.cannontech.database.data.lite.LiteYukonPAObject;
 import com.cannontech.database.data.lite.LiteYukonUser;
 import com.cannontech.msp.beans.v4.MeterReading;
 import com.cannontech.msp.beans.v4.ScadaAnalog;
+import com.cannontech.multispeak.client.MspRawPointHistoryHelper;
 import com.cannontech.multispeak.dao.v4.MeterReadingProcessingService;
 import com.cannontech.multispeak.dao.v4.MspRawPointHistoryDao;
 import com.cannontech.multispeak.data.v4.MspMeterReadingReturnList;
@@ -42,7 +42,7 @@ public class MspRawPointHistoryDaoImpl implements MspRawPointHistoryDao {
     private final Logger log = YukonLogManager.getLogger(MspRawPointHistoryDaoImpl.class);
 
     @Autowired private AttributeService attributeService;
-    @Autowired private MspRawPointHistoryBaseDao mspRawPointHistoryBaseDao;
+    @Autowired private MspRawPointHistoryHelper mspRawPointHistoryHelper;
     @Autowired private MeterReadingProcessingService meterReadingProcessingService;
     @Autowired private ScadaAnalogProcessingServiceImpl scadaAnalogProcessingServiceImpl;
     @Autowired private MeterRowMapper meterRowMapper;
@@ -107,7 +107,7 @@ public class MspRawPointHistoryDaoImpl implements MspRawPointHistoryDao {
 
         final Date timerStart = new Date();
 
-        List<LiteYukonPAObject> programs = mspRawPointHistoryBaseDao.getAuthorizedProgramsList(user);
+        List<LiteYukonPAObject> programs = mspRawPointHistoryHelper.getAuthorizedProgramsList(user);
         EnumSet<BuiltInAttribute> attributesToLoad = EnumSet.of(BuiltInAttribute.CONNECTED_LOAD,
                 BuiltInAttribute.DIVERSIFIED_LOAD,
                 BuiltInAttribute.MAX_LOAD_REDUCTION,

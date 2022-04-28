@@ -1,4 +1,4 @@
-package com.cannontech.core.dao.impl;
+package com.cannontech.multispeak.client;
 
 import java.util.List;
 import java.util.Set;
@@ -10,13 +10,12 @@ import com.cannontech.common.pao.definition.dao.PaoDefinitionDao;
 import com.cannontech.common.pao.definition.model.PaoTag;
 import com.cannontech.core.authorization.service.PaoAuthorizationService;
 import com.cannontech.core.authorization.support.Permission;
-import com.cannontech.core.dao.MspRawPointHistoryBaseDao;
 import com.cannontech.core.dao.PaoDao;
 import com.cannontech.database.data.lite.LiteYukonPAObject;
 import com.cannontech.database.data.lite.LiteYukonUser;
 import com.google.common.collect.Lists;
 
-public class MspRawPointHistoryBaseDaoImpl extends MspRawPointHistoryBaseDao {
+public class MspRawPointHistoryHelper {
 
     @Autowired private PaoDao paoDao;
     @Autowired private PaoDefinitionDao paoDefinitionDao;
@@ -26,7 +25,6 @@ public class MspRawPointHistoryBaseDaoImpl extends MspRawPointHistoryBaseDao {
      * Returns a list of paObjects for PaoTag.LM_PROGRAM that user has permission to access.
      * @return
      */
-    @Override
     public List<LiteYukonPAObject> getAuthorizedProgramsList(LiteYukonUser user) {
         Set<PaoType> paoTypes = paoDefinitionDao.getPaoTypesThatSupportTag(PaoTag.LM_PROGRAM);
         List<LiteYukonPAObject> programs = Lists.newArrayList();
@@ -36,4 +34,5 @@ public class MspRawPointHistoryBaseDaoImpl extends MspRawPointHistoryBaseDao {
         }
         return programs;
     }
+
 }
