@@ -305,7 +305,7 @@ public enum PaoType implements DisplayableEnum, DatabaseRepresentationSource {
     RFG301A(DeviceTypes.RFG301A, "RFG-301A", PaoCategory.DEVICE, PaoClass.RFMESH),
     RFG301R(DeviceTypes.RFG301R, "RFG-301R", PaoCategory.DEVICE, PaoClass.RFMESH),
     
-    SETO_EDGE_METER(DeviceTypes.SETO_EDGE_METER, "SETO Edge Meter", PaoCategory.DEVICE, PaoClass.RFMESH),
+    EDGE_METER(DeviceTypes.EDGE_METER, "Edge Meter", PaoCategory.DEVICE, PaoClass.RFMESH),
     
     NEST(DeviceTypes.NEST, "Nest", PaoCategory.DEVICE, PaoClass.THERMOSTAT),
     

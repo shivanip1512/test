@@ -92,6 +92,7 @@
 #include "rte_expresscom.h"
 #include "dev_rf_BatteryNode.h"
 #include "dev_rf_cellular_relay.h"
+#include "dev_rfn_edge.h"
 
 #include "devicetypes.h"
 #include "rtdb.h"
@@ -286,6 +287,8 @@ const DeviceLookup deviceFactory {
     { TYPE_RFG301R,      MakeDeviceFunc(makeDevice<Rfg301rDevice>) },
     //  RF Cellular IPLink Relays
     { TYPE_CRLY856,      MakeDeviceFunc(makeDevice<RfCellularRelayDevice>) },
+    //  SETO Device
+    { TYPE_EDGE_METER,   MakeDeviceFunc(makeDevice<RfnEdgeDevice>) },
     //  Electronic meters
     { TYPE_FULCRUM,      MakeDeviceFunc(makeDevice<CtiDeviceFulcrum>) },
     { TYPE_QUANTUM,      MakeDeviceFunc(makeDevice<CtiDeviceQuantum>) },

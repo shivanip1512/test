@@ -5,7 +5,7 @@ import com.cannontech.common.pao.PaoType;
 public class EdgeMeter extends RfnBase {
 
     public EdgeMeter() {
-        super(PaoType.SETO_EDGE_METER);
+        super(PaoType.EDGE_METER);
     }
 
 }

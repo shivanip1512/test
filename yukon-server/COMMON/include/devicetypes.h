@@ -125,6 +125,9 @@ enum DeviceTypes {
     // RF Cellular IPLink Relay
     TYPE_CRLY856,
 
+    // SETO Devices
+    TYPE_EDGE_METER,
+
     // Substation device identifiers
     TYPE_CCU700,
     TYPE_CCU710,
@@ -180,9 +183,6 @@ enum DeviceTypes {
 
     TYPE_FCI,
     TYPE_NEUTRAL_MONITOR,
-
-	// SETO Devices
-	TYPE_SETO_EDGE_METER,
 
     // Group type devices...
     TYPE_LMGROUP_EMETCON,

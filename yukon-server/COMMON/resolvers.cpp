@@ -308,7 +308,7 @@ static const std::map<std::string, DeviceTypes> device_lookups
     { "crly-856",           TYPE_CRLY856 },
 
     //  --- SETO Devices ---
-    { "edge meter",           TYPE_SETO_EDGE_METER },
+    { "edge meter",           TYPE_EDGE_METER },
 
     //  --- RTU devices ---
     { "rtu-dart",           TYPE_DARTRTU },

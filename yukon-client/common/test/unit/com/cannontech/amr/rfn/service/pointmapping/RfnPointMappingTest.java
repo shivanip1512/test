@@ -292,7 +292,7 @@ public class RfnPointMappingTest {
         rfnPointMapping.remove(PaoType.RFN430KV);
 
         // SETO Edge Meter is unmapped in yukonPointMapping
-        rfnPointMapping.remove(PaoType.SETO_EDGE_METER);
+        rfnPointMapping.remove(PaoType.EDGE_METER);
 
         
         rfnPointMapping.entrySet().stream()

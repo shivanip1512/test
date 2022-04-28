@@ -243,7 +243,7 @@ std::optional<DeviceTypes> resolvePaoIdXmlType( const std::string & type )
         { "CRLY856",                     TYPE_CRLY856 },
 
         //  --- SETO Devices ---
-        { "EDGE_METER",                     TYPE_SETO_EDGE_METER },
+        { "EDGE_METER",                     TYPE_EDGE_METER },
 
         //  --- RTU devices ---
         { "RTU_DART",                    TYPE_DARTRTU },

@@ -553,7 +553,7 @@ public final class DeviceFactory {
         case VIRTUAL_METER:
             returnDevice = new VirtualMeter();
             break;
-        case SETO_EDGE_METER:
+        case EDGE_METER:
             returnDevice = new EdgeMeter();
             break;
         default:
