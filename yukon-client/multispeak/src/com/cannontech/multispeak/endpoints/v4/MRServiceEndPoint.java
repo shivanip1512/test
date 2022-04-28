@@ -11,8 +11,10 @@ import org.springframework.ws.server.endpoint.annotation.PayloadRoot;
 import org.springframework.ws.server.endpoint.annotation.RequestPayload;
 import org.springframework.ws.server.endpoint.annotation.ResponsePayload;
 
+import com.cannontech.msp.beans.v4.ArrayOfFormattedBlock;
 import com.cannontech.msp.beans.v4.ArrayOfMeterReading1;
 import com.cannontech.msp.beans.v4.ArrayOfString;
+import com.cannontech.msp.beans.v4.FormattedBlock;
 import com.cannontech.msp.beans.v4.GetLatestReadingByMeterID;
 import com.cannontech.msp.beans.v4.GetLatestReadingByMeterIDResponse;
 import com.cannontech.msp.beans.v4.GetLatestReadings;
@@ -20,6 +22,8 @@ import com.cannontech.msp.beans.v4.GetLatestReadingsResponse;
 import com.cannontech.msp.beans.v4.GetMethods;
 import com.cannontech.msp.beans.v4.GetMethodsResponse;
 import com.cannontech.msp.beans.v4.GetReadingsByDate;
+import com.cannontech.msp.beans.v4.GetReadingsByDateAndFieldName;
+import com.cannontech.msp.beans.v4.GetReadingsByDateAndFieldNameResponse;
 import com.cannontech.msp.beans.v4.GetReadingsByDateResponse;
 import com.cannontech.msp.beans.v4.GetReadingsByMeterID;
 import com.cannontech.msp.beans.v4.GetReadingsByMeterIDResponse;
@@ -144,4 +148,29 @@ public class MRServiceEndPoint {
 
         return getLatestReadingByMeterIDResponse;
     }
+    
+    @PayloadRoot(localPart = "GetReadingsByDateAndFieldName", namespace = MultispeakDefines.NAMESPACE_v4)
+    public @ResponsePayload
+    GetReadingsByDateAndFieldNameResponse getReadingsByDateAndFieldName(
+            @RequestPayload GetReadingsByDateAndFieldName getReadingsByDateAndFieldName) throws MultispeakWebServiceException {
+        GetReadingsByDateAndFieldNameResponse response = objectFactory.createGetReadingsByDateAndFieldNameResponse();
+
+        String lastReceived = getReadingsByDateAndFieldName.getLastReceived();
+        String formattedBlockTemplateName = getReadingsByDateAndFieldName.getFormattedBlockTemplateName();
+        XMLGregorianCalendar startDate = getReadingsByDateAndFieldName.getStartDate();
+        XMLGregorianCalendar endDate = getReadingsByDateAndFieldName.getEndDate();
+
+        if (startDate == null || endDate == null) {
+            throw new MultispeakWebServiceException("Invalid date/time.");
+        }
+        List<FormattedBlock> formattedBlocks = mr_server.getReadingsByDateAndFieldName(startDate.toGregorianCalendar(),
+                                                                                  endDate.toGregorianCalendar(),
+                                                                                  lastReceived, formattedBlockTemplateName);
+        
+        ArrayOfFormattedBlock arrayOfFormattedBlock = objectFactory.createArrayOfFormattedBlock();
+        arrayOfFormattedBlock.getFormattedBlock().addAll(formattedBlocks);
+        response.setGetReadingsByDateAndFieldNameResult(arrayOfFormattedBlock);
+        return response;
+    }
+
 }

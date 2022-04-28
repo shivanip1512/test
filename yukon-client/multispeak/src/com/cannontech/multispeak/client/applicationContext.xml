@@ -31,7 +31,16 @@
             </map>
     </property>
   </bean>
-    <bean class="com.cannontech.multispeak.deploy.service.impl.v4.MR_ServerImpl" />
+  
+  <bean class="com.cannontech.multispeak.deploy.service.impl.v4.MR_ServerImpl">
+  <property name="porterConnection" ref="porterConnection" />
+    <property name="formattedBlockMap">
+            <map>
+                <entry key="Load" value-ref="loadBlockProcessingServicev4" />
+                <entry key="Outage" value-ref="outageBlockProcessingServicev4" />
+            </map>
+    </property>
+  </bean>
 
   <bean class="com.cannontech.multispeak.client.MultispeakFuncs"/>
   <bean id="multispeakFuncsV5" class="com.cannontech.multispeak.client.v5.MultispeakFuncs"/>
@@ -134,6 +143,16 @@
   
   <bean id="outageBlockProcessingService" class="com.cannontech.multispeak.dao.impl.OutageBlockProcessingServiceImpl" 
          parent="blockProcessingService">
+  </bean>
+  
+  <bean id="blockProcessingServicev4" class="com.cannontech.multispeak.dao.impl.v4.FormattedBlockProcessingServiceImpl" abstract="true"/>
+
+  <bean id="loadBlockProcessingServicev4" class="com.cannontech.multispeak.dao.impl.v4.LoadBlockProcessingServiceImpl" 
+         parent="blockProcessingServicev4">
+  </bean>
+  
+  <bean id="outageBlockProcessingServicev4" class="com.cannontech.multispeak.dao.impl.v4.OutageBlockProcessingServiceImpl" 
+         parent="blockProcessingServicev4">
   </bean>
   
   <bean id="blockProcessingServicev5" class="com.cannontech.multispeak.dao.impl.v5.FormattedBlockProcessingServiceImpl" abstract="true"/>
