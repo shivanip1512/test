@@ -21,6 +21,8 @@ import org.springframework.ws.soap.saaj.SaajSoapMessage;
 import org.w3c.dom.Node;
 
 import com.cannontech.clientutils.YukonLogManager;
+import com.cannontech.common.exception.BadAuthenticationException;
+import com.cannontech.common.exception.PasswordExpiredException;
 import com.cannontech.core.dao.NotFoundException;
 import com.cannontech.database.data.lite.LiteYukonUser;
 import com.cannontech.msp.beans.v4.ArrayOfErrorObject;
@@ -82,8 +84,21 @@ public class MultispeakFuncs extends MultispeakFuncsBase {
 
     @Override
     public LiteYukonUser authenticateMsgHeader() throws MultispeakWebServiceException {
-        // TODO Auto-generated method stub
-        return null;
+        try {
+            SoapEnvelope env = getRequestMessageSOAPEnvelope();
+            SoapHeader soapHeader = env.getHeader();
+            String username = getAtributeFromSOAPHeader(soapHeader, "UserID");
+            String password = getAtributeFromSOAPHeader(soapHeader, "Pwd");
+            LiteYukonUser user = authenticationService.login(username, password);
+            return user;
+
+        } catch (PasswordExpiredException e) {
+            throw new MultispeakWebServiceException("Password expired.", e);
+        } catch (BadAuthenticationException e) {
+            throw new MultispeakWebServiceException("User authentication failed.", e);
+        }
+    
+        
     }
 
     /**
