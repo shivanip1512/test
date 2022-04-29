@@ -61,4 +61,17 @@ public interface MspRawPointHistoryDao {
                                      Date startDate, Date endDate, String lastReceived,
                                      int maxRecords);
 
+    /**
+     * Returns a FormattedBlock of type block.
+     * @param blockProcessService - service to use when defining type of block and how to load
+     * @param lastReceived - Results are retrieved for meterNumber > lastReceived. LastReceived == null means start from beginning.
+     * @param maxRecords - Max results returned (NOTE: If maxRecords is exceeded over the same meterNumber, all results for
+     *            that meterNumber will still be included. Meaning meterRead[].length > maxRecords
+     *            is possible). More specifically, maxRecords is equivalent
+     *            to the number of actual Meters that data is being returned for.
+     * @return MspBlock
+     */
+    public MspBlockReturnList retrieveLatestBlock(FormattedBlockProcessingService<Block> blockProcessingService,
+                                           String lastReceived, int maxRecords);
+
  }

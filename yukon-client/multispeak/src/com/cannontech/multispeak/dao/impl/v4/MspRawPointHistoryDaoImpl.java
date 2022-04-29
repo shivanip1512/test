@@ -230,4 +230,52 @@ public class MspRawPointHistoryDaoImpl implements MspRawPointHistoryDao {
         log.debug("Retrieved " + blocks.size() + " Blocks. (" + (new Date().getTime() - timerStart.getTime())*.001 + " secs)");
         return mspBlockReturn;
     }
+    
+    @Override
+    public MspBlockReturnList retrieveLatestBlock(FormattedBlockProcessingService<Block> blockProcessingService, String lastReceived, int maxRecords) {
+
+        List<YukonMeter> meters = getPaoList(ReadBy.NONE, null, lastReceived, maxRecords);
+        
+        final Date timerStart = new Date();
+
+        EnumMap<BuiltInAttribute, Map<PaoIdentifier, PointValueQualityHolder>> resultsPerAttribute = Maps.newEnumMap(BuiltInAttribute.class);
+
+        int estimatedSize = 0;
+
+        EnumSet<BuiltInAttribute> attributesToLoad = blockProcessingService.getAttributeSet();
+
+        // load up results for each attribute
+        for (BuiltInAttribute attribute : attributesToLoad) {
+
+            Map<PaoIdentifier, PointValueQualityHolder> resultsForAttribute = 
+                rawPointHistoryDao.getSingleAttributeData(meters, attribute, false, null);
+
+            resultsPerAttribute.put(attribute, resultsForAttribute);
+            estimatedSize += resultsForAttribute.size();
+        }
+
+        List<Block> blocks = Lists.newArrayListWithExpectedSize(estimatedSize);
+
+        // loop over meters, results will be returned in whatever order getPaoList returns the meters in
+        // attempt to "block" all attributes for one meter together, because we know we only have one pointValue per meter per attribute.
+        for (YukonMeter meter : meters) {
+            Block block = blockProcessingService.createBlock(meter);
+            for (BuiltInAttribute attribute : attributesToLoad) { 
+                PointValueQualityHolder rawValue = resultsPerAttribute.get(attribute).remove(meter.getPaoIdentifier());
+                if (rawValue != null) {
+                    blockProcessingService.updateFormattedBlock(block, attribute, rawValue);
+                }
+            }
+            if (block.hasData()) {
+                blocks.add(block);
+            }
+        }
+
+        MspBlockReturnList mspBlockReturn = new MspBlockReturnList();
+        mspBlockReturn.setBlocks(blocks);
+        mspBlockReturn.setReturnFields(meters, maxRecords);
+        
+        log.debug("Retrieved " + blocks.size() + " Latest Blocks. (" + (new Date().getTime() - timerStart.getTime())*.001 + " secs)");
+        return mspBlockReturn;
+    }
 }
