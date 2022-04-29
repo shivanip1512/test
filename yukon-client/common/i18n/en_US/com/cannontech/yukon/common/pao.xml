@@ -282,5 +282,5 @@
     <entry key="yukon.common.pao.RFN_RELAY">RFN Relay</entry>
     <entry key="yukon.common.pao.CRLY856">CRLY-856</entry>
     
-    <entry key="yukon.common.pao.SETO_EDGE_METER">SETO Edge Meter</entry>
+    <entry key="yukon.common.pao.EDGE_METER">Edge Meter</entry>
 </properties>
