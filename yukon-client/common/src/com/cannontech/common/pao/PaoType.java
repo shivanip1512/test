@@ -617,7 +617,8 @@ public enum PaoType implements DisplayableEnum, DatabaseRepresentationSource {
             LCR6600_RFN,
             LCR6700_RFN,
             RFN_RELAY,
-            CRLY856);
+            CRLY856,
+            EDGE_METER);
         
         rfMeterTypes = Sets.intersection(rfTypes, meterTypes).immutableCopy();
         
