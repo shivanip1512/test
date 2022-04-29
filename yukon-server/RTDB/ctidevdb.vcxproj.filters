@@ -483,6 +483,9 @@
     <ClCompile Include="cmd_rfn_CommStatus.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="dev_rfn_edge.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="include\cmd_device.h">
