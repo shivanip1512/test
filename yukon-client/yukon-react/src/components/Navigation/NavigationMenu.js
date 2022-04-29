@@ -77,7 +77,7 @@ const NavigationMenu = (props) => {
     }
     // 2hr is default user idle time in yukon, which can be customizable as well
     // when that api will be created then timeout value can be used from that api
-    useIdleTimer({ onIdle, timeout: 1000 * 60 * 60 * 2 });
+    useIdleTimer({ onIdle, timeout: 1000 * 5 });
 
     const logOut = () => {
         axios
