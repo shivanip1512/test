@@ -7,13 +7,11 @@ import java.util.concurrent.atomic.AtomicInteger;
 import javax.annotation.PostConstruct;
 import javax.annotation.PreDestroy;
 
-import org.apache.logging.log4j.Logger;
 import org.joda.time.Instant;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.jmx.export.annotation.ManagedAttribute;
 import org.springframework.jmx.export.annotation.ManagedResource;
 
-import com.cannontech.clientutils.YukonLogManager;
 import com.cannontech.common.events.loggers.EndpointEventLogService;
 import com.cannontech.common.pao.dao.PaoLocationDao;
 import com.cannontech.common.pao.model.PaoLocation;
@@ -28,7 +26,7 @@ import com.google.common.collect.ImmutableList;
 
 @ManagedResource
 public class LocationArchiveResponseListener extends ArchiveRequestListenerBase<LocationResponse> {
-    private static final Logger log = YukonLogManager.getLogger(LocationArchiveResponseListener.class);
+    
     @Autowired private PaoLocationDao paoLocationDao;
     @Autowired private EndpointEventLogService endpointEventLogService ;
     @Autowired private YukonJmsTemplateFactory jmsTemplateFactory;
@@ -36,7 +34,7 @@ public class LocationArchiveResponseListener extends ArchiveRequestListenerBase<
     private YukonJmsTemplate jmsTemplate;
     private List<Worker> workers;
     private AtomicInteger processedAlarmArchiveRequest = new AtomicInteger();
-
+    
     public class Worker extends ConverterBase {
         public Worker(int workerNumber, int queueSize) {
             super("LocationArchiveResponse", workerNumber, queueSize);

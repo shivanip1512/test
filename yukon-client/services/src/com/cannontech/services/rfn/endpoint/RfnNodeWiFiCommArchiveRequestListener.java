@@ -10,7 +10,6 @@ import java.util.Set;
 
 import javax.annotation.PostConstruct;
 
-import org.apache.logging.log4j.Level;
 import org.apache.logging.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.jmx.export.annotation.ManagedResource;
@@ -21,8 +20,8 @@ import com.cannontech.common.pao.attribute.service.AttributeService;
 import com.cannontech.common.pao.attribute.service.IllegalUseOfAttribute;
 import com.cannontech.common.point.PointQuality;
 import com.cannontech.common.rfn.message.RfnIdentifier;
-import com.cannontech.common.rfn.message.node.NodeWiFiComm;
 import com.cannontech.common.rfn.message.node.NodeConnectionState;
+import com.cannontech.common.rfn.message.node.NodeWiFiComm;
 import com.cannontech.common.rfn.message.node.RfnNodeWiFiCommArchiveRequest;
 import com.cannontech.common.rfn.message.node.RfnNodeWiFiCommArchiveResponse;
 import com.cannontech.common.rfn.model.RfnDevice;
@@ -39,14 +38,13 @@ import com.cannontech.services.rfn.RfnArchiveQueueHandler;
 
 @ManagedResource
 public class RfnNodeWiFiCommArchiveRequestListener implements RfnArchiveProcessor {
-    private static final Logger log = YukonLogManager.getLogger(RfnNodeWiFiCommArchiveRequestListener.class);
     @Autowired private RfnArchiveQueueHandler queueHandler;
     @Autowired private AttributeService attributeService;
     @Autowired private RfnDeviceLookupService rfnDeviceLookupService;
     @Autowired private AsyncDynamicDataSource asyncDynamicDataSource;
     @Autowired private YukonJmsTemplateFactory jmsTemplateFactory;
 
-    private Logger rfnCommsLog = YukonLogManager.getRfnLogger();
+    private Logger log = YukonLogManager.getRfnLogger();
     private YukonJmsTemplate jmsTemplate;
 
     @PostConstruct
@@ -70,9 +68,7 @@ public class RfnNodeWiFiCommArchiveRequestListener implements RfnArchiveProcesso
      * Handles message from NM, logs the message and put in on a queue.
      */
     public void handleArchiveRequest(RfnNodeWiFiCommArchiveRequest request) {
-        if (rfnCommsLog.isEnabled(Level.INFO)) {
-            rfnCommsLog.log(Level.INFO, "<<< " + request.toString());
-        }
+        log.info("<<< {}", request.toString());
         queueHandler.add(this, request);
     }
 
@@ -150,7 +146,7 @@ public class RfnNodeWiFiCommArchiveRequestListener implements RfnArchiveProcesso
         if (!referenceIds.isEmpty()) {
             RfnNodeWiFiCommArchiveResponse response = new RfnNodeWiFiCommArchiveResponse();
             response.setReferenceIDs(referenceIds);
-            log.debug("{} acknowledged ids {}", processor, response.getReferenceIDs());
+            log.info(">>> {}", response.toString());
             jmsTemplate.convertAndSend(response);
         }
     }

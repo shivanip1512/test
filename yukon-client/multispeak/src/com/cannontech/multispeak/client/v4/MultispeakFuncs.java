@@ -1,6 +1,7 @@
 package com.cannontech.multispeak.client.v4;
 
 import java.util.Iterator;
+import java.util.List;
 
 import javax.xml.namespace.QName;
 import javax.xml.soap.MimeHeaders;
@@ -24,6 +25,9 @@ import com.cannontech.common.exception.BadAuthenticationException;
 import com.cannontech.common.exception.PasswordExpiredException;
 import com.cannontech.core.dao.NotFoundException;
 import com.cannontech.database.data.lite.LiteYukonUser;
+import com.cannontech.msp.beans.v4.ArrayOfErrorObject;
+import com.cannontech.msp.beans.v4.ErrorObject;
+import com.cannontech.msp.beans.v4.ObjectFactory;
 import com.cannontech.multispeak.client.MessageContextHolder;
 import com.cannontech.multispeak.client.MultiSpeakVersion;
 import com.cannontech.multispeak.client.MultispeakDefines;
@@ -37,6 +41,7 @@ import com.cannontech.multispeak.exceptions.MultispeakWebServiceException;
 public class MultispeakFuncs extends MultispeakFuncsBase {
     private final static Logger log = YukonLogManager.getLogger(MultispeakFuncs.class);
     @Autowired public MultispeakDao multispeakDao;
+    @Autowired private ObjectFactory objectFactory;
 
     @Override
     public MultiSpeakVersion version() {
@@ -240,6 +245,14 @@ public class MultispeakFuncs extends MultispeakFuncsBase {
         }
 
         return attributeValue;
+    }
+    
+    public ArrayOfErrorObject toArrayOfErrorObject(List<ErrorObject> errorObjects) {
+        ArrayOfErrorObject arrayOfErrorObject = objectFactory.createArrayOfErrorObject();
+        if (errorObjects != null) {
+            arrayOfErrorObject.getErrorObject().addAll(errorObjects);
+        }
+        return arrayOfErrorObject;
     }
 
 }

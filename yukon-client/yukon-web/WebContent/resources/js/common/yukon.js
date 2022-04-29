@@ -656,6 +656,9 @@ yukon.namespace = function (ns) {
                     }
                 }
                     
+                //remove tooltip for event id if it already exists (prevents duplicates from displaying)
+                $('.js-event-tooltip[data-event-id=' + firstEvent.id + ']').remove();
+                
                 var tooltip = $('<ul class="dn simple-list">')
                     .addClass('js-event-tooltip js-sticky-tooltip')
                     .attr('data-event-id', firstEvent.id);
