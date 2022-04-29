@@ -12,6 +12,7 @@ import java.util.Set;
 
 import org.apache.logging.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Required;
 
 import com.cannontech.clientutils.CTILogger;
 import com.cannontech.clientutils.YukonLogManager;
@@ -338,5 +339,10 @@ public class MultispeakLMServiceImpl extends MultispeakLMServiceBase implements 
             }
         }
         return errorObject;
+    }
+
+    @Required
+    public void setStrategiesToExcludeInReport(List<? extends String> strategiesToExcludeInReport) {
+        this.strategiesToExcludeInReport = strategiesToExcludeInReport;
     }
 }
