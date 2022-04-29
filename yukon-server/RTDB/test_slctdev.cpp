@@ -55,12 +55,12 @@ BOOST_AUTO_TEST_CASE(test_is_dnp_device_type)
     (_)(_)(_)(_)(_) (_)(_)(_)(_)(_)  //  70
     (_)(_)(_)(_)(_) (_)(_)(_)(_)(_)  //  80
     (_)(_)(_)(_)(_) (_)(_)(_)(_)(_)  //  90
-    (_)(_)(_)(_)(_) (X)(_)(_)(_)(_)  //  100
+    (_)(_)(_)(_)(_) (_)(X)(_)(_)(_)  //  100
 */
     expected[ 46 ] = true;
     expected[ 47 ] = true;
     expected[ 49 ] = true;
-    expected[ 105 ] = true;
+    expected[ 106 ] = true;
 
     std::vector<bool> results;
 
