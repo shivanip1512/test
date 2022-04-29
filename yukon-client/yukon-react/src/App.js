@@ -29,6 +29,8 @@ const ScrollToTop = () => {
     return null;
 };
 
+export const App = () => {
+
     return (
         <SecurityContextProvider>
             <AuthUIConfiguration>
