@@ -119,8 +119,21 @@ public class ApiControllerHelper {
                     error.rejectValue(field, errorCode);
                 }
             }
+            result.addAllErrors(error);
+
+            for (ObjectError objectError : error.getAllErrors()) {
+                FieldError mvcError = (FieldError) objectError;
+                String fieldName = mvcError.getField();
+                if (result.getFieldError(fieldName) == null) {
+                    result.rejectValue(fieldName, mvcError.getCode());
+                } else if (!fieldName.equals(result.getFieldError(fieldName).getField())) {
+                    result.rejectValue(fieldName, mvcError.getCode());
+                }
+            }
+        } else {
+            result.addAllErrors(error);
         }
-        return error.getBindingResult();
+        return result;
     }
 
     /**
