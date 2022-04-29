@@ -559,7 +559,7 @@ public enum PaoType implements DisplayableEnum, DatabaseRepresentationSource {
             TRANSDATA_MARKV,
             VECTRON,
             VIRTUAL_METER,
-            SETO_EDGE_METER
+            EDGE_METER
             );
         
         rfTypes = ImmutableSet.of(
