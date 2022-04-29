@@ -87,7 +87,7 @@ public class MultispeakLMServiceImpl extends MultispeakLMServiceBase implements 
         pointData.setType(PointType.Analog.getPointTypeId());
         pointData.setStr("MultiSpeak ScadaAnalog Analog point update.");
         pointData.setUserName(userName);
-        if (scadaAnalog.getTimeStamp() != null || scadaAnalog.getTimeStamp().isValid()) {
+        if (scadaAnalog.getTimeStamp() != null) {
             pointData.setTime(scadaAnalog.getTimeStamp().toGregorianCalendar().getTime());
         }
         return pointData;
@@ -104,7 +104,9 @@ public class MultispeakLMServiceImpl extends MultispeakLMServiceBase implements 
                 if (fdrTranslation.getDirection() == FdrDirection.RECEIVE) {
                     PointData pointData = buildPointData(fdrTranslation.getPointId(), scadaAnalog, liteYukonUser.getUsername());
                     simplePointAccessDao.writePointData(pointData);
-                    CTILogger.debug("PointData update sent to Dispatch (" + pointData.toString() + ")");
+                    if (pointData != null) {
+                        CTILogger.debug("PointData update sent to Dispatch (" + pointData.toString() + ")");
+                    }
                 }
             }
         } else {
@@ -246,7 +248,10 @@ public class MultispeakLMServiceImpl extends MultispeakLMServiceBase implements 
             MultispeakVendor vendor) {
 
         // Set the start date
-        Calendar scheduleDateTime = loadManagementEvent.getScheduleDateTime().toGregorianCalendar();
+        Calendar scheduleDateTime = null;
+        if (loadManagementEvent.getScheduleDateTime() != null) {
+            scheduleDateTime = loadManagementEvent.getScheduleDateTime().toGregorianCalendar();
+        }
         Date startTime = new Date(); // default to now.
         if (scheduleDateTime != null) {
             startTime.setTime(scheduleDateTime.getTimeInMillis());
