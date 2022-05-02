@@ -82,3 +82,10 @@ export const setFlashErrors = (flashErrors) => {
       theme: theme
     }
   }
+  
+  export const setThemeImage = (themeImage) => {
+    return {
+      type: actionTypes.SET_THEME_IMAGE,
+      themeImage: themeImage
+      };
+   };

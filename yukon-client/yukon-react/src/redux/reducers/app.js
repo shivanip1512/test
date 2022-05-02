@@ -11,7 +11,9 @@ import {
     SET_VALIDATION_ERRORS,
     CLEAR_VALIDATION_ERRORS,
     CLEAR_ALL_ALERTS,
-    SET_THEME
+    SET_THEME,
+    SET_THEME_IMAGE
+
 } from '../actions/actionTypes';
 
 const initialAppState = {
@@ -54,6 +56,8 @@ export const AppReducer = (state = initialAppState, action) => {
             return {...state, validationErrors: null, flashSuccess: null, flashErrors: null};
         case SET_THEME:
             return {...state, theme: action.theme};
+        case SET_THEME_IMAGE:
+            return {...state, theme: action.themeImage};
         default:
             return state;
     }

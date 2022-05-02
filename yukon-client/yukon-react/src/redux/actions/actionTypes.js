@@ -19,3 +19,4 @@ export const CLEAR_ALL_ALERTS = 'CLEAR_ALL_ALERTS';
 
 //themes
 export const SET_THEME = 'SET_THEME';
+export const SET_THEME_IMAGE = 'SET_THEME_IMAGE';

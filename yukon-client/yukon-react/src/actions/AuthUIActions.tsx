@@ -1,6 +1,9 @@
 /* eslint-disable @typescript-eslint/no-unused-vars */
 import { AuthUIActions, SecurityContextActions } from "@brightlayer-ui/react-auth-workflow";
 import { CookieStorage } from "../store/cookie-storage";
+import { useDispatch } from 'react-redux';
+import { useTheme } from '@material-ui/core/styles';
+import * as actions from '../redux/actions/index';
 import axios from "../axiosConfig";
 
 const sleep = (ms: number): Promise<void> => new Promise((resolve) => setTimeout(resolve, ms));
@@ -91,6 +94,10 @@ export const ProjectAuthUIActions: AuthUIActionsWithSecurity = (securityHelper) 
      * @returns Resolve if code is credentials are valid, otherwise reject.
      */
     logIn: async (email: string, password: string, rememberMe: boolean): Promise<void> => {
+
+    //const theme = useTheme();
+    const dispatch = useDispatch();
+    
         //fetch access token
         await axios
             .post("/api/token", {
@@ -114,9 +121,12 @@ export const ProjectAuthUIActions: AuthUIActionsWithSecurity = (securityHelper) 
 
         //get the theme and store in browser local storage
         //storing in react store gets cleared after every old yukon page since it's counted as a refresh
-        /*      axios.get('/api/theme')
+
+    
+        axios.get('/api/admin/config/currentTheme')
             .then(themeJson => {
                 if (themeJson) {
+                    console.log(themeJson.data);
                     //don't change theme if default theme is used
                     if (themeJson.data.themeId > 0) {
                         //get theme image
@@ -124,6 +134,7 @@ export const ProjectAuthUIActions: AuthUIActionsWithSecurity = (securityHelper) 
                         .then(themeImage => {
                             themeJson.data.properties.LOGO_IMAGE = themeImage.data;
                             dispatch(actions.setTheme(themeJson.data));
+                            dispatch(actions.setThemeImage(themeImage));
                             dispatch(actions.renderDrawer());
                             //Example if we want to change an entire piece of the pxblue theme
                             //theme.palette.primary.main = themeJson.data.properties.PRIMARY_COLOR;
@@ -133,7 +144,7 @@ export const ProjectAuthUIActions: AuthUIActionsWithSecurity = (securityHelper) 
                     }
                 }
             });
-        }*/
+    
 
         securityHelper.onUserAuthenticated({ email: email, userId: email, rememberMe: rememberMe });
 
