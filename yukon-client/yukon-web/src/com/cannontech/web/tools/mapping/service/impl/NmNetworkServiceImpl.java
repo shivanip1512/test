@@ -46,6 +46,7 @@ import com.cannontech.common.rfn.model.RfnGateway;
 import com.cannontech.common.rfn.service.RfnDeviceCreationService;
 import com.cannontech.common.rfn.service.RfnDeviceMetadataMultiService;
 import com.cannontech.common.rfn.service.RfnGatewayService;
+import com.cannontech.common.util.ExceptionToNullHelper;
 import com.cannontech.mbean.ServerDatabaseCache;
 import com.cannontech.web.tools.mapping.model.NetworkMap;
 import com.cannontech.web.tools.mapping.model.NetworkMapFilter;
@@ -90,7 +91,7 @@ public class NmNetworkServiceImpl implements NmNetworkService {
             if (rfnIdentifier.is_Empty_()) {
                 return null;
             }
-            RfnDevice parent = rfnDeviceCreationService.findOrCreate(rfnIdentifier);
+            RfnDevice parent = ExceptionToNullHelper.nullifyExceptions(() -> rfnDeviceCreationService.getOrCreate(rfnIdentifier));
             if (parent == null) {
                 // couldn't find or create parent
                 return null;
@@ -132,12 +133,12 @@ public class NmNetworkServiceImpl implements NmNetworkService {
                 log.error("Route is empty for device {}", deviceId);
                 return new ArrayList<>();
             }
-
+            
             Map<RfnIdentifier, RfnDevice> devices = route.stream()
                     // remove nulls returned from NM
                     .filter(Objects::nonNull)
                     .filter(identifier -> !identifier.is_Empty_())
-                    .map(rfnIdentifier -> rfnDeviceCreationService.findOrCreate(rfnIdentifier))
+                    .map(rfnIdentifier -> ExceptionToNullHelper.nullifyExceptions(() -> rfnDeviceCreationService.getOrCreate(rfnIdentifier)))
                     // remove devices not created or found
                     .filter(Objects::nonNull)
                     .collect(Collectors.toMap(data -> data.getRfnIdentifier(), data -> data));
@@ -197,7 +198,7 @@ public class NmNetworkServiceImpl implements NmNetworkService {
             Map<RfnIdentifier, RfnDevice> devices = neighbors.stream()
                     // remove devices that do not have identifier or identifier is not valid
                     .filter(neighbor -> neighbor.getRfnIdentifier() != null && !neighbor.getRfnIdentifier().is_Empty_())
-                    .map(neighbor -> rfnDeviceCreationService.findOrCreate(neighbor.getRfnIdentifier()))
+                    .map(neighbor -> ExceptionToNullHelper.nullifyExceptions(() -> rfnDeviceCreationService.getOrCreate(neighbor.getRfnIdentifier())))
                     // remove devices not created or found
                     .filter(Objects::nonNull)
                     .collect(Collectors.toMap(data -> data.getRfnIdentifier(), data -> data));
@@ -509,7 +510,7 @@ public class NmNetworkServiceImpl implements NmNetworkService {
             Map.Entry<RfnIdentifier, RfnMetadataMultiQueryResult> data) {
         if (!filter.getHopCount().containsAll(Arrays.asList(HopCount.values()))) {
             if (data.getValue().isValidResultForMulti(PRIMARY_FORWARD_ROUTE_DATA)) {
-				RouteData routeData = (RouteData) data.getValue().getMetadatas().get(PRIMARY_FORWARD_ROUTE_DATA);
+                                RouteData routeData = (RouteData) data.getValue().getMetadatas().get(PRIMARY_FORWARD_ROUTE_DATA);
                 if (!filter.getHopCount().contains(HopCount.getHopCount(routeData.getHopCount()))) {
                     filteredDevices.remove(data.getKey());
                 }
