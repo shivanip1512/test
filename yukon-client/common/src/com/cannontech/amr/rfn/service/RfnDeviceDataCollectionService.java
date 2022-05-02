@@ -30,6 +30,7 @@ import com.cannontech.common.rfn.model.RfnGateway;
 import com.cannontech.common.rfn.service.RfnDeviceCreationService;
 import com.cannontech.common.rfn.service.RfnDeviceMetadataMultiService;
 import com.cannontech.common.rfn.service.RfnGatewayService;
+import com.cannontech.common.util.ExceptionToNullHelper;
 import com.cannontech.common.util.jms.YukonJmsTemplate;
 import com.cannontech.core.dao.PersistedSystemValueDao;
 import com.cannontech.core.dao.PersistedSystemValueKey;
@@ -92,7 +93,7 @@ public class RfnDeviceDataCollectionService implements MessageListener {
                             Set.of(PRIMARY_FORWARD_GATEWAY, PRIMARY_FORWARD_DESCENDANT_COUNT));
             Set<DynamicRfnDeviceData> deviceData = new HashSet<>();
             response.forEach((deviceRfnIdentifier, queryResult) -> {
-                RfnDevice device = rfnDeviceCreationService.findOrCreate(deviceRfnIdentifier);
+                RfnDevice device = ExceptionToNullHelper.nullifyExceptions(() -> rfnDeviceCreationService.getOrCreate(deviceRfnIdentifier));
                 // Li confirmed PRIMARY_FORWARD_GATEWAY and PRIMARY_FORWARD_DESCENDANT_COUNT will always be returned
                 if (device != null && queryResult.isValidResultForMulti(PRIMARY_FORWARD_GATEWAY)
                         && queryResult.isValidResultForMulti(PRIMARY_FORWARD_DESCENDANT_COUNT)) {

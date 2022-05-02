@@ -56,6 +56,7 @@ import com.cannontech.common.rfn.service.RfnDeviceCreationService;
 import com.cannontech.common.rfn.service.RfnDeviceMetadataMultiService;
 import com.cannontech.common.rfn.service.RfnGatewayService;
 import com.cannontech.common.rfn.simulation.util.NetworkDebugHelper;
+import com.cannontech.common.util.ExceptionToNullHelper;
 import com.cannontech.common.util.jms.RequestReplyTemplate;
 import com.cannontech.common.util.jms.RequestReplyTemplateImpl;
 import com.cannontech.common.util.jms.YukonJmsTemplate;
@@ -322,7 +323,7 @@ public class NetworkTreeServiceImpl implements NetworkTreeService, MessageListen
             log.debug("Tree node creation: adding NULL {} to tree, rfnIdentifier is empty.", rfnIdentifier);  
             return new Node<Pair<Integer, FeatureCollection>>(null);
         }
-        RfnDevice device = rfnDeviceCreationService.findOrCreate(rfnIdentifier);
+        RfnDevice device = ExceptionToNullHelper.nullifyExceptions(() -> rfnDeviceCreationService.getOrCreate(rfnIdentifier));
         if (device == null) {
             yukonNodeStatistics.FAILED_TO_CREATE.incrementAndGet();
             // failed to create device
