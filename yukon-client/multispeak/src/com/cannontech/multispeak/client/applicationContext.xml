@@ -116,8 +116,15 @@
     </property>
   </bean>
 
-  <bean id="multispeakLMServicev4" class="com.cannontech.multispeak.service.impl.v4.MultispeakLMServiceImpl"/>
-
+  <bean id="multispeakLMServicev4" class="com.cannontech.multispeak.service.impl.v4.MultispeakLMServiceImpl">
+    <property name="strategiesToExcludeInReport">
+      <list>
+        <value>ALL DEVICES</value>
+        <value>SCRAM</value>
+      </list>
+    </property>
+  </bean>
+  
   <bean id="multispeakLMServicev5" class="com.cannontech.multispeak.service.impl.v5.MultispeakLMServiceImpl">
    <property name="strategiesToExcludeInReport">
       <list>
@@ -168,6 +175,7 @@
   </bean>
   <bean class="com.cannontech.multispeak.dao.impl.ScadaAnalogProcessingServiceImpl"/>
   <bean class="com.cannontech.multispeak.dao.impl.v5.ScadaAnalogProcessingServiceImpl"/>
+  <bean class="com.cannontech.multispeak.dao.impl.v4.ScadaAnalogProcessingServiceImpl"/>
     
   <bean id="mspObjectDao" class="com.cannontech.multispeak.dao.impl.MspObjectDaoImpl">
   </bean>
@@ -287,6 +295,8 @@
     <bean id="clientInterceptor" class="com.cannontech.multispeak.client.ClientMessageContextHolderInterceptor" />
     
     <bean  class="com.cannontech.multispeak.client.MultispeakLoggingHelper" />
+    
+     <bean  class="com.cannontech.multispeak.client.MspRawPointHistoryHelper" />
 
     <bean id="payloadTransform" class="com.cannontech.multispeak.client.PayloadTransformingInterceptor" >
        <property name="requestXslt" value="classpath:com/cannontech/multispeak/client/oldRequest.xsl" />

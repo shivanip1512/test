@@ -140,6 +140,11 @@ paths:
   /terminals/{id}/copy:
     $ref: 'api/terminalsApi.yaml#/copy-operation'
 
+  /notificationGroups:
+    $ref: 'api/notificationGroupsApi.yaml#/post-get-all-operation'
+  /notificationGroups/{id}:
+    $ref: 'api/notificationGroupsApi.yaml#/get-update-delete-operation'
+    
 components:
   securitySchemes:
     bearerAuth:
@@ -167,4 +172,5 @@ tags:
   - name: Logger
   - name: Macro Route
   - name: Terminals
+  - name: Notification Groups
 

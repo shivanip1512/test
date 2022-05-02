@@ -79,8 +79,11 @@ public class MR_ServerImpl implements MR_Server {
                                                            "CancelUsageMonitoring",
                                                            "GetAMRSupportedMeters",
                                                            "GetSupportedFieldNames",
-                                                           "GetLatestReadingByMeterID",
-                                                           "GetReadingsByDateAndFieldName"};
+                                                           "GetReadingsByDateAndFieldName",
+                                                           "GetReadingsByMeterIDAndFieldName",
+                                                           "GetLatestReadingByFieldName",
+                                                           "GetLatestReadingByMeterIDAndFieldName"
+                                                           };
 
     private void init() throws MultispeakWebServiceException {
         multispeakFuncs.init();
@@ -255,6 +258,99 @@ public class MR_ServerImpl implements MR_Server {
     public void setFormattedBlockMap(
             Map<String, FormattedBlockProcessingService<Block>> formattedBlockMap) {
         this.formattedBlockMap = formattedBlockMap;
+    }
+    
+    @Override
+    public List<FormattedBlock> getReadingsByMeterIDAndFieldName(String meterNo, Calendar startDate, Calendar endDate,
+            String lastReceived, String formattedBlockTemplateName)
+            throws MultispeakWebServiceException {
+        init();
+        MultispeakVendor vendor = multispeakFuncs.getMultispeakVendorFromHeader();
+        multispeakEventLogService.methodInvoked("GetReadingsByMeterIDAndFieldName", vendor.getCompanyName());
+
+        // Validate the meterNo is in Yukon
+        mspValidationService.isYukonMeterNumber(meterNo);
+
+        FormattedBlockProcessingService<Block> formattedBlockProcessingService = mspValidationService
+                .getProcessingServiceByFormattedBlockTemplate(formattedBlockMap, formattedBlockTemplateName);
+
+        MspBlockReturnList mspBlockReturnList = mspRawPointHistoryDao.retrieveBlock(ReadBy.METER_NUMBER, meterNo,
+                                                                                    formattedBlockProcessingService,
+                                                                                    startDate.getTime(),
+                                                                                    endDate.getTime(),
+                                                                                    null, // don't use lastReceived, we know there is only one
+                                                                                    vendor.getMaxReturnRecords());
+
+        FormattedBlock formattedBlock = formattedBlockProcessingService.createMspFormattedBlock(mspBlockReturnList.getBlocks());
+
+        multispeakEventLogService.returnObjects(1, mspBlockReturnList.getObjectsRemaining(), "FormattedBlock",
+                mspBlockReturnList.getLastSent(), "GetReadingsByMeterIDAndFieldName", vendor.getCompanyName());
+
+        return Collections.singletonList(formattedBlock);
+    }
+
+    @Override
+    public FormattedBlock getLatestReadingByMeterIDAndFieldName(String meterNo,
+            String formattedBlockTemplateName) throws MultispeakWebServiceException {
+        init();
+        MultispeakVendor vendor = multispeakFuncs.getMultispeakVendorFromHeader();
+        multispeakEventLogService.methodInvoked("GetLatestReadingByMeterIDAndFieldName", vendor.getCompanyName());
+
+        YukonMeter meter = mspValidationService.isYukonMeterNumber(meterNo);
+
+        FormattedBlockProcessingService<Block> formattedBlockProcessingService = mspValidationService
+                .getProcessingServiceByFormattedBlockTemplate(formattedBlockMap, formattedBlockTemplateName);
+
+        try {
+            Block block = formattedBlockProcessingService.createBlock(meter);
+
+            EnumSet<BuiltInAttribute> attributesToLoad = formattedBlockProcessingService.getAttributeSet();
+
+            for (BuiltInAttribute attribute : attributesToLoad) {
+                try {
+                    LitePoint litePoint = attributeService.getPointForAttribute(meter, attribute);
+                    PointValueQualityHolder pointValueQualityHolder = asyncDynamicDataSource
+                            .getPointValue(litePoint.getPointID());
+                    if (pointValueQualityHolder != null &&
+                            pointValueQualityHolder.getPointQuality() != PointQuality.Uninitialized) {
+                        formattedBlockProcessingService.updateFormattedBlock(block, attribute, pointValueQualityHolder);
+                    }
+                } catch (IllegalUseOfAttribute e) {
+                    // it's okay...just skip
+                }
+            }
+            FormattedBlock formattedBlock = formattedBlockProcessingService.createMspFormattedBlock(block);
+            multispeakEventLogService.returnObject("FormattedBlock", meterNo, "GetLatestReadingByMeterIDAndFieldName",
+                    vendor.getCompanyName());
+            return formattedBlock;
+
+        } catch (DynamicDataAccessException e) {
+            String message = "Connection to dispatch is invalid";
+            log.error(message);
+            throw new MultispeakWebServiceException(message);
+        }
+    }
+
+    @Override
+    public List<FormattedBlock> getLatestReadingByFieldName(String lastReceived, String formattedBlockTemplateName)
+            throws MultispeakWebServiceException {
+        init();
+        MultispeakVendor vendor = multispeakFuncs.getMultispeakVendorFromHeader();
+        multispeakEventLogService.methodInvoked("GetLatestReadingByFieldName", vendor.getCompanyName());
+
+        FormattedBlockProcessingService<Block> formattedBlockProcessingService = mspValidationService
+                .getProcessingServiceByFormattedBlockTemplate(formattedBlockMap, formattedBlockTemplateName);
+
+        MspBlockReturnList mspBlockReturnList = mspRawPointHistoryDao.retrieveLatestBlock(formattedBlockProcessingService,
+                lastReceived, vendor.getMaxReturnRecords());
+        multispeakFuncs.updateResponseHeader(mspBlockReturnList);
+
+        FormattedBlock formattedBlock = formattedBlockProcessingService.createMspFormattedBlock(mspBlockReturnList.getBlocks());
+
+        multispeakEventLogService.returnObjects(1, mspBlockReturnList.getObjectsRemaining(), "FormattedBlock",
+                mspBlockReturnList.getLastSent(), "GetLatestReadingByFieldName", vendor.getCompanyName());
+
+        return Collections.singletonList(formattedBlock);
     }
 
     @Override
