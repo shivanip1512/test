@@ -510,7 +510,7 @@ public class NmNetworkServiceImpl implements NmNetworkService {
             Map.Entry<RfnIdentifier, RfnMetadataMultiQueryResult> data) {
         if (!filter.getHopCount().containsAll(Arrays.asList(HopCount.values()))) {
             if (data.getValue().isValidResultForMulti(PRIMARY_FORWARD_ROUTE_DATA)) {
-                                RouteData routeData = (RouteData) data.getValue().getMetadatas().get(PRIMARY_FORWARD_ROUTE_DATA);
+                RouteData routeData = (RouteData) data.getValue().getMetadatas().get(PRIMARY_FORWARD_ROUTE_DATA);
                 if (!filter.getHopCount().contains(HopCount.getHopCount(routeData.getHopCount()))) {
                     filteredDevices.remove(data.getKey());
                 }
