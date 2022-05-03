@@ -1,4 +1,5 @@
 import React from 'react';
+import { useDispatch } from 'react-redux';
 
 import {
     AuthUIContextProvider,
@@ -13,7 +14,7 @@ import productLogo from '../../assets/images/eaton_yukon_logo.png';
 
 const AuthUIConfiguration = (props) => {
     const securityContextActions = useSecurityActions();
-
+    const dispatch = useDispatch();
     const backgroundProps = {
         backgroundImage: 'url(/yukon-ui/yukon_background.png)',
         backgroundRepeat: 'no-repeat',
@@ -22,7 +23,7 @@ const AuthUIConfiguration = (props) => {
 
     return (
         <AuthUIContextProvider
-            authActions={ProjectAuthUIActions(securityContextActions)}
+            authActions={ProjectAuthUIActions(securityContextActions, dispatch)}
             registrationActions={ProjectRegistrationUIActions}
             showSelfRegistration={false}
             showContactSupport={false}

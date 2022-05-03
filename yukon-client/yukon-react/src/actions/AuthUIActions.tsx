@@ -24,7 +24,7 @@ const getRefreshToken = async () => {
 };
 
 type AuthUIActionsFunction = () => AuthUIActions;
-type AuthUIActionsWithSecurity = (securityHelper: SecurityContextActions) => AuthUIActionsFunction;
+type AuthUIActionsWithSecurity = (securityHelper: SecurityContextActions, dispatch: any) => AuthUIActionsFunction;
 
 /**
  * Example implementation of [[AuthUIActions]] to start with during development.
@@ -33,7 +33,7 @@ type AuthUIActionsWithSecurity = (securityHelper: SecurityContextActions) => Aut
  * appropriate actions (often api calls, local network storage, credential updates, etc) and update
  * the global security state based on the actionable needs of the user.
  */
-export const ProjectAuthUIActions: AuthUIActionsWithSecurity = (securityHelper) => (): AuthUIActions => ({
+export const ProjectAuthUIActions: AuthUIActionsWithSecurity = (securityHelper, dispatch) => (): AuthUIActions => ({
     /**
      * Initialize the application security state. This will involve reading any local storage,
      * validating existing credentials (token expiration, for example). At the end of validation,
@@ -96,7 +96,6 @@ export const ProjectAuthUIActions: AuthUIActionsWithSecurity = (securityHelper) 
     logIn: async (email: string, password: string, rememberMe: boolean): Promise<void> => {
 
     //const theme = useTheme();
-    const dispatch = useDispatch();
     
         //fetch access token
         await axios
@@ -130,7 +129,7 @@ export const ProjectAuthUIActions: AuthUIActionsWithSecurity = (securityHelper) 
                     //don't change theme if default theme is used
                     if (themeJson.data.themeId > 0) {
                         //get theme image
-                        axios.get('/api/theme/image/' + themeJson.data.properties.LOGO)
+                        axios.get('/api/theme/image/' + themeJson.data.themeId)
                         .then(themeImage => {
                             themeJson.data.properties.LOGO_IMAGE = themeImage.data;
                             dispatch(actions.setTheme(themeJson.data));
