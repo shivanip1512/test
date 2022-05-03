@@ -1,7 +1,7 @@
 /*==============================================================*/
 /* Database name:  YukonDatabase                                */
 /* DBMS name:      Microsoft SQL Server 2005                    */
-/* Created on:     4/12/2022 9:33:44 AM                         */
+/* Created on:     4/27/2022 7:26:56 PM                         */
 /*==============================================================*/
 
 
@@ -11481,6 +11481,7 @@ INSERT INTO YukonRoleProperty VALUES (-90046,-900,'Enable ecobee','false','Contr
 INSERT INTO YukonRoleProperty VALUES (-90047,-900,'Allow DR Enable/Disable','true','Controls access to enable or disable control areas,load programs and load groups. Requires Allow DR Control.');
 INSERT INTO YukonRoleProperty VALUES (-90048,-900,'Allow Change Gears','true','Controls access to change gears for scenarios, control areas, and load programs. Requires Allow DR Control.');
 INSERT INTO YukonRoleProperty VALUES (-90049,-900,'DR Setup Permission','VIEW','Controls the ability to create, edit, or delete demand response setup and configuration i.e Load Groups, Programs, Control Areas. Demand Response Role controls view access.');
+INSERT INTO YukonRoleProperty VALUES (-90050,-900,'Edge DR Permission','false','Allow access to Edge DR features and APIs.');
 
 /* Capacitor Control role properties cont...*/
 insert into YukonRoleProperty values (-100205,-1002, 'Capbank Fixed/Static Text', 'Fixed', 'The text to display for fixed/static capbanks');

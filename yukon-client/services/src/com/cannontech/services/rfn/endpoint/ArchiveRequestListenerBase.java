@@ -33,16 +33,14 @@ import com.cannontech.message.dispatch.message.PointData;
 
 public abstract class ArchiveRequestListenerBase<T extends RfnIdentifyingMessage> {
     
-    private static final Logger log = YukonLogManager.getLogger(ArchiveRequestListenerBase.class);
-
     @Autowired protected AsyncDynamicDataSource asyncDynamicDataSource;
     @Autowired protected RfnChannelDataConverter pointDataProducer;
     @Autowired protected RfnDeviceCreationService rfnDeviceCreationService;
     @Autowired private ConfigurationSource configurationSource;
     @Autowired private PointDataTracker pointDataTracker; 
-    private static final Logger rfnLogger = YukonLogManager.getRfnLogger();
+    protected Logger log = YukonLogManager.getRfnLogger();
     private AtomicInteger processedArchiveRequest = new AtomicInteger();
- 
+    
     protected abstract class ConverterBase extends Thread {
         private ArrayBlockingQueue<T> inQueue;
         private volatile boolean shutdown = false;
@@ -295,7 +293,7 @@ public abstract class ArchiveRequestListenerBase<T extends RfnIdentifyingMessage
         Object response = getRfnArchiveResponse(request);
         if (response != null) {
             YukonJmsTemplate jmsTemplate = getJmsTemplate();
-            rfnLogger.info("<<< Sent " + response);
+            log.info("<<< Sent " + response);
             jmsTemplate.convertAndSend(response);
         }
     }

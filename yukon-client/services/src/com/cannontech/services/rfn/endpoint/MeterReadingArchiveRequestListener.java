@@ -10,7 +10,6 @@ import javax.annotation.PostConstruct;
 import javax.annotation.PreDestroy;
 
 import org.apache.logging.log4j.Level;
-import org.apache.logging.log4j.Logger;
 import org.joda.time.Instant;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.jmx.export.annotation.ManagedAttribute;
@@ -22,7 +21,6 @@ import com.cannontech.amr.rfn.message.read.RfnMeterReadingType;
 import com.cannontech.amr.rfn.model.CalculationData;
 import com.cannontech.amr.rfn.model.RfnMeterPlusReadingData;
 import com.cannontech.amr.rfn.service.NmSyncService;
-import com.cannontech.clientutils.YukonLogManager;
 import com.cannontech.common.rfn.model.RfnDevice;
 import com.cannontech.common.util.jms.YukonJmsTemplate;
 import com.cannontech.common.util.jms.YukonJmsTemplateFactory;
@@ -34,9 +32,7 @@ import com.google.common.collect.Lists;
 
 @ManagedResource
 public class MeterReadingArchiveRequestListener extends ArchiveRequestListenerBase<RfnMeterReadingArchiveRequest> {
-        
-    private static final Logger log = YukonLogManager.getLogger(MeterReadingArchiveRequestListener.class);
-    
+            
     @Autowired private CalculatedPointDataProducer calculatedProducer;
     @Autowired private NmSyncService nmSyncService;
     @Autowired private YukonJmsTemplateFactory jmsTemplateFactory;
@@ -47,6 +43,7 @@ public class MeterReadingArchiveRequestListener extends ArchiveRequestListenerBa
     private AtomicInteger archivedReadings = new AtomicInteger();
     private static AtomicInteger pointDataCount = new AtomicInteger();
     private static AtomicInteger archiveRequestsReceivedCount = new AtomicInteger();
+    
     /**
      * Special thread class to handle archiving channel data converted point data.
      */
