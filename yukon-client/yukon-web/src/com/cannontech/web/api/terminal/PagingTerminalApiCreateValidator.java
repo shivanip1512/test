@@ -36,7 +36,9 @@ public class PagingTerminalApiCreateValidator<T extends TerminalBase<?>> extends
 
     @Override
     protected void doValidation(T terminalBase, Errors errors) {
-        String nameI18nText = accessor.getMessage(commonkey + "name");
-        yukonApiValidationUtils.validateName(terminalBase.getName(), errors, nameI18nText);
+        if (!errors.hasFieldErrors("name")) {
+            String nameI18nText = accessor.getMessage(commonkey + "name");
+            yukonApiValidationUtils.validateName(terminalBase.getName(), errors, nameI18nText);
+        }
     }
 }
