@@ -28,6 +28,7 @@
     <c:if test="${zoneDto.zoneType != 'THREE_PHASE'}">
         <input type="hidden" id="regulatorPhase" value="${zoneDto.regulator.phase}"/>
     </c:if>
+    <cti:msg2 var="noneSelected" key="yukon.web.components.button.selectionPicker.label"/>
 
     <tags:nameValueContainer2 tableClass="stacked">
         <%-- Zone Name --%>
@@ -85,6 +86,7 @@
                     <tags:bind path="regulator.regulatorId">
                         <tags:pickerDialog id="voltageGangRegulatorPicker${zoneDto.zoneId}" 
                             type="availableVoltageRegulatorGangPicker" 
+                            buttonStyleClass="PT5"
                             destinationFieldName="regulator.regulatorId"
                             initialId="${zoneDto.regulator.regulatorId}"
                             selectionProperty="paoName"
@@ -94,6 +96,13 @@
                             multiSelectMode="false"
                             immediateSelectMode="true"/>
                     </tags:bind>
+                    <c:if test="${zoneDto.parentId != null}">
+                        <span class="ML50">
+                            <i:inline key=".table.point.feeder"/>:
+                            <tags:selectWithItems path="regulator.feederId" items="${feederList}"
+                                itemLabel="ccName" itemValue="ccId" defaultItemLabel="${noneSelected}" inputClass="ML15"/>
+                        </span>
+                    </c:if>
                 </tags:nameValue2>
             </c:when>
     
@@ -102,10 +111,11 @@
                 <c:forEach items="${zoneDto.regulators}" var="regulator">
                     <c:set var="phaseKey" value="${regulator.key}"/>
                     <input type="hidden" name="regulators[${phaseKey}].phase" value="${phaseKey}"/>
-                    <tags:nameValue2 nameKey=".label.regulator.${phaseKey}">
+                    <tags:nameValue2 nameKey=".label.regulator.${phaseKey}" valueClass="MT5">
                         <tags:bind path="regulators[${phaseKey}].regulatorId">
                             <tags:pickerDialog  id="voltageThreePhaseRegulatorPicker${zoneDto.zoneId}${phaseKey}"
                                 type="availableVoltageRegulatorPhasePicker" 
+                                buttonStyleClass="PT5"
                                 destinationFieldName="regulators[${phaseKey}].regulatorId"
                                 initialId="${zoneDto.regulators[phaseKey].regulatorId}"
                                 selectionProperty="paoName"
@@ -117,6 +127,13 @@
                                 allowEmptySelection="true"
                                 endAction="yukon.da.zone.wizard.updateRegPickerExcludes"/>
                         </tags:bind>
+                        <c:if test="${zoneDto.parentId != null}">
+                            <span class="ML50">
+                                <i:inline key=".table.point.feeder"/>:
+                                <tags:selectWithItems path="regulators[${phaseKey}].feederId" items="${feederList}"
+                                    itemLabel="ccName" itemValue="ccId" defaultItemLabel="${noneSelected}" inputClass="ML15"/>
+                            </span>
+                        </c:if>
                     </tags:nameValue2>
                 </c:forEach>
             </c:when>
@@ -128,6 +145,7 @@
                     <tags:bind path="regulator.regulatorId">
                         <tags:pickerDialog id="voltageSinglePhaseRegulatorPicker${zoneDto.zoneId}" 
                             type="availableVoltageRegulatorPhasePicker" 
+                            buttonStyleClass="PT5"
                             destinationFieldName="regulator.regulatorId"
                             initialId="${zoneDto.regulator.regulatorId}"
                             selectionProperty="paoName"
@@ -137,6 +155,13 @@
                             multiSelectMode="false"
                             immediateSelectMode="true"/>
                     </tags:bind>
+                    <c:if test="${zoneDto.parentId != null}">
+                        <span class="ML50">
+                            <i:inline key=".table.point.feeder"/>:
+                            <tags:selectWithItems path="regulator.feederId" items="${feederList}"
+                                itemLabel="ccName" itemValue="ccId" defaultItemLabel="${noneSelected}" inputClass="ML15"/>
+                        </span>
+                    </c:if>
                 </tags:nameValue2>
             </c:when>
         </c:choose>
@@ -206,7 +231,6 @@
                 id="pointTable" addItemParameters="${addItemParameters}"  addButtonClass="pointAddItem"
                 noBlockOnAdd="true" >
                 <div class="scroll-md">
-                    <cti:msg2 var="noneSelected" key="yukon.web.components.button.selectionPicker.label"/>
                     <table class="compact-results-table">
                         <thead>
                             <tr>

@@ -5,6 +5,7 @@ import com.cannontech.common.model.Phase;
 public class RegulatorToZoneMapping {
     private int regulatorId;
     private int zoneId;
+    private Integer feederId;
     private double graphStartPosition;
     private Phase phase;
     
@@ -44,6 +45,14 @@ public class RegulatorToZoneMapping {
 
     public void setPhase(Phase phase) {
         this.phase = phase;
+    }
+
+    public Integer getFeederId() {
+        return feederId;
+    }
+
+    public void setFeederId(Integer feederId) {
+        this.feederId = feederId;
     }
 
 }
