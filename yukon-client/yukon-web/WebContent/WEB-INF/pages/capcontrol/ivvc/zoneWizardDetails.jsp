@@ -111,7 +111,7 @@
                 <c:forEach items="${zoneDto.regulators}" var="regulator">
                     <c:set var="phaseKey" value="${regulator.key}"/>
                     <input type="hidden" name="regulators[${phaseKey}].phase" value="${phaseKey}"/>
-                    <tags:nameValue2 nameKey=".label.regulator.${phaseKey}" valueClass="MT5">
+                    <tags:nameValue2 nameKey=".label.regulator.${phaseKey}">
                         <tags:bind path="regulators[${phaseKey}].regulatorId">
                             <tags:pickerDialog  id="voltageThreePhaseRegulatorPicker${zoneDto.zoneId}${phaseKey}"
                                 type="availableVoltageRegulatorPhasePicker" 
