@@ -86,9 +86,23 @@ INSERT INTO DBUpdates VALUES ('YUK-26097', '9.3.0', SYSDATE);
 /* @end YUK-26097 */
 
 /* @start YUK-26210 */
+/* @error ignore-begin */
 INSERT INTO YukonRoleProperty VALUES (-90050,-900,'DER Edge Coordinator Permission','false','Allow access to DER Edge Coordinator features and APIs.');
 
 INSERT INTO DBUpdates VALUES ('YUK-26210', '9.3.0', SYSDATE);
+/* @error ignore-end */
+/* @end YUK-26210 */
+
+/* @start YUK-26210-2 */
+UPDATE YukonRoleProperty
+SET KeyName = 'DER Edge Coordinator Permission'
+WHERE RolePropertyID = -90050
+
+UPDATE YukonRoleProperty
+SET Description = 'Allow access to DER Edge Coordinator features and APIs.'
+WHERE RolePropertyID = -90050
+
+INSERT INTO DBUpdates VALUES ('YUK-26210-2', '9.3.0', SYSDATE);
 /* @end YUK-26210 */
 
 /***********************************************************************************/
