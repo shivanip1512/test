@@ -16,14 +16,10 @@ import DRSetupFilterPage from "./components/YukonPage/DemandResponse/DRSetupFilt
 import DRTestPage from "./components/YukonPage/DemandResponse/DRTestPage";
 import CommChannelCreatePage from "./components/YukonPage/Assets/CommChannelCreate";
 import DashboardPage from "./components/YukonPage/Dashboards/Dashboard";
-import { useIdleTimer } from "react-idle-timer";
 import axios from "../src/axiosConfig";
+import * as actions from '../src/redux/actions/index';
+import { useDispatch } from 'react-redux';
 
-const onIdle = () => {
-    axios.post("/api/logout", {}).catch((error) => {
-        console.warn("error in logout while user is idle");
-    });
-};
 
 const ScrollToTop = () => {
     const { pathname } = useLocation();
@@ -36,8 +32,32 @@ const ScrollToTop = () => {
 };
 
 export const App = () => {
-    // 2hr is default user idle time in yukon, which can be customizable as well
-    useIdleTimer({ onIdle, timeout: 1000 * 60 * 60 * 2 });
+
+    const dispatch = useDispatch();
+    axios.get('/api/admin/config/currentTheme')
+            .then(themeJson => {
+                //alert(themeJson.data)
+                console.log('this is theme data',themeJson.data);
+                if (themeJson) {
+                    console.log('inside themeJson',themeJson.data.name);
+                    //don't change theme if default theme is used
+                    if (themeJson.data.themeId > 0) {
+                        //get theme image
+                        axios.get('/api/common/images/' + themeJson.data.properties.LOGIN_BACKGROUND)
+                        .then(backgroundImage => {
+                            console.log('image that is returened',backgroundImage.data);
+                            themeJson.data.properties.LOGO_IMAGE = backgroundImage.data;
+                            dispatch(actions.setTheme(themeJson.data));
+                            dispatch(actions.setBackgroundImage(backgroundImage));
+                            dispatch(actions.renderDrawer());
+                            //Example if we want to change an entire piece of the pxblue theme
+                            //theme.palette.primary.main = themeJson.data.properties.PRIMARY_COLOR;
+                        });
+                    } else {
+                        dispatch(actions.renderDrawer());
+                    }
+                }
+            });
 
     return (
         <SecurityContextProvider>

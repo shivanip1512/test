@@ -33,7 +33,7 @@ type AuthUIActionsWithSecurity = (securityHelper: SecurityContextActions, dispat
  * appropriate actions (often api calls, local network storage, credential updates, etc) and update
  * the global security state based on the actionable needs of the user.
  */
-export const ProjectAuthUIActions: AuthUIActionsWithSecurity = (securityHelper, dispatch) => (): AuthUIActions => ({
+export const ProjectAuthUIActions: AuthUIActionsWithSecurity = (securityHelper) => (): AuthUIActions => ({
     /**
      * Initialize the application security state. This will involve reading any local storage,
      * validating existing credentials (token expiration, for example). At the end of validation,
@@ -122,27 +122,28 @@ export const ProjectAuthUIActions: AuthUIActionsWithSecurity = (securityHelper, 
         //storing in react store gets cleared after every old yukon page since it's counted as a refresh
 
     
-        axios.get('/api/admin/config/currentTheme')
-            .then(themeJson => {
-                if (themeJson) {
-                    console.log(themeJson.data);
-                    //don't change theme if default theme is used
-                    if (themeJson.data.themeId > 0) {
-                        //get theme image
-                        axios.get('/api/theme/image/' + themeJson.data.themeId)
-                        .then(themeImage => {
-                            themeJson.data.properties.LOGO_IMAGE = themeImage.data;
-                            dispatch(actions.setTheme(themeJson.data));
-                            dispatch(actions.setThemeImage(themeImage));
-                            dispatch(actions.renderDrawer());
-                            //Example if we want to change an entire piece of the pxblue theme
-                            //theme.palette.primary.main = themeJson.data.properties.PRIMARY_COLOR;
-                        });
-                    } else {
-                        dispatch(actions.renderDrawer());
-                    }
-                }
-            });
+        // axios.get('/api/admin/config/currentTheme')
+        //     .then(themeJson => {
+        //         if (themeJson) {
+        //             console.log(themeJson.data);
+        //             //don't change theme if default theme is used
+        //             if (themeJson.data.themeId > 0) {
+        //                 //get theme image
+        //                 axios.get('/api/theme/image/' + themeJson.data.themeId)
+        //                 .then(themeImage => {
+        //                     console.log(themeJson.data);
+        //                     themeJson.data.properties.LOGO_IMAGE = themeImage.data;
+        //                     dispatch(actions.setTheme(themeJson.data));
+        //                     dispatch(actions.setThemeImage(themeImage));
+        //                     dispatch(actions.renderDrawer());
+        //                     //Example if we want to change an entire piece of the pxblue theme
+        //                     //theme.palette.primary.main = themeJson.data.properties.PRIMARY_COLOR;
+        //                 });
+        //             } else {
+        //                 dispatch(actions.renderDrawer());
+        //             }
+        //         }
+        //     });
     
 
         securityHelper.onUserAuthenticated({ email: email, userId: email, rememberMe: rememberMe });

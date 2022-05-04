@@ -83,9 +83,9 @@ export const setFlashErrors = (flashErrors) => {
     }
   }
   
-  export const setThemeImage = (themeImage) => {
+  export const setBackgroundImage = (backgroundImage) => {
     return {
-      type: actionTypes.SET_THEME_IMAGE,
-      themeImage: themeImage
+      type: actionTypes.SET_BACKGROUND_IMAGE,
+      backgroundImage: backgroundImage
       };
    };

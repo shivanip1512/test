@@ -12,7 +12,7 @@ import {
     CLEAR_VALIDATION_ERRORS,
     CLEAR_ALL_ALERTS,
     SET_THEME,
-    SET_THEME_IMAGE
+    SET_BACKGROUND_IMAGE
 
 } from '../actions/actionTypes';
 
@@ -25,7 +25,9 @@ const initialAppState = {
     flashErrors: null,
     flashSuccess: null,
     validationErrors: null,
-    theme: null
+    theme: null,
+    backgroundImage: null
+
 };
 
 export const AppReducer = (state = initialAppState, action) => {
@@ -56,8 +58,8 @@ export const AppReducer = (state = initialAppState, action) => {
             return {...state, validationErrors: null, flashSuccess: null, flashErrors: null};
         case SET_THEME:
             return {...state, theme: action.theme};
-        case SET_THEME_IMAGE:
-            return {...state, theme: action.themeImage};
+        case SET_BACKGROUND_IMAGE:
+            return {...state, backgroundImage: action.backgroundImage};
         default:
             return state;
     }
