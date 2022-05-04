@@ -6,9 +6,9 @@ public class TNPPTerminal extends TerminalBase<com.cannontech.database.data.devi
     private Integer originAddress;
     private Integer destinationAddress;
     private Integer inertia;
-    private Protocol protocol = Protocol.FLEX;
-    private DataFormat dataFormat = DataFormat.ALPHANUMERIC_DISPLAY;
-    private IdentifierFormat identifierFormat = IdentifierFormat.CAP_PAGE;
+    private Protocol protocol;
+    private DataFormat dataFormat;
+    private IdentifierFormat identifierFormat;
     private String pagerId;
     private Integer channel;
     private Integer functionCode;

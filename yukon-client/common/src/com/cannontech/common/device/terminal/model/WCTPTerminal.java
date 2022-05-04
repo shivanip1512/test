@@ -4,8 +4,8 @@ import org.apache.commons.lang3.StringUtils;
 
 public class WCTPTerminal extends TerminalBase<com.cannontech.database.data.device.WCTPTerminal> {
     private String pagerNumber;
-    private String sender = "yukonserver@cannontech.com";
-    private String securityCode = "(none)";
+    private String sender;
+    private String securityCode;
 
     public WCTPTerminal() {
         super();

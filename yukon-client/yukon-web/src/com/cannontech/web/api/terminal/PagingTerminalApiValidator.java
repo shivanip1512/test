@@ -67,11 +67,12 @@ public class PagingTerminalApiValidator<T extends TerminalBase<?>> extends Simpl
 
         // validate password
         if (terminalBase.getPassword() == null) {
-            errors.rejectValue("password", ApiErrorDetails.INVALID_VALUE.getCodeString(),
-                    new Object[] { "Not null values" }, null);
+            yukonApiValidationUtils.checkIfFieldRequired("password", errors, terminalBase.getPassword(),
+                    "Password");
         }
         if (StringUtils.isNotBlank(terminalBase.getPassword())) {
-            yukonApiValidationUtils.checkExceedsMaxLength(errors, "password", terminalBase.getPassword(), 20);
+            int maxLength = terminalBase instanceof SNPPTerminal ? 64 : 20;
+            yukonApiValidationUtils.checkExceedsMaxLength(errors, "password", terminalBase.getPassword(), maxLength);
         }
 
         // validate commChannel
@@ -110,11 +111,11 @@ public class PagingTerminalApiValidator<T extends TerminalBase<?>> extends Simpl
                 yukonApiValidationUtils.checkExceedsMaxLength(errors, "pagerNumber", terminal.getPagerNumber(), 20);
             }
             if (terminal.getLogin() == null) {
-                errors.rejectValue("login", ApiErrorDetails.INVALID_VALUE.getCodeString(),
-                        new Object[] { "Not null values" }, null);
+                yukonApiValidationUtils.checkIfFieldRequired("login", errors, terminal.getLogin(),
+                        "Login");
             }
             if (StringUtils.isNotBlank(terminal.getLogin())) {
-                yukonApiValidationUtils.checkExceedsMaxLength(errors, "login", terminal.getLogin(), 20);
+                yukonApiValidationUtils.checkExceedsMaxLength(errors, "login", terminal.getLogin(), 64);
             }
         }
 

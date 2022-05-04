@@ -1,11 +1,9 @@
 package com.cannontech.common.device.terminal.model;
 
-import org.apache.commons.lang3.StringUtils;
-
 public class SNPPTerminal extends TerminalBase<com.cannontech.database.data.device.SNPPTerminal> {
 
     private String pagerNumber;
-    private String login = StringUtils.EMPTY;
+    private String login;
 
     public SNPPTerminal() {
         super();
