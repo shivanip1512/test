@@ -86,11 +86,9 @@ INSERT INTO DBUpdates VALUES ('YUK-26097', '9.3.0', SYSDATE);
 /* @end YUK-26097 */
 
 /* @start YUK-26210 */
-/* @error ignore-begin */
 INSERT INTO YukonRoleProperty VALUES (-90050,-900,'DER Edge Coordinator Permission','false','Allow access to DER Edge Coordinator features and APIs.');
 
 INSERT INTO DBUpdates VALUES ('YUK-26210', '9.3.0', SYSDATE);
-/* @error ignore-end */
 /* @end YUK-26210 */
 
 /* @start YUK-26210-2 */
