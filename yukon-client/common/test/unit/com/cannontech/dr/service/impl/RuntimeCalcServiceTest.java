@@ -1,6 +1,6 @@
 package com.cannontech.dr.service.impl;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.*;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -23,6 +23,13 @@ public class RuntimeCalcServiceTest {
     
     private static final DateTimeFormatter dtFormatter = DateTimeFormat.forPattern("MM/dd/yyyy HH:mm:ss").withZoneUTC(); 
     private static DateTime hour11;
+    private static DateTime hour1115;
+    private static DateTime hour1130;
+    private static DateTime hour1135;
+    private static DateTime hour1140;
+    private static DateTime hour1145;
+    private static DateTime hour1150;
+    private static DateTime hour1155;
     private static DateTime hour12;
     private static DateTime hour13;
     
@@ -32,6 +39,13 @@ public class RuntimeCalcServiceTest {
     @BeforeAll
     public static void init() {
         hour11 = dtFormatter.parseDateTime("10/10/2016 11:00:00");
+        hour1115 = dtFormatter.parseDateTime("10/10/2016 11:15:00");
+        hour1130 = dtFormatter.parseDateTime("10/10/2016 11:30:00");
+        hour1135 = dtFormatter.parseDateTime("10/10/2016 11:35:00");
+        hour1140 = dtFormatter.parseDateTime("10/10/2016 11:40:00");
+        hour1145 = dtFormatter.parseDateTime("10/10/2016 11:45:00");
+        hour1150 = dtFormatter.parseDateTime("10/10/2016 11:50:00");
+        hour1155 = dtFormatter.parseDateTime("10/10/2016 11:55:00");
         hour12 = dtFormatter.parseDateTime("10/10/2016 12:00:00");
         hour13 = dtFormatter.parseDateTime("10/10/2016 13:00:00");
     }
@@ -302,4 +316,161 @@ public class RuntimeCalcServiceTest {
         
         assertEquals(seconds, 1800, "Active seconds calculated across DST");
     }
+
+
+    
+      @Test
+      public void test_get30mRuntimeSeconds_noStatuses() {
+      
+      Map<DateTime, Integer> hourlyRuntimeSeconds = runtimeCalcService.get30MinuteRuntimeSeconds(statuses);
+      
+      assertEquals(hourlyRuntimeSeconds.size(), 0);
+      }
+      
+      @Test
+      public void test_get30mRuntimeSeconds_oneStatus() {
+      
+      statuses.add(new DatedRuntimeStatus(RuntimeStatus.RUNNING, dtFormatter.parseDateTime("10/10/2016 10:10:00")));
+      
+      Map<DateTime, Integer> hourlyRuntimeSeconds = runtimeCalcService.get30MinuteRuntimeSeconds(statuses);
+      
+      assertEquals(hourlyRuntimeSeconds.size(), 0);
+      }
+      
+      @Test
+      public void test_get30mRuntimeSeconds_outOfOrderStatusTimes() {
+      
+      statuses.add(new DatedRuntimeStatus(RuntimeStatus.RUNNING, dtFormatter.parseDateTime("10/10/2016 10:30:00")));
+      statuses.add(new DatedRuntimeStatus(RuntimeStatus.STOPPED, dtFormatter.parseDateTime("10/10/2016 10:10:00")));
+      
+      Assertions.assertThrows(IllegalArgumentException.class, () -> {
+      runtimeCalcService.get30MinuteRuntimeSeconds(statuses);
+      });
+      }
+      
+      @Test
+      public void test_get30mRuntimeSeconds_offWithinHour() {
+      
+      statuses.add(new DatedRuntimeStatus(RuntimeStatus.STOPPED, dtFormatter.parseDateTime("10/10/2016 10:35:00")));
+      statuses.add(new DatedRuntimeStatus(RuntimeStatus.RUNNING, dtFormatter.parseDateTime("10/10/2016 10:55:00")));
+      
+      Map<DateTime, Integer> thirtyMinRuntimeSeconds = runtimeCalcService.get30MinuteRuntimeSeconds(statuses);
+      
+      // device is off during measured period, runtime of 0 should be recorded
+      assertEquals(thirtyMinRuntimeSeconds.get(hour11), 0, "10:30-11:00 halfhour runtime");
+      assertEquals(thirtyMinRuntimeSeconds.size(), 1, "30m runtimes size");
+      }
+      
+      @Test
+      public void test_get30mRuntimeSeconds_runningWithinHour() {
+      
+      statuses.add(new DatedRuntimeStatus(RuntimeStatus.RUNNING, dtFormatter.parseDateTime("10/10/2016 10:35:00")));
+      statuses.add(new DatedRuntimeStatus(RuntimeStatus.STOPPED, dtFormatter.parseDateTime("10/10/2016 10:55:00")));
+      
+      Map<DateTime, Integer> thirtyMinRuntimeSeconds = runtimeCalcService.get30MinuteRuntimeSeconds(statuses);
+      
+      // 10:35-10:55 = 20 minutes (1200 seconds)
+      assertEquals(thirtyMinRuntimeSeconds.get(hour11), 1200, "10:30-11:00 halfhour runtime");
+      assertEquals(thirtyMinRuntimeSeconds.size(), 1, "30m runtimes size");
+      }
+      
+      @Test
+      public void test_get30mRuntimeSeconds_offAcrossHour() {
+      
+      statuses.add(new DatedRuntimeStatus(RuntimeStatus.STOPPED, dtFormatter.parseDateTime("10/10/2016 10:50:00")));
+      statuses.add(new DatedRuntimeStatus(RuntimeStatus.RUNNING, dtFormatter.parseDateTime("10/10/2016 11:10:00")));
+      
+      Map<DateTime, Integer> thirtyMinRuntimeSeconds = runtimeCalcService.get30MinuteRuntimeSeconds(statuses);
+      
+      // device is off during measured periods, runtimes of 0 should be recorded
+      assertEquals(thirtyMinRuntimeSeconds.get(hour11), 0, "11:00 hour runtime");
+      assertEquals(thirtyMinRuntimeSeconds.get(hour1130), 0, "11:30 hour runtime");
+      assertEquals(thirtyMinRuntimeSeconds.size(), 2, "30m runtimes size");
+      }
+      
+      @Test
+      public void test_get30mRuntimeSeconds_onAcrossHour() {
+      
+      statuses.add(new DatedRuntimeStatus(RuntimeStatus.RUNNING, dtFormatter.parseDateTime("10/10/2016 10:50:00")));
+      statuses.add(new DatedRuntimeStatus(RuntimeStatus.STOPPED, dtFormatter.parseDateTime("10/10/2016 11:10:00")));
+      
+      Map<DateTime, Integer> thirtyMinRuntimeSeconds = runtimeCalcService.get30MinuteRuntimeSeconds(statuses);
+      
+      // 10:50-11:00 = 10 minutes (600 seconds)
+      // 11:00-11:10 = 10 minutes (600 seconds)
+      assertEquals(thirtyMinRuntimeSeconds.get(hour11), 600, "11:00 hour runtime");
+      assertEquals(thirtyMinRuntimeSeconds.get(hour1130), 600, "11:30 hour runtime");
+      assertEquals(thirtyMinRuntimeSeconds.size(), 2, "30m runtimes size");
+      }
+      
+      
+      @Test
+      public void test_get30mRuntimeSeconds_onAcrossMultiHour() {
+      
+      statuses.add(new DatedRuntimeStatus(RuntimeStatus.RUNNING, dtFormatter.parseDateTime("10/10/2016 09:57:00")));
+      statuses.add(new DatedRuntimeStatus(RuntimeStatus.RUNNING, dtFormatter.parseDateTime("10/10/2016 10:57:00")));
+      statuses.add(new DatedRuntimeStatus(RuntimeStatus.RUNNING, dtFormatter.parseDateTime("10/10/2016 11:57:00")));
+      
+      Map<DateTime, Integer> thirtyMinRuntimeSeconds = runtimeCalcService.get30MinuteRuntimeSeconds(statuses);
+      
+      // 10:30-11:00 = 30 minutes (1800 seconds)
+      // 11:00-11:30 = 30 minutes (1800 seconds)
+      // 11:30-12:00 = 30 minutes (1800 seconds)
+      assertEquals(thirtyMinRuntimeSeconds.get(hour11), 1800, "11:00 hour runtime");
+      assertEquals(thirtyMinRuntimeSeconds.get(hour1130), 1800, "11:30 hour runtime");
+      assertEquals(thirtyMinRuntimeSeconds.get(hour12), 1620, "12:00 hour runtime");
+      assertEquals(thirtyMinRuntimeSeconds.size(), 5, "30m runtimes size");
+      }
+      
+      @Test
+      public void test_get15mRuntimeSeconds_onAcrossMultiHour() {
+      
+      statuses.add(new DatedRuntimeStatus(RuntimeStatus.RUNNING, dtFormatter.parseDateTime("10/10/2016 09:57:00")));
+      statuses.add(new DatedRuntimeStatus(RuntimeStatus.RUNNING, dtFormatter.parseDateTime("10/10/2016 10:57:00")));
+      statuses.add(new DatedRuntimeStatus(RuntimeStatus.RUNNING, dtFormatter.parseDateTime("10/10/2016 11:57:00")));
+      statuses.add(new DatedRuntimeStatus(RuntimeStatus.RUNNING, dtFormatter.parseDateTime("10/10/2016 12:00:00")));
+      
+      Map<DateTime, Integer> fifteenMinRuntimeSeconds = runtimeCalcService.get15MinuteRuntimeSeconds(statuses);
+      
+      // 10:45-11:00 = 15 minutes (900 seconds)
+      // 11:00-11:15 = 15 minutes (900 seconds)
+      // 11:15-11:30 = 15 minutes (900 seconds)
+      // 11:30-11:45 = 15 minutes (900 seconds)
+      // 11:45-12:00 = 15 minutes (900 seconds)
+      assertEquals(fifteenMinRuntimeSeconds.get(hour11), 900, "11:00 hour runtime");
+      assertEquals(fifteenMinRuntimeSeconds.get(hour1115), 900, "11:15 hour runtime");
+      assertEquals(fifteenMinRuntimeSeconds.get(hour1130), 900, "11:30 hour runtime");
+      assertEquals(fifteenMinRuntimeSeconds.get(hour1145), 900, "11:45 hour runtime");
+      assertEquals(fifteenMinRuntimeSeconds.get(hour12), 900, "12:00 hour runtime");
+      assertEquals(fifteenMinRuntimeSeconds.size(), 9, "30m runtimes size");
+      }
+      
+      @Test
+      public void test_get5mRuntimeSeconds_onAcrossMultiHour() {
+      
+      statuses.add(new DatedRuntimeStatus(RuntimeStatus.RUNNING, dtFormatter.parseDateTime("10/10/2016 09:57:00")));
+      statuses.add(new DatedRuntimeStatus(RuntimeStatus.RUNNING, dtFormatter.parseDateTime("10/10/2016 10:57:00")));
+      statuses.add(new DatedRuntimeStatus(RuntimeStatus.RUNNING, dtFormatter.parseDateTime("10/10/2016 11:57:00")));
+      
+      Map<DateTime, Integer> fiveMinRuntimeSeconds = runtimeCalcService.get5MinuteRuntimeSeconds(statuses);
+      
+      // 11:25-11:30 = 5 minutes (300 seconds)
+      // 11:30-11:35 = 5 minutes (300 seconds)
+      // 11:35-11:40 = 5 minutes (300 seconds)
+      // 11:40-11:45 = 5 minutes (300 seconds)
+      // 11:45-11:50 = 5 minutes (300 seconds)
+      // 11:50-11:55 = 5 minutes (300 seconds)
+      // 11:55-12:00 = 5 minutes (300 seconds)
+      assertEquals(fiveMinRuntimeSeconds.get(hour1130), 300, "11:30 hour runtime");
+      assertEquals(fiveMinRuntimeSeconds.get(hour1135), 300, "11:35 hour runtime");
+      assertEquals(fiveMinRuntimeSeconds.get(hour1140), 300, "11:40 hour runtime");
+      assertEquals(fiveMinRuntimeSeconds.get(hour1145), 300, "11:45 hour runtime");
+      assertEquals(fiveMinRuntimeSeconds.get(hour1150), 300, "11:50 hour runtime");
+      assertEquals(fiveMinRuntimeSeconds.get(hour1155), 300, "11:55 hour runtime");
+      assertEquals(fiveMinRuntimeSeconds.get(hour12), 120, "12:00 hour runtime");
+      assertEquals(fiveMinRuntimeSeconds.size(), 25, "30m runtimes size");
+      }
+     
+    
+    
 }

@@ -23,6 +23,12 @@ public interface RuntimeCalcService {
      */
     public Map<DateTime, Integer> getHourlyRuntimeSeconds(Iterable<DatedRuntimeStatus> statuses);
     
+    public Map<DateTime, Integer> get30MinuteRuntimeSeconds(Iterable<DatedRuntimeStatus> statuses);
+    
+    public Map<DateTime, Integer> get15MinuteRuntimeSeconds(Iterable<DatedRuntimeStatus> statuses);
+    
+    public Map<DateTime, Integer> get5MinuteRuntimeSeconds(Iterable<DatedRuntimeStatus> statuses);
+    
     /**
      * Similar to getHourlyRuntimeSeconds, but for either shedtime or runtime, and using a caller-specified interval.
      * @param statuses A datetime-ordered list of DatedStatuses representing the activity state of a DR device over
