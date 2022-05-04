@@ -181,10 +181,10 @@ public class ItronRuntimeCalcServiceImplTest {
         
         expect(itronRuntimeCalcService.getPrecedingArchivedValue(value1))
             .andReturn(List.of(buildPvqh(lcr6600s_relay1_relayState, rangeStart.minusMinutes(6), 9.0)));
-        
+
         expect(itronRuntimeCalcService.getPrecedingArchivedValue(value0))
         .andReturn(List.of(buildPvqh(lcr6600s_relay1_relayState, rangeStart.minusMinutes(20), 10.0)));
-        
+
         replay(itronRuntimeCalcService);
 
         Iterable<PointValueHolder> results = itronRuntimeCalcService.addBoundaryValues(relayStatuses, logRange); 
@@ -254,7 +254,7 @@ public class ItronRuntimeCalcServiceImplTest {
         
         expect(itronRuntimeCalcService.getPrecedingArchivedValue(value1))
             .andReturn(List.of(buildPvqh(lcr6600s_relay1_relayState, rangeStart.minusMinutes(6), 9.0)));
-        
+
         expect(itronRuntimeCalcService.getPrecedingArchivedValue(value0))
         .andReturn(List.of(buildPvqh(lcr6600s_relay1_relayState, rangeStart.minusMinutes(20), 10.0)));
         replay(itronRuntimeCalcService);

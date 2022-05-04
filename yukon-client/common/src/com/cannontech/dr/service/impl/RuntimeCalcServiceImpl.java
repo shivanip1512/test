@@ -15,27 +15,27 @@ import com.cannontech.dr.service.RuntimeCalcService;
 public class RuntimeCalcServiceImpl implements RuntimeCalcService {
     
     private static final Logger log = YukonLogManager.getLogger(RuntimeCalcServiceImpl.class);
-    
+
     @Override
     public Map<DateTime, Integer> getHourlyRuntimeSeconds(Iterable<DatedRuntimeStatus> statuses) {
         return getIntervalRelayLogs(statuses, RelayLogInterval.LOG_60_MINUTE);
     }
-    
+
     @Override
     public Map<DateTime, Integer> get30MinuteRuntimeSeconds(Iterable<DatedRuntimeStatus> statuses) {
         return getIntervalRelayLogs(statuses, RelayLogInterval.LOG_30_MINUTE);
     }
-    
+
     @Override
     public Map<DateTime, Integer> get15MinuteRuntimeSeconds(Iterable<DatedRuntimeStatus> statuses) {
         return getIntervalRelayLogs(statuses, RelayLogInterval.LOG_15_MINUTE);
     }
-    
+
     @Override
     public Map<DateTime, Integer> get5MinuteRuntimeSeconds(Iterable<DatedRuntimeStatus> statuses) {
         return getIntervalRelayLogs(statuses, RelayLogInterval.LOG_5_MINUTE);
     }
-    
+
     @Override
     public Map<DateTime, Integer> getIntervalRelayLogs(Iterable<? extends DatedStatus> statuses, RelayLogInterval interval) {
         Map<DateTime, Integer> intervalRelaySeconds = new HashMap<>();

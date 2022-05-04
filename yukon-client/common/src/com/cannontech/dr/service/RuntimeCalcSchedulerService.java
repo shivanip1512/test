@@ -221,7 +221,7 @@ public abstract class RuntimeCalcSchedulerService {
                     .map(RelayLogInterval.LOG_60_MINUTE::start) // round down to a 60 minute interval to allow full calculation of all interval lengths
                     .map(DateTime::toInstant)
                     .orElse(null);
-        
+
         log.debug("End Range:{}", endOfRange);
 
         if (endOfRange == null) {
@@ -249,7 +249,7 @@ public abstract class RuntimeCalcSchedulerService {
         Instant startOfRange = getLatestInitializedTimestamp(dataLogValues.values())
                 .map(DateTime::toInstant)
                 .orElse(null);
-        
+
         log.debug("Start Range:{}", startOfRange);
 
         if (startOfRange == endOfRange) {
@@ -261,20 +261,20 @@ public abstract class RuntimeCalcSchedulerService {
         startOfRange = getLimitedStartOfRange(startOfRange, historyLimitDays, DateTime.now());
         
         log.debug("Start Range after limiter:{}", startOfRange);
-        
+
         var logRange = Range.inclusive(startOfRange, endOfRange);
 
         // Get all relay state information in RPH since the last data log update, and split it by point ID
         Map<Integer, List<PointValueHolder>> relayStatusData = rphDao
                 .getPointData(relayStatusPointIds, logRange, false, Order.FORWARD).stream()
                 .collect(Collectors.groupingBy(PointValueHolder::getId));
-        
+
         log.debug("Relay Status Data since the last data log update :{}", relayStatusData);
 
         // Add in any relay information that's outside of the range
         relayStatusIdLookup
                 .forEach((ppi, pointId) -> relayStatusData.computeIfAbsent(pointId, x -> List.of(relayStatusValues.get(ppi))));
-        
+
         log.debug("Relay Status Id Lookup :{}", relayStatusIdLookup);
         log.debug("Relay Status Data since the last data log update plus missing stuff :{}", relayStatusData);
 
@@ -360,7 +360,7 @@ public abstract class RuntimeCalcSchedulerService {
                             logRange);
 
                     log.trace("Relay Statuses after boundry values :{}", relayStatuses);
-                    
+
                     if (isRuntime) {
                         // Transform the raw relay state data into runtime status
                         Iterable<? extends DatedStatus> statuses = IterableUtils.toList(relayStatuses).stream()
