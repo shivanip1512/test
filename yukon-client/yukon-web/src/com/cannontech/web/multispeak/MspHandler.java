@@ -34,6 +34,7 @@ public class MspHandler {
     @Autowired private MspAccountInformationV5 mspAccountInformationV5;
     @Autowired private MspObjectDao mspObjectDao;
     @Autowired private com.cannontech.multispeak.dao.v5.MspObjectDao mspObjectDaoV5;
+    @Autowired private com.cannontech.multispeak.dao.v4.MspObjectDao mspObjectDaoV4;
     @Autowired private MspWaterLeakReportV3 mspWaterLeakReportV3;
     @Autowired private MspWaterLeakReportV5 mspWaterLeakReportV5;
     @Autowired private MultispeakEventLogService multispeakEventLogService;
@@ -45,6 +46,7 @@ public class MspHandler {
 
     private static final String DOMAIN_MEMBERS_SUBSTATION_CODE = "GetDomainMembers - substationCode";
     private static final String DOMAIN_MEMBERS_SUBSTATION_CODE_V5 = "GetDomainsByDomainNames - substationCode";
+    private static final String DOMAIN_MEMBERS_SUBSTATION_CODE_V4 = "GetDomainsByDomainNames - substationCode";
 
     public void startDeviceGroupSync(MultispeakSyncType type,
             YukonUserContext userContext) {
@@ -92,6 +94,8 @@ public class MspHandler {
                 } else if (cisVersion == MultiSpeakVersion.V5) {
                     return mspObjectDaoV5.getMspSubstationName(mspPrimaryCISVendor);
                 }
+                else
+                    return mspObjectDaoV4.getMspSubstationName(mspPrimaryCISVendor);
             }
         }
         return Collections.emptyList();
@@ -111,6 +115,12 @@ public class MspHandler {
                     multispeakEventLogService.invalidSubstationName(DOMAIN_MEMBERS_SUBSTATION_CODE_V5,
                         mspSubstationName, mspPrimaryCISVendor.getCompanyName());
                 }
+                else {
+                    multispeakEventLogService.invalidSubstationName(DOMAIN_MEMBERS_SUBSTATION_CODE_V4,
+                            mspSubstationName, mspPrimaryCISVendor.getCompanyName());
+
+                }
+                    
             }
         }
     }

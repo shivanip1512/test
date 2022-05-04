@@ -11,7 +11,11 @@ import com.cannontech.clientutils.YukonLogManager;
 import com.cannontech.database.data.point.PointTypes;
 import com.cannontech.database.db.point.SystemLog;
 import com.cannontech.message.dispatch.message.SystemLogHelper;
+import com.cannontech.msp.beans.v4.ArrayOfDomainMember;
+import com.cannontech.msp.beans.v4.DomainMember;
 import com.cannontech.msp.beans.v4.ErrorObject;
+import com.cannontech.msp.beans.v4.GetDomainMembers;
+import com.cannontech.msp.beans.v4.GetDomainMembersResponse;
 import com.cannontech.msp.beans.v4.GetMethods;
 import com.cannontech.msp.beans.v4.GetMethodsResponse;
 import com.cannontech.msp.beans.v4.ObjectFactory;
@@ -30,7 +34,6 @@ import com.cannontech.multispeak.client.core.v4.OAClient;
 import com.cannontech.multispeak.client.core.v4.ODClient;
 import com.cannontech.multispeak.client.core.v4.SCADAClient;
 import com.cannontech.multispeak.client.v4.MultispeakFuncs;
-import com.cannontech.multispeak.dao.impl.v4.MspObjectDaoImpl;
 import com.cannontech.multispeak.dao.v4.MspObjectDao;
 import com.cannontech.multispeak.exceptions.MultispeakWebServiceClientException;
 import com.google.common.collect.Lists;
@@ -201,6 +204,36 @@ public class MspObjectDaoImpl implements MspObjectDao {
             String method, String userName) {
         return getNotFoundErrorObject(objectID, notFoundObjectType, nounType, method, userName,
                 "Was NOT found in Yukon");
+    }
+
+    @Override
+    public List<String> getMspSubstationName(MultispeakVendor mspVendor) {
+
+        List<String> substationNames = new ArrayList<>();
+        String endpointUrl = multispeakFuncs.getEndpointUrl(mspVendor, MultispeakDefines.CB_Server_STR);
+        try {
+            GetDomainMembers domainMembersRequest = objectFactory.createGetDomainMembers();
+            domainMembersRequest.setDomainName("substationCode");
+            GetDomainMembersResponse domainMembersResponse = cbClient.getDomainMembers(mspVendor, endpointUrl,
+                    domainMembersRequest);
+            ArrayOfDomainMember arrayOfDomainMember = domainMembersResponse.getGetDomainMembersResult();
+            List<DomainMember> domainMemberList = arrayOfDomainMember.getDomainMember();
+            if (!domainMemberList.isEmpty()) {
+                DomainMember[] domainMembers = new DomainMember[domainMemberList.size()];
+                domainMemberList.toArray(domainMembers);
+                if (domainMembers != null) {
+                    for (DomainMember domainMember : domainMembers) {
+                        substationNames.add(domainMember.getDescription());
+                    }
+                }
+            }
+
+        } catch (MultispeakWebServiceClientException e) {
+            log.error("TargetService: " + endpointUrl + " - getDomainMembers(" + mspVendor.getCompanyName()
+                    + ") for DomainMember 'substationCode'");
+            log.error("MultispeakWebServiceClientException: " + e.getMessage());
+        }
+        return substationNames;
     }
 
 }
