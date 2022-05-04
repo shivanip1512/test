@@ -142,7 +142,7 @@ public class LMProgramValidator extends SimpleValidator<LoadProgram> {
             } catch (SQLException e) {}
 
             if (CollectionUtils.isEmpty(loadProgram.getAssignedGroups())) {
-                errors.reject(ApiErrorDetails.FIELD_REQUIRED.getCodeString(), new Object[] { "Load Group" }, "");
+                errors.reject(ApiErrorDetails.FIELD_REQUIRED_GLOBAL_ERROR.getCodeString(), new Object[] { key + "noGroup" }, "");
             } else {
 
                 for (int i = 0; i < loadProgram.getAssignedGroups().size(); i++) {
@@ -184,7 +184,7 @@ public class LMProgramValidator extends SimpleValidator<LoadProgram> {
         }
         if (!errors.hasFieldErrors("type")) {
             if (CollectionUtils.isEmpty(loadProgram.getGears())) {
-                errors.reject(ApiErrorDetails.FIELD_REQUIRED.getCodeString(), new Object[] { "Gears" }, "");
+                errors.reject(ApiErrorDetails.FIELD_REQUIRED_GLOBAL_ERROR.getCodeString(), new Object[] { key + "noGear" }, "");
             } else {
 
                 if (loadProgram.getGears().size() >= IlmDefines.MAX_GEAR_COUNT) {
@@ -310,7 +310,7 @@ public class LMProgramValidator extends SimpleValidator<LoadProgram> {
                     || loadProgram.getNotification().getProgramStopInMinutes() != null
                     || loadProgram.getNotification().getNotifyOnAdjust() || loadProgram.getNotification().getEnableOnSchedule())
                     && CollectionUtils.isEmpty(notificationGroups)) {
-                errors.reject(ApiErrorDetails.FIELD_REQUIRED.getCodeString(), new Object[] { "Notification Group" }, "");
+                errors.reject(ApiErrorDetails.FIELD_REQUIRED_GLOBAL_ERROR.getCodeString(), new Object[] { key + "notificationGrp.notAssigned" }, "");
             }
             if (CollectionUtils.isNotEmpty(notificationGroups)) {
                 for (int i = 0; i < notificationGroups.size(); i++) {
