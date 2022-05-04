@@ -1,4 +1,5 @@
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
+<%@ taglib prefix="capTags" tagdir="/WEB-INF/tags/capcontrol" %>
 <%@ taglib prefix="cti" uri="http://cannontech.com/tags/cti" %>
 <%@ taglib prefix="d" tagdir="/WEB-INF/tags/dialog"%>
 <%@ taglib prefix="fn" uri="http://java.sun.com/jsp/jstl/functions"%>
@@ -97,11 +98,7 @@
                             immediateSelectMode="true"/>
                     </tags:bind>
                     <c:if test="${zoneDto.parentId != null}">
-                        <span class="ML50">
-                            <i:inline key=".table.point.feeder"/>:
-                            <tags:selectWithItems path="regulator.feederId" items="${feederList}"
-                                itemLabel="ccName" itemValue="ccId" defaultItemLabel="${noneSelected}" inputClass="ML15"/>
-                        </span>
+                        <capTags:regulatorFeederDropdown feederList="${feederList}" path="regulator.feederId"/>
                     </c:if>
                 </tags:nameValue2>
             </c:when>
@@ -128,11 +125,7 @@
                                 endAction="yukon.da.zone.wizard.updateRegPickerExcludes"/>
                         </tags:bind>
                         <c:if test="${zoneDto.parentId != null && statusIndex.index == 0}">
-                            <span class="ML50">
-                                <i:inline key=".table.point.feeder"/>:
-                                <tags:selectWithItems path="regulators[${phaseKey}].feederId" items="${feederList}"
-                                    itemLabel="ccName" itemValue="ccId" defaultItemLabel="${noneSelected}" inputClass="ML15"/>
-                            </span>
+                            <capTags:regulatorFeederDropdown feederList="${feederList}" path="regulators[${phaseKey}].feederId"/>
                         </c:if>
                     </tags:nameValue2>
                 </c:forEach>
@@ -156,11 +149,7 @@
                             immediateSelectMode="true"/>
                     </tags:bind>
                     <c:if test="${zoneDto.parentId != null}">
-                        <span class="ML50">
-                            <i:inline key=".table.point.feeder"/>:
-                            <tags:selectWithItems path="regulator.feederId" items="${feederList}"
-                                itemLabel="ccName" itemValue="ccId" defaultItemLabel="${noneSelected}" inputClass="ML15"/>
-                        </span>
+                        <capTags:regulatorFeederDropdown feederList="${feederList}" path="regulator.feederId"/>
                     </c:if>
                 </tags:nameValue2>
             </c:when>
