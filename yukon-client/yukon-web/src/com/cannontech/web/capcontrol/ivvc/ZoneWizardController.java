@@ -341,6 +341,15 @@ public class ZoneWizardController {
     }
 
     private boolean saveZone(AbstractZone zoneDto, BindingResult bindingResult, FlashScope flashScope) {
+        //set all regulator feeders if 3 phase zone
+        if (zoneDto.getZoneType().equals(ZoneType.THREE_PHASE)) {
+            RegulatorToZoneMapping regMapping = zoneDto.getRegulatorsList().get(0);
+            if (regMapping.getFeederId() != null) {
+                zoneDto.getRegulatorsList().forEach(mapping -> {
+                   mapping.setFeederId(regMapping.getFeederId()); 
+                });
+            }
+        }
         zoneDtoValidator.validate(zoneDto, bindingResult);
         if (bindingResult.hasErrors()) {
             return false;

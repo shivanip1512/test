@@ -108,7 +108,7 @@
     
             <%-- Regulator Selection - Three Phase --%>
             <c:when test="${zoneDto.zoneType ==  threePhase}">
-                <c:forEach items="${zoneDto.regulators}" var="regulator">
+                <c:forEach items="${zoneDto.regulators}" var="regulator" varStatus="statusIndex">
                     <c:set var="phaseKey" value="${regulator.key}"/>
                     <input type="hidden" name="regulators[${phaseKey}].phase" value="${phaseKey}"/>
                     <tags:nameValue2 nameKey=".label.regulator.${phaseKey}">
@@ -127,7 +127,7 @@
                                 allowEmptySelection="true"
                                 endAction="yukon.da.zone.wizard.updateRegPickerExcludes"/>
                         </tags:bind>
-                        <c:if test="${zoneDto.parentId != null}">
+                        <c:if test="${zoneDto.parentId != null && statusIndex.index == 0}">
                             <span class="ML50">
                                 <i:inline key=".table.point.feeder"/>:
                                 <tags:selectWithItems path="regulators[${phaseKey}].feederId" items="${feederList}"
