@@ -142,7 +142,8 @@ public class LMProgramValidator extends SimpleValidator<LoadProgram> {
             } catch (SQLException e) {}
 
             if (CollectionUtils.isEmpty(loadProgram.getAssignedGroups())) {
-                errors.reject(ApiErrorDetails.FIELD_REQUIRED_GLOBAL_ERROR.getCodeString(), new Object[] { key + "noGroup" }, "");
+                String noGroupI18nText = accessor.getMessage(key + "noGroup");
+                errors.reject(ApiErrorDetails.FIELD_REQUIRED_GLOBAL_ERROR.getCodeString(), new Object[] { noGroupI18nText }, "");
             } else {
 
                 for (int i = 0; i < loadProgram.getAssignedGroups().size(); i++) {
@@ -184,7 +185,8 @@ public class LMProgramValidator extends SimpleValidator<LoadProgram> {
         }
         if (!errors.hasFieldErrors("type")) {
             if (CollectionUtils.isEmpty(loadProgram.getGears())) {
-                errors.reject(ApiErrorDetails.FIELD_REQUIRED_GLOBAL_ERROR.getCodeString(), new Object[] { key + "noGear" }, "");
+                String noGearI18nText = accessor.getMessage(key + "noGear");
+                errors.reject(ApiErrorDetails.FIELD_REQUIRED_GLOBAL_ERROR.getCodeString(), new Object[] { noGearI18nText }, "");
             } else {
 
                 if (loadProgram.getGears().size() >= IlmDefines.MAX_GEAR_COUNT) {
@@ -246,7 +248,8 @@ public class LMProgramValidator extends SimpleValidator<LoadProgram> {
                                     || gear.getControlMethod() == GearControlMethod.NestCriticalCycle) {
                                     // Do not display error as these gears types do not have any validation
                                 } else {
-                                    errors.reject(ApiErrorDetails.FIELD_REQUIRED.getCodeString(), new Object[] { "Gear fields" },
+                                    String gearsI18nText = accessor.getMessage("yukon.web.modules.dr.setup.error.required", "Gear fields");
+                                    errors.reject(ApiErrorDetails.FIELD_REQUIRED_GLOBAL_ERROR.getCodeString(), new Object[] { gearsI18nText },
                                             "");
                                 }
                             }
@@ -310,7 +313,8 @@ public class LMProgramValidator extends SimpleValidator<LoadProgram> {
                     || loadProgram.getNotification().getProgramStopInMinutes() != null
                     || loadProgram.getNotification().getNotifyOnAdjust() || loadProgram.getNotification().getEnableOnSchedule())
                     && CollectionUtils.isEmpty(notificationGroups)) {
-                errors.reject(ApiErrorDetails.FIELD_REQUIRED_GLOBAL_ERROR.getCodeString(), new Object[] { key + "notificationGrp.notAssigned" }, "");
+                String notificationGrpI18nText = accessor.getMessage(key + "notificationGrp.notAssigned");
+                errors.reject(ApiErrorDetails.FIELD_REQUIRED_GLOBAL_ERROR.getCodeString(), new Object[] { notificationGrpI18nText }, "");
             }
             if (CollectionUtils.isNotEmpty(notificationGroups)) {
                 for (int i = 0; i < notificationGroups.size(); i++) {
