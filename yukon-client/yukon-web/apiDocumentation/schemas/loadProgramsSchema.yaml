@@ -376,7 +376,6 @@ LM_DIRECT_PROGRAM:
       type: array
       items:
         anyOf:
-          
           - $ref: '#/NoControl'
           - $ref: '#/TimeRefresh'
           - $ref: '#/SmartCycle'
