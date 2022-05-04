@@ -1,7 +1,7 @@
 /*==============================================================*/
 /* Database name:  YukonDatabase                                */
 /* DBMS name:      ORACLE Version 9i                            */
-/* Created on:     5/3/2022 10:54:48 PM                         */
+/* Created on:     5/4/2022 11:07:13 AM                         */
 /*==============================================================*/
 
 
@@ -8368,6 +8368,7 @@ create table RegulatorEvents  (
 create table RegulatorToZoneMapping  (
    RegulatorId          NUMBER                          not null,
    ZoneId               NUMBER                          not null,
+   FeederId             NUMBER,
    constraint PK_RegToZoneMap primary key (RegulatorId)
 );
 
