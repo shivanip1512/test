@@ -125,8 +125,8 @@ enum DeviceTypes {
     // RF Cellular IPLink Relay
     TYPE_CRLY856,
 
-    // SETO Devices
-    TYPE_EDGE_METER,
+    // DER_EDGE_COORDINATOR Devices
+    TYPE_DER_EDGE_COORDINATOR,
 
     // Substation device identifiers
     TYPE_CCU700,

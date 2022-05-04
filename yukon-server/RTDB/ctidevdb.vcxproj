@@ -567,7 +567,7 @@ if exist $(OutDir)$(TargetName).pdb xcopy /d/y/f $(OutDir)$(TargetName).pdb $(So
     <ClCompile Include="dev_repeater850.cpp">
     </ClCompile>
     <ClCompile Include="dev_rfnResidentialVoltage.cpp" />
-    <ClCompile Include="dev_rfn_edge.cpp" />
+    <ClCompile Include="dev_rfn_der_edge_coordinator.cpp" />
     <ClCompile Include="dev_rfn_LgyrFocus_al.cpp" />
     <ClCompile Include="dev_rf_BatteryNode.cpp" />
     <ClCompile Include="dev_rf_cellular_relay.cpp" />

@@ -93,7 +93,7 @@ public class RfnPointMappingTest {
                     .map(PaoType::valueOf)
                     .collect(Collectors.toSet());
 
-        var differences = Sets.symmetricDifference(PaoType.getRfMeterTypes(), rfnMappingPaoTypes);
+        var differences = Sets.symmetricDifference(PaoType.getRfMeterTypesThatSupportPoints(), rfnMappingPaoTypes);
 
         assertTrue(differences.isEmpty(), "Found mismatch between PaoType.getRfMeterTypes() and rfnPointMapping.xml paoTypes:" + differences);
     }
@@ -291,8 +291,8 @@ public class RfnPointMappingTest {
         //  RFN-430kV unmapped in yukonPointMapping
         rfnPointMapping.remove(PaoType.RFN430KV);
 
-        // SETO Edge Meter is unmapped in yukonPointMapping
-        rfnPointMapping.remove(PaoType.EDGE_METER);
+        // DER Edge Coordinator is unmapped in yukonPointMapping
+        rfnPointMapping.remove(PaoType.DER_EDGE_COORDINATOR);
 
         
         rfnPointMapping.entrySet().stream()

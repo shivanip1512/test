@@ -189,7 +189,7 @@ BOOST_AUTO_TEST_CASE(test_createDeviceType)
     *i++ = "class Cti::Devices::RfBatteryNodeDevice";
     *i++ = "class Cti::Devices::RfBatteryNodeDevice";
     *i++ = "class Cti::Devices::RfCellularRelayDevice";
-    *i++ = "class Cti::Devices::RfnEdgeDevice";
+    *i++ = "class Cti::Devices::RfnDerEdgeCoordinator";
     *i++ = "class CtiDeviceCCU710";
     //  100
     *i++ = "class CtiDeviceCCU710";
@@ -485,7 +485,7 @@ BOOST_AUTO_TEST_CASE(test_DeviceFactory)
         { "meter disconnect program",       "null pointer {0158EE7B-419F-EC43-9382-3496ED9E5F67}" },
         { "meter disconnect group",         "null pointer {0158EE7B-419F-EC43-9382-3496ED9E5F67}" },
         { "crly-856",                       "class Cti::Devices::RfCellularRelayDevice" },
-        { "edge meter",                     "class Cti::Devices::RfnEdgeDevice" },
+        { "der edge coordinator",           "class Cti::Devices::RfnDerEdgeCoordinator" },
     };
 
     std::vector<DeviceTypeRow> rowVec;

@@ -35,6 +35,7 @@ import com.cannontech.clientutils.YukonLogManager;
 import com.cannontech.common.bulk.collection.DeviceFilterCollectionHelper;
 import com.cannontech.common.bulk.collection.device.model.DeviceCollection;
 import com.cannontech.common.config.ConfigurationSource;
+import com.cannontech.common.config.MasterConfigBoolean;
 import com.cannontech.common.config.MasterConfigLicenseKey;
 import com.cannontech.common.device.config.dao.DeviceConfigurationDao;
 import com.cannontech.common.device.creation.DeviceCreationException;
@@ -55,6 +56,7 @@ import com.cannontech.common.pao.attribute.service.AttributeService;
 import com.cannontech.common.pao.definition.dao.PaoDefinitionDao;
 import com.cannontech.common.pao.definition.model.PaoTag;
 import com.cannontech.common.pao.meter.model.MeterTypeHelper;
+import com.cannontech.common.pao.meter.model.MeterTypeHelper.MeterGroup;
 import com.cannontech.common.pao.notes.service.PaoNotesService;
 import com.cannontech.common.pao.service.PointService;
 import com.cannontech.common.rfn.dataStreaming.DataStreamingAttributeHelper;
@@ -279,6 +281,7 @@ public class MeterController {
         boolean voltageThreePhaseDevice = paoDefDao.isTagSupported(type, PaoTag.THREE_PHASE_VOLTAGE); 
         boolean currentThreePhaseDevice = paoDefDao.isTagSupported(type, PaoTag.THREE_PHASE_CURRENT);
         boolean touDevice = paoDefDao.isTagSupported(type, PaoTag.TOU);
+        boolean derEdgeCooordinatorDisplayable = paoDefDao.isTagSupported(type, PaoTag.DER_EDGE_COORDINATOR_DISPLAYABLE);
         
         /** Device Attributes */
         boolean outageLogAttribute = deviceAttributes.contains(BuiltInAttribute.OUTAGE_LOG);
@@ -336,6 +339,7 @@ public class MeterController {
         model.addAttribute("showRfMetadata", rfDevice);
         model.addAttribute("showTou", touDevice);
         model.addAttribute("showWifiConnection", type.isWifiDevice());
+        model.addAttribute("isDerEdgeCooordinator", derEdgeCooordinatorDisplayable);
         
         /** Page Actions */
         model.addAttribute("showCommander", commanderDevice && commanderUser);
@@ -502,7 +506,15 @@ public class MeterController {
     
     private void setupModel(ModelMap model) {
 
-        model.addAttribute("meterTypes", meterTypeHelper.getCreateGroupedMeters());
+        var groupedMeters = meterTypeHelper.getCreateGroupedMeters();
+
+        // Remove DER Edge Coordinator device from Create Meter when Edge cparm is False
+        // YUK-26189
+        if(!configurationSource.getBoolean(MasterConfigBoolean.DER_EDGE_COORDINATOR)) {
+            groupedMeters.get(MeterGroup.RF_MESH).remove(PaoType.DER_EDGE_COORDINATOR);
+        }
+
+        model.addAttribute("meterTypes", groupedMeters);
         
         LiteYukonPAObject[] routes = paoDao.getRoutesByType(PaoType.ROUTE_CCU, PaoType.ROUTE_MACRO);
         model.addAttribute("routes", routes);
