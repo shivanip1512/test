@@ -247,7 +247,9 @@ LM_HONEYWELL_PROGRAM:
     gears:
       type: array
       items:
-        $ref: '#/HoneywellCycle'
+        anyOf:
+          - $ref: '#/HoneywellCycle'
+          - $ref: '#/HoneywellSetpoint'
     controlWindow:
       $ref: '#/controlWindow'
     assignedGroups:
@@ -387,7 +389,6 @@ LM_DIRECT_PROGRAM:
           - $ref: '#/TargetCycle'
           - $ref: '#/ThermostatRamping'
           - $ref: '#/SimpleThermostatRamping'
-          - $ref: '#/SmartCycle_TrueCycle_MagnitudeCycle_TargetCycle_Fields'
           - $ref: '#/BeatThePeak'
           
     controlWindow:
