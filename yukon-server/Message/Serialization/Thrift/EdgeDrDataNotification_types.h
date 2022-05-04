@@ -36,13 +36,13 @@ class EdgeDrDataNotification : public virtual ::apache::thrift::TBase {
 
   EdgeDrDataNotification(const EdgeDrDataNotification&);
   EdgeDrDataNotification& operator=(const EdgeDrDataNotification&);
-  EdgeDrDataNotification() : paoId(0), payload(), e2eId() {
+  EdgeDrDataNotification() : paoId(0), payload(), e2eId(0) {
   }
 
   virtual ~EdgeDrDataNotification() noexcept;
   int32_t paoId;
   std::string payload;
-  std::string e2eId;
+  int16_t e2eId;
    ::Cti::Messaging::Serialization::Thrift::EdgeDrError error;
 
   _EdgeDrDataNotification__isset __isset;
@@ -51,7 +51,7 @@ class EdgeDrDataNotification : public virtual ::apache::thrift::TBase {
 
   void __set_payload(const std::string& val);
 
-  void __set_e2eId(const std::string& val);
+  void __set_e2eId(const int16_t val);
 
   void __set_error(const  ::Cti::Messaging::Serialization::Thrift::EdgeDrError& val);
 

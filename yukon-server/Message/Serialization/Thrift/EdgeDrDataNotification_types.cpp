@@ -27,7 +27,7 @@ void EdgeDrDataNotification::__set_payload(const std::string& val) {
 __isset.payload = true;
 }
 
-void EdgeDrDataNotification::__set_e2eId(const std::string& val) {
+void EdgeDrDataNotification::__set_e2eId(const int16_t val) {
   this->e2eId = val;
 __isset.e2eId = true;
 }
@@ -82,8 +82,8 @@ uint32_t EdgeDrDataNotification::read(::apache::thrift::protocol::TProtocol* ipr
         }
         break;
       case 3:
-        if (ftype == ::apache::thrift::protocol::T_STRING) {
-          xfer += iprot->readString(this->e2eId);
+        if (ftype == ::apache::thrift::protocol::T_I16) {
+          xfer += iprot->readI16(this->e2eId);
           this->__isset.e2eId = true;
         } else {
           xfer += iprot->skip(ftype);
@@ -126,8 +126,8 @@ uint32_t EdgeDrDataNotification::write(::apache::thrift::protocol::TProtocol* op
     xfer += oprot->writeFieldEnd();
   }
   if (this->__isset.e2eId) {
-    xfer += oprot->writeFieldBegin("e2eId", ::apache::thrift::protocol::T_STRING, 3);
-    xfer += oprot->writeString(this->e2eId);
+    xfer += oprot->writeFieldBegin("e2eId", ::apache::thrift::protocol::T_I16, 3);
+    xfer += oprot->writeI16(this->e2eId);
     xfer += oprot->writeFieldEnd();
   }
   if (this->__isset.error) {

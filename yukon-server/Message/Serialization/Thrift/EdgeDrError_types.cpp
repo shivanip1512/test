@@ -13,39 +13,12 @@
 
 namespace Cti { namespace Messaging { namespace Serialization { namespace Thrift {
 
-int _kEdgeDrErrorTypeValues[] = {
-  EdgeDrErrorType::TIMEOUT
-};
-const char* _kEdgeDrErrorTypeNames[] = {
-  "TIMEOUT"
-};
-const std::map<int, const char*> _EdgeDrErrorType_VALUES_TO_NAMES(::apache::thrift::TEnumIterator(1, _kEdgeDrErrorTypeValues, _kEdgeDrErrorTypeNames), ::apache::thrift::TEnumIterator(-1, NULL, NULL));
-
-std::ostream& operator<<(std::ostream& out, const EdgeDrErrorType::type& val) {
-  std::map<int, const char*>::const_iterator it = _EdgeDrErrorType_VALUES_TO_NAMES.find(val);
-  if (it != _EdgeDrErrorType_VALUES_TO_NAMES.end()) {
-    out << it->second;
-  } else {
-    out << static_cast<int>(val);
-  }
-  return out;
-}
-
-std::string to_string(const EdgeDrErrorType::type& val) {
-  std::map<int, const char*>::const_iterator it = _EdgeDrErrorType_VALUES_TO_NAMES.find(val);
-  if (it != _EdgeDrErrorType_VALUES_TO_NAMES.end()) {
-    return std::string(it->second);
-  } else {
-    return std::to_string(static_cast<int>(val));
-  }
-}
-
 
 EdgeDrError::~EdgeDrError() noexcept {
 }
 
 
-void EdgeDrError::__set_errorType(const EdgeDrErrorType::type val) {
+void EdgeDrError::__set_errorType(const int32_t val) {
   this->errorType = val;
 }
 
@@ -84,9 +57,7 @@ uint32_t EdgeDrError::read(::apache::thrift::protocol::TProtocol* iprot) {
     {
       case 1:
         if (ftype == ::apache::thrift::protocol::T_I32) {
-          int32_t ecast0;
-          xfer += iprot->readI32(ecast0);
-          this->errorType = (EdgeDrErrorType::type)ecast0;
+          xfer += iprot->readI32(this->errorType);
           isset_errorType = true;
         } else {
           xfer += iprot->skip(ftype);
@@ -122,7 +93,7 @@ uint32_t EdgeDrError::write(::apache::thrift::protocol::TProtocol* oprot) const 
   xfer += oprot->writeStructBegin("EdgeDrError");
 
   xfer += oprot->writeFieldBegin("errorType", ::apache::thrift::protocol::T_I32, 1);
-  xfer += oprot->writeI32((int32_t)this->errorType);
+  xfer += oprot->writeI32(this->errorType);
   xfer += oprot->writeFieldEnd();
 
   xfer += oprot->writeFieldBegin("errorMessage", ::apache::thrift::protocol::T_STRING, 2);
@@ -140,13 +111,13 @@ void swap(EdgeDrError &a, EdgeDrError &b) {
   swap(a.errorMessage, b.errorMessage);
 }
 
-EdgeDrError::EdgeDrError(const EdgeDrError& other1) {
+EdgeDrError::EdgeDrError(const EdgeDrError& other0) {
+  errorType = other0.errorType;
+  errorMessage = other0.errorMessage;
+}
+EdgeDrError& EdgeDrError::operator=(const EdgeDrError& other1) {
   errorType = other1.errorType;
   errorMessage = other1.errorMessage;
-}
-EdgeDrError& EdgeDrError::operator=(const EdgeDrError& other2) {
-  errorType = other2.errorType;
-  errorMessage = other2.errorMessage;
   return *this;
 }
 void EdgeDrError::printTo(std::ostream& out) const {

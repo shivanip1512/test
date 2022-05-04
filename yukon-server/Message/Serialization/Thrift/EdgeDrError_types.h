@@ -21,18 +21,6 @@
 
 namespace Cti { namespace Messaging { namespace Serialization { namespace Thrift {
 
-struct EdgeDrErrorType {
-  enum type {
-    TIMEOUT = 1
-  };
-};
-
-extern const std::map<int, const char*> _EdgeDrErrorType_VALUES_TO_NAMES;
-
-std::ostream& operator<<(std::ostream& out, const EdgeDrErrorType::type& val);
-
-std::string to_string(const EdgeDrErrorType::type& val);
-
 class EdgeDrError;
 
 
@@ -41,14 +29,14 @@ class EdgeDrError : public virtual ::apache::thrift::TBase {
 
   EdgeDrError(const EdgeDrError&);
   EdgeDrError& operator=(const EdgeDrError&);
-  EdgeDrError() : errorType((EdgeDrErrorType::type)0), errorMessage() {
+  EdgeDrError() : errorType(0), errorMessage() {
   }
 
   virtual ~EdgeDrError() noexcept;
-  EdgeDrErrorType::type errorType;
+  int32_t errorType;
   std::string errorMessage;
 
-  void __set_errorType(const EdgeDrErrorType::type val);
+  void __set_errorType(const int32_t val);
 
   void __set_errorMessage(const std::string& val);
 

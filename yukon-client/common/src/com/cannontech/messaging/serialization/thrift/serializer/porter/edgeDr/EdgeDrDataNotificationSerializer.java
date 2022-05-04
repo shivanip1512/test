@@ -13,7 +13,7 @@ public class EdgeDrDataNotificationSerializer extends SimpleThriftSerializer imp
         var thriftMessage = new com.cannontech.messaging.serialization.thrift.generated.EdgeDrDataNotification();
         deserialize(msgBytes, thriftMessage);
         
-        EdgeDrError error = new EdgeDrError(thriftMessage.getError().getErrorType().getValue(), 
+        EdgeDrError error = new EdgeDrError(thriftMessage.getError().getErrorType(), 
                                             thriftMessage.getError().getErrorMessage());
         EdgeDrDataNotification notification = new EdgeDrDataNotification(thriftMessage.getPaoId(),
                                                                          thriftMessage.getPayload(),

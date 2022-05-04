@@ -39,14 +39,14 @@ class EdgeDrUnicastResponse : public virtual ::apache::thrift::TBase {
 
   virtual ~EdgeDrUnicastResponse() noexcept;
   std::string messageGuid;
-  std::map<int32_t, std::string>  paoToE2eId;
+  std::map<int32_t, int16_t>  paoToE2eId;
    ::Cti::Messaging::Serialization::Thrift::EdgeDrError error;
 
   _EdgeDrUnicastResponse__isset __isset;
 
   void __set_messageGuid(const std::string& val);
 
-  void __set_paoToE2eId(const std::map<int32_t, std::string> & val);
+  void __set_paoToE2eId(const std::map<int32_t, int16_t> & val);
 
   void __set_error(const  ::Cti::Messaging::Serialization::Thrift::EdgeDrError& val);
 

@@ -13,11 +13,9 @@ public class EdgeDrBroadcastResponseSerializer extends SimpleThriftSerializer im
         var thriftMessage = new com.cannontech.messaging.serialization.thrift.generated.EdgeDrBroadcastResponse();
         deserialize(msgBytes, thriftMessage);
         
-        EdgeDrError error = new EdgeDrError(thriftMessage.getError().getErrorType().getValue(), 
+        EdgeDrError error = new EdgeDrError(thriftMessage.getError().getErrorType(), 
                                             thriftMessage.getError().getErrorMessage());
-        EdgeDrBroadcastResponse response = new EdgeDrBroadcastResponse(thriftMessage.getMessageGuid(), error);
-        
-        return response;
+        return new EdgeDrBroadcastResponse(thriftMessage.getMessageGuid(), error);
     }
     
 }
