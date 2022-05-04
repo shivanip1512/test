@@ -103,7 +103,7 @@ SET Description = 'Allow access to DER Edge Coordinator features and APIs.'
 WHERE RolePropertyID = -90050
 
 INSERT INTO DBUpdates VALUES ('YUK-26210-2', '9.3.0', SYSDATE);
-/* @end YUK-26210 */
+/* @end YUK-26210-2 */
 
 /***********************************************************************************/
 /* VERSION INFO                                                                    */
