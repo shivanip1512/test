@@ -8,6 +8,7 @@ import java.util.stream.Collectors;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.logging.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.dao.EmptyResultDataAccessException;
 
 import com.cannontech.capcontrol.dao.FeederDao;
 import com.cannontech.capcontrol.dao.SubstationBusDao;
@@ -227,7 +228,11 @@ public class BusServiceImpl implements BusService {
         List<Integer> filteredIds = availableFeederIds.stream().filter(id -> !unassignedFeedersId.contains(id))
                                                                .collect(Collectors.toList());
         for (Integer feederId : filteredIds) {
-            isCapbankAssigned = feederService.isCapBanksAssignedToZone(feederId);
+            try {
+                isCapbankAssigned = feederService.isCapBanksAssignedToZone(feederId);
+            } catch (EmptyResultDataAccessException|NotFoundException e) {
+                log.info("Substation Bus not found for feeder.", e);
+            }
             if (isCapbankAssigned) {
                 break;
             }
@@ -246,7 +251,11 @@ public class BusServiceImpl implements BusService {
         List<Integer> filteredIds = availableFeederIds.stream().filter(id -> !unassignedFeedersId.contains(id))
                                                                .collect(Collectors.toList());
         for (Integer feederId : filteredIds) {
-            isFeederAssigned = feederService.isFeederAssignedToVoltagePointForZone(feederId);
+            try {
+                isFeederAssigned = feederService.isFeederAssignedToVoltagePointForZone(feederId);
+            } catch (EmptyResultDataAccessException|NotFoundException e) {
+                log.info("Substation Bus not found for feeder.", e);
+            }
             if (isFeederAssigned) {
                 break;
             }

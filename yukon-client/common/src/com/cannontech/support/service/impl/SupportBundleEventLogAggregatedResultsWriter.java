@@ -9,6 +9,7 @@ public class SupportBundleEventLogAggregatedResultsWriter extends SupportBundleS
         SqlStatementBuilder sql = new SqlStatementBuilder();
         sql.append("SELECT EventType, COUNT(*)");
         sql.append("FROM EventLog");
+        sql.append("JOIN EventLogType ON EventLog.EventTypeId=EventLogType.EventTypeId");
         sql.append("GROUP BY EventType");
         return sql;
     }

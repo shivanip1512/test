@@ -6,6 +6,8 @@ import java.io.IOException;
 import java.io.PrintWriter;
 import java.sql.SQLException;
 import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Iterator;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -15,6 +17,7 @@ import javax.servlet.http.HttpServletResponse;
 import javax.validation.ConstraintViolationException;
 
 import org.apache.commons.collections4.CollectionUtils;
+import org.apache.commons.collections4.iterators.ReverseListIterator;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.logging.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -26,6 +29,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.http.converter.HttpMessageNotReadableException;
 import org.springframework.http.converter.HttpMessageNotWritableException;
 import org.springframework.validation.BindingResult;
+import org.springframework.validation.ObjectError;
 import org.springframework.web.HttpMediaTypeNotSupportedException;
 import org.springframework.web.HttpRequestMethodNotSupportedException;
 import org.springframework.web.bind.MethodArgumentNotValidException;
@@ -72,7 +76,9 @@ import com.cannontech.web.api.token.AuthenticationException;
 import com.cannontech.web.spring.parameters.exceptions.InvalidPagingParametersException;
 import com.cannontech.web.spring.parameters.exceptions.InvalidSortingParametersException;
 import com.cannontech.web.tools.points.service.PointEditorService.AttachedException;
+import com.fasterxml.jackson.databind.JsonMappingException.Reference;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.exc.InvalidFormatException;
 
 @ControllerAdvice(annotations = RestController.class)
 public class ApiExceptionHandler extends ResponseEntityExceptionHandler {
@@ -92,7 +98,6 @@ public class ApiExceptionHandler extends ResponseEntityExceptionHandler {
         notSupportingUris.add(ApiURL.pickerBuildUrl.substring(0, ApiURL.pickerBuildUrl.lastIndexOf("/")));
         notSupportingUris.add(ApiURL.pickerSearchUrl);
         notSupportingUris.add(ApiURL.pickerIdSearchUrl);
-        notSupportingUris.add(ApiURL.drLoadProgramUrl);
         notSupportingUris.add(ApiURL.drGearRetrieveUrl);
         notSupportingUris.add(ApiURL.drHolidayScheduleUrl);
         notSupportingUris.add(ApiURL.drSeasonScheduleUrl);
@@ -388,6 +393,33 @@ public class ApiExceptionHandler extends ResponseEntityExceptionHandler {
             errorMessage = ex.getRootCause().getMessage();
         }
 
+		/*
+		 * For fields having a single enum data, the field name can be fetched by using
+		 * the last index of the list ->
+		 * formatException.getPath().get(formatException.size -1). However for fields
+		 * having List of enums in the API, field name equal to null gets mapped to the
+		 * last index since spring also maps the list of enums to the object and the
+		 * actual fieldName is mapped at the 0th index. Therefore, to cover both cases we
+		 * iterate the list in reverse order and break the loop when we get a non null
+		 * field name.
+		 */
+		if (ex.getRootCause() instanceof InvalidFormatException) {
+			InvalidFormatException formatException = (InvalidFormatException) ex.getRootCause();
+			if (formatException.getTargetType() != null && formatException.getTargetType().isEnum()) {
+				for (Iterator<Reference> iter = new ReverseListIterator<>(formatException.getPath()); iter.hasNext();) {
+					Reference ref = iter.next();
+					if (ref.getFieldName() != null) {
+						MessageSourceAccessor messageSourceAccessor = messageSourceResolver
+								.getMessageSourceAccessor(YukonUserContext.system);
+						errorMessage = messageSourceAccessor.getMessage("yukon.web.api.error.invalidEnum",
+								formatException.getValue(), ref.getFieldName(),
+								Arrays.toString(formatException.getTargetType().getEnumConstants()));
+						break;
+					}
+				}
+			}
+		}
+		
         if (isNewApiErrorSupported(request)) {
             ApiErrorModel apiErrorModel = buildGlobalErrorResponse(ApiErrorDetails.BAD_REQUEST, request, uniqueKey);
             apiErrorModel.setDetail(errorMessage);
@@ -562,9 +594,15 @@ public class ApiExceptionHandler extends ResponseEntityExceptionHandler {
             if (bindingResult == null || CollectionUtils.isEmpty(bindingResult.getGlobalErrors())) {
                 apiErrors = new ApiErrorModel(errorDetails, requestUri, uniqueKey);
             } else {
-                MessageSourceAccessor messageSourceAccessor = messageSourceResolver.getMessageSourceAccessor(YukonUserContext.system);
-                String i18nMessage = messageSourceAccessor.getMessage("yukon.web.error." + bindingResult.getGlobalError().getCode(),
-                        bindingResult.getGlobalError().getArguments());
+                MessageSourceAccessor messageSourceAccessor = messageSourceResolver
+                        .getMessageSourceAccessor(YukonUserContext.system);
+                String i18nMessage = StringUtils.EMPTY;
+                for (ObjectError error : bindingResult.getGlobalErrors()) {
+                    if (StringUtils.isNotBlank(i18nMessage)) {
+                        i18nMessage = i18nMessage.concat(", ");
+                    }
+                    i18nMessage = i18nMessage.concat( messageSourceAccessor.getMessage("yukon.web.error." + error.getCode(), error.getArguments()));
+                }
                 apiErrors = new ApiErrorModel(errorDetails, i18nMessage, requestUri, uniqueKey);
             }
         } else {

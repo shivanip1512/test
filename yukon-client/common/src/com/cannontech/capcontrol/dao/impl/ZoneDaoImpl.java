@@ -99,6 +99,7 @@ public class ZoneDaoImpl implements ZoneDao {
             
             regulatorToZone.setRegulatorId(rs.getInt("RegulatorId"));
             regulatorToZone.setZoneId(rs.getInt("ZoneId"));
+            regulatorToZone.setFeederId(rs.getNullableInt("FeederId"));
             regulatorToZone.setPhase(rs.getEnum("Phase", Phase.class));
             if (regulatorToZone.getPhase() == null) {
                 regulatorToZone.setPhase(Phase.ALL);
@@ -174,7 +175,7 @@ public class ZoneDaoImpl implements ZoneDao {
     public List<RegulatorToZoneMapping> getRegulatorToZoneMappingsByZoneId(int zoneId) {
         
         SqlStatementBuilder regulatorToZoneSql = new SqlStatementBuilder();
-        regulatorToZoneSql.append("SELECT rtz.RegulatorId, rtz.ZoneId, cc.Phase");
+        regulatorToZoneSql.append("SELECT rtz.RegulatorId, rtz.ZoneId, rtz.FeederId, cc.Phase");
         regulatorToZoneSql.append("FROM RegulatorToZoneMapping rtz");
         regulatorToZoneSql.append("LEFT JOIN CcMonitorBankList cc ON rtz.RegulatorId = cc.DeviceId");
         regulatorToZoneSql.append("WHERE rtz.zoneId").eq(zoneId);
@@ -702,7 +703,9 @@ public class ZoneDaoImpl implements ZoneDao {
             regulatorToZone.setRegulatorId(value);
         }
         @Override
-        public void extractValues(MapSqlParameterSource parameterHolder, RegulatorToZoneMapping object) {}
+        public void extractValues(MapSqlParameterSource parameterHolder, RegulatorToZoneMapping object) {
+            parameterHolder.addValue("FeederId", object.getFeederId());
+        }
     };
 
     @PostConstruct

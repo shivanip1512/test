@@ -12,14 +12,12 @@ import javax.annotation.PreDestroy;
 import javax.annotation.Resource;
 
 import org.apache.commons.lang3.StringUtils;
-import org.apache.logging.log4j.Logger;
 import org.joda.time.Hours;
 import org.joda.time.Instant;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import com.cannontech.amr.rfn.dao.RfnDeviceDao;
 import com.cannontech.amr.rfn.impl.NmSyncServiceImpl;
-import com.cannontech.clientutils.YukonLogManager;
 import com.cannontech.common.config.UpdateServerConfigHelper;
 import com.cannontech.common.events.loggers.GatewayEventLogService;
 import com.cannontech.common.rfn.message.RfnIdentifier;
@@ -36,8 +34,6 @@ import com.cannontech.core.dao.NotFoundException;
 import com.google.common.collect.ImmutableList;
 
 public class GatewayDataResponseListener extends ArchiveRequestListenerBase<RfnIdentifyingMessage> {
-    
-    private static final Logger log = YukonLogManager.getLogger(GatewayDataResponseListener.class);
     
     @Autowired private GatewayEventLogService gatewayEventLogService;
     @Autowired private RfnDeviceDao rfnDeviceDao;

@@ -252,7 +252,7 @@ public class FeederController {
                     return "redirect:/capcontrol/buses/" + parentId;
                 }
             }
-        } catch (EmptyResultDataAccessException e) {
+        } catch (EmptyResultDataAccessException|NotFoundException e) {
             feederService.delete(id);
             flash.setConfirm(new YukonMessageSourceResolvable(feederKey + ".delete.success", feeder.getName()));
             // do nothing and return to orphan page

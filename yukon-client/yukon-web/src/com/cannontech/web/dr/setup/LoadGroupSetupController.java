@@ -176,6 +176,9 @@ public class LoadGroupSetupController {
     public String save(@ModelAttribute("loadGroup") LoadGroupBase loadGroup, BindingResult result, YukonUserContext userContext,
             FlashScope flash, RedirectAttributes redirectAttributes, HttpServletRequest request) {
 
+        if (result.hasErrors()) {
+            return bindAndForward(loadGroup, result, redirectAttributes);
+        }
         try {
             String url;
             ResponseEntity<? extends Object> response;
@@ -187,6 +190,8 @@ public class LoadGroupSetupController {
                 response = saveGroup(userContext, request, url, loadGroup, HttpMethod.PUT);
             }
 
+
+            
             if (response.getStatusCode() == HttpStatus.UNPROCESSABLE_ENTITY) {
                 BindException error = new BindException(loadGroup, "loadGroup");
                 result = helper.populateBindingErrorForApiErrorModel(result, error, response, "yukon.web.error.");
