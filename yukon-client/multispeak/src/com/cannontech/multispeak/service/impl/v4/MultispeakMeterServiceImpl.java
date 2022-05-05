@@ -258,10 +258,10 @@ public class MultispeakMeterServiceImpl extends MultispeakMeterServiceBase imple
             } catch (NotFoundException e) {
                 multispeakEventLogService.meterNotFound(meterNumber, mspMethod, mspVendor.getCompanyName());
                 ErrorObject err = mspObjectDao.getNotFoundErrorObject(meterNumber,
-                        "MeterNumber",
-                        "MeterID",
-                        "removeFromGroup",
-                        mspVendor.getCompanyName());
+                                                                      "MeterNumber",
+                                                                      "MeterID",
+                                                                      "removeFromGroup",
+                                                                      mspVendor.getCompanyName());
                 errorObjects.add(err);
                 log.error(e);
             }
