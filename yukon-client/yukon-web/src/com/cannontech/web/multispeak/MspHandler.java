@@ -94,8 +94,9 @@ public class MspHandler {
                 } else if (cisVersion == MultiSpeakVersion.V5) {
                     return mspObjectDaoV5.getMspSubstationName(mspPrimaryCISVendor);
                 }
-                else
+                else if (cisVersion == MultiSpeakVersion.V4) {
                     return mspObjectDaoV4.getMspSubstationName(mspPrimaryCISVendor);
+                }
             }
         }
         return Collections.emptyList();
@@ -115,12 +116,10 @@ public class MspHandler {
                     multispeakEventLogService.invalidSubstationName(DOMAIN_MEMBERS_SUBSTATION_CODE_V5,
                         mspSubstationName, mspPrimaryCISVendor.getCompanyName());
                 }
-                else {
+                else if (cisVersion == MultiSpeakVersion.V4) {
                     multispeakEventLogService.invalidSubstationName(DOMAIN_MEMBERS_SUBSTATION_CODE_V4,
                             mspSubstationName, mspPrimaryCISVendor.getCompanyName());
-
                 }
-                    
             }
         }
     }

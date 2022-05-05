@@ -219,13 +219,9 @@ public class MspObjectDaoImpl implements MspObjectDao {
             ArrayOfDomainMember arrayOfDomainMember = domainMembersResponse.getGetDomainMembersResult();
             List<DomainMember> domainMemberList = arrayOfDomainMember.getDomainMember();
             if (!domainMemberList.isEmpty()) {
-                DomainMember[] domainMembers = new DomainMember[domainMemberList.size()];
-                domainMemberList.toArray(domainMembers);
-                if (domainMembers != null) {
-                    for (DomainMember domainMember : domainMembers) {
-                        substationNames.add(domainMember.getDescription());
-                    }
-                }
+                domainMemberList.forEach(domainMember -> {
+                    substationNames.add(domainMember.getDescription());
+                });
             }
 
         } catch (MultispeakWebServiceClientException e) {
