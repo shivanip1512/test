@@ -17,7 +17,7 @@ import org.springframework.web.bind.annotation.RestController;
 import com.cannontech.common.pao.YukonPao;
 import com.cannontech.core.dao.PaoDao;
 import com.cannontech.user.YukonUserContext;
-import com.cannontech.web.derEdge.service.DerEdgeCommunicationService;
+import com.cannontech.web.api.der.edge.service.DerEdgeCommunicationService;
 
 @RestController
 @RequestMapping("/edge")

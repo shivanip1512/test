@@ -1,14 +1,16 @@
-package com.cannontech.web.derEdge.service.impl;
+package com.cannontech.web.api.der.edge.service.impl;
 
 import java.util.Arrays;
 
 import org.apache.logging.log4j.core.Logger;
+import org.springframework.stereotype.Service;
 
 import com.cannontech.clientutils.YukonLogManager;
 import com.cannontech.common.pao.YukonPao;
 import com.cannontech.user.YukonUserContext;
-import com.cannontech.web.derEdge.service.DerEdgeCommunicationService;
+import com.cannontech.web.api.der.edge.service.DerEdgeCommunicationService;
 
+@Service
 public class DerEdgeCommunicationServiceImpl implements DerEdgeCommunicationService {
     private static final Logger log = YukonLogManager.getLogger(DerEdgeCommunicationServiceImpl.class);
     

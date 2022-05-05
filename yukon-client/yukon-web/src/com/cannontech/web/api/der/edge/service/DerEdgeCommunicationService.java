@@ -1,4 +1,4 @@
-package com.cannontech.web.derEdge.service;
+package com.cannontech.web.api.der.edge.service;
 
 import com.cannontech.common.pao.YukonPao;
 import com.cannontech.user.YukonUserContext;
