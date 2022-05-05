@@ -216,14 +216,17 @@ public class MspObjectDaoImpl implements MspObjectDao {
             domainMembersRequest.setDomainName("substationCode");
             GetDomainMembersResponse domainMembersResponse = cbClient.getDomainMembers(mspVendor, endpointUrl,
                     domainMembersRequest);
-            ArrayOfDomainMember arrayOfDomainMember = domainMembersResponse.getGetDomainMembersResult();
-            List<DomainMember> domainMemberList = arrayOfDomainMember.getDomainMember();
-            if (!domainMemberList.isEmpty()) {
-                domainMemberList.forEach(domainMember -> {
-                    substationNames.add(domainMember.getDescription());
-                });
+            if (domainMembersResponse != null) {
+                ArrayOfDomainMember arrayOfDomainMember = domainMembersResponse.getGetDomainMembersResult();
+                if (arrayOfDomainMember != null) {
+                    List<DomainMember> domainMemberList = arrayOfDomainMember.getDomainMember();
+                    if (domainMemberList != null && !domainMemberList.isEmpty()) {
+                        domainMemberList.forEach(domainMember -> {
+                            substationNames.add(domainMember.getDescription());
+                        });
+                    }
+                }
             }
-
         } catch (MultispeakWebServiceClientException e) {
             log.error("TargetService: " + endpointUrl + " - getDomainMembers(" + mspVendor.getCompanyName()
                     + ") for DomainMember 'substationCode'");

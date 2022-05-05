@@ -313,9 +313,9 @@ public abstract class MultispeakFuncsBase implements MultiSpeakVersionable {
         MultispeakInterface cb_server_v5 = mspVendor.getMspInterfaceMap()
                 .get(MultispeakVendor.buildMapKey(MultispeakDefines.CB_Server_STR, MultiSpeakVersion.V5));
 
-        if (cb_server_v3 != null && cb_server_v4 == null && cb_server_v5 == null) {
+        if (cb_server_v3 != null) {
             return cb_server_v3.getVersion();
-        } else if (cb_server_v4 != null && cb_server_v5 == null) {
+        } else if (cb_server_v4 != null) {
             return cb_server_v4.getVersion();
         } else if (cb_server_v5 != null) {
             return cb_server_v5.getVersion();
