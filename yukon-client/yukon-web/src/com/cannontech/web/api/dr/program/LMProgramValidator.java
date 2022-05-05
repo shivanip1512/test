@@ -81,13 +81,17 @@ public class LMProgramValidator extends SimpleValidator<LoadProgram> {
         if (!errors.hasFieldErrors("type")) {
             yukonApiValidationUtils.validateNewPaoName(loadProgram.getName(), loadProgram.getType(), errors, "Name");
             if (!loadProgram.getType().isDirectProgram()) {
-                errors.reject(ApiErrorDetails.TYPE_MISMATCH.getCodeString(), new Object[] { loadProgram.getType() }, "");
+                String typeMisMatchI18nText = accessor.getMessage(key + "notSupportedProgramType", loadProgram.getType());
+                errors.reject(ApiErrorDetails.TYPE_MISMATCH_GLOBAL_ERROR.getCodeString(), new Object[] { typeMisMatchI18nText }, "");
             }
         }
         yukonApiValidationUtils.checkIfFieldRequired("operationalState", errors, loadProgram.getOperationalState(), "Operational State");
         if (!errors.hasFieldErrors("operationalState")) {
             if (loadProgram.getType() == PaoType.LM_NEST_PROGRAM && loadProgram.getOperationalState() != OperationalState.ManualOnly) {
-                errors.reject(ApiErrorDetails.TYPE_MISMATCH.getCodeString(), new Object[] { loadProgram.getOperationalState() }, "");
+                String typeMisMatchI18nText = accessor.getMessage(key + "notSupportedOperationalState", PaoType.LM_NEST_PROGRAM,
+                        loadProgram.getOperationalState());
+                errors.reject(ApiErrorDetails.TYPE_MISMATCH_GLOBAL_ERROR.getCodeString(), new Object[] { typeMisMatchI18nText },
+                        "");
             }
         }
 
