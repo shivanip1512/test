@@ -118,7 +118,10 @@ LM_SEP_PROGRAM:
     gears:
       type: array
       items:
-        $ref: '#/NoControl'
+        anyOf:
+          - $ref: '#/NoControl'
+          - $ref: '#/SepCycle'
+          - $ref: '#/SepTemperatureOffset'
     controlWindow:
       $ref: '#/controlWindow'
     assignedGroups:
