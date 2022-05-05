@@ -29,6 +29,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.http.converter.HttpMessageNotReadableException;
 import org.springframework.http.converter.HttpMessageNotWritableException;
 import org.springframework.validation.BindingResult;
+import org.springframework.validation.ObjectError;
 import org.springframework.web.HttpMediaTypeNotSupportedException;
 import org.springframework.web.HttpRequestMethodNotSupportedException;
 import org.springframework.web.bind.MethodArgumentNotValidException;
@@ -593,9 +594,15 @@ public class ApiExceptionHandler extends ResponseEntityExceptionHandler {
             if (bindingResult == null || CollectionUtils.isEmpty(bindingResult.getGlobalErrors())) {
                 apiErrors = new ApiErrorModel(errorDetails, requestUri, uniqueKey);
             } else {
-                MessageSourceAccessor messageSourceAccessor = messageSourceResolver.getMessageSourceAccessor(YukonUserContext.system);
-                String i18nMessage = messageSourceAccessor.getMessage("yukon.web.error." + bindingResult.getGlobalError().getCode(),
-                        bindingResult.getGlobalError().getArguments());
+                MessageSourceAccessor messageSourceAccessor = messageSourceResolver
+                        .getMessageSourceAccessor(YukonUserContext.system);
+                String i18nMessage = StringUtils.EMPTY;
+                for (ObjectError error : bindingResult.getGlobalErrors()) {
+                    if (StringUtils.isNotBlank(i18nMessage)) {
+                        i18nMessage = i18nMessage.concat(", ");
+                    }
+                    i18nMessage = i18nMessage.concat( messageSourceAccessor.getMessage("yukon.web.error." + error.getCode(), error.getArguments()));
+                }
                 apiErrors = new ApiErrorModel(errorDetails, i18nMessage, requestUri, uniqueKey);
             }
         } else {
