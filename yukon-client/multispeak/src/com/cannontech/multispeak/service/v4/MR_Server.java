@@ -4,6 +4,7 @@ import java.util.Calendar;
 import java.util.List;
 
 import com.cannontech.msp.beans.v4.Meters;
+import com.cannontech.msp.beans.v4.ServiceLocation;
 import com.cannontech.msp.beans.v4.ErrorObject;
 import com.cannontech.msp.beans.v4.MeterID;
 
@@ -163,5 +164,14 @@ public interface MR_Server {
      */
     List<FormattedBlock> getReadingsByMeterIDAndFieldName(String meterNo, Calendar startDate, Calendar endDate,
             String lastReceived, String formattedBlockTemplateName) throws MultispeakWebServiceException;
+
+    /**
+     * service Location Changed Notification.
+     * 
+     * @param changedServiceLocations the changed service locations
+     * @return the error object[]
+     * @throws MultispeakWebServiceException the multispeak web service exception
+     */
+    public List<ErrorObject> serviceLocationChangedNotification(List<ServiceLocation> serviceLocations) throws MultispeakWebServiceException;
 
 }

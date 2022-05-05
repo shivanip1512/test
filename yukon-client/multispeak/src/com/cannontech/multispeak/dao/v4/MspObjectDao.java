@@ -3,6 +3,8 @@ package com.cannontech.multispeak.dao.v4;
 import java.util.List;
 
 import com.cannontech.msp.beans.v4.ErrorObject;
+import com.cannontech.msp.beans.v4.MspMeter;
+import com.cannontech.msp.beans.v4.ServiceLocation;
 import com.cannontech.multispeak.client.MultispeakVendor;
 import com.cannontech.multispeak.exceptions.MultispeakWebServiceClientException;
 
@@ -82,5 +84,15 @@ public interface MspObjectDao {
      */
     public ErrorObject getNotFoundErrorObject(String objectID, String notFoundObjectType, String nounType,
             String method, String userName, String exceptionMessage);
+
+    /**
+     * Returns a list of the MeterNumber(s) for the mspServiceLocation.
+     * If the interface/method is not supported by mspVendor, or if no object is found,
+     * an empty List<Meter> object is returned.
+     * @param mspServiceLocation The serviceLocation to get the Meter information for.
+     * @param mspVendor The MultiSpeak Vendor to ask for the information from.
+     * @return
+     */
+    public List<MspMeter> getMspMetersByServiceLocation(ServiceLocation mspServiceLocation, MultispeakVendor vendor);
 
 }

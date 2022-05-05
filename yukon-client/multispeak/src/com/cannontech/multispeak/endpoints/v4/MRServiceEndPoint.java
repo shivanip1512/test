@@ -16,16 +16,17 @@ import com.cannontech.msp.beans.v4.ArrayOfErrorObject;
 import com.cannontech.msp.beans.v4.ArrayOfFormattedBlock;
 import com.cannontech.msp.beans.v4.ArrayOfMeterID1;
 import com.cannontech.msp.beans.v4.ArrayOfMeterReading1;
+import com.cannontech.msp.beans.v4.ArrayOfServiceLocation1;
 import com.cannontech.msp.beans.v4.ArrayOfString;
 import com.cannontech.msp.beans.v4.ArrayOfString18;
 import com.cannontech.msp.beans.v4.CancelUsageMonitoring;
 import com.cannontech.msp.beans.v4.CancelUsageMonitoringResponse;
 import com.cannontech.msp.beans.v4.ErrorObject;
 import com.cannontech.msp.beans.v4.FormattedBlock;
-import com.cannontech.msp.beans.v4.GetLatestReadingByFieldName;
-import com.cannontech.msp.beans.v4.GetLatestReadingByFieldNameResponse;
 import com.cannontech.msp.beans.v4.GetAMRSupportedMeters;
 import com.cannontech.msp.beans.v4.GetAMRSupportedMetersResponse;
+import com.cannontech.msp.beans.v4.GetLatestReadingByFieldName;
+import com.cannontech.msp.beans.v4.GetLatestReadingByFieldNameResponse;
 import com.cannontech.msp.beans.v4.GetLatestReadingByMeterID;
 import com.cannontech.msp.beans.v4.GetLatestReadingByMeterIDAndFieldName;
 import com.cannontech.msp.beans.v4.GetLatestReadingByMeterIDAndFieldNameResponse;
@@ -54,6 +55,9 @@ import com.cannontech.msp.beans.v4.Meters;
 import com.cannontech.msp.beans.v4.ObjectFactory;
 import com.cannontech.msp.beans.v4.PingURL;
 import com.cannontech.msp.beans.v4.PingURLResponse;
+import com.cannontech.msp.beans.v4.ServiceLocation;
+import com.cannontech.msp.beans.v4.ServiceLocationChangedNotification;
+import com.cannontech.msp.beans.v4.ServiceLocationChangedNotificationResponse;
 import com.cannontech.multispeak.client.MultispeakDefines;
 import com.cannontech.multispeak.client.v4.MultispeakFuncs;
 import com.cannontech.multispeak.exceptions.MultispeakWebServiceException;
@@ -331,6 +335,23 @@ public class MRServiceEndPoint {
         arrayOfFormattedBlock.getFormattedBlock().addAll(formattedBlocks);
         getLatestReadingByFieldNameResponse.setGetLatestReadingByFieldNameResult(arrayOfFormattedBlock);
         return getLatestReadingByFieldNameResponse;
+    }
+    
+    @PayloadRoot(localPart = "ServiceLocationChangedNotification", namespace = MultispeakDefines.NAMESPACE_v4)
+    public @ResponsePayload ServiceLocationChangedNotificationResponse serviceLocationChangedNotification(
+            @RequestPayload ServiceLocationChangedNotification serviceLocationChangedNotification)
+            throws MultispeakWebServiceException {
+        ServiceLocationChangedNotificationResponse response = objectFactory.createServiceLocationChangedNotificationResponse();
+        
+        ArrayOfServiceLocation1 ArrOfServiceLocations = serviceLocationChangedNotification.getChangedServiceLocations();
+        List<ServiceLocation> serviceLocationList = null != ArrOfServiceLocations ? ArrOfServiceLocations
+                .getServiceLocation() : null;
+        List<ErrorObject> errorObjects = mr_server
+                .serviceLocationChangedNotification(ListUtils.emptyIfNull(serviceLocationList));
+        
+        ArrayOfErrorObject arrayOfErrorObject = multispeakFuncs.toArrayOfErrorObject(errorObjects);
+        response.setServiceLocationChangedNotificationResult(arrayOfErrorObject);
+        return response;
     }
 
 }

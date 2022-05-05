@@ -1,5 +1,6 @@
 package com.cannontech.multispeak.client.v4;
 
+import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 
@@ -8,6 +9,7 @@ import javax.xml.soap.MimeHeaders;
 import javax.xml.soap.SOAPException;
 import javax.xml.soap.SOAPMessage;
 
+import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.logging.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -25,9 +27,17 @@ import com.cannontech.common.exception.BadAuthenticationException;
 import com.cannontech.common.exception.PasswordExpiredException;
 import com.cannontech.core.dao.NotFoundException;
 import com.cannontech.database.data.lite.LiteYukonUser;
+import com.cannontech.msp.beans.v4.ArrayOfElectricMeter;
 import com.cannontech.msp.beans.v4.ArrayOfErrorObject;
+import com.cannontech.msp.beans.v4.ArrayOfGasMeter;
+import com.cannontech.msp.beans.v4.ArrayOfWaterMeter;
 import com.cannontech.msp.beans.v4.ErrorObject;
+import com.cannontech.msp.beans.v4.Meters;
+import com.cannontech.msp.beans.v4.MspMeter;
 import com.cannontech.msp.beans.v4.ObjectFactory;
+import com.cannontech.msp.beans.v4.ElectricMeter;
+import com.cannontech.msp.beans.v4.WaterMeter;
+import com.cannontech.msp.beans.v4.GasMeter;
 import com.cannontech.multispeak.client.MessageContextHolder;
 import com.cannontech.multispeak.client.MultiSpeakVersion;
 import com.cannontech.multispeak.client.MultispeakDefines;
@@ -253,6 +263,31 @@ public class MultispeakFuncs extends MultispeakFuncsBase {
             arrayOfErrorObject.getErrorObject().addAll(errorObjects);
         }
         return arrayOfErrorObject;
+    }
+
+    public List<MspMeter> getMspMeters(Meters meters) {
+        List<MspMeter> mspMeters = new ArrayList<>();
+
+        ArrayOfElectricMeter ArrOfElectricMeters = meters.getElectricMeters();
+        List<ElectricMeter> electricMeters = (null != ArrOfElectricMeters) ? ArrOfElectricMeters.getElectricMeter() : null;
+        if (CollectionUtils.isNotEmpty(electricMeters)) {
+            mspMeters.addAll(electricMeters);
+        }
+
+        ArrayOfWaterMeter ArrOfWaterMeters = meters.getWaterMeters();
+        List<WaterMeter> waterMeters = (null != ArrOfWaterMeters) ? ArrOfWaterMeters.getWaterMeter() : null;
+        if (CollectionUtils.isNotEmpty(waterMeters)) {
+            mspMeters.addAll(waterMeters);
+        }
+
+        ArrayOfGasMeter ArrOfGasMeters = meters.getGasMeters();
+        List<GasMeter> gasMeters = null != ArrOfGasMeters ? ArrOfGasMeters.getGasMeter() : null;
+        if (CollectionUtils.isNotEmpty(gasMeters)) {
+            mspMeters.addAll(gasMeters);
+        }
+
+        return mspMeters;
+
     }
 
 }

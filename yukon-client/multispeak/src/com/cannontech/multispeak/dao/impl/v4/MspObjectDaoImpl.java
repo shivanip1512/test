@@ -12,11 +12,16 @@ import com.cannontech.database.data.point.PointTypes;
 import com.cannontech.database.db.point.SystemLog;
 import com.cannontech.message.dispatch.message.SystemLogHelper;
 import com.cannontech.msp.beans.v4.ErrorObject;
+import com.cannontech.msp.beans.v4.GetMeterByServiceLocationID;
+import com.cannontech.msp.beans.v4.GetMeterByServiceLocationIDResponse;
 import com.cannontech.msp.beans.v4.GetMethods;
 import com.cannontech.msp.beans.v4.GetMethodsResponse;
+import com.cannontech.msp.beans.v4.Meters;
+import com.cannontech.msp.beans.v4.MspMeter;
 import com.cannontech.msp.beans.v4.ObjectFactory;
 import com.cannontech.msp.beans.v4.PingURL;
 import com.cannontech.msp.beans.v4.PingURLResponse;
+import com.cannontech.msp.beans.v4.ServiceLocation;
 import com.cannontech.multispeak.client.MultispeakDefines;
 import com.cannontech.multispeak.client.MultispeakVendor;
 import com.cannontech.multispeak.client.core.v4.CBClient;
@@ -30,7 +35,6 @@ import com.cannontech.multispeak.client.core.v4.OAClient;
 import com.cannontech.multispeak.client.core.v4.ODClient;
 import com.cannontech.multispeak.client.core.v4.SCADAClient;
 import com.cannontech.multispeak.client.v4.MultispeakFuncs;
-import com.cannontech.multispeak.dao.impl.v4.MspObjectDaoImpl;
 import com.cannontech.multispeak.dao.v4.MspObjectDao;
 import com.cannontech.multispeak.exceptions.MultispeakWebServiceClientException;
 import com.google.common.collect.Lists;
@@ -203,4 +207,41 @@ public class MspObjectDaoImpl implements MspObjectDao {
                 "Was NOT found in Yukon");
     }
 
+    @Override
+    public List<MspMeter> getMspMetersByServiceLocation(ServiceLocation mspServiceLocation, MultispeakVendor vendor) {
+        return getMspMetersByServiceLocation(mspServiceLocation.getObjectID(), vendor);
+
+    }
+    
+    
+    private List<MspMeter> getMspMetersByServiceLocation(String serviceLocation, MultispeakVendor mspVendor) {
+
+        List<MspMeter> listOfMeters = new ArrayList<>();
+        String endpointUrl = multispeakFuncs.getEndpointUrl(mspVendor, MultispeakDefines.CB_Server_STR);
+
+        try {
+            long start = System.currentTimeMillis();
+            log.debug("Begin call to getMspMetersByServiceLocation for ServLoc: " + serviceLocation);
+   
+            GetMeterByServiceLocationID getMeterByServLocID = objectFactory.createGetMeterByServiceLocationID();
+            getMeterByServLocID.setServiceLocationID(serviceLocation);
+            GetMeterByServiceLocationIDResponse getMeterByMeterNoResponse = cbClient.getMeterByServiceLocationID(mspVendor,
+                    endpointUrl, getMeterByServLocID);
+            Meters meters = getMeterByMeterNoResponse.getGetMeterByServiceLocationIDResult();
+       
+            if (meters != null) {
+                listOfMeters = multispeakFuncs.getMspMeters(meters);
+            }
+       
+            log.debug("End call to getMspMetersByServiceLocation for ServLoc:" + serviceLocation + "  (took "
+                    + (System.currentTimeMillis() - start) + " millis)");
+
+        } catch (MultispeakWebServiceClientException e) {
+            log.error("TargetService: " + endpointUrl + " - getMspMetersByServiceLocation (" + mspVendor.getCompanyName()
+                    + ") for ServLoc: " + serviceLocation);
+            log.error("MultispeakWebServiceClientException: " + e.getMessage());
+        }
+        return listOfMeters;
+    }
+    
 }
