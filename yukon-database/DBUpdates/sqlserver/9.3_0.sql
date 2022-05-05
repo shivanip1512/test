@@ -90,6 +90,13 @@ WHERE RolePropertyID = -90050
 INSERT INTO DBUpdates VALUES ('YUK-26210-2', '9.3.0', GETDATE());
 /* @end YUK-26210-2 */
 
+/* @start YUK-26401 */
+ALTER TABLE RegulatorToZoneMapping
+ADD FeederId NUMERIC NULL;
+
+INSERT INTO DBUpdates VALUES ('YUK-26401', '9.3.0', GETDATE());
+/* @end YUK-26401 */
+
 /***********************************************************************************/
 /* VERSION INFO                                                                    */
 /* Inserted when update script is run, stays commented out until the release build */
