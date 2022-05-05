@@ -1,8 +1,8 @@
 package com.cannontech.common.pao.meter.model;
 
 import java.util.Comparator;
+import java.util.HashMap;
 import java.util.HashSet;
-import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.stream.Collectors;
@@ -11,17 +11,18 @@ import javax.annotation.PostConstruct;
 
 import org.springframework.beans.factory.annotation.Autowired;
 
+import com.cannontech.common.config.ConfigurationSource;
+import com.cannontech.common.config.MasterConfigBoolean;
 import com.cannontech.common.i18n.DisplayableEnum;
 import com.cannontech.common.pao.PaoType;
 import com.cannontech.common.pao.definition.dao.PaoDefinitionDao;
 import com.cannontech.common.pao.definition.model.PaoDefinition;
-import com.google.common.collect.ImmutableMap;
-import com.google.common.collect.ImmutableSet;
 
 public class MeterTypeHelper {
     
     private static Map<MeterGroup, Set<PaoType>> createGroupedMeters;
     @Autowired private PaoDefinitionDao paoDefDao;
+    @Autowired private ConfigurationSource configurationSource;
 
     
     public enum MeterGroup implements DisplayableEnum  {
@@ -58,7 +59,7 @@ public class MeterTypeHelper {
     
     private void buildCreateMeterGroups() { 
         
-        ImmutableMap.Builder<MeterGroup, Set<PaoType>> allGroupedBuilder = ImmutableMap.builder();
+        HashMap<MeterGroup, Set<PaoType>> allGroupedBuilder = new HashMap<>();
         
         Set<PaoDefinition> creatableDefs = paoDefDao.getCreatablePaoDefinitions();
         Set<PaoType> creatable = new HashSet<>(); 
@@ -66,21 +67,21 @@ public class MeterTypeHelper {
         
         Comparator<PaoType> byDbString = (PaoType o1, PaoType o2) -> o1.getDbString().compareTo(o2.getDbString());
 
-        ImmutableSet.Builder<PaoType> mctMetersBuilder = ImmutableSet.builder();
+        HashSet<PaoType> mctMetersBuilder = new HashSet<>();
         mctMetersBuilder.addAll(PaoType.getMctTypes().stream()
                  .filter(type -> creatable.contains(type))
                  .sorted(byDbString).collect(Collectors.toList()));
-        allGroupedBuilder.put(MeterGroup.MCT, mctMetersBuilder.build());
+        allGroupedBuilder.put(MeterGroup.MCT, mctMetersBuilder);
         
-        ImmutableSet.Builder<PaoType> rfMetersBuilder = ImmutableSet.builder();
+        HashSet<PaoType> rfMetersBuilder = new HashSet<>();
         rfMetersBuilder.addAll(PaoType.getRfMeterTypes().stream()
                   .filter(type -> creatable.contains(type))
                   .sorted(byDbString).collect(Collectors.toList()));
-        allGroupedBuilder.put(MeterGroup.RF_MESH, rfMetersBuilder.build());
+        allGroupedBuilder.put(MeterGroup.RF_MESH, rfMetersBuilder);
         
-        ImmutableSet.Builder<PaoType> virtualMeterBuilder = ImmutableSet.builder();
+        HashSet<PaoType> virtualMeterBuilder = new HashSet<>();
         virtualMeterBuilder.add(PaoType.VIRTUAL_METER);
-        allGroupedBuilder.put(MeterGroup.VIRTUAL, virtualMeterBuilder.build());
+        allGroupedBuilder.put(MeterGroup.VIRTUAL, virtualMeterBuilder);
 
         // YUK-17216 asked for these to not be included, at least for now.
         /*ImmutableSet.Builder<PaoType> electronicMetersBuilder = ImmutableSet.builder();
@@ -92,10 +93,19 @@ public class MeterTypeHelper {
 
         // The attribute group map that is created can be used in conjunction with
         // the selectNameValue tag and groupItems="true".
-        createGroupedMeters = allGroupedBuilder.build();
+        createGroupedMeters = allGroupedBuilder;
+        removeMetersForRoleProperty();
     }
 
     public Map<MeterGroup, Set<PaoType>> getCreateGroupedMeters() {
         return createGroupedMeters;
+    }
+    
+    private void removeMetersForRoleProperty() {
+        // Remove DER Edge Coordinator device from Create Meter when Edge cparm is False
+        // YUK-26189
+        if (!configurationSource.getBoolean(MasterConfigBoolean.DER_EDGE_COORDINATOR)) {
+            createGroupedMeters.get(MeterGroup.RF_MESH).remove(PaoType.DER_EDGE_COORDINATOR);
+        }
     }
 }

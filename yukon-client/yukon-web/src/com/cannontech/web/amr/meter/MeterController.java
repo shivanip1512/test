@@ -506,15 +506,7 @@ public class MeterController {
     
     private void setupModel(ModelMap model) {
 
-        var groupedMeters = meterTypeHelper.getCreateGroupedMeters();
-
-        // Remove DER Edge Coordinator device from Create Meter when Edge cparm is False
-        // YUK-26189
-        if(!configurationSource.getBoolean(MasterConfigBoolean.DER_EDGE_COORDINATOR)) {
-            groupedMeters.get(MeterGroup.RF_MESH).remove(PaoType.DER_EDGE_COORDINATOR);
-        }
-
-        model.addAttribute("meterTypes", groupedMeters);
+        model.addAttribute("meterTypes", meterTypeHelper.getCreateGroupedMeters());
         
         LiteYukonPAObject[] routes = paoDao.getRoutesByType(PaoType.ROUTE_CCU, PaoType.ROUTE_MACRO);
         model.addAttribute("routes", routes);

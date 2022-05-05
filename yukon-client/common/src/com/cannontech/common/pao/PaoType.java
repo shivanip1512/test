@@ -366,6 +366,7 @@ public enum PaoType implements DisplayableEnum, DatabaseRepresentationSource {
     private final static ImmutableSet<PaoType> cloudLcrTypes;
     private final static ImmutableSet<PaoType> cellularTypes;
     private final static ImmutableSet<PaoType> noPointSupportMeterTypes;
+    private final static ImmutableSet<PaoType> derEdgeCoordinatorTypes;
 
     public final static int INVALID = -1;
     
@@ -759,8 +760,10 @@ public enum PaoType implements DisplayableEnum, DatabaseRepresentationSource {
         
         cloudLcrTypes = ImmutableSet.of(LCR6200C,
                                            LCR6600C);
-        
+
         noPointSupportMeterTypes = ImmutableSet.of(DER_EDGE_COORDINATOR);
+
+        derEdgeCoordinatorTypes = ImmutableSet.of(DER_EDGE_COORDINATOR);
 
         Builder<PaoType> capControlTypeBuilder = ImmutableSet.builder();
         for (PaoType paoType : PaoType.values()) {
@@ -844,7 +847,7 @@ public enum PaoType implements DisplayableEnum, DatabaseRepresentationSource {
           );
         
         rfElectricTypes = Sets.difference(rfMeterTypes, Sets.union(waterMeterTypes, gasMeterTypes)).immutableCopy();
-        
+
         rfMeterTypesThatSupportPoints = Sets.difference(rfMeterTypes, noPointSupportMeterTypes).immutableCopy();
     }
     
@@ -1064,6 +1067,10 @@ public enum PaoType implements DisplayableEnum, DatabaseRepresentationSource {
         return rfMeterTypesThatSupportPoints.contains(this);
     }
 
+    public boolean isDerEdgeCoordinator() {
+        return derEdgeCoordinatorTypes.contains(this);
+    }
+
     private PaoType(int deviceTypeId, String dbString, PaoCategory paoCategory, PaoClass paoClass) {
         this.deviceTypeId = deviceTypeId;
         this.dbString = dbString;
@@ -1258,6 +1265,10 @@ public enum PaoType implements DisplayableEnum, DatabaseRepresentationSource {
 
     public static ImmutableSet<PaoType> getRfMeterTypesThatSupportPoints() {
         return rfMeterTypesThatSupportPoints;
+    }
+
+    public static ImmutableSet<PaoType> getDerEdgeCoordinatorTypes() {
+        return derEdgeCoordinatorTypes;
     }
 
     /**
