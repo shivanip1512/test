@@ -23,7 +23,7 @@ public enum ApiErrorDetails {
     ONLY_ONE_ALLOWED(111, "Only one Allowed", "Only one Allowed"), // code : 100111
     CONSTRAINT_VIOLATED(112, "Constraint Violated", "Constraint Violated"), // code : 100112
     FIELD_REQUIRED_GLOBAL_ERROR(113, "Required field", "Field is required."),// code : 100113
-    TYPE_MISMATCH_GLOBAL_ERROR(114, "Type mismatch", "Type mismatch."),// code : 100113
+    TYPE_MISMATCH_GLOBAL_ERROR(114, "Type mismatch", "Type mismatch."),// code : 100114
 
     // Validation Errors
     INVALID_VALUE(ApiErrorCategory.VALIDATION_FAILED, 101, "Invalid value", "Invalid value for the field."), // code : 101101
