@@ -55,6 +55,15 @@ public class YukonValidationUtilsCommon extends ValidationUtils {
         }
         return false;
     }
+    
+    public static boolean checkHexOnlyCharacter(String fieldValue) {
+        if (fieldValue != null) {
+            String whitelist = "^[a-fA-F0-9]+$";
+            Matcher isWhitelistedChars = Pattern.compile(whitelist).matcher(fieldValue);
+            return isWhitelistedChars.matches();
+        }
+        return false;
+    }
 
     /**
      * Return true if the provided String contains any characters from illegal XML characters ( " ' < > and & )
@@ -71,6 +80,7 @@ public class YukonValidationUtilsCommon extends ValidationUtils {
      * @deprecated - Use {LINK #checkIsBlank(String fieldValue, boolean fieldAllowsNull)}
      */
     // @Deprecated(since="7.5", forRemoval=true)
+    @Deprecated
     public static boolean checkIsBlank(String fieldValue, boolean fieldAllowsNull) {
         // Skips error message when the field allows null and the field value is null,
         // otherwise validates using isBlank.

@@ -27,7 +27,8 @@ public class RestApiWebApplicationInitializer implements WebApplicationInitializ
     
     private static final String[] contextPaths = {
             "/WEB-INF/contexts/api/api-context-ecobee.xml",
-            "/WEB-INF/contexts/api/api-context-aggregateIntervalDataReport.xml"
+            "/WEB-INF/contexts/api/api-context-aggregateIntervalDataReport.xml",
+            "/WEB-INF/contexts/api/api-context-derEdge.xml"
     };
     
     @Override
