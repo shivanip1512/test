@@ -555,7 +555,6 @@ public class VoltageFlatnessGraphServiceImpl implements VoltageFlatnessGraphServ
                     Collections.sort(phasePointList, positionOrderer);
                     VfLineSettings lineSettings = getLineSettingsForPhase(settings, phase);
                     String phaseString = settings.getPhaseString(phase);
-                    //switch parameter on VfLine from zone name to feeder name?????
                     VfLine phaseLine = new VfLine(graphId.getAndIncrement(), phaseString, feeder.getCcName(), 
                                                    phase, lineSettings, phasePointList);
                     lines.add(phaseLine);
