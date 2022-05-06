@@ -292,7 +292,7 @@ public class RfnPointMappingTest {
         rfnPointMapping.remove(PaoType.RFN430KV);
 
         // DER Edge Coordinator is unmapped in yukonPointMapping
-        rfnPointMapping.remove(PaoType.DER_EDGE_COORDINATOR);
+        rfnPointMapping.remove(PaoType.getNoPointSupportMeterTypes());
 
         
         rfnPointMapping.entrySet().stream()

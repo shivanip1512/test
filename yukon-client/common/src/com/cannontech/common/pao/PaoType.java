@@ -1067,6 +1067,10 @@ public enum PaoType implements DisplayableEnum, DatabaseRepresentationSource {
         return rfMeterTypesThatSupportPoints.contains(this);
     }
 
+    public boolean isNoPointSupportMeterTypes() {
+        return noPointSupportMeterTypes.contains(this);
+    }
+
     public boolean isDerEdgeCoordinator() {
         return derEdgeCoordinatorTypes.contains(this);
     }
@@ -1265,6 +1269,10 @@ public enum PaoType implements DisplayableEnum, DatabaseRepresentationSource {
 
     public static ImmutableSet<PaoType> getRfMeterTypesThatSupportPoints() {
         return rfMeterTypesThatSupportPoints;
+    }
+
+    public static ImmutableSet<PaoType> getNoPointSupportMeterTypes() {
+        return noPointSupportMeterTypes;
     }
 
     public static ImmutableSet<PaoType> getDerEdgeCoordinatorTypes() {
