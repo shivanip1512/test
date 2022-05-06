@@ -471,13 +471,21 @@ public class VoltageFlatnessGraphServiceImpl implements VoltageFlatnessGraphServ
                 double graphStartPosition = getGraphStartPositionForZone(zone);
 
                 for (RegulatorToZoneMapping regulatorToZone: zone.getRegulators()) {
-                    //Add the regulator (three for a threePhaseZone)
                     VfPoint regulatorGraphPoint = getRegulatorVfPoint(settings, userContext, regulatorToZone, 
                                                                       zone.getName(), graphStartPosition);
                     checkForStrategyOverride(regulatorGraphPoint, infos, userContext);
-                    //for now add all regulator points to all feeder lines - this will change
                     regulatorGraphPoint.setFeederId(feeder.getCcId());
-                    points.add(regulatorGraphPoint);
+                    //Add the regulator (three for a threePhaseZone)
+                    //if the zone is the parent zone add the regulator points to all feeders or if the regulator point is assigned to the current feeder add the point
+                    if (zone.getParentId() == null || regulatorToZone.getFeederId() == feeder.getCcId()) {
+                        points.add(regulatorGraphPoint);
+                    } else {
+                        if (regulatorToZone.getFeederId() == null) {
+                            if (!noFeederPoints.contains(regulatorGraphPoint)) {
+                                noFeederPoints.add(regulatorGraphPoint);
+                            }
+                        }
+                    }
                 }
 
                 //Add the cap banks
