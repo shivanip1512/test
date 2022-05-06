@@ -30,7 +30,6 @@ import com.cannontech.multispeak.client.core.v4.OAClient;
 import com.cannontech.multispeak.client.core.v4.ODClient;
 import com.cannontech.multispeak.client.core.v4.SCADAClient;
 import com.cannontech.multispeak.client.v4.MultispeakFuncs;
-import com.cannontech.multispeak.dao.impl.v4.MspObjectDaoImpl;
 import com.cannontech.multispeak.dao.v4.MspObjectDao;
 import com.cannontech.multispeak.exceptions.MultispeakWebServiceClientException;
 import com.google.common.collect.Lists;
@@ -69,6 +68,24 @@ public class MspObjectDaoImpl implements MspObjectDao {
             return errors;
         }
         return new ErrorObject[0];
+    }
+
+    @Override
+    public ErrorObject getErrorObject(String objectID, String errorMessage, String nounType, String method,
+            String userName) {
+        ErrorObject errorObject = new ErrorObject();
+
+        errorObject.setEventTime(MultispeakFuncs.toXMLGregorianCalendar(new Date()));
+
+        errorObject.setObjectID(objectID);
+        errorObject.setErrorString(errorMessage);
+        errorObject.setNounType(nounType);
+
+        String description = "ErrorObject: (ObjId:" + errorObject.getObjectID() + " Noun:" + errorObject.getNounType()
+                + " Message:" + errorObject.getErrorString() + ")";
+        logMSPActivity(method, description, userName);
+
+        return errorObject;
     }
 
     @Override
@@ -174,25 +191,6 @@ public class MspObjectDaoImpl implements MspObjectDao {
         ErrorObject errorObject = getErrorObject(objectID, notFoundObjectType + ": " + objectID + " - " + exceptionMessage + ".",
                 nounType,
                 method, userName);
-        return errorObject;
-    }
-
-    @Override
-    public ErrorObject getErrorObject(String objectID, String errorMessage, String nounType, String method,
-            String userName) {
-        ErrorObject errorObject = new ErrorObject();
-
-        errorObject.setEventTime(MultispeakFuncs.toXMLGregorianCalendar(new Date()));
-
-        errorObject.setObjectID(objectID);
-        errorObject.setErrorString(errorMessage);
-        errorObject.setNounType(nounType);
-
-        String description = "ErrorObject: (ObjId:" + errorObject.getObjectID() + " Noun:" + errorObject.getNounType()
-                + " Message:"
-                + errorObject.getErrorString() + ")";
-        logMSPActivity(method, description, userName);
-
         return errorObject;
     }
 
