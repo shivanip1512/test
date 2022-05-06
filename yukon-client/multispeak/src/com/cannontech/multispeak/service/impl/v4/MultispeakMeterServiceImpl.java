@@ -18,18 +18,12 @@ import org.springframework.transaction.support.TransactionTemplate;
 
 import com.cannontech.amr.meter.model.YukonMeter;
 import com.cannontech.amr.meter.search.dao.MeterSearchDao;
-import com.cannontech.amr.meter.search.model.FilterBy;
-import com.cannontech.amr.meter.search.model.MeterSearchField;
-import com.cannontech.amr.meter.search.model.MeterSearchOrderBy;
-import com.cannontech.amr.meter.search.model.StandardFilterBy;
 import com.cannontech.clientutils.YukonLogManager;
-import com.cannontech.common.config.MasterConfigBoolean;
 import com.cannontech.common.device.groups.editor.dao.SystemGroupEnum;
 import com.cannontech.common.device.service.DeviceUpdateService;
 import com.cannontech.common.exception.InsufficientMultiSpeakDataException;
 import com.cannontech.common.pao.model.PaoLocation;
 import com.cannontech.common.rfn.message.location.Origin;
-import com.cannontech.common.search.result.SearchResults;
 import com.cannontech.core.dao.NotFoundException;
 import com.cannontech.core.roleproperties.MspPaoNameAliasEnum;
 import com.cannontech.core.roleproperties.MultispeakManagePaoLocation;
@@ -60,7 +54,6 @@ import com.cannontech.multispeak.service.v4.MultispeakMeterService;
 import com.cannontech.system.GlobalSettingType;
 import com.cannontech.system.dao.GlobalSettingDao;
 import com.cannontech.yukon.BasicServerConnection;
-import com.google.common.collect.Lists;
 
 public class MultispeakMeterServiceImpl extends MultispeakMeterServiceBase implements MultispeakMeterService {
 
@@ -645,32 +638,6 @@ public class MultispeakMeterServiceImpl extends MultispeakMeterServiceBase imple
         }
         log.warn("Extension " + extensionName + " key was not found. Returning default value: " + defaultValue);
         return defaultValue;
-    }
-
-    /**
-     * Helper method to search devices by PaoName for filterValue. Performs
-     * (starts with) search on PaoName. If MSP_EXACT_SEARCH_PAONAME is set, then
-     * an exact lookup of paoName for fitlerValue is performed.
-     */
-    private List<YukonMeter> searchForMetersByPaoName(String filterValue) {
-
-        boolean exactSearch = configurationSource.getBoolean(MasterConfigBoolean.MSP_EXACT_SEARCH_PAONAME);
-        List<YukonMeter> meters = Lists.newArrayList();
-        if (exactSearch) {
-            YukonMeter meter = meterDao.findForPaoName(filterValue);
-            if (meter != null) {
-                meters.add(meter);
-            }
-        } else {
-            List<FilterBy> searchFilter = new ArrayList<>(1);
-            FilterBy filterBy = new StandardFilterBy("deviceName", MeterSearchField.PAONAME);
-            filterBy.setFilterValue(filterValue);
-            searchFilter.add(filterBy);
-            MeterSearchOrderBy orderBy = new MeterSearchOrderBy(MeterSearchField.PAONAME.toString(), true);
-            SearchResults<YukonMeter> result = meterSearchDao.search(searchFilter, orderBy, 0, 25);
-            meters.addAll(result.getResultList());
-        }
-        return meters;
     }
 
 }
