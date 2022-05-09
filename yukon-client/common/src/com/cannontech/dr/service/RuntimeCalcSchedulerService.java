@@ -222,6 +222,8 @@ public abstract class RuntimeCalcSchedulerService {
                     .map(DateTime::toInstant)
                     .orElse(null);
 
+        log.debug("End Range:{}", endOfRange);
+
         if (endOfRange == null) {
             log.debug("No recent point data found for " + device);
             return;
@@ -241,16 +243,25 @@ public abstract class RuntimeCalcSchedulerService {
         Map<PaoPointIdentifier, Integer> relayStatusIdLookup = Maps.transformValues(relayStatusValues, PointValueHolder::getId);
 
         Set<Integer> relayStatusPointIds = Sets.newHashSet(relayStatusIdLookup.values());
+        // list of Load state and Activation State per relay
 
         // Latest data log point timestamp
         Instant startOfRange = getLatestInitializedTimestamp(dataLogValues.values())
                 .map(DateTime::toInstant)
                 .orElse(null);
 
+        log.debug("Start Range:{}", startOfRange);
+
+        if (startOfRange == endOfRange) {
+            throw new IllegalArgumentException("log range is 0");
+        }
+
         // Limit the range of data calculated. Default: 30 days back.
         // So if the latest initialized timestamp is older, ignore it, and limit the range to e.g. 30 days.
         startOfRange = getLimitedStartOfRange(startOfRange, historyLimitDays, DateTime.now());
         
+        log.debug("Start Range after limiter:{}", startOfRange);
+
         var logRange = Range.inclusive(startOfRange, endOfRange);
 
         // Get all relay state information in RPH since the last data log update, and split it by point ID
@@ -258,9 +269,14 @@ public abstract class RuntimeCalcSchedulerService {
                 .getPointData(relayStatusPointIds, logRange, false, Order.FORWARD).stream()
                 .collect(Collectors.groupingBy(PointValueHolder::getId));
 
+        log.debug("Relay Status Data since the last data log update :{}", relayStatusData);
+
         // Add in any relay information that's outside of the range
         relayStatusIdLookup
                 .forEach((ppi, pointId) -> relayStatusData.computeIfAbsent(pointId, x -> List.of(relayStatusValues.get(ppi))));
+
+        log.debug("Relay Status Id Lookup :{}", relayStatusIdLookup);
+        log.debug("Relay Status Data since the last data log update plus missing stuff :{}", relayStatusData);
 
         calculateRelayDataLogs(device, dataLogIdLookup, relayStatusIdLookup, logRange, relayStatusData);
     }
@@ -308,6 +324,12 @@ public abstract class RuntimeCalcSchedulerService {
             Map<PaoPointIdentifier, Integer> relayStatusIdLookup,
             Map<PaoPointIdentifier, Integer> dataLogIdLookup) {
 
+        log.debug("\nLog Range: {} \nRelay Status Data: {} \nIs Runtime?: {} \nRelay Number: {}",
+                logRange, relayStatusData, isRuntime, relayNumber);
+
+        log.trace("\nRelay Status Attribute: {} \nRelay Status Id Lookup: {} \nData Log Id Lookup: {}",
+                relayStatusAttribute, relayStatusIdLookup, dataLogIdLookup);
+
         // Map of point ID to its RelayLogInterval
         Map<Integer, RelayLogInterval> dataLogIntervals = intervals.entrySet().stream()
                 // Start with the attribute...
@@ -337,12 +359,14 @@ public abstract class RuntimeCalcSchedulerService {
                     Iterable<PointValueHolder> relayStatuses = addBoundaryValues(relayStatusData.get(relayStatusPointId),
                             logRange);
 
+                    log.trace("Relay Statuses after boundry values :{}", relayStatuses);
+
                     if (isRuntime) {
                         // Transform the raw relay state data into runtime status
                         Iterable<? extends DatedStatus> statuses = IterableUtils.toList(relayStatuses).stream()
                                 .map(status -> getRuntimeStatusFromPoint(status)).collect(Collectors.toList());
                         log.debug(
-                                "Device:{} Relay Number:{} Point id:{} Runtime:{} Relay Statuses (rph boundry values):{} Range:{}",
+                                "Device:{} Relay Number:{} Point id:{} Runtime:{} Relay Statuses (rph boundry values):{} Range:{} DataLogIntervals:{}",
                                 device, relayNumber, relayStatusPointId, isRuntime, statuses, logRange, dataLogIntervals);
                         insertRelayRuntime(device, dataLogIntervals, statuses, logRange, relayNumber);
                     } else {
@@ -350,7 +374,7 @@ public abstract class RuntimeCalcSchedulerService {
                         Iterable<? extends DatedStatus> statuses = IterableUtils.toList(relayStatuses).stream()
                                 .map(status -> getShedtimeStatusFromPoint(status)).collect(Collectors.toList());
                         log.debug(
-                                "Device:{} Relay Number:{} Point id:{} Runtime:{} Relay Statuses (rph boundry values):{} Range:{}",
+                                "Device:{} Relay Number:{} Point id:{} Runtime:{} Relay Statuses (rph boundry values):{} Range:{} DataLogIntervals:{}",
                                 device, relayNumber, relayStatusPointId, isRuntime, statuses, logRange, dataLogIntervals);
                         insertRelayShedtime(device, dataLogIntervals, statuses, logRange);
                     }
@@ -369,6 +393,7 @@ public abstract class RuntimeCalcSchedulerService {
      */
     public Iterable<PointValueHolder> addBoundaryValues(Iterable<PointValueHolder> relayStatuses, Range<Instant> logRange) {
 
+        log.trace("Relay Statuses before boundry values :{}", relayStatuses);
         relayStatuses = addPrecedingValue(relayStatuses, logRange);
 
         relayStatuses = addTrailingValue(relayStatuses, logRange);
@@ -378,11 +403,20 @@ public abstract class RuntimeCalcSchedulerService {
 
     private Iterable<PointValueHolder> addPrecedingValue(Iterable<PointValueHolder> relayStatuses, Range<Instant> logRange) {
         PointValueHolder firstStatus = Iterables.getFirst(relayStatuses, null);
+        log.trace("First Status :{}", firstStatus);
         if (firstStatus != null) {
-            var firstStatusInstant = new Instant(firstStatus.getPointDataTimeStamp().getTime());
             // Get the entry preceding the range, if the start of the range is defined
+            var firstStatusInstant = new Instant(firstStatus.getPointDataTimeStamp().getTime());
             if (logRange.getMin() != null && logRange.getMin().isBefore(firstStatusInstant)) {
-                relayStatuses = Iterables.concat(getPrecedingArchivedValue(firstStatus), relayStatuses);
+                List<PointValueHolder> previousStatus = getPrecedingArchivedValue(firstStatus);
+                log.trace("Previous Status :{}", previousStatus);
+                relayStatuses = Iterables.concat(previousStatus, relayStatuses);
+                if (!previousStatus.isEmpty()) {
+                    List<PointValueHolder> previousPreviousStatus = getPrecedingArchivedValue(Iterables.getFirst(previousStatus, null));
+                    log.trace("Previous Previous Status :{}", previousPreviousStatus);
+                    relayStatuses = Iterables.concat(previousPreviousStatus, relayStatuses);
+                }
+
             }
         }
         return relayStatuses;
@@ -479,7 +513,7 @@ public abstract class RuntimeCalcSchedulerService {
             Integer relayDataLogPointId, RelayLogInterval interval) {
         Map<DateTime, Integer> runtimeSeconds = runtimeCalcService.getIntervalRelayLogs(statuses, interval);
 
-        log.trace("Inserting data logs for device: {}", device);
+        log.trace("Inserting data logs for device: {}, Runtime Seconds: {}", device, runtimeSeconds);
 
         if (runtimeSeconds.isEmpty()) {
             log.info("Skipping data log insertion for {}. No new data is available for calculation.", device.getPaoIdentifier());
@@ -493,6 +527,7 @@ public abstract class RuntimeCalcSchedulerService {
                 .collect(Collectors.toList());
         try {
             asyncDynamicDataSource.putValues(pointDatas);
+            log.trace("Inserting point data to async cache {}", pointDatas);
         } catch (DispatchNotConnectedException e) {
             log.error("Unable to insert data logs for " + device.getPaoIdentifier()
                     + " - no dispatch connection.  Will attempt to recalculate on next execution.", e);
