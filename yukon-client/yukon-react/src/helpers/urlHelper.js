@@ -1,5 +1,4 @@
-const CURRENT_URL = new URL(window.location.href);
-const API_AND_REACT_URL = CURRENT_URL.origin;
+const API_AND_REACT_URL = new URL(window.location.href).origin;
 
 export function getYukonApiUrl() {
     var apiUrl = API_AND_REACT_URL;
