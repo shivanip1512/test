@@ -91,14 +91,11 @@ public class MultispeakFuncs extends MultispeakFuncsBase {
             String password = getAtributeFromSOAPHeader(soapHeader, "Pwd");
             LiteYukonUser user = authenticationService.login(username, password);
             return user;
-
         } catch (PasswordExpiredException e) {
-            throw new MultispeakWebServiceException("Password expired.", e);
+            throw new MultispeakWebServiceException("Password expired", e);
         } catch (BadAuthenticationException e) {
-            throw new MultispeakWebServiceException("User authentication failed.", e);
+            throw new MultispeakWebServiceException("User Authentication Failed", e);
         }
-    
-        
     }
 
     /**
