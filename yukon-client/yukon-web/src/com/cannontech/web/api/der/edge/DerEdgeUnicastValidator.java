@@ -19,12 +19,9 @@ public class DerEdgeUnicastValidator extends SimpleValidator<EdgeUnicastRequest>
     
     @Override
     protected void doValidation(EdgeUnicastRequest request, Errors errors) {
-        
-        //TODO validate paoName, paoType, or pao?
-        
         String payload = request.getPayload();
         validationUtils.checkIsBlank(errors, "payload", payload, false, "Payload");
-        validationUtils.checkHexOnlyCharacter(errors, "payload", payload, "Payload"); //^[a-zA-Z0-9]+$
+        validationUtils.checkHexOnlyCharacter(errors, "payload", payload, "Payload");
         checkIfLengthDivisibleByTwo(errors, payload); //(hex bytes should each be 2 characters)
         
         //TODO payload Max length - 1280 - Does this need to be shorter for E2E packet limit? Does OSCORE affect size?
@@ -34,8 +31,8 @@ public class DerEdgeUnicastValidator extends SimpleValidator<EdgeUnicastRequest>
     
     private void checkIfLengthDivisibleByTwo(Errors errors, String payload) {
         if (payload.length() % 2 != 0) {
-            errors.rejectValue("payload", ApiErrorDetails.INVALID_FIELD_LENGTH.getCodeString(),
-                    new Object[] { payload }, "");
+            errors.rejectValue("payload", ApiErrorDetails.INVALID_LENGTH_EVEN.getCodeString(),
+                    new Object[] {"Payload"}, "Payload length must be even.");
         }
     }
 }

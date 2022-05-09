@@ -60,7 +60,7 @@ public class YukonValidationUtilsCommon extends ValidationUtils {
         if (fieldValue != null) {
             String whitelist = "^[a-fA-F0-9]+$";
             Matcher isWhitelistedChars = Pattern.compile(whitelist).matcher(fieldValue);
-            return isWhitelistedChars.matches();
+            return !isWhitelistedChars.matches();
         }
         return false;
     }

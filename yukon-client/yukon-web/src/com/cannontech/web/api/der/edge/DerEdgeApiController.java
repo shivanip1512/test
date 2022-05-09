@@ -11,7 +11,6 @@ import org.springframework.web.bind.WebDataBinder;
 import org.springframework.web.bind.annotation.InitBinder;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.cannontech.common.pao.YukonPao;
@@ -20,7 +19,6 @@ import com.cannontech.user.YukonUserContext;
 import com.cannontech.web.api.der.edge.service.DerEdgeCommunicationService;
 
 @RestController
-@RequestMapping("/edge")
 //TODO - @CheckRoleProperty(YukonRoleProperty.EDGE_DR_PERMISSION)
 //TODO - after YUK-26189 merged - The endpoint should only accept requests if master.cfg setting is true
 //@CheckCparm(MasterConfigBoolean.DER_EDGE_COORDINATOR)
@@ -30,15 +28,20 @@ public class DerEdgeApiController {
     @Autowired private DerEdgeCommunicationService derEdgeCommunicationService;
     @Autowired private PaoDao paoDao;
     
-    @PostMapping("/unicast")
-    public ResponseEntity<Object> create(@Valid @RequestBody EdgeUnicastRequest unicastRequest, YukonUserContext userContext) {
+    @PostMapping("/unicastMessage")
+    public ResponseEntity<Object> create(@Valid @RequestBody EdgeUnicastRequest edgeUnicastRequest, YukonUserContext userContext) {
         
         //TODO: does the API return something nice when an invalid PaoType is used? could use findYukonPao to throw ourselves
         //ApiFieldError DOES_NOT_EXISTS
-        YukonPao pao = paoDao.getYukonPao(unicastRequest.getName(), unicastRequest.getType());
+        YukonPao pao = paoDao.getYukonPao(edgeUnicastRequest.getName(), edgeUnicastRequest.getType());
         
         //Convert payload string into byte[] for porter
-        byte[] payload = convertPayloadToBytes(unicastRequest.getPayload());
+        byte[] payload = null;
+        try {
+            payload = convertPayloadToBytes(edgeUnicastRequest.getPayload());
+        } catch (Exception e) {
+            throw new IllegalArgumentException("Invalid unicast payload.", e);
+        }
         
         short e2eId = derEdgeCommunicationService.sendUnicastRequest(pao, payload, userContext);
         
@@ -54,11 +57,12 @@ public class DerEdgeApiController {
      * @return the payload in the form of a byte array
      */
     private byte[] convertPayloadToBytes(String stringPayload) {
+        //TODO Java 17 - HexFormat.parseHex?
         BigInteger intValue = new BigInteger(stringPayload, 16 /*parse as hex*/);
         return intValue.toByteArray();
     }
     
-    @InitBinder("unicastRequest")
+    @InitBinder("edgeUnicastRequest")
     public void setBinder(WebDataBinder binder) {
         binder.addValidators(unicastValidator);
     }

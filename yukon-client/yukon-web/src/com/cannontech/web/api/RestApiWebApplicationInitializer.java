@@ -37,7 +37,7 @@ public class RestApiWebApplicationInitializer implements WebApplicationInitializ
         log.info("REST API servlet initializing.");
         if (log.isDebugEnabled()) {
             String paths = String.join(",\n", contextPaths);
-            log.info("Context paths: \n{}", paths);
+            log.debug("Context paths: \n{}", paths);
         }
         
         /*
