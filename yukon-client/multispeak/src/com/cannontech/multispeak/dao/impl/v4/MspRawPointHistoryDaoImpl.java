@@ -15,6 +15,7 @@ import com.cannontech.amr.meter.model.YukonMeter;
 import com.cannontech.clientutils.YukonLogManager;
 import com.cannontech.common.pao.PaoIdentifier;
 import com.cannontech.common.pao.attribute.model.BuiltInAttribute;
+import com.cannontech.common.pao.attribute.service.AttributeService;
 import com.cannontech.common.util.CtiUtilities;
 import com.cannontech.common.util.Range;
 import com.cannontech.common.util.SqlStatementBuilder;
@@ -22,13 +23,20 @@ import com.cannontech.core.dao.RawPointHistoryDao;
 import com.cannontech.core.dao.RawPointHistoryDao.Order;
 import com.cannontech.core.dynamic.PointValueQualityHolder;
 import com.cannontech.database.YukonJdbcTemplate;
+import com.cannontech.database.data.lite.LitePoint;
+import com.cannontech.database.data.lite.LiteYukonPAObject;
+import com.cannontech.database.data.lite.LiteYukonUser;
 import com.cannontech.msp.beans.v4.MeterReading;
+import com.cannontech.msp.beans.v4.ScadaAnalog;
 import com.cannontech.multispeak.block.v4.Block;
+import com.cannontech.multispeak.client.MspRawPointHistoryHelper;
 import com.cannontech.multispeak.dao.v4.FormattedBlockProcessingService;
 import com.cannontech.multispeak.dao.v4.MeterReadingProcessingService;
 import com.cannontech.multispeak.dao.v4.MspRawPointHistoryDao;
 import com.cannontech.multispeak.data.v4.MspBlockReturnList;
 import com.cannontech.multispeak.data.v4.MspMeterReadingReturnList;
+import com.cannontech.multispeak.data.v4.MspScadaAnalogReturnList;
+import com.google.common.collect.BiMap;
 import com.google.common.collect.ListMultimap;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
@@ -36,7 +44,10 @@ import com.google.common.collect.Maps;
 public class MspRawPointHistoryDaoImpl implements MspRawPointHistoryDao {
     private final Logger log = YukonLogManager.getLogger(MspRawPointHistoryDaoImpl.class);
 
+    @Autowired private AttributeService attributeService;
+    @Autowired private MspRawPointHistoryHelper mspRawPointHistoryHelper;
     @Autowired private MeterReadingProcessingService meterReadingProcessingService;
+    @Autowired private ScadaAnalogProcessingServiceImpl scadaAnalogProcessingServiceImpl;
     @Autowired private MeterRowMapper meterRowMapper;
     @Autowired private RawPointHistoryDao rawPointHistoryDao;
     @Autowired private YukonJdbcTemplate yukonJdbcTemplate;
@@ -92,7 +103,46 @@ public class MspRawPointHistoryDaoImpl implements MspRawPointHistoryDao {
 
         return mspMeterReadingReturn;
 
-    } 
+    }
+    
+    @Override
+    public MspScadaAnalogReturnList retrieveLatestScadaAnalogs(LiteYukonUser user) {
+
+        final Date timerStart = new Date();
+
+        List<LiteYukonPAObject> programs = mspRawPointHistoryHelper.getAuthorizedProgramsList(user);
+        EnumSet<BuiltInAttribute> attributesToLoad = EnumSet.of(BuiltInAttribute.CONNECTED_LOAD,
+                BuiltInAttribute.DIVERSIFIED_LOAD,
+                BuiltInAttribute.MAX_LOAD_REDUCTION,
+                BuiltInAttribute.AVAILABLE_LOAD_REDUCTION);
+        List<ScadaAnalog> scadaAnalogs = Lists.newArrayListWithExpectedSize(4 * programs.size());
+
+        // loop over programs, results will be returned in whatever order getProgramList returns the programs in
+        for (BuiltInAttribute attribute : attributesToLoad) {
+            BiMap<PaoIdentifier, LitePoint> programToPoint = attributeService.getPoints(programs, attribute);
+            Map<PaoIdentifier, PointValueQualityHolder> resultsForAttribute = rawPointHistoryDao.getSingleAttributeData(programs,
+                    attribute, false, null);
+            for (LiteYukonPAObject program : programs) {
+                LitePoint litePoint = programToPoint.get(program.getPaoIdentifier());
+                PointValueQualityHolder pointValueQualityHolder = resultsForAttribute.remove(program.getPaoIdentifier());
+
+                if (pointValueQualityHolder != null) {
+                    ScadaAnalog scadaAnalog = scadaAnalogProcessingServiceImpl.createScadaAnalog(program, litePoint,
+                            pointValueQualityHolder);
+                    scadaAnalogs.add(scadaAnalog);
+                }
+            }
+        }
+
+        MspScadaAnalogReturnList mspScadaAnalogs = new MspScadaAnalogReturnList();
+        mspScadaAnalogs.setScadaAnalogs(scadaAnalogs);
+        mspScadaAnalogs.setReturnFields(scadaAnalogs, scadaAnalogs.size() + 1);
+
+        log.debug("Retrieved " + scadaAnalogs.size() + " Latest ScadaAnalogs. ("
+                + (new Date().getTime() - timerStart.getTime()) * .001 + " secs)");
+
+        return mspScadaAnalogs;
+    }
     
     @Override
     public MspMeterReadingReturnList retrieveLatestMeterReading(ReadBy readBy, String readByValue, String lastReceived, int maxRecords) {

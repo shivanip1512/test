@@ -347,7 +347,7 @@ public class ItronRuntimeCalcServiceImplTest {
 
         ReflectionTestUtils.setField(itronRuntimeCalcService, "runtimeCalcService", new RuntimeCalcServiceImpl());
 
-        var mockPaoDao = createNiceMock(PaoDao.class);
+        PaoDao mockPaoDao = createNiceMock(PaoDao.class);
         
         expect(mockPaoDao.getLiteYukonPAObjectByType(PaoType.LCR6600S))
             .andReturn(Lists.newArrayList(lcr6600s));
@@ -359,7 +359,7 @@ public class ItronRuntimeCalcServiceImplTest {
         
         ReflectionTestUtils.setField(itronRuntimeCalcService, "paoDao", mockPaoDao);
         
-        var mockAttributeService = createStrictMock(AttributeService.class);
+        AttributeService mockAttributeService = createStrictMock(AttributeService.class);
 
         expect(mockAttributeService.findPaoMultiPointIdentifiersForAttributes(List.of(lcr6600s), ItronRelayDataLogs.getDataLogAttributes()))
             .andReturn(List.of(new PaoMultiPointIdentifier(lcr6600s, List.of(new PointIdentifier(lcr6600s_relay1_runtimeLog_15m.getPointTypeEnum(),
@@ -373,7 +373,7 @@ public class ItronRuntimeCalcServiceImplTest {
 
         //  Per device:
         //  getRecentData()
-        var mockPointDao = createNiceMock(PointDao.class);
+        PointDao mockPointDao = createNiceMock(PointDao.class);
         expect(mockPointDao.getLitePointsByPaObjectId(lcr6600s.getPaoIdentifier().getPaoId()))
             .andReturn(lcr6600s_points);
         replay(mockPointDao);
@@ -388,7 +388,7 @@ public class ItronRuntimeCalcServiceImplTest {
         DateTime interimRelayState = recentRelayState.minus(Duration.standardHours(2));
         DateTime previousRelayState = recentDataLog.minus(Duration.standardMinutes(17));
         
-        var mockAsyncDynamicDataSource = createStrictMock(AsyncDynamicDataSource.class);
+        AsyncDynamicDataSource mockAsyncDynamicDataSource = createStrictMock(AsyncDynamicDataSource.class);
         EasyMock.<Set<? extends PointValueQualityHolder>>expect(mockAsyncDynamicDataSource.getPointDataOnce(lcr6600s_pointIds))
             .andReturn(Sets.newHashSet(buildPvqh(lcr6600s_radioLinkQuality, radioLinkQuality, 100.0),
                                        buildPvqh(lcr6600s_relay1_relayState, recentRelayState, 0.0),
@@ -418,7 +418,7 @@ public class ItronRuntimeCalcServiceImplTest {
         ReflectionTestUtils.setField(itronRuntimeCalcService, "asyncDynamicDataSource", mockAsyncDynamicDataSource);
 
         //  per relay status
-        var mockRawPointHistoryDao = createStrictMock(RawPointHistoryDao.class);
+        RawPointHistoryDao mockRawPointHistoryDao = createStrictMock(RawPointHistoryDao.class);
         expect(mockRawPointHistoryDao.getPointData(Sets.newHashSet(lcr6600s_relay1_relayState.getPointID()),
                                                    Range.inclusive(recentDataLog.toInstant(), TimeUtil.getStartOfHour(radioLinkQuality).toInstant()), 
                                                    false,
@@ -435,7 +435,7 @@ public class ItronRuntimeCalcServiceImplTest {
 
         ReflectionTestUtils.setField(itronRuntimeCalcService, "rphDao", mockRawPointHistoryDao);
 
-        var mockPaoDefinitionDao = createStrictMock(PaoDefinitionDao.class);
+        PaoDefinitionDao mockPaoDefinitionDao = createStrictMock(PaoDefinitionDao.class);
         expect(mockPaoDefinitionDao.findAttributeLookup(eq(lcr6600s.getPaoType()), anyObject(BuiltInAttribute.class)))
             .andReturn(Optional.empty());
         expect(mockPaoDefinitionDao.findAttributeLookup(lcr6600s.getPaoType(), BuiltInAttribute.RELAY_1_RUN_TIME_DATA_LOG_15_MIN))
@@ -467,7 +467,7 @@ public class ItronRuntimeCalcServiceImplTest {
         var newTimes = new AssetAvailabilityPointDataTimes(lcr6600sId);
         newTimes.setRelayRuntime(1, date1.toInstant());
         
-        var mockDynamicLcrCommunicationsDao = createNiceMock(DynamicLcrCommunicationsDao.class);
+        DynamicLcrCommunicationsDao mockDynamicLcrCommunicationsDao = createNiceMock(DynamicLcrCommunicationsDao.class);
         /* expect */ mockDynamicLcrCommunicationsDao.insertData(newTimes);
         
         replay(mockDynamicLcrCommunicationsDao);
@@ -482,7 +482,7 @@ public class ItronRuntimeCalcServiceImplTest {
 
         ReflectionTestUtils.setField(itronRuntimeCalcService, "runtimeCalcService", new RuntimeCalcServiceImpl());
 
-        var mockPaoDao = createNiceMock(PaoDao.class);
+        PaoDao mockPaoDao = createNiceMock(PaoDao.class);
         
         expect(mockPaoDao.getLiteYukonPAObjectByType(PaoType.LCR6600S))
             .andReturn(Lists.newArrayList(lcr6600s));
@@ -494,7 +494,7 @@ public class ItronRuntimeCalcServiceImplTest {
         
         ReflectionTestUtils.setField(itronRuntimeCalcService, "paoDao", mockPaoDao);
         
-        var mockAttributeService = createStrictMock(AttributeService.class);
+        AttributeService mockAttributeService = createStrictMock(AttributeService.class);
 
         expect(mockAttributeService.findPaoMultiPointIdentifiersForAttributes(List.of(lcr6600s), ItronRelayDataLogs.getDataLogAttributes()))
             .andReturn(List.of(new PaoMultiPointIdentifier(lcr6600s, List.of(new PointIdentifier(lcr6600s_relay1_runtimeLog_15m.getPointTypeEnum(),
@@ -514,7 +514,7 @@ public class ItronRuntimeCalcServiceImplTest {
 
         //  Per device:
         //  getRecentData()
-        var mockPointDao = createNiceMock(PointDao.class);
+        PointDao mockPointDao = createNiceMock(PointDao.class);
         expect(mockPointDao.getLitePointsByPaObjectId(lcr6600s.getPaoIdentifier().getPaoId()))
             .andReturn(lcr6600s_points);
         replay(mockPointDao);
@@ -526,7 +526,7 @@ public class ItronRuntimeCalcServiceImplTest {
         DateTime recentRelayState = DateTime.parse("2019-03-20T11:13:27.000Z");
         DateTime uninitialized = DateTime.parse("2010-01-01T18:00:00.000Z");
         
-        var mockAsyncDynamicDataSource = createStrictMock(AsyncDynamicDataSource.class);
+        AsyncDynamicDataSource mockAsyncDynamicDataSource = createStrictMock(AsyncDynamicDataSource.class);
         EasyMock.<Set<? extends PointValueQualityHolder>>expect(mockAsyncDynamicDataSource.getPointDataOnce(lcr6600s_pointIds))
             .andReturn(Sets.newHashSet(buildPvqh(lcr6600s_relay1_relayState, recentRelayState, 0.0),
                                        buildPvqh(lcr6600s_relay1_shedStatus, uninitialized, 0.0, PointQuality.Uninitialized),
@@ -541,7 +541,7 @@ public class ItronRuntimeCalcServiceImplTest {
         ReflectionTestUtils.setField(itronRuntimeCalcService, "asyncDynamicDataSource", mockAsyncDynamicDataSource);
 
         //  per relay status
-        var mockRawPointHistoryDao = createStrictMock(RawPointHistoryDao.class);
+        RawPointHistoryDao mockRawPointHistoryDao = createStrictMock(RawPointHistoryDao.class);
         expect(mockRawPointHistoryDao.getPointData(Sets.newHashSet(lcr6600s_relay1_relayState.getPointID()),
                                                    Range.inclusive(null, TimeUtil.getStartOfHour(recentRelayState).toInstant()), 
                                                    false,
@@ -552,7 +552,7 @@ public class ItronRuntimeCalcServiceImplTest {
 
         ReflectionTestUtils.setField(itronRuntimeCalcService, "rphDao", mockRawPointHistoryDao);
 
-        var mockPaoDefinitionDao = createStrictMock(PaoDefinitionDao.class);
+        PaoDefinitionDao mockPaoDefinitionDao = createStrictMock(PaoDefinitionDao.class);
         expect(mockPaoDefinitionDao.findAttributeLookup(eq(lcr6600s.getPaoType()), anyObject(BuiltInAttribute.class)))
             .andReturn(Optional.empty());
         expect(mockPaoDefinitionDao.findAttributeLookup(lcr6600s.getPaoType(), BuiltInAttribute.RELAY_1_RUN_TIME_DATA_LOG_15_MIN))
@@ -584,7 +584,7 @@ public class ItronRuntimeCalcServiceImplTest {
         var newTimes = new AssetAvailabilityPointDataTimes(lcr6600sId);
         newTimes.setRelayRuntime(1, date1.toInstant());
         
-        var mockDynamicLcrCommunicationsDao = createNiceMock(DynamicLcrCommunicationsDao.class);
+        DynamicLcrCommunicationsDao mockDynamicLcrCommunicationsDao = createNiceMock(DynamicLcrCommunicationsDao.class);
         /* expect */ mockDynamicLcrCommunicationsDao.insertData(newTimes);
         
         replay(mockDynamicLcrCommunicationsDao);

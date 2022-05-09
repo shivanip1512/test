@@ -104,7 +104,7 @@ public class ApiControllerHelper {
         LinkedHashMap<?, ?> errorObject = (LinkedHashMap<?, ?>) errorResponse.getBody();
         ArrayList<?> errors = (ArrayList<?>) errorObject.get("errors");
 
-        if (!errors.isEmpty()) {
+        if (CollectionUtils.isNotEmpty(errors)) {
 
             for (Object e : errors) {
                 LinkedHashMap<?, ?> errorMap = (LinkedHashMap<?, ?>) e;
@@ -131,7 +131,7 @@ public class ApiControllerHelper {
                 }
             }
         } else {
-            result.addAllErrors(error);
+                result.reject(errorObject.get("detail").toString());
         }
         return result;
     }

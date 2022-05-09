@@ -14,7 +14,7 @@ public interface MspObjectDao {
      * @return
      */
     public ErrorObject[] toErrorObject(List<ErrorObject> errorObjects);
-    
+
     /**
      * Creates a new (MSP) ErrorObject
      * 
@@ -36,16 +36,6 @@ public interface MspObjectDao {
      */
     public ErrorObject getNotFoundErrorObject(String objectID, String notFoundObjectType, String nounType,
             String method, String userName);
-    
-    /**
-     * Creates an entry in the System log and prints a debug statement.
-     * TODO All of this logging (SystemLog) can be removed following completion of MultiSpeak EventLogs.
-     * 
-     * @param method
-     * @param description
-     * @param userName
-     */
-    public void logMSPActivity(String method, String description, String userName);
     
     /**
      * Utility to implement the pingURL method for the service.
@@ -82,5 +72,13 @@ public interface MspObjectDao {
      */
     public ErrorObject getNotFoundErrorObject(String objectID, String notFoundObjectType, String nounType,
             String method, String userName, String exceptionMessage);
+
+    /**
+     * Creates an entry in the System log and prints a debug statement.
+     * @param method
+     * @param description
+     * @param userName
+     */
+    public void logMSPActivity(String method, String description, String userName);
 
 }

@@ -51,6 +51,7 @@ SNPP_TERMINAL:
     - type
     - pagerNumber
     - commChannel
+    - login
     - password
   type: object
   properties:
@@ -87,10 +88,10 @@ SNPP_TERMINAL:
     login:
       type: string
       maxLength: 64
-      description: 'Login of terminal.'
+      description: 'Login of terminal. This field can be empty but cannot be null. It should have some valid string.'
     password:
       type: string
-      maxLength: 20
+      maxLength: 64
       description: 'Password of terminal. This field can be empty but cannot be null. It should have some valid string.'
 
 TNPP_TERMINAL:

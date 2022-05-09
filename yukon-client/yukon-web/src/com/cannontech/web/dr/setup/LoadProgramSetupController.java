@@ -225,7 +225,7 @@ public class LoadProgramSetupController {
             
             if (response.getStatusCode() == HttpStatus.UNPROCESSABLE_ENTITY) {
                 BindException error = new BindException(loadProgram, "loadProgram");
-                result = helper.populateBindingError(result, error, response);
+                result = helper.populateBindingErrorForApiErrorModel(result, error, response, "yukon.web.error.");
                 if (result.hasGlobalErrors()) {
 
                     List<ObjectError> objectErrorList = result.getGlobalErrors();

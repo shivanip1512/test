@@ -2,9 +2,11 @@ package com.cannontech.multispeak.dao.v4;
 
 import java.util.Date;
 
+import com.cannontech.database.data.lite.LiteYukonUser;
 import com.cannontech.multispeak.block.v4.Block;
 import com.cannontech.multispeak.data.v4.MspBlockReturnList;
 import com.cannontech.multispeak.data.v4.MspMeterReadingReturnList;
+import com.cannontech.multispeak.data.v4.MspScadaAnalogReturnList;
 
 public interface MspRawPointHistoryDao {
     public enum ReadBy {
@@ -43,6 +45,16 @@ public interface MspRawPointHistoryDao {
                                                     String lastReceived, int maxRecords);
     
     /**
+<<<<<<< HEAD
+     * Retrieves estimated load data for the SCADA_Server endpoint.  
+     * It reads and returns the latest point values for all analog points attached to LM program paos, 
+     * which includes the points: Connected Load, Diversified Load, Max Load Reduction, Available Load Reduction.
+     * user must have LM_VISIBLE permission for the program to be included in the return
+     * @return A list of SCADAAnalog data representing all analog point values for LM program paos. 
+     */
+    public MspScadaAnalogReturnList retrieveLatestScadaAnalogs(LiteYukonUser user) ;
+
+    /**
      * Returns a list of Blocks.
      * @param readBy - readings collected for ReadBy value (ReadBy = NONE then ReadBy option not used).
      * @param readByValue
@@ -73,5 +85,6 @@ public interface MspRawPointHistoryDao {
      */
     public MspBlockReturnList retrieveLatestBlock(FormattedBlockProcessingService<Block> blockProcessingService,
                                            String lastReceived, int maxRecords);
+
 
  }

@@ -43,10 +43,10 @@ public class EcobeeZeusSecurityServiceImplTest {
         try {
             
             EncryptedRouteDao encryptedRouteDao = EasyMock.createStrictMock(EncryptedRouteDao.class);
-            Capture<String> privateKeyArg = new Capture<>();
-            Capture<String> publicKeyArg = new Capture<>();
-            Capture<EncryptionKeyType> keyType = new Capture<>();
-            Capture<Instant> time = new Capture<>();
+            Capture<String> privateKeyArg = Capture.newInstance();
+            Capture<String> publicKeyArg = Capture.newInstance();
+            Capture<EncryptionKeyType> keyType = Capture.newInstance();
+            Capture<Instant> time = Capture.newInstance();
             
             encryptedRouteDao.saveOrUpdateEncryptionKey(EasyMock.capture(privateKeyArg),EasyMock.capture(publicKeyArg),EasyMock.capture(keyType),EasyMock.capture(time));
             EasyMock.expectLastCall().once();
