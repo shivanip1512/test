@@ -1,5 +1,5 @@
 import React, { useEffect } from "react";
-import { Route, Redirect, Switch, useLocation } from "react-router-dom";
+import { Route, Redirect, Switch, useLocation, useHistory } from "react-router-dom";
 import { I18nextProvider } from "react-i18next";
 
 import yukoni18n from "./components/I18n/i18nConfig";
@@ -16,8 +16,7 @@ import DRSetupFilterPage from "./components/YukonPage/DemandResponse/DRSetupFilt
 import DRTestPage from "./components/YukonPage/DemandResponse/DRTestPage";
 import CommChannelCreatePage from "./components/YukonPage/Assets/CommChannelCreate";
 import DashboardPage from "./components/YukonPage/Dashboards/Dashboard";
-import { useIdleTimer } from "react-idle-timer";
-import axios from "../src/axiosConfig";
+import { urlHelper } from "./helpers/urlHelper";
 
 const ScrollToTop = () => {
     const { pathname } = useLocation();
@@ -30,6 +29,10 @@ const ScrollToTop = () => {
 };
 
 export const App = () => {
+    const YUKON_API_URL = urlHelper.getYukonApiUrl();
+    const YUKON_REACT_URL = urlHelper.getYukonReactUrl();
+    //TODO: Remove this later.
+    console.log(process.env.NODE_ENV);
 
     return (
         <SecurityContextProvider>
@@ -37,10 +40,8 @@ export const App = () => {
                 <AuthNavigationContainer routeConfig={routes}>
                     <I18nextProvider i18n={yukoni18n}>
                         <ScrollToTop />
-                        <DrawerLayout
-                            drawer={<NavigationDrawer yukonPath={window.configs.YUKON_API_URL} reactPath={window.configs.YUKON_REACT_URL} />}
-                        >
-                            <NavigationMenu yukonPath={window.configs.YUKON_API_URL} reactPath={window.configs.YUKON_REACT_URL} />
+                        <DrawerLayout drawer={<NavigationDrawer yukonPath={YUKON_API_URL} reactPath={YUKON_REACT_URL} />}>
+                            <NavigationMenu yukonPath={YUKON_API_URL} reactPath={YUKON_REACT_URL} />
                             <Switch>
                                 <Route exact path="/yukon-ui/dashboard" component={DashboardPage} />
                                 <Route exact path="/yukon-ui/dr/setup/list" component={DRSetupFilterPage} />
