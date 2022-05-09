@@ -186,7 +186,10 @@ LM_ECOBEE_PROGRAM:
     gears:
       type: array
       items:
-        $ref: '#/EcobeeCycle'
+        anyOf:
+          - $ref: '#/EcobeeCycle'
+          - $ref: '#/EcobeePlus'
+          - $ref: '#/EcobeeSetpoint'
     controlWindow:
       $ref: '#/controlWindow'
     assignedGroups:
@@ -393,7 +396,6 @@ LM_DIRECT_PROGRAM:
           - $ref: '#/ThermostatRamping'
           - $ref: '#/SimpleThermostatRamping'
           - $ref: '#/BeatThePeak'
-          
     controlWindow:
       $ref: '#/controlWindow'
     assignedGroups:
@@ -580,7 +582,10 @@ LM_SEP_PROGRAM Response Schema:
     gears:
       type: array
       items:
-        $ref: '#/NoControl'
+        anyOf:
+          - $ref: '#/NoControl'
+          - $ref: '#/SepCycle'
+          - $ref: '#/SepTemperatureOffset'
     controlWindow:
       $ref: '#/controlWindow'
     assignedGroups:
@@ -641,7 +646,10 @@ LM_ECOBEE_PROGRAM Response Schema:
     gears:
       type: array
       items:
-        $ref: '#/EcobeeCycle'
+        anyOf:
+          - $ref: '#/EcobeeCycle'
+          - $ref: '#/EcobeePlus'
+          - $ref: '#/EcobeeSetpoint'
     controlWindow:
       $ref: '#/controlWindow'
     assignedGroups:
@@ -701,7 +709,9 @@ LM_HONEYWELL_PROGRAM Response Schema:
     gears:
       type: array
       items:
-        $ref: '#/HoneywellCycle'
+        anyOf:
+          - $ref: '#/HoneywellCycle'
+          - $ref: '#/HoneywellSetpoint'
     controlWindow:
       $ref: '#/controlWindow'
     assignedGroups:
@@ -821,7 +831,19 @@ LM_DIRECT_PROGRAM Response Schema:
     gears:
       type: array
       items:
-        $ref: '#/NoControl'
+        anyOf:
+          - $ref: '#/NoControl'
+          - $ref: '#/TimeRefresh'
+          - $ref: '#/SmartCycle'
+          - $ref: '#/MasterCycle'
+          - $ref: '#/Rotation'
+          - $ref: '#/Latching'
+          - $ref: '#/TrueCycle'
+          - $ref: '#/MagnitudeCycle'
+          - $ref: '#/TargetCycle'
+          - $ref: '#/ThermostatRamping'
+          - $ref: '#/SimpleThermostatRamping'
+          - $ref: '#/BeatThePeak'
     controlWindow:
       $ref: '#/controlWindow'
     assignedGroups:
