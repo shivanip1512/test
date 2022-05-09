@@ -4,13 +4,13 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.validation.Errors;
 
 import com.cannontech.common.dr.gear.setup.fields.LatchingGearFields;
+import com.cannontech.common.validator.YukonApiValidationUtils;
 import com.cannontech.database.db.device.lm.GearControlMethod;
-import com.cannontech.web.api.dr.setup.LMValidatorHelper;
 
 public class LatchingGearFieldsValidator extends ProgramGearFieldsValidator<LatchingGearFields> {
 
-    @Autowired private LMValidatorHelper lmValidatorHelper;
-    @Autowired private GearValidatorHelper gearValidatorHelper;
+    @Autowired private GearApiValidatorHelper gearApiValidatorHelper;
+    @Autowired private static YukonApiValidationUtils yukonApiValidationUtils;
 
     public LatchingGearFieldsValidator() {
         super(LatchingGearFields.class);
@@ -28,11 +28,11 @@ public class LatchingGearFieldsValidator extends ProgramGearFieldsValidator<Latc
     @Override
     protected void doValidation(LatchingGearFields latchingCycleGear, Errors errors) {
         // Check Control Start State
-        lmValidatorHelper.checkIfFieldRequired("startControlState", errors, latchingCycleGear.getStartControlState(),
+        yukonApiValidationUtils.checkIfFieldRequired("startControlState", errors, latchingCycleGear.getStartControlState(),
             "Start Control State");
 
         // Check Group Capacity Reduction
-        gearValidatorHelper.checkGroupCapacityReduction(latchingCycleGear.getCapacityReduction(), errors);
+        gearApiValidatorHelper.checkGroupCapacityReduction(latchingCycleGear.getCapacityReduction(), errors);
     }
 
 }

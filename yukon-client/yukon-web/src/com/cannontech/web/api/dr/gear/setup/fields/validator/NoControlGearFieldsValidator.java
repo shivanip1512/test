@@ -8,7 +8,7 @@ import com.cannontech.database.db.device.lm.GearControlMethod;
 
 public class NoControlGearFieldsValidator extends ProgramGearFieldsValidator<NoControlGearFields> {
 
-    @Autowired private GearValidatorHelper gearValidatorHelper;
+    @Autowired private GearApiValidatorHelper gearApiValidatorHelper;
 
     public NoControlGearFieldsValidator() {
         super(NoControlGearFields.class);
@@ -27,7 +27,7 @@ public class NoControlGearFieldsValidator extends ProgramGearFieldsValidator<NoC
     protected void doValidation(NoControlGearFields noControlCycleGear, Errors errors) {
 
         // Check When to change
-        gearValidatorHelper.checkWhenToChange(noControlCycleGear.getWhenToChangeFields(), errors);
+        gearApiValidatorHelper.checkWhenToChange(noControlCycleGear.getWhenToChangeFields(), errors);
     }
 
 }

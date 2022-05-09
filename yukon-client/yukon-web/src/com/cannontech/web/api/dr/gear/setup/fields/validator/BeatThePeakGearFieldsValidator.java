@@ -4,13 +4,13 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.validation.Errors;
 
 import com.cannontech.common.dr.gear.setup.fields.BeatThePeakGearFields;
+import com.cannontech.common.validator.YukonApiValidationUtils;
 import com.cannontech.common.validator.YukonValidationUtils;
 import com.cannontech.database.db.device.lm.GearControlMethod;
-import com.cannontech.web.api.dr.setup.LMValidatorHelper;
 
 public class BeatThePeakGearFieldsValidator extends ProgramGearFieldsValidator<BeatThePeakGearFields> {
-    @Autowired private LMValidatorHelper lmValidatorHelper;
-    @Autowired private GearValidatorHelper gearValidatorHelper;
+    @Autowired private GearApiValidatorHelper gearApiValidatorHelper;
+    @Autowired private static YukonApiValidationUtils yukonApiValidationUtils;
 
     public BeatThePeakGearFieldsValidator() {
         super(BeatThePeakGearFields.class);
@@ -28,11 +28,11 @@ public class BeatThePeakGearFieldsValidator extends ProgramGearFieldsValidator<B
     @Override
     protected void doValidation(BeatThePeakGearFields beatThePeakCycleGear, Errors errors) {
         // Check BTP LED indicator
-        lmValidatorHelper.checkIfFieldRequired("indicator", errors, beatThePeakCycleGear.getIndicator(),
+        yukonApiValidationUtils.checkIfFieldRequired("indicator", errors, beatThePeakCycleGear.getIndicator(),
             "BTP LED Indicator");
 
         // Check Max Indicator Timeout
-        lmValidatorHelper.checkIfFieldRequired("timeoutInMinutes", errors, beatThePeakCycleGear.getTimeoutInMinutes(),
+        yukonApiValidationUtils.checkIfFieldRequired("timeoutInMinutes", errors, beatThePeakCycleGear.getTimeoutInMinutes(),
             "Max Indicator Timeout");
         if (!errors.hasFieldErrors("timeoutInMinutes")) {
             YukonValidationUtils.checkRange(errors, "timeoutInMinutes", beatThePeakCycleGear.getTimeoutInMinutes(), 0,
@@ -40,7 +40,7 @@ public class BeatThePeakGearFieldsValidator extends ProgramGearFieldsValidator<B
         }
 
         // Check Resend Rate
-        lmValidatorHelper.checkIfFieldRequired("resendInMinutes", errors, beatThePeakCycleGear.getResendInMinutes(),
+        yukonApiValidationUtils.checkIfFieldRequired("resendInMinutes", errors, beatThePeakCycleGear.getResendInMinutes(),
             "Resend Rate");
         if (!errors.hasFieldErrors("resendInMinutes")) {
             YukonValidationUtils.checkRange(errors, "resendInMinutes", beatThePeakCycleGear.getResendInMinutes(), 0,
@@ -48,6 +48,6 @@ public class BeatThePeakGearFieldsValidator extends ProgramGearFieldsValidator<B
         }
 
         // Check When to Change
-        gearValidatorHelper.checkWhenToChange(beatThePeakCycleGear.getWhenToChangeFields(), errors);
+        gearApiValidatorHelper.checkWhenToChange(beatThePeakCycleGear.getWhenToChangeFields(), errors);
     }
 }
