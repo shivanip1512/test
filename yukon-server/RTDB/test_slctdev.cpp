@@ -55,12 +55,12 @@ BOOST_AUTO_TEST_CASE(test_is_dnp_device_type)
     (_)(_)(_)(_)(_) (_)(_)(_)(_)(_)  //  70
     (_)(_)(_)(_)(_) (_)(_)(_)(_)(_)  //  80
     (_)(_)(_)(_)(_) (_)(_)(_)(_)(_)  //  90
-    (_)(_)(_)(_)(_) (X)(_)(_)(_)(_)  //  100
+    (_)(_)(_)(_)(_) (_)(X)(_)(_)(_)  //  100
 */
     expected[ 46 ] = true;
     expected[ 47 ] = true;
     expected[ 49 ] = true;
-    expected[ 105 ] = true;
+    expected[ 106 ] = true;
 
     std::vector<bool> results;
 
@@ -189,9 +189,10 @@ BOOST_AUTO_TEST_CASE(test_createDeviceType)
     *i++ = "class Cti::Devices::RfBatteryNodeDevice";
     *i++ = "class Cti::Devices::RfBatteryNodeDevice";
     *i++ = "class Cti::Devices::RfCellularRelayDevice";
-    *i++ = "class CtiDeviceCCU710";
+    *i++ = "class Cti::Devices::RfnDerEdgeCoordinator";
     *i++ = "class CtiDeviceCCU710";
     //  100
+    *i++ = "class CtiDeviceCCU710";
     *i++ = "class CtiDeviceCCU";
     *i++ = "class Cti::Devices::Ccu721Device";
     *i++ = "class CtiDeviceILEX";
@@ -201,8 +202,8 @@ BOOST_AUTO_TEST_CASE(test_createDeviceType)
     *i++ = "class Cti::Devices::DnpRtuDevice";
     *i++ = "class CtiDeviceION";
     *i++ = "class CtiDeviceION";
-    *i++ = "class CtiDeviceION";
     //  110
+    *i++ = "class CtiDeviceION";
     *i++ = "class CtiDeviceLCU";
     *i++ = "class CtiDeviceLCU";
     *i++ = "class CtiDeviceLCU";
@@ -212,8 +213,8 @@ BOOST_AUTO_TEST_CASE(test_createDeviceType)
     *i++ = "class CtiDeviceMarkV";
     *i++ = "class CtiDeviceDavis";
     *i++ = "class CtiDeviceAlphaPPlus";
-    *i++ = "class CtiDeviceFulcrum";
     //  120
+    *i++ = "class CtiDeviceFulcrum";
     *i++ = "class CtiDeviceLandisGyrS4";
     *i++ = "class CtiDeviceVectron";
     *i++ = "class CtiDeviceAlphaA1";
@@ -223,8 +224,8 @@ BOOST_AUTO_TEST_CASE(test_createDeviceType)
     *i++ = "class Cti::Devices::CtiDeviceSentinel";
     *i++ = "class Cti::Devices::CtiDeviceFocus";
     *i++ = "class CtiDeviceKV2";
-    *i++ = "class CtiDeviceSixnet";
     //  130
+    *i++ = "class CtiDeviceSixnet";
     *i++ = "class Cti::Devices::Ipc410ALDevice";
     *i++ = "class Cti::Devices::Ipc420ADDevice";
     *i++ = "class CtiDeviceLandisGyrS4";
@@ -234,8 +235,8 @@ BOOST_AUTO_TEST_CASE(test_createDeviceType)
     *i++ = "class Cti::Devices::RDSTransmitter";
     *i++ = "class CtiDeviceSnppPagingTerminal";
     *i++ = "class CtiDevicePagingReceiver";
-    *i++ = "class CtiDeviceTnppPagingTerminal";
     //  140
+    *i++ = "class CtiDeviceTnppPagingTerminal";
     *i++ = "class CtiDeviceRTC";
     *i++ = "class CtiDeviceRTM";
     *i++ = "class CtiDeviceSeriesV";
@@ -245,14 +246,14 @@ BOOST_AUTO_TEST_CASE(test_createDeviceType)
     *i++ = "class CtiDeviceGridAdvisor";
     *i++ = "class CtiDeviceGroupEmetcon";
     *i++ = "class CtiDeviceGroupVersacom";
-    *i++ = "class CtiDeviceGroupRipple";
     //  150
+    *i++ = "class CtiDeviceGroupRipple";
     *i++ = "class CtiDeviceGroupPoint";
     *i++ = "class CtiDeviceGroupExpresscom";
     *i++ = "class CtiDeviceGroupRfnExpresscom";
     i += 6;
-    *i++ = "class CtiDeviceGroupMCT";
     //  160
+    *i++ = "class CtiDeviceGroupMCT";
     i++;
     *i++ = "class CtiDeviceGroupGolay";
     *i++ = "class CtiDeviceGroupSADigital";
@@ -260,10 +261,11 @@ BOOST_AUTO_TEST_CASE(test_createDeviceType)
     *i++ = "class CtiDeviceGroupSA205";
     *i++ = "class CtiDeviceGroupSA305";
     *i++ = "class Cti::Devices::MctBroadcastDevice";
-    i += 3;
+    i += 2;
     //  170
     i += 10;
     //  180
+    i++;
     *i++ = "class CtiDeviceMacro";
     *i++ = "class CtiDeviceSystem";
 
@@ -481,7 +483,9 @@ BOOST_AUTO_TEST_CASE(test_DeviceFactory)
         { "itron program",                  "null pointer {0158EE7B-419F-EC43-9382-3496ED9E5F67}" },
         { "itron group",                    "null pointer {0158EE7B-419F-EC43-9382-3496ED9E5F67}" },
         { "meter disconnect program",       "null pointer {0158EE7B-419F-EC43-9382-3496ED9E5F67}" },
-        { "meter disconnect group",         "null pointer {0158EE7B-419F-EC43-9382-3496ED9E5F67}" }
+        { "meter disconnect group",         "null pointer {0158EE7B-419F-EC43-9382-3496ED9E5F67}" },
+        { "crly-856",                       "class Cti::Devices::RfCellularRelayDevice" },
+        { "der edge coordinator",           "class Cti::Devices::RfnDerEdgeCoordinator" },
     };
 
     std::vector<DeviceTypeRow> rowVec;

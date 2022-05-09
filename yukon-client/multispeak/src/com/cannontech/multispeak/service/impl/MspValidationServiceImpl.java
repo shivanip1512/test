@@ -75,10 +75,6 @@ public class MspValidationServiceImpl implements MspValidationService {
             errorObject = mspObjectDao.getErrorObject(scadaAnalog.getObjectID(), 
                     "ScadaAnalog Quality was not populated.",
                     "ScadaAnalog", "isValidScadaAnalog", null);
-    	} else if (scadaAnalog.getUnit() == null) {
-            errorObject = mspObjectDao.getErrorObject(scadaAnalog.getObjectID(), 
-                    "ScadaAnalog Unit was not populated.",
-                    "ScadaAnalog", "isValidScadaAnalog", null);
     	}
     	return errorObject;
     }
