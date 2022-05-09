@@ -10,6 +10,8 @@ import com.cannontech.msp.beans.v4.GetMeterByServiceLocationID;
 import com.cannontech.msp.beans.v4.GetMeterByServiceLocationIDResponse;
 import com.cannontech.msp.beans.v4.GetMethods;
 import com.cannontech.msp.beans.v4.GetMethodsResponse;
+import com.cannontech.msp.beans.v4.GetServiceLocationByMeterID;
+import com.cannontech.msp.beans.v4.GetServiceLocationByMeterIDResponse;
 import com.cannontech.msp.beans.v4.PingURL;
 import com.cannontech.msp.beans.v4.PingURLResponse;
 import com.cannontech.multispeak.client.MultispeakDefines;
@@ -72,5 +74,19 @@ public class CBClient implements ICBClient {
             throw new MultispeakWebServiceClientException(e.getMessage());
         }
     }
+
+    public GetServiceLocationByMeterIDResponse getServiceLocationByMeterID(MultispeakVendor mspVendor, String endpointUrl,
+            GetServiceLocationByMeterID getServiceLocationByMspMeterID) throws MultispeakWebServiceClientException {
+        try {
+            multispeakFuncs.setMsgSender(webServiceTemplate, mspVendor);
+
+            return (GetServiceLocationByMeterIDResponse) webServiceTemplate.marshalSendAndReceive(endpointUrl,
+                    getServiceLocationByMspMeterID,
+                    customWebServiceMsgCallback.addRequestHeader(mspVendor, MultispeakDefines.CB_Server_STR));
+        } catch (WebServiceException | XmlMappingException e) {
+            throw new MultispeakWebServiceClientException(e.getMessage());
+        }
+    }
+        
 
 }
