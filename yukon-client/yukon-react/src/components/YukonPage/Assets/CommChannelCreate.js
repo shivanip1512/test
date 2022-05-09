@@ -10,7 +10,7 @@ import Input from "../../controls/Input";
 import ToggleButtons from "../../controls/ToggleButtons";
 import Dropdown from "../../controls/Dropdown";
 import PageButtons from "../../PageContents/PageButtons";
-import { urlHelper } from "../../../helpers/urlHelper";
+import { getYukonApiUrl } from "../../../helpers/urlHelper";
 
 import axios from "../../../axiosConfig";
 
@@ -22,7 +22,7 @@ const CommChannelCreate = () => {
     const dispatch = useDispatch();
     const theme = useTheme();
 
-    const commChannelListUrl = urlHelper.getYukonApiUrl() + "/stars/device/commChannel/list";
+    const commChannelListUrl = getYukonApiUrl() + "/stars/device/commChannel/list";
 
     const breadcrumbs = [
         { link: "/", title: "Home" },

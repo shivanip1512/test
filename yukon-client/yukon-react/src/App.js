@@ -16,7 +16,7 @@ import DRSetupFilterPage from "./components/YukonPage/DemandResponse/DRSetupFilt
 import DRTestPage from "./components/YukonPage/DemandResponse/DRTestPage";
 import CommChannelCreatePage from "./components/YukonPage/Assets/CommChannelCreate";
 import DashboardPage from "./components/YukonPage/Dashboards/Dashboard";
-import { urlHelper } from "./helpers/urlHelper";
+import { getYukonApiUrl, getYukonReactUrl } from "./helpers/urlHelper";
 
 const ScrollToTop = () => {
     const { pathname } = useLocation();
@@ -29,10 +29,8 @@ const ScrollToTop = () => {
 };
 
 export const App = () => {
-    const YUKON_API_URL = urlHelper.getYukonApiUrl();
-    const YUKON_REACT_URL = urlHelper.getYukonReactUrl();
-    //TODO: Remove this later.
-    console.log(process.env.NODE_ENV);
+    const YUKON_API_URL = getYukonApiUrl();
+    const YUKON_REACT_URL = getYukonReactUrl();
 
     return (
         <SecurityContextProvider>
