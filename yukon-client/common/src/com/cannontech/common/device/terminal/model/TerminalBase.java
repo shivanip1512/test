@@ -1,7 +1,5 @@
 package com.cannontech.common.device.terminal.model;
 
-import org.apache.commons.lang3.StringUtils;
-
 import com.cannontech.common.device.port.DBPersistentConverter;
 import com.cannontech.common.dr.setup.LMDto;
 import com.cannontech.common.pao.PaoType;
@@ -23,7 +21,7 @@ public class TerminalBase<T extends IEDBase> implements DBPersistentConverter<T>
     private String name;
     private PaoType type;
     private boolean enabled = true;
-    private String password = StringUtils.EMPTY;
+    private String password;
     private LMDto commChannel;
 
     public TerminalBase() {

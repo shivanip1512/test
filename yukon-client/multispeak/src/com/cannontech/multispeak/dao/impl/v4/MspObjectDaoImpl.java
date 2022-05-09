@@ -84,6 +84,24 @@ public class MspObjectDaoImpl implements MspObjectDao {
     }
 
     @Override
+    public ErrorObject getErrorObject(String objectID, String errorMessage, String nounType, String method,
+            String userName) {
+        ErrorObject errorObject = new ErrorObject();
+
+        errorObject.setEventTime(MultispeakFuncs.toXMLGregorianCalendar(new Date()));
+
+        errorObject.setObjectID(objectID);
+        errorObject.setErrorString(errorMessage);
+        errorObject.setNounType(nounType);
+
+        String description = "ErrorObject: (ObjId:" + errorObject.getObjectID() + " Noun:" + errorObject.getNounType()
+                + " Message:" + errorObject.getErrorString() + ")";
+        logMSPActivity(method, description, userName);
+
+        return errorObject;
+    }
+
+    @Override
     public ErrorObject[] pingURL(MultispeakVendor mspVendor, String service, String endpointUrl)
             throws MultispeakWebServiceClientException {
 
@@ -186,25 +204,6 @@ public class MspObjectDaoImpl implements MspObjectDao {
         ErrorObject errorObject = getErrorObject(objectID, notFoundObjectType + ": " + objectID + " - " + exceptionMessage + ".",
                 nounType,
                 method, userName);
-        return errorObject;
-    }
-
-    @Override
-    public ErrorObject getErrorObject(String objectID, String errorMessage, String nounType, String method,
-            String userName) {
-        ErrorObject errorObject = new ErrorObject();
-
-        errorObject.setEventTime(MultispeakFuncs.toXMLGregorianCalendar(new Date()));
-
-        errorObject.setObjectID(objectID);
-        errorObject.setErrorString(errorMessage);
-        errorObject.setNounType(nounType);
-
-        String description = "ErrorObject: (ObjId:" + errorObject.getObjectID() + " Noun:" + errorObject.getNounType()
-                + " Message:"
-                + errorObject.getErrorString() + ")";
-        logMSPActivity(method, description, userName);
-
         return errorObject;
     }
 

@@ -81,13 +81,17 @@ public class LMProgramValidator extends SimpleValidator<LoadProgram> {
         if (!errors.hasFieldErrors("type")) {
             yukonApiValidationUtils.validateNewPaoName(loadProgram.getName(), loadProgram.getType(), errors, "Name");
             if (!loadProgram.getType().isDirectProgram()) {
-                errors.reject(ApiErrorDetails.TYPE_MISMATCH.getCodeString(), new Object[] { loadProgram.getType() }, "");
+                String typeMisMatchI18nText = accessor.getMessage(key + "notSupportedProgramType", loadProgram.getType());
+                errors.reject(ApiErrorDetails.TYPE_MISMATCH_GLOBAL_ERROR.getCodeString(), new Object[] { typeMisMatchI18nText }, "");
             }
         }
         yukonApiValidationUtils.checkIfFieldRequired("operationalState", errors, loadProgram.getOperationalState(), "Operational State");
         if (!errors.hasFieldErrors("operationalState")) {
             if (loadProgram.getType() == PaoType.LM_NEST_PROGRAM && loadProgram.getOperationalState() != OperationalState.ManualOnly) {
-                errors.reject(ApiErrorDetails.TYPE_MISMATCH.getCodeString(), new Object[] { loadProgram.getOperationalState() }, "");
+                String typeMisMatchI18nText = accessor.getMessage(key + "notSupportedOperationalState", PaoType.LM_NEST_PROGRAM,
+                        loadProgram.getOperationalState());
+                errors.reject(ApiErrorDetails.TYPE_MISMATCH_GLOBAL_ERROR.getCodeString(), new Object[] { typeMisMatchI18nText },
+                        "");
             }
         }
 
@@ -142,7 +146,8 @@ public class LMProgramValidator extends SimpleValidator<LoadProgram> {
             } catch (SQLException e) {}
 
             if (CollectionUtils.isEmpty(loadProgram.getAssignedGroups())) {
-                errors.reject(ApiErrorDetails.FIELD_REQUIRED.getCodeString(), new Object[] { "Load Group" }, "");
+                String noGroupI18nText = accessor.getMessage(key + "noGroup");
+                errors.reject(ApiErrorDetails.FIELD_REQUIRED_GLOBAL_ERROR.getCodeString(), new Object[] { noGroupI18nText }, "");
             } else {
 
                 for (int i = 0; i < loadProgram.getAssignedGroups().size(); i++) {
@@ -184,7 +189,8 @@ public class LMProgramValidator extends SimpleValidator<LoadProgram> {
         }
         if (!errors.hasFieldErrors("type")) {
             if (CollectionUtils.isEmpty(loadProgram.getGears())) {
-                errors.reject(ApiErrorDetails.FIELD_REQUIRED.getCodeString(), new Object[] { "Gears" }, "");
+                String noGearI18nText = accessor.getMessage(key + "noGear");
+                errors.reject(ApiErrorDetails.FIELD_REQUIRED_GLOBAL_ERROR.getCodeString(), new Object[] { noGearI18nText }, "");
             } else {
 
                 if (loadProgram.getGears().size() >= IlmDefines.MAX_GEAR_COUNT) {
@@ -246,7 +252,8 @@ public class LMProgramValidator extends SimpleValidator<LoadProgram> {
                                     || gear.getControlMethod() == GearControlMethod.NestCriticalCycle) {
                                     // Do not display error as these gears types do not have any validation
                                 } else {
-                                    errors.reject(ApiErrorDetails.FIELD_REQUIRED.getCodeString(), new Object[] { "Gear fields" },
+                                    String gearsI18nText = accessor.getMessage("yukon.web.modules.dr.setup.error.required", "Gear fields");
+                                    errors.reject(ApiErrorDetails.FIELD_REQUIRED_GLOBAL_ERROR.getCodeString(), new Object[] { gearsI18nText },
                                             "");
                                 }
                             }
@@ -310,7 +317,8 @@ public class LMProgramValidator extends SimpleValidator<LoadProgram> {
                     || loadProgram.getNotification().getProgramStopInMinutes() != null
                     || loadProgram.getNotification().getNotifyOnAdjust() || loadProgram.getNotification().getEnableOnSchedule())
                     && CollectionUtils.isEmpty(notificationGroups)) {
-                errors.reject(ApiErrorDetails.FIELD_REQUIRED.getCodeString(), new Object[] { "Notification Group" }, "");
+                String notificationGrpI18nText = accessor.getMessage(key + "notificationGrp.notAssigned");
+                errors.reject(ApiErrorDetails.FIELD_REQUIRED_GLOBAL_ERROR.getCodeString(), new Object[] { notificationGrpI18nText }, "");
             }
             if (CollectionUtils.isNotEmpty(notificationGroups)) {
                 for (int i = 0; i < notificationGroups.size(); i++) {

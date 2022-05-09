@@ -481,7 +481,7 @@ public class RfnGatewayServiceTest {
         
         // Expect a call to save location data for the gateway
         PaoLocationDao paoLocationDao = EasyMock.createStrictMock(PaoLocationDao.class);
-        Capture<PaoLocation> paoLocationArg = new Capture<>();
+        Capture<PaoLocation> paoLocationArg = Capture.newInstance();
         paoLocationDao.save(EasyMock.capture(paoLocationArg));
         EasyMock.expectLastCall().once();
         EasyMock.replay(paoLocationDao);
@@ -521,7 +521,7 @@ public class RfnGatewayServiceTest {
                 
         // Expect a call to save location data for the gateway
         PaoLocationDao paoLocationDao = EasyMock.createStrictMock(PaoLocationDao.class);
-        Capture<PaoLocation> paoLocationArg = new Capture<>();
+        Capture<PaoLocation> paoLocationArg = Capture.newInstance();
         paoLocationDao.save(EasyMock.capture(paoLocationArg));
         EasyMock.expectLastCall().once();
         EasyMock.replay(paoLocationDao);
@@ -562,7 +562,7 @@ public class RfnGatewayServiceTest {
                 
         // Expect a call to save location data for the gateway
         PaoLocationDao paoLocationDao = EasyMock.createStrictMock(PaoLocationDao.class);
-        Capture<PaoLocation> paoLocationArg = new Capture<>();
+        Capture<PaoLocation> paoLocationArg = Capture.newInstance();
         paoLocationDao.save(EasyMock.capture(paoLocationArg));
         EasyMock.expectLastCall().once();
         EasyMock.replay(paoLocationDao);

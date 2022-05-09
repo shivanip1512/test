@@ -5,9 +5,10 @@ import static org.easymock.EasyMock.createStrictMock;
 import static org.easymock.EasyMock.expect;
 import static org.easymock.EasyMock.expectLastCall;
 import static org.easymock.EasyMock.replay;
-import static org.hamcrest.Matchers.hasItems;
-import static org.hamcrest.Matchers.equalTo;
 import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.Matchers.equalTo;
+import static org.hamcrest.Matchers.hasItems;
+
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
@@ -16,7 +17,6 @@ import java.util.function.Predicate;
 
 import org.easymock.Capture;
 import org.easymock.EasyMock;
-
 import org.joda.time.DateTime;
 import org.joda.time.Duration;
 import org.junit.jupiter.api.Assertions;
@@ -291,7 +291,7 @@ public class HoneywellWifiRuntimeCalcServiceTest {
         hourlyRuntimeSeconds.put(date2, 1200);
         hourlyRuntimeSeconds.put(date1, 660);
         
-        Capture<Iterable<PointData>> dispatchDataCapture = new Capture<>();
+        Capture<Iterable<PointData>> dispatchDataCapture = Capture.newInstance();
         AsyncDynamicDataSource mockDispatch = createStrictMock(AsyncDynamicDataSource.class);
         mockDispatch.putValues(EasyMock.capture(dispatchDataCapture));
         expectLastCall();
@@ -332,7 +332,7 @@ public class HoneywellWifiRuntimeCalcServiceTest {
         hourlyRuntimeSeconds.put(date2, 1200);
         hourlyRuntimeSeconds.put(date1, 660);
         
-        Capture<Iterable<PointData>> dispatchDataCapture = new Capture<>();
+        Capture<Iterable<PointData>> dispatchDataCapture = Capture.newInstance();
         AsyncDynamicDataSource mockDispatch = createStrictMock(AsyncDynamicDataSource.class);
         mockDispatch.putValues(EasyMock.capture(dispatchDataCapture));
         expectLastCall();

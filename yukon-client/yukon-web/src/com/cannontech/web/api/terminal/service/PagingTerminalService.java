@@ -8,5 +8,10 @@ public interface PagingTerminalService {
      * Create a paging terminal
      */
     public TerminalBase<?> create(TerminalBase<?> terminalBase);
+    
+    /**
+     * Delete a paging terminal
+     */
+    int delete(int id);
 
 }
