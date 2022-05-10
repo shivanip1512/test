@@ -25,9 +25,6 @@ import com.cannontech.web.security.annotation.CheckRoleProperty;
 @RestController
 @CheckRoleProperty(YukonRoleProperty.DER_EDGE_COORDINATOR_PERMISSION)
 @CheckCparm(MasterConfigBoolean.DER_EDGE_COORDINATOR)
-//TODO - @CheckRoleProperty(YukonRoleProperty.EDGE_DR_PERMISSION)
-//TODO - after YUK-26189 merged - The endpoint should only accept requests if master.cfg setting is true
-//@CheckCparm(MasterConfigBoolean.DER_EDGE_COORDINATOR)
 public class DerEdgeApiController {
     
     @Autowired private DerEdgeUnicastValidator unicastValidator;
@@ -36,19 +33,11 @@ public class DerEdgeApiController {
     
     @PostMapping("/unicastMessage")
     public ResponseEntity<Object> create(@Valid @RequestBody EdgeUnicastRequest edgeUnicastRequest, YukonUserContext userContext) {
-        
-        //TODO: does the API return something nice when an invalid PaoType is used? could use findYukonPao to throw ourselves
-        //ApiFieldError DOES_NOT_EXISTS
         YukonPao pao = paoDao.getYukonPao(edgeUnicastRequest.getName(), edgeUnicastRequest.getType());
         
         //Convert payload string into byte[] for porter
-        byte[] payload = null;
-        try {
-            payload = convertPayloadToBytes(edgeUnicastRequest.getPayload());
-        } catch (Exception e) {
-            throw new IllegalArgumentException("Invalid unicast payload.", e);
-        }
-        
+        byte[] payload = convertPayloadToBytes(edgeUnicastRequest.getPayload());
+        //Send the request to Porter and get back the E2E ID that will correlate with the response data when it comes back.
         short e2eId = derEdgeCommunicationService.sendUnicastRequest(pao, payload, userContext);
         
         //TODO later - correlate E2E IDs with response GUID
@@ -61,11 +50,16 @@ public class DerEdgeApiController {
      * Accept a DER Edge unicast payload as a hex string and return the equivalent byte array. 
      * @param stringPayload a DER Edge unicast payload as a hex string
      * @return the payload in the form of a byte array
+     * @throws IllegalArgumentException if an unexpected error occurs converting the payload string to a byte array.
      */
     private byte[] convertPayloadToBytes(String stringPayload) {
-        //TODO Java 17 - HexFormat.parseHex?
-        BigInteger intValue = new BigInteger(stringPayload, 16 /*parse as hex*/);
-        return intValue.toByteArray();
+        try {
+            //TODO Java 17 - HexFormat.parseHex?
+            BigInteger intValue = new BigInteger(stringPayload, 16 /*parse as hex*/);
+            return intValue.toByteArray();
+        } catch (Exception e) {
+            throw new IllegalArgumentException("Invalid unicast payload.", e);
+        }
     }
     
     @InitBinder("edgeUnicastRequest")
