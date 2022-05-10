@@ -1,5 +1,5 @@
 import React, { useEffect } from "react";
-import { Route, Redirect, Switch, useLocation, useHistory } from "react-router-dom";
+import { Route, Redirect, Switch, useLocation } from "react-router-dom";
 import { I18nextProvider } from "react-i18next";
 
 import yukoni18n from "./components/I18n/i18nConfig";
