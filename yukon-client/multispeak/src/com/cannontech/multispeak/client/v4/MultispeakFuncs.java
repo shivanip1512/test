@@ -23,11 +23,19 @@ import org.w3c.dom.Node;
 import com.cannontech.clientutils.YukonLogManager;
 import com.cannontech.common.exception.BadAuthenticationException;
 import com.cannontech.common.exception.PasswordExpiredException;
+import com.cannontech.common.pao.YukonDevice;
+import com.cannontech.common.pao.definition.model.PaoTag;
 import com.cannontech.core.dao.NotFoundException;
+import com.cannontech.core.dynamic.PointValueHolder;
+import com.cannontech.core.service.PointFormattingService.Format;
 import com.cannontech.database.data.lite.LiteYukonUser;
+import com.cannontech.database.db.point.stategroup.Disconnect410State;
+import com.cannontech.database.db.point.stategroup.PointStateHelper;
+import com.cannontech.database.db.point.stategroup.RfnDisconnectStatusState;
 import com.cannontech.msp.beans.v4.ArrayOfErrorObject;
 import com.cannontech.msp.beans.v4.ErrorObject;
 import com.cannontech.msp.beans.v4.ObjectFactory;
+import com.cannontech.msp.beans.v4.RCDState;
 import com.cannontech.multispeak.client.MessageContextHolder;
 import com.cannontech.multispeak.client.MultiSpeakVersion;
 import com.cannontech.multispeak.client.MultispeakDefines;
@@ -36,7 +44,9 @@ import com.cannontech.multispeak.client.MultispeakVendor;
 import com.cannontech.multispeak.client.YukonMultispeakMsgHeader;
 import com.cannontech.multispeak.dao.MultispeakDao;
 import com.cannontech.multispeak.data.MspReturnList;
+import com.cannontech.multispeak.data.v4.MspRCDState;
 import com.cannontech.multispeak.exceptions.MultispeakWebServiceException;
+import com.cannontech.user.YukonUserContext;
 
 public class MultispeakFuncs extends MultispeakFuncsBase {
     private final static Logger log = YukonLogManager.getLogger(MultispeakFuncs.class);
@@ -253,6 +263,44 @@ public class MultispeakFuncs extends MultispeakFuncsBase {
             arrayOfErrorObject.getErrorObject().addAll(errorObjects);
         }
         return arrayOfErrorObject;
+    }
+
+    /**
+     * Translates the rawState into a loadActionCode based on the type of meter
+     * and expected state group for that type. Returns loadActionCode.Unknown
+     * when cannot be determined.
+     * 
+     * @param meter
+     * @return
+     */
+    public RCDState getRCDState(YukonDevice yukonDevice, PointValueHolder pointValueHolder) {
+
+        MspRCDState mspRCDState;
+        try {
+
+            log.debug("Returning disconnect status from cache: "
+                    + pointFormattingService.getCachedInstance().getValueString(pointValueHolder, Format.FULL,
+                            YukonUserContext.system));
+
+            boolean isRfnDisconnect = paoDefinitionDao.isTagSupported(yukonDevice.getPaoIdentifier().getPaoType(),
+                    PaoTag.DISCONNECT_RFN);
+            if (isRfnDisconnect) {
+                RfnDisconnectStatusState pointState = PointStateHelper.decodeRawState(RfnDisconnectStatusState.class,
+                        pointValueHolder.getValue());
+                mspRCDState = MspRCDState.getForRfnState(pointState);
+                log.debug("returning mspRCDState for RFN: " + mspRCDState);
+            } else { // assume everything else is PLC
+                Disconnect410State pointState = PointStateHelper.decodeRawState(Disconnect410State.class,
+                        pointValueHolder.getValue());
+                mspRCDState = MspRCDState.getForPlcState(pointState);
+                log.debug("returning loadActionCode for PLC: " + mspRCDState);
+            }
+        } catch (IllegalArgumentException e) {
+            // we were unable to decode the rawState
+            log.warn("Unable to decode rawState. value:" + pointValueHolder.getValue());
+            return RCDState.UNKNOWN;
+        }
+        return mspRCDState.getRCDState();
     }
 
 }

@@ -6,6 +6,7 @@ import com.cannontech.amr.meter.model.YukonMeter;
 import com.cannontech.msp.beans.v4.ErrorObject;
 import com.cannontech.msp.beans.v4.MeterID;
 import com.cannontech.msp.beans.v4.MeterReading;
+import com.cannontech.msp.beans.v4.RCDState;
 import com.cannontech.multispeak.client.MultispeakVendor;
 import com.cannontech.multispeak.exceptions.MultispeakWebServiceException;
 
@@ -28,4 +29,14 @@ public interface MultispeakMeterService {
      * Remove MeterNos from SystemGroupEnum.USAGEMONITORING Device Group.
      */
     public List<ErrorObject> cancelUsageMonitoring(MultispeakVendor mspVendor, List<MeterID> meterIDs);
+
+    /**
+     * Returns the CDMeterState (or connected status) for meter
+     * Performs a read of DISCONNECT_STATUS attribute.
+     * Waits for response, times out after mspVendor.maxRequestTimeout
+     * 
+     * @throws MultispeakWebServiceException
+     */
+    public RCDState CDMeterState(MultispeakVendor mspVendor,
+            YukonMeter meter) throws MultispeakWebServiceException;
 }
