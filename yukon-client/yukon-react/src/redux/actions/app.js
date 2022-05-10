@@ -82,10 +82,3 @@ export const setFlashErrors = (flashErrors) => {
       theme: theme
     }
   }
-  
-  export const setBackgroundImage = (backgroundImage) => {
-    return {
-      type: actionTypes.SET_BACKGROUND_IMAGE,
-      backgroundImage: backgroundImage
-      };
-   };

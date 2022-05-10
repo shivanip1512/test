@@ -20,7 +20,6 @@ import axios from "../src/axiosConfig";
 import * as actions from '../src/redux/actions/index';
 import { useDispatch } from 'react-redux';
 
-
 const ScrollToTop = () => {
     const { pathname } = useLocation();
 
@@ -33,35 +32,24 @@ const ScrollToTop = () => {
 
 export const App = () => {
 
-    const dispatch = useDispatch();
-    axios.get('/api/admin/config/currentTheme')
-            .then(themeJson => {
-                //alert(themeJson.data)
-                console.log('this is theme data',themeJson.data);
+    const dispatch = useDispatch();;
+    
+    const fetchTheme = async () => {
+        await axios.get('/api/admin/config/currentTheme')
+            .then(themeJson => {                
                 if (themeJson) {
-                    console.log('inside themeJson',themeJson.data.name);
-                    //don't change theme if default theme is used
-                    if (themeJson.data.themeId > 0) {
-                        //get theme image
-                        axios.get('/api/common/images/' + themeJson.data.properties.LOGIN_BACKGROUND)
-                        .then(backgroundImage => {
-                            console.log('image that is returened',backgroundImage.data);
-                            themeJson.data.properties.LOGO_IMAGE = backgroundImage.data;
-                            dispatch(actions.setTheme(themeJson.data));
-                            dispatch(actions.setBackgroundImage(backgroundImage));
-                            dispatch(actions.renderDrawer());
-                            //Example if we want to change an entire piece of the pxblue theme
-                            //theme.palette.primary.main = themeJson.data.properties.PRIMARY_COLOR;
-                        });
-                    } else {
-                        dispatch(actions.renderDrawer());
-                    }
+                    dispatch(actions.setTheme(themeJson.data));
                 }
             });
+    }
+    
+    useEffect(() => {
+        fetchTheme();
+      }, []);
 
     return (
         <SecurityContextProvider>
-            <AuthUIConfiguration>
+            <AuthUIConfiguration yukonPath={window.configs.YUKON_API_URL}>
                 <AuthNavigationContainer routeConfig={routes}>
                     <I18nextProvider i18n={yukoni18n}>
                         <ScrollToTop />

@@ -58,8 +58,6 @@ export const AppReducer = (state = initialAppState, action) => {
             return {...state, validationErrors: null, flashSuccess: null, flashErrors: null};
         case SET_THEME:
             return {...state, theme: action.theme};
-        case SET_BACKGROUND_IMAGE:
-            return {...state, backgroundImage: action.backgroundImage};
         default:
             return state;
     }
