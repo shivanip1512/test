@@ -5,6 +5,7 @@ ProgramConstraint:
     - seasonSchedule
     - holidaySchedule
     - maxActivateSeconds
+    - minActivateSeconds
     - maxDailyOps
     - minRestartSeconds
     - maxHoursDaily
@@ -35,6 +36,11 @@ ProgramConstraint:
       minimum: 0
       maximum: 99999
       description: 'Maximum number of seconds that a load group can be active during a control session.'
+    minActivateSeconds:
+      type: integer
+      minimum: 0
+      maximum: 99999
+      description: 'Minimum number of seconds that a load group can be active during a control session.'
     maxDailyOps:
       type: integer
       minimum: 0
@@ -173,6 +179,11 @@ ProgramConstraint Response Schema:
       minimum: 0
       maximum: 99999
       description: 'Maximum number of seconds that a load group can be active during a control session.'
+    minActivateSeconds:
+      type: integer
+      minimum: 0
+      maximum: 99999
+      description: 'Minimum number of seconds that a load group can be active during a control session.'
     maxDailyOps:
       type: integer
       minimum: 0

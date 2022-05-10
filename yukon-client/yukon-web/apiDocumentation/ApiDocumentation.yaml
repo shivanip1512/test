@@ -69,7 +69,7 @@ paths:
     $ref: 'api/loadProgramsApi.yaml#/copy-operation'
 
   /dr/constraints:
-    $ref: 'api/programConstraintsApi.yaml#/post-operation'
+    $ref: 'api/programConstraintsApi.yaml#/post-get-all-operation'
   /dr/constraints/{id}:
     $ref: 'api/programConstraintsApi.yaml#/get-update-delete-operation'
   /dr/constraints/seasonSchedules:
