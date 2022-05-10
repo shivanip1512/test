@@ -1,4 +1,4 @@
-post-operation:
+post-get-all-operation:
   post:
     tags:
      - Program Constraints
@@ -23,6 +23,21 @@ post-operation:
             examples:
               Program Constraints:
                 $ref: '../schemas/programConstraintsSchema.yaml#/components/examples/ProgramConstraint Response'
+  get:
+    tags:
+       - Program Constraints
+    summary: 'Retrieve all Program Constraints'
+    description: 'API to retrieve all program constraints.'
+    responses:
+      '200':
+        description: OK
+        content:
+          application/json:
+            schema:
+              $ref: '../schemas/programConstraintsSchema.yaml#/program-constraint-dto'
+            examples:
+              Program Constraints:
+                $ref: '../schemas/programConstraintsSchema.yaml#/components/examples/ItemtList'
 get-update-delete-operation:
   get:
     tags:
@@ -133,19 +148,4 @@ holiday-schedules:
               Holiday Schedules:
                 $ref: '../schemas/programConstraintsSchema.yaml#/components/examples/ItemtList'
 
-program-constraints:
-  get:
-    tags:
-       - Program Constraints
-    summary: 'Retrieve all Program Constraints'
-    description: 'API to retrieve all program constraints.'
-    responses:
-      '200':
-        description: OK
-        content:
-          application/json:
-            schema:
-              $ref: '../schemas/programConstraintsSchema.yaml#/program-constraint-dto'
-            examples:
-              Program Constraints:
-                $ref: '../schemas/programConstraintsSchema.yaml#/components/examples/ItemtList'
+
