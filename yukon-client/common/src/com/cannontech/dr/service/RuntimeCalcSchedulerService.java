@@ -1,5 +1,6 @@
 package com.cannontech.dr.service;
 
+import java.text.SimpleDateFormat;
 import java.util.Collection;
 import java.util.Date;
 import java.util.List;
@@ -89,7 +90,7 @@ public abstract class RuntimeCalcSchedulerService {
     protected Set<BuiltInAttribute> dataLogAttributes;
     protected Set<BuiltInAttribute> relayStatusAttributes;
     protected Set<PaoType> types;
-
+    private static final SimpleDateFormat DATE_FORMAT = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
 
     @PostConstruct
     protected void init() {
@@ -252,8 +253,9 @@ public abstract class RuntimeCalcSchedulerService {
         
         log.debug("Start Range:{}", startOfRange);
 
-        if (startOfRange == endOfRange) {
-            throw new IllegalArgumentException("log range is 0");
+        if (startOfRange != null && startOfRange.equals(endOfRange)) {
+            log.debug("Already calculated values for {}, skipping calculation.", DATE_FORMAT.format(startOfRange.toDate()));
+            return;
         }
 
         // Limit the range of data calculated. Default: 30 days back.
