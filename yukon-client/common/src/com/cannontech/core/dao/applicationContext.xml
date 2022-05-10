@@ -25,6 +25,7 @@
   <bean id="dbPersistentDao" class="com.cannontech.core.dao.impl.DBPersistentDaoImpl"/>        
   <bean id="deviceDao" class="com.cannontech.core.dao.impl.DeviceDaoImpl"/>
   <bean id="dynamicBillingFileDao" class="com.cannontech.common.dynamicBilling.dao.impl.DynamicBillingFileDaoImpl"/>
+  <bean class="com.cannontech.core.service.impl.TimeServiceImpl"/>
 
   <bean id="graphDao" class="com.cannontech.core.dao.impl.GraphDaoImpl"/>
   
@@ -128,4 +129,5 @@
   <bean class="com.cannontech.system.GlobalSettingTypeValidators"/>
   
   <bean class="com.cannontech.dr.eatonCloud.service.impl.v1.EatonCloudDataReadServiceImpl "/>
+
 </beans>

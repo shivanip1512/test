@@ -42,6 +42,7 @@ import com.cannontech.common.smartNotification.service.SmartNotificationEventCre
 import com.cannontech.common.util.Range;
 import com.cannontech.common.util.ScheduledExecutor;
 import com.cannontech.core.dao.DeviceDao;
+import com.cannontech.core.service.TimeService;
 import com.cannontech.database.data.lite.LiteYukonPAObject;
 import com.cannontech.dr.eatonCloud.model.v1.EatonCloudCommandRequestV1;
 import com.cannontech.dr.eatonCloud.model.v1.EatonCloudCommandResponseV1;
@@ -65,6 +66,7 @@ public class EatonCloudSendControlServiceImpl implements EatonCloudSendControlSe
 
     private static final Logger log = YukonLogManager.getLogger(EatonCloudSendControlServiceImpl.class);
 
+    @Autowired private TimeService timeService;
     @Autowired private IDatabaseCache dbCache;
     @Autowired private DeviceDao deviceDao;
     @Autowired private EatonCloudEventLogService eatonCloudEventLogService;
@@ -210,7 +212,7 @@ public class EatonCloudSendControlServiceImpl implements EatonCloudSendControlSe
         Map<Integer, String> guids = deviceDao.getGuids(devices);
         AtomicInteger totalFailed = new AtomicInteger(0);
         AtomicInteger totalSucceeded = new AtomicInteger(0);
-        Instant sendTime = new Instant();
+        Instant now = timeService.now();
 
         StopWatch stopwatch = new StopWatch();
         stopwatch.start();
@@ -232,8 +234,8 @@ public class EatonCloudSendControlServiceImpl implements EatonCloudSendControlSe
                         new EatonCloudCommandRequestV1("LCR_Control", params));
                 if (response.getStatusCode() == HttpStatus.OK.value()) {
                     recentEventParticipationDao.updateDeviceControlEvent(eventId.toString(), deviceId,
-                            ControlEventDeviceStatus.SUCCESS_RECEIVED, new Instant(),
-                            null, tryNumber == 1 ? null : Instant.now());
+                            ControlEventDeviceStatus.SUCCESS_RECEIVED, now,
+                            null, tryNumber == 1 ? null : now);
                     totalSucceeded.incrementAndGet();
                     log.debug("[external event id: {} ({} of {})] Success sending shed command to device id:{} guid:{} name:{} relay:{}",
                             eventId, tryNumber, totalTries, deviceId, guid, deviceName, command.getVirtualRelayId(), params);
@@ -275,7 +277,7 @@ public class EatonCloudSendControlServiceImpl implements EatonCloudSendControlSe
                 command.getDutyCyclePeriod() / 60,
                 2, RoundingMode.CEILING);
         Instant nextReadTime = DateTime.now().plusMinutes(readTimeFromNowInMinutes).toInstant();
-        nextRead.put(eventId, Pair.of(nextReadTime, sendTime));
+        nextRead.put(eventId, Pair.of(nextReadTime, now));
 
         log.info(
                 "[external event id: {} ({} of {})] Finished sending LM Eaton Cloud Shed Command:{} devices:{} relay:{} failed:{} succeeded:{} next device read in {} minutes at {}",
