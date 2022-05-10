@@ -9,4 +9,8 @@ public interface NotificationGroupService {
      */
     public NotificationGroup create(NotificationGroup notificationGroup);
 
+    /**
+     * Delete a notification group
+     */
+    int delete(int id);
 }
