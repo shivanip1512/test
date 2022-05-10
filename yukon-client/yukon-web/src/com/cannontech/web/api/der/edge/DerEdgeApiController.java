@@ -13,12 +13,18 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.cannontech.common.config.MasterConfigBoolean;
 import com.cannontech.common.pao.YukonPao;
 import com.cannontech.core.dao.PaoDao;
+import com.cannontech.core.roleproperties.YukonRoleProperty;
 import com.cannontech.user.YukonUserContext;
 import com.cannontech.web.api.der.edge.service.DerEdgeCommunicationService;
+import com.cannontech.web.security.annotation.CheckCparm;
+import com.cannontech.web.security.annotation.CheckRoleProperty;
 
 @RestController
+@CheckRoleProperty(YukonRoleProperty.DER_EDGE_COORDINATOR_PERMISSION)
+@CheckCparm(MasterConfigBoolean.DER_EDGE_COORDINATOR)
 //TODO - @CheckRoleProperty(YukonRoleProperty.EDGE_DR_PERMISSION)
 //TODO - after YUK-26189 merged - The endpoint should only accept requests if master.cfg setting is true
 //@CheckCparm(MasterConfigBoolean.DER_EDGE_COORDINATOR)
