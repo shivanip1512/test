@@ -617,6 +617,7 @@
     <entry key="yukon.web.modules.dev.email">Email</entry>
     
     <entry key="yukon.web.modules.dev.rfnMeterSimulator.reportingInterval.types.REPORTING_INTERVAL_24_HOURS">1 Day</entry>
+    <entry key="yukon.web.modules.dev.rfnMeterSimulator.reportingInterval.types.REPORTING_INTERVAL_6_HOURS">6 Hours</entry>
     <entry key="yukon.web.modules.dev.rfnMeterSimulator.reportingInterval.types.REPORTING_INTERVAL_4_HOURS">4 Hours</entry>
     <entry key="yukon.web.modules.dev.rfnMeterSimulator.reportingInterval.types.REPORTING_INTERVAL_1_HOURS">1 Hour</entry>
 

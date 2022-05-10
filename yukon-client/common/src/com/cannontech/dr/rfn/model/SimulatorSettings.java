@@ -58,6 +58,7 @@ public class SimulatorSettings implements Serializable {
     public enum ReportingInterval implements DisplayableEnum {
         REPORTING_INTERVAL_1_HOURS(Duration.standardHours(1)),
         REPORTING_INTERVAL_4_HOURS(Duration.standardHours(4)),
+        REPORTING_INTERVAL_6_HOURS(Duration.standardHours(6)),
         REPORTING_INTERVAL_24_HOURS(Duration.standardDays(1)),;
         private static final String prefix = "yukon.web.modules.dev.rfnMeterSimulator.reportingInterval.types.";
         private Duration duration;
