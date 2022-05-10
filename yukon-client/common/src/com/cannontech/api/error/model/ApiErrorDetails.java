@@ -43,7 +43,10 @@ public enum ApiErrorDetails {
     TYPE_MISMATCH(ApiErrorCategory.VALIDATION_FAILED, 113, "Type mismatch", "Type mismatch."), // code : 101113
     INVALID_FIELD_LENGTH(ApiErrorCategory.VALIDATION_FAILED, 114, "Field length must be valid", "Field length must be valid."), // code : 101114
     WHITELIST_CHARACTERS(ApiErrorCategory.VALIDATION_FAILED, 115, "Not a whitelisted characters", "Invalid whitelisted characters."), // code : 101115
-    FUTURE_DATE(ApiErrorCategory.VALIDATION_FAILED, 116, "Date must be in the future", "Date must be in the future."); // code : 101116
+    FUTURE_DATE(ApiErrorCategory.VALIDATION_FAILED, 116, "Date must be in the future", "Date must be in the future."), // code : 101116
+    INVALID_LENGTH_EVEN(ApiErrorCategory.VALIDATION_FAILED, 117, "Length must be even", "Field length must be even."), // code: 101117
+    HEXIDECIMAL_CHARACTERS(ApiErrorCategory.VALIDATION_FAILED, 118, "Non-hexidecimal characters", "Invalid hexidecimal characters."), // code : 101118
+    ;
 
     private ApiErrorCategory category;
     private int code;
@@ -64,7 +67,7 @@ public enum ApiErrorDetails {
      * Defines an error in the specified category. The error code will be category code + error ID.
      */
     ApiErrorDetails(ApiErrorCategory category, int errorId, String title, String defaultMessage) {
-        this.code = category.getCode() + errorId;
+        code = category.getCode() + errorId;
         this.category = category;
         this.title = title;
         this.defaultMessage = defaultMessage;

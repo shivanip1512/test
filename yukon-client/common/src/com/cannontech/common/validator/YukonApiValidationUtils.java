@@ -113,7 +113,8 @@ public class YukonApiValidationUtils extends ValidationUtils {
     
     public boolean checkHexOnlyCharacter(Errors errors, String field, String fieldValue, String fieldName) {
         if (YukonValidationUtilsCommon.checkHexOnlyCharacter(fieldValue)) {
-            errors.rejectValue(field, ApiErrorDetails.ILLEGAL_CHARACTERS.getCodeString(), new Object[] { fieldName }, "");
+            errors.rejectValue(field, ApiErrorDetails.HEXIDECIMAL_CHARACTERS.getCodeString(), new Object[] { fieldName }, 
+                    "Contains non-hexidecimal characters.");
             return true;
         }
         return false;

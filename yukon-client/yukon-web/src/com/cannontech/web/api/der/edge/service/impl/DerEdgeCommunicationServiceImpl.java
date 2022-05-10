@@ -18,7 +18,7 @@ public class DerEdgeCommunicationServiceImpl implements DerEdgeCommunicationServ
     public short sendUnicastRequest(YukonPao pao, byte[] payload, YukonUserContext userContext) {
         
         //TODO later - clean up this logging
-        log.info("DER Edge Unicast Request - Pao: {}, payload: {}", pao, Arrays.toString(payload));
+        log.info("Processing DER Edge Unicast Request - Pao: {}, payload: {}", pao, Arrays.toString(payload));
         
         //TODO later - send request to porter and receive response
         
