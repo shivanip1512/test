@@ -131,6 +131,9 @@
                     <c:when test="${showPolyphaseReadings}">
                        <tags:widget bean="polyphaseMeterReadingsWidget"/>
                     </c:when>
+                    <c:when test ="${isDerEdgeCooordinator}">
+                        <!-- Don't show any meter reading widget -->
+                    </c:when>
                     <c:otherwise>
                        <tags:widget bean="meterReadingsWidget"/>
                     </c:otherwise>
@@ -154,10 +157,11 @@
             </div>
             
             <div class="column two nogutter">
-                <div id="trendWidget">
-                   <tags:widget bean="csrTrendWidget" tabularDataViewer="archivedDataReport" showHelpIcon="true"/>
-                </div>
-                
+                <c:if test="${!isDerEdgeCooordinator}">
+                    <div id="trendWidget">
+                        <tags:widget bean="csrTrendWidget" tabularDataViewer="archivedDataReport" showHelpIcon="true"/>
+                    </div>
+                </c:if>
                 <c:if test="${showDisconnect}">
                     <cti:url var="url" value="/widget/disconnectMeterWidget/helpInfo">
                         <cti:param name="deviceId" value="${deviceId}"/>
