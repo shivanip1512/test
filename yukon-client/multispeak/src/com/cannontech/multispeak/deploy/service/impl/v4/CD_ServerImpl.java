@@ -6,6 +6,7 @@ import java.util.List;
 
 import org.apache.logging.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Service;
 
 import com.cannontech.amr.meter.model.YukonMeter;
@@ -44,7 +45,7 @@ public class CD_ServerImpl implements CD_Server {
     @Autowired private MultispeakMeterService multispeakMeterService;
     @Autowired private PaoDefinitionDao paoDefinitionDao;
     @Autowired private AsyncDynamicDataSource asyncDynamicDataSource;
-    @Autowired private MspMeterDao mspMeterDao;
+    @Autowired @Qualifier("mspMeterDaoV4") private MspMeterDao mspMeterDao;
 
     private final Logger log = YukonLogManager.getLogger(CD_ServerImpl.class);
     private final static String[] methods = new String[] { "PingURL", 
