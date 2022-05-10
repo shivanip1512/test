@@ -5,7 +5,6 @@ import org.springframework.validation.Errors;
 
 import com.cannontech.common.dr.gear.setup.fields.SimpleThermostatRampingGearFields;
 import com.cannontech.common.validator.YukonApiValidationUtils;
-import com.cannontech.common.validator.YukonValidationUtils;
 import com.cannontech.database.db.device.lm.GearControlMethod;
 
 public class SimpleThermostatRampingGearFieldsValidator
@@ -34,7 +33,7 @@ public class SimpleThermostatRampingGearFieldsValidator
         yukonApiValidationUtils.checkIfFieldRequired("randomStartTimeInMinutes", errors,
             simpleThermostatRampingCycleGear.getRandomStartTimeInMinutes(), "Random Start Time");
         if (!errors.hasFieldErrors("randomStartTimeInMinutes")) {
-            YukonValidationUtils.checkRange(errors, "randomStartTimeInMinutes",
+            yukonApiValidationUtils.checkRange(errors, "randomStartTimeInMinutes",
                 simpleThermostatRampingCycleGear.getRandomStartTimeInMinutes(), 0, 120, false);
         }
 
@@ -45,7 +44,7 @@ public class SimpleThermostatRampingGearFieldsValidator
         yukonApiValidationUtils.checkIfFieldRequired("preOpTemp", errors, simpleThermostatRampingCycleGear.getPreOpTemp(),
             "Temp");
         if (!errors.hasFieldErrors("preOpTemp")) {
-            YukonValidationUtils.checkRange(errors, "preOpTemp", simpleThermostatRampingCycleGear.getPreOpTemp(), -20,
+            yukonApiValidationUtils.checkRange(errors, "preOpTemp", simpleThermostatRampingCycleGear.getPreOpTemp(), -20,
                 20, false);
         }
 
@@ -53,7 +52,7 @@ public class SimpleThermostatRampingGearFieldsValidator
         yukonApiValidationUtils.checkIfFieldRequired("preOpTimeInMinutes", errors,
             simpleThermostatRampingCycleGear.getPreOpTimeInMinutes(), "Time");
         if (!errors.hasFieldErrors("preOpTimeInMinutes")) {
-            YukonValidationUtils.checkRange(errors, "preOpTimeInMinutes",
+            yukonApiValidationUtils.checkRange(errors, "preOpTimeInMinutes",
                 simpleThermostatRampingCycleGear.getPreOpTimeInMinutes(), 0, 300, false);
         }
 
@@ -61,7 +60,7 @@ public class SimpleThermostatRampingGearFieldsValidator
         yukonApiValidationUtils.checkIfFieldRequired("preOpHoldInMinutes", errors,
             simpleThermostatRampingCycleGear.getPreOpHoldInMinutes(), "Hold");
         if (!errors.hasFieldErrors("preOpHoldInMinutes")) {
-            YukonValidationUtils.checkRange(errors, "preOpHoldInMinutes",
+            yukonApiValidationUtils.checkRange(errors, "preOpHoldInMinutes",
                 simpleThermostatRampingCycleGear.getPreOpHoldInMinutes(), 0, 300, false);
         }
 
@@ -69,7 +68,7 @@ public class SimpleThermostatRampingGearFieldsValidator
         yukonApiValidationUtils.checkIfFieldRequired("rampPerHour", errors, simpleThermostatRampingCycleGear.getRampPerHour(),
             "Ramp °F/Hour");
         if (!errors.hasFieldErrors("rampPerHour")) {
-            YukonValidationUtils.checkRange(errors, "rampPerHour", simpleThermostatRampingCycleGear.getRampPerHour(),
+            yukonApiValidationUtils.checkRange(errors, "rampPerHour", simpleThermostatRampingCycleGear.getRampPerHour(),
                 (float) -9.9, (float) 9.9, false);
         }
 
@@ -77,14 +76,14 @@ public class SimpleThermostatRampingGearFieldsValidator
         yukonApiValidationUtils.checkIfFieldRequired("max", errors, simpleThermostatRampingCycleGear.getMax(),
             "Max °\u0394");
         if (!errors.hasFieldErrors("max")) {
-            YukonValidationUtils.checkRange(errors, "max", simpleThermostatRampingCycleGear.getMax(), 0, 20, false);
+            yukonApiValidationUtils.checkRange(errors, "max", simpleThermostatRampingCycleGear.getMax(), 0, 20, false);
         }
 
         // Check Ramp out Time
         yukonApiValidationUtils.checkIfFieldRequired("rampOutTimeInMinutes", errors,
             simpleThermostatRampingCycleGear.getRampOutTimeInMinutes(), "Ramp out Time");
         if (!errors.hasFieldErrors("rampOutTimeInMinutes")) {
-            YukonValidationUtils.checkRange(errors, "rampOutTimeInMinutes",
+            yukonApiValidationUtils.checkRange(errors, "rampOutTimeInMinutes",
                 simpleThermostatRampingCycleGear.getRampOutTimeInMinutes(), 0, 300, false);
         }
 
@@ -92,7 +91,7 @@ public class SimpleThermostatRampingGearFieldsValidator
         yukonApiValidationUtils.checkIfFieldRequired("maxRuntimeInMinutes", errors,
             simpleThermostatRampingCycleGear.getMaxRuntimeInMinutes(), "Max Runtime");
         if (!errors.hasFieldErrors("maxRuntimeInMinutes")) {
-            YukonValidationUtils.checkRange(errors, "maxRuntimeInMinutes",
+            yukonApiValidationUtils.checkRange(errors, "maxRuntimeInMinutes",
                 simpleThermostatRampingCycleGear.getMaxRuntimeInMinutes(), 240, 1439, false);
         }
 

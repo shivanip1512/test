@@ -5,7 +5,6 @@ import org.springframework.validation.Errors;
 
 import com.cannontech.common.dr.gear.setup.fields.BeatThePeakGearFields;
 import com.cannontech.common.validator.YukonApiValidationUtils;
-import com.cannontech.common.validator.YukonValidationUtils;
 import com.cannontech.database.db.device.lm.GearControlMethod;
 
 public class BeatThePeakGearFieldsValidator extends ProgramGearFieldsValidator<BeatThePeakGearFields> {
@@ -35,7 +34,7 @@ public class BeatThePeakGearFieldsValidator extends ProgramGearFieldsValidator<B
         yukonApiValidationUtils.checkIfFieldRequired("timeoutInMinutes", errors, beatThePeakCycleGear.getTimeoutInMinutes(),
             "Max Indicator Timeout");
         if (!errors.hasFieldErrors("timeoutInMinutes")) {
-            YukonValidationUtils.checkRange(errors, "timeoutInMinutes", beatThePeakCycleGear.getTimeoutInMinutes(), 0,
+            yukonApiValidationUtils.checkRange(errors, "timeoutInMinutes", beatThePeakCycleGear.getTimeoutInMinutes(), 0,
                 99999, false);
         }
 
@@ -43,7 +42,7 @@ public class BeatThePeakGearFieldsValidator extends ProgramGearFieldsValidator<B
         yukonApiValidationUtils.checkIfFieldRequired("resendInMinutes", errors, beatThePeakCycleGear.getResendInMinutes(),
             "Resend Rate");
         if (!errors.hasFieldErrors("resendInMinutes")) {
-            YukonValidationUtils.checkRange(errors, "resendInMinutes", beatThePeakCycleGear.getResendInMinutes(), 0,
+            yukonApiValidationUtils.checkRange(errors, "resendInMinutes", beatThePeakCycleGear.getResendInMinutes(), 0,
                 99999, false);
         }
 
