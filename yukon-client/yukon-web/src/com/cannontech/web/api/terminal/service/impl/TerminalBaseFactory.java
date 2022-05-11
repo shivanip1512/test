@@ -9,7 +9,10 @@ import com.cannontech.database.data.device.TNPPTerminal;
 import com.cannontech.database.data.device.WCTPTerminal;
 
 public class TerminalBaseFactory {
-
+    
+    /**
+     * Return IEDBase model object on the basis of PaoType
+     */
     public static IEDBase getIEDBase(PaoType type) {
         switch (type) {
         case TAPTERMINAL:
@@ -25,8 +28,10 @@ public class TerminalBaseFactory {
         }
     }
     
-    public static TerminalBase<?> getTerminalBase(PaoType type)
-    {
+    /**
+     * Return TerminalBase model object on the basis of PaoType
+     */
+    public static TerminalBase<?> getTerminalBase(PaoType type) {
         switch (type) {
         case TAPTERMINAL:
             return new com.cannontech.common.device.terminal.model.PagingTapTerminal();
