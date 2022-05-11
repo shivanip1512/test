@@ -15,6 +15,7 @@ import com.cannontech.capcontrol.PointToZoneMapping;
 import com.cannontech.capcontrol.dao.CapbankDao;
 import com.cannontech.capcontrol.dao.FeederDao;
 import com.cannontech.capcontrol.dao.ZoneDao;
+import com.cannontech.capcontrol.model.RegulatorToZoneMapping;
 import com.cannontech.capcontrol.model.Zone;
 import com.cannontech.cbc.cache.CapControlCache;
 import com.cannontech.cbc.util.CapControlUtils;
@@ -223,7 +224,8 @@ public class FeederServiceImpl implements FeederService {
             for (Zone zone: zones) {
                 List<PointToZoneMapping> pointMappings = zoneDao.getPointToZoneMappingByZoneId(zone.getId());
                 Optional<PointToZoneMapping> feederPoint = pointMappings.stream()
-                        .filter(point -> point.getFeederId().equals(feederId)).findFirst();
+                        .filter(point -> point.getFeederId() != null && point.getFeederId().equals(feederId))
+                        .findFirst();
                 if (feederPoint.isPresent()) {
                     return true;
                 }
@@ -232,6 +234,28 @@ public class FeederServiceImpl implements FeederService {
 
         return false;
     }
+    
+    @Override
+    public boolean isFeederAssignedToRegulatorPointForZone(int feederId) throws EmptyResultDataAccessException, NotFoundException {
+
+        Integer substationBusId = feederDao.getParentSubBusID(feederId);
+        SubBus bus = ccCache.getSubBus(substationBusId);
+        if (bus.getAlgorithm() == ControlAlgorithm.INTEGRATED_VOLT_VAR) {
+            List<Zone> zones = zoneDao.getZonesBySubBusId(substationBusId);
+            for (Zone zone: zones) {
+                List<RegulatorToZoneMapping> regMappings = zoneDao.getRegulatorToZoneMappingsByZoneId(zone.getId());
+                Optional<RegulatorToZoneMapping> feederPoint = regMappings.stream()
+                        .filter(point -> point.getFeederId() != null && point.getFeederId().equals(feederId))
+                        .findFirst();
+                if (feederPoint.isPresent()) {
+                    return true;
+                }
+            }
+        }
+
+        return false;
+    }
+    
     /**
      * @throws NotFoundException if the given id is not a feeder
      */
