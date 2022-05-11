@@ -15,20 +15,24 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.beans.factory.annotation.Required;
 
+import com.cannontech.amr.demandreset.service.DemandResetService;
 import com.cannontech.amr.meter.model.YukonMeter;
 import com.cannontech.clientutils.YukonLogManager;
 import com.cannontech.common.events.loggers.MultispeakEventLogService;
+import com.cannontech.common.pao.PaoIdentifier;
 import com.cannontech.common.pao.attribute.model.BuiltInAttribute;
 import com.cannontech.common.pao.attribute.service.AttributeService;
 import com.cannontech.common.pao.attribute.service.IllegalUseOfAttribute;
 import com.cannontech.common.pao.definition.dao.PaoDefinitionDao;
 import com.cannontech.common.pao.definition.model.PaoTag;
 import com.cannontech.common.point.PointQuality;
+import com.cannontech.core.dao.PaoDao;
 import com.cannontech.core.dynamic.AsyncDynamicDataSource;
 import com.cannontech.core.dynamic.PointValueQualityHolder;
 import com.cannontech.core.dynamic.exception.DynamicDataAccessException;
 import com.cannontech.database.data.lite.LitePoint;
 import com.cannontech.msp.beans.v4.ErrorObject;
+import com.cannontech.msp.beans.v4.ExpirationTime;
 import com.cannontech.msp.beans.v4.FormattedBlock;
 import com.cannontech.msp.beans.v4.MeterID;
 import com.cannontech.msp.beans.v4.MeterReading;
@@ -40,17 +44,23 @@ import com.cannontech.multispeak.client.v4.MultispeakFuncs;
 import com.cannontech.multispeak.dao.MspMeterDao;
 import com.cannontech.multispeak.dao.v4.FormattedBlockProcessingService;
 import com.cannontech.multispeak.dao.v4.MeterReadingProcessingService;
+import com.cannontech.multispeak.dao.v4.MspObjectDao;
 import com.cannontech.multispeak.dao.v4.MspRawPointHistoryDao;
 import com.cannontech.multispeak.dao.v4.MspRawPointHistoryDao.ReadBy;
 import com.cannontech.multispeak.data.v4.FieldNamesMspV4;
 import com.cannontech.multispeak.data.v4.MspBlockReturnList;
 import com.cannontech.multispeak.data.v4.MspMeterReadingReturnList;
 import com.cannontech.multispeak.data.v4.MspMeterReturnList;
+import com.cannontech.multispeak.deploy.service.impl.v4.MRServerDemandResetCallback;
 import com.cannontech.multispeak.exceptions.MultispeakWebServiceException;
 import com.cannontech.multispeak.service.v4.MR_Server;
 import com.cannontech.multispeak.service.v4.MspValidationService;
 import com.cannontech.multispeak.service.v4.MultispeakMeterService;
+import com.cannontech.user.UserUtils;
 import com.cannontech.yukon.BasicServerConnection;
+import com.google.common.collect.HashBiMap;
+import com.google.common.collect.Lists;
+import com.google.common.collect.Sets;
 
 public class MR_ServerImpl implements MR_Server {
 
@@ -66,6 +76,9 @@ public class MR_ServerImpl implements MR_Server {
     @Autowired @Qualifier("mspMeterDaoV4") private MspMeterDao mspMeterDao;
     private Map<String, FormattedBlockProcessingService<Block>> formattedBlockMap;
     private BasicServerConnection porterConnection;
+    @Autowired private PaoDao paoDao;
+    @Autowired private MspObjectDao mspObjectDao;
+    @Autowired private DemandResetService demandResetService;
    
     private final Logger log = YukonLogManager.getLogger(MR_ServerImpl.class);
     private final static String[] methods = new String[] { "PingURL", 
@@ -424,6 +437,66 @@ public class MR_ServerImpl implements MR_Server {
                 .collect(Collectors.toList());
 
         return fieldNames;
+    }
+
+    @Override
+    public List<ErrorObject> initiateDemandReset(List<MeterID> meterIDs, String responseURL, String transactionID,
+            ExpirationTime expirationTime) throws MultispeakWebServiceException {
+        init();
+        MultispeakVendor vendor = multispeakFuncs.getMultispeakVendorFromHeader();
+        multispeakEventLogService.methodInvoked("InitiateDemandReset", vendor.getCompanyName());
+
+        List<ErrorObject> errors = Lists.newArrayList();
+        boolean hasFatalErrors = false;
+
+        String actualResponseUrl = multispeakFuncs.getResponseUrl(vendor, responseURL, MultispeakDefines.CB_Server_STR);
+
+        // Do a basic URL check. This only validates that it's not empty.
+        ErrorObject errorObject = mspValidationService.validateResponseURL(actualResponseUrl, "Meter", "InitiateDemandReset");
+        if (errorObject != null) {
+            errors.add(errorObject);
+            hasFatalErrors = true;
+        }
+
+        Set<String> meterNumbers = meterIDs.stream().map(meterID -> meterID.getMeterNo()).collect(Collectors.toSet());
+        Map<String, PaoIdentifier> paoIdsByMeterNumber = paoDao.findPaoIdentifiersByMeterNumber(meterNumbers);
+        Map<PaoIdentifier, String> meterNumbersByPaoId = HashBiMap.create(paoIdsByMeterNumber).inverse();
+        Set<String> invalidMeterNumbers = Sets.difference(meterNumbers, paoIdsByMeterNumber.keySet());
+
+        for (String invalidMeterNumber : invalidMeterNumbers) {
+            errors.add(mspObjectDao.getNotFoundErrorObject(invalidMeterNumber, "MeterID", "Meter",
+                    "InitiateDemandReset", vendor.getCompanyName()));
+        }
+
+        Set<PaoIdentifier> meterIdentifiers = Sets.newHashSet(paoIdsByMeterNumber.values());
+        Set<PaoIdentifier> validMeters = Sets.newHashSet(demandResetService.filterDevices(meterIdentifiers));
+        Set<PaoIdentifier> unsupportedMeters = Sets.difference(meterIdentifiers, validMeters);
+        for (PaoIdentifier unsupportedMeter : unsupportedMeters) {
+            String errorMsg = unsupportedMeter.getPaoIdentifier().getPaoType()
+                    + " does not support demand reset";
+            String meterNumber = meterNumbersByPaoId.get(unsupportedMeter);
+            errors.add(mspObjectDao.getErrorObject(meterNumber, errorMsg, "MeterID",
+                    "InitiateDemandReset", vendor.getCompanyName()));
+        }
+
+        if (hasFatalErrors || validMeters.isEmpty()) {
+            return errors;
+        }
+
+        log.info("Received " + meterIDs.size() + " Meter(s) for Demand Reset from " + vendor.getCompanyName());
+        multispeakEventLogService.initiateDemandResetRequest(meterNumbers.size(), meterNumbersByPaoId.size(),
+                invalidMeterNumbers.size(), unsupportedMeters.size(),
+                "InitiateConnectDisconnect", vendor.getCompanyName());
+        
+        MRServerDemandResetCallback callback =
+                new MRServerDemandResetCallback(mspObjectDao, multispeakEventLogService, vendor, meterNumbersByPaoId,
+                    actualResponseUrl, transactionID);
+            
+        
+        demandResetService.sendDemandResetAndVerify(validMeters, callback, UserUtils.getYukonUser());
+        errors.addAll(callback.getErrors());
+
+        return errors;
     }
 
 }

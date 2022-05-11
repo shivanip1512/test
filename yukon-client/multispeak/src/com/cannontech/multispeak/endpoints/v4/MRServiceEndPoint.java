@@ -1,6 +1,8 @@
 package com.cannontech.multispeak.endpoints.v4;
 
+import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 
 import javax.xml.datatype.XMLGregorianCalendar;
 
@@ -21,6 +23,7 @@ import com.cannontech.msp.beans.v4.ArrayOfString18;
 import com.cannontech.msp.beans.v4.CancelUsageMonitoring;
 import com.cannontech.msp.beans.v4.CancelUsageMonitoringResponse;
 import com.cannontech.msp.beans.v4.ErrorObject;
+import com.cannontech.msp.beans.v4.ExpirationTime;
 import com.cannontech.msp.beans.v4.FormattedBlock;
 import com.cannontech.msp.beans.v4.GetLatestReadingByFieldName;
 import com.cannontech.msp.beans.v4.GetLatestReadingByFieldNameResponse;
@@ -44,6 +47,8 @@ import com.cannontech.msp.beans.v4.GetReadingsByMeterIDAndFieldNameResponse;
 import com.cannontech.msp.beans.v4.GetReadingsByMeterIDResponse;
 import com.cannontech.msp.beans.v4.GetSupportedFieldNames;
 import com.cannontech.msp.beans.v4.GetSupportedFieldNamesResponse;
+import com.cannontech.msp.beans.v4.InitiateDemandReset;
+import com.cannontech.msp.beans.v4.InitiateDemandResetResponse;
 import com.cannontech.msp.beans.v4.InitiateUsageMonitoring;
 import com.cannontech.msp.beans.v4.InitiateUsageMonitoringResponse;
 import com.cannontech.msp.beans.v4.IsAMRMeter;
@@ -330,7 +335,28 @@ public class MRServiceEndPoint {
         ArrayOfFormattedBlock arrayOfFormattedBlock = objectFactory.createArrayOfFormattedBlock();
         arrayOfFormattedBlock.getFormattedBlock().addAll(formattedBlocks);
         getLatestReadingByFieldNameResponse.setGetLatestReadingByFieldNameResult(arrayOfFormattedBlock);
-        return getLatestReadingByFieldNameResponse;
+        return getLatestReadingByFieldNameResponse; 
+    }
+    
+    @PayloadRoot(localPart = "InitiateDemandReset", namespace = MultispeakDefines.NAMESPACE_v4)
+    public @ResponsePayload InitiateDemandResetResponse initiateDemandReset(
+            @RequestPayload InitiateDemandReset initiateDemandReset) throws MultispeakWebServiceException {
+        InitiateDemandResetResponse response = objectFactory.createInitiateDemandResetResponse();
+
+        ExpirationTime expirationTime = initiateDemandReset.getExpTime();
+        String responseURL = initiateDemandReset.getResponseURL();
+        String transactionID = initiateDemandReset.getTransactionID();
+
+        ArrayOfMeterID1 ArrOfMeterIDs = initiateDemandReset.getMeterIDs();
+        List<MeterID> meterIDs = null != ArrOfMeterIDs ? ArrOfMeterIDs.getMeterID() : null;
+
+        List<ErrorObject> errorObjects = mr_server.initiateDemandReset(ListUtils.emptyIfNull(meterIDs), responseURL,
+                transactionID,
+                expirationTime);
+        ArrayOfErrorObject arrayOfErrorObject = multispeakFuncs.toArrayOfErrorObject(errorObjects);
+        response.setInitiateDemandResetResult(arrayOfErrorObject);
+
+        return response;
     }
 
 }

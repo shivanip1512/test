@@ -2,6 +2,8 @@ package com.cannontech.multispeak.client.core.v4;
 
 import com.cannontech.msp.beans.v4.GetDomainMembers;
 import com.cannontech.msp.beans.v4.GetDomainMembersResponse;
+import com.cannontech.msp.beans.v4.MeterEventNotification;
+import com.cannontech.msp.beans.v4.MeterEventNotificationResponse;
 import com.cannontech.msp.beans.v4.GetMethods;
 import com.cannontech.msp.beans.v4.GetMethodsResponse;
 import com.cannontech.msp.beans.v4.PingURL;
@@ -46,5 +48,18 @@ public interface ICBClient {
      */
     public GetDomainMembersResponse getDomainMembers(MultispeakVendor mspVendor, String uri,
             GetDomainMembers getDomainMembers) throws MultispeakWebServiceClientException;
+
+    
+    /**
+     * Format the blocked notifications
+     * 
+     * @param MSP vendor details
+     * @param String the URI of the CB Server
+     * @param MeterEventNotification the MeterEventNotification used as input.
+     * @return MeterEventNotificationResponse
+     * @throws MultispeakWebServiceClientException
+     */
+    public MeterEventNotificationResponse meterEventNotification(MultispeakVendor mspVendor, String uri,
+            MeterEventNotification meterEventNotification) throws MultispeakWebServiceClientException;
 
 }

@@ -16,6 +16,7 @@ import com.cannontech.database.YukonResultSet;
 import com.cannontech.database.YukonRowMapper;
 import com.cannontech.msp.beans.v4.ArrayOfModule;
 import com.cannontech.msp.beans.v4.ElectricMeter;
+import com.cannontech.msp.beans.v4.GasMeter;
 import com.cannontech.msp.beans.v4.Module;
 import com.cannontech.msp.beans.v4.ModuleList;
 import com.cannontech.msp.beans.v4.MspMeter;
@@ -111,6 +112,8 @@ public final class MspMeterDaoImpl extends MspMeterDaoBase {
         MspMeter meter = null;
         if (paoIdentifier.getPaoType().isWaterMeter()) {
             meter = new WaterMeter();
+        } else if (paoIdentifier.getPaoType().isGasMeter()) {
+            meter = new GasMeter();
         } else {
             meter = new ElectricMeter();
         }
@@ -157,6 +160,8 @@ public final class MspMeterDaoImpl extends MspMeterDaoBase {
     private static void setMeterCommAddress(MspMeter meter, String address) {
         if (meter instanceof WaterMeter) {
             ((WaterMeter) meter).setMeterCommAddress(address);
+        } else if (meter instanceof GasMeter) {
+            ((GasMeter) meter).setMeterCommAddress(address);
         } else {
             ((ElectricMeter) meter).setMeterCommAddress(address);
         }
@@ -164,7 +169,7 @@ public final class MspMeterDaoImpl extends MspMeterDaoBase {
 
     @Override
     public MspReturnList getAllCDDevices(String lastReceived, int maxRecords) {
-        // This method should not be called for v3, only v5 implementation.
+        // TODO Auto-generated method stub
         return null;
     }
 }

@@ -16,6 +16,7 @@ import com.cannontech.msp.beans.v4.LoadManagementEvent;
 import com.cannontech.msp.beans.v4.ObjectRef;
 import com.cannontech.msp.beans.v4.ScadaAnalog;
 import com.cannontech.msp.beans.v4.Strategy;
+import com.cannontech.msp.beans.v4.ErrorObject;
 import com.cannontech.multispeak.block.v4.Block;
 import com.cannontech.multispeak.dao.MspMeterDao;
 import com.cannontech.multispeak.dao.v4.FormattedBlockProcessingService;
@@ -117,5 +118,15 @@ public class MspValidationServiceImpl implements MspValidationService {
             }
         }
         return errorObject;
+    }
+    @Override
+    public ErrorObject validateResponseURL(String responseURL, String nounType, String method) {
+        ErrorObject errorObjectRetVal = null;
+
+        if (StringUtils.isBlank(responseURL)) {
+            errorObjectRetVal = mspObjectDao.getErrorObject("n/a", "responseURL is blank", nounType, method, null);
+        }
+
+        return errorObjectRetVal;
     }
 }
