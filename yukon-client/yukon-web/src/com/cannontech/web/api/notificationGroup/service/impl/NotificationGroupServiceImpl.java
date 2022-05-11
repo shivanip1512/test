@@ -33,9 +33,6 @@ public class NotificationGroupServiceImpl implements NotificationGroupService {
     @Autowired private CustomerDao customerDao;
     @Autowired private ContactDao contactDao;
     @Autowired private ContactNotificationDao contactNotificationDao;
-    private static final boolean ENABLE_EMAIL = true;
-    private static final boolean ENABLE_PHONECALL = false;
-    private static final boolean SELECTED = false;
 
     @Override
     public NotificationGroup create(NotificationGroup notificationGroup) {
@@ -79,7 +76,7 @@ public class NotificationGroupServiceImpl implements NotificationGroupService {
 
             // using liteContactNotification object to get contact id
             LiteContactNotification liteNotifObject = contactNotificationDao.getNotificationForContact(notifID);
-            Contact contact = new Contact(liteNotifObject.getContactID(), ENABLE_EMAIL, ENABLE_PHONECALL, SELECTED);
+            Contact contact = new Contact(liteNotifObject.getContactID());
 
             // using a map here since there is a possibility of having two notifications mapped to a single contact
             if (tempContactMap.containsKey(contact.getId())) {
@@ -131,7 +128,7 @@ public class NotificationGroupServiceImpl implements NotificationGroupService {
             List<LiteContact> liteContacts = customerDao
                     .getAllContacts(allCICustomers.get(customerNotifGroupMap[i].getCustomerID()).get(0));
             List<Contact> contacts = liteContacts.stream()
-                    .map(obj -> new Contact(obj.getContactID(), ENABLE_EMAIL, ENABLE_PHONECALL, SELECTED))
+                    .map(obj -> new Contact(obj.getContactID(), cICustomer.isEmailEnabled(), cICustomer.isPhoneCallEnabled()))
                     .collect(Collectors.toList());
 
             // Getting Notifications for each Contact
@@ -153,7 +150,7 @@ public class NotificationGroupServiceImpl implements NotificationGroupService {
         // Getting Customer for this contact
         LiteCICustomer cICust = contactDao.getCICustomer(contact.getId());
         if (cICust != null) {
-            CICustomer cICustomer = new CICustomer(cICust.getCustomerID(), ENABLE_EMAIL, ENABLE_PHONECALL, SELECTED);
+            CICustomer cICustomer = new CICustomer(cICust.getCustomerID());
             if (mainMap.containsKey(cICustomer.getId())) {
                 List<Contact> contacts = mainMap.get(cICustomer.getId()).getContacts();
                 contacts.add(contact);
@@ -174,9 +171,10 @@ public class NotificationGroupServiceImpl implements NotificationGroupService {
         // Getting Notif for this contact
         List<LiteContactNotification> notificationsForContact = contactNotificationDao
                 .getNotificationsForContact(contact.getId());
+        // email enable of notif will be same as contact
         List<NotificationSettings> notifications = notificationsForContact.stream()
-                .map(obj -> new NotificationSettings(obj.getContactNotifID(), ENABLE_PHONECALL, ENABLE_EMAIL,
-                        SELECTED))
+                .map(obj -> new NotificationSettings(obj.getContactNotifID(), contact.isEmailEnabled(),
+                        contact.isPhoneCallEnabled()))
                 .collect(Collectors.toList());
         contact.setNotifications(notifications);
     }

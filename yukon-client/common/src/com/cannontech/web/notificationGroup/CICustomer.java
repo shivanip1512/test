@@ -13,8 +13,8 @@ public class CICustomer extends NotificationSettings
         super();
     }
 
-    public CICustomer(int id, boolean emailEnabled, boolean phoneCallEnabled, boolean selected) {
-        super(id, emailEnabled, phoneCallEnabled, selected);
+    public CICustomer(int id) {
+        super(id);
     }
 
     public List<Contact> getContacts() {

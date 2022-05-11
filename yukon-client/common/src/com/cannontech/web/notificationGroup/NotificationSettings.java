@@ -10,12 +10,16 @@ public class NotificationSettings {
         super();
     }
 
-    public NotificationSettings(int id, boolean emailEnabled, boolean phoneCallEnabled, boolean selected) {
+    public NotificationSettings(int id) {
+        super();
+        this.id = id;
+    }
+
+    public NotificationSettings(int id, boolean emailEnabled, boolean phoneCallEnabled) {
         super();
         this.id = id;
         this.emailEnabled = emailEnabled;
         this.phoneCallEnabled = phoneCallEnabled;
-        this.selected = selected;
     }
 
     public int getId() {

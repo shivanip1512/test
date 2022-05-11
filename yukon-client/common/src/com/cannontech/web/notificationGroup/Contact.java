@@ -11,8 +11,12 @@ public class Contact extends NotificationSettings implements DBPersistentConvert
         super();
     }
 
-    public Contact(int id, boolean emailEnabled, boolean phoneCallEnabled, boolean selected) {
-        super(id, emailEnabled, phoneCallEnabled, selected);
+    public Contact(int id) {
+        super(id);
+    }
+
+    public Contact(int contactID, boolean emailEnabled, boolean phoneCallEnabled) {
+        super( contactID, emailEnabled, phoneCallEnabled);
     }
 
     public List<NotificationSettings> getNotifications() {
