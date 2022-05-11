@@ -7,6 +7,6 @@ public interface NotificationGroupService {
     /**
      * Create a notification group
      */
-    public NotificationGroup create(NotificationGroup notificationGroup);
+    NotificationGroup create(NotificationGroup notificationGroup);
 
 }
