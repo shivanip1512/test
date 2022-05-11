@@ -4,6 +4,7 @@ import java.util.List;
 
 import com.cannontech.amr.meter.model.YukonMeter;
 import com.cannontech.msp.beans.v4.ErrorObject;
+import com.cannontech.msp.beans.v4.MeterGroup;
 import com.cannontech.msp.beans.v4.MeterID;
 import com.cannontech.msp.beans.v4.MeterReading;
 import com.cannontech.multispeak.client.MultispeakVendor;
@@ -28,4 +29,9 @@ public interface MultispeakMeterService {
      * Remove MeterNos from SystemGroupEnum.USAGEMONITORING Device Group.
      */
     public List<ErrorObject> cancelUsageMonitoring(MultispeakVendor mspVendor, List<MeterID> meterIDs);
+
+    /**
+     * Adds meters to a group. If the group doesn't exist, a new group will be created
+     */
+    public List<ErrorObject> addMetersToGroup(MeterGroup meterGroup, String mspMethod, MultispeakVendor mspVendor);
 }

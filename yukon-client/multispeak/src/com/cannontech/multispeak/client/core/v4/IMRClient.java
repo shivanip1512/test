@@ -1,5 +1,7 @@
 package com.cannontech.multispeak.client.core.v4;
 
+import com.cannontech.msp.beans.v4.EstablishMeterGroup;
+import com.cannontech.msp.beans.v4.EstablishMeterGroupResponse;
 import com.cannontech.msp.beans.v4.GetMethods;
 import com.cannontech.msp.beans.v4.GetMethodsResponse;
 import com.cannontech.msp.beans.v4.GetReadingsByDate;
@@ -43,4 +45,15 @@ public interface IMRClient {
     public GetReadingsByDateResponse getReadingsByDate(MultispeakVendor mspVendor, String uri,
             GetReadingsByDate getReadingsByDate) throws MultispeakWebServiceClientException;
 
+    /**
+     * establish Meter Group
+     * 
+     * @param mspVendor
+     * @param uri
+     * @param establishMeterGroup
+     * @return
+     * @throws MultispeakWebServiceClientException
+     */
+    public EstablishMeterGroupResponse establishMeterGroup(MultispeakVendor mspVendor, String uri,
+            EstablishMeterGroup establishMeterGroup) throws MultispeakWebServiceClientException;
 }

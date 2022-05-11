@@ -7,16 +7,23 @@ import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 
+import org.apache.commons.collections4.CollectionUtils;
 import org.apache.logging.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.dao.EmptyResultDataAccessException;
+import org.springframework.dao.IncorrectResultSizeDataAccessException;
+
 import com.cannontech.amr.meter.model.YukonMeter;
 import com.cannontech.clientutils.YukonLogManager;
 import com.cannontech.common.device.groups.editor.dao.SystemGroupEnum;
+import com.cannontech.common.device.groups.editor.model.StoredDeviceGroup;
+import com.cannontech.common.device.model.SimpleDevice;
 import com.cannontech.common.device.service.DeviceUpdateService;
 import com.cannontech.core.dao.NotFoundException;
 import com.cannontech.database.data.device.DeviceTypesFuncs;
 import com.cannontech.message.porter.message.Request;
 import com.cannontech.msp.beans.v4.ErrorObject;
+import com.cannontech.msp.beans.v4.MeterGroup;
 import com.cannontech.msp.beans.v4.MeterID;
 import com.cannontech.msp.beans.v4.MeterReading;
 import com.cannontech.multispeak.client.MultispeakVendor;
@@ -228,4 +235,39 @@ public class MultispeakMeterServiceImpl extends MultispeakMeterServiceBase imple
         return errorObjects;
     }
 
+    @Override
+    public List<ErrorObject> addMetersToGroup(MeterGroup meterGroup, String mspMethod, MultispeakVendor mspVendor) {
+
+        List<ErrorObject> errorObjects = new ArrayList<>();
+        if (meterGroup != null && meterGroup.getGroupName() != null && meterGroup.getMeterList() != null) {
+            // Convert MeterNumbers to YukonDevices
+            List<SimpleDevice> yukonDevices = new ArrayList<>();
+            for (MeterID meterNumber : CollectionUtils.emptyIfNull(meterGroup.getMeterList().getMeterID())) {
+                try {
+                    SimpleDevice yukonDevice = deviceDao.getYukonDeviceObjectByMeterNumber(meterNumber.toString());
+                    yukonDevices.add(yukonDevice);
+                } catch (EmptyResultDataAccessException e) {
+                    String exceptionMessage = "Unknown meter number " + meterNumber;
+                    ErrorObject errorObject = mspObjectDao.getNotFoundErrorObject(meterNumber.toString(), "MeterNumber", "Meter",
+                            "addMetersToGroup",
+                            mspVendor.getCompanyName(), exceptionMessage);
+                    errorObjects.add(errorObject);
+                    log.error(e);
+                } catch (IncorrectResultSizeDataAccessException e) {
+                    String exceptionMessage = "Duplicate meters were found for this meter number  " + meterNumber;
+                    ErrorObject errorObject = mspObjectDao.getNotFoundErrorObject(meterNumber.toString(), "MeterNumber", "Meter",
+                            "addMetersToGroup",
+                            mspVendor.getCompanyName(), exceptionMessage);
+                    errorObjects.add(errorObject);
+                    log.error(e);
+                }
+            }
+
+            StoredDeviceGroup storedGroup = deviceGroupEditorDao.getStoredGroup(meterGroup.getGroupName(), true);
+            deviceGroupMemberEditorDao.addDevices(storedGroup, yukonDevices);
+            multispeakEventLogService.addMetersToGroup(yukonDevices.size(), storedGroup.getFullName(), mspMethod,
+                    mspVendor.getCompanyName());
+        }
+        return errorObjects;
+    }
 }

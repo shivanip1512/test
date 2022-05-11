@@ -30,6 +30,7 @@ import com.cannontech.core.dynamic.exception.DynamicDataAccessException;
 import com.cannontech.database.data.lite.LitePoint;
 import com.cannontech.msp.beans.v4.ErrorObject;
 import com.cannontech.msp.beans.v4.FormattedBlock;
+import com.cannontech.msp.beans.v4.MeterGroup;
 import com.cannontech.msp.beans.v4.MeterID;
 import com.cannontech.msp.beans.v4.MeterReading;
 import com.cannontech.msp.beans.v4.Meters;
@@ -82,7 +83,8 @@ public class MR_ServerImpl implements MR_Server {
                                                            "GetReadingsByDateAndFieldName",
                                                            "GetReadingsByMeterIDAndFieldName",
                                                            "GetLatestReadingByFieldName",
-                                                           "GetLatestReadingByMeterIDAndFieldName"
+                                                           "GetLatestReadingByMeterIDAndFieldName",
+                                                           "EstablishMeterGroup"
                                                            };
 
     private void init() throws MultispeakWebServiceException {
@@ -426,4 +428,13 @@ public class MR_ServerImpl implements MR_Server {
         return fieldNames;
     }
 
+    @Override
+    public List<ErrorObject> establishMeterGroup(MeterGroup meterGroup)
+            throws MultispeakWebServiceException {
+        init();
+        MultispeakVendor vendor = multispeakFuncs.getMultispeakVendorFromHeader();
+        multispeakEventLogService.methodInvoked("EstablishMeterGroup", vendor.getCompanyName());
+        List<ErrorObject> errorObject = multispeakMeterService.addMetersToGroup(meterGroup, "EstablishMeterGroup", vendor);
+        return errorObject;
+    }
 }

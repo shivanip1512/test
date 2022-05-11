@@ -21,11 +21,13 @@ import com.cannontech.msp.beans.v4.ArrayOfString18;
 import com.cannontech.msp.beans.v4.CancelUsageMonitoring;
 import com.cannontech.msp.beans.v4.CancelUsageMonitoringResponse;
 import com.cannontech.msp.beans.v4.ErrorObject;
+import com.cannontech.msp.beans.v4.EstablishMeterGroup;
+import com.cannontech.msp.beans.v4.EstablishMeterGroupResponse;
 import com.cannontech.msp.beans.v4.FormattedBlock;
-import com.cannontech.msp.beans.v4.GetLatestReadingByFieldName;
-import com.cannontech.msp.beans.v4.GetLatestReadingByFieldNameResponse;
 import com.cannontech.msp.beans.v4.GetAMRSupportedMeters;
 import com.cannontech.msp.beans.v4.GetAMRSupportedMetersResponse;
+import com.cannontech.msp.beans.v4.GetLatestReadingByFieldName;
+import com.cannontech.msp.beans.v4.GetLatestReadingByFieldNameResponse;
 import com.cannontech.msp.beans.v4.GetLatestReadingByMeterID;
 import com.cannontech.msp.beans.v4.GetLatestReadingByMeterIDAndFieldName;
 import com.cannontech.msp.beans.v4.GetLatestReadingByMeterIDAndFieldNameResponse;
@@ -48,6 +50,7 @@ import com.cannontech.msp.beans.v4.InitiateUsageMonitoring;
 import com.cannontech.msp.beans.v4.InitiateUsageMonitoringResponse;
 import com.cannontech.msp.beans.v4.IsAMRMeter;
 import com.cannontech.msp.beans.v4.IsAMRMeterResponse;
+import com.cannontech.msp.beans.v4.MeterGroup;
 import com.cannontech.msp.beans.v4.MeterID;
 import com.cannontech.msp.beans.v4.MeterReading;
 import com.cannontech.msp.beans.v4.Meters;
@@ -333,4 +336,18 @@ public class MRServiceEndPoint {
         return getLatestReadingByFieldNameResponse;
     }
 
+    @PayloadRoot(localPart = "EstablishMeterGroup", namespace = MultispeakDefines.NAMESPACE_v4)
+    public @ResponsePayload EstablishMeterGroupResponse establishMeterGroup(
+            @RequestPayload EstablishMeterGroup establishMeterGroup)
+            throws MultispeakWebServiceException {
+        EstablishMeterGroupResponse response = objectFactory.createEstablishMeterGroupResponse();
+
+        MeterGroup meterGroup = establishMeterGroup.getMeterGroup();
+        List<ErrorObject> errorObjects = mr_server.establishMeterGroup(meterGroup);
+
+        ArrayOfErrorObject arrayOfErrorObject = objectFactory.createArrayOfErrorObject();
+        arrayOfErrorObject.getErrorObject().addAll(errorObjects);
+        response.setEstablishMeterGroupResult(arrayOfErrorObject);
+        return response;
+    }
 }

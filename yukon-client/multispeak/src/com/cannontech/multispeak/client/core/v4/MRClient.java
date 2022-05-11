@@ -6,6 +6,8 @@ import org.springframework.oxm.XmlMappingException;
 import org.springframework.ws.WebServiceException;
 import org.springframework.ws.client.core.WebServiceTemplate;
 
+import com.cannontech.msp.beans.v4.EstablishMeterGroup;
+import com.cannontech.msp.beans.v4.EstablishMeterGroupResponse;
 import com.cannontech.msp.beans.v4.GetMethods;
 import com.cannontech.msp.beans.v4.GetMethodsResponse;
 import com.cannontech.msp.beans.v4.GetReadingsByDate;
@@ -65,6 +67,19 @@ public class MRClient implements IMRClient {
             multispeakFuncs.setMsgSender(webServiceTemplate, mspVendor);
 
             return (GetMethodsResponse) webServiceTemplate.marshalSendAndReceive(uri, getMethods,
+                    customWebServiceMsgCallback.addRequestHeader(mspVendor, MultispeakDefines.MR_Server_STR));
+        } catch (WebServiceException | XmlMappingException ex) {
+            throw new MultispeakWebServiceClientException(ex.getMessage());
+        }
+    }
+
+    @Override
+    public EstablishMeterGroupResponse establishMeterGroup(MultispeakVendor mspVendor, String uri,
+            EstablishMeterGroup establishMeterGroup) throws MultispeakWebServiceClientException {
+        try {
+            multispeakFuncs.setMsgSender(webServiceTemplate, mspVendor);
+
+            return (EstablishMeterGroupResponse) webServiceTemplate.marshalSendAndReceive(uri, establishMeterGroup,
                     customWebServiceMsgCallback.addRequestHeader(mspVendor, MultispeakDefines.MR_Server_STR));
         } catch (WebServiceException | XmlMappingException ex) {
             throw new MultispeakWebServiceClientException(ex.getMessage());

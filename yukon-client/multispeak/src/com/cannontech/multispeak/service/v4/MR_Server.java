@@ -3,12 +3,12 @@ package com.cannontech.multispeak.service.v4;
 import java.util.Calendar;
 import java.util.List;
 
-import com.cannontech.msp.beans.v4.Meters;
 import com.cannontech.msp.beans.v4.ErrorObject;
-import com.cannontech.msp.beans.v4.MeterID;
-
 import com.cannontech.msp.beans.v4.FormattedBlock;
+import com.cannontech.msp.beans.v4.MeterGroup;
+import com.cannontech.msp.beans.v4.MeterID;
 import com.cannontech.msp.beans.v4.MeterReading;
+import com.cannontech.msp.beans.v4.Meters;
 import com.cannontech.multispeak.exceptions.MultispeakWebServiceException;
 
 public interface MR_Server {
@@ -164,4 +164,12 @@ public interface MR_Server {
     List<FormattedBlock> getReadingsByMeterIDAndFieldName(String meterNo, Calendar startDate, Calendar endDate,
             String lastReceived, String formattedBlockTemplateName) throws MultispeakWebServiceException;
 
+    /**
+     * establish Meter Group.
+     * 
+     * @param meterGroup the meter group
+     * @return the error object[]
+     * @throws MultispeakWebServiceException the multispeak web service exception
+     */
+    public List<ErrorObject> establishMeterGroup(MeterGroup meterGroup) throws MultispeakWebServiceException;
 }
