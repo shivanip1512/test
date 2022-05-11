@@ -29,7 +29,7 @@
     },
     "scripts": {
         "start": "react-scripts start",
-        "build": "react-scripts build",
+        "build": "react-scripts build && rimraf build/config.js",
         "bundle": "webpack --config webpack.config.js",
         "test": "react-scripts test",
         "eject": "react-scripts eject"
@@ -56,6 +56,7 @@
         "@types/react-dom": "17.0.13",
         "@types/react-router-dom": "5.3.1",
         "http-proxy-middleware": "2.0.3",
+        "rimraf": "3.0.2",
         "typescript": "4.6.2",
         "url-loader": "4.1.1",
         "webpack": "5.72.0",

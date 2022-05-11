@@ -1,73 +1,73 @@
-import React, { useState } from 'react';
-import { useDispatch } from 'react-redux';
+import React, { useState } from "react";
+import { useDispatch } from "react-redux";
 
-import { useTheme } from '@material-ui/core/styles';
-import Paper from '@material-ui/core/Paper';
+import { useTheme } from "@material-ui/core/styles";
+import Paper from "@material-ui/core/Paper";
 
-import PageHeader from '../../PageContents/PageHeader';
-import PageContents from '../../PageContents/PageContents';
-import Input from '../../controls/Input';
-import ToggleButtons from '../../controls/ToggleButtons';
-import Dropdown from '../../controls/Dropdown';
-import PageButtons from '../../PageContents/PageButtons';
+import PageHeader from "../../PageContents/PageHeader";
+import PageContents from "../../PageContents/PageContents";
+import Input from "../../controls/Input";
+import ToggleButtons from "../../controls/ToggleButtons";
+import Dropdown from "../../controls/Dropdown";
+import PageButtons from "../../PageContents/PageButtons";
+import { getYukonApiUrl } from "../../../helpers/urlHelper";
 
-import axios from '../../../axiosConfig';
+import axios from "../../../axiosConfig";
 
-import * as actions from '../../../redux/actions/index';
+import * as actions from "../../../redux/actions/index";
 
-import yup from '../../../validationConfig';
+import yup from "../../../validationConfig";
 
 const CommChannelCreate = () => {
-
     const dispatch = useDispatch();
     const theme = useTheme();
 
-    const commChannelListUrl = window.configs.YUKON_API_URL + '/stars/device/commChannel/list';
+    const commChannelListUrl = getYukonApiUrl() + "/stars/device/commChannel/list";
 
     const breadcrumbs = [
-        { link: '/', title: 'Home' },
-        { link: '/stars/operator/inventory/home', title: 'Assets' },
-        { link: '/stars/device/commChannel/list', title: 'Comm Channels' }
+        { link: "/", title: "Home" },
+        { link: "/stars/operator/inventory/home", title: "Assets" },
+        { link: "/stars/device/commChannel/list", title: "Comm Channels" },
     ];
 
     const statusButtons = [
-        { label: 'Disabled', value: false },
-        { label: 'Enabled', value: true }
+        { label: "Disabled", value: false },
+        { label: "Enabled", value: true },
     ];
 
-    const types = [
-        { label: 'UDP', value: 'UDPPORT' }
-    ];
+    const types = [{ label: "UDP", value: "UDPPORT" }];
 
     const handleSaveClicked = () => {
-        axios.post('/api/devices/commChannels', {
-            deviceName: name,
-            deviceType: type,
-            portNumber: port,
-            baudRate: baudRate,
-            enabled: enabled
-        }).then(response => {
-            dispatch(actions.setFlashSuccess(name + ' saved successfully.'));
-            window.location.href = commChannelListUrl;
-        });
+        axios
+            .post("/api/devices/commChannels", {
+                deviceName: name,
+                deviceType: type,
+                portNumber: port,
+                baudRate: baudRate,
+                enabled: enabled,
+            })
+            .then((response) => {
+                dispatch(actions.setFlashSuccess(name + " saved successfully."));
+                window.location.href = commChannelListUrl;
+            });
     };
 
     const pageButtons = [
-        { label: 'Save', onClick: handleSaveClicked },
-        { label: 'Cancel', href: commChannelListUrl }
-    ]
+        { label: "Save", onClick: handleSaveClicked },
+        { label: "Cancel", href: commChannelListUrl },
+    ];
 
     const baudRates = [
-        { label: '300', value: 'BAUD_300' },
-        { label: '1200', value: 'BAUD_1200' },
-        { label: '2400', value: 'BAUD_2400' },
-        { label: '4800', value: 'BAUD_4800' },
-        { label: '9600', value: 'BAUD_9600' },
-        { label: '14400', value: 'BAUD_14400' },
-        { label: '38400', value: 'BAUD_38400' },
-        { label: '57600', value: 'BAUD_57600' },
-        { label: '115200', value: 'BAUD_115200' }
-    ]
+        { label: "300", value: "BAUD_300" },
+        { label: "1200", value: "BAUD_1200" },
+        { label: "2400", value: "BAUD_2400" },
+        { label: "4800", value: "BAUD_4800" },
+        { label: "9600", value: "BAUD_9600" },
+        { label: "14400", value: "BAUD_14400" },
+        { label: "38400", value: "BAUD_38400" },
+        { label: "57600", value: "BAUD_57600" },
+        { label: "115200", value: "BAUD_115200" },
+    ];
 
     const [name, setName] = useState("");
     const [type, setType] = useState("UDPPORT");
@@ -104,21 +104,34 @@ const CommChannelCreate = () => {
 
     return (
         <div>
-            <PageHeader breadcrumbs={breadcrumbs} pageTitle="Create Comm Channel"/>
+            <PageHeader breadcrumbs={breadcrumbs} pageTitle="Create Comm Channel" />
             <PageContents>
-                <Paper style={{padding: theme.spacing(4)}}>
-                    <Input label="Name" name="name" value={name} maxLength={60} style={{width: '30%'}}
-                        onChange={handleNameChanged} validationSchema={validationSchema.name}/>
-                    <Dropdown value={type} name="type" label="Type" onChange={handleTypeChanged} items={types}/>
-                    <Input label="Port Number" name="portNumber" value={port} maxLength={5} 
-                        onChange={handlePortChanged} validationSchema={validationSchema.port}/>
-                    <Dropdown value={baudRate} name="baudRate" label="Baud Rate" onChange={handleBaudRateChanged} items={baudRates}/>
-                    <ToggleButtons value={enabled} name="enabled" label="Status" onChange={handleStatusChanged} buttons={statusButtons}/>
-                    <PageButtons buttons={pageButtons}/>
+                <Paper style={{ padding: theme.spacing(4) }}>
+                    <Input
+                        label="Name"
+                        name="name"
+                        value={name}
+                        maxLength={60}
+                        style={{ width: "30%" }}
+                        onChange={handleNameChanged}
+                        validationSchema={validationSchema.name}
+                    />
+                    <Dropdown value={type} name="type" label="Type" onChange={handleTypeChanged} items={types} />
+                    <Input
+                        label="Port Number"
+                        name="portNumber"
+                        value={port}
+                        maxLength={5}
+                        onChange={handlePortChanged}
+                        validationSchema={validationSchema.port}
+                    />
+                    <Dropdown value={baudRate} name="baudRate" label="Baud Rate" onChange={handleBaudRateChanged} items={baudRates} />
+                    <ToggleButtons value={enabled} name="enabled" label="Status" onChange={handleStatusChanged} buttons={statusButtons} />
+                    <PageButtons buttons={pageButtons} />
                 </Paper>
             </PageContents>
         </div>
-    )
-}
+    );
+};
 
 export default CommChannelCreate;

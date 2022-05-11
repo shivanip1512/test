@@ -1,4 +1,5 @@
 import React, { useEffect } from "react";
+import { useDispatch } from "react-redux";
 import { Route, Redirect, Switch, useLocation } from "react-router-dom";
 import { I18nextProvider } from "react-i18next";
 
@@ -17,8 +18,8 @@ import DRTestPage from "./components/YukonPage/DemandResponse/DRTestPage";
 import CommChannelCreatePage from "./components/YukonPage/Assets/CommChannelCreate";
 import DashboardPage from "./components/YukonPage/Dashboards/Dashboard";
 import axios from "../src/axiosConfig";
-import * as actions from '../src/redux/actions/index';
-import { useDispatch } from 'react-redux';
+import * as actions from "../src/redux/actions/index";
+import { getYukonApiUrl, getYukonReactUrl } from "./helpers/urlHelper";
 
 const ScrollToTop = () => {
     const { pathname } = useLocation();
@@ -31,32 +32,30 @@ const ScrollToTop = () => {
 };
 
 export const App = () => {
+    const dispatch = useDispatch();
+    const YUKON_API_URL = getYukonApiUrl();
+    const YUKON_REACT_URL = getYukonReactUrl();
 
-    const dispatch = useDispatch();;
-    
     const fetchTheme = async () => {
-        await axios.get('/api/admin/config/currentTheme')
-            .then(themeJson => {                
-                if (themeJson) {
-                    dispatch(actions.setTheme(themeJson.data));
-                }
-            });
-    }
-    
+        await axios.get("/api/admin/config/currentTheme").then((themeJson) => {
+            if (themeJson) {
+                dispatch(actions.setTheme(themeJson.data));
+            }
+        });
+    };
+
     useEffect(() => {
         fetchTheme();
-      }, []);
+    }, []);
 
     return (
         <SecurityContextProvider>
-            <AuthUIConfiguration yukonPath={window.configs.YUKON_API_URL}>
+            <AuthUIConfiguration yukonPath={YUKON_API_URL}>
                 <AuthNavigationContainer routeConfig={routes}>
                     <I18nextProvider i18n={yukoni18n}>
                         <ScrollToTop />
-                        <DrawerLayout
-                            drawer={<NavigationDrawer yukonPath={window.configs.YUKON_API_URL} reactPath={window.configs.YUKON_REACT_URL} />}
-                        >
-                            <NavigationMenu yukonPath={window.configs.YUKON_API_URL} reactPath={window.configs.YUKON_REACT_URL} />
+                        <DrawerLayout drawer={<NavigationDrawer yukonPath={YUKON_API_URL} reactPath={YUKON_REACT_URL} />}>
+                            <NavigationMenu yukonPath={YUKON_API_URL} reactPath={YUKON_REACT_URL} />
                             <Switch>
                                 <Route exact path="/yukon-ui/dashboard" component={DashboardPage} />
                                 <Route exact path="/yukon-ui/dr/setup/list" component={DRSetupFilterPage} />
