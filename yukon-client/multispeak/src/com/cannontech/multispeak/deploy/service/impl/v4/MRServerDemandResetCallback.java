@@ -13,30 +13,28 @@ import com.cannontech.common.events.loggers.MultispeakEventLogService;
 import com.cannontech.common.pao.PaoIdentifier;
 import com.cannontech.common.pao.YukonPao;
 import com.cannontech.core.dynamic.PointValueHolder;
+import com.cannontech.msp.beans.v4.Action;
 import com.cannontech.msp.beans.v4.ArrayOfErrorObject;
 import com.cannontech.msp.beans.v4.ArrayOfEventInstance;
 import com.cannontech.msp.beans.v4.ArrayOfExtensionsItem;
+import com.cannontech.msp.beans.v4.ErrorObject;
 import com.cannontech.msp.beans.v4.EventInstance;
-import com.cannontech.msp.beans.v4.EventInstances;
+import com.cannontech.msp.beans.v4.ExpirationTime;
 import com.cannontech.msp.beans.v4.ExtType;
 import com.cannontech.msp.beans.v4.ExtValue;
 import com.cannontech.msp.beans.v4.ExtensionsItem;
-import com.cannontech.msp.beans.v4.ExtensionsList;
 import com.cannontech.msp.beans.v4.MeterEvent;
 import com.cannontech.msp.beans.v4.MeterEventList;
 import com.cannontech.msp.beans.v4.MeterEventNotification;
 import com.cannontech.msp.beans.v4.MeterEventNotificationResponse;
 import com.cannontech.msp.beans.v4.MeterID;
-import com.cannontech.msp.beans.v4.ServiceType;
-import com.cannontech.msp.beans.v4.Action;
-import com.cannontech.msp.beans.v4.ErrorObject;
+import com.cannontech.msp.beans.v4.ObjectFactory;
+import com.cannontech.multispeak.client.MultispeakVendor;
+import com.cannontech.multispeak.client.core.v4.CBClient;
 import com.cannontech.multispeak.constants.iec61689_9.EndDeviceEventDomain;
 import com.cannontech.multispeak.constants.iec61689_9.EndDeviceEventDomainPart;
 import com.cannontech.multispeak.constants.iec61689_9.EndDeviceEventIndex;
 import com.cannontech.multispeak.constants.iec61689_9.EndDeviceEventType;
-import com.cannontech.msp.beans.v4.ObjectFactory;
-import com.cannontech.multispeak.client.MultispeakVendor;
-import com.cannontech.multispeak.client.core.v4.CBClient;
 import com.cannontech.multispeak.dao.v4.MspObjectDao;
 import com.cannontech.multispeak.exceptions.MultispeakWebServiceClientException;
 import com.cannontech.spring.YukonSpringHook;
@@ -55,16 +53,18 @@ public class MRServerDemandResetCallback implements DemandResetCallback {
     private final Map<PaoIdentifier, String> meterNumbersByPaoId;
     private final String responseUrl;
     private final String transactionId;
+    private ExpirationTime expirationTime;
 
-    public MRServerDemandResetCallback(MspObjectDao mspObjectDao, MultispeakEventLogService multispeakEventLogService, 
-                                       MultispeakVendor vendor, Map<PaoIdentifier, String> meterNumbersByPaoId,
-                                       String responseURL, String transactionId) {
+    public MRServerDemandResetCallback(MspObjectDao mspObjectDao, MultispeakEventLogService multispeakEventLogService,
+            MultispeakVendor vendor, Map<PaoIdentifier, String> meterNumbersByPaoId,
+            String responseURL, String transactionId, ExpirationTime expirationTime) {
         this.multispeakEventLogService = multispeakEventLogService;
         this.mspObjectDao = mspObjectDao;
         this.vendor = vendor;
         this.meterNumbersByPaoId = meterNumbersByPaoId;
         this.responseUrl = responseURL;
         this.transactionId = transactionId;
+        this.expirationTime = expirationTime;
     }
 
     public List<ErrorObject> getErrors() {
@@ -112,9 +112,9 @@ public class MRServerDemandResetCallback implements DemandResetCallback {
         listEventInstance.add(eventInstance);
 
         ExtensionsItem extensionItem = objectFactory.createExtensionsItem();
-        extensionItem.setExtName("transactionId");
+        extensionItem.setExtName("expirationTime");
         ExtValue extValue = new ExtValue();
-        extValue.setValue(transactionId);
+        extValue.setValue(String.valueOf(expirationTime.getValue()));
         extensionItem.setExtValue(extValue);
         extensionItem.setExtType(ExtType.STRING);
 
@@ -130,6 +130,7 @@ public class MRServerDemandResetCallback implements DemandResetCallback {
         try {
             MeterEventNotification meterEventNotification = objectFactory.createMeterEventNotification();
             meterEventNotification.setEvents(events);
+            meterEventNotification.setTransactionID(transactionId);
             MeterEventNotificationResponse meterEventNotificationResponse = cbClient.meterEventNotification(vendor,
                     responseUrl,
                     meterEventNotification);

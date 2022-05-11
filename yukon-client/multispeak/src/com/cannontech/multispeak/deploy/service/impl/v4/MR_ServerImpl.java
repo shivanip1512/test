@@ -51,7 +51,6 @@ import com.cannontech.multispeak.data.v4.FieldNamesMspV4;
 import com.cannontech.multispeak.data.v4.MspBlockReturnList;
 import com.cannontech.multispeak.data.v4.MspMeterReadingReturnList;
 import com.cannontech.multispeak.data.v4.MspMeterReturnList;
-import com.cannontech.multispeak.deploy.service.impl.v4.MRServerDemandResetCallback;
 import com.cannontech.multispeak.exceptions.MultispeakWebServiceException;
 import com.cannontech.multispeak.service.v4.MR_Server;
 import com.cannontech.multispeak.service.v4.MspValidationService;
@@ -487,12 +486,11 @@ public class MR_ServerImpl implements MR_Server {
         multispeakEventLogService.initiateDemandResetRequest(meterNumbers.size(), meterNumbersByPaoId.size(),
                 invalidMeterNumbers.size(), unsupportedMeters.size(),
                 "InitiateConnectDisconnect", vendor.getCompanyName());
-        
-        MRServerDemandResetCallback callback =
-                new MRServerDemandResetCallback(mspObjectDao, multispeakEventLogService, vendor, meterNumbersByPaoId,
-                    actualResponseUrl, transactionID);
-            
-        
+
+        MRServerDemandResetCallback callback = new MRServerDemandResetCallback(mspObjectDao, multispeakEventLogService, vendor,
+                meterNumbersByPaoId,
+                actualResponseUrl, transactionID, expirationTime);
+
         demandResetService.sendDemandResetAndVerify(validMeters, callback, UserUtils.getYukonUser());
         errors.addAll(callback.getErrors());
 
