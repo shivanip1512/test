@@ -1565,4 +1565,6 @@
     <bean class="com.cannontech.web.api.terminal.PagingTerminalApiValidator"/>
     <bean class="com.cannontech.web.api.terminal.service.impl.PagingTerminalServiceImpl"/>
     
+    <bean class="com.cannontech.web.api.notificationGroup.service.impl.NotificationGroupServiceImpl"/>
+    
 </beans>

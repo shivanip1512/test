@@ -32,7 +32,7 @@ public class PagingTerminalServiceImpl implements PagingTerminalService {
     @SuppressWarnings({ "unchecked", "rawtypes" })
     @Override
     public TerminalBase create(TerminalBase terminalBase) {
-        IEDBase iedBase = TerminalBaseFactory.getTerminalBase(terminalBase.getType());
+        IEDBase iedBase = TerminalBaseFactory.getIEDBase(terminalBase.getType());
         terminalBase.buildDBPersistent(iedBase);
         dbPersistentDao.performDBChange(iedBase, TransactionType.INSERT);
         // Add default points
@@ -91,4 +91,20 @@ public class PagingTerminalServiceImpl implements PagingTerminalService {
         dbPersistentDao.performDBChange(deleteTerminal, TransactionType.DELETE);
         return deleteTerminal.getPAObjectID();
     }
+
+    @SuppressWarnings({ "unchecked", "rawtypes" })
+    @Override
+    public TerminalBase<?> retrieve(int id) {
+        LiteYukonPAObject terminal = cache.getAllPaosMap().get(id);
+        if (terminal == null || !terminal.getPaoType().isTransmitter()) {
+            throw new NotFoundException("Terminal Id not found");
+        }
+
+        IEDBase iedBase = (IEDBase) dbPersistentDao.retrieveDBPersistent(terminal);
+        TerminalBase terminalBase = TerminalBaseFactory.getTerminalBase(iedBase.getPaoType());
+        terminalBase.buildModel(iedBase);
+        terminalBase.getCommChannel().setName(cache.getAllPaosMap().get(terminalBase.getCommChannel().getId()).getPaoName());
+        return terminalBase;
+    }
+
 }
