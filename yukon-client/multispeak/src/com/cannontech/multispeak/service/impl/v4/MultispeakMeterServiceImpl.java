@@ -250,7 +250,7 @@ public class MultispeakMeterServiceImpl extends MultispeakMeterServiceBase imple
     }
 
     @Override
-    public RCDState CDMeterState(final MultispeakVendor mspVendor, final YukonMeter meter) throws MultispeakWebServiceException {
+    public RCDState cdMeterState(final MultispeakVendor mspVendor, final YukonMeter meter) throws MultispeakWebServiceException {
 
         log.info("Received " + meter.getMeterNumber() + " for CDMeterState from " + mspVendor.getCompanyName());
         if (!porterConnection.isValid()) {

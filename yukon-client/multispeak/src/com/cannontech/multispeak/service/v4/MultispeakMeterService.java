@@ -37,6 +37,6 @@ public interface MultispeakMeterService {
      * 
      * @throws MultispeakWebServiceException
      */
-    public RCDState CDMeterState(MultispeakVendor mspVendor,
+    public RCDState cdMeterState(MultispeakVendor mspVendor,
             YukonMeter meter) throws MultispeakWebServiceException;
 }

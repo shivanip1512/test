@@ -20,7 +20,6 @@ import com.cannontech.msp.beans.v4.Module;
 import com.cannontech.msp.beans.v4.ModuleList;
 import com.cannontech.msp.beans.v4.MspMeter;
 import com.cannontech.msp.beans.v4.ObjectFactory;
-import com.cannontech.msp.beans.v4.UtilityInfo;
 import com.cannontech.msp.beans.v4.WaterMeter;
 import com.cannontech.multispeak.client.MultispeakDefines;
 import com.cannontech.multispeak.dao.MspMeterDaoBase;

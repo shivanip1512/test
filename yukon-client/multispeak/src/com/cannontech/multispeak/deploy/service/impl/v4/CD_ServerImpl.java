@@ -82,7 +82,7 @@ public class CD_ServerImpl implements CD_Server {
         // CDMeterState can handle multiple types of communications,
         // but there is no gain from performing a real time read for non-porter meters...to-date.
         if (canInitiatePorterRequest) {
-            rCDState = multispeakMeterService.CDMeterState(vendor, meter);
+            rCDState = multispeakMeterService.cdMeterState(vendor, meter);
         } else { // if we can't initiate a new request (aka RFN meter), then just return what dispatch has
             // stored.
             rCDState = getRCDStateFromCache(meter);
