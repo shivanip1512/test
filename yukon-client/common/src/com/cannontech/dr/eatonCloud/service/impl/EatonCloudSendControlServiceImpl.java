@@ -139,7 +139,7 @@ public class EatonCloudSendControlServiceImpl implements EatonCloudSendControlSe
                 Instant nextRead = entry.getValue().getKey();
                 Instant sendTime = entry.getValue().getValue();
                 if (nextRead.isEqualNow() || nextRead.isBeforeNow()) {
-                    Range<Instant> range = new Range<>(sendTime, true, Instant.now(), true);
+                    Range<Instant> range = new Range<>(sendTime, true, timeService.now(), true);
                     Set<Integer> devicesToRead = recentEventParticipationDao.getDeviceIdsByExternalEventIdAndStatuses(eventId,
                             List.of(ControlEventDeviceStatus.SUCCESS_RECEIVED));
                     if (!devicesToRead.isEmpty()) {
@@ -510,7 +510,7 @@ public class EatonCloudSendControlServiceImpl implements EatonCloudSendControlSe
         recentEventParticipationDao.updateDeviceControlEvent(eventId.toString(),
                 deviceId,
                 ControlEventDeviceStatus.FAILED_WILL_RETRY,
-                Instant.now(),
+                timeService.now(),
                 StringUtils.isEmpty(message) ? null : message.length() > 100 ? message.substring(0, 100) : message,
                 null);
     }
