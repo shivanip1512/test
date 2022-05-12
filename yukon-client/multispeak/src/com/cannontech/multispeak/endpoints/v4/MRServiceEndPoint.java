@@ -344,8 +344,7 @@ public class MRServiceEndPoint {
         ServiceLocationChangedNotificationResponse response = objectFactory.createServiceLocationChangedNotificationResponse();
         
         ArrayOfServiceLocation1 ArrOfServiceLocations = serviceLocationChangedNotification.getChangedServiceLocations();
-        List<ServiceLocation> serviceLocationList = null != ArrOfServiceLocations ? ArrOfServiceLocations
-                .getServiceLocation() : null;
+        List<ServiceLocation> serviceLocationList = null != ArrOfServiceLocations ? ArrOfServiceLocations.getServiceLocation() : null;
         List<ErrorObject> errorObjects = mr_server
                 .serviceLocationChangedNotification(ListUtils.emptyIfNull(serviceLocationList));
         
