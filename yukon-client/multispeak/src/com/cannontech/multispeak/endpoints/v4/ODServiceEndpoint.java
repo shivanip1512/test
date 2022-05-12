@@ -1,7 +1,12 @@
 package com.cannontech.multispeak.endpoints.v4;
 
+import java.util.Calendar;
+import java.util.Date;
 import java.util.List;
 
+import javax.xml.datatype.XMLGregorianCalendar;
+
+import org.apache.commons.collections4.ListUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.ws.server.endpoint.annotation.Endpoint;
@@ -9,9 +14,15 @@ import org.springframework.ws.server.endpoint.annotation.PayloadRoot;
 import org.springframework.ws.server.endpoint.annotation.RequestPayload;
 import org.springframework.ws.server.endpoint.annotation.ResponsePayload;
 
+import com.cannontech.msp.beans.v4.ArrayOfErrorObject;
+import com.cannontech.msp.beans.v4.ArrayOfMeterID1;
 import com.cannontech.msp.beans.v4.ArrayOfString;
+import com.cannontech.msp.beans.v4.ErrorObject;
 import com.cannontech.msp.beans.v4.GetMethods;
 import com.cannontech.msp.beans.v4.GetMethodsResponse;
+import com.cannontech.msp.beans.v4.InitiateOutageDetectionEventRequest;
+import com.cannontech.msp.beans.v4.InitiateOutageDetectionEventRequestResponse;
+import com.cannontech.msp.beans.v4.MeterID;
 import com.cannontech.msp.beans.v4.ObjectFactory;
 import com.cannontech.msp.beans.v4.PingURL;
 import com.cannontech.msp.beans.v4.PingURLResponse;
@@ -49,6 +60,36 @@ public class ODServiceEndpoint {
         response.setGetMethodsResult(arrayOfString);
         return response;
     }
+    
+    @PayloadRoot(localPart = "InitiateOutageDetectionEventRequest", namespace = OD_V4_ENDPOINT_NAMESPACE)
+    public @ResponsePayload InitiateOutageDetectionEventRequestResponse initiateOutageDetectionEventRequest(
+            @RequestPayload InitiateOutageDetectionEventRequest initiateOutageDetectionEventRequest)
+            throws MultispeakWebServiceException {
+        InitiateOutageDetectionEventRequestResponse response = objectFactory.createInitiateOutageDetectionEventRequestResponse();
+
+        ArrayOfMeterID1 ArrOfMeterIDs = initiateOutageDetectionEventRequest.getMeterIDs();
+        List<MeterID> meterIDs = null != ArrOfMeterIDs.getMeterID() ? ArrOfMeterIDs.getMeterID() : null;
+
+        XMLGregorianCalendar xmlRequestDate = initiateOutageDetectionEventRequest.getRequestDate();
+
+        if (xmlRequestDate == null) {
+            throw new MultispeakWebServiceException("Invalid date/time.");
+        }
+
+        Date requestDate = xmlRequestDate.toGregorianCalendar().getTime();
+        Calendar requestDateTime = Calendar.getInstance();
+        requestDateTime.setTime(requestDate);
+        String responseURL = initiateOutageDetectionEventRequest.getResponseURL();
+        String transactionID = initiateOutageDetectionEventRequest.getTransactionID();
+        Float expirationTime = initiateOutageDetectionEventRequest.getExpTime().getValue();
+
+        List<ErrorObject> errorObjects = od_server.initiateOutageDetectionEventRequest(ListUtils.emptyIfNull(meterIDs),
+                requestDateTime,
+                responseURL, transactionID, expirationTime);
+        ArrayOfErrorObject arrayOfErrorObject = objectFactory.createArrayOfErrorObject();
+        arrayOfErrorObject.getErrorObject().addAll(errorObjects);
+        response.setInitiateOutageDetectionEventRequestResult(arrayOfErrorObject);
+        return response;
+
+    }
 }
-
-

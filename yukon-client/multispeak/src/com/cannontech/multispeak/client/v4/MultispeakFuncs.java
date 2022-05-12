@@ -8,6 +8,7 @@ import javax.xml.soap.MimeHeaders;
 import javax.xml.soap.SOAPException;
 import javax.xml.soap.SOAPMessage;
 
+import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.logging.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -47,7 +48,16 @@ public class MultispeakFuncs extends MultispeakFuncsBase {
     public MultiSpeakVersion version() {
         return MultiSpeakVersion.V4;
     }
-
+    
+    public void logErrorObjects(String intfaceName, String methodName, List<ErrorObject> objects) {
+        if (CollectionUtils.isNotEmpty(objects)) {
+            for (ErrorObject errorObject : objects) {
+                log.info("Error Return from " + intfaceName + "(" + methodName + "): " + (errorObject == null ? "Null"
+                        : errorObject.getObjectID() + " - " + errorObject.getErrorString()));
+            }
+        }
+    }
+    
     @Override
     public void loadResponseHeader() throws MultispeakWebServiceException {
         SoapEnvelope env;

@@ -28,4 +28,13 @@ public interface MultispeakMeterService {
      * Remove MeterNos from SystemGroupEnum.USAGEMONITORING Device Group.
      */
     public List<ErrorObject> cancelUsageMonitoring(MultispeakVendor mspVendor, List<MeterID> meterIDs);
+    
+    /**
+     * Send a ping command to pil connection for each meter in meterNumbers.
+     * @return ErrorObject [] Array of errorObjects for meters that cannot be found, etc.
+     * @throws MultispeakWebServiceException
+     */
+    public List<ErrorObject> odEvent(MultispeakVendor mspVendor,
+            List<MeterID> meterIDs,
+            String transactionID, String responseUrl) throws MultispeakWebServiceException;
 }
