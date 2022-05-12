@@ -72,6 +72,7 @@ import com.cannontech.system.GlobalSettingType;
 import com.cannontech.system.dao.GlobalSettingDao;
 import com.cannontech.user.UserUtils;
 import com.cannontech.yukon.BasicServerConnection;
+import com.google.common.collect.Maps;
 
 public class MultispeakMeterServiceImpl extends MultispeakMeterServiceBase implements MultispeakMeterService {
 
@@ -316,9 +317,6 @@ public class MultispeakMeterServiceImpl extends MultispeakMeterServiceBase imple
                                 
                                 if (mspObject instanceof ElectricService) {
                                     ElectricService electricService = (ElectricService) mspObject;
-                                    System.out.println("electricService :" + electricService);
-                                    System.out.println(
-                                            "electricService.getElectricMeterID :" + electricService.getElectricMeterID());
                                     meterNo = electricService.getElectricMeterID();
                                     MeterBase meterBase = electricService.getMeterBase();
                                     mspMeter = null != meterBase ? meterBase.getElectricMeter() : null;
@@ -348,14 +346,12 @@ public class MultispeakMeterServiceImpl extends MultispeakMeterServiceBase imple
                                 else
                                 {
                                     YukonMeter meter = null;
+                                    
                                     if (meterNo != null) {
-                                        
-                                        try 
-                                        {
+                                        try {
                                             meter = getMeterByMeterNumber(meterNo);
                                             isMeterFound = true;
-                                        } 
-                                        catch (NotFoundException e) {
+                                        } catch (NotFoundException e) {
                                             multispeakEventLogService.meterNotFound(meterNo, SERV_LOC_CHANGED_STRING, companyName);
                                             ErrorObject err = mspObjectDao.getNotFoundErrorObject(meterNo,
                                                                                                   "MeterNumber",
@@ -368,15 +364,12 @@ public class MultispeakMeterServiceImpl extends MultispeakMeterServiceBase imple
                                                                                   companyName);
                                             log.error(e);
                                         }
-
                                     }
 
                                     if (!isMeterFound && mspMeter != null) {
-                                        try 
-                                        {
+                                        try {
                                             meter = getMeterByMeterNumber(mspMeter.getMeterNo());
-                                        }
-                                        catch (NotFoundException e) {
+                                        } catch (NotFoundException e) {
                                             multispeakEventLogService.meterNotFound(mspMeter.getMeterNo(),
                                                                                     SERV_LOC_CHANGED_STRING,
                                                                                     companyName);
@@ -418,7 +411,7 @@ public class MultispeakMeterServiceImpl extends MultispeakMeterServiceBase imple
 
                                         verifyAndUpdatePaoName(newPaoName, meter, SERV_LOC_CHANGED_STRING, mspVendor);
 
-                                        String mspMeterDeviceClass = getDeviceClassForMspMeter(mspMeter);
+                                        String mspMeterDeviceClass = (String) getModuleListFieldsForMspMeter(mspMeter).get("deviceClass");
                                         updateCISDeviceClassGroup(mspMeter.getMeterNo(), mspMeterDeviceClass, meter,
                                                                   SERV_LOC_CHANGED_STRING, mspVendor);
 
@@ -501,18 +494,22 @@ public class MultispeakMeterServiceImpl extends MultispeakMeterServiceBase imple
      * @param mspMeter - multispeak meter
      * @return returns Device class for particular multispeak meter
      */
-    private String getDeviceClassForMspMeter(MspMeter mspMeter) {
-        String deviceClass = null;
+    private Map<String, Object> getModuleListFieldsForMspMeter(MspMeter mspMeter) {
+
+        Map<String, Object> moduleListFields = Maps.newHashMap();
         ArrayOfModule moduleList = mspMeter.getModuleList();
 
         if (moduleList != null) {
             List<Module> ListOfModule = moduleList.getModule();
             if (CollectionUtils.isNotEmpty(ListOfModule)) {
                 Module module = ListOfModule.get(0);
-                deviceClass = null != module ? module.getDeviceClass() : null;
+                if (module != null) {
+                    moduleListFields.put("deviceClass", module.getDeviceClass());
+                    moduleListFields.put("facilityID", module.getFacilityID());
+                }
             }
         }
-        return deviceClass;
+        return moduleListFields;
     }
 
     /**
@@ -645,7 +642,7 @@ public class MultispeakMeterServiceImpl extends MultispeakMeterServiceBase imple
                 }
             }
         } else if (paoAlias == MspPaoNameAliasEnum.GRID_LOCATION) {
-            // TODO present in mspDevice
+            paoName = (String) getModuleListFieldsForMspMeter(mspMeter).get("facilityID");
 
         } else if (paoAlias == MspPaoNameAliasEnum.METER_NUMBER) {
             if (StringUtils.isNotBlank(mspMeter.getMeterNo())) {
@@ -687,7 +684,7 @@ public class MultispeakMeterServiceImpl extends MultispeakMeterServiceBase imple
                 return mspMeter.getMeterNo();
             } else if (extensionName.equalsIgnoreCase("deviceclass")) { 
                 // specific field (WHE custom)
-                return getDeviceClassForMspMeter(mspMeter);
+                return (String) getModuleListFieldsForMspMeter(mspMeter).get("deviceClass");
             } else { 
                 // use extensions
                 return getExtensionValue(mspMeter.getExtensionsList(), extensionName, null);
