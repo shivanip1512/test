@@ -3,6 +3,8 @@ package com.cannontech.web.notificationGroup;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.apache.commons.collections4.CollectionUtils;
+
 import com.cannontech.common.device.port.DBPersistentConverter;
 import com.cannontech.database.data.notification.ContactNotifGroupMap;
 import com.cannontech.database.data.notification.CustomerNotifGroupMap;
@@ -91,53 +93,57 @@ public class NotificationGroup implements DBPersistentConverter<com.cannontech.d
 
     private void buildDBPersistentForCustomer(List<CustomerNotifGroupMap> custList, List<ContactNotifGroupMap> contactList,
             List<NotifDestinationMap> notifList) {
-        for (CICustomer cICust : getcICustomers()) {
-            NotifMap notifMap = new NotifMap();
-            notifMap.setSendEmails(cICust.isEmailEnabled());
-            notifMap.setSendOutboundCalls(cICust.isPhoneCallEnabled());
-            notifMap.setSendSms(cICust.isEmailEnabled());
-            if (cICust.isSelected()) {
-                custList.add(
-                        new CustomerNotifGroupMap(
-                                cICust.getId(),
-                                notifMap.getAttribs()));
+        if (CollectionUtils.isNotEmpty(getcICustomers())) {
+            for (CICustomer cICust : getcICustomers()) {
+                NotifMap notifMap = new NotifMap();
+                notifMap.setSendEmails(cICust.isEmailEnabled());
+                notifMap.setSendOutboundCalls(cICust.isPhoneCallEnabled());
+                notifMap.setSendSms(cICust.isEmailEnabled());
+                if (cICust.isSelected()) {
+                    custList.add(
+                            new CustomerNotifGroupMap(
+                                    cICust.getId(),
+                                    notifMap.getAttribs()));
+                }
+                buildDBPersistentForContact(cICust.getContacts(), contactList, notifList);
             }
-            buildDBPersistentForContact(cICust.getContacts(), contactList, notifList);
         }
-
     }
 
     private void buildDBPersistentForContact(
             List<Contact> contacts, List<ContactNotifGroupMap> contactList, List<NotifDestinationMap> notifList) {
-        for (Contact cont : contacts) {
-            NotifMap notifMap = new NotifMap();
-            notifMap.setSendEmails(cont.isEmailEnabled());
-            notifMap.setSendOutboundCalls(cont.isPhoneCallEnabled());
-            notifMap.setSendSms(cont.isEmailEnabled());
-            if (cont.isSelected()) {
-                contactList.add(
-                        new ContactNotifGroupMap(
-                                cont.getId(),
-                                notifMap.getAttribs()));
+        if (CollectionUtils.isNotEmpty(contacts)) {
+            for (Contact cont : contacts) {
+                NotifMap notifMap = new NotifMap();
+                notifMap.setSendEmails(cont.isEmailEnabled());
+                notifMap.setSendOutboundCalls(cont.isPhoneCallEnabled());
+                notifMap.setSendSms(cont.isEmailEnabled());
+                if (cont.isSelected()) {
+                    contactList.add(
+                            new ContactNotifGroupMap(
+                                    cont.getId(),
+                                    notifMap.getAttribs()));
+                }
+                builDBPersistentForNotification(cont.getNotifications(), notifList);
             }
-            builDBPersistentForNotification(cont.getNotifications(), notifList);
         }
     }
 
     private void builDBPersistentForNotification(List<NotificationSettings> notifications, List<NotifDestinationMap> notifList) {
-        for (NotificationSettings notif : notifications) {
-            NotifMap notifMap = new NotifMap();
-            notifMap.setSendEmails(notif.isEmailEnabled());
-            notifMap.setSendOutboundCalls(notif.isPhoneCallEnabled());
-            notifMap.setSendSms(notif.isEmailEnabled());
-            if (notif.isSelected()) {
-                notifList.add(
-                        new NotifDestinationMap(
-                                notif.getId(),
-                                notifMap.getAttribs()));
+        if (CollectionUtils.isNotEmpty(notifications)) {
+            for (NotificationSettings notif : notifications) {
+                NotifMap notifMap = new NotifMap();
+                notifMap.setSendEmails(notif.isEmailEnabled());
+                notifMap.setSendOutboundCalls(notif.isPhoneCallEnabled());
+                notifMap.setSendSms(notif.isEmailEnabled());
+                if (notif.isSelected()) {
+                    notifList.add(
+                            new NotifDestinationMap(
+                                    notif.getId(),
+                                    notifMap.getAttribs()));
+                }
             }
         }
-
     }
 
 }
