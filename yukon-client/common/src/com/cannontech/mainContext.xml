@@ -269,6 +269,7 @@
                 <value>classpath:com/cannontech/yukon/web/modules/operator/mapNetwork</value>
                 <value>classpath:com/cannontech/yukon/web/modules/operator/comprehensiveMap</value>
                 <value>classpath:com/cannontech/yukon/web/modules/operator/commChannel</value>
+                <value>classpath:com/cannontech/yukon/web/modules/operator/signalTrasnmitter</value>
                 <value>classpath:com/cannontech/yukon/web/modules/operator/relay</value>
                 <value>classpath:com/cannontech/yukon/web/modules/operator/rtu</value>
                 <value>classpath:com/cannontech/yukon/web/modules/operator/scheduledDataImport</value>

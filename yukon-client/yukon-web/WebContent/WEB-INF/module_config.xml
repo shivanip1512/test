@@ -1354,6 +1354,9 @@
                     <page name="rtuDetail.CREATE" type="BASIC"/>
                 </pages>
             </page>
+            <page name="signalTransmitter.list" type="BASIC" hideSearch="true">
+                <link>/stars/device/signalTransmitter/list</link>
+            </page>
             <page name="virtualDevices.list" type="BASIC">
                 <link>/stars/virtualDevices</link>
                 <pages>
