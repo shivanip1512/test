@@ -106,7 +106,6 @@ public class MultispeakMeterServiceImpl extends MultispeakMeterServiceBase imple
     @Autowired private AttributeService attributeService;
     @Autowired private DeviceAttributeReadService deviceAttributeReadService;
     
-    private static final String METER_ADD_STRING = "MeterAddNotification";
     private static final String EXTENSION_DEVICE_TEMPLATE_STRING = "AMRMeterType";
     private static final String SERV_LOC_CHANGED_STRING = "ServiceLocationChangedNotification";
 
@@ -512,7 +511,7 @@ public class MultispeakMeterServiceImpl extends MultispeakMeterServiceBase imple
     public List<ErrorObject> meterAdd(final MultispeakVendor mspVendor, List<MspMeter> addMeters)
             throws MultispeakWebServiceException {
         final List<ErrorObject> errorObjects = new ArrayList<>();
-
+        final String METER_ADD_STRING = "MeterAddNotification";
         for (final MspMeter mspMeter : addMeters) {
             try {
                 transactionTemplate.execute(new TransactionCallbackWithoutResult() {
@@ -523,9 +522,9 @@ public class MultispeakMeterServiceImpl extends MultispeakMeterServiceBase imple
 
                         YukonMeter newMeter;
                         try {
-                            newMeter = checkForExistingMeterAndUpdate(mspMeter, mspVendor);
+                            newMeter = checkForExistingMeterAndUpdate(mspMeter, mspVendor, METER_ADD_STRING);
                         } catch (NotFoundException e) { // and NEW meter
-                            newMeter = addNewMeter(mspMeter, mspVendor);
+                            newMeter = addNewMeter(mspMeter, mspVendor, METER_ADD_STRING);
                         }
 
                         updatePaoLocation(mspMeter, newMeter, METER_ADD_STRING);
@@ -579,7 +578,7 @@ public class MultispeakMeterServiceImpl extends MultispeakMeterServiceBase imple
      * @throws NotFoundException       if existing meter is not found in system.
      * @throws MspErrorObjectException when templateName is not a valid YukonPaobject Name. Or if changeType cannot be processed.
      */
-    private YukonMeter checkForExistingMeterAndUpdate(MspMeter mspMeter, MultispeakVendor mspVendor)
+    private YukonMeter checkForExistingMeterAndUpdate(MspMeter mspMeter, MultispeakVendor mspVendor, String mspMethod )
             throws NotFoundException, MspErrorObjectException {
 
         YukonMeter meter = null;
@@ -625,16 +624,16 @@ public class MultispeakMeterServiceImpl extends MultispeakMeterServiceBase imple
             break;
         }
 
-        multispeakEventLogService.meterFound(meter.getMeterNumber(), meter, METER_ADD_STRING, mspVendor.getCompanyName());
+        multispeakEventLogService.meterFound(meter.getMeterNumber(), meter, mspMethod, mspVendor.getCompanyName());
 
         // load (and validate) template exists
-        YukonMeter templateMeter = getYukonMeterForTemplate(mspMeter, mspVendor, false); // throws MspErrorObjectException
+        YukonMeter templateMeter = getYukonMeterForTemplate(mspMeter, mspVendor, false, mspMethod); // throws MspErrorObjectException
         if (templateMeter == null) {
             // If no template found, just use this meter as the template (meaning, same meter, no type changes).
             templateMeter = meter;
         }
 
-        meter = updateExistingMeter(mspMeter, meter, templateMeter, METER_ADD_STRING, mspVendor, true);
+        meter = updateExistingMeter(mspMeter, meter, templateMeter, mspMethod, mspVendor, true);
         return meter;
     }
 
@@ -643,9 +642,9 @@ public class MultispeakMeterServiceImpl extends MultispeakMeterServiceBase imple
      * 
      * @throws MspErrorObjectException when templateName is not a valid YukonPaobject Name.
      */
-    private YukonMeter addNewMeter(MspMeter mspMeter, MultispeakVendor mspVendor) throws MspErrorObjectException {
+    private YukonMeter addNewMeter(MspMeter mspMeter, MultispeakVendor mspVendor, String mspMethod) throws MspErrorObjectException {
 
-        YukonMeter templateMeter = getYukonMeterForTemplate(mspMeter, mspVendor, true);
+        YukonMeter templateMeter = getYukonMeterForTemplate(mspMeter, mspVendor, true, mspMethod );
 
         String newPaoName = getPaoNameFromMspMeter(mspMeter, mspVendor);
         // If PaoName already exists, a uniqueness value will be added.
@@ -675,7 +674,7 @@ public class MultispeakMeterServiceImpl extends MultispeakMeterServiceBase imple
                 ErrorObject errorObject = mspObjectDao.getErrorObject(mspMeter.getObjectID(),
                                                                       "Error: Invalid template type [" + templateMeter.getPaoType() + "].",
                                                                       "Meter",
-                                                                      METER_ADD_STRING,
+                                                                      mspMethod,
                                                                       mspVendor.getCompanyName());
                 throw new MspErrorObjectException(errorObject);
             }
@@ -684,17 +683,17 @@ public class MultispeakMeterServiceImpl extends MultispeakMeterServiceBase imple
             ErrorObject errorObject = mspObjectDao.getErrorObject(mspMeter.getObjectID(),
                                                                   "Error: " + e.getMessage(),
                                                                   "Meter",
-                                                                  METER_ADD_STRING,
+                                                                  mspMethod,
                                                                   mspVendor.getCompanyName());
             throw new MspErrorObjectException(errorObject);
         }
 
         YukonMeter newMeter = meterDao.getForId(newDevice.getDeviceId());
-        systemLog(METER_ADD_STRING, "New Meter created: " + newMeter.toString(), mspVendor);
-        multispeakEventLogService.meterCreated(newMeter.getMeterNumber(), newMeter, METER_ADD_STRING, mspVendor.getCompanyName());
+        systemLog(mspMethod, "New Meter created: " + newMeter.toString(), mspVendor);
+        multispeakEventLogService.meterCreated(newMeter.getMeterNumber(), newMeter, mspMethod, mspVendor.getCompanyName());
 
         // update default values of newMeter
-        newMeter = updateExistingMeter(mspMeter, newMeter, templateMeter, METER_ADD_STRING, mspVendor, true);
+        newMeter = updateExistingMeter(mspMeter, newMeter, templateMeter, mspMethod, mspVendor, true);
         return newMeter;
     }
     
@@ -785,7 +784,7 @@ public class MultispeakMeterServiceImpl extends MultispeakMeterServiceBase imple
      * 
      * @throws MspErrorObjectException when meter not found in Yukon by templateName provided
      */
-    private YukonMeter getYukonMeterForTemplate(MspMeter mspMeter, MultispeakVendor mspVendor, boolean useDefault)
+    private YukonMeter getYukonMeterForTemplate(MspMeter mspMeter, MultispeakVendor mspVendor, boolean useDefault, String mspMethod)
             throws MspErrorObjectException {
 
         String defaultTemplateName = useDefault ? mspVendor.getTemplateNameDefault() : null;
@@ -797,10 +796,9 @@ public class MultispeakMeterServiceImpl extends MultispeakMeterServiceBase imple
             } catch (NotFoundException e) {
                 // template not found...now what? ERROR?
                 ErrorObject err = mspObjectDao.getErrorObject(mspMeter.getObjectID(),
-                                                                "Error: Meter (" + mspMeter.getMeterNo() + ") - does not contain a valid template meter: Template["
-                                                                        + templateName
-                                                                        + "]. Processing could not be completed, returning ErrorObject to calling vendor for processing.",
-                                                                "Meter", METER_ADD_STRING, mspVendor.getCompanyName());
+                                                              "Error: Meter (" + mspMeter.getMeterNo() + ") - does not contain a valid template meter: Template["
+                                                              + templateName + "]. Processing could not be completed, returning ErrorObject to calling vendor for processing.",
+                                                              "Meter", mspMethod, mspVendor.getCompanyName());
                 log.error(e);
                 throw new MspErrorObjectException(err);
             }
