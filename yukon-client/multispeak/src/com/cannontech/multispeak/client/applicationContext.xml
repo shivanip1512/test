@@ -57,9 +57,7 @@
     <property name="porterConnection" ref="porterConnection"/>
   </bean>
   
-  <bean class="com.cannontech.multispeak.service.impl.v4.MultispeakMeterServiceImpl">
-   <property name="porterConnection" ref="porterConnection"/>
-  </bean>
+  <bean class="com.cannontech.multispeak.service.impl.v4.MultispeakMeterServiceImpl"></bean>
   
   <bean class="com.cannontech.multispeak.service.impl.v5.MultispeakMeterServiceImpl">
     <property name="porterConnection" ref="porterConnection" />

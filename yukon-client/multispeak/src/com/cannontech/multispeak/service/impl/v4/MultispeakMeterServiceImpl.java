@@ -15,6 +15,7 @@ import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.logging.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.beans.factory.annotation.Required;
 
 import com.cannontech.amr.deviceread.dao.DeviceAttributeReadCallback;
@@ -91,8 +92,7 @@ public class MultispeakMeterServiceImpl extends MultispeakMeterServiceBase imple
 
     private static final Logger log = YukonLogManager.getLogger(MultispeakMeterServiceImpl.class);
 
-    private BasicServerConnection porterConnection;
-
+    @Autowired private @Qualifier("porter") BasicServerConnection porterConnection;
     @Autowired private MspObjectDao mspObjectDao;
     @Autowired private ObjectFactory objectFactory;
     @Autowired private MultispeakFuncs multispeakFuncs;
