@@ -7,6 +7,7 @@ import com.cannontech.msp.beans.v4.ErrorObject;
 import com.cannontech.msp.beans.v4.MeterID;
 import com.cannontech.msp.beans.v4.MeterReading;
 import com.cannontech.msp.beans.v4.ServiceLocation;
+import com.cannontech.msp.beans.v4.RCDState;
 import com.cannontech.multispeak.client.MultispeakVendor;
 import com.cannontech.multispeak.exceptions.MultispeakWebServiceException;
 
@@ -34,4 +35,14 @@ public interface MultispeakMeterService {
      * Updates the "meter" object, based on the PaoName Alias lookup value. 
      */
     public List<ErrorObject> serviceLocationChanged(MultispeakVendor vendor, List<ServiceLocation> serviceLocations);
+
+    /**
+     * Returns the CDMeterState (or connected status) for meter
+     * Performs a read of DISCONNECT_STATUS attribute.
+     * Waits for response, times out after mspVendor.maxRequestTimeout
+     * 
+     * @throws MultispeakWebServiceException
+     */
+    public RCDState cdMeterState(MultispeakVendor mspVendor,
+            YukonMeter meter) throws MultispeakWebServiceException;
 }
