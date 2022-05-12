@@ -249,7 +249,7 @@ public class MspObjectDaoImpl implements MspObjectDao {
                     + (System.currentTimeMillis() - start) + " millis)");
 
         } catch (MultispeakWebServiceClientException e) {
-            log.error("TargetService: " + endpointUrl + " - getMspMetersByServiceLocation (" + mspVendor.getCompanyName()
+            log.error("TargetService: " + endpointUrl + " - getMeterByServiceLocationID (" + mspVendor.getCompanyName()
                     + ") for ServLoc: " + serviceLocation);
             log.error("MultispeakWebServiceClientException: " + e.getMessage());
         }
@@ -287,7 +287,7 @@ public class MspObjectDaoImpl implements MspObjectDao {
             return serviceLocation != null ? serviceLocation.get(0) : null;
 
         } catch (MultispeakWebServiceClientException e) {
-            log.error("TargetService: " + endpointUrl + " - getServiceLocationByMeterNo (" + mspVendor.getCompanyName()
+            log.error("TargetService: " + endpointUrl + " - GetServiceLocationByMeterID (" + mspVendor.getCompanyName()
                     + ") for MeterID: " + meterID);
             log.error("MultispeakWebServiceClientException: " + e.getMessage());
             log.info("A default(empty) is being used for ServiceLocation");
