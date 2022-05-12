@@ -492,7 +492,7 @@ public class MultispeakMeterServiceImpl extends MultispeakMeterServiceBase imple
 
     /**
      * @param mspMeter - multispeak meter
-     * @return returns Device class for particular multispeak meter
+     * @return returns module list fields for particular multispeak meter
      */
     private Map<String, Object> getModuleListFieldsForMspMeter(MspMeter mspMeter) {
 
