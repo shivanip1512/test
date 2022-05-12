@@ -65,6 +65,7 @@ public final class MspMeterDaoImpl extends MspMeterDaoBase {
 
         mspMeters.setElectricMeters(electricMeters);
         mspMeters.setWaterMeters(waterMeters);
+        mspMeters.setGasMeters(gasMeters);
 
         mspMeters.setReturnFields(mspMeters.getLastProcessed(), mspMeters.getSize(), maxRecords);
         return mspMeters;

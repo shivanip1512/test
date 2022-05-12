@@ -17,6 +17,11 @@ import com.cannontech.msp.beans.v4.ErrorObject;
 import com.cannontech.msp.beans.v4.GasService;
 import com.cannontech.msp.beans.v4.GetMeterByServiceLocationID;
 import com.cannontech.msp.beans.v4.GetMeterByServiceLocationIDResponse;
+import com.cannontech.msp.beans.v4.ArrayOfDomainMember;
+import com.cannontech.msp.beans.v4.DomainMember;
+import com.cannontech.msp.beans.v4.ErrorObject;
+import com.cannontech.msp.beans.v4.GetDomainMembers;
+import com.cannontech.msp.beans.v4.GetDomainMembersResponse;
 import com.cannontech.msp.beans.v4.GetMethods;
 import com.cannontech.msp.beans.v4.GetMethodsResponse;
 import com.cannontech.msp.beans.v4.GetServiceLocationByMeterID;
@@ -244,7 +249,7 @@ public class MspObjectDaoImpl implements MspObjectDao {
                     + (System.currentTimeMillis() - start) + " millis)");
 
         } catch (MultispeakWebServiceClientException e) {
-            log.error("TargetService: " + endpointUrl + " - getMspMetersByServiceLocation (" + mspVendor.getCompanyName()
+            log.error("TargetService: " + endpointUrl + " - getMeterByServiceLocationID (" + mspVendor.getCompanyName()
                     + ") for ServLoc: " + serviceLocation);
             log.error("MultispeakWebServiceClientException: " + e.getMessage());
         }
@@ -282,7 +287,7 @@ public class MspObjectDaoImpl implements MspObjectDao {
             return serviceLocation != null ? serviceLocation.get(0) : null;
 
         } catch (MultispeakWebServiceClientException e) {
-            log.error("TargetService: " + endpointUrl + " - getServiceLocationByMeterNo (" + mspVendor.getCompanyName()
+            log.error("TargetService: " + endpointUrl + " - GetServiceLocationByMeterID (" + mspVendor.getCompanyName()
                     + ") for MeterID: " + meterID);
             log.error("MultispeakWebServiceClientException: " + e.getMessage());
             log.info("A default(empty) is being used for ServiceLocation");
@@ -290,4 +295,32 @@ public class MspObjectDaoImpl implements MspObjectDao {
         return mspServiceLocation;
     }
     
+    public List<String> getMspSubstationName(MultispeakVendor mspVendor) {
+
+        List<String> substationNames = new ArrayList<>();
+        String endpointUrl = multispeakFuncs.getEndpointUrl(mspVendor, MultispeakDefines.CB_Server_STR);
+        try {
+            GetDomainMembers domainMembersRequest = objectFactory.createGetDomainMembers();
+            domainMembersRequest.setDomainName("substationCode");
+            GetDomainMembersResponse domainMembersResponse = cbClient.getDomainMembers(mspVendor, endpointUrl,
+                    domainMembersRequest);
+            if (domainMembersResponse != null) {
+                ArrayOfDomainMember arrayOfDomainMember = domainMembersResponse.getGetDomainMembersResult();
+                if (arrayOfDomainMember != null) {
+                    List<DomainMember> domainMemberList = arrayOfDomainMember.getDomainMember();
+                    if (domainMemberList != null && !domainMemberList.isEmpty()) {
+                        domainMemberList.forEach(domainMember -> {
+                            substationNames.add(domainMember.getDescription());
+                        });
+                    }
+                }
+            }
+        } catch (MultispeakWebServiceClientException e) {
+            log.error("TargetService: " + endpointUrl + " - getDomainMembers(" + mspVendor.getCompanyName()
+                    + ") for DomainMember 'substationCode'");
+            log.error("MultispeakWebServiceClientException: " + e.getMessage());
+        }
+        return substationNames;
+    }
+
 }

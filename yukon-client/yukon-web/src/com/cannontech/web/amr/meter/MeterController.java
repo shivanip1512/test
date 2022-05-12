@@ -55,6 +55,7 @@ import com.cannontech.common.pao.attribute.service.AttributeService;
 import com.cannontech.common.pao.definition.dao.PaoDefinitionDao;
 import com.cannontech.common.pao.definition.model.PaoTag;
 import com.cannontech.common.pao.meter.model.MeterTypeHelper;
+import com.cannontech.common.pao.meter.model.MeterTypeHelper.MeterGroup;
 import com.cannontech.common.pao.notes.service.PaoNotesService;
 import com.cannontech.common.pao.service.PointService;
 import com.cannontech.common.rfn.dataStreaming.DataStreamingAttributeHelper;
@@ -279,6 +280,7 @@ public class MeterController {
         boolean voltageThreePhaseDevice = paoDefDao.isTagSupported(type, PaoTag.THREE_PHASE_VOLTAGE); 
         boolean currentThreePhaseDevice = paoDefDao.isTagSupported(type, PaoTag.THREE_PHASE_CURRENT);
         boolean touDevice = paoDefDao.isTagSupported(type, PaoTag.TOU);
+        boolean derEdgeCooordinatorDisplayable = paoDefDao.isTagSupported(type, PaoTag.DER_EDGE_COORDINATOR_DISPLAYABLE);
         
         /** Device Attributes */
         boolean outageLogAttribute = deviceAttributes.contains(BuiltInAttribute.OUTAGE_LOG);
@@ -336,6 +338,7 @@ public class MeterController {
         model.addAttribute("showRfMetadata", rfDevice);
         model.addAttribute("showTou", touDevice);
         model.addAttribute("showWifiConnection", type.isWifiDevice());
+        model.addAttribute("isDerEdgeCooordinator", derEdgeCooordinatorDisplayable);
         
         /** Page Actions */
         model.addAttribute("showCommander", commanderDevice && commanderUser);

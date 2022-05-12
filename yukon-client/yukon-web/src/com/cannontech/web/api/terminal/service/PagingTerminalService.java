@@ -5,6 +5,11 @@ import com.cannontech.common.device.terminal.model.TerminalBase;
 public interface PagingTerminalService {
 
     /**
+     * Retrieve a paging terminal using id
+     */
+    TerminalBase<?> retrieve(int id);
+    
+    /**
      * Create a paging terminal
      */
     public TerminalBase<?> create(TerminalBase<?> terminalBase);
