@@ -2,29 +2,46 @@ package com.cannontech.multispeak.service.impl.v4;
 
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.EnumSet;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 import java.util.stream.Collectors;
 
 import org.apache.logging.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
+
+import com.cannontech.amr.deviceread.dao.DeviceAttributeReadService;
+import com.cannontech.amr.deviceread.dao.WaitableDeviceAttributeReadCallback;
+import com.cannontech.amr.errors.model.SpecificDeviceErrorDescription;
 import com.cannontech.amr.meter.model.YukonMeter;
 import com.cannontech.clientutils.YukonLogManager;
+import com.cannontech.common.device.DeviceRequestType;
 import com.cannontech.common.device.groups.editor.dao.SystemGroupEnum;
 import com.cannontech.common.device.service.DeviceUpdateService;
+import com.cannontech.common.pao.PaoIdentifier;
+import com.cannontech.common.pao.attribute.model.BuiltInAttribute;
+import com.cannontech.common.pao.attribute.service.AttributeService;
+import com.cannontech.common.pao.definition.model.PaoPointIdentifier;
 import com.cannontech.core.dao.NotFoundException;
+import com.cannontech.core.dao.PointDao;
+import com.cannontech.core.dynamic.PointValueHolder;
 import com.cannontech.database.data.device.DeviceTypesFuncs;
 import com.cannontech.message.porter.message.Request;
 import com.cannontech.msp.beans.v4.ErrorObject;
 import com.cannontech.msp.beans.v4.MeterID;
 import com.cannontech.msp.beans.v4.MeterReading;
+import com.cannontech.msp.beans.v4.RCDState;
 import com.cannontech.multispeak.client.MultispeakVendor;
+import com.cannontech.multispeak.client.v4.MultispeakFuncs;
 import com.cannontech.multispeak.dao.v4.MspObjectDao;
 import com.cannontech.multispeak.event.v4.MeterReadEvent;
 import com.cannontech.multispeak.event.v4.MultispeakEvent;
+import com.cannontech.multispeak.exceptions.MultispeakWebServiceException;
 import com.cannontech.multispeak.service.MultispeakMeterServiceBase;
 import com.cannontech.multispeak.service.v4.MultispeakMeterService;
+import com.cannontech.user.UserUtils;
 import com.cannontech.yukon.BasicServerConnection;
 
 public class MultispeakMeterServiceImpl extends MultispeakMeterServiceBase implements MultispeakMeterService {
@@ -35,6 +52,10 @@ public class MultispeakMeterServiceImpl extends MultispeakMeterServiceBase imple
 
     @Autowired private MspObjectDao mspObjectDao;
     @Autowired private DeviceUpdateService deviceUpdateService;
+    @Autowired private MultispeakFuncs multispeakFuncs;
+    @Autowired private PointDao pointDao;
+    @Autowired private AttributeService attributeService;
+    @Autowired private DeviceAttributeReadService deviceAttributeReadService;
 
     /** Singleton incrementor for messageIDs to send to porter connection */
     private static long messageID = 1;
@@ -228,4 +249,86 @@ public class MultispeakMeterServiceImpl extends MultispeakMeterServiceBase imple
         return errorObjects;
     }
 
+    @Override
+    public RCDState cdMeterState(final MultispeakVendor mspVendor, final YukonMeter meter) throws MultispeakWebServiceException {
+
+        log.info("Received " + meter.getMeterNumber() + " for CDMeterState from " + mspVendor.getCompanyName());
+        if (!porterConnection.isValid()) {
+            throw new MultispeakWebServiceException(
+                    "Connection to 'Yukon Port Control Service' is not valid.  Please contact your Yukon Administrator.");
+        }
+
+        List<YukonMeter> allPaosToRead = Collections.singletonList(meter);
+        final EnumSet<BuiltInAttribute> attributes = EnumSet.of(BuiltInAttribute.DISCONNECT_STATUS);
+
+        LACWaitableDeviceAttributeReadCallback waitableCallback = new LACWaitableDeviceAttributeReadCallback(
+                mspVendor.getRequestMessageTimeout()) {
+
+            @Override
+            public void complete() {
+                super.complete();
+                // do we need to do anything here once we received all of the data?
+                log.debug("deviceAttributeReadCallback.complete for cdEvent");
+            }
+
+            @Override
+            public void receivedValue(PaoIdentifier pao, PointValueHolder value) {
+                // the following is expensive but unavoidable until PointData is
+                // changed
+                PaoPointIdentifier paoPointIdentifier = pointDao.getPaoPointIdentifier(value.getId());
+                Set<BuiltInAttribute> thisAttribute = attributeService
+                        .findAttributesForPoint(paoPointIdentifier.getPaoTypePointIdentifier(), attributes);
+                if (thisAttribute.contains(BuiltInAttribute.DISCONNECT_STATUS)) {
+                    setRCDState(multispeakFuncs.getRCDState(meter, value));
+                } else {
+                    return;
+                }
+            }
+
+            @Override
+            public void receivedLastValue(PaoIdentifier pao, String value) {
+                log.debug("deviceAttributeReadCallback.receivedLastValue for cdEvent");
+            }
+
+            @Override
+            public void receivedError(PaoIdentifier pao, SpecificDeviceErrorDescription error) {
+                // do we need to send something to the foreign system here?
+                log.warn("received error for " + pao + ": " + error);
+            }
+
+            @Override
+            public void receivedException(SpecificDeviceErrorDescription error) {
+                log.warn("received exception in meterReadEvent callback: " + error);
+            }
+
+        };
+        multispeakEventLogService.initiateMeterRead(meter.getMeterNumber(), meter, "N/A", "GetCDMeterState",
+                mspVendor.getCompanyName());
+        deviceAttributeReadService.initiateRead(allPaosToRead, attributes, waitableCallback,
+                DeviceRequestType.MULTISPEAK_METER_READ_EVENT, UserUtils.getYukonUser());
+        try {
+            waitableCallback.waitForCompletion();
+        } catch (InterruptedException e) {
+            /* Ignore */}
+        return waitableCallback.getRCDState();
+    }
+
+    /**
+     * Wrapper class for holding attribute read response value.
+     */
+    private abstract class LACWaitableDeviceAttributeReadCallback extends WaitableDeviceAttributeReadCallback {
+        private RCDState rCDState = RCDState.UNKNOWN;
+
+        public LACWaitableDeviceAttributeReadCallback(long timeoutInMillis) {
+            super(timeoutInMillis);
+        }
+
+        public void setRCDState(RCDState rCDState) {
+            this.rCDState = rCDState;
+        }
+
+        public RCDState getRCDState() {
+            return rCDState;
+        }
+    };
 }
