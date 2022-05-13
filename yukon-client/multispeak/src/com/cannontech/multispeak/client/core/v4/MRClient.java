@@ -6,6 +6,8 @@ import org.springframework.oxm.XmlMappingException;
 import org.springframework.ws.WebServiceException;
 import org.springframework.ws.client.core.WebServiceTemplate;
 
+import com.cannontech.msp.beans.v4.MeterRemoveNotification;
+import com.cannontech.msp.beans.v4.MeterRemoveNotificationResponse;
 import com.cannontech.msp.beans.v4.GetMethods;
 import com.cannontech.msp.beans.v4.GetMethodsResponse;
 import com.cannontech.msp.beans.v4.GetReadingsByDate;
@@ -66,6 +68,19 @@ public class MRClient implements IMRClient {
 
             return (GetMethodsResponse) webServiceTemplate.marshalSendAndReceive(uri, getMethods,
                     customWebServiceMsgCallback.addRequestHeader(mspVendor, MultispeakDefines.MR_Server_STR));
+        } catch (WebServiceException | XmlMappingException ex) {
+            throw new MultispeakWebServiceClientException(ex.getMessage());
+        }
+    }
+
+    @Override
+    public MeterRemoveNotificationResponse meterRemoveNotification(MultispeakVendor mspVendor, String uri,
+            MeterRemoveNotification meterRemoveNotification) throws MultispeakWebServiceClientException {
+        try {
+            multispeakFuncs.setMsgSender(webServiceTemplate, mspVendor);
+
+            return (MeterRemoveNotificationResponse) webServiceTemplate.marshalSendAndReceive(uri,
+                meterRemoveNotification, customWebServiceMsgCallback.addRequestHeader(mspVendor, MultispeakDefines.MR_Server_STR));
         } catch (WebServiceException | XmlMappingException ex) {
             throw new MultispeakWebServiceClientException(ex.getMessage());
         }

@@ -3,14 +3,13 @@ package com.cannontech.multispeak.service.v4;
 import java.util.Calendar;
 import java.util.List;
 
+import com.cannontech.msp.beans.v4.ErrorObject;
+import com.cannontech.msp.beans.v4.FormattedBlock;
+import com.cannontech.msp.beans.v4.MeterID;
+import com.cannontech.msp.beans.v4.MeterReading;
 import com.cannontech.msp.beans.v4.Meters;
 import com.cannontech.msp.beans.v4.MspMeter;
 import com.cannontech.msp.beans.v4.ServiceLocation;
-import com.cannontech.msp.beans.v4.ErrorObject;
-import com.cannontech.msp.beans.v4.MeterID;
-
-import com.cannontech.msp.beans.v4.FormattedBlock;
-import com.cannontech.msp.beans.v4.MeterReading;
 import com.cannontech.multispeak.exceptions.MultispeakWebServiceException;
 
 public interface MR_Server {
@@ -183,4 +182,13 @@ public interface MR_Server {
      * @throws MultispeakWebServiceException the multispeak web service exception
      */
     public List<ErrorObject> meterAddNotification(List<MspMeter> addedMeters) throws MultispeakWebServiceException;
+
+    /**
+     * meter Remove Notification.
+     * 
+     * @param removedMeters the removed meters
+     * @return the error object[]
+     * @throws MultispeakWebServiceException the multispeak web service exception
+     */
+    public List<ErrorObject> meterRemoveNotification(List<MspMeter> removedMeters) throws MultispeakWebServiceException;
 }

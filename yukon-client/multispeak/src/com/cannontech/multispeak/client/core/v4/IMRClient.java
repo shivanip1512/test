@@ -1,5 +1,7 @@
 package com.cannontech.multispeak.client.core.v4;
 
+import com.cannontech.msp.beans.v4.MeterRemoveNotification;
+import com.cannontech.msp.beans.v4.MeterRemoveNotificationResponse;
 import com.cannontech.msp.beans.v4.GetMethods;
 import com.cannontech.msp.beans.v4.GetMethodsResponse;
 import com.cannontech.msp.beans.v4.GetReadingsByDate;
@@ -43,4 +45,15 @@ public interface IMRClient {
     public GetReadingsByDateResponse getReadingsByDate(MultispeakVendor mspVendor, String uri,
             GetReadingsByDate getReadingsByDate) throws MultispeakWebServiceClientException;
 
+    /**
+     * meter Remove Notification
+     * 
+     * @param mspVendor
+     * @param uri
+     * @param meterRemoveNotification
+     * @return
+     * @throws MultispeakWebServiceClientException
+     */
+    public MeterRemoveNotificationResponse meterRemoveNotification(MultispeakVendor mspVendor, String uri,
+            MeterRemoveNotification meterRemoveNotification) throws MultispeakWebServiceClientException;
 }

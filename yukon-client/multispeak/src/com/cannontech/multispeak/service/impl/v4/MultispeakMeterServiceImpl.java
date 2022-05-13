@@ -28,10 +28,9 @@ import com.cannontech.clientutils.YukonLogManager;
 import com.cannontech.common.bulk.processor.ProcessingException;
 import com.cannontech.common.config.MasterConfigBoolean;
 import com.cannontech.common.config.MasterConfigString;
+import com.cannontech.common.device.DeviceRequestType;
 import com.cannontech.common.device.creation.DeviceCreationException;
 import com.cannontech.common.device.creation.DeviceCreationService;
-import com.cannontech.common.device.DeviceRequestType;
-
 import com.cannontech.common.device.groups.editor.dao.SystemGroupEnum;
 import com.cannontech.common.device.groups.editor.model.StoredDeviceGroup;
 import com.cannontech.common.device.groups.model.DeviceGroup;
@@ -39,9 +38,9 @@ import com.cannontech.common.device.model.SimpleDevice;
 import com.cannontech.common.device.service.DeviceUpdateService;
 import com.cannontech.common.exception.BadConfigurationException;
 import com.cannontech.common.exception.InsufficientMultiSpeakDataException;
+import com.cannontech.common.pao.PaoIdentifier;
 import com.cannontech.common.pao.PaoType;
 import com.cannontech.common.pao.YukonDevice;
-import com.cannontech.common.pao.PaoIdentifier;
 import com.cannontech.common.pao.attribute.model.BuiltInAttribute;
 import com.cannontech.common.pao.attribute.service.AttributeService;
 import com.cannontech.common.pao.definition.model.PaoPointIdentifier;
@@ -107,7 +106,11 @@ public class MultispeakMeterServiceImpl extends MultispeakMeterServiceBase imple
     @Autowired private DeviceAttributeReadService deviceAttributeReadService;
     
     private static final String EXTENSION_DEVICE_TEMPLATE_STRING = "AMRMeterType";
+    // Strings to represent method calls, generally used for logging.
     private static final String SERV_LOC_CHANGED_STRING = "ServiceLocationChangedNotification";
+    private static final String METER_REMOVE_STRING = "MeterRemoveNotification";
+    private static final String METER_CHANGED_STRING = "MeterChangedNotification";
+    private static final String METER_ADD_STRING = "MeterAddNotification";
 
     /** Singleton incrementor for messageIDs to send to porter connection */
     private static long messageID = 1;
@@ -1220,4 +1223,41 @@ public class MultispeakMeterServiceImpl extends MultispeakMeterServiceBase imple
             return rCDState;
         }
     };
+
+    @Override
+    public List<ErrorObject> meterRemove(MultispeakVendor mspVendor, List<MspMeter> removeMeters) {
+        ArrayList<ErrorObject> errorObjects = new ArrayList<>();
+
+        for (MspMeter mspMeter : removeMeters) {
+            if (mspMeter.getMeterNo() != null) {
+                // Lookup meter in Yukon by msp meter number
+                YukonMeter meter;
+                try {
+                    meter = getMeterByMeterNumber(mspMeter.getMeterNo().trim());
+                    removeDeviceNameExtension(meter, METER_REMOVE_STRING, mspVendor);
+                    removeDeviceFromCISGroups(meter, METER_REMOVE_STRING, mspVendor);
+                    // Added meter to Inventory
+                    addMeterToGroup(meter, SystemGroupEnum.INVENTORY, METER_REMOVE_STRING, mspVendor);
+                    if (!meter.isDisabled()) {// enabled
+                        meter.setDisabled(true); // update local object reference
+                        deviceUpdateService.disableDevice(meter);
+                        multispeakEventLogService.disableDevice(meter.getMeterNumber(), meter, METER_REMOVE_STRING,
+                                mspVendor.getCompanyName());
+                    }
+
+                } catch (NotFoundException e) {
+                    multispeakEventLogService.meterNotFound(mspMeter.getMeterNo(), METER_REMOVE_STRING,
+                            mspVendor.getCompanyName());
+                    ErrorObject err = mspObjectDao.getNotFoundErrorObject(mspMeter.getMeterNo().trim(), "MeterNumber", "Meter",
+                            METER_REMOVE_STRING, mspVendor.getCompanyName());
+                    errorObjects.add(err);
+                    multispeakEventLogService.errorObject(err.getErrorString(), METER_REMOVE_STRING,
+                            mspVendor.getCompanyName());
+                    log.error(e);
+                }
+            }
+        }
+
+        return errorObjects;
+    }
 }

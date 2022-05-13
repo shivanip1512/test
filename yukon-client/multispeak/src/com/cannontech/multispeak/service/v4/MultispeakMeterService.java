@@ -8,8 +8,8 @@ import com.cannontech.msp.beans.v4.ErrorObject;
 import com.cannontech.msp.beans.v4.MeterID;
 import com.cannontech.msp.beans.v4.MeterReading;
 import com.cannontech.msp.beans.v4.MspMeter;
-import com.cannontech.msp.beans.v4.ServiceLocation;
 import com.cannontech.msp.beans.v4.RCDState;
+import com.cannontech.msp.beans.v4.ServiceLocation;
 import com.cannontech.multispeak.client.MultispeakVendor;
 import com.cannontech.multispeak.exceptions.MultispeakWebServiceException;
 
@@ -71,6 +71,11 @@ public interface MultispeakMeterService {
      */
     public boolean updateAltGroup(MspMeter mspMeter, String meterNumber, YukonDevice yukonDevice,
             String mspMethod, MultispeakVendor mspVendor);
+
+    /**
+     * Removes (disables) a list of meters in Yukon.
+     */
+    public List<ErrorObject> meterRemove(MultispeakVendor mspVendor, List<MspMeter> removeMeters);
 
 }
  

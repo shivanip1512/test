@@ -54,6 +54,8 @@ import com.cannontech.msp.beans.v4.MeterAddNotification;
 import com.cannontech.msp.beans.v4.MeterAddNotificationResponse;
 import com.cannontech.msp.beans.v4.MeterID;
 import com.cannontech.msp.beans.v4.MeterReading;
+import com.cannontech.msp.beans.v4.MeterRemoveNotification;
+import com.cannontech.msp.beans.v4.MeterRemoveNotificationResponse;
 import com.cannontech.msp.beans.v4.Meters;
 import com.cannontech.msp.beans.v4.MspMeter;
 import com.cannontech.msp.beans.v4.ObjectFactory;
@@ -377,4 +379,20 @@ public class MRServiceEndPoint {
         return response;
     }
 
+    @PayloadRoot(localPart = "MeterRemoveNotification", namespace = MultispeakDefines.NAMESPACE_v4)
+    public @ResponsePayload MeterRemoveNotificationResponse meterRemoveNotification(
+            @RequestPayload MeterRemoveNotification meterRemoveNotification) throws MultispeakWebServiceException {
+        MeterRemoveNotificationResponse meterRemoveNotificationResponse = objectFactory.createMeterRemoveNotificationResponse();
+
+        List<MspMeter> mspMeters = new ArrayList<>();
+        if (meterRemoveNotification.getRemovedMeters() != null) {
+            mspMeters = multispeakFuncs.getMspMeters(meterRemoveNotification.getRemovedMeters());
+        }
+        List<ErrorObject> errorObjects = mr_server.meterRemoveNotification(ListUtils.emptyIfNull(mspMeters));
+
+        ArrayOfErrorObject arrayOfErrorObject = objectFactory.createArrayOfErrorObject();
+        arrayOfErrorObject.getErrorObject().addAll(errorObjects);
+        meterRemoveNotificationResponse.setMeterRemoveNotificationResult(arrayOfErrorObject);
+        return meterRemoveNotificationResponse;
+    }
 }
