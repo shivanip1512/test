@@ -395,8 +395,7 @@ public class MRServiceEndPoint {
         MeterGroup meterGroup = establishMeterGroup.getMeterGroup();
         List<ErrorObject> errorObjects = mr_server.establishMeterGroup(meterGroup);
 
-        ArrayOfErrorObject arrayOfErrorObject = objectFactory.createArrayOfErrorObject();
-        arrayOfErrorObject.getErrorObject().addAll(errorObjects);
+        ArrayOfErrorObject arrayOfErrorObject = multispeakFuncs.toArrayOfErrorObject(errorObjects); 
         response.setEstablishMeterGroupResult(arrayOfErrorObject);
         return response;
     }
@@ -414,8 +413,7 @@ public class MRServiceEndPoint {
             List<MeterID> meterIds = arrayOfMeterId1.getMeterID();
             String meterGroupId = insertMeterInMeterGroup.getMeterGroupID();
             List<ErrorObject> errorObjects = mr_server.insertMeterInMeterGroup(meterIds, meterGroupId);
-            ArrayOfErrorObject arrayOfErrorObject = objectFactory.createArrayOfErrorObject();
-            arrayOfErrorObject.getErrorObject().addAll(errorObjects);
+            ArrayOfErrorObject arrayOfErrorObject = multispeakFuncs.toArrayOfErrorObject(errorObjects); 
             insertMeterInMeterGroupResponse.setInsertMeterInMeterGroupResult(arrayOfErrorObject);
         }
         return insertMeterInMeterGroupResponse;
@@ -446,8 +444,7 @@ public class MRServiceEndPoint {
                 .getMeterIDs() : null;
         if (arrayOfMeterId1 != null) {
             List<ErrorObject> errorObjects = mr_server.removeMetersFromMeterGroup(arrayOfMeterId1.getMeterID(), meterGroupIds);
-            ArrayOfErrorObject arrayOfErrorObject = objectFactory.createArrayOfErrorObject();
-            arrayOfErrorObject.getErrorObject().addAll(errorObjects);
+            ArrayOfErrorObject arrayOfErrorObject = multispeakFuncs.toArrayOfErrorObject(errorObjects); 
             response.setRemoveMetersFromMeterGroupResult(arrayOfErrorObject);
         }
         return response;
