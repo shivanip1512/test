@@ -259,7 +259,7 @@ BOOST_AUTO_TEST_CASE(test_resolveDeviceType)
     BOOST_CHECK_EQUAL(resolveDeviceType("crly-856"),    TYPE_CRLY856);
 
     //  --- DER Edge Coordinator Devices ---
-    BOOST_CHECK_EQUAL(resolveDeviceType("der edge coordinator"),    TYPE_DER_EDGE_COORDINATOR);
+    BOOST_CHECK_EQUAL(resolveDeviceType("rfn-530s4x-der"),    TYPE_RFN530S4X_DER);
 
     //  --- RTU devices ---
     BOOST_CHECK_EQUAL(resolveDeviceType("rtu-dart"),    TYPE_DARTRTU);

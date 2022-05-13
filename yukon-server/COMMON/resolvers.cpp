@@ -308,7 +308,7 @@ static const std::map<std::string, DeviceTypes> device_lookups
     { "crly-856",           TYPE_CRLY856 },
 
     //  --- DER Edge Coordinator Devices ---
-    { "der edge coordinator",           TYPE_DER_EDGE_COORDINATOR },
+    { "rfn-530s4x-der",           TYPE_RFN530S4X_DER },
 
     //  --- RTU devices ---
     { "rtu-dart",           TYPE_DARTRTU },

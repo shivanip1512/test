@@ -1,6 +1,6 @@
 #include "precompiled.h"
 
-#include "dev_rfn_der_edge_coordinator.h"
+#include "dev_rfn530s4x_der.h"
 
 #include "cmd_rfn_CommStatus.h"
 

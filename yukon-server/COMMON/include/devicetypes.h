@@ -126,7 +126,7 @@ enum DeviceTypes {
     TYPE_CRLY856,
 
     // DER_EDGE_COORDINATOR Devices
-    TYPE_DER_EDGE_COORDINATOR,
+	TYPE_RFN530S4X_DER,
 
     // Substation device identifiers
     TYPE_CCU700,

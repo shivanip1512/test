@@ -243,7 +243,7 @@ std::optional<DeviceTypes> resolvePaoIdXmlType( const std::string & type )
         { "CRLY856",                     TYPE_CRLY856 },
 
         //  --- DER Edge Coordinator Devices ---
-        { "DER_EDGE_COORDINATOR",                     TYPE_DER_EDGE_COORDINATOR },
+        { "RFN530S4X_DER",                     TYPE_RFN530S4X_DER },
 
         //  --- RTU devices ---
         { "RTU_DART",                    TYPE_DARTRTU },
