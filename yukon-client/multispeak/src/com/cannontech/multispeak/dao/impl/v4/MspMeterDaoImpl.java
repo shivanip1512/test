@@ -21,7 +21,6 @@ import com.cannontech.msp.beans.v4.Module;
 import com.cannontech.msp.beans.v4.ModuleList;
 import com.cannontech.msp.beans.v4.MspMeter;
 import com.cannontech.msp.beans.v4.ObjectFactory;
-import com.cannontech.msp.beans.v4.UtilityInfo;
 import com.cannontech.msp.beans.v4.WaterMeter;
 import com.cannontech.multispeak.client.MultispeakDefines;
 import com.cannontech.multispeak.dao.MspMeterDaoBase;
@@ -46,6 +45,7 @@ public final class MspMeterDaoImpl extends MspMeterDaoBase {
         MspMeterReturnList mspMeters = new MspMeterReturnList();
         List<ElectricMeter> electricMeters = new ArrayList<>();
         List<WaterMeter> waterMeters = new ArrayList<>();
+        List<GasMeter> gasMeters = new ArrayList<>();
         jdbcTemplate.query(sql, new MaxRowCalbackHandlerRse(new AbstractRowCallbackHandler() {
             @Override
             public void processRow(ResultSet rs, int rowNum) throws SQLException {
@@ -54,6 +54,8 @@ public final class MspMeterDaoImpl extends MspMeterDaoBase {
                     electricMeters.add((ElectricMeter) mspMeter);
                 } else if (mspMeter instanceof WaterMeter) {
                     waterMeters.add((WaterMeter) mspMeter);
+                }else if(mspMeter instanceof GasMeter) {
+                    gasMeters.add((GasMeter) mspMeter);
                 }
 
                 // setting the last object we'll process as we loop through them.
@@ -63,6 +65,7 @@ public final class MspMeterDaoImpl extends MspMeterDaoBase {
 
         mspMeters.setElectricMeters(electricMeters);
         mspMeters.setWaterMeters(waterMeters);
+        mspMeters.setGasMeters(gasMeters);
 
         mspMeters.setReturnFields(mspMeters.getLastProcessed(), mspMeters.getSize(), maxRecords);
         return mspMeters;
@@ -162,7 +165,7 @@ public final class MspMeterDaoImpl extends MspMeterDaoBase {
             ((WaterMeter) meter).setMeterCommAddress(address);
         } else if (meter instanceof GasMeter) {
             ((GasMeter) meter).setMeterCommAddress(address);
-        } else {
+        } else if(meter instanceof ElectricMeter){
             ((ElectricMeter) meter).setMeterCommAddress(address);
         }
     }

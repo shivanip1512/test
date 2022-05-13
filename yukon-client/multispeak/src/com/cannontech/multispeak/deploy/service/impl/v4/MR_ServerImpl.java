@@ -37,6 +37,8 @@ import com.cannontech.msp.beans.v4.FormattedBlock;
 import com.cannontech.msp.beans.v4.MeterID;
 import com.cannontech.msp.beans.v4.MeterReading;
 import com.cannontech.msp.beans.v4.Meters;
+import com.cannontech.msp.beans.v4.MspMeter;
+import com.cannontech.msp.beans.v4.ServiceLocation;
 import com.cannontech.multispeak.block.v4.Block;
 import com.cannontech.multispeak.client.MultispeakDefines;
 import com.cannontech.multispeak.client.MultispeakVendor;
@@ -94,7 +96,10 @@ public class MR_ServerImpl implements MR_Server {
                                                            "GetReadingsByDateAndFieldName",
                                                            "GetReadingsByMeterIDAndFieldName",
                                                            "GetLatestReadingByFieldName",
-                                                           "GetLatestReadingByMeterIDAndFieldName"
+                                                           "GetLatestReadingByMeterIDAndFieldName",
+                                                           "ServiceLocationChangedNotification",
+                                                           "MeterAddNotification",
+                                                           "InitiateDemandReset"
                                                            };
 
     private void init() throws MultispeakWebServiceException {
@@ -495,6 +500,23 @@ public class MR_ServerImpl implements MR_Server {
         errors.addAll(callback.getErrors());
 
         return errors;
+    }
+    public List<ErrorObject> serviceLocationChangedNotification(List<ServiceLocation> serviceLocations)
+            throws MultispeakWebServiceException {
+        init();
+        MultispeakVendor vendor = multispeakFuncs.getMultispeakVendorFromHeader();
+        multispeakEventLogService.methodInvoked("ServiceLocationChangedNotification", vendor.getCompanyName());
+        List<ErrorObject> errorObject = multispeakMeterService.serviceLocationChanged(vendor, serviceLocations);
+        return errorObject;
+    }
+    
+    @Override
+    public List<ErrorObject> meterAddNotification(List<MspMeter> addedMeters) throws MultispeakWebServiceException {
+        init();
+        MultispeakVendor vendor = multispeakFuncs.getMultispeakVendorFromHeader();
+        multispeakEventLogService.methodInvoked("MeterAddNotification", vendor.getCompanyName());
+        List<ErrorObject> errorObject = multispeakMeterService.meterAdd(vendor, addedMeters);
+        return errorObject;
     }
 
 }
