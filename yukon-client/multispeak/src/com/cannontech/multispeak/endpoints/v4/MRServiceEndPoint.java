@@ -1,5 +1,6 @@
 package com.cannontech.multispeak.endpoints.v4;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import javax.xml.datatype.XMLGregorianCalendar;
@@ -16,6 +17,7 @@ import com.cannontech.msp.beans.v4.ArrayOfErrorObject;
 import com.cannontech.msp.beans.v4.ArrayOfFormattedBlock;
 import com.cannontech.msp.beans.v4.ArrayOfMeterID1;
 import com.cannontech.msp.beans.v4.ArrayOfMeterReading1;
+import com.cannontech.msp.beans.v4.ArrayOfServiceLocation1;
 import com.cannontech.msp.beans.v4.ArrayOfString;
 import com.cannontech.msp.beans.v4.ArrayOfString18;
 import com.cannontech.msp.beans.v4.CancelUsageMonitoring;
@@ -54,15 +56,21 @@ import com.cannontech.msp.beans.v4.InsertMeterInMeterGroup;
 import com.cannontech.msp.beans.v4.InsertMeterInMeterGroupResponse;
 import com.cannontech.msp.beans.v4.IsAMRMeter;
 import com.cannontech.msp.beans.v4.IsAMRMeterResponse;
+import com.cannontech.msp.beans.v4.MeterAddNotification;
+import com.cannontech.msp.beans.v4.MeterAddNotificationResponse;
 import com.cannontech.msp.beans.v4.MeterGroup;
 import com.cannontech.msp.beans.v4.MeterID;
 import com.cannontech.msp.beans.v4.MeterReading;
 import com.cannontech.msp.beans.v4.Meters;
+import com.cannontech.msp.beans.v4.MspMeter;
 import com.cannontech.msp.beans.v4.ObjectFactory;
 import com.cannontech.msp.beans.v4.PingURL;
 import com.cannontech.msp.beans.v4.PingURLResponse;
 import com.cannontech.msp.beans.v4.RemoveMetersFromMeterGroup;
 import com.cannontech.msp.beans.v4.RemoveMetersFromMeterGroupResponse;
+import com.cannontech.msp.beans.v4.ServiceLocation;
+import com.cannontech.msp.beans.v4.ServiceLocationChangedNotification;
+import com.cannontech.msp.beans.v4.ServiceLocationChangedNotificationResponse;
 import com.cannontech.multispeak.client.MultispeakDefines;
 import com.cannontech.multispeak.client.v4.MultispeakFuncs;
 import com.cannontech.multispeak.exceptions.MultispeakWebServiceException;
@@ -340,6 +348,42 @@ public class MRServiceEndPoint {
         arrayOfFormattedBlock.getFormattedBlock().addAll(formattedBlocks);
         getLatestReadingByFieldNameResponse.setGetLatestReadingByFieldNameResult(arrayOfFormattedBlock);
         return getLatestReadingByFieldNameResponse;
+    }
+    
+    @PayloadRoot(localPart = "ServiceLocationChangedNotification", namespace = MultispeakDefines.NAMESPACE_v4)
+    public @ResponsePayload ServiceLocationChangedNotificationResponse serviceLocationChangedNotification(
+            @RequestPayload ServiceLocationChangedNotification serviceLocationChangedNotification)
+            throws MultispeakWebServiceException {
+        ServiceLocationChangedNotificationResponse response = objectFactory.createServiceLocationChangedNotificationResponse();
+        
+        ArrayOfServiceLocation1 ArrOfServiceLocations = serviceLocationChangedNotification.getChangedServiceLocations();
+        List<ServiceLocation> serviceLocationList = null != ArrOfServiceLocations ? ArrOfServiceLocations.getServiceLocation() : null;
+        List<ErrorObject> errorObjects = mr_server
+                .serviceLocationChangedNotification(ListUtils.emptyIfNull(serviceLocationList));
+        
+        ArrayOfErrorObject arrayOfErrorObject = multispeakFuncs.toArrayOfErrorObject(errorObjects);
+        response.setServiceLocationChangedNotificationResult(arrayOfErrorObject);
+        return response;
+    }
+    
+    @PayloadRoot(localPart = "MeterAddNotification", namespace = MultispeakDefines.NAMESPACE_v4)
+    public @ResponsePayload MeterAddNotificationResponse meterAddNotification(
+            @RequestPayload MeterAddNotification meterAddNotification)
+            throws MultispeakWebServiceException {
+        MeterAddNotificationResponse response = objectFactory.createMeterAddNotificationResponse();
+
+        List<MspMeter> mspMeters = new ArrayList<>();
+
+        if (meterAddNotification.getAddedMeters() != null) {
+            mspMeters = multispeakFuncs.getMspMeters(meterAddNotification.getAddedMeters());
+        }
+        List<ErrorObject> errorObjects = mr_server.meterAddNotification(ListUtils.emptyIfNull((mspMeters)));
+
+        ArrayOfErrorObject arrayOfErrorObject = objectFactory.createArrayOfErrorObject();
+        arrayOfErrorObject.getErrorObject().addAll(errorObjects);
+        response.setMeterAddNotificationResult(arrayOfErrorObject);
+
+        return response;
     }
 
     @PayloadRoot(localPart = "EstablishMeterGroup", namespace = MultispeakDefines.NAMESPACE_v4)

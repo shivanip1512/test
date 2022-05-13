@@ -9,6 +9,8 @@ import com.cannontech.msp.beans.v4.MeterGroup;
 import com.cannontech.msp.beans.v4.MeterID;
 import com.cannontech.msp.beans.v4.MeterReading;
 import com.cannontech.msp.beans.v4.Meters;
+import com.cannontech.msp.beans.v4.MspMeter;
+import com.cannontech.msp.beans.v4.ServiceLocation;
 import com.cannontech.multispeak.exceptions.MultispeakWebServiceException;
 
 public interface MR_Server {
@@ -163,6 +165,25 @@ public interface MR_Server {
      */
     List<FormattedBlock> getReadingsByMeterIDAndFieldName(String meterNo, Calendar startDate, Calendar endDate,
             String lastReceived, String formattedBlockTemplateName) throws MultispeakWebServiceException;
+
+    /**
+     * service Location Changed Notification.
+     * 
+     * @param changedServiceLocations the changed service locations
+     * @return the error object[]
+     * @throws MultispeakWebServiceException the multispeak web service exception
+     */
+    public List<ErrorObject> serviceLocationChangedNotification(List<ServiceLocation> serviceLocations)
+            throws MultispeakWebServiceException;
+
+    /**
+     * meter Add Notification.
+     * 
+     * @param addedMeters the added meters
+     * @return the error object[]
+     * @throws MultispeakWebServiceException the multispeak web service exception
+     */
+    public List<ErrorObject> meterAddNotification(List<MspMeter> addedMeters) throws MultispeakWebServiceException;
 
     /**
      * establish Meter Group.

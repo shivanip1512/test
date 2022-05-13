@@ -10,8 +10,14 @@ import org.springframework.ws.server.endpoint.annotation.RequestPayload;
 import org.springframework.ws.server.endpoint.annotation.ResponsePayload;
 
 import com.cannontech.msp.beans.v4.ArrayOfString;
+import com.cannontech.msp.beans.v4.CDState;
+import com.cannontech.msp.beans.v4.GetCDMeterState;
+import com.cannontech.msp.beans.v4.GetCDMeterStateResponse;
+import com.cannontech.msp.beans.v4.GetCDSupportedMeters;
+import com.cannontech.msp.beans.v4.GetCDSupportedMetersResponse;
 import com.cannontech.msp.beans.v4.GetMethods;
 import com.cannontech.msp.beans.v4.GetMethodsResponse;
+import com.cannontech.msp.beans.v4.Meters;
 import com.cannontech.msp.beans.v4.ObjectFactory;
 import com.cannontech.msp.beans.v4.PingURL;
 import com.cannontech.msp.beans.v4.PingURLResponse;
@@ -47,6 +53,27 @@ public class CDServiceEndpoint {
         ArrayOfString arrayOfString = objectFactory.createArrayOfString();
         arrayOfString.getString().addAll(methods);
         response.setGetMethodsResult(arrayOfString);
+        return response;
+    }
+
+    @PayloadRoot(localPart = "GetCDMeterState", namespace = CD_V4_ENDPOINT_NAMESPACE)
+    public @ResponsePayload GetCDMeterStateResponse getCDMeterState(@RequestPayload GetCDMeterState cdMeterState)
+            throws MultispeakWebServiceException {
+        GetCDMeterStateResponse response = objectFactory.createGetCDMeterStateResponse();
+        CDState cdState = cd_server.getCDMeterState(cdMeterState.getMeterID());
+        response.setGetCDMeterStateResult(cdState);
+        return response;
+    }
+
+    @PayloadRoot(localPart = "GetCDSupportedMeters", namespace = CD_V4_ENDPOINT_NAMESPACE)
+    public @ResponsePayload GetCDSupportedMetersResponse getCDSupportedMeters(
+            @RequestPayload GetCDSupportedMeters getCDSupportedMeters)
+            throws MultispeakWebServiceException {
+        GetCDSupportedMetersResponse response = objectFactory.createGetCDSupportedMetersResponse();
+
+        String lastReceived = getCDSupportedMeters.getLastReceived();
+        Meters meters = cd_server.getCDSupportedMeters(lastReceived);
+        response.setGetCDSupportedMetersResult(meters);
         return response;
     }
 }

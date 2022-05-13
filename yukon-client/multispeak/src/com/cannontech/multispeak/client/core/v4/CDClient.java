@@ -6,6 +6,10 @@ import org.springframework.oxm.XmlMappingException;
 import org.springframework.ws.WebServiceException;
 import org.springframework.ws.client.core.WebServiceTemplate;
 
+import com.cannontech.msp.beans.v4.GetCDSupportedMeters;
+import com.cannontech.msp.beans.v4.GetCDSupportedMetersResponse;
+import com.cannontech.msp.beans.v4.GetCDMeterState;
+import com.cannontech.msp.beans.v4.GetCDMeterStateResponse;
 import com.cannontech.msp.beans.v4.GetMethods;
 import com.cannontech.msp.beans.v4.GetMethodsResponse;
 import com.cannontech.msp.beans.v4.PingURL;
@@ -51,6 +55,32 @@ public class CDClient implements ICDClient {
             multispeakFuncs.setMsgSender(webServiceTemplate, mspVendor);
 
             return (GetMethodsResponse) webServiceTemplate.marshalSendAndReceive(uri, getMethods,
+                    customWebServiceMsgCallback.addRequestHeader(mspVendor, MultispeakDefines.CD_Server_STR));
+        } catch (WebServiceException | XmlMappingException ex) {
+            throw new MultispeakWebServiceClientException(ex.getMessage());
+        }
+    }
+
+    @Override
+    public GetCDMeterStateResponse getCDMeterState(final MultispeakVendor mspVendor, String uri,
+            GetCDMeterState getCDMeterState) throws MultispeakWebServiceClientException {
+        try {
+            multispeakFuncs.setMsgSender(webServiceTemplate, mspVendor);
+
+            return (GetCDMeterStateResponse) webServiceTemplate.marshalSendAndReceive(uri, getCDMeterState,
+                    customWebServiceMsgCallback.addRequestHeader(mspVendor, MultispeakDefines.CD_Server_STR));
+        } catch (WebServiceException | XmlMappingException ex) {
+            throw new MultispeakWebServiceClientException(ex.getMessage());
+        }
+    }
+
+    @Override
+    public GetCDSupportedMetersResponse getCDSupportedMeters(final MultispeakVendor mspVendor, String uri,
+            GetCDSupportedMeters getCDSupportedMeters) throws MultispeakWebServiceClientException {
+        try {
+            multispeakFuncs.setMsgSender(webServiceTemplate, mspVendor);
+
+            return (GetCDSupportedMetersResponse) webServiceTemplate.marshalSendAndReceive(uri, getCDSupportedMeters,
                     customWebServiceMsgCallback.addRequestHeader(mspVendor, MultispeakDefines.CD_Server_STR));
         } catch (WebServiceException | XmlMappingException ex) {
             throw new MultispeakWebServiceClientException(ex.getMessage());
