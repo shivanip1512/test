@@ -1,6 +1,7 @@
 package com.cannontech.multispeak.service.impl.v4;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.Date;
 import java.util.EnumSet;
@@ -13,6 +14,7 @@ import java.util.stream.Collectors;
 import javax.annotation.PostConstruct;
 
 import org.apache.commons.collections4.CollectionUtils;
+import org.apache.commons.lang3.ArrayUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.logging.log4j.Logger;
 import org.joda.time.Instant;
@@ -34,7 +36,9 @@ import com.cannontech.amr.meter.search.dao.MeterSearchDao;
 import com.cannontech.amr.rfn.model.RfnMeter;
 import com.cannontech.clientutils.YukonLogManager;
 import com.cannontech.common.bulk.processor.ProcessingException;
+import com.cannontech.common.config.ConfigurationSource;
 import com.cannontech.common.config.MasterConfigBoolean;
+import com.cannontech.common.config.MasterConfigHelper;
 import com.cannontech.common.config.MasterConfigString;
 import com.cannontech.common.device.DeviceRequestType;
 import com.cannontech.common.device.commands.CommandCompletionCallback;
@@ -121,14 +125,18 @@ import com.cannontech.user.UserUtils;
 import com.cannontech.user.YukonUserContext;
 import com.cannontech.yukon.BasicServerConnection;
 import com.google.common.collect.BiMap;
+import com.google.common.collect.HashMultimap;
 import com.google.common.collect.ImmutableMap;
+import com.google.common.collect.ImmutableMultimap;
 import com.google.common.collect.ImmutableSet;
 import com.google.common.collect.ImmutableSetMultimap;
 import com.google.common.collect.Iterables;
 import com.google.common.collect.ListMultimap;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
+import com.google.common.collect.SetMultimap;
 import com.google.common.collect.Sets;
+import com.google.common.collect.ImmutableMultimap.Builder;
 
 public class MultispeakMeterServiceImpl extends MultispeakMeterServiceBase implements MultispeakMeterService,MessageListener {
 
@@ -169,6 +177,43 @@ public class MultispeakMeterServiceImpl extends MultispeakMeterServiceBase imple
     public void initialize() throws Exception {
         log.info("New MSP instance created");
         porterConnection.addMessageListener(this);
+        
+
+        ConfigurationSource configurationSource = MasterConfigHelper.getConfiguration();
+        Builder<OutageEventType, Integer> builder = ImmutableMultimap.builder();
+        
+        // We are purposely not adding any RFN DeviceErros for OUTAGE, all should default to NO_RESPONSE
+        // NM_TIMEOUT (aka RfnMeterReadingDataReplyType.NETWORK_TIMEOUT) is the only one that could be, (with some higher confidence), a real outage.
+        builder.putAll(OutageEventType.OUTAGE, DeviceError.WORD_1_NACK_PADDED.getCode(),
+                                               DeviceError.EWORD_RECEIVED.getCode(),
+                                               DeviceError.DLC_READ_TIMEOUT.getCode());
+        builder.putAll(OutageEventType.RESTORATION, DeviceError.ABNORMAL_RETURN.getCode(),
+                                                    DeviceError.WORD_1_NACK.getCode(),
+                                                    DeviceError.ROUTE_FAILED.getCode(),
+                                                    DeviceError.SUCCESS.getCode());
+        ImmutableMultimap<OutageEventType, Integer> systemDefault = builder.build();
+
+        supportedEventTypes = ImmutableSet.of(OutageEventType.OUTAGE,
+                                              OutageEventType.NO_RESPONSE,
+                                              OutageEventType.RESTORATION,
+                                              OutageEventType.POWER_OFF,
+                                              OutageEventType.POWER_ON,
+                                              OutageEventType.INSTANTANEOUS,
+                                              OutageEventType.INFERRED);
+
+        SetMultimap<OutageEventType, Integer> outageConfigTemp = HashMultimap.create(systemDefault);
+        for (OutageEventType eventType : supportedEventTypes) {
+            String valueStr = configurationSource.getString("MSP_OUTAGE_EVENT_TYPE_CONFIG_" + eventType.value().toUpperCase());
+            if (valueStr != null) {
+                int[] errorCodes = com.cannontech.common.util.StringUtils.parseIntStringAfterRemovingWhitespace(valueStr);
+                List<Integer> errorCodeList = Arrays.asList(ArrayUtils.toObject(errorCodes));
+                outageConfigTemp.values().removeAll(errorCodeList);
+                outageConfigTemp.putAll(eventType, errorCodeList);
+            }
+        }
+
+        outageConfig = ImmutableSetMultimap.copyOf(outageConfigTemp);
+        log.info("outage event configuration: " + outageConfig);
     }
     
     /**
