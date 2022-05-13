@@ -1,5 +1,6 @@
 package com.cannontech.multispeak.endpoints.v4;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import javax.xml.datatype.XMLGregorianCalendar;
@@ -49,9 +50,12 @@ import com.cannontech.msp.beans.v4.InitiateUsageMonitoring;
 import com.cannontech.msp.beans.v4.InitiateUsageMonitoringResponse;
 import com.cannontech.msp.beans.v4.IsAMRMeter;
 import com.cannontech.msp.beans.v4.IsAMRMeterResponse;
+import com.cannontech.msp.beans.v4.MeterAddNotification;
+import com.cannontech.msp.beans.v4.MeterAddNotificationResponse;
 import com.cannontech.msp.beans.v4.MeterID;
 import com.cannontech.msp.beans.v4.MeterReading;
 import com.cannontech.msp.beans.v4.Meters;
+import com.cannontech.msp.beans.v4.MspMeter;
 import com.cannontech.msp.beans.v4.ObjectFactory;
 import com.cannontech.msp.beans.v4.PingURL;
 import com.cannontech.msp.beans.v4.PingURLResponse;
@@ -350,6 +354,26 @@ public class MRServiceEndPoint {
         
         ArrayOfErrorObject arrayOfErrorObject = multispeakFuncs.toArrayOfErrorObject(errorObjects);
         response.setServiceLocationChangedNotificationResult(arrayOfErrorObject);
+        return response;
+    }
+    
+    @PayloadRoot(localPart = "MeterAddNotification", namespace = MultispeakDefines.NAMESPACE_v4)
+    public @ResponsePayload MeterAddNotificationResponse meterAddNotification(
+            @RequestPayload MeterAddNotification meterAddNotification)
+            throws MultispeakWebServiceException {
+        MeterAddNotificationResponse response = objectFactory.createMeterAddNotificationResponse();
+
+        List<MspMeter> mspMeters = new ArrayList<>();
+
+        if (meterAddNotification.getAddedMeters() != null) {
+            mspMeters = multispeakFuncs.getMspMeters(meterAddNotification.getAddedMeters());
+        }
+        List<ErrorObject> errorObjects = mr_server.meterAddNotification(ListUtils.emptyIfNull((mspMeters)));
+
+        ArrayOfErrorObject arrayOfErrorObject = objectFactory.createArrayOfErrorObject();
+        arrayOfErrorObject.getErrorObject().addAll(errorObjects);
+        response.setMeterAddNotificationResult(arrayOfErrorObject);
+
         return response;
     }
 
