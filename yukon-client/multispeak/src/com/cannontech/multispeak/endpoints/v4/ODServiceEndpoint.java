@@ -69,23 +69,17 @@ public class ODServiceEndpoint {
 
         ArrayOfMeterID1 ArrOfMeterIDs = initiateOutageDetectionEventRequest.getMeterIDs();
         List<MeterID> meterIDs = null != ArrOfMeterIDs.getMeterID() ? ArrOfMeterIDs.getMeterID() : null;
-
         XMLGregorianCalendar xmlRequestDate = initiateOutageDetectionEventRequest.getRequestDate();
 
         if (xmlRequestDate == null) {
             throw new MultispeakWebServiceException("Invalid date/time.");
         }
-
-        Date requestDate = xmlRequestDate.toGregorianCalendar().getTime();
-        Calendar requestDateTime = Calendar.getInstance();
-        requestDateTime.setTime(requestDate);
+        
         String responseURL = initiateOutageDetectionEventRequest.getResponseURL();
         String transactionID = initiateOutageDetectionEventRequest.getTransactionID();
-        Float expirationTime = initiateOutageDetectionEventRequest.getExpTime().getValue();
 
         List<ErrorObject> errorObjects = od_server.initiateOutageDetectionEventRequest(ListUtils.emptyIfNull(meterIDs),
-                requestDateTime,
-                responseURL, transactionID, expirationTime);
+                responseURL, transactionID);
         ArrayOfErrorObject arrayOfErrorObject = objectFactory.createArrayOfErrorObject();
         arrayOfErrorObject.getErrorObject().addAll(errorObjects);
         response.setInitiateOutageDetectionEventRequestResult(arrayOfErrorObject);

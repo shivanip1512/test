@@ -40,7 +40,7 @@ public interface MultispeakMeterService {
      */
     public List<ErrorObject> odEvent(MultispeakVendor mspVendor,
             List<MeterID> meterIDs,
-            String transactionID, String responseUrl) throws MultispeakWebServiceException;
+            String transactionId, String responseUrl) throws MultispeakWebServiceException;
 
     /**
      * Updates the "meter" object, based on the PaoName Alias lookup value. 

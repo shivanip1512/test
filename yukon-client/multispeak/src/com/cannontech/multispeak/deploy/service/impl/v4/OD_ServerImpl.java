@@ -48,21 +48,20 @@ public class OD_ServerImpl implements OD_Server {
     }
 
     @Override
-    public List<ErrorObject> initiateOutageDetectionEventRequest(List<MeterID> meterIDs, Calendar requestDate,
-            String responseURL, String transactionId, Float expirationTime) throws MultispeakWebServiceException {
+    public List<ErrorObject> initiateOutageDetectionEventRequest(List<MeterID> meterIDs,
+            String responseURL, String transactionId) throws MultispeakWebServiceException {
         init();
 
         MultispeakVendor vendor = multispeakFuncs.getMultispeakVendorFromHeader();
         multispeakEventLogService.methodInvoked("InitiateOutageDetectionEventRequest", vendor.getCompanyName());
         String actualResponseUrl = multispeakFuncs.getResponseUrl(vendor, responseURL, MultispeakDefines.OA_Server_STR);
-        
-        
+
         List<ErrorObject> errorObjects = new ArrayList<ErrorObject>();
         if (!CollectionUtils.isEmpty(meterIDs)) {
             errorObjects = multispeakMeterService.odEvent(vendor, meterIDs, transactionId, actualResponseUrl);
         }
         multispeakFuncs.logErrorObjects(MultispeakDefines.OD_Server_STR, "InitiateOutageDetectionEventRequest",
-            errorObjects);
+                errorObjects);
         return errorObjects;
     }
 }

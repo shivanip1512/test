@@ -31,8 +31,7 @@ public interface OD_Server {
      * @return the error object[]
      * @throws MultispeakWebServiceException the multispeak web service exception
      */
-    public List<ErrorObject> initiateOutageDetectionEventRequest(List<MeterID> meterIDs, Calendar requestDate,
-            String responseURL, String transactionID, Float expirationTime) throws MultispeakWebServiceException;
-    
-    
+    public List<ErrorObject> initiateOutageDetectionEventRequest(List<MeterID> meterIDs,
+            String responseURL, String transactionId) throws MultispeakWebServiceException;
+
 }
