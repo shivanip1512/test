@@ -1,7 +1,7 @@
 /*==============================================================*/
 /* Database name:  YukonDatabase                                */
 /* DBMS name:      Microsoft SQL Server 2005                    */
-/* Created on:     5/3/2022 10:52:52 PM                         */
+/* Created on:     5/4/2022 11:08:15 AM                         */
 /*==============================================================*/
 
 
@@ -8901,6 +8901,7 @@ go
 create table RegulatorToZoneMapping (
    RegulatorId          numeric              not null,
    ZoneId               numeric              not null,
+   FeederId             numeric              null,
    constraint PK_RegToZoneMap primary key (RegulatorId)
 )
 go

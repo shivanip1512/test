@@ -426,8 +426,11 @@
 		</attributes>
 	</classpathentry>
 	<classpathentry exported="true" kind="lib" path="/third-party/snakeyaml-1.18.2.jar" sourcepath="/third-party/linked-sources/snakeyaml-1.18.2-sources.jar"/>
-	<classpathentry exported="true" kind="lib" path="/third-party/easymock-3.0.jar" sourcepath="/third-party/linked-sources/easymock-3.0-sources.jar"/>
-	<classpathentry kind="lib" path="/third-party/objenesis-1.2.jar"/>
+	<classpathentry exported="true" kind="lib" path="/third-party/easymock-4.3.jar" sourcepath="/third-party/linked-sources/easymock-4.3-sources.jar"/>
+	<classpathentry exported="true" kind="lib" path="/third-party/mockito-core-4.5.1.jar" sourcepath="/third-party/linked-sources/mockito-core-4.5.1-sources.jar"/>
+	<classpathentry exported="true" kind="lib" path="/third-party/byte-buddy-1.12.10.jar" sourcepath="/third-party/linked-sources/byte-buddy-1.12.10-sources.jar"/>
+	<classpathentry exported="true" kind="lib" path="/third-party/byte-buddy-agent-1.12.10.jar" sourcepath="/third-party/linked-sources/byte-buddy-agent-1.12.10-sources.jar"/>
+	<classpathentry kind="lib" path="/third-party/objenesis-3.2.jar"/>
 	<classpathentry exported="true" kind="lib" path="/third-party/log4j-slf4j-impl-2.17.1.jar">
 		<attributes>
 			<attribute name="org.eclipse.jst.component.dependency" value="../"/>

@@ -115,6 +115,15 @@
       </list>
     </property>
   </bean>
+
+  <bean id="multispeakLMServicev4" class="com.cannontech.multispeak.service.impl.v4.MultispeakLMServiceImpl">
+    <property name="strategiesToExcludeInReport">
+      <list>
+        <value>ALL DEVICES</value>
+        <value>SCRAM</value>
+      </list>
+    </property>
+  </bean>
   
   <bean id="multispeakLMServicev5" class="com.cannontech.multispeak.service.impl.v5.MultispeakLMServiceImpl">
    <property name="strategiesToExcludeInReport">

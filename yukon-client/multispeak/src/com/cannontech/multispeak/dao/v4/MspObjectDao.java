@@ -3,6 +3,9 @@ package com.cannontech.multispeak.dao.v4;
 import java.util.List;
 
 import com.cannontech.msp.beans.v4.ErrorObject;
+import com.cannontech.msp.beans.v4.MspMeter;
+import com.cannontech.msp.beans.v4.MspObject;
+import com.cannontech.msp.beans.v4.ServiceLocation;
 import com.cannontech.multispeak.client.MultispeakVendor;
 import com.cannontech.multispeak.exceptions.MultispeakWebServiceClientException;
 
@@ -14,7 +17,7 @@ public interface MspObjectDao {
      * @return
      */
     public ErrorObject[] toErrorObject(List<ErrorObject> errorObjects);
-    
+
     /**
      * Creates a new (MSP) ErrorObject
      * 
@@ -36,16 +39,6 @@ public interface MspObjectDao {
      */
     public ErrorObject getNotFoundErrorObject(String objectID, String notFoundObjectType, String nounType,
             String method, String userName);
-    
-    /**
-     * Creates an entry in the System log and prints a debug statement.
-     * TODO All of this logging (SystemLog) can be removed following completion of MultiSpeak EventLogs.
-     * 
-     * @param method
-     * @param description
-     * @param userName
-     */
-    public void logMSPActivity(String method, String description, String userName);
     
     /**
      * Utility to implement the pingURL method for the service.
@@ -70,6 +63,14 @@ public interface MspObjectDao {
     public List<String> getMethods(MultispeakVendor mspVendor, String service, String endpointUrl)
             throws MultispeakWebServiceClientException;
     
+    /**
+     * Returns a list of SubstationNames for the vendor.
+     * If the interface/method is not supported by mspVendor, or if no object is found,
+     * an empty String List object is returned.
+     * @param mspVendor
+     * @return
+     */
+    public List<String> getMspSubstationName(MultispeakVendor mspVendor);
     
     /**
      * Creates a new (MSP) ErrorObject
@@ -82,5 +83,34 @@ public interface MspObjectDao {
      */
     public ErrorObject getNotFoundErrorObject(String objectID, String notFoundObjectType, String nounType,
             String method, String userName, String exceptionMessage);
+
+    /**
+<<<<<<< HEAD
+     * Returns a list of the MeterNumber(s) for the mspServiceLocation.
+     * If the interface/method is not supported by mspVendor, or if no object is found,
+     * an empty List<Meter> object is returned.
+     * @param mspServiceLocation The serviceLocation to get the Meter information for.
+     * @param mspVendor The MultiSpeak Vendor to ask for the information from.
+     * @return
+     */
+    public List<MspMeter> getMspMetersByServiceLocation(ServiceLocation mspServiceLocation, MultispeakVendor vendor);
+   
+    /**
+     * Returns a Msp ServiceLocation for the meter
+     * If the interface/method is not supported by mspVendor, or if no object is found,
+     * an empty ServiceLocation object is returned.
+     * @param mspObject The meter to get the ServiceLocation information for.
+     * @param mspVendor The Multispeak Vendor to ask for the information from.
+     * @return
+     */
+    public ServiceLocation getMspServiceLocation(MspObject mspObject, MultispeakVendor mspVendor);
+ 
+    /**
+     * Creates an entry in the System log and prints a debug statement.
+     * @param method
+     * @param description
+     * @param userName
+     */
+    public void logMSPActivity(String method, String description, String userName);
 
 }

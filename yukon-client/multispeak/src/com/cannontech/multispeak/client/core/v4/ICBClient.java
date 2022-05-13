@@ -1,5 +1,9 @@
 package com.cannontech.multispeak.client.core.v4;
 
+import com.cannontech.msp.beans.v4.GetDomainMembers;
+import com.cannontech.msp.beans.v4.GetDomainMembersResponse;
+import com.cannontech.msp.beans.v4.GetMeterByServiceLocationID;
+import com.cannontech.msp.beans.v4.GetMeterByServiceLocationIDResponse;
 import com.cannontech.msp.beans.v4.GetMethods;
 import com.cannontech.msp.beans.v4.GetMethodsResponse;
 import com.cannontech.msp.beans.v4.PingURL;
@@ -32,4 +36,28 @@ public interface ICBClient {
      */
     public GetMethodsResponse getMethods(MultispeakVendor mspVendor, String uri, GetMethods getMethods)
             throws MultispeakWebServiceClientException;
+    
+    /**
+     * Gets domain members.
+     * 
+     * @param MSP              vendor details
+     * @param String           the URI of the CB Server
+     * @param GetDomainMembers the GetDomainMembers used as input.
+     * @return GetDomainMembersResponse
+     * @throws MultispeakWebServiceClientException
+     */
+    public GetDomainMembersResponse getDomainMembers(MultispeakVendor mspVendor, String uri,
+            GetDomainMembers getDomainMembers) throws MultispeakWebServiceClientException;
+    
+    /**
+     * 
+     * @param mspVendor           vendor details
+     * @param endpointUrl         the URI of the CB Server
+     * @param getMeterByServLocID serviceLocationID used
+     * @return Meters By ServiceLocationID
+     * @throws MultispeakWebServiceClientException
+     */
+    public GetMeterByServiceLocationIDResponse getMeterByServiceLocationID(MultispeakVendor mspVendor, String endpointUrl,
+            GetMeterByServiceLocationID getMeterByServLocID) throws MultispeakWebServiceClientException;
+
 }

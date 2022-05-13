@@ -1,16 +1,23 @@
 package com.cannontech.web.api.terminal.service.impl;
 
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.transaction.annotation.Transactional;
 
 import com.cannontech.common.device.model.SimpleDevice;
 import com.cannontech.common.device.terminal.model.TerminalBase;
+import com.cannontech.common.exception.DeletionFailureException;
 import com.cannontech.common.pao.PaoType;
 import com.cannontech.common.pao.service.impl.PaoCreationHelper;
 import com.cannontech.common.util.CtiUtilities;
 import com.cannontech.core.dao.DBPersistentDao;
+import com.cannontech.core.dao.NotFoundException;
 import com.cannontech.database.TransactionType;
 import com.cannontech.database.data.device.DeviceBase;
 import com.cannontech.database.data.device.IEDBase;
+import com.cannontech.database.data.lite.LiteFactory;
+import com.cannontech.database.data.lite.LiteYukonPAObject;
+import com.cannontech.database.data.pao.YukonPAObject;
 import com.cannontech.database.data.route.RouteBase;
 import com.cannontech.database.data.route.RouteFactory;
 import com.cannontech.web.api.terminal.service.PagingTerminalService;
@@ -25,7 +32,7 @@ public class PagingTerminalServiceImpl implements PagingTerminalService {
     @SuppressWarnings({ "unchecked", "rawtypes" })
     @Override
     public TerminalBase create(TerminalBase terminalBase) {
-        IEDBase iedBase = TerminalBaseFactory.getTerminalBase(terminalBase.getType());
+        IEDBase iedBase = TerminalBaseFactory.getIEDBase(terminalBase.getType());
         terminalBase.buildDBPersistent(iedBase);
         dbPersistentDao.performDBChange(iedBase, TransactionType.INSERT);
         // Add default points
@@ -65,4 +72,39 @@ public class PagingTerminalServiceImpl implements PagingTerminalService {
             dbPersistentDao.performDBChange(route, TransactionType.INSERT);
         }
     }
+
+    @Override
+    @Transactional
+    public int delete(int id) {
+        LiteYukonPAObject terminal = cache.getAllPaosMap().get(id);
+        if (terminal == null || !terminal.getPaoType().isTransmitter()) {
+            throw new NotFoundException("Terminal Id not found");
+        }
+
+        String routeName = DeviceBase.hasRoute(terminal.getLiteID());
+        if (StringUtils.isNotBlank(routeName)) {
+            throw new DeletionFailureException(
+                    "You cannot delete the terminal '" + terminal.getPaoName() + "' because it is utilized by the route named '"
+                            + routeName + "'");
+        }
+        YukonPAObject deleteTerminal = (YukonPAObject) LiteFactory.createDBPersistent(terminal);
+        dbPersistentDao.performDBChange(deleteTerminal, TransactionType.DELETE);
+        return deleteTerminal.getPAObjectID();
+    }
+
+    @SuppressWarnings({ "unchecked", "rawtypes" })
+    @Override
+    public TerminalBase<?> retrieve(int id) {
+        LiteYukonPAObject terminal = cache.getAllPaosMap().get(id);
+        if (terminal == null || !terminal.getPaoType().isTransmitter()) {
+            throw new NotFoundException("Terminal Id not found");
+        }
+
+        IEDBase iedBase = (IEDBase) dbPersistentDao.retrieveDBPersistent(terminal);
+        TerminalBase terminalBase = TerminalBaseFactory.getTerminalBase(iedBase.getPaoType());
+        terminalBase.buildModel(iedBase);
+        terminalBase.getCommChannel().setName(cache.getAllPaosMap().get(terminalBase.getCommChannel().getId()).getPaoName());
+        return terminalBase;
+    }
+
 }

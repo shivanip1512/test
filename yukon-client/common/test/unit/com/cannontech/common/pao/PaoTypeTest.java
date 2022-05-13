@@ -261,7 +261,8 @@ public class PaoTypeTest {
                         PaoType.HONEYWELL_VISIONPRO_8000,
                         PaoType.NEST,
                         PaoType.RFN_RELAY,
-                        PaoType.CRLY856);
+                        PaoType.CRLY856,
+                        PaoType.DER_EDGE_COORDINATOR);
 
     private static final ImmutableSet<PaoType> nonMeterTypes =
         ImmutableSet.of(PaoType.CCU710A,
@@ -621,7 +622,8 @@ public class PaoTypeTest {
                         PaoType.HONEYWELL_VISIONPRO_8000,
                         PaoType.NEST,
                         PaoType.RFN_RELAY,
-                        PaoType.CRLY856);
+                        PaoType.CRLY856,
+                        PaoType.DER_EDGE_COORDINATOR);
 
     private static final ImmutableSet<PaoType> nonIedTypes =
         ImmutableSet.of(PaoType.CCU710A,
@@ -847,7 +849,8 @@ public class PaoTypeTest {
                         PaoType.HONEYWELL_VISIONPRO_8000,
                         PaoType.NEST,
                         PaoType.RFN_RELAY,
-                        PaoType.CRLY856);
+                        PaoType.CRLY856,
+                        PaoType.DER_EDGE_COORDINATOR);
 
     private static final ImmutableSet<PaoType> nonRtuTypes =
         ImmutableSet.of(PaoType.CCU710A,
@@ -1089,7 +1092,8 @@ public class PaoTypeTest {
                         PaoType.HONEYWELL_VISIONPRO_8000,
                         PaoType.NEST,
                         PaoType.RFN_RELAY,
-                        PaoType.CRLY856);
+                        PaoType.CRLY856,
+                        PaoType.DER_EDGE_COORDINATOR);
 
     private static final ImmutableSet<PaoType> nonPortTypes =
         ImmutableSet.of(PaoType.CCU710A,
@@ -1324,7 +1328,8 @@ public class PaoTypeTest {
                         PaoType.HONEYWELL_VISIONPRO_8000,
                         PaoType.NEST,
                         PaoType.RFN_RELAY,
-                        PaoType.CRLY856);
+                        PaoType.CRLY856,
+                        PaoType.DER_EDGE_COORDINATOR);
     
     private static final ImmutableSet<PaoType> nonItronTypes = 
             ImmutableSet.of(
@@ -1570,7 +1575,8 @@ public class PaoTypeTest {
                 PaoType.RFG201,
                 PaoType.RFG301A,
                 PaoType.RFG301R,
-                PaoType.NEST);
+                PaoType.NEST,
+                PaoType.DER_EDGE_COORDINATOR);
     
     private void validatePredicate(Predicate<PaoType> classification, ImmutableSet<PaoType> others, String set) {
         var violations = Arrays.stream(PaoType.values())
