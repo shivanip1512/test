@@ -3,14 +3,14 @@ package com.cannontech.multispeak.service.v4;
 import java.util.Calendar;
 import java.util.List;
 
+import com.cannontech.msp.beans.v4.ErrorObject;
+import com.cannontech.msp.beans.v4.FormattedBlock;
+import com.cannontech.msp.beans.v4.MeterGroup;
+import com.cannontech.msp.beans.v4.MeterID;
+import com.cannontech.msp.beans.v4.MeterReading;
 import com.cannontech.msp.beans.v4.Meters;
 import com.cannontech.msp.beans.v4.MspMeter;
 import com.cannontech.msp.beans.v4.ServiceLocation;
-import com.cannontech.msp.beans.v4.ErrorObject;
-import com.cannontech.msp.beans.v4.MeterID;
-
-import com.cannontech.msp.beans.v4.FormattedBlock;
-import com.cannontech.msp.beans.v4.MeterReading;
 import com.cannontech.multispeak.exceptions.MultispeakWebServiceException;
 
 public interface MR_Server {
@@ -173,7 +173,8 @@ public interface MR_Server {
      * @return the error object[]
      * @throws MultispeakWebServiceException the multispeak web service exception
      */
-    public List<ErrorObject> serviceLocationChangedNotification(List<ServiceLocation> serviceLocations) throws MultispeakWebServiceException;
+    public List<ErrorObject> serviceLocationChangedNotification(List<ServiceLocation> serviceLocations)
+            throws MultispeakWebServiceException;
 
     /**
      * meter Add Notification.
@@ -183,4 +184,45 @@ public interface MR_Server {
      * @throws MultispeakWebServiceException the multispeak web service exception
      */
     public List<ErrorObject> meterAddNotification(List<MspMeter> addedMeters) throws MultispeakWebServiceException;
+
+    /**
+     * establish Meter Group.
+     * 
+     * @param meterGroup the meter group
+     * @return the error object[]
+     * @throws MultispeakWebServiceException the multispeak web service exception
+     */
+    public List<ErrorObject> establishMeterGroup(MeterGroup meterGroup) throws MultispeakWebServiceException;
+
+    /**
+     * insert Meters In Meter Group.
+     * 
+     * @param meterID      the meter ids
+     * @param meterGroupId the meter group id
+     * @return the error object[]
+     * @throws MultispeakWebServiceException the multispeak web service
+     *                                       exception
+     */
+    public List<ErrorObject> insertMeterInMeterGroup(List<MeterID> meterIds,
+            String meterGroupId) throws MultispeakWebServiceException;
+
+    /**
+     * delete Meter Group.
+     * 
+     * @param meterGroupID the meter group id
+     * @return the error object
+     * @throws MultispeakWebServiceException the multispeak web service exception
+     */
+    public ErrorObject deleteMeterGroup(String meterGroupId) throws MultispeakWebServiceException;
+
+    /**
+     * remove Meters From Meter Group.
+     * 
+     * @param meterNumbers the meter numbers
+     * @param meterGroupID the meter group id
+     * @return the error object[]
+     * @throws MultispeakWebServiceException the multispeak web service exception
+     */
+    public List<ErrorObject> removeMetersFromMeterGroup(List<MeterID> meterIds, String meterGroupId)
+            throws MultispeakWebServiceException;
 }
