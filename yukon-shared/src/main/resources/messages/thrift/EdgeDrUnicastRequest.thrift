@@ -5,4 +5,5 @@ struct EdgeDrUnicastRequest {
     1: required string messageGuid;
     2: required list<i32> paoIds;
     3: required binary payload;
+    4: required byte priority;
 }
