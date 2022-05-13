@@ -488,7 +488,7 @@ public class MR_ServerImpl implements MR_Server {
 
         for (String invalidMeterNumber : invalidMeterNumbers) {
             errors.add(mspObjectDao.getNotFoundErrorObject(invalidMeterNumber, "MeterID", "Meter",
-                    "InitiateDemandReset", vendor.getCompanyName()));
+                                                           "InitiateDemandReset", vendor.getCompanyName()));
         }
 
         Set<PaoIdentifier> meterIdentifiers = Sets.newHashSet(paoIdsByMeterNumber.values());
@@ -499,7 +499,7 @@ public class MR_ServerImpl implements MR_Server {
                     + " does not support demand reset";
             String meterNumber = meterNumbersByPaoId.get(unsupportedMeter);
             errors.add(mspObjectDao.getErrorObject(meterNumber, errorMsg, "MeterID",
-                    "InitiateDemandReset", vendor.getCompanyName()));
+                                                   "InitiateDemandReset", vendor.getCompanyName()));
         }
 
         if (hasFatalErrors || validMeters.isEmpty()) {

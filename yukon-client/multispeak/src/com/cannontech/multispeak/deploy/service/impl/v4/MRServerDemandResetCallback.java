@@ -82,8 +82,7 @@ public class MRServerDemandResetCallback implements DemandResetCallback {
             String meterNumber = meterNumbersByPaoId.get(device.getPaoIdentifier());
 
             errors.add(mspObjectDao.getErrorObject(meterNumber, error.getPorter(), "MeterID",
-                    "initiateDemandReset",
-                    vendor.getCompanyName()));
+                                                   "initiateDemandReset", vendor.getCompanyName()));
         }
     }
 
@@ -132,8 +131,8 @@ public class MRServerDemandResetCallback implements DemandResetCallback {
             meterEventNotification.setEvents(events);
             meterEventNotification.setTransactionID(transactionId);
             MeterEventNotificationResponse meterEventNotificationResponse = cbClient.meterEventNotification(vendor,
-                    responseUrl,
-                    meterEventNotification);
+                                                                                                            responseUrl,
+                                                                                                            meterEventNotification);
 
             ErrorObject[] errObjects = null;
             if (meterEventNotificationResponse != null) {
@@ -144,11 +143,11 @@ public class MRServerDemandResetCallback implements DemandResetCallback {
                 }
             }
             multispeakEventLogService.notificationResponse("InitiateDemandReset",
-                    transactionId,
-                    meterNumber,
-                    "Reset and Verified",
-                    errObjects.length,
-                    responseUrl);
+                                                            transactionId,
+                                                            meterNumber,
+                                                            "Reset and Verified",
+                                                            errObjects.length,
+                                                            responseUrl);
         } catch (MultispeakWebServiceClientException re) {
             log.error("error pushing verification notice", re);
         }
