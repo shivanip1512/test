@@ -317,16 +317,16 @@ public class MultispeakMeterServiceImpl extends MultispeakMeterServiceBase imple
                     yukonDevices.add(yukonDevice);
                 } catch (EmptyResultDataAccessException e) {
                     String exceptionMessage = "Unknown meter number";
-                    ErrorObject errorObject = mspObjectDao.getNotFoundErrorObject(meterId.getMeterNo(), "MeterID",
-                            "Meter",
+                    ErrorObject errorObject = mspObjectDao.getNotFoundErrorObject(meterId.getMeterNo(), "MeterNumber",
+                            "MeterID",
                             "addMetersToGroup",
                             mspVendor.getCompanyName(), exceptionMessage);
                     errorObjects.add(errorObject);
                     log.error(e);
                 } catch (IncorrectResultSizeDataAccessException e) {
                     String exceptionMessage = "Duplicate meters were found for this meter number " + meterId;
-                    ErrorObject errorObject = mspObjectDao.getNotFoundErrorObject(meterId.getMeterNo(), "MeterID",
-                            "Meter",
+                    ErrorObject errorObject = mspObjectDao.getNotFoundErrorObject(meterId.getMeterNo(), "MeterNumber",
+                            "MeterID",
                             "addMetersToGroup",
                             mspVendor.getCompanyName(), exceptionMessage);
                     errorObjects.add(errorObject);
