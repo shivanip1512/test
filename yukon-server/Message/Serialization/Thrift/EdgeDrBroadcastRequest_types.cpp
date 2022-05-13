@@ -13,6 +13,35 @@
 
 namespace Cti { namespace Messaging { namespace Serialization { namespace Thrift {
 
+int _kEdgeBroadcastMessagePriorityValues[] = {
+  EdgeBroadcastMessagePriority::IMMEDIATE,
+  EdgeBroadcastMessagePriority::NON_REAL_TIME
+};
+const char* _kEdgeBroadcastMessagePriorityNames[] = {
+  "IMMEDIATE",
+  "NON_REAL_TIME"
+};
+const std::map<int, const char*> _EdgeBroadcastMessagePriority_VALUES_TO_NAMES(::apache::thrift::TEnumIterator(2, _kEdgeBroadcastMessagePriorityValues, _kEdgeBroadcastMessagePriorityNames), ::apache::thrift::TEnumIterator(-1, NULL, NULL));
+
+std::ostream& operator<<(std::ostream& out, const EdgeBroadcastMessagePriority::type& val) {
+  std::map<int, const char*>::const_iterator it = _EdgeBroadcastMessagePriority_VALUES_TO_NAMES.find(val);
+  if (it != _EdgeBroadcastMessagePriority_VALUES_TO_NAMES.end()) {
+    out << it->second;
+  } else {
+    out << static_cast<int>(val);
+  }
+  return out;
+}
+
+std::string to_string(const EdgeBroadcastMessagePriority::type& val) {
+  std::map<int, const char*>::const_iterator it = _EdgeBroadcastMessagePriority_VALUES_TO_NAMES.find(val);
+  if (it != _EdgeBroadcastMessagePriority_VALUES_TO_NAMES.end()) {
+    return std::string(it->second);
+  } else {
+    return std::to_string(static_cast<int>(val));
+  }
+}
+
 
 EdgeDrBroadcastRequest::~EdgeDrBroadcastRequest() noexcept {
 }
@@ -24,6 +53,11 @@ void EdgeDrBroadcastRequest::__set_messageGuid(const std::string& val) {
 
 void EdgeDrBroadcastRequest::__set_payload(const std::string& val) {
   this->payload = val;
+}
+
+void EdgeDrBroadcastRequest::__set_priority(const EdgeBroadcastMessagePriority::type val) {
+  this->priority = val;
+__isset.priority = true;
 }
 std::ostream& operator<<(std::ostream& out, const EdgeDrBroadcastRequest& obj)
 {
@@ -71,6 +105,16 @@ uint32_t EdgeDrBroadcastRequest::read(::apache::thrift::protocol::TProtocol* ipr
           xfer += iprot->skip(ftype);
         }
         break;
+      case 3:
+        if (ftype == ::apache::thrift::protocol::T_I32) {
+          int32_t ecast0;
+          xfer += iprot->readI32(ecast0);
+          this->priority = (EdgeBroadcastMessagePriority::type)ecast0;
+          this->__isset.priority = true;
+        } else {
+          xfer += iprot->skip(ftype);
+        }
+        break;
       default:
         xfer += iprot->skip(ftype);
         break;
@@ -100,6 +144,11 @@ uint32_t EdgeDrBroadcastRequest::write(::apache::thrift::protocol::TProtocol* op
   xfer += oprot->writeBinary(this->payload);
   xfer += oprot->writeFieldEnd();
 
+  if (this->__isset.priority) {
+    xfer += oprot->writeFieldBegin("priority", ::apache::thrift::protocol::T_I32, 3);
+    xfer += oprot->writeI32((int32_t)this->priority);
+    xfer += oprot->writeFieldEnd();
+  }
   xfer += oprot->writeFieldStop();
   xfer += oprot->writeStructEnd();
   return xfer;
@@ -109,15 +158,21 @@ void swap(EdgeDrBroadcastRequest &a, EdgeDrBroadcastRequest &b) {
   using ::std::swap;
   swap(a.messageGuid, b.messageGuid);
   swap(a.payload, b.payload);
+  swap(a.priority, b.priority);
+  swap(a.__isset, b.__isset);
 }
 
-EdgeDrBroadcastRequest::EdgeDrBroadcastRequest(const EdgeDrBroadcastRequest& other0) {
-  messageGuid = other0.messageGuid;
-  payload = other0.payload;
-}
-EdgeDrBroadcastRequest& EdgeDrBroadcastRequest::operator=(const EdgeDrBroadcastRequest& other1) {
+EdgeDrBroadcastRequest::EdgeDrBroadcastRequest(const EdgeDrBroadcastRequest& other1) {
   messageGuid = other1.messageGuid;
   payload = other1.payload;
+  priority = other1.priority;
+  __isset = other1.__isset;
+}
+EdgeDrBroadcastRequest& EdgeDrBroadcastRequest::operator=(const EdgeDrBroadcastRequest& other2) {
+  messageGuid = other2.messageGuid;
+  payload = other2.payload;
+  priority = other2.priority;
+  __isset = other2.__isset;
   return *this;
 }
 void EdgeDrBroadcastRequest::printTo(std::ostream& out) const {
@@ -125,6 +180,7 @@ void EdgeDrBroadcastRequest::printTo(std::ostream& out) const {
   out << "EdgeDrBroadcastRequest(";
   out << "messageGuid=" << to_string(messageGuid);
   out << ", " << "payload=" << to_string(payload);
+  out << ", " << "priority="; (__isset.priority ? (out << to_string(priority)) : (out << "<null>"));
   out << ")";
 }
 

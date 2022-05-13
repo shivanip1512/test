@@ -21,30 +21,58 @@
 
 namespace Cti { namespace Messaging { namespace Serialization { namespace Thrift {
 
+struct EdgeBroadcastMessagePriority {
+  enum type {
+    IMMEDIATE = 0,
+    NON_REAL_TIME = 1
+  };
+};
+
+extern const std::map<int, const char*> _EdgeBroadcastMessagePriority_VALUES_TO_NAMES;
+
+std::ostream& operator<<(std::ostream& out, const EdgeBroadcastMessagePriority::type& val);
+
+std::string to_string(const EdgeBroadcastMessagePriority::type& val);
+
 class EdgeDrBroadcastRequest;
 
+typedef struct _EdgeDrBroadcastRequest__isset {
+  _EdgeDrBroadcastRequest__isset() : priority(true) {}
+  bool priority :1;
+} _EdgeDrBroadcastRequest__isset;
 
 class EdgeDrBroadcastRequest : public virtual ::apache::thrift::TBase {
  public:
 
   EdgeDrBroadcastRequest(const EdgeDrBroadcastRequest&);
   EdgeDrBroadcastRequest& operator=(const EdgeDrBroadcastRequest&);
-  EdgeDrBroadcastRequest() : messageGuid(), payload() {
+  EdgeDrBroadcastRequest() : messageGuid(), payload(), priority((EdgeBroadcastMessagePriority::type)1) {
+    priority = (EdgeBroadcastMessagePriority::type)1;
+
   }
 
   virtual ~EdgeDrBroadcastRequest() noexcept;
   std::string messageGuid;
   std::string payload;
+  EdgeBroadcastMessagePriority::type priority;
+
+  _EdgeDrBroadcastRequest__isset __isset;
 
   void __set_messageGuid(const std::string& val);
 
   void __set_payload(const std::string& val);
+
+  void __set_priority(const EdgeBroadcastMessagePriority::type val);
 
   bool operator == (const EdgeDrBroadcastRequest & rhs) const
   {
     if (!(messageGuid == rhs.messageGuid))
       return false;
     if (!(payload == rhs.payload))
+      return false;
+    if (__isset.priority != rhs.__isset.priority)
+      return false;
+    else if (__isset.priority && !(priority == rhs.priority))
       return false;
     return true;
   }

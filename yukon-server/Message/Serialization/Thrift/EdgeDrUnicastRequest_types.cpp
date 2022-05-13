@@ -29,6 +29,10 @@ void EdgeDrUnicastRequest::__set_paoIds(const std::vector<int32_t> & val) {
 void EdgeDrUnicastRequest::__set_payload(const std::string& val) {
   this->payload = val;
 }
+
+void EdgeDrUnicastRequest::__set_priority(const int8_t val) {
+  this->priority = val;
+}
 std::ostream& operator<<(std::ostream& out, const EdgeDrUnicastRequest& obj)
 {
   obj.printTo(out);
@@ -51,6 +55,7 @@ uint32_t EdgeDrUnicastRequest::read(::apache::thrift::protocol::TProtocol* iprot
   bool isset_messageGuid = false;
   bool isset_paoIds = false;
   bool isset_payload = false;
+  bool isset_priority = false;
 
   while (true)
   {
@@ -96,6 +101,14 @@ uint32_t EdgeDrUnicastRequest::read(::apache::thrift::protocol::TProtocol* iprot
           xfer += iprot->skip(ftype);
         }
         break;
+      case 4:
+        if (ftype == ::apache::thrift::protocol::T_BYTE) {
+          xfer += iprot->readByte(this->priority);
+          isset_priority = true;
+        } else {
+          xfer += iprot->skip(ftype);
+        }
+        break;
       default:
         xfer += iprot->skip(ftype);
         break;
@@ -110,6 +123,8 @@ uint32_t EdgeDrUnicastRequest::read(::apache::thrift::protocol::TProtocol* iprot
   if (!isset_paoIds)
     throw TProtocolException(TProtocolException::INVALID_DATA);
   if (!isset_payload)
+    throw TProtocolException(TProtocolException::INVALID_DATA);
+  if (!isset_priority)
     throw TProtocolException(TProtocolException::INVALID_DATA);
   return xfer;
 }
@@ -139,6 +154,10 @@ uint32_t EdgeDrUnicastRequest::write(::apache::thrift::protocol::TProtocol* opro
   xfer += oprot->writeBinary(this->payload);
   xfer += oprot->writeFieldEnd();
 
+  xfer += oprot->writeFieldBegin("priority", ::apache::thrift::protocol::T_BYTE, 4);
+  xfer += oprot->writeByte(this->priority);
+  xfer += oprot->writeFieldEnd();
+
   xfer += oprot->writeFieldStop();
   xfer += oprot->writeStructEnd();
   return xfer;
@@ -149,17 +168,20 @@ void swap(EdgeDrUnicastRequest &a, EdgeDrUnicastRequest &b) {
   swap(a.messageGuid, b.messageGuid);
   swap(a.paoIds, b.paoIds);
   swap(a.payload, b.payload);
+  swap(a.priority, b.priority);
 }
 
 EdgeDrUnicastRequest::EdgeDrUnicastRequest(const EdgeDrUnicastRequest& other6) {
   messageGuid = other6.messageGuid;
   paoIds = other6.paoIds;
   payload = other6.payload;
+  priority = other6.priority;
 }
 EdgeDrUnicastRequest& EdgeDrUnicastRequest::operator=(const EdgeDrUnicastRequest& other7) {
   messageGuid = other7.messageGuid;
   paoIds = other7.paoIds;
   payload = other7.payload;
+  priority = other7.priority;
   return *this;
 }
 void EdgeDrUnicastRequest::printTo(std::ostream& out) const {
@@ -168,6 +190,7 @@ void EdgeDrUnicastRequest::printTo(std::ostream& out) const {
   out << "messageGuid=" << to_string(messageGuid);
   out << ", " << "paoIds=" << to_string(paoIds);
   out << ", " << "payload=" << to_string(payload);
+  out << ", " << "priority=" << to_string(priority);
   out << ")";
 }
 

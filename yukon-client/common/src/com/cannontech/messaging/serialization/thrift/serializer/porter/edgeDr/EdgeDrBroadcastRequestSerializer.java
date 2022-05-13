@@ -14,6 +14,7 @@ public class EdgeDrBroadcastRequestSerializer extends SimpleThriftSerializer imp
         
         thriftMessage.setMessageGuid(request.getMessageGuid());
         thriftMessage.setPayload(request.getPayload());
+        thriftMessage.setPriority(request.getPriority().getThriftEquivalent());
         
         return serialize(thriftMessage);
     }

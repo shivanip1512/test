@@ -15,6 +15,7 @@ public class EdgeDrUnicastRequestSerializer extends SimpleThriftSerializer imple
         thriftMessage.setPaoIds(request.getPaoIds());
         thriftMessage.setMessageGuid(request.getMessageGuid());
         thriftMessage.setPayload(request.getPayload());
+        thriftMessage.setPriority(request.getPriority());
         
         return serialize(thriftMessage);
     }

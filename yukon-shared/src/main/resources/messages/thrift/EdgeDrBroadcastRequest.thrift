@@ -10,5 +10,5 @@ enum EdgeBroadcastMessagePriority {
 struct EdgeDrBroadcastRequest {
     1: required string messageGuid;
     2: required binary payload;
-    3: optional EdgeBroadcastMessagePriority = NON_REAL_TIME;
+    3: optional EdgeBroadcastMessagePriority priority = EdgeBroadcastMessagePriority.NON_REAL_TIME;
 }

@@ -29,19 +29,22 @@ class EdgeDrUnicastRequest : public virtual ::apache::thrift::TBase {
 
   EdgeDrUnicastRequest(const EdgeDrUnicastRequest&);
   EdgeDrUnicastRequest& operator=(const EdgeDrUnicastRequest&);
-  EdgeDrUnicastRequest() : messageGuid(), payload() {
+  EdgeDrUnicastRequest() : messageGuid(), payload(), priority(0) {
   }
 
   virtual ~EdgeDrUnicastRequest() noexcept;
   std::string messageGuid;
   std::vector<int32_t>  paoIds;
   std::string payload;
+  int8_t priority;
 
   void __set_messageGuid(const std::string& val);
 
   void __set_paoIds(const std::vector<int32_t> & val);
 
   void __set_payload(const std::string& val);
+
+  void __set_priority(const int8_t val);
 
   bool operator == (const EdgeDrUnicastRequest & rhs) const
   {
@@ -50,6 +53,8 @@ class EdgeDrUnicastRequest : public virtual ::apache::thrift::TBase {
     if (!(paoIds == rhs.paoIds))
       return false;
     if (!(payload == rhs.payload))
+      return false;
+    if (!(priority == rhs.priority))
       return false;
     return true;
   }
