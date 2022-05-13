@@ -463,7 +463,7 @@ public class MR_ServerImpl implements MR_Server {
     }
     
     @Override
-    public List<ErrorObject> initiateDemandReset(List<MeterID> meterIDs, String responseURL, String transactionID,
+    public List<ErrorObject> initiateDemandReset(List<MeterID> meterIDs, String responseURL, String transactionId,
             ExpirationTime expirationTime) throws MultispeakWebServiceException {
         init();
         MultispeakVendor vendor = multispeakFuncs.getMultispeakVendorFromHeader();
@@ -513,7 +513,7 @@ public class MR_ServerImpl implements MR_Server {
 
         MRServerDemandResetCallback callback = new MRServerDemandResetCallback(mspObjectDao, multispeakEventLogService,
                                                                                vendor, meterNumbersByPaoId,
-                                                                               actualResponseUrl, transactionID,
+                                                                               actualResponseUrl, transactionId,
                                                                                expirationTime);
 
         demandResetService.sendDemandResetAndVerify(validMeters, callback, UserUtils.getYukonUser());

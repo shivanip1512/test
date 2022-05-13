@@ -352,13 +352,13 @@ public class MRServiceEndPoint {
 
         ExpirationTime expirationTime = initiateDemandReset.getExpTime();
         String responseURL = initiateDemandReset.getResponseURL();
-        String transactionID = initiateDemandReset.getTransactionID();
+        String transactionId = initiateDemandReset.getTransactionID();
 
         ArrayOfMeterID1 ArrOfMeterIDs = initiateDemandReset.getMeterIDs();
         List<MeterID> meterIDs = null != ArrOfMeterIDs ? ArrOfMeterIDs.getMeterID() : null;
 
         List<ErrorObject> errorObjects = mr_server.initiateDemandReset(ListUtils.emptyIfNull(meterIDs), responseURL,
-                transactionID,
+                transactionId,
                 expirationTime);
         ArrayOfErrorObject arrayOfErrorObject = multispeakFuncs.toArrayOfErrorObject(errorObjects);
         response.setInitiateDemandResetResult(arrayOfErrorObject);
