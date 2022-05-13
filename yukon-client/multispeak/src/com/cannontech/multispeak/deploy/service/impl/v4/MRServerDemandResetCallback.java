@@ -42,8 +42,8 @@ import com.google.common.collect.Lists;
 
 public class MRServerDemandResetCallback implements DemandResetCallback {
     private final static Logger log = YukonLogManager.getLogger(MRServerDemandResetCallback.class);
-    private final ObjectFactory objectFactory = YukonSpringHook.getBean("objectFactory", ObjectFactory.class);
-    private final CBClient cbClient = YukonSpringHook.getBean("cbClient", CBClient.class);
+    private final ObjectFactory objectFactory = YukonSpringHook.getBean("objectFactory4", ObjectFactory.class);
+    private final CBClient cbClient = YukonSpringHook.getBean("cbClientV4", CBClient.class);
 
     private final MspObjectDao mspObjectDao;
 

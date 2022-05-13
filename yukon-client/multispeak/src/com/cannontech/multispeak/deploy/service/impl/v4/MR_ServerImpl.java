@@ -74,12 +74,12 @@ public class MR_ServerImpl implements MR_Server {
     @Autowired private MspValidationService mspValidationService;
     @Autowired private MultispeakMeterService multispeakMeterService;
     @Autowired private PaoDefinitionDao paoDefinitionDao;
-    @Autowired @Qualifier("mspMeterDaoV4") private MspMeterDao mspMeterDao;
-    private Map<String, FormattedBlockProcessingService<Block>> formattedBlockMap;
-    private BasicServerConnection porterConnection;
     @Autowired private PaoDao paoDao;
     @Autowired private MspObjectDao mspObjectDao;
     @Autowired private DemandResetService demandResetService;
+    @Autowired @Qualifier("mspMeterDaoV4") private MspMeterDao mspMeterDao;
+    private Map<String, FormattedBlockProcessingService<Block>> formattedBlockMap;
+    private BasicServerConnection porterConnection;
    
     private final Logger log = YukonLogManager.getLogger(MR_ServerImpl.class);
     private final static String[] methods = new String[] { "PingURL", 
@@ -444,6 +444,25 @@ public class MR_ServerImpl implements MR_Server {
     }
 
     @Override
+    public List<ErrorObject> serviceLocationChangedNotification(List<ServiceLocation> serviceLocations)
+            throws MultispeakWebServiceException {
+        init();
+        MultispeakVendor vendor = multispeakFuncs.getMultispeakVendorFromHeader();
+        multispeakEventLogService.methodInvoked("ServiceLocationChangedNotification", vendor.getCompanyName());
+        List<ErrorObject> errorObject = multispeakMeterService.serviceLocationChanged(vendor, serviceLocations);
+        return errorObject;
+    }
+    
+    @Override
+    public List<ErrorObject> meterAddNotification(List<MspMeter> addedMeters) throws MultispeakWebServiceException {
+        init();
+        MultispeakVendor vendor = multispeakFuncs.getMultispeakVendorFromHeader();
+        multispeakEventLogService.methodInvoked("MeterAddNotification", vendor.getCompanyName());
+        List<ErrorObject> errorObject = multispeakMeterService.meterAdd(vendor, addedMeters);
+        return errorObject;
+    }
+    
+    @Override
     public List<ErrorObject> initiateDemandReset(List<MeterID> meterIDs, String responseURL, String transactionID,
             ExpirationTime expirationTime) throws MultispeakWebServiceException {
         init();
@@ -492,31 +511,16 @@ public class MR_ServerImpl implements MR_Server {
                 invalidMeterNumbers.size(), unsupportedMeters.size(),
                 "InitiateConnectDisconnect", vendor.getCompanyName());
 
-        MRServerDemandResetCallback callback = new MRServerDemandResetCallback(mspObjectDao, multispeakEventLogService, vendor,
-                meterNumbersByPaoId,
-                actualResponseUrl, transactionID, expirationTime);
+        MRServerDemandResetCallback callback = new MRServerDemandResetCallback(mspObjectDao, multispeakEventLogService,
+                                                                               vendor, meterNumbersByPaoId,
+                                                                               actualResponseUrl, transactionID,
+                                                                               expirationTime);
 
         demandResetService.sendDemandResetAndVerify(validMeters, callback, UserUtils.getYukonUser());
         errors.addAll(callback.getErrors());
 
         return errors;
     }
-    public List<ErrorObject> serviceLocationChangedNotification(List<ServiceLocation> serviceLocations)
-            throws MultispeakWebServiceException {
-        init();
-        MultispeakVendor vendor = multispeakFuncs.getMultispeakVendorFromHeader();
-        multispeakEventLogService.methodInvoked("ServiceLocationChangedNotification", vendor.getCompanyName());
-        List<ErrorObject> errorObject = multispeakMeterService.serviceLocationChanged(vendor, serviceLocations);
-        return errorObject;
-    }
-    
-    @Override
-    public List<ErrorObject> meterAddNotification(List<MspMeter> addedMeters) throws MultispeakWebServiceException {
-        init();
-        MultispeakVendor vendor = multispeakFuncs.getMultispeakVendorFromHeader();
-        multispeakEventLogService.methodInvoked("MeterAddNotification", vendor.getCompanyName());
-        List<ErrorObject> errorObject = multispeakMeterService.meterAdd(vendor, addedMeters);
-        return errorObject;
-    }
+
 
 }
