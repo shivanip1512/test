@@ -1,5 +1,6 @@
 package com.cannontech.multispeak.client.v4;
 
+import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 
@@ -8,6 +9,7 @@ import javax.xml.soap.MimeHeaders;
 import javax.xml.soap.SOAPException;
 import javax.xml.soap.SOAPMessage;
 
+import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.logging.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -29,12 +31,20 @@ import com.cannontech.core.dao.NotFoundException;
 import com.cannontech.core.dynamic.PointValueHolder;
 import com.cannontech.core.service.PointFormattingService.Format;
 import com.cannontech.database.data.lite.LiteYukonUser;
+import com.cannontech.msp.beans.v4.ArrayOfElectricMeter;
 import com.cannontech.database.db.point.stategroup.Disconnect410State;
 import com.cannontech.database.db.point.stategroup.PointStateHelper;
 import com.cannontech.database.db.point.stategroup.RfnDisconnectStatusState;
 import com.cannontech.msp.beans.v4.ArrayOfErrorObject;
+import com.cannontech.msp.beans.v4.ArrayOfGasMeter;
+import com.cannontech.msp.beans.v4.ArrayOfWaterMeter;
 import com.cannontech.msp.beans.v4.ErrorObject;
+import com.cannontech.msp.beans.v4.Meters;
+import com.cannontech.msp.beans.v4.MspMeter;
 import com.cannontech.msp.beans.v4.ObjectFactory;
+import com.cannontech.msp.beans.v4.ElectricMeter;
+import com.cannontech.msp.beans.v4.WaterMeter;
+import com.cannontech.msp.beans.v4.GasMeter;
 import com.cannontech.msp.beans.v4.RCDState;
 import com.cannontech.multispeak.client.MessageContextHolder;
 import com.cannontech.multispeak.client.MultiSpeakVersion;
@@ -262,6 +272,30 @@ public class MultispeakFuncs extends MultispeakFuncsBase {
         return arrayOfErrorObject;
     }
 
+    public List<MspMeter> getMspMeters(Meters meters) {
+        List<MspMeter> mspMeters = new ArrayList<>();
+
+        ArrayOfElectricMeter ArrOfElectricMeters = meters.getElectricMeters();
+        List<ElectricMeter> electricMeters = (null != ArrOfElectricMeters) ? ArrOfElectricMeters.getElectricMeter() : null;
+        if (CollectionUtils.isNotEmpty(electricMeters)) {
+            mspMeters.addAll(electricMeters);
+        }
+
+        ArrayOfWaterMeter ArrOfWaterMeters = meters.getWaterMeters();
+        List<WaterMeter> waterMeters = (null != ArrOfWaterMeters) ? ArrOfWaterMeters.getWaterMeter() : null;
+        if (CollectionUtils.isNotEmpty(waterMeters)) {
+            mspMeters.addAll(waterMeters);
+        }
+
+        ArrayOfGasMeter ArrOfGasMeters = meters.getGasMeters();
+        List<GasMeter> gasMeters = null != ArrOfGasMeters ? ArrOfGasMeters.getGasMeter() : null;
+        if (CollectionUtils.isNotEmpty(gasMeters)) {
+            mspMeters.addAll(gasMeters);
+        }
+
+        return mspMeters;
+    }
+    
     /**
      * Translates the rawState into a loadActionCode based on the type of meter
      * and expected state group for that type. Returns loadActionCode.Unknown

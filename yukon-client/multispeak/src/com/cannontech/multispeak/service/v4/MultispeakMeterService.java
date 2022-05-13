@@ -6,6 +6,7 @@ import com.cannontech.amr.meter.model.YukonMeter;
 import com.cannontech.msp.beans.v4.ErrorObject;
 import com.cannontech.msp.beans.v4.MeterID;
 import com.cannontech.msp.beans.v4.MeterReading;
+import com.cannontech.msp.beans.v4.ServiceLocation;
 import com.cannontech.msp.beans.v4.RCDState;
 import com.cannontech.multispeak.client.MultispeakVendor;
 import com.cannontech.multispeak.exceptions.MultispeakWebServiceException;
@@ -29,6 +30,11 @@ public interface MultispeakMeterService {
      * Remove MeterNos from SystemGroupEnum.USAGEMONITORING Device Group.
      */
     public List<ErrorObject> cancelUsageMonitoring(MultispeakVendor mspVendor, List<MeterID> meterIDs);
+
+    /**
+     * Updates the "meter" object, based on the PaoName Alias lookup value. 
+     */
+    public List<ErrorObject> serviceLocationChanged(MultispeakVendor vendor, List<ServiceLocation> serviceLocations);
 
     /**
      * Returns the CDMeterState (or connected status) for meter
