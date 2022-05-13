@@ -172,7 +172,7 @@ public final class MspMeterDaoImpl extends MspMeterDaoBase {
 
     @Override
     public MspReturnList getAllCDDevices(String lastReceived, int maxRecords) {
-        // TODO Auto-generated method stub
+        // This method should not be called for v3, only v5 implementation.
         return null;
     }
 }
