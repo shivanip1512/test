@@ -1401,11 +1401,7 @@ public class MultispeakMeterServiceImpl extends MultispeakMeterServiceBase imple
                         YukonMeter yukonMeter = meterDao.getForId(pao.getPaoId());
                         if (meters.contains(yukonMeter)) {
                             meters.remove(yukonMeter);
-                            OutageEventType outageEventType = getForStatusCode(DeviceError.SUCCESS.getCode()); // assume if we got
-                                                                                                               // one value, then
-                                                                                                               // the meter must
-                                                                                                               // be talking
-                                                                                                               // successfully
+                            OutageEventType outageEventType = getForStatusCode(DeviceError.SUCCESS.getCode()); // assume if we got one value, then the meter must be talking successfully
                             OutageDetectionEvent outageDetectionEvent = buildOutageDetectionEvent(yukonMeter, outageEventType,
                                     value.getPointDataTimeStamp(), "");
                             sendODEventNotification(yukonMeter, mspVendor, transactionId, responseUrl, outageDetectionEvent);
@@ -1421,10 +1417,7 @@ public class MultispeakMeterServiceImpl extends MultispeakMeterServiceBase imple
                     if (meters.contains(yukonMeter)) {
                         meters.remove(yukonMeter);
                         Date now = new Date(); // may need to get this from the callback, but for now "now" will do.
-                        OutageEventType outageEventType = getForStatusCode(DeviceError.TIMEOUT.getCode()); // unknown status if we
-                                                                                                           // didn't hit
-                                                                                                           // receivedValue at
-                                                                                                           // least once
+                        OutageEventType outageEventType = getForStatusCode(DeviceError.TIMEOUT.getCode()); // unknown status if we didn't hit receivedValue at least once
                         OutageDetectionEvent outageDetectionEvent = buildOutageDetectionEvent(yukonMeter, outageEventType, now,
                                 "");
                         sendODEventNotification(yukonMeter, mspVendor, transactionId, responseUrl, outageDetectionEvent);
@@ -1449,10 +1442,8 @@ public class MultispeakMeterServiceImpl extends MultispeakMeterServiceBase imple
                 @Override
                 public void receivedException(SpecificDeviceErrorDescription error) {
                     log.warn("deviceAttributeReadCallback.receivedException in odEvent callback: " + error);
-                    // TODO there is still a potential bug here, because meters is left populated with the pao, even though an
-                    // exception
-                    // has occurred. This means we can still get receivedLastValue and process it as a "success" instead of
-                    // "unknown" or failure.
+                    // TODO there is still a potential bug here, because meters is left populated with the pao, even though an exception
+                    //   has occurred. This means we can still get receivedLastValue and process it as a "success" instead of "unknown" or failure.
                 }
 
             };
