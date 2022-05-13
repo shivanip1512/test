@@ -60,6 +60,14 @@ public interface MspObjectDao {
     public List<String> getMethods(MultispeakVendor mspVendor, String service, String endpointUrl)
             throws MultispeakWebServiceClientException;
     
+    /**
+     * Returns a list of SubstationNames for the vendor.
+     * If the interface/method is not supported by mspVendor, or if no object is found,
+     * an empty String List object is returned.
+     * @param mspVendor
+     * @return
+     */
+    public List<String> getMspSubstationName(MultispeakVendor mspVendor);
     
     /**
      * Creates a new (MSP) ErrorObject

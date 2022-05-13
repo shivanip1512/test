@@ -172,4 +172,36 @@ public interface MR_Server {
      * @throws MultispeakWebServiceException the multispeak web service exception
      */
     public List<ErrorObject> establishMeterGroup(MeterGroup meterGroup) throws MultispeakWebServiceException;
+
+    /**
+     * insert Meters In Meter Group.
+     * 
+     * @param meterID      the meter ids
+     * @param meterGroupId the meter group id
+     * @return the error object[]
+     * @throws MultispeakWebServiceException the multispeak web service
+     *                                       exception
+     */
+    public List<ErrorObject> insertMeterInMeterGroup(List<MeterID> meterIds,
+            String meterGroupId) throws MultispeakWebServiceException;
+
+    /**
+     * delete Meter Group.
+     * 
+     * @param meterGroupID the meter group id
+     * @return the error object
+     * @throws MultispeakWebServiceException the multispeak web service exception
+     */
+    public ErrorObject deleteMeterGroup(String meterGroupId) throws MultispeakWebServiceException;
+
+    /**
+     * remove Meters From Meter Group.
+     * 
+     * @param meterNumbers the meter numbers
+     * @param meterGroupID the meter group id
+     * @return the error object[]
+     * @throws MultispeakWebServiceException the multispeak web service exception
+     */
+    public List<ErrorObject> removeMetersFromMeterGroup(List<MeterID> meterIds, String meterGroupId)
+            throws MultispeakWebServiceException;
 }

@@ -34,4 +34,15 @@ public interface MultispeakMeterService {
      * Adds meters to a group. If the group doesn't exist, a new group will be created
      */
     public List<ErrorObject> addMetersToGroup(MeterGroup meterGroup, String mspMethod, MultispeakVendor mspVendor);
+
+    /**
+     * Removed meters from groupName and deletes groupName from the system.
+     */
+    public ErrorObject deleteGroup(String groupName, MultispeakVendor mspVendor);
+
+    /**
+     * Removes meterIDs from groupName.
+     */
+    public List<ErrorObject> removeMetersFromGroup(String groupName, List<MeterID> meterIds,
+            MultispeakVendor mspVendor);
 }

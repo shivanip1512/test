@@ -6,6 +6,8 @@ import org.springframework.oxm.XmlMappingException;
 import org.springframework.ws.WebServiceException;
 import org.springframework.ws.client.core.WebServiceTemplate;
 
+import com.cannontech.msp.beans.v4.GetDomainMembers;
+import com.cannontech.msp.beans.v4.GetDomainMembersResponse;
 import com.cannontech.msp.beans.v4.GetMethods;
 import com.cannontech.msp.beans.v4.GetMethodsResponse;
 import com.cannontech.msp.beans.v4.PingURL;
@@ -53,6 +55,20 @@ public class CBClient implements ICBClient {
         try {
             multispeakFuncs.setMsgSender(webServiceTemplate, mspVendor);
             return (GetMethodsResponse) webServiceTemplate.marshalSendAndReceive(uri, getMethods,
+                    customWebServiceMsgCallback.addRequestHeader(mspVendor, MultispeakDefines.CB_Server_STR));
+        } catch (WebServiceException | XmlMappingException e) {
+            throw new MultispeakWebServiceClientException(e.getMessage());
+        }
+
+    }
+
+    @Override
+    public GetDomainMembersResponse getDomainMembers(MultispeakVendor mspVendor, String uri, GetDomainMembers getDomainMembers)
+            throws MultispeakWebServiceClientException {
+        try {
+            multispeakFuncs.setMsgSender(webServiceTemplate, mspVendor);
+
+            return (GetDomainMembersResponse) webServiceTemplate.marshalSendAndReceive(uri, getDomainMembers,
                     customWebServiceMsgCallback.addRequestHeader(mspVendor, MultispeakDefines.CB_Server_STR));
         } catch (WebServiceException | XmlMappingException e) {
             throw new MultispeakWebServiceClientException(e.getMessage());

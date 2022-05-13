@@ -20,6 +20,8 @@ import com.cannontech.msp.beans.v4.ArrayOfString;
 import com.cannontech.msp.beans.v4.ArrayOfString18;
 import com.cannontech.msp.beans.v4.CancelUsageMonitoring;
 import com.cannontech.msp.beans.v4.CancelUsageMonitoringResponse;
+import com.cannontech.msp.beans.v4.DeleteMeterGroup;
+import com.cannontech.msp.beans.v4.DeleteMeterGroupResponse;
 import com.cannontech.msp.beans.v4.ErrorObject;
 import com.cannontech.msp.beans.v4.EstablishMeterGroup;
 import com.cannontech.msp.beans.v4.EstablishMeterGroupResponse;
@@ -48,6 +50,8 @@ import com.cannontech.msp.beans.v4.GetSupportedFieldNames;
 import com.cannontech.msp.beans.v4.GetSupportedFieldNamesResponse;
 import com.cannontech.msp.beans.v4.InitiateUsageMonitoring;
 import com.cannontech.msp.beans.v4.InitiateUsageMonitoringResponse;
+import com.cannontech.msp.beans.v4.InsertMeterInMeterGroup;
+import com.cannontech.msp.beans.v4.InsertMeterInMeterGroupResponse;
 import com.cannontech.msp.beans.v4.IsAMRMeter;
 import com.cannontech.msp.beans.v4.IsAMRMeterResponse;
 import com.cannontech.msp.beans.v4.MeterGroup;
@@ -57,6 +61,8 @@ import com.cannontech.msp.beans.v4.Meters;
 import com.cannontech.msp.beans.v4.ObjectFactory;
 import com.cannontech.msp.beans.v4.PingURL;
 import com.cannontech.msp.beans.v4.PingURLResponse;
+import com.cannontech.msp.beans.v4.RemoveMetersFromMeterGroup;
+import com.cannontech.msp.beans.v4.RemoveMetersFromMeterGroupResponse;
 import com.cannontech.multispeak.client.MultispeakDefines;
 import com.cannontech.multispeak.client.v4.MultispeakFuncs;
 import com.cannontech.multispeak.exceptions.MultispeakWebServiceException;
@@ -348,6 +354,58 @@ public class MRServiceEndPoint {
         ArrayOfErrorObject arrayOfErrorObject = objectFactory.createArrayOfErrorObject();
         arrayOfErrorObject.getErrorObject().addAll(errorObjects);
         response.setEstablishMeterGroupResult(arrayOfErrorObject);
+        return response;
+    }
+
+    @PayloadRoot(localPart = "InsertMeterInMeterGroup", namespace = MultispeakDefines.NAMESPACE_v4)
+    public @ResponsePayload InsertMeterInMeterGroupResponse insertMeterInMeterGroup(
+            @RequestPayload InsertMeterInMeterGroup insertMeterInMeterGroup) throws MultispeakWebServiceException {
+
+        InsertMeterInMeterGroupResponse insertMeterInMeterGroupResponse = objectFactory
+                .createInsertMeterInMeterGroupResponse();
+        ArrayOfMeterID1 arrayOfMeterId1 = (null != insertMeterInMeterGroup.getMeterIDs()) ? insertMeterInMeterGroup
+                .getMeterIDs() : null;
+
+        if (arrayOfMeterId1 != null) {
+            List<MeterID> meterIds = arrayOfMeterId1.getMeterID();
+            String meterGroupId = insertMeterInMeterGroup.getMeterGroupID();
+            List<ErrorObject> errorObjects = mr_server.insertMeterInMeterGroup(meterIds, meterGroupId);
+            ArrayOfErrorObject arrayOfErrorObject = objectFactory.createArrayOfErrorObject();
+            arrayOfErrorObject.getErrorObject().addAll(errorObjects);
+            insertMeterInMeterGroupResponse.setInsertMeterInMeterGroupResult(arrayOfErrorObject);
+        }
+        return insertMeterInMeterGroupResponse;
+    }
+
+    @PayloadRoot(localPart = "DeleteMeterGroup", namespace = MultispeakDefines.NAMESPACE_v4)
+    public @ResponsePayload DeleteMeterGroupResponse deleteMeterGroup(@RequestPayload DeleteMeterGroup deleteMeterGroup)
+            throws MultispeakWebServiceException {
+        DeleteMeterGroupResponse response = objectFactory.createDeleteMeterGroupResponse();
+
+        String meterGroupIds = deleteMeterGroup.getMeterGroupID();
+        ErrorObject errorObject = mr_server.deleteMeterGroup(meterGroupIds);
+        ArrayOfErrorObject createArrayOfErrorObject = objectFactory.createArrayOfErrorObject();
+        if (errorObject != null) {
+            createArrayOfErrorObject.getErrorObject().add(errorObject);
+        }
+        response.setDeleteMeterGroupResult(createArrayOfErrorObject);
+        return response;
+    }
+
+    @PayloadRoot(localPart = "RemoveMetersFromMeterGroup", namespace = MultispeakDefines.NAMESPACE_v4)
+    public @ResponsePayload RemoveMetersFromMeterGroupResponse removeMetersFromMeterGroup(
+            @RequestPayload RemoveMetersFromMeterGroup removeMetersFromMeterGroup) throws MultispeakWebServiceException {
+        RemoveMetersFromMeterGroupResponse response = objectFactory.createRemoveMetersFromMeterGroupResponse();
+
+        String meterGroupIds = removeMetersFromMeterGroup.getMeterGroupID();
+        ArrayOfMeterID1 arrayOfMeterId1 = (null != removeMetersFromMeterGroup.getMeterIDs()) ? removeMetersFromMeterGroup
+                .getMeterIDs() : null;
+        if (arrayOfMeterId1 != null) {
+            List<ErrorObject> errorObjects = mr_server.removeMetersFromMeterGroup(arrayOfMeterId1.getMeterID(), meterGroupIds);
+            ArrayOfErrorObject arrayOfErrorObject = objectFactory.createArrayOfErrorObject();
+            arrayOfErrorObject.getErrorObject().addAll(errorObjects);
+            response.setRemoveMetersFromMeterGroupResult(arrayOfErrorObject);
+        }
         return response;
     }
 }
