@@ -530,7 +530,7 @@ public class MR_ServerImpl implements MR_Server {
     }
     
     @Override
-    public List<ErrorObject> initiateDemandReset(List<MeterID> meterIDs, String responseURL, String transactionId,
+    public List<ErrorObject> initiateDemandReset(List<MeterID> meterIds, String responseURL, String transactionId,
             ExpirationTime expirationTime) throws MultispeakWebServiceException {
         init();
         MultispeakVendor vendor = multispeakFuncs.getMultispeakVendorFromHeader();
@@ -548,7 +548,7 @@ public class MR_ServerImpl implements MR_Server {
             hasFatalErrors = true;
         }
 
-        Set<String> meterNumbers = meterIDs.stream().map(meterID -> meterID.getMeterNo()).collect(Collectors.toSet());
+        Set<String> meterNumbers = meterIds.stream().map(meterID -> meterID.getMeterNo()).collect(Collectors.toSet());
         Map<String, PaoIdentifier> paoIdsByMeterNumber = paoDao.findPaoIdentifiersByMeterNumber(meterNumbers);
         Map<PaoIdentifier, String> meterNumbersByPaoId = HashBiMap.create(paoIdsByMeterNumber).inverse();
         Set<String> invalidMeterNumbers = Sets.difference(meterNumbers, paoIdsByMeterNumber.keySet());
@@ -573,7 +573,7 @@ public class MR_ServerImpl implements MR_Server {
             return errors;
         }
 
-        log.info("Received " + meterIDs.size() + " Meter(s) for Demand Reset from " + vendor.getCompanyName());
+        log.info("Received " + meterIds.size() + " Meter(s) for Demand Reset from " + vendor.getCompanyName());
         multispeakEventLogService.initiateDemandResetRequest(meterNumbers.size(), meterNumbersByPaoId.size(),
                 invalidMeterNumbers.size(), unsupportedMeters.size(),
                 "InitiateConnectDisconnect", vendor.getCompanyName());

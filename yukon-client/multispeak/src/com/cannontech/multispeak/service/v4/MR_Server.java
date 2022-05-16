@@ -177,7 +177,7 @@ public interface MR_Server {
      * @return the error object[]
      * @throws MultispeakWebServiceException the multispeak web service exception
      */
-    List<ErrorObject> initiateDemandReset(List<MeterID> meterIDs, String responseURL, String transactionId,
+    List<ErrorObject> initiateDemandReset(List<MeterID> meterIds, String responseURL, String transactionId,
             ExpirationTime expirationTime) throws MultispeakWebServiceException;
 
     /**

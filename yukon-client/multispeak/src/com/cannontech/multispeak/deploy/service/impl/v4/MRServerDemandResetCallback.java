@@ -93,8 +93,15 @@ public class MRServerDemandResetCallback implements DemandResetCallback {
         PaoIdentifier paoIdentifier = device.getPaoIdentifier();
         String meterNumber = meterNumbersByPaoId.get(paoIdentifier);
         MeterEvent meterEvent = objectFactory.createMeterEvent();
-        // check with rahul for literals (water literal for domain)
-        meterEvent.setDomain(EndDeviceEventDomain.ELECTRICT_METER.code);
+        
+        //TODO check on EndDeviceEventDomain values standardisation
+        if (paoIdentifier.getPaoType().isGasMeter()) {
+            meterEvent.setDomain(EndDeviceEventDomain.GAS_METER.code);
+        } else if (paoIdentifier.getPaoType().isWaterMeter()) {
+            meterEvent.setDomain(EndDeviceEventDomain.WATER_METER.code);
+        } else {
+            meterEvent.setDomain(EndDeviceEventDomain.ELECTRICT_METER.code);
+        }
         meterEvent.setDomainPart(EndDeviceEventDomainPart.DEMAND.code);
         meterEvent.setType(EndDeviceEventType.COMMAND.code);
         meterEvent.setIndex(EndDeviceEventIndex.RESET.code);
@@ -104,9 +111,9 @@ public class MRServerDemandResetCallback implements DemandResetCallback {
 
         EventInstance eventInstance = objectFactory.createEventInstance();
 
-        MeterID meterID = new MeterID();
-        meterID.setMeterNo(meterNumber);
-        eventInstance.setMeterID(meterID);
+        MeterID meterId = new MeterID();
+        meterId.setMeterNo(meterNumber);
+        eventInstance.setMeterID(meterId);
         eventInstance.setMeterEvent(meterEvent);
         listEventInstance.add(eventInstance);
 

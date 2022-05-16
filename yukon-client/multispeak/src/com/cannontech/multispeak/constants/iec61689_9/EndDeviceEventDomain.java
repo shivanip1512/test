@@ -16,6 +16,7 @@ public enum EndDeviceEventDomain {
     SECURITY("7"),
     TRANSFORMER("8"),
     TURBINE("9"),
+    WATER_METER("24")
     ;
 
     public final String code;
