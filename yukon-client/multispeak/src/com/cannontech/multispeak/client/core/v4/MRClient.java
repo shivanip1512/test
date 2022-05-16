@@ -16,6 +16,8 @@ import com.cannontech.msp.beans.v4.GetReadingsByDate;
 import com.cannontech.msp.beans.v4.GetReadingsByDateResponse;
 import com.cannontech.msp.beans.v4.InsertMeterInMeterGroup;
 import com.cannontech.msp.beans.v4.InsertMeterInMeterGroupResponse;
+import com.cannontech.msp.beans.v4.MeterRemoveNotification;
+import com.cannontech.msp.beans.v4.MeterRemoveNotificationResponse;
 import com.cannontech.msp.beans.v4.PingURL;
 import com.cannontech.msp.beans.v4.PingURLResponse;
 import com.cannontech.msp.beans.v4.RemoveMetersFromMeterGroup;
@@ -80,6 +82,18 @@ public class MRClient implements IMRClient {
     }
 
     @Override
+    public MeterRemoveNotificationResponse meterRemoveNotification(MultispeakVendor mspVendor, String uri,
+            MeterRemoveNotification meterRemoveNotification) throws MultispeakWebServiceClientException {
+        try {
+            multispeakFuncs.setMsgSender(webServiceTemplate, mspVendor);
+
+            return (MeterRemoveNotificationResponse) webServiceTemplate.marshalSendAndReceive(uri,
+                meterRemoveNotification, customWebServiceMsgCallback.addRequestHeader(mspVendor, MultispeakDefines.MR_Server_STR));
+        } catch (WebServiceException | XmlMappingException ex) {
+            throw new MultispeakWebServiceClientException(ex.getMessage());
+        }
+    }
+
     public EstablishMeterGroupResponse establishMeterGroup(MultispeakVendor mspVendor, String uri,
             EstablishMeterGroup establishMeterGroup) throws MultispeakWebServiceClientException {
         try {

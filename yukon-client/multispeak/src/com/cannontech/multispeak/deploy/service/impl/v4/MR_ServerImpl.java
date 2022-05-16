@@ -93,11 +93,12 @@ public class MR_ServerImpl implements MR_Server {
                                                            "GetLatestReadingByMeterIDAndFieldName",
                                                            "ServiceLocationChangedNotification",
                                                            "MeterAddNotification",
+                                                           "MeterRemoveNotification",
                                                            "EstablishMeterGroup",
                                                            "InsertMeterInMeterGroup",
                                                            "DeleteMeterGroup",
                                                            "RemoveMetersFromMeterGroup"
-    };
+                                                           };
 
     private void init() throws MultispeakWebServiceException {
         multispeakFuncs.init();
@@ -513,6 +514,15 @@ public class MR_ServerImpl implements MR_Server {
         MultispeakVendor vendor = multispeakFuncs.getMultispeakVendorFromHeader();
         multispeakEventLogService.methodInvoked("MeterAddNotification", vendor.getCompanyName());
         List<ErrorObject> errorObject = multispeakMeterService.meterAdd(vendor, addedMeters);
+        return errorObject;
+    }
+
+    @Override
+    public List<ErrorObject> meterRemoveNotification(List<MspMeter> removedMeters) throws MultispeakWebServiceException {
+        init();
+        MultispeakVendor vendor = multispeakFuncs.getMultispeakVendorFromHeader();
+        multispeakEventLogService.methodInvoked("MeterRemoveNotification", vendor.getCompanyName());
+        List<ErrorObject> errorObject = multispeakMeterService.meterRemove(vendor, removedMeters);
         return errorObject;
     }
 }
