@@ -542,7 +542,7 @@ public class MR_ServerImpl implements MR_Server {
         String actualResponseUrl = multispeakFuncs.getResponseUrl(vendor, responseURL, MultispeakDefines.CB_Server_STR);
 
         // Do a basic URL check. This only validates that it's not empty.
-        ErrorObject errorObject = mspValidationService.validateResponseURL(actualResponseUrl, "Meter", "InitiateDemandReset");
+        ErrorObject errorObject = mspValidationService.validateResponseURL(actualResponseUrl, "ResponseURL", "InitiateDemandReset");
         if (errorObject != null) {
             errors.add(errorObject);
             hasFatalErrors = true;
@@ -554,7 +554,7 @@ public class MR_ServerImpl implements MR_Server {
         Set<String> invalidMeterNumbers = Sets.difference(meterNumbers, paoIdsByMeterNumber.keySet());
 
         for (String invalidMeterNumber : invalidMeterNumbers) {
-            errors.add(mspObjectDao.getNotFoundErrorObject(invalidMeterNumber, "MeterID", "Meter",
+            errors.add(mspObjectDao.getNotFoundErrorObject(invalidMeterNumber, "MeterID", "MeterNumber",
                                                            "InitiateDemandReset", vendor.getCompanyName()));
         }
 
