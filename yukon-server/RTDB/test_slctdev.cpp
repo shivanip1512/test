@@ -485,7 +485,7 @@ BOOST_AUTO_TEST_CASE(test_DeviceFactory)
         { "meter disconnect program",       "null pointer {0158EE7B-419F-EC43-9382-3496ED9E5F67}" },
         { "meter disconnect group",         "null pointer {0158EE7B-419F-EC43-9382-3496ED9E5F67}" },
         { "crly-856",                       "class Cti::Devices::RfCellularRelayDevice" },
-        { "rfn-530s4x-der",                 "class Cti::Devices::Rfn530S4X_Der" },
+        { "rfn-530s4x-der",                 "class Cti::Devices::Rfn530s4xDerDevice" },
     };
 
     std::vector<DeviceTypeRow> rowVec;

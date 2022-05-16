@@ -6,7 +6,7 @@
 
 namespace Cti::Devices {
 
-YukonError_t Rfn530S4X_Der::executeGetStatus(CtiRequestMsg* pReq, CtiCommandParser& parse, ReturnMsgList& returnMsgs, RequestMsgList& requestMsgs, RfnIndividualCommandList& rfnRequests)
+YukonError_t Rfn530s4xDerDevice::executeGetStatus(CtiRequestMsg* pReq, CtiCommandParser& parse, ReturnMsgList& returnMsgs, RequestMsgList& requestMsgs, RfnIndividualCommandList& rfnRequests)
 {
     return ClientErrors::NoMethod;
 }

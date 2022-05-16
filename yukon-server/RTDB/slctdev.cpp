@@ -288,7 +288,7 @@ const DeviceLookup deviceFactory {
     //  RF Cellular IPLink Relays
     { TYPE_CRLY856,      MakeDeviceFunc(makeDevice<RfCellularRelayDevice>) },
     //  SETO Device
-    { TYPE_RFN530S4X_DER,   MakeDeviceFunc(makeDevice<Rfn530S4X_Der>) },
+    { TYPE_RFN530S4X_DER,   MakeDeviceFunc(makeDevice<Rfn530s4xDerDevice>) },
     //  Electronic meters
     { TYPE_FULCRUM,      MakeDeviceFunc(makeDevice<CtiDeviceFulcrum>) },
     { TYPE_QUANTUM,      MakeDeviceFunc(makeDevice<CtiDeviceQuantum>) },
