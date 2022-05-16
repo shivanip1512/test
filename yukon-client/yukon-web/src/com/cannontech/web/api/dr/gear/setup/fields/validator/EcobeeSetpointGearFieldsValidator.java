@@ -4,13 +4,13 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.validation.Errors;
 
 import com.cannontech.common.dr.gear.setup.fields.EcobeeSetpointGearFields;
+import com.cannontech.common.validator.YukonApiValidationUtils;
 import com.cannontech.database.db.device.lm.GearControlMethod;
-import com.cannontech.web.api.dr.setup.LMValidatorHelper;
 
 public class EcobeeSetpointGearFieldsValidator extends ProgramGearFieldsValidator<EcobeeSetpointGearFields> {
 
-    @Autowired private LMValidatorHelper lmValidatorHelper;
-    @Autowired private GearValidatorHelper gearValidatorHelper;
+    @Autowired private GearApiValidatorHelper gearApiValidatorHelper;
+    @Autowired private static YukonApiValidationUtils yukonApiValidationUtils;
     
     public EcobeeSetpointGearFieldsValidator() {
         super(EcobeeSetpointGearFields.class);
@@ -28,18 +28,18 @@ public class EcobeeSetpointGearFieldsValidator extends ProgramGearFieldsValidato
     @Override
     protected void doValidation(EcobeeSetpointGearFields ecobeeSetpointGear, Errors errors) {
         //Check Mandatory
-        lmValidatorHelper.checkIfFieldRequired("mandatory", errors, ecobeeSetpointGear.getMandatory(), "Mandatory");
+        yukonApiValidationUtils.checkIfFieldRequired("mandatory", errors, ecobeeSetpointGear.getMandatory(), "Mandatory");
         
         //Check Setpoint
-        gearValidatorHelper.checkSetpointOffset(ecobeeSetpointGear.getSetpointOffset(), errors);
+        gearApiValidatorHelper.checkSetpointOffset(ecobeeSetpointGear.getSetpointOffset(), errors);
         
         // Check for How to Stop Control
-        gearValidatorHelper.checkHowToStopControl(ecobeeSetpointGear.getHowToStopControl(), getControlMethod(), errors);
+        gearApiValidatorHelper.checkHowToStopControl(ecobeeSetpointGear.getHowToStopControl(), getControlMethod(), errors);
 
         // Check for Group Capacity Reduction
-        gearValidatorHelper.checkGroupCapacityReduction(ecobeeSetpointGear.getCapacityReduction(), errors);
+        gearApiValidatorHelper.checkGroupCapacityReduction(ecobeeSetpointGear.getCapacityReduction(), errors);
 
         // Check for When To Change
-        gearValidatorHelper.checkWhenToChange(ecobeeSetpointGear.getWhenToChangeFields(), errors);
+        gearApiValidatorHelper.checkWhenToChange(ecobeeSetpointGear.getWhenToChangeFields(), errors);
     }
 }

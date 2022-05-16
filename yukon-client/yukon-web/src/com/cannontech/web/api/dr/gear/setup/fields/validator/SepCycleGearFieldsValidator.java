@@ -4,13 +4,13 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.validation.Errors;
 
 import com.cannontech.common.dr.gear.setup.fields.SepCycleGearFields;
+import com.cannontech.common.validator.YukonApiValidationUtils;
 import com.cannontech.database.db.device.lm.GearControlMethod;
-import com.cannontech.web.api.dr.setup.LMValidatorHelper;
 
 public class SepCycleGearFieldsValidator extends ProgramGearFieldsValidator<SepCycleGearFields> {
 
-    @Autowired private LMValidatorHelper lmValidatorHelper;
-    @Autowired private GearValidatorHelper gearValidatorHelper;
+    @Autowired private GearApiValidatorHelper gearApiValidatorHelper;
+    @Autowired private static YukonApiValidationUtils yukonApiValidationUtils;
 
     public SepCycleGearFieldsValidator() {
         super(SepCycleGearFields.class);
@@ -28,30 +28,30 @@ public class SepCycleGearFieldsValidator extends ProgramGearFieldsValidator<SepC
     @Override
     protected void doValidation(SepCycleGearFields sepCycleGearFieldsCycleGear, Errors errors) {
         // Check Ramp In
-        gearValidatorHelper.checkRampIn(sepCycleGearFieldsCycleGear.getRampIn(), errors);
+        gearApiValidatorHelper.checkRampIn(sepCycleGearFieldsCycleGear.getRampIn(), errors);
 
         // Check Ramp Out
-        gearValidatorHelper.checkRampOut(sepCycleGearFieldsCycleGear.getRampOut(), errors);
+        gearApiValidatorHelper.checkRampOut(sepCycleGearFieldsCycleGear.getRampOut(), errors);
 
         // Check TrueCycle or adaptive algorithm
-        lmValidatorHelper.checkIfFieldRequired("trueCycle", errors, sepCycleGearFieldsCycleGear.getTrueCycle(),
+        yukonApiValidationUtils.checkIfFieldRequired("trueCycle", errors, sepCycleGearFieldsCycleGear.getTrueCycle(),
             "True Cycle or Adaptive Algorithm");
 
         // Check Control Percent
-        gearValidatorHelper.checkControlPercent(sepCycleGearFieldsCycleGear.getControlPercent(), errors);
+        gearApiValidatorHelper.checkControlPercent(sepCycleGearFieldsCycleGear.getControlPercent(), errors);
 
         // Check Criticality
-        gearValidatorHelper.checkCriticality(sepCycleGearFieldsCycleGear.getCriticality(), errors);
+        gearApiValidatorHelper.checkCriticality(sepCycleGearFieldsCycleGear.getCriticality(), errors);
 
         // Check How to Stop Control
-        gearValidatorHelper.checkHowToStopControl(sepCycleGearFieldsCycleGear.getHowToStopControl(), getControlMethod(),
+        gearApiValidatorHelper.checkHowToStopControl(sepCycleGearFieldsCycleGear.getHowToStopControl(), getControlMethod(),
             errors);
 
         // Check Group Capacity Reduction
-        gearValidatorHelper.checkGroupCapacityReduction(sepCycleGearFieldsCycleGear.getCapacityReduction(), errors);
+        gearApiValidatorHelper.checkGroupCapacityReduction(sepCycleGearFieldsCycleGear.getCapacityReduction(), errors);
 
         // Check When To Change
-        gearValidatorHelper.checkWhenToChange(sepCycleGearFieldsCycleGear.getWhenToChangeFields(), errors);
+        gearApiValidatorHelper.checkWhenToChange(sepCycleGearFieldsCycleGear.getWhenToChangeFields(), errors);
     }
 
 }

@@ -4,13 +4,13 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.validation.Errors;
 
 import com.cannontech.common.dr.gear.setup.fields.EcobeeCycleGearFields;
+import com.cannontech.common.validator.YukonApiValidationUtils;
 import com.cannontech.database.db.device.lm.GearControlMethod;
-import com.cannontech.web.api.dr.setup.LMValidatorHelper;
 
 public class EcobeeCycleGearFieldsValidator extends ProgramGearFieldsValidator<EcobeeCycleGearFields> {
 
-    @Autowired private LMValidatorHelper lmValidatorHelper;
-    @Autowired private GearValidatorHelper gearValidatorHelper;
+    @Autowired private GearApiValidatorHelper gearApiValidatorHelper;
+    @Autowired private static YukonApiValidationUtils yukonApiValidationUtils;
 
     public EcobeeCycleGearFieldsValidator() {
         super(EcobeeCycleGearFields.class);
@@ -28,22 +28,22 @@ public class EcobeeCycleGearFieldsValidator extends ProgramGearFieldsValidator<E
     @Override
     protected void doValidation(EcobeeCycleGearFields ecobeeCycleGear, Errors errors) {
         // Check Mandatory
-        lmValidatorHelper.checkIfFieldRequired("mandatory", errors, ecobeeCycleGear.getMandatory(), "Mandatory");
+        yukonApiValidationUtils.checkIfFieldRequired("mandatory", errors, ecobeeCycleGear.getMandatory(), "Mandatory");
 
         // Check Ramp In/Out
-        lmValidatorHelper.checkIfFieldRequired("rampInOut", errors, ecobeeCycleGear.getRampInOut(), "Ramp In/Out");
+        yukonApiValidationUtils.checkIfFieldRequired("rampInOut", errors, ecobeeCycleGear.getRampInOut(), "Ramp In/Out");
 
         // Check for Control Percent
-        gearValidatorHelper.checkControlPercent(ecobeeCycleGear.getControlPercent(), errors);
+        gearApiValidatorHelper.checkControlPercent(ecobeeCycleGear.getControlPercent(), errors);
 
         // Check for How to Stop Control
-        gearValidatorHelper.checkHowToStopControl(ecobeeCycleGear.getHowToStopControl(), getControlMethod(), errors);
+        gearApiValidatorHelper.checkHowToStopControl(ecobeeCycleGear.getHowToStopControl(), getControlMethod(), errors);
 
         // Check for Group Capacity Reduction
-        gearValidatorHelper.checkGroupCapacityReduction(ecobeeCycleGear.getCapacityReduction(), errors);
+        gearApiValidatorHelper.checkGroupCapacityReduction(ecobeeCycleGear.getCapacityReduction(), errors);
 
         // Check for When To Change
-        gearValidatorHelper.checkWhenToChange(ecobeeCycleGear.getWhenToChangeFields(), errors);
+        gearApiValidatorHelper.checkWhenToChange(ecobeeCycleGear.getWhenToChangeFields(), errors);
     }
 
 }

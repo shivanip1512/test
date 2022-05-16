@@ -6,15 +6,14 @@ import org.springframework.validation.Errors;
 import com.cannontech.common.dr.gear.setup.Mode;
 import com.cannontech.common.dr.gear.setup.TemperatureMeasureUnit;
 import com.cannontech.common.dr.gear.setup.fields.SepTemperatureOffsetGearFields;
-import com.cannontech.common.validator.YukonValidationUtils;
+import com.cannontech.common.validator.YukonApiValidationUtils;
 import com.cannontech.database.db.device.lm.GearControlMethod;
-import com.cannontech.web.api.dr.setup.LMValidatorHelper;
 
 public class SepTemperatureOffsetGearFieldsValidator
         extends ProgramGearFieldsValidator<SepTemperatureOffsetGearFields> {
 
-    @Autowired private LMValidatorHelper lmValidatorHelper;
-    @Autowired private GearValidatorHelper gearValidatorHelper;
+    @Autowired private GearApiValidatorHelper gearApiValidatorHelper;
+    @Autowired private static YukonApiValidationUtils yukonApiValidationUtils;
 
     public SepTemperatureOffsetGearFieldsValidator() {
         super(SepTemperatureOffsetGearFields.class);
@@ -32,43 +31,43 @@ public class SepTemperatureOffsetGearFieldsValidator
     @Override
     protected void doValidation(SepTemperatureOffsetGearFields sepTemperatureOffsetCycleGear, Errors errors) {
         // Check Ramp In
-        gearValidatorHelper.checkRampIn(sepTemperatureOffsetCycleGear.getRampIn(), errors);
+        gearApiValidatorHelper.checkRampIn(sepTemperatureOffsetCycleGear.getRampIn(), errors);
 
         // Check Ramp Out
-        gearValidatorHelper.checkRampOut(sepTemperatureOffsetCycleGear.getRampOut(), errors);
+        gearApiValidatorHelper.checkRampOut(sepTemperatureOffsetCycleGear.getRampOut(), errors);
 
         // Check degree F/ degree C
-        lmValidatorHelper.checkIfFieldRequired("tempMeasureUnit", errors,
+        yukonApiValidationUtils.checkIfFieldRequired("tempMeasureUnit", errors,
             sepTemperatureOffsetCycleGear.getTempMeasureUnit(), "Temperature Measure Unit");
 
         // Check Heating Mode or Cooling Mode
-        lmValidatorHelper.checkIfFieldRequired("mode", errors, sepTemperatureOffsetCycleGear.getMode(), "Mode");
+        yukonApiValidationUtils.checkIfFieldRequired("mode", errors, sepTemperatureOffsetCycleGear.getMode(), "Mode");
 
         // Check Heating offset or Cooling Offset
-        lmValidatorHelper.checkIfFieldRequired("offset", errors, sepTemperatureOffsetCycleGear.getOffset(),
+        yukonApiValidationUtils.checkIfFieldRequired("offset", errors, sepTemperatureOffsetCycleGear.getOffset(),
             (sepTemperatureOffsetCycleGear.getMode() == Mode.HEAT) ? "Heating Offset" : "Cooling Offset");
         if (!errors.hasFieldErrors("offset")) {
             if (sepTemperatureOffsetCycleGear.getTempMeasureUnit() == TemperatureMeasureUnit.FAHRENHEIT) {
-                YukonValidationUtils.checkRange(errors, "offset", sepTemperatureOffsetCycleGear.getOffset(), 0.1, 77.7,
+                yukonApiValidationUtils.checkRange(errors, "offset", sepTemperatureOffsetCycleGear.getOffset(), 0.1, 77.7,
                     false);
             } else {
-                YukonValidationUtils.checkRange(errors, "offset", sepTemperatureOffsetCycleGear.getOffset(), 0.1, 25.4,
+                yukonApiValidationUtils.checkRange(errors, "offset", sepTemperatureOffsetCycleGear.getOffset(), 0.1, 25.4,
                     false);
             }
         }
 
         // Check Criticality
-        gearValidatorHelper.checkCriticality(sepTemperatureOffsetCycleGear.getCriticality(), errors);
+        gearApiValidatorHelper.checkCriticality(sepTemperatureOffsetCycleGear.getCriticality(), errors);
 
         // Check How to Stop Control
-        gearValidatorHelper.checkHowToStopControl(sepTemperatureOffsetCycleGear.getHowToStopControl(),
+        gearApiValidatorHelper.checkHowToStopControl(sepTemperatureOffsetCycleGear.getHowToStopControl(),
             getControlMethod(), errors);
 
         // Check Group Capacity Reduction
-        gearValidatorHelper.checkGroupCapacityReduction(sepTemperatureOffsetCycleGear.getCapacityReduction(), errors);
+        gearApiValidatorHelper.checkGroupCapacityReduction(sepTemperatureOffsetCycleGear.getCapacityReduction(), errors);
 
         // Check When to Change
-        gearValidatorHelper.checkWhenToChange(sepTemperatureOffsetCycleGear.getWhenToChangeFields(), errors);
+        gearApiValidatorHelper.checkWhenToChange(sepTemperatureOffsetCycleGear.getWhenToChangeFields(), errors);
     }
 
 }
