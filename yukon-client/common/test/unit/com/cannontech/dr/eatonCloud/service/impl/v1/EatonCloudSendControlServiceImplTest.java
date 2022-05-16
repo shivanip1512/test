@@ -15,14 +15,19 @@ import java.util.Map;
 import java.util.Set;
 
 import org.joda.time.Instant;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 import org.springframework.http.HttpStatus;
 
+import com.cannontech.common.config.ConfigurationSource;
+import com.cannontech.common.config.MasterConfigInteger;
 import com.cannontech.common.events.loggers.EatonCloudEventLogService;
 import com.cannontech.common.smartNotification.service.SmartNotificationEventCreationService;
+import com.cannontech.common.util.Range;
+import com.cannontech.common.util.ScheduledExecutor;
 import com.cannontech.core.dao.DeviceDao;
 import com.cannontech.core.service.TimeService;
 import com.cannontech.database.data.lite.LiteYukonPAObject;
@@ -31,9 +36,12 @@ import com.cannontech.dr.eatonCloud.model.v1.EatonCloudCommandResponseV1;
 import com.cannontech.dr.eatonCloud.model.v1.EatonCloudCommunicationExceptionV1;
 import com.cannontech.dr.eatonCloud.service.impl.EatonCloudSendControlServiceImpl;
 import com.cannontech.dr.eatonCloud.service.v1.EatonCloudCommunicationServiceV1;
+import com.cannontech.dr.eatonCloud.service.v1.EatonCloudDataReadService;
 import com.cannontech.dr.recenteventparticipation.ControlEventDeviceStatus;
 import com.cannontech.dr.recenteventparticipation.dao.RecentEventParticipationDao;
 import com.cannontech.loadcontrol.messages.LMEatonCloudScheduledCycleCommand;
+import com.cannontech.system.GlobalSettingType;
+import com.cannontech.system.dao.GlobalSettingDao;
 import com.cannontech.yukon.IDatabaseCache;
 
 public class EatonCloudSendControlServiceImplTest {
@@ -51,14 +59,25 @@ public class EatonCloudSendControlServiceImplTest {
     TimeService timeService;
     @Mock
     SmartNotificationEventCreationService smartNotificationEventCreationService;
+    @Mock
+    GlobalSettingDao settingDao;
+    @Mock
+    ConfigurationSource configurationSource;
+    @Mock
+    ScheduledExecutor scheduledExecutor;
+    @Mock
+    EatonCloudDataReadService eatonCloudDataReadService;
     
     @InjectMocks
     EatonCloudSendControlServiceImpl service;
     
-    @Test
-    public void testSendInitialShedCommand_OneDevice_ResponseOK() {
+    @BeforeEach
+    public void init() {
         MockitoAnnotations.openMocks(this);
-        
+    }
+    
+    @Test
+    public void sendInitialShedCommand_OneDeviceResponseOK_SUCCESS_RECEIVED() {
         Instant now = Instant.now();
         when(timeService.now()).thenReturn(now);
         LMEatonCloudScheduledCycleCommand command = createCommand();
@@ -80,9 +99,7 @@ public class EatonCloudSendControlServiceImplTest {
     }
     
     @Test
-    public void testSendInitialShedCommand_OneDevice_ResponseBAD_REQUEST() {
-        MockitoAnnotations.openMocks(this);
-        
+    public void sendInitialShedCommand_OneDeviceResponseBAD_REQUEST_FAILED_WILL_RETRY() {        
         Instant now = Instant.now();
         when(timeService.now()).thenReturn(now);
         
@@ -114,9 +131,7 @@ public class EatonCloudSendControlServiceImplTest {
     }
     
     @Test
-    public void testSendInitialShedCommand_OneDevice_Response_No_Connection() {
-        MockitoAnnotations.openMocks(this);
-        
+    public void sendInitialShedCommand_OneDeviceResponseNoConnection_FAILED_WILL_RETRY() {
         Instant now = Instant.now();
         when(timeService.now()).thenReturn(now);
         
@@ -146,6 +161,28 @@ public class EatonCloudSendControlServiceImplTest {
         verify(eatonCloudEventLogService, times(1)).sendShedFailed(null, "test", "1", "1", 0, 2, 0, 1,"A communication error has occurred. Please see logs for more details");
     }
 
+    @Test
+    //method/condition/result
+    public void init_NullSiteGuid_EarlyReturn() {
+        when(settingDao.getString(GlobalSettingType.EATON_CLOUD_SERVICE_ACCOUNT_ID)).thenReturn(null);
+        service.init();
+        verify(recentEventParticipationDao, times(0)).failWillRetryDevices(null);
+    }
+    
+    @Test
+    public void testInit_NoDevicesToRead_NoDataCollected() {
+        // TODO Use ArgumentCaptor to force a run of the executor.
+        when(settingDao.getString(GlobalSettingType.EATON_CLOUD_SERVICE_ACCOUNT_ID)).thenReturn("1");
+        Set<Integer> devicesToRead = new HashSet<Integer>();
+        devicesToRead.add(1);
+        when(recentEventParticipationDao.getDeviceIdsByExternalEventIdAndStatuses(1, List.of(ControlEventDeviceStatus.SUCCESS_RECEIVED))).thenReturn(devicesToRead);
+        service.init();
+        verify(configurationSource, times(1)).getInteger(MasterConfigInteger.EATON_CLOUD_NOTIFICATION_COMMAND_FAILURE_PERCENT, 25);
+        verify(recentEventParticipationDao, times(1)).failWillRetryDevices(null);
+        Range<Instant> range = null;
+        verify(eatonCloudDataReadService, times(1)).collectDataForRead(devicesToRead, range, "READ AFTER SHED");
+    }
+    
     private LMEatonCloudScheduledCycleCommand createCommand() {
         LMEatonCloudScheduledCycleCommand command = new LMEatonCloudScheduledCycleCommand();
         command.setIsRampIn(true);
