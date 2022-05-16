@@ -14,6 +14,8 @@ import org.apache.commons.lang3.StringUtils;
 import org.apache.logging.log4j.Logger;
 import org.joda.time.Instant;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.dao.EmptyResultDataAccessException;
+import org.springframework.dao.IncorrectResultSizeDataAccessException;
 import org.springframework.transaction.TransactionStatus;
 import org.springframework.transaction.support.TransactionCallbackWithoutResult;
 import org.springframework.transaction.support.TransactionTemplate;
@@ -28,10 +30,10 @@ import com.cannontech.clientutils.YukonLogManager;
 import com.cannontech.common.bulk.processor.ProcessingException;
 import com.cannontech.common.config.MasterConfigBoolean;
 import com.cannontech.common.config.MasterConfigString;
+import com.cannontech.common.device.DeviceRequestType;
 import com.cannontech.common.device.creation.DeviceCreationException;
 import com.cannontech.common.device.creation.DeviceCreationService;
-import com.cannontech.common.device.DeviceRequestType;
-
+import com.cannontech.common.device.groups.DeviceGroupInUseException;
 import com.cannontech.common.device.groups.editor.dao.SystemGroupEnum;
 import com.cannontech.common.device.groups.editor.model.StoredDeviceGroup;
 import com.cannontech.common.device.groups.model.DeviceGroup;
@@ -39,9 +41,9 @@ import com.cannontech.common.device.model.SimpleDevice;
 import com.cannontech.common.device.service.DeviceUpdateService;
 import com.cannontech.common.exception.BadConfigurationException;
 import com.cannontech.common.exception.InsufficientMultiSpeakDataException;
+import com.cannontech.common.pao.PaoIdentifier;
 import com.cannontech.common.pao.PaoType;
 import com.cannontech.common.pao.YukonDevice;
-import com.cannontech.common.pao.PaoIdentifier;
 import com.cannontech.common.pao.attribute.model.BuiltInAttribute;
 import com.cannontech.common.pao.attribute.service.AttributeService;
 import com.cannontech.common.pao.definition.model.PaoPointIdentifier;
@@ -65,6 +67,7 @@ import com.cannontech.msp.beans.v4.ExtensionsItem;
 import com.cannontech.msp.beans.v4.GasMeter;
 import com.cannontech.msp.beans.v4.GasService;
 import com.cannontech.msp.beans.v4.MeterBase;
+import com.cannontech.msp.beans.v4.MeterGroup;
 import com.cannontech.msp.beans.v4.MeterID;
 import com.cannontech.msp.beans.v4.MeterReading;
 import com.cannontech.msp.beans.v4.Module;
@@ -302,6 +305,43 @@ public class MultispeakMeterServiceImpl extends MultispeakMeterServiceBase imple
     }
 
     @Override
+    public List<ErrorObject> addMetersToGroup(MeterGroup meterGroup, String mspMethod, MultispeakVendor mspVendor) {
+
+        List<ErrorObject> errorObjects = new ArrayList<>();
+        if (meterGroup != null && meterGroup.getGroupName() != null && meterGroup.getMeterList() != null) {
+            // Convert MeterNumbers to YukonDevices
+            List<SimpleDevice> yukonDevices = new ArrayList<>();
+            for (MeterID meterId : CollectionUtils.emptyIfNull(meterGroup.getMeterList().getMeterID())) {
+                try {
+                    SimpleDevice yukonDevice = deviceDao.getYukonDeviceObjectByMeterNumber(meterId.getMeterNo());
+                    yukonDevices.add(yukonDevice);
+                } catch (EmptyResultDataAccessException e) {
+                    String exceptionMessage = "Unknown meter number";
+                    ErrorObject errorObject = mspObjectDao.getNotFoundErrorObject(meterId.getMeterNo(), "MeterNumber",
+                            "MeterID",
+                            "addMetersToGroup",
+                            mspVendor.getCompanyName(), exceptionMessage);
+                    errorObjects.add(errorObject);
+                    log.error(e);
+                } catch (IncorrectResultSizeDataAccessException e) {
+                    String exceptionMessage = "Duplicate meters were found for this meter number " + meterId;
+                    ErrorObject errorObject = mspObjectDao.getNotFoundErrorObject(meterId.getMeterNo(), "MeterNumber",
+                            "MeterID",
+                            "addMetersToGroup",
+                            mspVendor.getCompanyName(), exceptionMessage);
+                    errorObjects.add(errorObject);
+                    log.error(e);
+                }
+            }
+
+            StoredDeviceGroup storedGroup = deviceGroupEditorDao.getStoredGroup(meterGroup.getGroupName(), true);
+            deviceGroupMemberEditorDao.addDevices(storedGroup, yukonDevices);
+            multispeakEventLogService.addMetersToGroup(yukonDevices.size(), storedGroup.getFullName(), mspMethod,
+                    mspVendor.getCompanyName());
+        }
+        return errorObjects;
+    }
+
     public List<ErrorObject> serviceLocationChanged(MultispeakVendor mspVendor, List<ServiceLocation> serviceLocations) {
         final ArrayList<ErrorObject> errorObjects = new ArrayList<>();
 
@@ -568,6 +608,69 @@ public class MultispeakMeterServiceImpl extends MultispeakMeterServiceBase imple
                 multispeakEventLogService.errorObject(err.getErrorString(), METER_ADD_STRING, mspVendor.getCompanyName());
                 log.error(ex);
             }
+        }
+        return errorObjects;
+    }
+
+    @Override
+    public ErrorObject deleteGroup(String groupName, MultispeakVendor mspVendor) {
+        ErrorObject errorObject = null;
+        if (groupName != null) {
+            try {
+                StoredDeviceGroup storedGroup = deviceGroupEditorDao.getStoredGroup(groupName, false);
+                deviceGroupEditorDao.removeGroup(storedGroup);
+            } catch (NotFoundException e) {
+                errorObject = mspObjectDao.getNotFoundErrorObject(groupName, "meterGroupId", "MeterGroup", "deleteGroup",
+                        mspVendor.getCompanyName());
+            } catch (DeviceGroupInUseException e) {
+                errorObject = mspObjectDao.getErrorObject(groupName, "Cannot delete group, it is currently in use.", "MeterGroup",
+                        "deleteGroup", mspVendor.getCompanyName());
+            }
+        }
+        return errorObject;
+    }
+
+    @Override
+    public List<ErrorObject> removeMetersFromGroup(String groupName, List<MeterID> meterIds, MultispeakVendor mspVendor) {
+        List<ErrorObject> errorObjects = new ArrayList<>();
+        List<SimpleDevice> yukonDevices = new ArrayList<>();
+
+        try {
+            if (groupName != null) {
+                StoredDeviceGroup storedGroup = deviceGroupEditorDao.getStoredGroup(groupName, false);
+                String meterNumber = null;
+                if (meterIds != null) {
+                    for (MeterID meterId : meterIds) {
+                        try {
+                            meterNumber = meterId.getMeterNo();
+                            SimpleDevice yukonDevice = deviceDao.getYukonDeviceObjectByMeterNumber(meterNumber);
+                            yukonDevices.add(yukonDevice);
+                        } catch (EmptyResultDataAccessException e) {
+                            String exceptionMessage = "Unknown meter number " + meterNumber;
+                            ErrorObject errorObject = mspObjectDao.getNotFoundErrorObject(meterNumber, "MeterNumber", "MeterID",
+                                    "removeMetersFromGroup", mspVendor.getCompanyName(), exceptionMessage);
+                            errorObjects.add(errorObject);
+                            log.error(e);
+                        } catch (IncorrectResultSizeDataAccessException e) {
+                            String exceptionMessage = "Duplicate meters were found for this meter number  " + meterNumber;
+                            ErrorObject errorObject = mspObjectDao.getNotFoundErrorObject(meterNumber, "MeterNumber", "MeterID",
+                                    "removeMetersFromGroup", mspVendor.getCompanyName(), exceptionMessage);
+                            errorObjects.add(errorObject);
+                            log.error(e);
+                        }
+                    }
+                }
+
+                deviceGroupMemberEditorDao.removeDevices(storedGroup, yukonDevices);
+                multispeakEventLogService.removeMetersFromGroup(yukonDevices.size(), storedGroup.getFullName(),
+                        "RemoveMetersFromMeterGroup", mspVendor.getCompanyName());
+            }
+        } catch (NotFoundException e) {
+            ErrorObject errorObject = mspObjectDao.getNotFoundErrorObject(groupName, "GroupName", "meterGroupID",
+                    "removeMetersFromGroup",
+                    mspVendor.getCompanyName());
+            errorObjects.add(errorObject);
+            log.error(e);
         }
         return errorObjects;
     }
