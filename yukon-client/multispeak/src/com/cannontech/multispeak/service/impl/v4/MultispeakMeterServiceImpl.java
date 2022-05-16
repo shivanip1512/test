@@ -110,7 +110,9 @@ public class MultispeakMeterServiceImpl extends MultispeakMeterServiceBase imple
     @Autowired private DeviceAttributeReadService deviceAttributeReadService;
     
     private static final String EXTENSION_DEVICE_TEMPLATE_STRING = "AMRMeterType";
+    // Strings to represent method calls, generally used for logging.
     private static final String SERV_LOC_CHANGED_STRING = "ServiceLocationChangedNotification";
+    private static final String METER_REMOVE_STRING = "MeterRemoveNotification";
 
     /** Singleton incrementor for messageIDs to send to porter connection */
     private static long messageID = 1;
@@ -1344,4 +1346,41 @@ public class MultispeakMeterServiceImpl extends MultispeakMeterServiceBase imple
             return rCDState;
         }
     };
+
+    @Override
+    public List<ErrorObject> meterRemove(MultispeakVendor mspVendor, List<MspMeter> removeMeters) {
+        ArrayList<ErrorObject> errorObjects = new ArrayList<>();
+
+        for (MspMeter mspMeter : removeMeters) {
+            if (mspMeter.getMeterNo() != null) {
+                // Lookup meter in Yukon by msp meter number
+                YukonMeter meter;
+                try {
+                    meter = getMeterByMeterNumber(mspMeter.getMeterNo().trim());
+                    removeDeviceNameExtension(meter, METER_REMOVE_STRING, mspVendor);
+                    removeDeviceFromCISGroups(meter, METER_REMOVE_STRING, mspVendor);
+                    // Added meter to Inventory
+                    addMeterToGroup(meter, SystemGroupEnum.INVENTORY, METER_REMOVE_STRING, mspVendor);
+                    if (!meter.isDisabled()) {// enabled
+                        meter.setDisabled(true); // update local object reference
+                        deviceUpdateService.disableDevice(meter);
+                        multispeakEventLogService.disableDevice(meter.getMeterNumber(), meter, METER_REMOVE_STRING,
+                                mspVendor.getCompanyName());
+                    }
+
+                } catch (NotFoundException e) {
+                    multispeakEventLogService.meterNotFound(mspMeter.getMeterNo(), METER_REMOVE_STRING,
+                            mspVendor.getCompanyName());
+                    ErrorObject err = mspObjectDao.getNotFoundErrorObject(mspMeter.getMeterNo().trim(), "MeterNumber", "MeterID",
+                            METER_REMOVE_STRING, mspVendor.getCompanyName());
+                    errorObjects.add(err);
+                    multispeakEventLogService.errorObject(err.getErrorString(), METER_REMOVE_STRING,
+                            mspVendor.getCompanyName());
+                    log.error(e);
+                }
+            }
+        }
+
+        return errorObjects;
+    }
 }

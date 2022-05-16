@@ -106,6 +106,7 @@ public class MR_ServerImpl implements MR_Server {
                                                            "ServiceLocationChangedNotification",
                                                            "MeterAddNotification",
                                                            "InitiateDemandReset",
+                                                           "MeterRemoveNotification",
                                                            "EstablishMeterGroup",
                                                            "InsertMeterInMeterGroup",
                                                            "DeleteMeterGroup",
@@ -593,4 +594,12 @@ public class MR_ServerImpl implements MR_Server {
         return errors;
     }
 
+    @Override
+    public List<ErrorObject> meterRemoveNotification(List<MspMeter> removedMeters) throws MultispeakWebServiceException {
+        init();
+        MultispeakVendor vendor = multispeakFuncs.getMultispeakVendorFromHeader();
+        multispeakEventLogService.methodInvoked("MeterRemoveNotification", vendor.getCompanyName());
+        List<ErrorObject> errorObject = multispeakMeterService.meterRemove(vendor, removedMeters);
+        return errorObject;
+    }
 }

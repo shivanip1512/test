@@ -88,5 +88,10 @@ public interface MultispeakMeterService {
      */
     public boolean updateAltGroup(MspMeter mspMeter, String meterNumber, YukonDevice yukonDevice,
             String mspMethod, MultispeakVendor mspVendor);
+
+    /**
+     * Removes (disables) a list of meters in Yukon.
+     */
+    public List<ErrorObject> meterRemove(MultispeakVendor mspVendor, List<MspMeter> removeMeters);
 }
  

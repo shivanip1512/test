@@ -200,6 +200,15 @@ public interface MR_Server {
     public List<ErrorObject> meterAddNotification(List<MspMeter> addedMeters) throws MultispeakWebServiceException;
 
     /**
+     * meter Remove Notification.
+     * 
+     * @param removedMeters the removed meters
+     * @return the error object[]
+     * @throws MultispeakWebServiceException the multispeak web service exception
+     */
+    public List<ErrorObject> meterRemoveNotification(List<MspMeter> removedMeters) throws MultispeakWebServiceException;
+
+    /**
      * establish Meter Group.
      * 
      * @param meterGroup the meter group
