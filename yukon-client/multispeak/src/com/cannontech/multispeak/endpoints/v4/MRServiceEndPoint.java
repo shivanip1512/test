@@ -210,8 +210,8 @@ public class MRServiceEndPoint {
             @RequestPayload InitiateUsageMonitoring initiateUsageMonitoring) throws MultispeakWebServiceException {
         InitiateUsageMonitoringResponse response = objectFactory.createInitiateUsageMonitoringResponse();
 
-        ArrayOfMeterID1 ArrOfMeterIds = initiateUsageMonitoring.getMeterIDs();
-        List<MeterID> meterIds = (null != ArrOfMeterIds.getMeterID()) ? ArrOfMeterIds.getMeterID() : null;
+        ArrayOfMeterID1 arrOfMeterIds = initiateUsageMonitoring.getMeterIDs();
+        List<MeterID> meterIds = (null != arrOfMeterIds.getMeterID()) ? arrOfMeterIds.getMeterID() : null;
         List<ErrorObject> errorObjects = mr_server.initiateUsageMonitoring(ListUtils.emptyIfNull(meterIds));
 
         ArrayOfErrorObject arrayOfErrorObject = multispeakFuncs.toArrayOfErrorObject(errorObjects);
@@ -225,8 +225,8 @@ public class MRServiceEndPoint {
             throws MultispeakWebServiceException {
         CancelUsageMonitoringResponse cancelUsageMonitoringResponse = objectFactory.createCancelUsageMonitoringResponse();
 
-        ArrayOfMeterID1 ArrOfMeterIds = cancelUsageMonitoring.getMeterIDs();
-        List<MeterID> meterIds = null != ArrOfMeterIds.getMeterID() ? ArrOfMeterIds.getMeterID() : null;
+        ArrayOfMeterID1 arrOfMeterIds = cancelUsageMonitoring.getMeterIDs();
+        List<MeterID> meterIds = null != arrOfMeterIds.getMeterID() ? arrOfMeterIds.getMeterID() : null;
 
         List<ErrorObject> errorObjects = mr_server.cancelUsageMonitoring(ListUtils.emptyIfNull(meterIds));
 
