@@ -2,6 +2,7 @@ package com.cannontech.multispeak.endpoints.v4;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 
 import javax.xml.datatype.XMLGregorianCalendar;
 
@@ -25,6 +26,7 @@ import com.cannontech.msp.beans.v4.CancelUsageMonitoringResponse;
 import com.cannontech.msp.beans.v4.DeleteMeterGroup;
 import com.cannontech.msp.beans.v4.DeleteMeterGroupResponse;
 import com.cannontech.msp.beans.v4.ErrorObject;
+import com.cannontech.msp.beans.v4.ExpirationTime;
 import com.cannontech.msp.beans.v4.EstablishMeterGroup;
 import com.cannontech.msp.beans.v4.EstablishMeterGroupResponse;
 import com.cannontech.msp.beans.v4.FormattedBlock;
@@ -50,6 +52,8 @@ import com.cannontech.msp.beans.v4.GetReadingsByMeterIDAndFieldNameResponse;
 import com.cannontech.msp.beans.v4.GetReadingsByMeterIDResponse;
 import com.cannontech.msp.beans.v4.GetSupportedFieldNames;
 import com.cannontech.msp.beans.v4.GetSupportedFieldNamesResponse;
+import com.cannontech.msp.beans.v4.InitiateDemandReset;
+import com.cannontech.msp.beans.v4.InitiateDemandResetResponse;
 import com.cannontech.msp.beans.v4.InitiateUsageMonitoring;
 import com.cannontech.msp.beans.v4.InitiateUsageMonitoringResponse;
 import com.cannontech.msp.beans.v4.InsertMeterInMeterGroup;
@@ -208,9 +212,9 @@ public class MRServiceEndPoint {
             @RequestPayload InitiateUsageMonitoring initiateUsageMonitoring) throws MultispeakWebServiceException {
         InitiateUsageMonitoringResponse response = objectFactory.createInitiateUsageMonitoringResponse();
 
-        ArrayOfMeterID1 ArrOfMeterIDs = initiateUsageMonitoring.getMeterIDs();
-        List<MeterID> meterIDs = (null != ArrOfMeterIDs.getMeterID()) ? ArrOfMeterIDs.getMeterID() : null;
-        List<ErrorObject> errorObjects = mr_server.initiateUsageMonitoring(ListUtils.emptyIfNull(meterIDs));
+        ArrayOfMeterID1 arrOfMeterIds = initiateUsageMonitoring.getMeterIDs();
+        List<MeterID> meterIds = (null != arrOfMeterIds.getMeterID()) ? arrOfMeterIds.getMeterID() : null;
+        List<ErrorObject> errorObjects = mr_server.initiateUsageMonitoring(ListUtils.emptyIfNull(meterIds));
 
         ArrayOfErrorObject arrayOfErrorObject = multispeakFuncs.toArrayOfErrorObject(errorObjects);
         response.setInitiateUsageMonitoringResult(arrayOfErrorObject);
@@ -223,10 +227,10 @@ public class MRServiceEndPoint {
             throws MultispeakWebServiceException {
         CancelUsageMonitoringResponse cancelUsageMonitoringResponse = objectFactory.createCancelUsageMonitoringResponse();
 
-        ArrayOfMeterID1 ArrOfMeterIDs = cancelUsageMonitoring.getMeterIDs();
-        List<MeterID> meterIDs = null != ArrOfMeterIDs.getMeterID() ? ArrOfMeterIDs.getMeterID() : null;
+        ArrayOfMeterID1 arrOfMeterIds = cancelUsageMonitoring.getMeterIDs();
+        List<MeterID> meterIds = null != arrOfMeterIds.getMeterID() ? arrOfMeterIds.getMeterID() : null;
 
-        List<ErrorObject> errorObjects = mr_server.cancelUsageMonitoring(ListUtils.emptyIfNull(meterIDs));
+        List<ErrorObject> errorObjects = mr_server.cancelUsageMonitoring(ListUtils.emptyIfNull(meterIds));
 
         ArrayOfErrorObject arrayOfErrorObject = multispeakFuncs.toArrayOfErrorObject(errorObjects);
         cancelUsageMonitoringResponse.setCancelUsageMonitoringResult(arrayOfErrorObject);
@@ -349,7 +353,28 @@ public class MRServiceEndPoint {
         ArrayOfFormattedBlock arrayOfFormattedBlock = objectFactory.createArrayOfFormattedBlock();
         arrayOfFormattedBlock.getFormattedBlock().addAll(formattedBlocks);
         getLatestReadingByFieldNameResponse.setGetLatestReadingByFieldNameResult(arrayOfFormattedBlock);
-        return getLatestReadingByFieldNameResponse;
+        return getLatestReadingByFieldNameResponse; 
+    }
+    
+    @PayloadRoot(localPart = "InitiateDemandReset", namespace = MultispeakDefines.NAMESPACE_v4)
+    public @ResponsePayload InitiateDemandResetResponse initiateDemandReset(
+            @RequestPayload InitiateDemandReset initiateDemandReset) throws MultispeakWebServiceException {
+        InitiateDemandResetResponse response = objectFactory.createInitiateDemandResetResponse();
+
+        ExpirationTime expirationTime = initiateDemandReset.getExpTime();
+        String responseURL = initiateDemandReset.getResponseURL();
+        String transactionId = initiateDemandReset.getTransactionID();
+
+        ArrayOfMeterID1 arrOfMeterIds = initiateDemandReset.getMeterIDs();
+        List<MeterID> meterIds = null != arrOfMeterIds ? arrOfMeterIds.getMeterID() : null;
+
+        List<ErrorObject> errorObjects = mr_server.initiateDemandReset(ListUtils.emptyIfNull(meterIds), responseURL,
+                transactionId,
+                expirationTime);
+        ArrayOfErrorObject arrayOfErrorObject = multispeakFuncs.toArrayOfErrorObject(errorObjects);
+        response.setInitiateDemandResetResult(arrayOfErrorObject);
+
+        return response;
     }
     
     @PayloadRoot(localPart = "ServiceLocationChangedNotification", namespace = MultispeakDefines.NAMESPACE_v4)
@@ -358,8 +383,8 @@ public class MRServiceEndPoint {
             throws MultispeakWebServiceException {
         ServiceLocationChangedNotificationResponse response = objectFactory.createServiceLocationChangedNotificationResponse();
         
-        ArrayOfServiceLocation1 ArrOfServiceLocations = serviceLocationChangedNotification.getChangedServiceLocations();
-        List<ServiceLocation> serviceLocationList = null != ArrOfServiceLocations ? ArrOfServiceLocations.getServiceLocation() : null;
+        ArrayOfServiceLocation1 arrOfServiceLocations = serviceLocationChangedNotification.getChangedServiceLocations();
+        List<ServiceLocation> serviceLocationList = null != arrOfServiceLocations ? arrOfServiceLocations.getServiceLocation() : null;
         List<ErrorObject> errorObjects = mr_server
                 .serviceLocationChangedNotification(ListUtils.emptyIfNull(serviceLocationList));
         

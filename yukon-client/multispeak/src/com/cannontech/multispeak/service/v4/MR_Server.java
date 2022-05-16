@@ -4,6 +4,7 @@ import java.util.Calendar;
 import java.util.List;
 
 import com.cannontech.msp.beans.v4.ErrorObject;
+import com.cannontech.msp.beans.v4.ExpirationTime;
 import com.cannontech.msp.beans.v4.FormattedBlock;
 import com.cannontech.msp.beans.v4.MeterGroup;
 import com.cannontech.msp.beans.v4.MeterID;
@@ -167,6 +168,19 @@ public interface MR_Server {
             String lastReceived, String formattedBlockTemplateName) throws MultispeakWebServiceException;
 
     /**
+     * initiate Demand Reset.
+     * 
+     * @param meterIDs the meter IDs
+     * @param responseURL the response url
+     * @param transactionID the transaction id
+     * @param expirationTime the expiration time
+     * @return the error object[]
+     * @throws MultispeakWebServiceException the multispeak web service exception
+     */
+    List<ErrorObject> initiateDemandReset(List<MeterID> meterIds, String responseURL, String transactionId,
+            ExpirationTime expirationTime) throws MultispeakWebServiceException;
+
+    /**
      * service Location Changed Notification.
      * 
      * @param changedServiceLocations the changed service locations
@@ -206,7 +220,7 @@ public interface MR_Server {
     /**
      * insert Meters In Meter Group.
      * 
-     * @param meterID      the meter ids
+     * @param meterIds      the meter ids
      * @param meterGroupId the meter group id
      * @return the error object[]
      * @throws MultispeakWebServiceException the multispeak web service
