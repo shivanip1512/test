@@ -7,16 +7,28 @@ import java.util.List;
 import org.apache.logging.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 
+import com.cannontech.amr.meter.model.SimpleMeter;
 import com.cannontech.clientutils.YukonLogManager;
 import com.cannontech.database.data.point.PointTypes;
 import com.cannontech.database.db.point.SystemLog;
 import com.cannontech.message.dispatch.message.SystemLogHelper;
+import com.cannontech.msp.beans.v4.ArrayOfServiceLocation1;
+import com.cannontech.msp.beans.v4.Customer;
 import com.cannontech.msp.beans.v4.ErrorObject;
+import com.cannontech.msp.beans.v4.GetCustomerByMeterID;
+import com.cannontech.msp.beans.v4.GetCustomerByMeterIDResponse;
+import com.cannontech.msp.beans.v4.GetMeterByMeterID;
+import com.cannontech.msp.beans.v4.GetMeterByMeterIDResponse;
 import com.cannontech.msp.beans.v4.GetMethods;
 import com.cannontech.msp.beans.v4.GetMethodsResponse;
+import com.cannontech.msp.beans.v4.GetServiceLocationByMeterID;
+import com.cannontech.msp.beans.v4.GetServiceLocationByMeterIDResponse;
+import com.cannontech.msp.beans.v4.MeterID;
+import com.cannontech.msp.beans.v4.Meters;
 import com.cannontech.msp.beans.v4.ObjectFactory;
 import com.cannontech.msp.beans.v4.PingURL;
 import com.cannontech.msp.beans.v4.PingURLResponse;
+import com.cannontech.msp.beans.v4.ServiceLocation;
 import com.cannontech.multispeak.client.MultispeakDefines;
 import com.cannontech.multispeak.client.MultispeakVendor;
 import com.cannontech.multispeak.client.core.v4.CBClient;
@@ -200,5 +212,91 @@ public class MspObjectDaoImpl implements MspObjectDao {
         return getNotFoundErrorObject(objectID, notFoundObjectType, nounType, method, userName,
                 "Was NOT found in Yukon");
     }
+
+    @Override
+    public Customer getMspCustomer(SimpleMeter meter, MultispeakVendor mspVendor) {
+        return getMspCustomer(meter.getMeterNumber(), mspVendor);
+    }
+    
+    @Override
+    public Customer getMspCustomer(String meterNumber, MultispeakVendor mspVendor) {
+
+        Customer mspCustomer = new Customer();
+        GetCustomerByMeterID getCustomerByMeterId = objectFactory.createGetCustomerByMeterID();
+        MeterID meterId = objectFactory.createMeterID();
+        meterId.setMeterNo(meterNumber);
+        getCustomerByMeterId.setMeterID(meterId);
+        String endpointUrl = multispeakFuncs.getEndpointUrl(mspVendor, MultispeakDefines.CB_Server_STR);
+        try {
+            GetCustomerByMeterIDResponse getCustomerByMeterIdResponse =
+                cbClient.getCustomerByMeterId(mspVendor, endpointUrl, getCustomerByMeterId);
+            mspCustomer = getCustomerByMeterIdResponse.getGetCustomerByMeterIDResult();
+        } catch (MultispeakWebServiceClientException e) {
+            log.error("TargetService: " + endpointUrl + " - getCustomerByMeterNo(" + mspVendor.getCompanyName()
+                + ") for MeterNo: " + meterNumber);
+            log.error("MultispeakWebServiceClientException: " + e.getMessage());
+            log.info("A default(empty) is being used for Customer");
+        }
+        return mspCustomer;
+    }
+
+    @Override
+    public ArrayOfServiceLocation1 getMspServiceLocation(SimpleMeter meter, MultispeakVendor mspVendor) {
+        return getMspServiceLocation(meter.getMeterNumber(), mspVendor);
+    }
+    
+    @Override
+    public ArrayOfServiceLocation1 getMspServiceLocation(String meterNumber, MultispeakVendor mspVendor) {
+        ArrayOfServiceLocation1 mspServiceLocation = objectFactory.createArrayOfServiceLocation1();
+        String endpointUrl = multispeakFuncs.getEndpointUrl(mspVendor, MultispeakDefines.CB_Server_STR);
+
+        try {
+            GetServiceLocationByMeterID getServiceLocationByMeterId =
+                    objectFactory.createGetServiceLocationByMeterID();
+            MeterID meterId = objectFactory.createMeterID();
+            meterId.setMeterNo(meterNumber);
+            getServiceLocationByMeterId.setMeterID(meterId);
+            log.debug("Calling " + mspVendor.getCompanyName()
+                + " CB_Server.getServiceLocationByMeterNo for meterNumber: " + meterNumber);
+            GetServiceLocationByMeterIDResponse getServiceLocationByMeterNoResponse =
+                cbClient.getServiceLocationByMeterId(mspVendor, endpointUrl, getServiceLocationByMeterId);
+            mspServiceLocation = getServiceLocationByMeterNoResponse.getGetServiceLocationByMeterIDResult();
+        } catch (MultispeakWebServiceClientException e) {
+            log.error("TargetService: " + endpointUrl + " - getServiceLocationByMeterNo (" + mspVendor.getCompanyName()
+                + ") for MeterNo: " + meterNumber);
+            log.error("MultispeakWebServiceClientException: " + e.getMessage());
+            log.info("A default(empty) is being used for ServiceLocation");
+        }
+        return mspServiceLocation;
+    }
+
+    @Override
+    public Meters getMspMeter(String meterNumber, MultispeakVendor mspVendor) throws MultispeakWebServiceClientException {
+        Meters mspMeter = new Meters();
+        String endpointUrl = multispeakFuncs.getEndpointUrl(mspVendor, MultispeakDefines.CB_Server_STR);
+        MeterID meterId = new MeterID();
+        meterId.setMeterNo(meterNumber);
+        GetMeterByMeterID getMeterByMeterId = objectFactory.createGetMeterByMeterID();
+        getMeterByMeterId.setMeterID(meterId);
+        GetMeterByMeterIDResponse getMeterByMeterIdResponse = cbClient.getMeterByMeterID(mspVendor, endpointUrl,
+                getMeterByMeterId);
+        mspMeter = getMeterByMeterIdResponse.getGetMeterByMeterIDResult();
+        return mspMeter;
+    }
+
+    @Override
+    public Meters getMspMeter(SimpleMeter meter, MultispeakVendor mspVendor) {
+        String endpointUrl = multispeakFuncs.getEndpointUrl(mspVendor, MultispeakDefines.CB_Server_STR);
+        try {
+            return getMspMeter(meter.getMeterNumber(), mspVendor);
+        } catch (MultispeakWebServiceClientException e) {
+            log.error("TargetService: " + endpointUrl + " - getMeterByMeterNo (" + mspVendor.getCompanyName()
+                    + ") for MeterNo: " + meter.getMeterNumber());
+            log.error("MultispeakWebServiceClientException: " + e.getMessage());
+            log.info("A default(empty) is being used for Meter");
+        }
+        return null;
+    }
+
 
 }

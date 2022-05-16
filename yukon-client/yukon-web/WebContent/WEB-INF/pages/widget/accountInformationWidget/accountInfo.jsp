@@ -22,6 +22,10 @@
             <c:when test="${multiSpeakVersion.version == V3}">
                 <%@ include file="accountInfoPartial.jspf"%>
             </c:when>
+            
+            <c:when test="${multiSpeakVersion.version == V4}">
+                <%@ include file="accountInfoPartialV4.jspf"%>
+            </c:when>
             <c:otherwise>
                 <%@ include file="accountInfoPartialV5.jspf"%>
             </c:otherwise>
@@ -29,6 +33,9 @@
         <div class="action-area">
             <c:choose>
                 <c:when test="${multiSpeakVersion.version == V3}">
+                    <a href="javascript:void(0);" id="cisDetailsLink" class="fl"><i:inline key=".viewDetails" /></a>
+                </c:when>
+                <c:when test="${multiSpeakVersion.version == V4}">
                     <a href="javascript:void(0);" id="cisDetailsLink" class="fl"><i:inline key=".viewDetails" /></a>
                 </c:when>
                 <c:otherwise>

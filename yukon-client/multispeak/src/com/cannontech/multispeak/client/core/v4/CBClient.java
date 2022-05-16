@@ -6,12 +6,21 @@ import org.springframework.oxm.XmlMappingException;
 import org.springframework.ws.WebServiceException;
 import org.springframework.ws.client.core.WebServiceTemplate;
 
+import com.cannontech.msp.beans.v3.GetCustomerByMeterNo;
+import com.cannontech.msp.beans.v3.GetCustomerByMeterNoResponse;
+import com.cannontech.msp.beans.v3.GetServiceLocationByMeterNo;
+import com.cannontech.msp.beans.v3.GetServiceLocationByMeterNoResponse;
+import com.cannontech.msp.beans.v4.GetCustomerByMeterID;
+import com.cannontech.msp.beans.v4.GetCustomerByMeterIDResponse;
+import com.cannontech.msp.beans.v4.GetMeterByMeterID;
+import com.cannontech.msp.beans.v4.GetMeterByMeterIDResponse;
 import com.cannontech.msp.beans.v4.GetMethods;
 import com.cannontech.msp.beans.v4.GetMethodsResponse;
+import com.cannontech.msp.beans.v4.GetServiceLocationByMeterID;
+import com.cannontech.msp.beans.v4.GetServiceLocationByMeterIDResponse;
 import com.cannontech.msp.beans.v4.PingURL;
 import com.cannontech.msp.beans.v4.PingURLResponse;
 import com.cannontech.multispeak.client.MultispeakDefines;
-
 import com.cannontech.multispeak.client.MultispeakVendor;
 import com.cannontech.multispeak.client.v4.MultispeakFuncs;
 import com.cannontech.multispeak.exceptions.MultispeakWebServiceClientException;
@@ -58,6 +67,45 @@ public class CBClient implements ICBClient {
             throw new MultispeakWebServiceClientException(e.getMessage());
         }
 
+    }
+    
+    @Override
+    public GetMeterByMeterIDResponse getMeterByMeterID(final MultispeakVendor mspVendor, String uri,
+            GetMeterByMeterID getMeterByMeterId) throws MultispeakWebServiceClientException {
+        try {
+            multispeakFuncs.setMsgSender(webServiceTemplate, mspVendor);
+
+            return (GetMeterByMeterIDResponse) webServiceTemplate.marshalSendAndReceive(uri, getMeterByMeterId,
+                customWebServiceMsgCallback.addRequestHeader(mspVendor, MultispeakDefines.CB_Server_STR));
+        } catch (WebServiceException | XmlMappingException e) {
+            throw new MultispeakWebServiceClientException(e.getMessage());
+        }
+    }
+    
+    @Override
+    public GetCustomerByMeterIDResponse getCustomerByMeterId(final MultispeakVendor mspVendor, String uri,
+            GetCustomerByMeterID getCustomerByMeterId) throws MultispeakWebServiceClientException {
+        try {
+            multispeakFuncs.setMsgSender(webServiceTemplate, mspVendor);
+            return (GetCustomerByMeterIDResponse) webServiceTemplate.marshalSendAndReceive(uri, getCustomerByMeterId,
+                customWebServiceMsgCallback.addRequestHeader(mspVendor, MultispeakDefines.CB_Server_STR));
+        } catch (WebServiceException | XmlMappingException e) {
+            throw new MultispeakWebServiceClientException(e.getMessage());
+        }
+    }
+    
+    @Override
+    public GetServiceLocationByMeterIDResponse getServiceLocationByMeterId(final MultispeakVendor mspVendor,
+            String uri, GetServiceLocationByMeterID getServiceLocationByMeterId)
+            throws MultispeakWebServiceClientException {
+        try {
+            multispeakFuncs.setMsgSender(webServiceTemplate, mspVendor);
+
+            return (GetServiceLocationByMeterIDResponse) webServiceTemplate.marshalSendAndReceive(uri,
+                getServiceLocationByMeterId, customWebServiceMsgCallback.addRequestHeader(mspVendor, MultispeakDefines.CB_Server_STR));
+        } catch (WebServiceException | XmlMappingException e) {
+            throw new MultispeakWebServiceClientException(e.getMessage());
+        }
     }
 
 }
