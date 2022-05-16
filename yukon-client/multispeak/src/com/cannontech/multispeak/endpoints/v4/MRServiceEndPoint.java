@@ -399,8 +399,7 @@ public class MRServiceEndPoint {
         }
         List<ErrorObject> errorObjects = mr_server.meterRemoveNotification(ListUtils.emptyIfNull(mspMeters));
 
-        ArrayOfErrorObject arrayOfErrorObject = objectFactory.createArrayOfErrorObject();
-        arrayOfErrorObject.getErrorObject().addAll(errorObjects);
+        ArrayOfErrorObject arrayOfErrorObject = multispeakFuncs.toArrayOfErrorObject(errorObjects);
         meterRemoveNotificationResponse.setMeterRemoveNotificationResult(arrayOfErrorObject);
         return meterRemoveNotificationResponse;
     }
