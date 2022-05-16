@@ -1,5 +1,6 @@
 package com.cannontech.multispeak.deploy.service.impl.v4;
 
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Calendar;
 import java.util.Collections;
@@ -28,12 +29,15 @@ import com.cannontech.core.dynamic.AsyncDynamicDataSource;
 import com.cannontech.core.dynamic.PointValueQualityHolder;
 import com.cannontech.core.dynamic.exception.DynamicDataAccessException;
 import com.cannontech.database.data.lite.LitePoint;
+import com.cannontech.msp.beans.v4.ArrayOfMeterID;
 import com.cannontech.msp.beans.v4.ErrorObject;
 import com.cannontech.msp.beans.v4.FormattedBlock;
+import com.cannontech.msp.beans.v4.MeterGroup;
 import com.cannontech.msp.beans.v4.MeterID;
 import com.cannontech.msp.beans.v4.MeterReading;
 import com.cannontech.msp.beans.v4.Meters;
 import com.cannontech.msp.beans.v4.MspMeter;
+import com.cannontech.msp.beans.v4.ObjectFactory;
 import com.cannontech.msp.beans.v4.ServiceLocation;
 import com.cannontech.multispeak.block.v4.Block;
 import com.cannontech.multispeak.client.MultispeakDefines;
@@ -65,12 +69,14 @@ public class MR_ServerImpl implements MR_Server {
     @Autowired private MspValidationService mspValidationService;
     @Autowired private MultispeakMeterService multispeakMeterService;
     @Autowired private PaoDefinitionDao paoDefinitionDao;
+    @Autowired private ObjectFactory objectFactory;
     @Autowired @Qualifier("mspMeterDaoV4") private MspMeterDao mspMeterDao;
     private Map<String, FormattedBlockProcessingService<Block>> formattedBlockMap;
     private BasicServerConnection porterConnection;
-   
+
     private final Logger log = YukonLogManager.getLogger(MR_ServerImpl.class);
-    private final static String[] methods = new String[] { "PingURL", 
+
+    private final static String[] methods = new String[] { "PingURL",
                                                            "GetMethods",
                                                            "GetReadingsByDate",
                                                            "GetReadingsByMeterID",
@@ -87,7 +93,11 @@ public class MR_ServerImpl implements MR_Server {
                                                            "GetLatestReadingByMeterIDAndFieldName",
                                                            "ServiceLocationChangedNotification",
                                                            "MeterAddNotification",
-                                                           "MeterRemoveNotification"
+                                                           "MeterRemoveNotification",
+                                                           "EstablishMeterGroup",
+                                                           "InsertMeterInMeterGroup",
+                                                           "DeleteMeterGroup",
+                                                           "RemoveMetersFromMeterGroup"
                                                            };
 
     private void init() throws MultispeakWebServiceException {
@@ -432,6 +442,63 @@ public class MR_ServerImpl implements MR_Server {
     }
 
     @Override
+    public List<ErrorObject> establishMeterGroup(MeterGroup meterGroup)
+            throws MultispeakWebServiceException {
+        init();
+        MultispeakVendor vendor = multispeakFuncs.getMultispeakVendorFromHeader();
+        multispeakEventLogService.methodInvoked("EstablishMeterGroup", vendor.getCompanyName());
+        List<ErrorObject> errorObject = multispeakMeterService.addMetersToGroup(meterGroup, "EstablishMeterGroup", vendor);
+        return errorObject;
+    }
+
+    @Override
+    public List<ErrorObject> insertMeterInMeterGroup(List<MeterID> meterIds,
+            String meterGroupId)
+            throws MultispeakWebServiceException {
+        init();
+        MultispeakVendor vendor = multispeakFuncs.getMultispeakVendorFromHeader();
+        multispeakEventLogService.methodInvoked("InsertMeterInMeterGroup", vendor.getCompanyName());
+
+        List<ErrorObject> errorObject = new ArrayList<ErrorObject>();
+        if (meterIds != null && meterGroupId != null) {
+            MeterGroup meterGroup = new MeterGroup();
+
+            ArrayOfMeterID arrayOfMeterId = objectFactory.createArrayOfMeterID();
+            List<MeterID> meterList = arrayOfMeterId.getMeterID();
+
+            for (MeterID id : meterIds) {
+                meterList.add(id);
+            }
+
+            meterGroup.setMeterList(arrayOfMeterId);
+            meterGroup.setGroupName(meterGroupId);
+
+            errorObject = multispeakMeterService.addMetersToGroup(meterGroup,
+                    "InsertMeterInMeterGroup", vendor);
+        }
+        return errorObject;
+    }
+
+    @Override
+    public ErrorObject deleteMeterGroup(String meterGroupId)
+            throws MultispeakWebServiceException {
+        init();
+        MultispeakVendor vendor = multispeakFuncs.getMultispeakVendorFromHeader();
+        multispeakEventLogService.methodInvoked("DeleteMeterGroup", vendor.getCompanyName());
+        return multispeakMeterService.deleteGroup(meterGroupId, vendor);
+    }
+
+    @Override
+    public List<ErrorObject> removeMetersFromMeterGroup(List<MeterID> meterIds,
+            String meterGroupId) throws MultispeakWebServiceException {
+        init();
+        MultispeakVendor vendor = multispeakFuncs.getMultispeakVendorFromHeader();
+        multispeakEventLogService.methodInvoked("RemoveMetersFromMeterGroup", vendor.getCompanyName());
+
+        List<ErrorObject> errorObject = multispeakMeterService.removeMetersFromGroup(meterGroupId, meterIds, vendor);
+        return errorObject;
+    }
+
     public List<ErrorObject> serviceLocationChangedNotification(List<ServiceLocation> serviceLocations)
             throws MultispeakWebServiceException {
         init();

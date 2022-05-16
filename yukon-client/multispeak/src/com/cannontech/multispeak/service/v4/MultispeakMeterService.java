@@ -5,6 +5,7 @@ import java.util.List;
 import com.cannontech.amr.meter.model.YukonMeter;
 import com.cannontech.common.pao.YukonDevice;
 import com.cannontech.msp.beans.v4.ErrorObject;
+import com.cannontech.msp.beans.v4.MeterGroup;
 import com.cannontech.msp.beans.v4.MeterID;
 import com.cannontech.msp.beans.v4.MeterReading;
 import com.cannontech.msp.beans.v4.MspMeter;
@@ -32,6 +33,22 @@ public interface MultispeakMeterService {
      * Remove MeterNos from SystemGroupEnum.USAGEMONITORING Device Group.
      */
     public List<ErrorObject> cancelUsageMonitoring(MultispeakVendor mspVendor, List<MeterID> meterIDs);
+
+    /**
+     * Adds meters to a group. If the group doesn't exist, a new group will be created
+     */
+    public List<ErrorObject> addMetersToGroup(MeterGroup meterGroup, String mspMethod, MultispeakVendor mspVendor);
+
+    /**
+     * Removed meters from groupName and deletes groupName from the system.
+     */
+    public ErrorObject deleteGroup(String groupName, MultispeakVendor mspVendor);
+
+    /**
+     * Removes meterIDs from groupName.
+     */
+    public List<ErrorObject> removeMetersFromGroup(String groupName, List<MeterID> meterIds,
+            MultispeakVendor mspVendor);
 
     /**
      * Updates the "meter" object, based on the PaoName Alias lookup value. 
@@ -76,6 +93,5 @@ public interface MultispeakMeterService {
      * Removes (disables) a list of meters in Yukon.
      */
     public List<ErrorObject> meterRemove(MultispeakVendor mspVendor, List<MspMeter> removeMeters);
-
 }
  
