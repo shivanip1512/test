@@ -14,6 +14,7 @@ import org.apache.commons.lang3.StringUtils;
 import org.apache.logging.log4j.Logger;
 import org.joda.time.Instant;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.dao.IncorrectResultSizeDataAccessException;
 import org.springframework.transaction.TransactionStatus;
@@ -96,7 +97,7 @@ public class MultispeakMeterServiceImpl extends MultispeakMeterServiceBase imple
 
     private static final Logger log = YukonLogManager.getLogger(MultispeakMeterServiceImpl.class);
 
-    private BasicServerConnection porterConnection;
+    @Autowired private @Qualifier("porter") BasicServerConnection porterConnection;
 
     @Autowired private MspObjectDao mspObjectDao;
     @Autowired private DeviceUpdateService deviceUpdateService;
