@@ -363,8 +363,8 @@ public class MRServiceEndPoint {
         String responseURL = initiateDemandReset.getResponseURL();
         String transactionId = initiateDemandReset.getTransactionID();
 
-        ArrayOfMeterID1 ArrOfMeterIds = initiateDemandReset.getMeterIDs();
-        List<MeterID> meterIds = null != ArrOfMeterIds ? ArrOfMeterIds.getMeterID() : null;
+        ArrayOfMeterID1 arrOfMeterIds = initiateDemandReset.getMeterIDs();
+        List<MeterID> meterIds = null != arrOfMeterIds ? arrOfMeterIds.getMeterID() : null;
 
         List<ErrorObject> errorObjects = mr_server.initiateDemandReset(ListUtils.emptyIfNull(meterIds), responseURL,
                 transactionId,
@@ -381,8 +381,8 @@ public class MRServiceEndPoint {
             throws MultispeakWebServiceException {
         ServiceLocationChangedNotificationResponse response = objectFactory.createServiceLocationChangedNotificationResponse();
         
-        ArrayOfServiceLocation1 ArrOfServiceLocations = serviceLocationChangedNotification.getChangedServiceLocations();
-        List<ServiceLocation> serviceLocationList = null != ArrOfServiceLocations ? ArrOfServiceLocations.getServiceLocation() : null;
+        ArrayOfServiceLocation1 arrOfServiceLocations = serviceLocationChangedNotification.getChangedServiceLocations();
+        List<ServiceLocation> serviceLocationList = null != arrOfServiceLocations ? arrOfServiceLocations.getServiceLocation() : null;
         List<ErrorObject> errorObjects = mr_server
                 .serviceLocationChangedNotification(ListUtils.emptyIfNull(serviceLocationList));
         

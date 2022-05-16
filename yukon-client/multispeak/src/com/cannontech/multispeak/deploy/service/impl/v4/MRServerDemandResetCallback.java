@@ -106,8 +106,8 @@ public class MRServerDemandResetCallback implements DemandResetCallback {
         meterEvent.setType(EndDeviceEventType.COMMAND.code);
         meterEvent.setIndex(EndDeviceEventIndex.RESET.code);
 
-        ArrayOfEventInstance ArrOfEventInstances = objectFactory.createArrayOfEventInstance();
-        List<EventInstance> listEventInstance = ArrOfEventInstances != null ? ArrOfEventInstances.getEventInstance() : null;
+        ArrayOfEventInstance arrOfEventInstances = objectFactory.createArrayOfEventInstance();
+        List<EventInstance> listEventInstance = arrOfEventInstances != null ? arrOfEventInstances.getEventInstance() : null;
 
         EventInstance eventInstance = objectFactory.createEventInstance();
 
@@ -131,7 +131,7 @@ public class MRServerDemandResetCallback implements DemandResetCallback {
         events.setObjectID(meterNumber);
         events.setVerb(Action.CHANGE);
         events.setExtensionsList(extensionsList);
-        events.setEventInstances(ArrOfEventInstances);
+        events.setEventInstances(arrOfEventInstances);
 
         try {
             MeterEventNotification meterEventNotification = objectFactory.createMeterEventNotification();
