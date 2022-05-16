@@ -400,21 +400,21 @@ public class MR_ServerImpl implements MR_Server {
     }
 
     @Override
-    public List<ErrorObject> initiateUsageMonitoring(List<MeterID> meterIDs) throws MultispeakWebServiceException {
+    public List<ErrorObject> initiateUsageMonitoring(List<MeterID> meterIds) throws MultispeakWebServiceException {
         init();
         MultispeakVendor vendor = multispeakFuncs.getMultispeakVendorFromHeader();
         multispeakEventLogService.methodInvoked("InitiateUsageMonitoring", vendor.getCompanyName());
 
-        List<ErrorObject> errorObject = multispeakMeterService.initiateUsageMonitoring(vendor, meterIDs);
+        List<ErrorObject> errorObject = multispeakMeterService.initiateUsageMonitoring(vendor, meterIds);
         return errorObject;
     }
 
     @Override
-    public List<ErrorObject> cancelUsageMonitoring(List<MeterID> meterIDs) throws MultispeakWebServiceException {
+    public List<ErrorObject> cancelUsageMonitoring(List<MeterID> meterIds) throws MultispeakWebServiceException {
         init();
         MultispeakVendor vendor = multispeakFuncs.getMultispeakVendorFromHeader();
         multispeakEventLogService.methodInvoked("CancelUsageMonitoring", vendor.getCompanyName());
-        List<ErrorObject> errorObject = multispeakMeterService.cancelUsageMonitoring(vendor, meterIDs);
+        List<ErrorObject> errorObject = multispeakMeterService.cancelUsageMonitoring(vendor, meterIds);
         return errorObject;
     }
 
@@ -548,13 +548,13 @@ public class MR_ServerImpl implements MR_Server {
             hasFatalErrors = true;
         }
 
-        Set<String> meterNumbers = meterIds.stream().map(meterID -> meterID.getMeterNo()).collect(Collectors.toSet());
+        Set<String> meterNumbers = meterIds.stream().map(meterId -> meterId.getMeterNo()).collect(Collectors.toSet());
         Map<String, PaoIdentifier> paoIdsByMeterNumber = paoDao.findPaoIdentifiersByMeterNumber(meterNumbers);
         Map<PaoIdentifier, String> meterNumbersByPaoId = HashBiMap.create(paoIdsByMeterNumber).inverse();
         Set<String> invalidMeterNumbers = Sets.difference(meterNumbers, paoIdsByMeterNumber.keySet());
 
         for (String invalidMeterNumber : invalidMeterNumbers) {
-            errors.add(mspObjectDao.getNotFoundErrorObject(invalidMeterNumber, "MeterID", "MeterNumber",
+            errors.add(mspObjectDao.getNotFoundErrorObject(invalidMeterNumber, "MeterId", "MeterNumber",
                                                            "InitiateDemandReset", vendor.getCompanyName()));
         }
 
@@ -565,7 +565,7 @@ public class MR_ServerImpl implements MR_Server {
             String errorMsg = unsupportedMeter.getPaoIdentifier().getPaoType()
                     + " does not support demand reset";
             String meterNumber = meterNumbersByPaoId.get(unsupportedMeter);
-            errors.add(mspObjectDao.getErrorObject(meterNumber, errorMsg, "MeterID",
+            errors.add(mspObjectDao.getErrorObject(meterNumber, errorMsg, "MeterId",
                                                    "InitiateDemandReset", vendor.getCompanyName()));
         }
 

@@ -210,9 +210,9 @@ public class MRServiceEndPoint {
             @RequestPayload InitiateUsageMonitoring initiateUsageMonitoring) throws MultispeakWebServiceException {
         InitiateUsageMonitoringResponse response = objectFactory.createInitiateUsageMonitoringResponse();
 
-        ArrayOfMeterID1 ArrOfMeterIDs = initiateUsageMonitoring.getMeterIDs();
-        List<MeterID> meterIDs = (null != ArrOfMeterIDs.getMeterID()) ? ArrOfMeterIDs.getMeterID() : null;
-        List<ErrorObject> errorObjects = mr_server.initiateUsageMonitoring(ListUtils.emptyIfNull(meterIDs));
+        ArrayOfMeterID1 ArrOfMeterIds = initiateUsageMonitoring.getMeterIDs();
+        List<MeterID> meterIds = (null != ArrOfMeterIds.getMeterID()) ? ArrOfMeterIds.getMeterID() : null;
+        List<ErrorObject> errorObjects = mr_server.initiateUsageMonitoring(ListUtils.emptyIfNull(meterIds));
 
         ArrayOfErrorObject arrayOfErrorObject = multispeakFuncs.toArrayOfErrorObject(errorObjects);
         response.setInitiateUsageMonitoringResult(arrayOfErrorObject);
@@ -225,10 +225,10 @@ public class MRServiceEndPoint {
             throws MultispeakWebServiceException {
         CancelUsageMonitoringResponse cancelUsageMonitoringResponse = objectFactory.createCancelUsageMonitoringResponse();
 
-        ArrayOfMeterID1 ArrOfMeterIDs = cancelUsageMonitoring.getMeterIDs();
-        List<MeterID> meterIDs = null != ArrOfMeterIDs.getMeterID() ? ArrOfMeterIDs.getMeterID() : null;
+        ArrayOfMeterID1 ArrOfMeterIds = cancelUsageMonitoring.getMeterIDs();
+        List<MeterID> meterIds = null != ArrOfMeterIds.getMeterID() ? ArrOfMeterIds.getMeterID() : null;
 
-        List<ErrorObject> errorObjects = mr_server.cancelUsageMonitoring(ListUtils.emptyIfNull(meterIDs));
+        List<ErrorObject> errorObjects = mr_server.cancelUsageMonitoring(ListUtils.emptyIfNull(meterIds));
 
         ArrayOfErrorObject arrayOfErrorObject = multispeakFuncs.toArrayOfErrorObject(errorObjects);
         cancelUsageMonitoringResponse.setCancelUsageMonitoringResult(arrayOfErrorObject);
@@ -363,10 +363,10 @@ public class MRServiceEndPoint {
         String responseURL = initiateDemandReset.getResponseURL();
         String transactionId = initiateDemandReset.getTransactionID();
 
-        ArrayOfMeterID1 ArrOfMeterIDs = initiateDemandReset.getMeterIDs();
-        List<MeterID> meterIDs = null != ArrOfMeterIDs ? ArrOfMeterIDs.getMeterID() : null;
+        ArrayOfMeterID1 ArrOfMeterIds = initiateDemandReset.getMeterIDs();
+        List<MeterID> meterIds = null != ArrOfMeterIds ? ArrOfMeterIds.getMeterID() : null;
 
-        List<ErrorObject> errorObjects = mr_server.initiateDemandReset(ListUtils.emptyIfNull(meterIDs), responseURL,
+        List<ErrorObject> errorObjects = mr_server.initiateDemandReset(ListUtils.emptyIfNull(meterIds), responseURL,
                 transactionId,
                 expirationTime);
         ArrayOfErrorObject arrayOfErrorObject = multispeakFuncs.toArrayOfErrorObject(errorObjects);

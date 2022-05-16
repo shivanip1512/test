@@ -211,7 +211,7 @@ public interface MR_Server {
     /**
      * insert Meters In Meter Group.
      * 
-     * @param meterID      the meter ids
+     * @param meterIds      the meter ids
      * @param meterGroupId the meter group id
      * @return the error object[]
      * @throws MultispeakWebServiceException the multispeak web service
