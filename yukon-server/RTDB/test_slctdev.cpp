@@ -189,7 +189,7 @@ BOOST_AUTO_TEST_CASE(test_createDeviceType)
     *i++ = "class Cti::Devices::RfBatteryNodeDevice";
     *i++ = "class Cti::Devices::RfBatteryNodeDevice";
     *i++ = "class Cti::Devices::RfCellularRelayDevice";
-    *i++ = "class Cti::Devices::Rfn530S4X_Der";
+    *i++ = "class Cti::Devices::Rfn530s4xDerDevice";
     *i++ = "class CtiDeviceCCU710";
     //  100
     *i++ = "class CtiDeviceCCU710";
