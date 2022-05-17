@@ -81,8 +81,10 @@ public class MRServerDemandResetCallback implements DemandResetCallback {
             SpecificDeviceErrorDescription error = drErrors.get(device);
             String meterNumber = meterNumbersByPaoId.get(device.getPaoIdentifier());
 
-            errors.add(mspObjectDao.getErrorObject(meterNumber, error.getPorter(), "MeterID",
-                                                   "initiateDemandReset", vendor.getCompanyName()));
+            errors.add(mspObjectDao.getErrorObject(meterNumber, error.getPorter(), 
+                                                   "MeterID",
+                                                   "initiateDemandReset", 
+                                                   vendor.getCompanyName()));
         }
     }
 

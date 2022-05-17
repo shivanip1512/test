@@ -7,6 +7,8 @@ public enum SyntaxItem {
     METER_NUMBER("meterNo", null),
     PHYSICAL_ADDRESS("transponderID", null),
     KWH("posKWh", MspUom.kWh),
+    WATER_VOLUME ("WaterVolume", MspUom.gallon),
+    GAS_VOLUME ("GasVolume", MspUom.ccf),
     KWH_DATETIME("posKWhDateTime", MspUom.DateTime),
     LAST_INTERVAL_DEMAND("kW", MspUom.kW),
     LAST_INTERVAL_DEMAND_DATETIME("kWDateTime", MspUom.DateTime),

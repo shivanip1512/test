@@ -68,12 +68,12 @@ public class CD_ServerImpl implements CD_Server {
         return multispeakFuncs.getMethods(MultispeakDefines.CD_Server_STR, Arrays.asList(methods));
     }
 
-    public CDState getCDMeterState(MeterID meterID) throws MultispeakWebServiceException {
+    public CDState getCDMeterState(MeterID meterId) throws MultispeakWebServiceException {
         init();
         MultispeakVendor vendor = multispeakFuncs.getMultispeakVendorFromHeader();
         multispeakEventLogService.methodInvoked("GetCDMeterState", vendor.getCompanyName());
 
-        YukonMeter meter = mspValidationService.isYukonMeterNumber(meterID.getMeterNo());
+        YukonMeter meter = mspValidationService.isYukonMeterNumber(meterId.getMeterNo());
 
         boolean canInitiatePorterRequest = paoDefinitionDao.isTagSupported(meter.getPaoIdentifier().getPaoType(),
                 PaoTag.PORTER_COMMAND_REQUESTS);
@@ -87,10 +87,11 @@ public class CD_ServerImpl implements CD_Server {
             // stored.
             rCDState = getRCDStateFromCache(meter);
         }
-        multispeakEventLogService.returnObject("RCDState." + rCDState.value(), meterID.getMeterNo(), "GetCDMeterState",
+        multispeakEventLogService.returnObject("RCDState." + rCDState.value(), meterId.getMeterNo(), "GetCDMeterState",
                 vendor.getCompanyName());
 
         CDState cdState = new CDState();
+        cdState.setMeterID(meterId);
         cdState.setRCDState(rCDState);
 
         return cdState;
@@ -137,15 +138,18 @@ public class CD_ServerImpl implements CD_Server {
         multispeakEventLogService.methodInvoked("GetCDSupportedMeters", vendor.getCompanyName());
 
         Date timerStart = new Date();
-        MspMeterReturnList meterList = (MspMeterReturnList) mspMeterDao.getCDSupportedMeters(lastReceived,
-                vendor.getMaxReturnRecords());
+        MspMeterReturnList meterList = (MspMeterReturnList) mspMeterDao.getCDSupportedMeters(lastReceived, vendor.getMaxReturnRecords());
 
         multispeakFuncs.updateResponseHeader(meterList);
 
         log.info("Returning " + meterList.getSize() + " CD Supported Meters. ("
                 + (new Date().getTime() - timerStart.getTime()) * .001 + " secs)");
-        multispeakEventLogService.returnObjects(meterList.getSize(), meterList.getObjectsRemaining(), "Meter",
-                meterList.getLastSent(), "GetCDSupportedMeters", vendor.getCompanyName());
+        multispeakEventLogService.returnObjects(meterList.getSize(), 
+                                                meterList.getObjectsRemaining(), 
+                                                "Meter",
+                                                meterList.getLastSent(), 
+                                                "GetCDSupportedMeters", 
+                                                vendor.getCompanyName());
 
         return meterList.getMeters();
     }

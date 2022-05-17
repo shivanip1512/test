@@ -40,7 +40,7 @@ public class MspValidationServiceImpl implements MspValidationService {
         
         try {
             yukonMeter = mspMeterDao.getMeterForMeterNumber(meterNumber);
-        }catch (NotFoundException e){
+        } catch (NotFoundException e){
             String errorMessage = "Meter Number: (" + meterNumber + ") - Was NOT found in Yukon.";
             log.error(errorMessage);
             throw new MultispeakWebServiceException(errorMessage);
@@ -66,16 +66,22 @@ public class MspValidationServiceImpl implements MspValidationService {
         ErrorObject errorObject = null;
         if (StringUtils.isBlank(scadaAnalog.getObjectID())) {
             errorObject = mspObjectDao.getErrorObject(null,
-                    "ScadaAnalog objectId was not populated.",
-                    "ScadaAnalog", "isValidScadaAnalog", null);
+                                                      "ScadaAnalog objectId was not populated.",
+                                                      "ScadaAnalog", 
+                                                      "isValidScadaAnalog", 
+                                                      null);
         } else if (scadaAnalog.getValue() == null) {
             errorObject = mspObjectDao.getErrorObject(scadaAnalog.getObjectID(),
-                    "ScadaAnalog Value was not populated.",
-                    "ScadaAnalog", "isValidScadaAnalog", null);
+                                                      "ScadaAnalog Value was not populated.",
+                                                      "ScadaAnalog", 
+                                                      "isValidScadaAnalog", 
+                                                      null);
         } else if (scadaAnalog.getQuality() == null) {
             errorObject = mspObjectDao.getErrorObject(scadaAnalog.getObjectID(),
-                    "ScadaAnalog Quality was not populated.",
-                    "ScadaAnalog", "isValidScadaAnalog", null);
+                                                      "ScadaAnalog Quality was not populated.",
+                                                      "ScadaAnalog", 
+                                                      "isValidScadaAnalog", 
+                                                      null);
         }
         return errorObject;
     }
@@ -88,29 +94,37 @@ public class MspValidationServiceImpl implements MspValidationService {
         // is control type is defined?
         if (controlEventType == null || StringUtils.isBlank(controlEventType.value())) {
             errorObject = mspObjectDao.getErrorObject(loadManagementEvent.getObjectID(),
-                    "ControlEventType not specified, event not processed.",
-                    "LoadManagementEvent", "isValidLoadManagementEvent", null);
+                                                      "ControlEventType not specified, event not processed.",
+                                                      "LoadManagementEvent", 
+                                                      "isValidLoadManagementEvent", 
+                                                      null);
         } else {
             // is strategy name defined?
             Strategy strategy = loadManagementEvent.getStrategy();
             if (strategy == null) {
                 errorObject = mspObjectDao.getErrorObject(loadManagementEvent.getObjectID(),
-                        "Strategy is null, event not processed.",
-                        "LoadManagementEvent", "isValidLoadManagementEvent", null);
+                                                          "Strategy is null, event not processed.",
+                                                          "LoadManagementEvent", 
+                                                          "isValidLoadManagementEvent", 
+                                                          null);
             } else {
                 // are substation values for the strategy defined?
                 List<ObjectRef> substations = strategy.getApplicationPointList().getApplicationPoint();
                 if (substations == null) {
                     errorObject = mspObjectDao.getErrorObject(loadManagementEvent.getObjectID(),
-                            "ApplicationPointList is null (invalid Substation value), event not processed.",
-                            "LoadManagementEvent", "isValidLoadManagementEvent", null);
+                                                              "ApplicationPointList is null (invalid Substation value), event not processed.",
+                                                              "LoadManagementEvent", 
+                                                              "isValidLoadManagementEvent", 
+                                                              null);
                 } else {
                     // are the substation name values for the strategy defined?
                     for (ObjectRef substationRef : substations) {
                         if (StringUtils.isBlank(substationRef.getName())) {
                             errorObject = mspObjectDao.getErrorObject(loadManagementEvent.getObjectID(),
-                                    "ApplicationPointList (" + substationRef.toString() + ") .Name is null, event not processed.",
-                                    "LoadManagementEvent", "isValidLoadManagementEvent", null);
+                                                                      "ApplicationPointList (" + substationRef.toString() + ") .Name is null, event not processed.",
+                                                                      "LoadManagementEvent", 
+                                                                      "isValidLoadManagementEvent", 
+                                                                      null);
                         }
                     }
                 }
@@ -125,8 +139,7 @@ public class MspValidationServiceImpl implements MspValidationService {
         ErrorObject errorObjectRetVal = null;
 
         if (StringUtils.isBlank(responseURL)) {
-            errorObjectRetVal = mspObjectDao.getErrorObject("n/a", "responseURL is blank", nounType, method,
-                                                 null);
+            errorObjectRetVal = mspObjectDao.getErrorObject("n/a", "responseURL is blank", nounType, method, null);
         }
 
         return errorObjectRetVal;

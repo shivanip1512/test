@@ -27,12 +27,12 @@ public interface MultispeakMeterService {
     /**
      * Add MeterNos to SystemGroupEnum.USAGEMONITORING Device Group.
      */
-    public List<ErrorObject> initiateUsageMonitoring(MultispeakVendor mspVendor, List<MeterID> meterIDs);
+    public List<ErrorObject> initiateUsageMonitoring(MultispeakVendor mspVendor, List<MeterID> meterIds);
     
     /**
      * Remove MeterNos from SystemGroupEnum.USAGEMONITORING Device Group.
      */
-    public List<ErrorObject> cancelUsageMonitoring(MultispeakVendor mspVendor, List<MeterID> meterIDs);
+    public List<ErrorObject> cancelUsageMonitoring(MultispeakVendor mspVendor, List<MeterID> meterIds);
 
     /**
      * Adds meters to a group. If the group doesn't exist, a new group will be created

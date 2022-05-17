@@ -272,6 +272,12 @@
                 </entry>
                 <entry>
                     <key>
+                        <value>http://www.multispeak.org/V5.0/ws/response</value>
+                    </key>
+                    <value>res</value>
+                </entry>
+                <entry>
+                    <key>
                         <value>http://www.multispeak.org/V5.0</value>
                     </key>
                     <value>v5</value>
