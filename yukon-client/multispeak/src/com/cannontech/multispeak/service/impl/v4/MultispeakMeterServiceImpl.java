@@ -405,7 +405,7 @@ public class MultispeakMeterServiceImpl extends MultispeakMeterServiceBase imple
                                 // if above both optional fields (meterID/mspMeter ) are not present in ServiceLocation then should we need to send any error message.
                                 if (meterNo == null && mspMeter == null) {
                                     ErrorObject err = mspObjectDao.getNotFoundErrorObject("MeterID and MspMeter",
-                                                                                          "Meter",
+                                                                                          "MspMeter",
                                                                                           "ServiceLocation", 
                                                                                           SERV_LOC_CHANGED_STRING,
                                                                                           companyName,
@@ -600,7 +600,7 @@ public class MultispeakMeterServiceImpl extends MultispeakMeterServiceBase imple
                 // Transactional code threw application exception -> rollback
                 ErrorObject err = mspObjectDao.getErrorObject(mspMeter.getMeterNo(),
                                                               "X Exception: (MeterNo:" + mspMeter.getMeterNo() + ")-" + ex.getMessage(),
-                                                              "Meter",
+                                                              "MspMeter",
                                                               METER_ADD_STRING,
                                                               mspVendor.getCompanyName());
                 errorObjects.add(err);
@@ -610,7 +610,7 @@ public class MultispeakMeterServiceImpl extends MultispeakMeterServiceBase imple
                 // Transactional code threw error -> rollback
                 ErrorObject err = mspObjectDao.getErrorObject(mspMeter.getMeterNo(),
                                                               "X Error: (MeterNo:" + mspMeter.getMeterNo() + ")-" + ex.getMessage(),
-                                                              "Meter",
+                                                              "MspMeter",
                                                               METER_ADD_STRING,
                                                               mspVendor.getCompanyName());
                 errorObjects.add(err);
@@ -803,7 +803,7 @@ public class MultispeakMeterServiceImpl extends MultispeakMeterServiceBase imple
                 // return errorObject for any other type.
                 ErrorObject errorObject = mspObjectDao.getErrorObject(mspMeter.getObjectID(),
                                                                       "Error: Invalid template type [" + templateMeter.getPaoType() + "].",
-                                                                      "Meter",
+                                                                      "MspMeter",
                                                                       mspMethod,
                                                                       mspVendor.getCompanyName());
                 throw new MspErrorObjectException(errorObject);
@@ -812,7 +812,7 @@ public class MultispeakMeterServiceImpl extends MultispeakMeterServiceBase imple
             log.error(e);
             ErrorObject errorObject = mspObjectDao.getErrorObject(mspMeter.getObjectID(),
                                                                   "Error: " + e.getMessage(),
-                                                                  "Meter",
+                                                                  "MspMeter",
                                                                   mspMethod,
                                                                   mspVendor.getCompanyName());
             throw new MspErrorObjectException(errorObject);
@@ -898,7 +898,7 @@ public class MultispeakMeterServiceImpl extends MultispeakMeterServiceBase imple
                 existingMeter = updateDeviceType(templateMeter, existingMeter, serialOrAddress, mspMethod, mspVendor);
             } catch (ProcessingException | NumberFormatException e) {
                 ErrorObject errorObject = mspObjectDao.getErrorObject(existingMeter.getMeterNumber(), "Error: " + e.getMessage(),
-                                                                      "Meter",
+                                                                      "MspMeter",
                                                                       "ChangeDeviceType", mspVendor.getCompanyName());
                 // return errorObject; couldn't save the change type
                 throw new MspErrorObjectException(errorObject);
@@ -928,7 +928,7 @@ public class MultispeakMeterServiceImpl extends MultispeakMeterServiceBase imple
                 ErrorObject err = mspObjectDao.getErrorObject(mspMeter.getObjectID(),
                                                               "Error: Meter (" + mspMeter.getMeterNo() + ") - does not contain a valid template meter: Template["
                                                               + templateName + "]. Processing could not be completed, returning ErrorObject to calling vendor for processing.",
-                                                              "Meter", mspMethod, mspVendor.getCompanyName());
+                                                              "MspMeter", mspMethod, mspVendor.getCompanyName());
                 log.error(e);
                 throw new MspErrorObjectException(err);
             }
