@@ -118,4 +118,17 @@ public class MspValidationServiceImpl implements MspValidationService {
         }
         return errorObject;
     }
+    
+    
+    @Override
+    public ErrorObject validateResponseURL(String responseURL, String nounType, String method) {
+        ErrorObject errorObjectRetVal = null;
+
+        if (StringUtils.isBlank(responseURL)) {
+            errorObjectRetVal = mspObjectDao.getErrorObject("n/a", "responseURL is blank", nounType, method,
+                                                 null);
+        }
+
+        return errorObjectRetVal;
+    }
 }

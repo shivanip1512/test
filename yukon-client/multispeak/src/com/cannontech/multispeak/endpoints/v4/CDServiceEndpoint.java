@@ -60,6 +60,11 @@ public class CDServiceEndpoint {
     public @ResponsePayload GetCDMeterStateResponse getCDMeterState(@RequestPayload GetCDMeterState cdMeterState)
             throws MultispeakWebServiceException {
         GetCDMeterStateResponse response = objectFactory.createGetCDMeterStateResponse();
+        
+        if (cdMeterState.getMeterID() == null) {
+            throw new MultispeakWebServiceException("Missing MeterID or MeterNo in request");
+        }
+        
         CDState cdState = cd_server.getCDMeterState(cdMeterState.getMeterID());
         response.setGetCDMeterStateResult(cdState);
         return response;
