@@ -23,6 +23,9 @@ import com.cannontech.core.dynamic.PointValueQualityHolder;
 import com.cannontech.core.dynamic.exception.DynamicDataAccessException;
 import com.cannontech.database.data.lite.LitePoint;
 import com.cannontech.msp.beans.v4.CDState;
+import com.cannontech.msp.beans.v4.ConnectDisconnectEvent;
+import com.cannontech.msp.beans.v4.ErrorObject;
+import com.cannontech.msp.beans.v4.ExpirationTime;
 import com.cannontech.msp.beans.v4.MeterID;
 import com.cannontech.msp.beans.v4.Meters;
 import com.cannontech.msp.beans.v4.RCDState;
@@ -148,5 +151,12 @@ public class CD_ServerImpl implements CD_Server {
                 meterList.getLastSent(), "GetCDSupportedMeters", vendor.getCompanyName());
 
         return meterList.getMeters();
+    }
+
+    @Override
+    public List<ErrorObject> initiateConnectDisconnect(List<ConnectDisconnectEvent> cdEvents, String responseURL,
+            String transactionId, ExpirationTime expirationTime) throws MultispeakWebServiceException {
+        // TODO Auto-generated method stub
+        return null;
     }
 }
