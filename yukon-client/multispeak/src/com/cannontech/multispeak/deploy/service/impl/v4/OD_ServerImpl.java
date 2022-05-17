@@ -30,7 +30,8 @@ public class OD_ServerImpl implements OD_Server {
 
     private final Logger log = YukonLogManager.getLogger(OD_ServerImpl.class);
     private final static String[] methods = new String[] { "PingURL",
-            "GetMethods", "InitiateOutageDetectionEventRequest" };
+                                                           "GetMethods", 
+                                                           "InitiateOutageDetectionEventRequest" };
 
     private void init() throws MultispeakWebServiceException {
         multispeakFuncs.init();
@@ -48,7 +49,7 @@ public class OD_ServerImpl implements OD_Server {
     }
 
     @Override
-    public List<ErrorObject> initiateOutageDetectionEventRequest(List<MeterID> meterIDs,
+    public List<ErrorObject> initiateOutageDetectionEventRequest(List<MeterID> meterIds,
             String responseURL, String transactionId) throws MultispeakWebServiceException {
         init();
 
@@ -57,8 +58,8 @@ public class OD_ServerImpl implements OD_Server {
         String actualResponseUrl = multispeakFuncs.getResponseUrl(vendor, responseURL, MultispeakDefines.OA_Server_STR);
 
         List<ErrorObject> errorObjects = new ArrayList<ErrorObject>();
-        if (!CollectionUtils.isEmpty(meterIDs)) {
-            errorObjects = multispeakMeterService.odEvent(vendor, meterIDs, transactionId, actualResponseUrl);
+        if (!CollectionUtils.isEmpty(meterIds)) {
+            errorObjects = multispeakMeterService.odEvent(vendor, meterIds, transactionId, actualResponseUrl);
         }
         multispeakFuncs.logErrorObjects(MultispeakDefines.OD_Server_STR, "InitiateOutageDetectionEventRequest",
                 errorObjects);

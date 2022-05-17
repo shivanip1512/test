@@ -75,10 +75,10 @@ public class ODServiceEndpoint {
             List<MeterID> meterIds = null != arrOfMeterIds.getMeterID() ? arrOfMeterIds.getMeterID() : null;
             if (CollectionUtils.isNotEmpty(meterIds)) {
                 String responseURL = initiateOutageDetectionEventRequest.getResponseURL();
-                String transactionID = initiateOutageDetectionEventRequest.getTransactionID();
+                String transactionId = initiateOutageDetectionEventRequest.getTransactionID();
 
                 List<ErrorObject> errorObjects = od_server.initiateOutageDetectionEventRequest(meterIds,
-                        responseURL, transactionID);
+                        responseURL, transactionId);
 
                 ArrayOfErrorObject arrayOfErrorObject = multispeakFuncs.toArrayOfErrorObject(errorObjects);
                 response.setInitiateOutageDetectionEventRequestResult(arrayOfErrorObject);

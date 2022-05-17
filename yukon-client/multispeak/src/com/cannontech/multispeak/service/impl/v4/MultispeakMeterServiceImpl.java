@@ -1721,13 +1721,13 @@ public class MultispeakMeterServiceImpl extends MultispeakMeterServiceBase imple
         
         MeterID meterId = new MeterID();
         meterId.setMeterNo(meterNumber);
-        if (yukonMeter.getPaoIdentifier().getPaoType().isGasMeter()) {
+        if (yukonMeter.getPaoIdentifier().getPaoType().isGasMeter())
             meterId.setServiceType(ServiceType.GAS);
-        } else if (yukonMeter.getPaoIdentifier().getPaoType().isWaterMeter()) {
+        else if (yukonMeter.getPaoIdentifier().getPaoType().isWaterMeter())
             meterId.setServiceType(ServiceType.WATER);
-        } else
+        else
             meterId.setServiceType(ServiceType.ELECTRIC);
-        
+
         outageLocation.setMeterID(meterId);
         outageDetectionEvent.setOutageLocation(outageLocation);
 
