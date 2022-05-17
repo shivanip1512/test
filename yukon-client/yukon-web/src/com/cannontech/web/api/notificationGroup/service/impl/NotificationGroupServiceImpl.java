@@ -184,6 +184,19 @@ public class NotificationGroupServiceImpl implements NotificationGroupService {
     }
 
     @Override
+    public NotificationGroup retrieve(int id) {
+        LiteNotificationGroup liteNotificationGroup = cache.getAllContactNotificationGroups().stream()
+                .filter(obj -> obj.getNotificationGroupID() == id).findFirst()
+                .orElseThrow(() -> new NotFoundException("Notification Group id not found"));
+        com.cannontech.database.data.notification.NotificationGroup notificationGroupBase = (com.cannontech.database.data.notification.NotificationGroup) dbPersistentDao
+                .retrieveDBPersistent(liteNotificationGroup);
+
+        NotificationGroup notificationGroup = new NotificationGroup();
+        notificationGroup.buildModel(notificationGroupBase);
+        buildModelForCICustomersAndUnassignedCont(notificationGroup, notificationGroupBase);
+        return notificationGroup;
+    }
+
     @Transactional
     public int delete(int id) {
         LiteNotificationGroup liteNotificationGroup = cache.getAllContactNotificationGroups().stream()
