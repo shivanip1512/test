@@ -27,6 +27,7 @@ import com.cannontech.msp.beans.v4.ObjectFactory;
 import com.cannontech.msp.beans.v4.PingURL;
 import com.cannontech.msp.beans.v4.PingURLResponse;
 import com.cannontech.multispeak.client.MultispeakDefines;
+import com.cannontech.multispeak.client.v4.MultispeakFuncs;
 import com.cannontech.multispeak.exceptions.MultispeakWebServiceException;
 import com.cannontech.multispeak.service.v4.OD_Server;
 
@@ -40,6 +41,7 @@ public class ODServiceEndpoint {
 
     @Autowired private ObjectFactory objectFactory;
     @Autowired private OD_Server od_server;
+    @Autowired private MultispeakFuncs multispeakFuncs;
     private final String OD_V4_ENDPOINT_NAMESPACE = MultispeakDefines.NAMESPACE_v4;
 
     @PayloadRoot(localPart = "PingURL", namespace = OD_V4_ENDPOINT_NAMESPACE)
@@ -67,21 +69,21 @@ public class ODServiceEndpoint {
             throws MultispeakWebServiceException {
         InitiateOutageDetectionEventRequestResponse response = objectFactory.createInitiateOutageDetectionEventRequestResponse();
 
-        ArrayOfMeterID1 ArrOfMeterIDs = initiateOutageDetectionEventRequest.getMeterIDs();
-        List<MeterID> meterIDs = null != ArrOfMeterIDs.getMeterID() ? ArrOfMeterIDs.getMeterID() : null;
+        ArrayOfMeterID1 arrOfMeterIds = initiateOutageDetectionEventRequest.getMeterIDs();
+        List<MeterID> meterIds = null != arrOfMeterIds.getMeterID() ? arrOfMeterIds.getMeterID() : null;
         XMLGregorianCalendar xmlRequestDate = initiateOutageDetectionEventRequest.getRequestDate();
 
         if (xmlRequestDate == null) {
             throw new MultispeakWebServiceException("Invalid date/time.");
         }
-        
+
         String responseURL = initiateOutageDetectionEventRequest.getResponseURL();
         String transactionID = initiateOutageDetectionEventRequest.getTransactionID();
 
-        List<ErrorObject> errorObjects = od_server.initiateOutageDetectionEventRequest(ListUtils.emptyIfNull(meterIDs),
+        List<ErrorObject> errorObjects = od_server.initiateOutageDetectionEventRequest(ListUtils.emptyIfNull(meterIds),
                 responseURL, transactionID);
-        ArrayOfErrorObject arrayOfErrorObject = objectFactory.createArrayOfErrorObject();
-        arrayOfErrorObject.getErrorObject().addAll(errorObjects);
+
+        ArrayOfErrorObject arrayOfErrorObject = multispeakFuncs.toArrayOfErrorObject(errorObjects);
         response.setInitiateOutageDetectionEventRequestResult(arrayOfErrorObject);
         return response;
 

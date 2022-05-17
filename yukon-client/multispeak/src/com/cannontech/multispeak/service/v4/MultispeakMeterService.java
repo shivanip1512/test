@@ -40,7 +40,7 @@ public interface MultispeakMeterService {
      * @throws MultispeakWebServiceException
      */
     public List<ErrorObject> odEvent(MultispeakVendor mspVendor,
-            List<MeterID> meterIDs,
+            List<MeterID> meterIds,
             String transactionId, String responseUrl) throws MultispeakWebServiceException;
     
     /** Adds meters to a group. If the group doesn't exist, a new group will be created

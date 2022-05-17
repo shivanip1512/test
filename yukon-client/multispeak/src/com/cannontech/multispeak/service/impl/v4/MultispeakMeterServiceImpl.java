@@ -110,6 +110,7 @@ import com.cannontech.msp.beans.v4.OutageEventType;
 import com.cannontech.msp.beans.v4.OutageLocation;
 import com.cannontech.msp.beans.v4.RCDState;
 import com.cannontech.msp.beans.v4.ServiceLocation;
+import com.cannontech.msp.beans.v4.ServiceType;
 import com.cannontech.msp.beans.v4.WaterMeter;
 import com.cannontech.msp.beans.v4.WaterService;
 import com.cannontech.multispeak.client.MultispeakVendor;
@@ -142,7 +143,7 @@ import com.google.common.collect.Maps;
 import com.google.common.collect.SetMultimap;
 import com.google.common.collect.Sets;
 
-public class MultispeakMeterServiceImpl extends MultispeakMeterServiceBase implements MultispeakMeterService,MessageListener {
+public class MultispeakMeterServiceImpl extends MultispeakMeterServiceBase implements MultispeakMeterService, MessageListener {
 
     private static final Logger log = YukonLogManager.getLogger(MultispeakMeterServiceImpl.class);
 
@@ -1703,10 +1704,9 @@ public class MultispeakMeterServiceImpl extends MultispeakMeterServiceBase imple
     private OutageDetectionEvent buildOutageDetectionEvent(SimpleMeter yukonMeter, OutageEventType outageEventType,
             Date timestamp, String resultString) {
         OutageDetectionEvent outageDetectionEvent = null;
-
         outageDetectionEvent = new OutageDetectionEvent();
         String meterNumber = yukonMeter.getMeterNumber();
-
+ 
         outageDetectionEvent.setEventTime(MultispeakFuncs.toXMLGregorianCalendar(timestamp));
 
         System.out.println("EventTime: " + timestamp.getTime());
@@ -1716,9 +1716,17 @@ public class MultispeakMeterServiceImpl extends MultispeakMeterServiceBase imple
 
         OutageLocation outageLocation = new OutageLocation();
         outageLocation.setObjectID(meterNumber);
-        MeterID meterID = new MeterID();
-        meterID.setMeterNo(meterNumber);
-        outageLocation.setMeterID(meterID);
+        
+        MeterID meterId = new MeterID();
+        meterId.setMeterNo(meterNumber);
+        if (yukonMeter.getPaoIdentifier().getPaoType().isGasMeter()) {
+            meterId.setServiceType(ServiceType.GAS);
+        } else if (yukonMeter.getPaoIdentifier().getPaoType().isWaterMeter()) {
+            meterId.setServiceType(ServiceType.WATER);
+        } else
+            meterId.setServiceType(ServiceType.ELECTRIC);
+        
+        outageLocation.setMeterID(meterId);
         outageDetectionEvent.setOutageLocation(outageLocation);
 
         // set defaults, may be overwritten below
@@ -1730,10 +1738,10 @@ public class MultispeakMeterServiceImpl extends MultispeakMeterServiceBase imple
     }
 
     @Override
-    public synchronized List<ErrorObject> odEvent(final MultispeakVendor mspVendor, List<MeterID> meterIDs,
+    public synchronized List<ErrorObject> odEvent(final MultispeakVendor mspVendor, List<MeterID> meterIds,
             final String transactionId, final String responseUrl) throws MultispeakWebServiceException {
 
-        List<String> meterNumbers = meterIDs.stream().map(meterID -> meterID.getMeterNo()).collect(Collectors.toList());
+        List<String> meterNumbers = meterIds.stream().map(meterID -> meterID.getMeterNo()).collect(Collectors.toList());
 
         if (StringUtils.isBlank(responseUrl)) { // no need to go through all the work if we have no one to respond to.
             throw new MultispeakWebServiceException("OMS vendor unknown.  Please contact Yukon administrator" +
@@ -1761,7 +1769,7 @@ public class MultispeakMeterServiceImpl extends MultispeakMeterServiceBase imple
         for (String meterNumber : meterNumbers) {
             List<YukonMeter> meters = meterNumberToMeterMap.get(meterNumber); // this will most likely be size 1
             if (CollectionUtils.isEmpty(meters)) {
-                ErrorObject err = mspObjectDao.getNotFoundErrorObject(meterNumber, "MeterNumber", "Meter", "ODEvent",
+                ErrorObject err = mspObjectDao.getNotFoundErrorObject(meterNumber, "MeterNumber", "MeterID", "ODEvent",
                         mspVendor.getCompanyName());
                 errorObjects.add(err);
                 multispeakEventLogService.meterNotFound(meterNumber, "InitiateOutageDetectionEventRequest",
@@ -1793,7 +1801,7 @@ public class MultispeakMeterServiceImpl extends MultispeakMeterServiceBase imple
                 } else {
                     ErrorObject err = mspObjectDao.getErrorObject(meterNumber,
                             "MeterNumber (" + meterNumber + ") - Meter cannot receive requests from porter. ",
-                            "Meter", "ODEvent", mspVendor.getCompanyName());
+                            "MeterID", "ODEvent", mspVendor.getCompanyName());
                     errorObjects.add(err);
                 }
             }
