@@ -6,7 +6,6 @@ import org.springframework.validation.Errors;
 import com.cannontech.common.dr.gear.setup.fields.NestStandardCycleGearFields;
 import com.cannontech.common.validator.YukonApiValidationUtils;
 import com.cannontech.database.db.device.lm.GearControlMethod;
-import com.cannontech.web.api.dr.setup.LMValidatorHelper;
 
 public class NestStandardCycleGearFieldsValidator extends ProgramGearFieldsValidator<NestStandardCycleGearFields> {
 

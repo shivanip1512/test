@@ -6,7 +6,6 @@ import org.springframework.validation.Errors;
 import com.cannontech.api.error.model.ApiErrorDetails;
 import com.cannontech.common.dr.gear.setup.fields.EatonCloudCycleGearFields;
 import com.cannontech.common.validator.YukonApiValidationUtils;
-import com.cannontech.common.validator.YukonValidationUtils;
 import com.cannontech.database.db.device.lm.GearControlMethod;
 
 public class EatonCloudCycleGearFieldsValidator extends ProgramGearFieldsValidator<EatonCloudCycleGearFields> {
@@ -44,7 +43,7 @@ public class EatonCloudCycleGearFieldsValidator extends ProgramGearFieldsValidat
         yukonApiValidationUtils.checkIfFieldRequired("dutyCyclePercent", errors, eatonCloudCycleGear.getDutyCyclePercent(),
                 "Duty Cycle");
         if (!errors.hasFieldErrors("dutyCyclePercent")) {
-            YukonValidationUtils.checkRange(errors, "dutyCyclePercent", eatonCloudCycleGear.getDutyCyclePercent(), 0, 100,
+            yukonApiValidationUtils.checkRange(errors, "dutyCyclePercent", eatonCloudCycleGear.getDutyCyclePercent(), 0, 100,
                     false);
         }
 
@@ -63,7 +62,7 @@ public class EatonCloudCycleGearFieldsValidator extends ProgramGearFieldsValidat
         // Check Criticality
         yukonApiValidationUtils.checkIfFieldRequired("criticality", errors, eatonCloudCycleGear.getCriticality(), "Criticality");
         if (!errors.hasFieldErrors("criticality")) {
-            YukonValidationUtils.checkRange(errors, "criticality", eatonCloudCycleGear.getCriticality(), 0, 255, false);
+            yukonApiValidationUtils.checkRange(errors, "criticality", eatonCloudCycleGear.getCriticality(), 0, 255, false);
         }
 
         // Check Group Capacity Reduction
