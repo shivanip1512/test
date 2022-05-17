@@ -7,15 +7,19 @@ import java.util.Map;
 import java.util.stream.Collectors;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.transaction.annotation.Transactional;
 
 import com.cannontech.core.dao.ContactDao;
 import com.cannontech.core.dao.ContactNotificationDao;
 import com.cannontech.core.dao.CustomerDao;
 import com.cannontech.core.dao.DBPersistentDao;
+import com.cannontech.core.dao.NotFoundException;
 import com.cannontech.database.TransactionType;
 import com.cannontech.database.data.lite.LiteCICustomer;
 import com.cannontech.database.data.lite.LiteContact;
 import com.cannontech.database.data.lite.LiteContactNotification;
+import com.cannontech.database.data.lite.LiteFactory;
+import com.cannontech.database.data.lite.LiteNotificationGroup;
 import com.cannontech.database.data.notification.ContactNotifGroupMap;
 import com.cannontech.database.data.notification.CustomerNotifGroupMap;
 import com.cannontech.database.data.notification.NotifDestinationMap;
@@ -179,4 +183,15 @@ public class NotificationGroupServiceImpl implements NotificationGroupService {
         contact.setNotifications(notifications);
     }
 
+    @Override
+    @Transactional
+    public int delete(int id) {
+        LiteNotificationGroup liteNotificationGroup = cache.getAllContactNotificationGroups().stream()
+                .filter(obj -> obj.getNotificationGroupID() == id).findFirst()
+                .orElseThrow(() -> new NotFoundException("Notification Group id not found"));
+        com.cannontech.database.data.notification.NotificationGroup notificationGroup = (com.cannontech.database.data.notification.NotificationGroup) LiteFactory
+                .createDBPersistent(liteNotificationGroup);
+        dbPersistentDao.performDBChange(notificationGroup, TransactionType.DELETE);
+        return notificationGroup.getNotificationGroup().getNotificationGroupID();
+    }
 }

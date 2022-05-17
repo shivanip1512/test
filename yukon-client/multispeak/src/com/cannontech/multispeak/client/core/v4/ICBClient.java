@@ -2,6 +2,8 @@ package com.cannontech.multispeak.client.core.v4;
 
 import com.cannontech.msp.beans.v4.GetDomainMembers;
 import com.cannontech.msp.beans.v4.GetDomainMembersResponse;
+import com.cannontech.msp.beans.v4.MeterEventNotification;
+import com.cannontech.msp.beans.v4.MeterEventNotificationResponse;
 import com.cannontech.msp.beans.v4.GetMeterByServiceLocationID;
 import com.cannontech.msp.beans.v4.GetMeterByServiceLocationIDResponse;
 import com.cannontech.msp.beans.v4.GetMethods;
@@ -59,5 +61,18 @@ public interface ICBClient {
      */
     public GetMeterByServiceLocationIDResponse getMeterByServiceLocationID(MultispeakVendor mspVendor, String endpointUrl,
             GetMeterByServiceLocationID getMeterByServLocID) throws MultispeakWebServiceClientException;
+
+    
+    /**
+     * Format the blocked notifications
+     * 
+     * @param MSP vendor details
+     * @param String the URI of the CB Server
+     * @param MeterEventNotification the MeterEventNotification used as input.
+     * @return MeterEventNotificationResponse
+     * @throws MultispeakWebServiceClientException
+     */
+    public MeterEventNotificationResponse meterEventNotification(MultispeakVendor mspVendor, String uri,
+            MeterEventNotification meterEventNotification) throws MultispeakWebServiceClientException;
 
 }

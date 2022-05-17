@@ -115,6 +115,8 @@ public final class MspMeterDaoImpl extends MspMeterDaoBase {
         MspMeter meter = null;
         if (paoIdentifier.getPaoType().isWaterMeter()) {
             meter = new WaterMeter();
+        } else if (paoIdentifier.getPaoType().isGasMeter()) {
+            meter = new GasMeter();
         } else {
             meter = new ElectricMeter();
         }
