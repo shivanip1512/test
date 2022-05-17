@@ -6,6 +6,7 @@ import java.util.List;
 
 import javax.xml.datatype.XMLGregorianCalendar;
 
+import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.collections4.ListUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -70,21 +71,19 @@ public class ODServiceEndpoint {
         InitiateOutageDetectionEventRequestResponse response = objectFactory.createInitiateOutageDetectionEventRequestResponse();
 
         ArrayOfMeterID1 arrOfMeterIds = initiateOutageDetectionEventRequest.getMeterIDs();
-        List<MeterID> meterIds = null != arrOfMeterIds.getMeterID() ? arrOfMeterIds.getMeterID() : null;
-        XMLGregorianCalendar xmlRequestDate = initiateOutageDetectionEventRequest.getRequestDate();
+        if (arrOfMeterIds != null) {
+            List<MeterID> meterIds = null != arrOfMeterIds.getMeterID() ? arrOfMeterIds.getMeterID() : null;
+            if (CollectionUtils.isNotEmpty(meterIds)) {
+                String responseURL = initiateOutageDetectionEventRequest.getResponseURL();
+                String transactionID = initiateOutageDetectionEventRequest.getTransactionID();
 
-        if (xmlRequestDate == null) {
-            throw new MultispeakWebServiceException("Invalid date/time.");
+                List<ErrorObject> errorObjects = od_server.initiateOutageDetectionEventRequest(meterIds,
+                        responseURL, transactionID);
+
+                ArrayOfErrorObject arrayOfErrorObject = multispeakFuncs.toArrayOfErrorObject(errorObjects);
+                response.setInitiateOutageDetectionEventRequestResult(arrayOfErrorObject);
+            }
         }
-
-        String responseURL = initiateOutageDetectionEventRequest.getResponseURL();
-        String transactionID = initiateOutageDetectionEventRequest.getTransactionID();
-
-        List<ErrorObject> errorObjects = od_server.initiateOutageDetectionEventRequest(ListUtils.emptyIfNull(meterIds),
-                responseURL, transactionID);
-
-        ArrayOfErrorObject arrayOfErrorObject = multispeakFuncs.toArrayOfErrorObject(errorObjects);
-        response.setInitiateOutageDetectionEventRequestResult(arrayOfErrorObject);
         return response;
 
     }

@@ -8,6 +8,7 @@ import java.util.EnumSet;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 import java.util.Set;
 import java.util.stream.Collectors;
 
@@ -1688,15 +1689,16 @@ public class MultispeakMeterServiceImpl extends MultispeakMeterServiceBase imple
                 errObjects = responseErrorObjects;
             }
 
-            multispeakEventLogService.notificationResponse("ODEventNotification", transactionId,
-                    outageDetectionEvent.getObjectID(), outageDetectionEvent.getOutageEventType().toString(),
-                    CollectionUtils.size(errObjects), responseUrl);
+            multispeakEventLogService.notificationResponse("ODEventNotification", 
+                                                            transactionId,
+                                                            outageDetectionEvent.getObjectID(), 
+                                                            outageDetectionEvent.getOutageEventType().toString(),
+                                                            CollectionUtils.size(errObjects), responseUrl);
             if (CollectionUtils.isNotEmpty(errObjects)) {
                 multispeakFuncs.logErrorObjects(responseUrl, "ODEventNotification", errObjects);
             }
         } catch (MultispeakWebServiceClientException e) {
-            log.error("TargetService: " + responseUrl + " - initiateOutageDetection (" + mspVendor.getCompanyName()
-                    + ")");
+            log.error("TargetService: " + responseUrl + " - initiateOutageDetection (" + mspVendor.getCompanyName() + ")");
             log.error("MultispeakWebServiceClientException: " + e.getMessage());
         }
     }
@@ -1740,9 +1742,14 @@ public class MultispeakMeterServiceImpl extends MultispeakMeterServiceBase imple
     @Override
     public synchronized List<ErrorObject> odEvent(final MultispeakVendor mspVendor, List<MeterID> meterIds,
             final String transactionId, final String responseUrl) throws MultispeakWebServiceException {
-
-        List<String> meterNumbers = meterIds.stream().map(meterID -> meterID.getMeterNo()).collect(Collectors.toList());
-
+     
+        List<String> meterNumbers = meterIds.stream().map(meterID -> {
+            if (meterID != null)
+                return meterID.getMeterNo();
+            else
+                return null;
+        }).collect(Collectors.toList());
+        meterNumbers.removeIf(Objects::isNull);
         if (StringUtils.isBlank(responseUrl)) { // no need to go through all the work if we have no one to respond to.
             throw new MultispeakWebServiceException("OMS vendor unknown.  Please contact Yukon administrator" +
                     " to set the Multispeak Vendor Role Property value in Yukon.");
@@ -1755,8 +1762,9 @@ public class MultispeakMeterServiceImpl extends MultispeakMeterServiceBase imple
 
         log.info("Received " + meterNumbers.size() + " Meter(s) for Outage Verification Testing from "
                 + mspVendor.getCompanyName());
-        multispeakEventLogService.initiateODEventRequest(meterNumbers.size(), "InitiateOutageDetectionEventRequest",
-                mspVendor.getCompanyName());
+        multispeakEventLogService.initiateODEventRequest(meterNumbers.size(), 
+                                                        "InitiateOutageDetectionEventRequest",
+                                                         mspVendor.getCompanyName());
 
         ArrayList<ErrorObject> errorObjects = new ArrayList<>();
         List<YukonMeter> rfnPaosToPing = Lists.newArrayList();
@@ -1769,11 +1777,14 @@ public class MultispeakMeterServiceImpl extends MultispeakMeterServiceBase imple
         for (String meterNumber : meterNumbers) {
             List<YukonMeter> meters = meterNumberToMeterMap.get(meterNumber); // this will most likely be size 1
             if (CollectionUtils.isEmpty(meters)) {
-                ErrorObject err = mspObjectDao.getNotFoundErrorObject(meterNumber, "MeterNumber", "MeterID", "ODEvent",
-                        mspVendor.getCompanyName());
+                ErrorObject err = mspObjectDao.getNotFoundErrorObject(meterNumber,
+                                                                      "MeterNumber",
+                                                                      "MeterID",
+                                                                      "ODEvent",
+                                                                       mspVendor.getCompanyName());
                 errorObjects.add(err);
                 multispeakEventLogService.meterNotFound(meterNumber, "InitiateOutageDetectionEventRequest",
-                        mspVendor.getCompanyName());
+                                                                      mspVendor.getCompanyName());
             }
 
             for (YukonMeter meter : meters) {
@@ -1784,8 +1795,11 @@ public class MultispeakMeterServiceImpl extends MultispeakMeterServiceBase imple
                 // TODO validate is OD supported meter ???
                 if (meter instanceof RfnMeter) {
                     rfnPaosToPing.add(meter);
-                    multispeakEventLogService.initiateODEvent(meterNumber, meter, transactionId,
-                            "InitiateOutageDetectionEventRequest", mspVendor.getCompanyName());
+                    multispeakEventLogService.initiateODEvent(meterNumber, 
+                                                              meter, 
+                                                              transactionId,
+                                                              "InitiateOutageDetectionEventRequest", 
+                                                              mspVendor.getCompanyName());
                     continue;
                 }
                 // Assume plc if we made it this far, validate meter can receive porter command requests and command string
@@ -1800,23 +1814,24 @@ public class MultispeakMeterServiceImpl extends MultispeakMeterServiceBase imple
                             "InitiateOutageDetectionEventRequest", mspVendor.getCompanyName());
                 } else {
                     ErrorObject err = mspObjectDao.getErrorObject(meterNumber,
-                            "MeterNumber (" + meterNumber + ") - Meter cannot receive requests from porter. ",
-                            "MeterID", "ODEvent", mspVendor.getCompanyName());
+                                                                 "MeterNumber (" + meterNumber + ") - Meter cannot receive requests from porter. ",
+                                                                 "MeterID", 
+                                                                 "ODEvent", 
+                                                                  mspVendor.getCompanyName());
                     errorObjects.add(err);
                 }
             }
         }
+        
 
         // perform read attribute(?) on list of meters
         doRfnOutagePing(rfnPaosToPing, mspVendor, transactionId, responseUrl);
         // perform plc action on list of commandRequests
         doPlcOutagePing(plcCommandRequests, mspVendor, transactionId, responseUrl);
-        return errorObjects;
-    }
 
-    @Required
-    public void setPorterConnection(BasicServerConnection porterConnection) {
-        this.porterConnection = porterConnection;
+        return errorObjects;
+        
+        
     }
 
     @Override
@@ -1843,7 +1858,7 @@ public class MultispeakMeterServiceImpl extends MultispeakMeterServiceBase imple
 
                         if (returnMsg.getExpectMore() == 0) {
 
-                            log.info("Received Message From ID:" + returnMsg.getDeviceID() + " - " + returnMsg.getResultString());
+                            log.info("Received Message From Id:" + returnMsg.getDeviceID() + " - " + returnMsg.getResultString());
 
                             boolean doneProcessing = event.messageReceived(returnMsg);
                             if (doneProcessing) {
