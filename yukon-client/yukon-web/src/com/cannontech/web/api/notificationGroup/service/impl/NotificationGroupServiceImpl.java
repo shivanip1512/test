@@ -198,6 +198,7 @@ public class NotificationGroupServiceImpl implements NotificationGroupService {
     }
 
     @Transactional
+    @Override
     public int delete(int id) {
         LiteNotificationGroup liteNotificationGroup = cache.getAllContactNotificationGroups().stream()
                 .filter(obj -> obj.getNotificationGroupID() == id).findFirst()
