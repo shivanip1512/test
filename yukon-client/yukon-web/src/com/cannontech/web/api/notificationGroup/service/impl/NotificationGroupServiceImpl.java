@@ -12,12 +12,10 @@ import com.cannontech.core.dao.ContactDao;
 import com.cannontech.core.dao.ContactNotificationDao;
 import com.cannontech.core.dao.CustomerDao;
 import com.cannontech.core.dao.DBPersistentDao;
-import com.cannontech.core.dao.NotFoundException;
 import com.cannontech.database.TransactionType;
 import com.cannontech.database.data.lite.LiteCICustomer;
 import com.cannontech.database.data.lite.LiteContact;
 import com.cannontech.database.data.lite.LiteContactNotification;
-import com.cannontech.database.data.lite.LiteNotificationGroup;
 import com.cannontech.database.data.notification.ContactNotifGroupMap;
 import com.cannontech.database.data.notification.CustomerNotifGroupMap;
 import com.cannontech.database.data.notification.NotifDestinationMap;
@@ -181,17 +179,4 @@ public class NotificationGroupServiceImpl implements NotificationGroupService {
         contact.setNotifications(notifications);
     }
 
-    @Override
-    public NotificationGroup retrieve(int id) {
-        LiteNotificationGroup liteNotificationGroup = cache.getAllContactNotificationGroups().stream()
-                .filter(obj -> obj.getNotificationGroupID() == id).findFirst()
-                .orElseThrow(() -> new NotFoundException("Notification Group id not found"));
-        com.cannontech.database.data.notification.NotificationGroup notificationGroupBase = (com.cannontech.database.data.notification.NotificationGroup) dbPersistentDao
-                .retrieveDBPersistent(liteNotificationGroup);
-
-        NotificationGroup notificationGroup = new NotificationGroup();
-        notificationGroup.buildModel(notificationGroupBase);
-        buildModelForCICustomersAndUnassignedCont(notificationGroup, notificationGroupBase);
-        return notificationGroup;
-    }
 }
