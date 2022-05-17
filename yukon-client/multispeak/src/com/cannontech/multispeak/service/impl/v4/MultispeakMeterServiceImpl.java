@@ -182,8 +182,7 @@ public class MultispeakMeterServiceImpl extends MultispeakMeterServiceBase imple
 
         final String meterNumber = meter.getMeterNumber();
         log.info("Received " + meterNumber + " for LatestReadingInterrogate from " + mspVendor.getCompanyName());
-        multispeakEventLogService.initiateMeterRead(meterNumber, meter, "N/A", "GetLatestReadingByMeterID",
-                mspVendor.getCompanyName());
+        multispeakEventLogService.initiateMeterRead(meterNumber, meter, "N/A", "GetLatestReadingByMeterID", mspVendor.getCompanyName());
 
         // Writes a request to pil for the meter and commandStr using the id for mspVendor.
         commandStr += " update noqueue";
@@ -191,16 +190,14 @@ public class MultispeakMeterServiceImpl extends MultispeakMeterServiceBase imple
         pilRequest.setPriority(13);
         porterConnection.write(pilRequest);
 
-        systemLog("GetLatestReadingByMeterID",
-                "(ID:" + meter.getPaoIdentifier().getPaoId() + ") MeterNumber (" + meterNumber + ") - " + commandStr, mspVendor);
+        systemLog("GetLatestReadingByMeterID", "(ID:" + meter.getPaoIdentifier().getPaoId() + ") MeterNumber (" + meterNumber + ") - " + commandStr, mspVendor);
 
         synchronized (event) {
             boolean timeout = !waitOnEvent(event, mspVendor.getRequestMessageTimeout());
             if (timeout) {
                 mspObjectDao.logMSPActivity("GetLatestReadingByMeterID",
-                        "MeterNumber (" + meterNumber + ") - Reading Timed out after " +
-                                (mspVendor.getRequestMessageTimeout() / 1000) + " seconds.  No reading collected.",
-                        mspVendor.getCompanyName());
+                                            "MeterNumber (" + meterNumber + ") - Reading Timed out after " + (mspVendor.getRequestMessageTimeout() / 1000) + " seconds.  No reading collected.",
+                                            mspVendor.getCompanyName());
             }
         }
 
@@ -219,7 +216,9 @@ public class MultispeakMeterServiceImpl extends MultispeakMeterServiceBase imple
     @Override
     public List<ErrorObject> initiateUsageMonitoring(MultispeakVendor mspVendor, List<MeterID> meterIds) {
 
-        List<String> mspMeters = meterIds.stream().map(meterId -> meterId.getMeterNo()).collect(Collectors.toList());
+        List<String> mspMeters = meterIds.stream()
+                                         .map(meterId -> meterId.getMeterNo())
+                                         .collect(Collectors.toList());
 
         return addMetersToGroup(mspMeters, SystemGroupEnum.USAGE_MONITORING, "InitiateUsageMonitoring", mspVendor);
     }
@@ -267,7 +266,9 @@ public class MultispeakMeterServiceImpl extends MultispeakMeterServiceBase imple
     @Override
     public List<ErrorObject> cancelUsageMonitoring(MultispeakVendor mspVendor, List<MeterID> meterIds) {
         
-        List<String> mspMeters = meterIds.stream().map(meterId -> meterId.getMeterNo()).collect(Collectors.toList());
+        List<String> mspMeters = meterIds.stream()
+                                         .map(meterId -> meterId.getMeterNo())
+                                         .collect(Collectors.toList());
         
         return removeMetersFromGroup(mspMeters, SystemGroupEnum.USAGE_MONITORING, "CancelUsageMonitoring", mspVendor);
     }
@@ -346,8 +347,7 @@ public class MultispeakMeterServiceImpl extends MultispeakMeterServiceBase imple
 
             StoredDeviceGroup storedGroup = deviceGroupEditorDao.getStoredGroup(meterGroup.getGroupName(), true);
             deviceGroupMemberEditorDao.addDevices(storedGroup, yukonDevices);
-            multispeakEventLogService.addMetersToGroup(yukonDevices.size(), storedGroup.getFullName(), mspMethod,
-                    mspVendor.getCompanyName());
+            multispeakEventLogService.addMetersToGroup(yukonDevices.size(), storedGroup.getFullName(), mspMethod, mspVendor.getCompanyName());
         }
         return errorObjects;
     }
@@ -458,9 +458,7 @@ public class MultispeakMeterServiceImpl extends MultispeakMeterServiceBase imple
                                     if (meter != null) {
                                         // update the billing group from request
                                         updateBillingCyle(billingCycle, meter.getMeterNumber(), meter, SERV_LOC_CHANGED_STRING, mspVendor);
-                                        
                                         updatePaoLocation(serviceLocation, meter, SERV_LOC_CHANGED_STRING);
-                                        
                                         verifyAndUpdateSubstationGroupAndRoute(meter, mspVendor, null, mspObject, SERV_LOC_CHANGED_STRING);
                                     }
                                 }
@@ -481,8 +479,7 @@ public class MultispeakMeterServiceImpl extends MultispeakMeterServiceBase imple
                                         verifyAndUpdatePaoName(newPaoName, meter, SERV_LOC_CHANGED_STRING, mspVendor);
 
                                         String mspMeterDeviceClass = (String) getModuleListFieldsForMspMeter(mspMeter).get("deviceClass");
-                                        updateCISDeviceClassGroup(mspMeter.getMeterNo(), mspMeterDeviceClass, meter,
-                                                                  SERV_LOC_CHANGED_STRING, mspVendor);
+                                        updateCISDeviceClassGroup(mspMeter.getMeterNo(), mspMeterDeviceClass, meter, SERV_LOC_CHANGED_STRING, mspVendor);
 
                                         String billingCycle = mspMeter.getBillingCycle();
                                         
@@ -632,11 +629,17 @@ public class MultispeakMeterServiceImpl extends MultispeakMeterServiceBase imple
                 StoredDeviceGroup storedGroup = deviceGroupEditorDao.getStoredGroup(groupName, false);
                 deviceGroupEditorDao.removeGroup(storedGroup);
             } catch (NotFoundException e) {
-                errorObject = mspObjectDao.getNotFoundErrorObject(groupName, "meterGroupId", "MeterGroup", "deleteGroup",
-                        mspVendor.getCompanyName());
+                errorObject = mspObjectDao.getNotFoundErrorObject(groupName, 
+                                                                  "meterGroupId", 
+                                                                  "MeterGroup", 
+                                                                  "deleteGroup",
+                                                                  mspVendor.getCompanyName());
             } catch (DeviceGroupInUseException e) {
-                errorObject = mspObjectDao.getErrorObject(groupName, "Cannot delete group, it is currently in use.", "MeterGroup",
-                        "deleteGroup", mspVendor.getCompanyName());
+                errorObject = mspObjectDao.getErrorObject(groupName, 
+                                                          "Cannot delete group, it is currently in use.", 
+                                                          "MeterGroup",
+                                                          "deleteGroup", 
+                                                          mspVendor.getCompanyName());
             }
         }
         return errorObject;
@@ -962,7 +965,7 @@ public class MultispeakMeterServiceImpl extends MultispeakMeterServiceBase imple
 
             ErrorObject errorObject = mspObjectDao.getErrorObject(mspMeter.getMeterNo(),
                                                                   "Error: MeterNo is invalid (empty or null).  No updates were made.",
-                                                                  "Meter",
+                                                                  "MspMeter",
                                                                   method,
                                                                   mspVendor.getCompanyName());
             throw new MspErrorObjectException(errorObject);
@@ -974,7 +977,7 @@ public class MultispeakMeterServiceImpl extends MultispeakMeterServiceBase imple
             ErrorObject errorObject = mspObjectDao.getErrorObject(mspMeter.getMeterNo(),
                                                                   "Error: MeterNumber(" + mspMeter.getMeterNo()
                                                                         + ") - SerialNumber nor TransponderId are valid.  No updates were made.",
-                                                                  "Meter",
+                                                                  "MspMeter",
                                                                   method,
                                                                   mspVendor.getCompanyName());
             throw new MspErrorObjectException(errorObject);
@@ -1029,8 +1032,7 @@ public class MultispeakMeterServiceImpl extends MultispeakMeterServiceBase imple
                 Double longitude = mspMeter.getUtilityInfo().getGpsPoint().getLongitude();
                 Double latitude = mspMeter.getUtilityInfo().getGpsPoint().getLatitude();
                 if (longitude != null && latitude != null) {
-                    PaoLocation paoLocation = new PaoLocation(meterToUpdate.getPaoIdentifier(), latitude, longitude,
-                            Origin.MULTISPEAK, Instant.now());
+                    PaoLocation paoLocation = new PaoLocation(meterToUpdate.getPaoIdentifier(), latitude, longitude, Origin.MULTISPEAK, Instant.now());
                     updatePaoLocation(meterToUpdate.getMeterNumber(), meterToUpdate.getName(), paoLocation);
                 }
             }
@@ -1138,10 +1140,8 @@ public class MultispeakMeterServiceImpl extends MultispeakMeterServiceBase imple
             if (mspObject instanceof ElectricMeter) {
                 ElectricMeter electricMeter = (ElectricMeter) mspObject;
                 
-                if (electricMeter.getElectricLocationFields() != null && 
-                        electricMeter.getElectricLocationFields().getSubstationName() != null && 
-                        !StringUtils.isBlank(electricMeter.getElectricLocationFields().getSubstationName())) 
-                {
+                if (electricMeter.getElectricLocationFields() != null && electricMeter.getElectricLocationFields().getSubstationName() != null && 
+                        !StringUtils.isBlank(electricMeter.getElectricLocationFields().getSubstationName())) {
                     return electricMeter.getElectricLocationFields().getSubstationName();
                 } 
             }
@@ -1159,8 +1159,7 @@ public class MultispeakMeterServiceImpl extends MultispeakMeterServiceBase imple
             if (mspServiceLocation.getGPSLocation() != null) {
                 double longitude = mspServiceLocation.getGPSLocation().getLongitude();
                 double latitude = mspServiceLocation.getGPSLocation().getLatitude();
-                PaoLocation paoLocation = new PaoLocation(meterToUpdate.getPaoIdentifier(), latitude, longitude,
-                                                          Origin.MULTISPEAK, Instant.now());
+                PaoLocation paoLocation = new PaoLocation(meterToUpdate.getPaoIdentifier(), latitude, longitude, Origin.MULTISPEAK, Instant.now());
                 updatePaoLocation(meterToUpdate.getMeterNumber(), meterToUpdate.getName(), paoLocation);
             }
         }
@@ -1270,8 +1269,7 @@ public class MultispeakMeterServiceImpl extends MultispeakMeterServiceBase imple
 
         log.info("Received " + meter.getMeterNumber() + " for CDMeterState from " + mspVendor.getCompanyName());
         if (!porterConnection.isValid()) {
-            throw new MultispeakWebServiceException(
-                    "Connection to 'Yukon Port Control Service' is not valid.  Please contact your Yukon Administrator.");
+            throw new MultispeakWebServiceException("Connection to 'Yukon Port Control Service' is not valid.  Please contact your Yukon Administrator.");
         }
 
         List<YukonMeter> allPaosToRead = Collections.singletonList(meter);
@@ -1289,11 +1287,9 @@ public class MultispeakMeterServiceImpl extends MultispeakMeterServiceBase imple
 
             @Override
             public void receivedValue(PaoIdentifier pao, PointValueHolder value) {
-                // the following is expensive but unavoidable until PointData is
-                // changed
+                // the following is expensive but unavoidable until PointData is changed
                 PaoPointIdentifier paoPointIdentifier = pointDao.getPaoPointIdentifier(value.getId());
-                Set<BuiltInAttribute> thisAttribute = attributeService
-                        .findAttributesForPoint(paoPointIdentifier.getPaoTypePointIdentifier(), attributes);
+                Set<BuiltInAttribute> thisAttribute = attributeService.findAttributesForPoint(paoPointIdentifier.getPaoTypePointIdentifier(), attributes);
                 if (thisAttribute.contains(BuiltInAttribute.DISCONNECT_STATUS)) {
                     setRCDState(multispeakFuncs.getRCDState(meter, value));
                 } else {
@@ -1318,8 +1314,11 @@ public class MultispeakMeterServiceImpl extends MultispeakMeterServiceBase imple
             }
 
         };
-        multispeakEventLogService.initiateMeterRead(meter.getMeterNumber(), meter, "N/A", "GetCDMeterState",
-                mspVendor.getCompanyName());
+        multispeakEventLogService.initiateMeterRead(meter.getMeterNumber(), 
+                                                    meter, 
+                                                    "N/A", 
+                                                    "GetCDMeterState",
+                                                    mspVendor.getCompanyName());
         deviceAttributeReadService.initiateRead(allPaosToRead, attributes, waitableCallback,
                 DeviceRequestType.MULTISPEAK_METER_READ_EVENT, UserUtils.getYukonUser());
         try {
@@ -1370,13 +1369,18 @@ public class MultispeakMeterServiceImpl extends MultispeakMeterServiceBase imple
                     }
 
                 } catch (NotFoundException e) {
-                    multispeakEventLogService.meterNotFound(mspMeter.getMeterNo(), METER_REMOVE_STRING,
-                            mspVendor.getCompanyName());
-                    ErrorObject err = mspObjectDao.getNotFoundErrorObject(mspMeter.getMeterNo().trim(), "MeterNumber", "MeterID",
-                            METER_REMOVE_STRING, mspVendor.getCompanyName());
+                    multispeakEventLogService.meterNotFound(mspMeter.getMeterNo(), 
+                                                            METER_REMOVE_STRING,
+                                                            mspVendor.getCompanyName());
+                    ErrorObject err = mspObjectDao.getNotFoundErrorObject(mspMeter.getMeterNo().trim(), 
+                                                                          "MeterNumber", 
+                                                                          "MeterID",
+                                                                          METER_REMOVE_STRING, 
+                                                                          mspVendor.getCompanyName());
                     errorObjects.add(err);
-                    multispeakEventLogService.errorObject(err.getErrorString(), METER_REMOVE_STRING,
-                            mspVendor.getCompanyName());
+                    multispeakEventLogService.errorObject(err.getErrorString(), 
+                                                          METER_REMOVE_STRING,
+                                                          mspVendor.getCompanyName());
                     log.error(e);
                 }
             }

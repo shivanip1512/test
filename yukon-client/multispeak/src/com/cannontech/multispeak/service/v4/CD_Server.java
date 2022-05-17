@@ -28,7 +28,7 @@ public interface CD_Server {
      * Returns Current State of a Connect/Disconnect Device for a
      * given the Meter Number. The default condition is Closed.
      */
-    public CDState getCDMeterState(MeterID meterID) throws MultispeakWebServiceException;
+    public CDState getCDMeterState(MeterID meterId) throws MultispeakWebServiceException;
 
     /**
      * Returns all meters that have Connect/Disconnect Capability.

@@ -111,8 +111,10 @@ public class MultispeakLMServiceImpl extends MultispeakLMServiceBase implements 
             }
         } else {
             return mspObjectDao.getErrorObject(objectId,
-                    "No point mapping found in Yukon for objectId:" + objectId,
-                    "ScadaAnalog", "writeAnalogPointData", liteYukonUser.getUsername());
+                                               "No point mapping found in Yukon for objectId:" + objectId,
+                                               "ScadaAnalog", 
+                                               "writeAnalogPointData", 
+                                               liteYukonUser.getUsername());
         }
         return null;
     }
@@ -208,8 +210,7 @@ public class MultispeakLMServiceImpl extends MultispeakLMServiceBase implements 
 
         // add the last object
         if (!controlledItemsList.isEmpty() && prevSubstationName != null) {
-            SubstationLoadControlStatus substationLoadControlStatus = buildSubstationLoadControlStatus(prevSubstationName,
-                    controlledItemsList);
+            SubstationLoadControlStatus substationLoadControlStatus = buildSubstationLoadControlStatus(prevSubstationName, controlledItemsList);
             // Get unique/master status
             substationLoadControlStatus.setStatus(mspLMGroupDao.getMasterStatus(allStatus).toString());
             // Get unique/master mode
@@ -244,8 +245,7 @@ public class MultispeakLMServiceImpl extends MultispeakLMServiceBase implements 
     }
 
     @Override
-    public List<ErrorObject> buildMspLoadControl(LoadManagementEvent loadManagementEvent, MspLoadControl mspLoadControl,
-            MultispeakVendor vendor) {
+    public List<ErrorObject> buildMspLoadControl(LoadManagementEvent loadManagementEvent, MspLoadControl mspLoadControl, MultispeakVendor vendor) {
 
         // Set the start date
         Calendar scheduleDateTime = null;
@@ -286,8 +286,11 @@ public class MultispeakLMServiceImpl extends MultispeakLMServiceBase implements 
                 lmInterfaces.add(lmInterface);
             } catch (NotFoundException e) {
                 mspObjectDao.logMSPActivity("buildMspLoadControl", e.getMessage(), vendor.getCompanyName());
-                ErrorObject err = mspObjectDao.getErrorObject(loadManagementEvent.getObjectID(), e.getMessage(),
-                        "loadManagementEvent", "buildMspLoadControl", vendor.getCompanyName());
+                ErrorObject err = mspObjectDao.getErrorObject(loadManagementEvent.getObjectID(), 
+                                                              e.getMessage(),
+                                                              "loadManagementEvent", 
+                                                              "buildMspLoadControl", 
+                                                              vendor.getCompanyName());
                 errorObjects.add(err);
             }
         }
@@ -325,21 +328,23 @@ public class MultispeakLMServiceImpl extends MultispeakLMServiceBase implements 
                 }
             } catch (TimeoutException e) {
                 errorObject = mspObjectDao.getErrorObject(null,
-                        mspLMInterfaceMapping.getSubstationName() + "/" + mspLMInterfaceMapping.getStrategyName() + " - "
-                                + e.getMessage() +
-                                ". TimeoutException. Verify the scheduedStartTime (" + mspLoadControl.getStartTime()
-                                + ") is not in the past.",
-                        "LoadManagementEvent", "control", liteYukonUser.getUsername());
+                                                          mspLMInterfaceMapping.getSubstationName() + "/" + mspLMInterfaceMapping.getStrategyName() + " - "
+                                                          + e.getMessage() +". TimeoutException. Verify the scheduedStartTime (" + mspLoadControl.getStartTime() + ") is not in the past.",
+                                                         "LoadManagementEvent", 
+                                                         "control", 
+                                                         liteYukonUser.getUsername());
             } catch (NotAuthorizedException | NotFoundException | BadServerResponseException | ConnectionException e) {
                 errorObject = mspObjectDao.getErrorObject(null,
-                        mspLMInterfaceMapping.getSubstationName() + "/" + mspLMInterfaceMapping.getStrategyName() + " - "
-                                + e.getMessage(),
-                        "LoadManagementEvent", "control", liteYukonUser.getUsername());
+                                                          mspLMInterfaceMapping.getSubstationName() + "/" + mspLMInterfaceMapping.getStrategyName() + " - " + e.getMessage(),
+                                                          "LoadManagementEvent", 
+                                                          "control", 
+                                                          liteYukonUser.getUsername());
             } catch (Exception e) {
                 errorObject = mspObjectDao.getErrorObject(null,
-                        mspLMInterfaceMapping.getSubstationName() + "/" + mspLMInterfaceMapping.getStrategyName() + " - "
-                                + e.getMessage(),
-                        "LoadManagementEvent", "control", liteYukonUser.getUsername());
+                                                          mspLMInterfaceMapping.getSubstationName() + "/" + mspLMInterfaceMapping.getStrategyName() + " - " + e.getMessage(),
+                                                          "LoadManagementEvent", 
+                                                          "control", 
+                                                          liteYukonUser.getUsername());
                 log.error(e.getMessage(), e);
             }
         }
