@@ -315,6 +315,9 @@
     <ClCompile Include="coap_helper.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="cbor_codec.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="include\ansi_application.h">
@@ -642,6 +645,9 @@
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="include\e2e_exceptions.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="include\cbor_codec.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>
