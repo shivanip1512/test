@@ -24,7 +24,7 @@ const getRefreshToken = async () => {
 };
 
 type AuthUIActionsFunction = () => AuthUIActions;
-type AuthUIActionsWithSecurity = (securityHelper: SecurityContextActions, dispatch: any) => AuthUIActionsFunction;
+type AuthUIActionsWithSecurity = (securityHelper: SecurityContextActions) => AuthUIActionsFunction;
 
 /**
  * Example implementation of [[AuthUIActions]] to start with during development.

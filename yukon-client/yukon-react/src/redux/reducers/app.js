@@ -25,7 +25,6 @@ const initialAppState = {
     validationErrors: null,
     theme: null,
     backgroundImage: null
-
 };
 
 export const AppReducer = (state = initialAppState, action) => {
