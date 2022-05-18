@@ -10,6 +10,7 @@ import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.transaction.annotation.Transactional;
 
+import com.cannontech.common.util.CtiUtilities;
 import com.cannontech.core.dao.ContactDao;
 import com.cannontech.core.dao.ContactNotificationDao;
 import com.cannontech.core.dao.CustomerDao;
@@ -199,7 +200,11 @@ public class NotificationGroupServiceImpl implements NotificationGroupService {
 
     private String getContactName(int contactID) {
         LiteContact liteContact = contactDao.getContact(contactID);
-        return liteContact.toString();
+        if (liteContact != null) {
+            return liteContact.toString();
+        } else {
+            return CtiUtilities.STRING_NONE + "," + CtiUtilities.STRING_NONE;
+        }
     }
 
     @Override
