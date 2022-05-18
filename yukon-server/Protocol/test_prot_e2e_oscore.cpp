@@ -1289,7 +1289,7 @@ Buffer cbor_aad_encode( const Aad & aad )
 {
     Buffer cbor_data;
 
-    // 5 element array
+    // 3 element array
 
     cbor_data.push_back( 0x83 );
 
@@ -1406,12 +1406,6 @@ BOOST_AUTO_TEST_CASE( test_oscore_option_value_encoding )
             Buffer { 0x44, 0x61, 0x6c, 0x65, 0x6b },
             Buffer {  },
             { 0x19, 0x05, 0x05, 0x44, 0x61, 0x6c, 0x65, 0x6b }
-        },
-        { 
-            {  },
-            {  },
-            {  },
-            { 0x00 }
         },
         { 
             Buffer { 0x07 },
