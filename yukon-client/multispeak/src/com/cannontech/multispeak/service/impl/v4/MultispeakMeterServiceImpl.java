@@ -1446,13 +1446,13 @@ public class MultispeakMeterServiceImpl extends MultispeakMeterServiceBase imple
                     YukonMeter meter = mspMeterDao.getMeterForMeterNumber(meterNumber);
                     
                     if (cdEvent.getLoadActionCode() == null) {
-                        ErrorObject err =
-                            mspObjectDao.getErrorObject(meterNumber, 
-                                                        "MeterNumber (" + meterNumber
-                                                        + ") - Cannot InitiateConnectDisconnect as no load action code exists.", 
-                                                        "Meter",
-                                                        "CDEvent", 
-                                                         mspVendor.getCompanyName());
+                        ErrorObject err = mspObjectDao.getErrorObject(meterNumber, 
+                                                                      "MeterNumber (" + meterNumber +
+                                                                      ") - Cannot InitiateConnectDisconnect as no load action code exists.", 
+                                                                      "Meter",
+                                                                      "CDEvent", 
+                                                                       mspVendor.getCompanyName());
+                            
                         errorObjects.add(err);
                         continue;
                     }
@@ -1617,7 +1617,7 @@ public class MultispeakMeterServiceImpl extends MultispeakMeterServiceBase imple
      * 
      * @param yukonMeter     - meter
      * @param loadActionCode - loadActionCode
-     * @param mspVendor      - msp vendor that made the inital request
+     * @param mspVendor      - msp vendor that made the initial request
      * @param transactionId  - the token provided from the initial request
      */
     private void sendCDEventNotification(SimpleMeter yukonMeter, LoadActionCode loadActionCode,

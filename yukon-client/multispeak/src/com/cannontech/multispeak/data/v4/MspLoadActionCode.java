@@ -2,6 +2,7 @@ package com.cannontech.multispeak.data.v4;
 
 import java.util.Arrays;
 import java.util.List;
+import java.util.Collections;
 
 import org.apache.logging.log4j.Logger;
 
@@ -54,7 +55,9 @@ public enum MspLoadActionCode {
                         rfnBuilder.put(rfnDisconnectStatusState, mspLoadActionCode);
                     }
                 }
-                plcBuilder.put(mspLoadActionCode.plcState, mspLoadActionCode);
+                if (mspLoadActionCode.plcState != null) {
+                    plcBuilder.put(mspLoadActionCode.plcState, mspLoadActionCode);
+                }
                 mspLACBuilder.put(mspLoadActionCode.loadActionCode, mspLoadActionCode);
             }
             lookupByRfnState  = rfnBuilder.build();
@@ -70,7 +73,11 @@ public enum MspLoadActionCode {
             RfnDisconnectStatusState... rfnStates) {
         this.loadActionCode = loadActionCode;
         this.plcState = plcState;
-        this.rfnStates = Arrays.asList(rfnStates);
+        if (rfnStates != null) {
+            this.rfnStates = Arrays.asList(rfnStates);
+        } else {
+            this.rfnStates = Collections.emptyList();
+        }
     }
 
     public static MspLoadActionCode getForPlcState(Disconnect410State plcState)  {

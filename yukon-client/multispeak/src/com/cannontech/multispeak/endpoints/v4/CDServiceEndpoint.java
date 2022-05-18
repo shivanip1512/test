@@ -88,7 +88,7 @@ public class CDServiceEndpoint {
         return response;
     }
     
-    @PayloadRoot(localPart = "InitiateConnectDisconnect", namespace = MultispeakDefines.NAMESPACE_v4)
+    @PayloadRoot(localPart = "InitiateConnectDisconnect", namespace = CD_V4_ENDPOINT_NAMESPACE)
     public @ResponsePayload
     InitiateConnectDisconnectResponse initiateConnectDisconnect(
             @RequestPayload InitiateConnectDisconnect initiateConnectDisconnect) throws MultispeakWebServiceException {
