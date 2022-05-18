@@ -43,7 +43,7 @@ const NavigationContainer = (props) => {
                 <ThemeProvider theme={createTheme(PXBThemes.blue)}>
                     <Suspense fallback={<div></div>}>
                         <SecurityContextProvider>
-                            <AuthUIConfiguration yukonPath={window.configs.YUKON_API_URL}>
+                            <AuthUIConfiguration yukonPath={props.path}>
                                 <AuthNavigationContainer routeConfig={routes}>
                                     <I18nextProvider i18n={yukoni18n}>
                                         <DrawerLayout

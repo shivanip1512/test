@@ -23,7 +23,6 @@ import NewIcon from '@material-ui/icons/FiberNew';
 import EatonLogo from '../../assets/icons/EatonLogo';
 import { useTheme, makeStyles } from '@material-ui/core/styles';
 
-import axios from '../../axiosConfig';
 import * as actions from '../../redux/actions/index';
 
 import * as menuItems from '../Navigation/menuRoutes';
