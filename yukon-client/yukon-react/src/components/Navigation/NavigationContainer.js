@@ -29,6 +29,14 @@ const NavigationContainer = (props) => {
     const theme = useTheme();
     const classes = useStyles();
 
+    useEffect(()=>{
+        fetchTheme().then((themeResp) => {
+            if (themeResp) {
+                dispatch(actions.setTheme(themeResp));
+            }
+        })
+    })
+
     return (
         <Provider store={store}>
             <I18nextProvider i18n={i18n}>

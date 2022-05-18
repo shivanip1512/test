@@ -16,9 +16,9 @@ import DRSetupFilterPage from "./components/YukonPage/DemandResponse/DRSetupFilt
 import DRTestPage from "./components/YukonPage/DemandResponse/DRTestPage";
 import CommChannelCreatePage from "./components/YukonPage/Assets/CommChannelCreate";
 import DashboardPage from "./components/YukonPage/Dashboards/Dashboard";
-import axios from "../src/axiosConfig";
 import * as actions from '../src/redux/actions/index';
-import { useDispatch } from 'react-redux';
+import { useDispatch } from "react-redux";
+import { fetchTheme } from '../src/apiHelpers/themeApiHelper';
 
 const ScrollToTop = () => {
     const { pathname } = useLocation();
@@ -32,20 +32,15 @@ const ScrollToTop = () => {
 
 export const App = () => {
 
-    const dispatch = useDispatch();;
-    
-    const fetchTheme = async () => {
-        await axios.get('/api/admin/config/currentTheme')
-            .then(themeJson => {                
-                if (themeJson) {
-                    dispatch(actions.setTheme(themeJson.data));
-                }
-            });
-    }
-    
-    useEffect(() => {
-        fetchTheme();
-      }, []);
+    const dispatch = useDispatch();
+
+    useEffect(()=>{
+        fetchTheme().then((themeResp) => {
+            if (themeResp) {
+                dispatch(actions.setTheme(themeResp));
+            }
+        })
+    })
 
     return (
         <SecurityContextProvider>

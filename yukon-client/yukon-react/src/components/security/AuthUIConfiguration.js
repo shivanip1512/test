@@ -15,14 +15,10 @@ const AuthUIConfiguration = (props) => {
   const [backgroundImage, setBackgroundImage] = useState("");
   const securityContextActions = useSecurityActions();
   const yukonTheme = useSelector((store) => store.app.theme);
-  
-  //console.log("inside Auth ui confi"+yukonTheme.properties.LOGO);
-  //console.log("built url  ----"+props.yukonPath+"/api/common/images/"+yukonTheme.properties.LOGO);
 
   useEffect(() => {
     if (yukonTheme?.properties?.LOGO) {
       setBackgroundImage(`url(${props.yukonPath}/api/common/images/${yukonTheme.properties.LOGIN_BACKGROUND})`);
-      console.log("run when yukon theme changes", yukonTheme);
     }
   }, [yukonTheme]);
 
