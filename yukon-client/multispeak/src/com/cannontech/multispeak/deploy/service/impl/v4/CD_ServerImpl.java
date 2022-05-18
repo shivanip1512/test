@@ -156,7 +156,15 @@ public class CD_ServerImpl implements CD_Server {
     @Override
     public List<ErrorObject> initiateConnectDisconnect(List<ConnectDisconnectEvent> cdEvents, String responseURL,
             String transactionId, ExpirationTime expirationTime) throws MultispeakWebServiceException {
-        // TODO Auto-generated method stub
-        return null;
+        init();
+        MultispeakVendor vendor = multispeakFuncs.getMultispeakVendorFromHeader();
+        multispeakEventLogService.methodInvoked("InitiateConnectDisconnect", vendor.getCompanyName());
+
+        String actualResponseURL =
+            multispeakFuncs.getResponseUrl(vendor, responseURL, MultispeakDefines.NOT_Server_STR);
+        List<ErrorObject> errorObjects = multispeakMeterService.cdEvent(vendor, cdEvents, transactionId, actualResponseURL);
+
+        multispeakFuncs.logErrorObjects(MultispeakDefines.CD_Server_STR, "InitiateConnectDisconnect", errorObjects);
+        return errorObjects;
     }
 }
