@@ -16,10 +16,7 @@ import DRSetupFilterPage from "./components/YukonPage/DemandResponse/DRSetupFilt
 import DRTestPage from "./components/YukonPage/DemandResponse/DRTestPage";
 import CommChannelCreatePage from "./components/YukonPage/Assets/CommChannelCreate";
 import DashboardPage from "./components/YukonPage/Dashboards/Dashboard";
-import * as actions from '../src/redux/actions/index';
-import { useDispatch } from "react-redux";
 import { getYukonApiUrl, getYukonReactUrl } from "./helpers/urlHelper";
-import { fetchTheme } from '../src/apiHelpers/themeApiHelper';
 
 const ScrollToTop = () => {
     const { pathname } = useLocation();
@@ -35,25 +32,13 @@ export const App = () => {
     const YUKON_API_URL = getYukonApiUrl();
     const YUKON_REACT_URL = getYukonReactUrl();
 
-    const dispatch = useDispatch();
-
-    useEffect(()=>{
-        fetchTheme().then((themeResp) => {
-            if (themeResp) {
-                dispatch(actions.setTheme(themeResp));
-            }
-        })
-    })
-
     return (
         <SecurityContextProvider>
-            <AuthUIConfiguration yukonPath={window.configs.YUKON_API_URL}>
+            <AuthUIConfiguration>
                 <AuthNavigationContainer routeConfig={routes}>
                     <I18nextProvider i18n={yukoni18n}>
                         <ScrollToTop />
-                        <DrawerLayout
-                            drawer={<NavigationDrawer yukonPath={YUKON_API_URL} reactPath={YUKON_REACT_URL} />}
-                        >
+                        <DrawerLayout drawer={<NavigationDrawer yukonPath={YUKON_API_URL} reactPath={YUKON_REACT_URL} />}>
                             <NavigationMenu yukonPath={YUKON_API_URL} reactPath={YUKON_REACT_URL} />
                             <Switch>
                                 <Route exact path="/yukon-ui/dashboard" component={DashboardPage} />
