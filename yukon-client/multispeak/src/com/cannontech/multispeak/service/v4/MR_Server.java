@@ -91,7 +91,7 @@ public interface MR_Server {
      * @return the error object[]
      * @throws MultispeakWebServiceException the multispeak web service exception
      */
-    public List<ErrorObject> initiateUsageMonitoring(List<MeterID> meterIDs) throws MultispeakWebServiceException;
+    public List<ErrorObject> initiateUsageMonitoring(List<MeterID> meterIds) throws MultispeakWebServiceException;
 
     /**
      * cancel Usage Monitoring.
@@ -100,7 +100,7 @@ public interface MR_Server {
      * @return the error object[]
      * @throws MultispeakWebServiceException the multispeak web service exception
      */
-    public List<ErrorObject> cancelUsageMonitoring(List<MeterID> meterIDs) throws MultispeakWebServiceException;
+    public List<ErrorObject> cancelUsageMonitoring(List<MeterID> meterIds) throws MultispeakWebServiceException;
 
     /**
      * get AMR Supported Meters.

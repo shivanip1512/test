@@ -477,7 +477,9 @@ public class VoltageFlatnessGraphServiceImpl implements VoltageFlatnessGraphServ
                     regulatorGraphPoint.setFeederId(feeder.getCcId());
                     //Add the regulator (three for a threePhaseZone)
                     //if the zone is the parent zone add the regulator points to all feeders or if the regulator point is assigned to the current feeder add the point
-                    if (zone.getParentId() == null || regulatorToZone.getFeederId() == feeder.getCcId()) {
+                    if (zone.getParentId() == null) {
+                        points.add(regulatorGraphPoint);
+                    } else if (regulatorToZone.getFeederId() != null && regulatorToZone.getFeederId().equals(feeder.getCcId())) {
                         points.add(regulatorGraphPoint);
                     } else {
                         if (regulatorToZone.getFeederId() == null) {
@@ -515,7 +517,7 @@ public class VoltageFlatnessGraphServiceImpl implements VoltageFlatnessGraphServ
                             noFeederPoints.add(graphPoint);
                         }
                     } else {
-                        if (pointToZone.getFeederId() == feeder.getCcId()) {
+                        if (pointToZone.getFeederId().equals(feeder.getCcId())) {
                             graphPoint.setFeederId(feeder.getCcId());
                             points.add(graphPoint);
                         }
