@@ -17,6 +17,9 @@ import DRTestPage from "./components/YukonPage/DemandResponse/DRTestPage";
 import CommChannelCreatePage from "./components/YukonPage/Assets/CommChannelCreate";
 import DashboardPage from "./components/YukonPage/Dashboards/Dashboard";
 import { getYukonApiUrl, getYukonReactUrl } from "./helpers/urlHelper";
+import * as actions from '../src/redux/actions/index';
+import { useDispatch } from "react-redux";
+import { fetchTheme } from '../src/apiHelpers/themeApiHelper';
 
 const ScrollToTop = () => {
     const { pathname } = useLocation();
@@ -31,10 +34,19 @@ const ScrollToTop = () => {
 export const App = () => {
     const YUKON_API_URL = getYukonApiUrl();
     const YUKON_REACT_URL = getYukonReactUrl();
+    const dispatch = useDispatch();
+
+    useEffect(()=>{
+        fetchTheme().then((themeResp) => {
+            if (themeResp) {
+                dispatch(actions.setTheme(themeResp));
+            }
+        })
+    })
 
     return (
         <SecurityContextProvider>
-            <AuthUIConfiguration>
+            <AuthUIConfiguration yukonPath={YUKON_API_URL}>
                 <AuthNavigationContainer routeConfig={routes}>
                     <I18nextProvider i18n={yukoni18n}>
                         <ScrollToTop />
