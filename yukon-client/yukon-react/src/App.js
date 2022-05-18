@@ -18,6 +18,7 @@ import CommChannelCreatePage from "./components/YukonPage/Assets/CommChannelCrea
 import DashboardPage from "./components/YukonPage/Dashboards/Dashboard";
 import * as actions from '../src/redux/actions/index';
 import { useDispatch } from "react-redux";
+import { getYukonApiUrl, getYukonReactUrl } from "./helpers/urlHelper";
 import { fetchTheme } from '../src/apiHelpers/themeApiHelper';
 
 const ScrollToTop = () => {
@@ -31,6 +32,8 @@ const ScrollToTop = () => {
 };
 
 export const App = () => {
+    const YUKON_API_URL = getYukonApiUrl();
+    const YUKON_REACT_URL = getYukonReactUrl();
 
     const dispatch = useDispatch();
 
@@ -49,9 +52,9 @@ export const App = () => {
                     <I18nextProvider i18n={yukoni18n}>
                         <ScrollToTop />
                         <DrawerLayout
-                            drawer={<NavigationDrawer yukonPath={window.configs.YUKON_API_URL} reactPath={window.configs.YUKON_REACT_URL} />}
+                            drawer={<NavigationDrawer yukonPath={YUKON_API_URL} reactPath={YUKON_REACT_URL} />}
                         >
-                            <NavigationMenu yukonPath={window.configs.YUKON_API_URL} reactPath={window.configs.YUKON_REACT_URL} />
+                            <NavigationMenu yukonPath={YUKON_API_URL} reactPath={YUKON_REACT_URL} />
                             <Switch>
                                 <Route exact path="/yukon-ui/dashboard" component={DashboardPage} />
                                 <Route exact path="/yukon-ui/dr/setup/list" component={DRSetupFilterPage} />
