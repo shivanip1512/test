@@ -129,9 +129,10 @@ public class CBClient implements ICBClient {
         try {
             multispeakFuncs.setMsgSender(webServiceTemplate, mspVendor);
 
-            CDStateChangedNotificationResponse response =
-                (CDStateChangedNotificationResponse) webServiceTemplate.marshalSendAndReceive(uri,
-                    cdStateChangedNotification, customWebServiceMsgCallback.addRequestHeader(mspVendor, MultispeakDefines.CB_Server_STR));
+            CDStateChangedNotificationResponse response = (CDStateChangedNotificationResponse) webServiceTemplate.marshalSendAndReceive(
+                                                               uri,
+                                                               cdStateChangedNotification,
+                                                               customWebServiceMsgCallback.addRequestHeader(mspVendor, MultispeakDefines.CB_Server_STR));
             return response;
         } catch (WebServiceException | XmlMappingException e) {
             throw new MultispeakWebServiceClientException(e.getMessage());
