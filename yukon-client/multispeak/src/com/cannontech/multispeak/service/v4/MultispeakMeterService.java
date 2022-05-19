@@ -101,6 +101,6 @@ public interface MultispeakMeterService {
      * @return ErrorObject [] Array of errorObjects for meters that cannot be found, etc.
      */
     public List<ErrorObject> cdEvent(MultispeakVendor mspVendor, List<ConnectDisconnectEvent> cdEvents, 
-                                     String transactionID, String responseURL) throws MultispeakWebServiceException;
+                                     String transactionId, String responseURL) throws MultispeakWebServiceException;
 }
  

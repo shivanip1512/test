@@ -96,12 +96,14 @@ public class CDServiceEndpoint {
         List<ConnectDisconnectEvent> cdEvents = (null != initiateConnectDisconnect.getCdEvents()) ? 
                                                 initiateConnectDisconnect.getCdEvents().getConnectDisconnectEvent() : null;
 
-        List<ErrorObject> errorObjects = cd_server.initiateConnectDisconnect(cdEvents,
-                                                                             initiateConnectDisconnect.getResponseURL(),
-                                                                             initiateConnectDisconnect.getTransactionID(),
-                                                                             initiateConnectDisconnect.getExpTime());
+        if (cdEvents != null) {
+            List<ErrorObject> errorObjects = cd_server.initiateConnectDisconnect(cdEvents,
+                                                                                 initiateConnectDisconnect.getResponseURL(),
+                                                                                 initiateConnectDisconnect.getTransactionID(),
+                                                                                 initiateConnectDisconnect.getExpTime());
 
-        response.setInitiateConnectDisconnectResult(multispeakFuncs.toArrayOfErrorObject(errorObjects));
+            response.setInitiateConnectDisconnectResult(multispeakFuncs.toArrayOfErrorObject(errorObjects));
+        }
         return response;
     }
 }
