@@ -3,6 +3,7 @@ package com.cannontech.dr.eatonCloud.service.impl.v1;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyList;
 import static org.mockito.ArgumentMatchers.anyString;
+import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
@@ -13,12 +14,15 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.concurrent.TimeUnit;
 
 import org.joda.time.Instant;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.mockito.ArgumentCaptor;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
+import org.mockito.Mockito;
 import org.mockito.MockitoAnnotations;
 import org.springframework.http.HttpStatus;
 
@@ -170,7 +174,7 @@ public class EatonCloudSendControlServiceImplTest {
     }
     
     @Test
-    public void testInit_NoDevicesToRead_NoDataCollected() {
+    public void init_NoDevicesToRead_NoDataCollected() {
         // TODO Use ArgumentCaptor to force a run of the executor.
         when(settingDao.getString(GlobalSettingType.EATON_CLOUD_SERVICE_ACCOUNT_ID)).thenReturn("1");
         Set<Integer> devicesToRead = new HashSet<Integer>();
@@ -179,7 +183,15 @@ public class EatonCloudSendControlServiceImplTest {
         service.init();
         verify(configurationSource, times(1)).getInteger(MasterConfigInteger.EATON_CLOUD_NOTIFICATION_COMMAND_FAILURE_PERCENT, 25);
         verify(recentEventParticipationDao, times(1)).failWillRetryDevices(null);
-        Range<Instant> range = null;
+        Range<Instant> range = Range.inclusiveExclusive(null, null);
+        
+        LMEatonCloudScheduledCycleCommand command = createCommand();
+        service.sendInitialShedCommand(0, new HashSet<>(), command, 1);
+        
+        ArgumentCaptor<Runnable> argumentCaptor = ArgumentCaptor.forClass(Runnable.class);
+        verify(scheduledExecutor, times(1)).scheduleAtFixedRate(argumentCaptor.capture(), eq(0l), eq(1l), eq(TimeUnit.MINUTES));
+        
+        argumentCaptor.getAllValues().get(0).run();
         verify(eatonCloudDataReadService, times(1)).collectDataForRead(devicesToRead, range, "READ AFTER SHED");
     }
     

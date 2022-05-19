@@ -221,17 +221,14 @@ public class EatonCloudSendControlServiceImpl implements EatonCloudSendControlSe
             int deviceId = entry.getKey();
             String guid = entry.getValue();
 
-            String deviceName = dbCache.getAllDevices().stream()
-                    .filter(d -> d.getLiteID() == deviceId)
-                    .findAny()
-                    .map(LiteYukonPAObject::getPaoName)
-                    .orElse(null);
+            String deviceName = getDeviceName(deviceId);
             try {
                 log.debug(
                         "[external event id: {} ({} of {})] Attempting to send shed command to device id:{} guid:{} name:{} relay:{}",
                         eventId, tryNumber, totalTries, deviceId, guid, deviceName, command.getVirtualRelayId());
                 EatonCloudCommandResponseV1 response = eatonCloudCommunicationService.sendCommand(guid,
                         new EatonCloudCommandRequestV1("LCR_Control", params));
+                
                 if (response.getStatusCode() == HttpStatus.OK.value()) {
                     recentEventParticipationDao.updateDeviceControlEvent(eventId.toString(), deviceId,
                             ControlEventDeviceStatus.SUCCESS_RECEIVED, now,
@@ -295,6 +292,15 @@ public class EatonCloudSendControlServiceImpl implements EatonCloudSendControlSe
         return totalFailed.intValue();
     }
 
+    private String getDeviceName(int deviceId) {
+        return dbCache.getAllDevices().stream()
+                .filter(d -> d.getLiteID() == deviceId)
+                .findAny()
+                .map(d -> d.getPaoName())
+                .orElse(null);
+    }
+
+
     private void sendSmartNotifications(int eventId, int groupId, int programId, int totalDevices, int totalFailed) {
         if (totalFailed == 0) {
             return;
@@ -357,11 +363,7 @@ public class EatonCloudSendControlServiceImpl implements EatonCloudSendControlSe
             int deviceId = entry.getKey();
             String guid = entry.getValue();
 
-            String deviceName = dbCache.getAllDevices().stream()
-                    .filter(d -> d.getLiteID() == deviceId)
-                    .findAny()
-                    .map(d -> d.getPaoName())
-                    .orElse(null);
+            String deviceName = getDeviceName(deviceId);
             log.debug("[external event id:{}] Attampting to send restore command to device id:{} name:{} relay:{}", eventId,
                     deviceId,
                     deviceName, command.getVirtualRelayId());
@@ -384,6 +386,8 @@ public class EatonCloudSendControlServiceImpl implements EatonCloudSendControlSe
         log.info("[external event id:{}] Finished sending LM Eaton Cloud Restore Command:{} devices:{} relay:{} failed:{}", eventId, command,
                 devices.size(), command.getVirtualRelayId(), totalFailed.intValue());
     }
+
+   
 
     private final class ResendOptions {
         private AtomicInteger currentTry = new AtomicInteger(1);
