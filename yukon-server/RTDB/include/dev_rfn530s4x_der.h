@@ -4,7 +4,7 @@
 
 namespace Cti::Devices {
 
-class IM_EX_DEVDB RfnDerEdgeCoordinator : public RfnDevice
+class IM_EX_DEVDB Rfn530s4xDerDevice : public RfnDevice
 {
     typedef RfnDevice Inherited;
 

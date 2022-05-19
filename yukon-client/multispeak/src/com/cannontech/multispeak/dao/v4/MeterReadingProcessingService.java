@@ -3,6 +3,7 @@ package com.cannontech.multispeak.dao.v4;
 import java.util.Set;
 
 import com.cannontech.amr.meter.model.YukonMeter;
+import com.cannontech.common.pao.PaoType;
 import com.cannontech.common.pao.attribute.model.BuiltInAttribute;
 import com.cannontech.core.dynamic.PointValueHolder;
 import com.cannontech.msp.beans.v4.MeterReading;
@@ -21,7 +22,7 @@ public interface MeterReadingProcessingService {
      * be shared across threads.
      */
     public void updateMeterReading(MeterReading reading, BuiltInAttribute attribute,
-            PointValueHolder pointValueHolder);
+            PointValueHolder pointValueHolder, PaoType type);
     
     /**
      * to get supported field names

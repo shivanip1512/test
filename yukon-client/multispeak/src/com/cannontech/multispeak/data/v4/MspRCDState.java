@@ -12,8 +12,7 @@ import com.google.common.collect.ImmutableMap.Builder;
 public enum MspRCDState {
 
     OPENED(RCDState.OPENED, RfnDisconnectStatusState.CONNECTED, Disconnect410State.CONNECTED, "control connect"),
-    CLOSED(RCDState.CLOSED, RfnDisconnectStatusState.DISCONNECTED, Disconnect410State.CONFIRMED_DISCONNECTED,
-            "control disconnect"),
+    CLOSED(RCDState.CLOSED, RfnDisconnectStatusState.DISCONNECTED, Disconnect410State.CONFIRMED_DISCONNECTED, "control disconnect"),
     ARMED(RCDState.ARMED, RfnDisconnectStatusState.ARMED, Disconnect410State.CONNECT_ARMED),
     UNKNOWN(RCDState.UNKNOWN, RfnDisconnectStatusState.UNKNOWN, Disconnect410State.UNCONFIRMED_DISCONNECTED),
     ;
@@ -47,8 +46,7 @@ public enum MspRCDState {
         }
     }
 
-    private MspRCDState(RCDState rcdState,
-            RfnDisconnectStatusState rfnState, Disconnect410State plcState) {
+    private MspRCDState(RCDState rcdState, RfnDisconnectStatusState rfnState, Disconnect410State plcState) {
         this(rcdState, rfnState, plcState, null);
     }
 

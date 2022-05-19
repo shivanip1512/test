@@ -483,7 +483,7 @@
     <ClCompile Include="cmd_rfn_CommStatus.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="dev_rfn_der_edge_coordinator.cpp">
+    <ClCompile Include="dev_rfn530s4x_der.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>

@@ -19,7 +19,6 @@ import com.cannontech.msp.beans.v4.GetMeterByServiceLocationID;
 import com.cannontech.msp.beans.v4.GetMeterByServiceLocationIDResponse;
 import com.cannontech.msp.beans.v4.ArrayOfDomainMember;
 import com.cannontech.msp.beans.v4.DomainMember;
-import com.cannontech.msp.beans.v4.ErrorObject;
 import com.cannontech.msp.beans.v4.GetDomainMembers;
 import com.cannontech.msp.beans.v4.GetDomainMembersResponse;
 import com.cannontech.msp.beans.v4.GetMethods;
@@ -206,17 +205,23 @@ public class MspObjectDaoImpl implements MspObjectDao {
     @Override
     public ErrorObject getNotFoundErrorObject(String objectID, String notFoundObjectType, String nounType,
             String method, String userName, String exceptionMessage) {
-        ErrorObject errorObject = getErrorObject(objectID, notFoundObjectType + ": " + objectID + " - " + exceptionMessage + ".",
-                nounType,
-                method, userName);
+        ErrorObject errorObject = getErrorObject(objectID, 
+                                                 notFoundObjectType + ": " + objectID + " - " + exceptionMessage + ".",
+                                                 nounType,
+                                                 method, 
+                                                 userName);
         return errorObject;
     }
 
     @Override
     public ErrorObject getNotFoundErrorObject(String objectID, String notFoundObjectType, String nounType,
             String method, String userName) {
-        return getNotFoundErrorObject(objectID, notFoundObjectType, nounType, method, userName,
-                "Was NOT found in Yukon");
+        return getNotFoundErrorObject(objectID, 
+                                      notFoundObjectType, 
+                                      nounType, 
+                                      method, 
+                                      userName,
+                                      "Was NOT found in Yukon");
     }
 
     @Override
@@ -237,8 +242,7 @@ public class MspObjectDaoImpl implements MspObjectDao {
    
             GetMeterByServiceLocationID getMeterByServLocID = objectFactory.createGetMeterByServiceLocationID();
             getMeterByServLocID.setServiceLocationID(serviceLocation);
-            GetMeterByServiceLocationIDResponse getMeterByMeterNoResponse = cbClient.getMeterByServiceLocationID(mspVendor,
-                    endpointUrl, getMeterByServLocID);
+            GetMeterByServiceLocationIDResponse getMeterByMeterNoResponse = cbClient.getMeterByServiceLocationID(mspVendor, endpointUrl, getMeterByServLocID);
             Meters meters = getMeterByMeterNoResponse.getGetMeterByServiceLocationIDResult();
        
             if (meters != null) {
@@ -261,25 +265,25 @@ public class MspObjectDaoImpl implements MspObjectDao {
         ServiceLocation mspServiceLocation = new ServiceLocation();
         String endpointUrl = multispeakFuncs.getEndpointUrl(mspVendor, MultispeakDefines.CB_Server_STR);
 
-        String meterID = null;
+        String meterNo = null;
         if (mspObject instanceof ElectricService) {
-            meterID = ((ElectricService) mspObject).getElectricMeterID();
+            meterNo = ((ElectricService) mspObject).getElectricMeterID();
         } else if (mspObject instanceof WaterService) {
-            meterID = ((WaterService) mspObject).getWaterMeterID();
+            meterNo = ((WaterService) mspObject).getWaterMeterID();
         } else if (mspObject instanceof GasService) {
-            meterID = ((GasService) mspObject).getGasMeterID();
+            meterNo = ((GasService) mspObject).getGasMeterID();
         }
 
         try {
-            GetServiceLocationByMeterID getServiceLocationByMspMeterID = objectFactory.createGetServiceLocationByMeterID();
+            GetServiceLocationByMeterID getServiceLocationByMspMeterId = objectFactory.createGetServiceLocationByMeterID();
 
-            MeterID mspMeterID = new MeterID();
-            mspMeterID.setMeterNo(meterID);
-            getServiceLocationByMspMeterID.setMeterID(mspMeterID);
+            MeterID mspMeterId = new MeterID();
+            mspMeterId.setMeterNo(meterNo);
+            getServiceLocationByMspMeterId.setMeterID(mspMeterId);
             log.debug("Calling " + mspVendor.getCompanyName()
-                    + " CB_Server.GetServiceLocationByMeterID for meterID: " + meterID);
+                    + " CB_Server.GetServiceLocationByMeterID for meterID: " + meterNo);
             GetServiceLocationByMeterIDResponse getServiceLocationByMeterNoResponse = cbClient
-                    .getServiceLocationByMeterID(mspVendor, endpointUrl, getServiceLocationByMspMeterID);
+                    .getServiceLocationByMeterID(mspVendor, endpointUrl, getServiceLocationByMspMeterId);
 
             ArrayOfServiceLocation1 locationByMeterIDResult = getServiceLocationByMeterNoResponse
                     .getGetServiceLocationByMeterIDResult();
@@ -288,7 +292,7 @@ public class MspObjectDaoImpl implements MspObjectDao {
 
         } catch (MultispeakWebServiceClientException e) {
             log.error("TargetService: " + endpointUrl + " - GetServiceLocationByMeterID (" + mspVendor.getCompanyName()
-                    + ") for MeterID: " + meterID);
+                    + ") for MeterID: " + meterNo);
             log.error("MultispeakWebServiceClientException: " + e.getMessage());
             log.info("A default(empty) is being used for ServiceLocation");
         }
@@ -300,10 +304,11 @@ public class MspObjectDaoImpl implements MspObjectDao {
         List<String> substationNames = new ArrayList<>();
         String endpointUrl = multispeakFuncs.getEndpointUrl(mspVendor, MultispeakDefines.CB_Server_STR);
         try {
-            GetDomainMembers domainMembersRequest = objectFactory.createGetDomainMembers();
-            domainMembersRequest.setDomainName("substationCode");
-            GetDomainMembersResponse domainMembersResponse = cbClient.getDomainMembers(mspVendor, endpointUrl,
-                    domainMembersRequest);
+            GetDomainMembers domainMembers = objectFactory.createGetDomainMembers();
+            domainMembers.setDomainName("substationCode");
+            GetDomainMembersResponse domainMembersResponse = cbClient.getDomainMembers(mspVendor, 
+                                                                                       endpointUrl,
+                                                                                       domainMembers);
             if (domainMembersResponse != null) {
                 ArrayOfDomainMember arrayOfDomainMember = domainMembersResponse.getGetDomainMembersResult();
                 if (arrayOfDomainMember != null) {
