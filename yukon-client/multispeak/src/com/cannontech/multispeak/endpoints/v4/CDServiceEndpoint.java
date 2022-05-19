@@ -9,6 +9,10 @@ import org.springframework.ws.server.endpoint.annotation.PayloadRoot;
 import org.springframework.ws.server.endpoint.annotation.RequestPayload;
 import org.springframework.ws.server.endpoint.annotation.ResponsePayload;
 
+import com.cannontech.msp.beans.v4.ConnectDisconnectEvent;
+import com.cannontech.msp.beans.v4.ErrorObject;
+import com.cannontech.msp.beans.v4.InitiateConnectDisconnect;
+import com.cannontech.msp.beans.v4.InitiateConnectDisconnectResponse;
 import com.cannontech.msp.beans.v4.ArrayOfString;
 import com.cannontech.msp.beans.v4.CDState;
 import com.cannontech.msp.beans.v4.GetCDMeterState;
@@ -22,6 +26,7 @@ import com.cannontech.msp.beans.v4.ObjectFactory;
 import com.cannontech.msp.beans.v4.PingURL;
 import com.cannontech.msp.beans.v4.PingURLResponse;
 import com.cannontech.multispeak.client.MultispeakDefines;
+import com.cannontech.multispeak.client.v4.MultispeakFuncs;
 import com.cannontech.multispeak.exceptions.MultispeakWebServiceException;
 import com.cannontech.multispeak.service.v4.CD_Server;
 
@@ -35,6 +40,7 @@ public class CDServiceEndpoint {
 
     @Autowired private ObjectFactory objectFactory;
     @Autowired private CD_Server cd_server;
+    @Autowired private MultispeakFuncs multispeakFuncs;
     private final String CD_V4_ENDPOINT_NAMESPACE = MultispeakDefines.NAMESPACE_v4;
 
     @PayloadRoot(localPart = "PingURL", namespace = CD_V4_ENDPOINT_NAMESPACE)
@@ -79,6 +85,25 @@ public class CDServiceEndpoint {
         String lastReceived = getCDSupportedMeters.getLastReceived();
         Meters meters = cd_server.getCDSupportedMeters(lastReceived);
         response.setGetCDSupportedMetersResult(meters);
+        return response;
+    }
+    
+    @PayloadRoot(localPart = "InitiateConnectDisconnect", namespace = CD_V4_ENDPOINT_NAMESPACE)
+    public @ResponsePayload InitiateConnectDisconnectResponse initiateConnectDisconnect(
+            @RequestPayload InitiateConnectDisconnect initiateConnectDisconnect) throws MultispeakWebServiceException {
+        
+        InitiateConnectDisconnectResponse response = objectFactory.createInitiateConnectDisconnectResponse();
+        List<ConnectDisconnectEvent> cdEvents = (null != initiateConnectDisconnect.getCdEvents()) ? 
+                                                initiateConnectDisconnect.getCdEvents().getConnectDisconnectEvent() : null;
+
+        if (cdEvents != null) {
+            List<ErrorObject> errorObjects = cd_server.initiateConnectDisconnect(cdEvents,
+                                                                                 initiateConnectDisconnect.getResponseURL(),
+                                                                                 initiateConnectDisconnect.getTransactionID(),
+                                                                                 initiateConnectDisconnect.getExpTime());
+
+            response.setInitiateConnectDisconnectResult(multispeakFuncs.toArrayOfErrorObject(errorObjects));
+        }
         return response;
     }
 }

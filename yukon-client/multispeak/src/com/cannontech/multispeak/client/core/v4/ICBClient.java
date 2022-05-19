@@ -1,5 +1,7 @@
 package com.cannontech.multispeak.client.core.v4;
 
+import com.cannontech.msp.beans.v4.CDStateChangedNotification;
+import com.cannontech.msp.beans.v4.CDStateChangedNotificationResponse;
 import com.cannontech.msp.beans.v4.GetDomainMembers;
 import com.cannontech.msp.beans.v4.GetDomainMembersResponse;
 import com.cannontech.msp.beans.v4.MeterEventNotification;
@@ -74,5 +76,17 @@ public interface ICBClient {
      */
     public MeterEventNotificationResponse meterEventNotification(MultispeakVendor mspVendor, String uri,
             MeterEventNotification meterEventNotification) throws MultispeakWebServiceClientException;
+
+    /**
+     * CD State Change Notification
+     * 
+     * @param mspVendor                  vendor details
+     * @param uri                        the URI of the CB Server
+     * @param cdStateChangedNotification the CDStateChangedNotification used as input.
+     * @return CDStateChangedNotificationResponse
+     * @throws MultispeakWebServiceClientException
+     */
+    public CDStateChangedNotificationResponse cdStateChangedNotification(MultispeakVendor mspVendor, String uri,
+            CDStateChangedNotification cdStateChangedNotification) throws MultispeakWebServiceClientException;
 
 }
