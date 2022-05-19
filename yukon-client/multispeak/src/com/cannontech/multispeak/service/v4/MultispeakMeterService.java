@@ -93,5 +93,11 @@ public interface MultispeakMeterService {
      * Removes (disables) a list of meters in Yukon.
      */
     public List<ErrorObject> meterRemove(MultispeakVendor mspVendor, List<MspMeter> removeMeters);
+
+    /**
+     * Changes the meter information.
+     * @throws MultispeakWebServiceException
+     */
+     public List<ErrorObject> meterChanged(MultispeakVendor mspVendor, List<MspMeter> changedMeters) throws MultispeakWebServiceException;
 }
  
