@@ -1446,6 +1446,10 @@ public class MultispeakMeterServiceImpl extends MultispeakMeterServiceBase imple
                 final String meterNumber = getMeterNumberFromCDEvent(cdEvent);
              
                 try {
+                    if(meterNumber == null || StringUtils.isBlank(meterNumber)) {
+                        throw new NotFoundException("Invalid MeterNo");
+                    }
+                    
                     YukonMeter meter = mspMeterDao.getMeterForMeterNumber(meterNumber);
                     
                     if (cdEvent.getLoadActionCode() == null) {
