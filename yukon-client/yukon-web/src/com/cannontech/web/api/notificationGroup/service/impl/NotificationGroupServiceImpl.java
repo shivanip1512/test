@@ -6,11 +6,9 @@ import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 
-import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.transaction.annotation.Transactional;
 
-import com.cannontech.common.util.CtiUtilities;
 import com.cannontech.core.dao.ContactDao;
 import com.cannontech.core.dao.ContactNotificationDao;
 import com.cannontech.core.dao.CustomerDao;
@@ -82,10 +80,7 @@ public class NotificationGroupServiceImpl implements NotificationGroupService {
 
             // using liteContactNotification object to get contact id
             LiteContactNotification liteNotifObject = contactNotificationDao.getNotificationForContact(notifID);
-            notif.setNotification(liteNotifObject.getNotification());
-
             Contact contact = new Contact(liteNotifObject.getContactID());
-            contact.setName(getContactName(contact.getId()));
 
             // using a map here since there is a possibility of having two notifications mapped to a single contact
             if (tempContactMap.containsKey(contact.getId())) {
@@ -112,8 +107,6 @@ public class NotificationGroupServiceImpl implements NotificationGroupService {
             contact.setEmailEnabled(convertAttribs(contactNotifGroupMap[i].getAttribs(), NotifType.EMAIL));
             contact.setPhoneCallEnabled(convertAttribs(contactNotifGroupMap[i].getAttribs(), NotifType.VOICE));
 
-            contact.setName(getContactName(contID));
-
             getNotificationsForContact(contact);
 
             createCICustomerForContact(contact, mainMap, unassignedContacts);
@@ -128,11 +121,7 @@ public class NotificationGroupServiceImpl implements NotificationGroupService {
                 .collect(Collectors.groupingBy(LiteCICustomer::getCustomerID));
 
         for (int i = 0; i < customerNotifGroupMap.length; i++) {
-            LiteCICustomer liteCustomer = allCICustomers.get(customerNotifGroupMap[i].getCustomerID()).get(0);
             CICustomer cICustomer = new CICustomer();
-            if (!StringUtils.isBlank(liteCustomer.getCompanyName())) {
-                cICustomer.setCompanyName(liteCustomer.getCompanyName());
-            }
             cICustomer.setId(customerNotifGroupMap[i].getCustomerID());
             cICustomer.setSelected(true);
             cICustomer.setEmailEnabled(convertAttribs(customerNotifGroupMap[i].getAttribs(), NotifType.EMAIL));
@@ -141,10 +130,9 @@ public class NotificationGroupServiceImpl implements NotificationGroupService {
 
             // Getting Contacts associated with this customer
             List<LiteContact> liteContacts = customerDao
-                    .getAllContacts(liteCustomer);
+                    .getAllContacts(allCICustomers.get(customerNotifGroupMap[i].getCustomerID()).get(0));
             List<Contact> contacts = liteContacts.stream()
-                    .map(obj -> new Contact(obj.getContactID(), obj.toString(), cICustomer.isEmailEnabled(),
-                            cICustomer.isPhoneCallEnabled()))
+                    .map(obj -> new Contact(obj.getContactID(), cICustomer.isEmailEnabled(), cICustomer.isPhoneCallEnabled()))
                     .collect(Collectors.toList());
 
             // Getting Notifications for each Contact
@@ -167,9 +155,6 @@ public class NotificationGroupServiceImpl implements NotificationGroupService {
         LiteCICustomer cICust = contactDao.getCICustomer(contact.getId());
         if (cICust != null) {
             CICustomer cICustomer = new CICustomer(cICust.getCustomerID());
-            if (!StringUtils.isBlank(cICust.getCompanyName())) {
-                cICustomer.setCompanyName(cICust.getCompanyName());
-            }
             if (mainMap.containsKey(cICustomer.getId())) {
                 List<Contact> contacts = mainMap.get(cICustomer.getId()).getContacts();
                 contacts.add(contact);
@@ -192,23 +177,28 @@ public class NotificationGroupServiceImpl implements NotificationGroupService {
                 .getNotificationsForContact(contact.getId());
         // email enable of notif will be same as contact
         List<NotificationSettings> notifications = notificationsForContact.stream()
-                .map(obj -> new NotificationSettings(obj.getContactNotifID(), obj.getNotification(), contact.isEmailEnabled(),
+                .map(obj -> new NotificationSettings(obj.getContactNotifID(), contact.isEmailEnabled(),
                         contact.isPhoneCallEnabled()))
                 .collect(Collectors.toList());
         contact.setNotifications(notifications);
     }
 
-    private String getContactName(int contactID) {
-        LiteContact liteContact = contactDao.getContact(contactID);
-        if (liteContact != null) {
-            return liteContact.toString();
-        } else {
-            return CtiUtilities.STRING_NONE + "," + CtiUtilities.STRING_NONE;
-        }
+    @Override
+    public NotificationGroup retrieve(int id) {
+        LiteNotificationGroup liteNotificationGroup = cache.getAllContactNotificationGroups().stream()
+                .filter(obj -> obj.getNotificationGroupID() == id).findFirst()
+                .orElseThrow(() -> new NotFoundException("Notification Group id not found"));
+        com.cannontech.database.data.notification.NotificationGroup notificationGroupBase = (com.cannontech.database.data.notification.NotificationGroup) dbPersistentDao
+                .retrieveDBPersistent(liteNotificationGroup);
+
+        NotificationGroup notificationGroup = new NotificationGroup();
+        notificationGroup.buildModel(notificationGroupBase);
+        buildModelForCICustomersAndUnassignedCont(notificationGroup, notificationGroupBase);
+        return notificationGroup;
     }
 
-    @Override
     @Transactional
+    @Override
     public int delete(int id) {
         LiteNotificationGroup liteNotificationGroup = cache.getAllContactNotificationGroups().stream()
                 .filter(obj -> obj.getNotificationGroupID() == id).findFirst()
