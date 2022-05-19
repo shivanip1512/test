@@ -1,19 +1,18 @@
 import React, { Suspense } from "react";
+import { Provider } from "react-redux";
+import { I18nextProvider } from "react-i18next";
 
 import NavigationMenu from "./NavigationMenu";
 import NavigationDrawer from "./NavigationDrawer";
-import { ThemeProvider, createTheme } from "@material-ui/core/styles";
+import { ThemeProvider, createTheme, useTheme, makeStyles } from "@material-ui/core/styles";
+
 import * as PXBThemes from "@brightlayer-ui/react-themes";
 import { DrawerLayout } from "@brightlayer-ui/react-components";
-import { Provider } from "react-redux";
-
-import { I18nextProvider } from "react-i18next";
 import { SecurityContextProvider, AuthNavigationContainer } from "@brightlayer-ui/react-auth-workflow";
+
 import AuthUIConfiguration from "../security/AuthUIConfiguration";
 import { routes } from "../../constants/routing";
 import yukoni18n from "../I18n/i18nConfig";
-
-import { makeStyles, useTheme } from "@material-ui/core/styles";
 
 import { store } from "../../redux/store";
 
@@ -26,7 +25,6 @@ const useStyles = makeStyles((theme) => ({
 }));
 
 const NavigationContainer = (props) => {
-    const theme = useTheme();
     const classes = useStyles();
 
     return (
@@ -35,7 +33,7 @@ const NavigationContainer = (props) => {
                 <ThemeProvider theme={createTheme(PXBThemes.blue)}>
                     <Suspense fallback={<div></div>}>
                         <SecurityContextProvider>
-                            <AuthUIConfiguration yukonPath={window.configs.YUKON_API_URL}>
+                            <AuthUIConfiguration yukonPath={props.path}>
                                 <AuthNavigationContainer routeConfig={routes}>
                                     <I18nextProvider i18n={yukoni18n}>
                                         <DrawerLayout

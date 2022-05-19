@@ -11,9 +11,7 @@ import {
     SET_VALIDATION_ERRORS,
     CLEAR_VALIDATION_ERRORS,
     CLEAR_ALL_ALERTS,
-    SET_THEME,
-    SET_BACKGROUND_IMAGE
-
+    SET_THEME
 } from '../actions/actionTypes';
 
 const initialAppState = {
@@ -27,7 +25,6 @@ const initialAppState = {
     validationErrors: null,
     theme: null,
     backgroundImage: null
-
 };
 
 export const AppReducer = (state = initialAppState, action) => {

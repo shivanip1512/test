@@ -101,7 +101,7 @@ const NavigationMenu = (props) => {
             <Toolbar>
                 {yukonTheme ? (
                     <img
-                        src={"data:image/png;base64," + yukonTheme.properties.LOGO}
+                        src={props.yukonPath + "/api/common/images/" + yukonTheme.properties.LOGO}
                         alt="customerLogo"
                         style={{ paddingRight: theme.spacing(1) }}
                     />

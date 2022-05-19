@@ -1,24 +1,20 @@
 import React, { useEffect } from "react";
-import { useDispatch } from "react-redux";
 import { Route, Redirect, Switch, useLocation } from "react-router-dom";
 import { I18nextProvider } from "react-i18next";
 
-import yukoni18n from "./components/I18n/i18nConfig";
-
 import { DrawerLayout } from "@brightlayer-ui/react-components";
-
 import { SecurityContextProvider, AuthNavigationContainer } from "@brightlayer-ui/react-auth-workflow";
-import AuthUIConfiguration from "./components/security/AuthUIConfiguration";
-import { routes } from "./constants/routing";
 
+import AuthUIConfiguration from "./components/security/AuthUIConfiguration";
 import NavigationMenu from "./components/Navigation/NavigationMenu";
 import NavigationDrawer from "./components/Navigation/NavigationDrawer";
 import DRSetupFilterPage from "./components/YukonPage/DemandResponse/DRSetupFilter";
 import DRTestPage from "./components/YukonPage/DemandResponse/DRTestPage";
 import CommChannelCreatePage from "./components/YukonPage/Assets/CommChannelCreate";
 import DashboardPage from "./components/YukonPage/Dashboards/Dashboard";
-import axios from "../src/axiosConfig";
-import * as actions from "../src/redux/actions/index";
+import yukoni18n from "./components/I18n/i18nConfig";
+
+import { routes } from "./constants/routing";
 import { getYukonApiUrl, getYukonReactUrl } from "./helpers/urlHelper";
 
 const ScrollToTop = () => {
@@ -32,21 +28,8 @@ const ScrollToTop = () => {
 };
 
 export const App = () => {
-    const dispatch = useDispatch();
     const YUKON_API_URL = getYukonApiUrl();
     const YUKON_REACT_URL = getYukonReactUrl();
-
-    const fetchTheme = async () => {
-        await axios.get("/api/admin/config/currentTheme").then((themeJson) => {
-            if (themeJson) {
-                dispatch(actions.setTheme(themeJson.data));
-            }
-        });
-    };
-
-    useEffect(() => {
-        fetchTheme();
-    }, []);
 
     return (
         <SecurityContextProvider>
