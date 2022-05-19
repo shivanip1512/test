@@ -89,17 +89,17 @@ public class CDServiceEndpoint {
     }
     
     @PayloadRoot(localPart = "InitiateConnectDisconnect", namespace = CD_V4_ENDPOINT_NAMESPACE)
-    public @ResponsePayload
-    InitiateConnectDisconnectResponse initiateConnectDisconnect(
+    public @ResponsePayload InitiateConnectDisconnectResponse initiateConnectDisconnect(
             @RequestPayload InitiateConnectDisconnect initiateConnectDisconnect) throws MultispeakWebServiceException {
+        
         InitiateConnectDisconnectResponse response = objectFactory.createInitiateConnectDisconnectResponse();
-        List<ConnectDisconnectEvent> cdEvents = (null != initiateConnectDisconnect.getCdEvents()) 
-                ? initiateConnectDisconnect.getCdEvents().getConnectDisconnectEvent() : null;
+        List<ConnectDisconnectEvent> cdEvents = (null != initiateConnectDisconnect.getCdEvents()) ? 
+                                                initiateConnectDisconnect.getCdEvents().getConnectDisconnectEvent() : null;
 
-        List<ErrorObject> errorObjects =
-            cd_server.initiateConnectDisconnect(cdEvents,
-                initiateConnectDisconnect.getResponseURL(), initiateConnectDisconnect.getTransactionID(),
-                initiateConnectDisconnect.getExpTime());
+        List<ErrorObject> errorObjects = cd_server.initiateConnectDisconnect(cdEvents,
+                                                                             initiateConnectDisconnect.getResponseURL(),
+                                                                             initiateConnectDisconnect.getTransactionID(),
+                                                                             initiateConnectDisconnect.getExpTime());
 
         response.setInitiateConnectDisconnectResult(multispeakFuncs.toArrayOfErrorObject(errorObjects));
         return response;

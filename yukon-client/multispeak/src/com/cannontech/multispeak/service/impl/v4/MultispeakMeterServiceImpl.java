@@ -100,6 +100,7 @@ import com.cannontech.msp.beans.v4.ServiceLocation;
 import com.cannontech.msp.beans.v4.ServiceType;
 import com.cannontech.msp.beans.v4.WaterMeter;
 import com.cannontech.msp.beans.v4.WaterService;
+import com.cannontech.multispeak.client.MultispeakDefines;
 import com.cannontech.multispeak.client.MultispeakVendor;
 import com.cannontech.multispeak.client.core.v4.CBClient;
 import com.cannontech.multispeak.client.v4.MultispeakFuncs;
@@ -1431,11 +1432,13 @@ public class MultispeakMeterServiceImpl extends MultispeakMeterServiceBase imple
         }
 
         ArrayList<ErrorObject> errorObjects = Lists.newArrayList();
+        
         if (CollectionUtils.isNotEmpty(cdEvents)) {
             log.info("Received " + cdEvents.size() + " Meter(s) for Connect/Disconnect from " + mspVendor.getCompanyName());
+            
             multispeakEventLogService.initiateCDRequest(cdEvents.size(), 
                                                         "InitiateConnectDisconnect",
-                                                        mspVendor.getCompanyName());
+                                                         mspVendor.getCompanyName());
 
             List<CommandRequestDevice> plcCommandRequests = Lists.newArrayList();
             
@@ -1447,9 +1450,9 @@ public class MultispeakMeterServiceImpl extends MultispeakMeterServiceBase imple
                     
                     if (cdEvent.getLoadActionCode() == null) {
                         ErrorObject err = mspObjectDao.getErrorObject(meterNumber, 
-                                                                      "MeterNumber (" + meterNumber +
+                                                                      "MeterNumber (" + meterNumber + 
                                                                       ") - Cannot InitiateConnectDisconnect as no load action code exists.", 
-                                                                      "Meter",
+                                                                      "MeterID",
                                                                       "CDEvent", 
                                                                        mspVendor.getCompanyName());
                             
@@ -1462,11 +1465,9 @@ public class MultispeakMeterServiceImpl extends MultispeakMeterServiceBase imple
                     
                     if (mspLoadActionCode == null) {
                             ErrorObject err = mspObjectDao.getErrorObject(meterNumber, 
-                                                                          "MeterNumber (" + meterNumber +
-                                                                          ") - LoadActionCode '" + 
-                                                                          cdEvent.getLoadActionCode().toString() + 
-                                                                          "' is NOT Supported.",
-                                                                          "Meter", 
+                                                                          "MeterNumber (" + meterNumber + ") - LoadActionCode '" + 
+                                                                          cdEvent.getLoadActionCode().toString() + "' is NOT Supported.",
+                                                                          "MeterID", 
                                                                           "CDEvent", 
                                                                           mspVendor.getCompanyName());
                             errorObjects.add(err);
@@ -1479,7 +1480,7 @@ public class MultispeakMeterServiceImpl extends MultispeakMeterServiceBase imple
                             mspObjectDao.getErrorObject(meterNumber, 
                                                         "MeterNumber (" + meterNumber + 
                                                         ") - Invalid Yukon Connect/Disconnect Meter.", 
-                                                        "Meter", 
+                                                        "MeterID", 
                                                         "CDEvent",
                                                         mspVendor.getCompanyName());
                         errorObjects.add(err);
@@ -1505,8 +1506,6 @@ public class MultispeakMeterServiceImpl extends MultispeakMeterServiceBase imple
                         continue;
                     }
 
-                    // Assume plc if we made it this far, validate meter can receive porter command requests
-                    // and command string exists, then perform action
                     boolean canInitiatePorterRequest = paoDefinitionDao.isTagSupported(meter.getPaoIdentifier().getPaoType(),
                                                                                        PaoTag.PORTER_COMMAND_REQUESTS);
                     
@@ -1515,7 +1514,7 @@ public class MultispeakMeterServiceImpl extends MultispeakMeterServiceBase imple
                                                                       "MeterNumber (" + meterNumber + 
                                                                       ") - Meter cannot receive requests from porter or no control command exists. " + 
                                                                       "LoadActionCode=" + cdEvent.getLoadActionCode(), 
-                                                                      "Meter", 
+                                                                      "MeterID", 
                                                                       "CDEvent",
                                                                        mspVendor.getCompanyName());
                         errorObjects.add(err);
@@ -1538,7 +1537,7 @@ public class MultispeakMeterServiceImpl extends MultispeakMeterServiceBase imple
                     ErrorObject err =
                         mspObjectDao.getNotFoundErrorObject(meterNumber, 
                                                             "MeterNumber", 
-                                                            "Meter", 
+                                                            "MeterID", 
                                                             "CDEvent",
                                                              mspVendor.getCompanyName());
                     errorObjects.add(err);
@@ -1631,18 +1630,21 @@ public class MultispeakMeterServiceImpl extends MultispeakMeterServiceBase imple
             CDStateChangedNotification cdStateChangedNotification = objectFactory.createCDStateChangedNotification();
             CDStateChange stateChange = new CDStateChange();
 
-            MeterID meterID = new MeterID();
-            meterID.setMeterNo(yukonMeter.getMeterNumber());
+            MeterID meterId = new MeterID();
+            meterId.setMeterNo(yukonMeter.getMeterNumber());
             
-            if (paoType.isWaterMeter())
-                meterID.setServiceType(ServiceType.WATER);
-            else if (paoType.isGasMeter())
-                meterID.setServiceType(ServiceType.GAS);
-            else
-                meterID.setServiceType(ServiceType.ELECTRIC);
-            
+            if (paoType.isWaterMeter()) {
+                meterId.setServiceType(ServiceType.WATER);
+            }
+            else if (paoType.isGasMeter()) {
+                meterId.setServiceType(ServiceType.GAS);
+            }
+            else {
+                meterId.setServiceType(ServiceType.ELECTRIC);
+            }
+            meterId.setUtility(MultispeakDefines.AMR_VENDOR);
 
-            stateChange.setMeterID(meterID);
+            stateChange.setMeterID(meterId);
             stateChange.setStateChange(loadActionCode);
             cdStateChangedNotification.setStateChange(stateChange);
             cdStateChangedNotification.setTransactionID(transactionId);
