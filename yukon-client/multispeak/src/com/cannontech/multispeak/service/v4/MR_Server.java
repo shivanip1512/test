@@ -250,7 +250,6 @@ public interface MR_Server {
 
     /**
      * meter Changed Notification.
-     * 
      * @param changedMeters the changed meters
      * @return the error object[]
      * @throws MultispeakWebServiceException the multispeak web service exception

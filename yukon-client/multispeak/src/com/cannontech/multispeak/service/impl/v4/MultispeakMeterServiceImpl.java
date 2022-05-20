@@ -150,6 +150,7 @@ public class MultispeakMeterServiceImpl extends MultispeakMeterServiceBase imple
     // Strings to represent method calls, generally used for logging.
     private static final String SERV_LOC_CHANGED_STRING = "ServiceLocationChangedNotification";
     private static final String METER_REMOVE_STRING = "MeterRemoveNotification";
+    private static final String METER_CHANGED_STRING = "MeterChangedNotification";
 
     /** Singleton incrementor for messageIDs to send to porter connection */
     private static long messageID = 1;
@@ -741,7 +742,7 @@ public class MultispeakMeterServiceImpl extends MultispeakMeterServiceBase imple
     @Override
     public List<ErrorObject> meterChanged(final MultispeakVendor mspVendor, List<MspMeter> changedMeters) throws MultispeakWebServiceException{
         final List<ErrorObject> errorObjects = new ArrayList<>();
-        final String METER_CHANGED_STRING = "MeterChangedNotification";
+
         for (final MspMeter mspMeter : changedMeters) {
             try {
                 transactionTemplate.execute(new TransactionCallbackWithoutResult() {
@@ -771,7 +772,8 @@ public class MultispeakMeterServiceImpl extends MultispeakMeterServiceBase imple
                             multispeakEventLogService.meterNotFound(mspMeter.getMeterNo(), METER_CHANGED_STRING, mspVendor.getCompanyName());
                             ErrorObject err = mspObjectDao.getNotFoundErrorObject(mspMeter.getObjectID(),
                                                                                   "MeterNumber: " + mspMeter.getMeterNo(),
-                                                                                  "Meter", METER_CHANGED_STRING, mspVendor.getCompanyName());
+                                                                                  "Meter", METER_CHANGED_STRING, 
+                                                                                   mspVendor.getCompanyName());
                             errorObjects.add(err);
                             multispeakEventLogService.errorObject(err.getErrorString(), METER_CHANGED_STRING, mspVendor.getCompanyName());
                             log.error(e);
@@ -786,7 +788,8 @@ public class MultispeakMeterServiceImpl extends MultispeakMeterServiceBase imple
                 // Transactional code threw application exception -> rollback
                 ErrorObject err = mspObjectDao.getErrorObject(mspMeter.getMeterNo(),
                                                               "X Exception: (MeterNo:" + mspMeter.getMeterNo() + ")-" + ex.getMessage(),
-                                                              "Meter", METER_CHANGED_STRING, mspVendor.getCompanyName());
+                                                              "Meter", METER_CHANGED_STRING, 
+                                                              mspVendor.getCompanyName());
                 errorObjects.add(err);
                 multispeakEventLogService.errorObject(err.getErrorString(), METER_CHANGED_STRING, mspVendor.getCompanyName());
                 log.error(ex);
@@ -794,7 +797,8 @@ public class MultispeakMeterServiceImpl extends MultispeakMeterServiceBase imple
                 // Transactional code threw error -> rollback
                 ErrorObject err = mspObjectDao.getErrorObject(mspMeter.getMeterNo(),
                                                               "X Error: (MeterNo:" + mspMeter.getMeterNo() + ")-" + ex.getMessage(),
-                                                              "Meter", METER_CHANGED_STRING, mspVendor.getCompanyName());
+                                                              "Meter", METER_CHANGED_STRING, 
+                                                              mspVendor.getCompanyName());
                 errorObjects.add(err);
                 multispeakEventLogService.errorObject(err.getErrorString(), METER_CHANGED_STRING, mspVendor.getCompanyName());
                 log.error(ex);
