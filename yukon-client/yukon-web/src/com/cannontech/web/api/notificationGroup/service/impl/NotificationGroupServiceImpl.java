@@ -6,11 +6,10 @@ import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 
-import org.apache.commons.lang3.StringUtils;
+import org.apache.commons.collections4.CollectionUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.transaction.annotation.Transactional;
 
-import com.cannontech.common.util.CtiUtilities;
 import com.cannontech.core.dao.ContactDao;
 import com.cannontech.core.dao.ContactNotificationDao;
 import com.cannontech.core.dao.CustomerDao;
@@ -111,8 +110,6 @@ public class NotificationGroupServiceImpl implements NotificationGroupService {
             contact.setSelected(true);
             contact.setEmailEnabled(convertAttribs(contactNotifGroupMap[i].getAttribs(), NotifType.EMAIL));
             contact.setPhoneCallEnabled(convertAttribs(contactNotifGroupMap[i].getAttribs(), NotifType.VOICE));
-
-            contact.setName(getContactName(contID));
 
             getNotificationsForContact(contact);
 
@@ -231,5 +228,22 @@ public class NotificationGroupServiceImpl implements NotificationGroupService {
                 .createDBPersistent(liteNotificationGroup);
         dbPersistentDao.performDBChange(notificationGroup, TransactionType.DELETE);
         return notificationGroup.getNotificationGroup().getNotificationGroupID();
+    }
+
+    @Override
+    public List<NotificationGroup> retrieveAll() {
+        List<LiteNotificationGroup> liteNotificationGroup = cache.getAllContactNotificationGroups();
+        List<NotificationGroup> notificationGroupList = new ArrayList<NotificationGroup>();
+        if (CollectionUtils.isNotEmpty(liteNotificationGroup)) {
+            liteNotificationGroup.forEach(liteObject -> {
+                com.cannontech.database.data.notification.NotificationGroup notificationGroupBase = (com.cannontech.database.data.notification.NotificationGroup) dbPersistentDao
+                        .retrieveDBPersistent(liteObject);
+                NotificationGroup notificationGroup = new NotificationGroup();
+                notificationGroup.buildModel(notificationGroupBase);
+                buildModelForCICustomersAndUnassignedCont(notificationGroup, notificationGroupBase);
+                notificationGroupList.add(notificationGroup);
+            });
+        }
+        return notificationGroupList;
     }
 }
