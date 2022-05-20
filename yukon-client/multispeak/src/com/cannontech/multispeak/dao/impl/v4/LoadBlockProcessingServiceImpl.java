@@ -48,9 +48,10 @@ public class LoadBlockProcessingServiceImpl extends FormattedBlockProcessingServ
             }
         };
 
-        Map<BuiltInAttribute, ReadingProcessor<LoadBlock>> attributesToLoad = ImmutableMap.of(BuiltInAttribute.LOAD_PROFILE,
-                loadProfileConverter, BuiltInAttribute.KVAR, kVarConverter,
-                BuiltInAttribute.VOLTAGE, voltageConverter, BuiltInAttribute.VOLTAGE_PROFILE, voltageProfileConverter);
+        Map<BuiltInAttribute, ReadingProcessor<LoadBlock>> attributesToLoad = ImmutableMap.of(BuiltInAttribute.LOAD_PROFILE, loadProfileConverter, 
+                                                                                              BuiltInAttribute.KVAR, kVarConverter,
+                                                                                              BuiltInAttribute.VOLTAGE, voltageConverter, 
+                                                                                              BuiltInAttribute.VOLTAGE_PROFILE, voltageProfileConverter);
 
         setAttributesToLoad(attributesToLoad);
     }
@@ -65,8 +66,6 @@ public class LoadBlockProcessingServiceImpl extends FormattedBlockProcessingServ
     @Override
     public FormattedBlock createMspFormattedBlock(List<LoadBlock> blocks) {
         LoadValList loadValList = new LoadValList(blocks);
-        return FormattedBlockBase.createMspFormattedBlock(loadValList
-
-        );
+        return FormattedBlockBase.createMspFormattedBlock(loadValList);
     }
 }

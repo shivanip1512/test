@@ -69,6 +69,8 @@ public class MeterReadProcessingServiceImpl implements MeterReadProcessingServic
                 
                 if(type.isWaterMeter()) {
                     readingTypeCode.setFieldName(FieldNameKind.WATER_VOLUME);
+                } else if (type.isGasMeter()) {
+                    readingTypeCode.setFieldName(FieldNameKind.CORRECTED_GAS_VOLUME);
                 } else {
                     readingTypeCode.setFieldName(FieldNameKind.POS_K_WH);
                 }

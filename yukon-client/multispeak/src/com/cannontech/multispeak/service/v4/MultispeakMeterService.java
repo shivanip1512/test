@@ -4,6 +4,7 @@ import java.util.List;
 
 import com.cannontech.amr.meter.model.YukonMeter;
 import com.cannontech.common.pao.YukonDevice;
+import com.cannontech.msp.beans.v4.ConnectDisconnectEvent;
 import com.cannontech.msp.beans.v4.ErrorObject;
 import com.cannontech.msp.beans.v4.MeterGroup;
 import com.cannontech.msp.beans.v4.MeterID;
@@ -27,12 +28,12 @@ public interface MultispeakMeterService {
     /**
      * Add MeterNos to SystemGroupEnum.USAGEMONITORING Device Group.
      */
-    public List<ErrorObject> initiateUsageMonitoring(MultispeakVendor mspVendor, List<MeterID> meterIDs);
+    public List<ErrorObject> initiateUsageMonitoring(MultispeakVendor mspVendor, List<MeterID> meterIds);
     
     /**
      * Remove MeterNos from SystemGroupEnum.USAGEMONITORING Device Group.
      */
-    public List<ErrorObject> cancelUsageMonitoring(MultispeakVendor mspVendor, List<MeterID> meterIDs);
+    public List<ErrorObject> cancelUsageMonitoring(MultispeakVendor mspVendor, List<MeterID> meterIds);
 
     /**
      * Adds meters to a group. If the group doesn't exist, a new group will be created
@@ -99,5 +100,14 @@ public interface MultispeakMeterService {
      * @throws MultispeakWebServiceException
      */
      public List<ErrorObject> meterChanged(MultispeakVendor mspVendor, List<MspMeter> changedMeters) throws MultispeakWebServiceException;
+
+     /**
+     * Send a disconnect/connect request to Porter (PLC) or submit to queue (RFN) for each meter in meterNumbers.
+     * 
+     * @return ErrorObject [] Array of errorObjects for meters that cannot be found, etc.
+     */
+    public List<ErrorObject> cdEvent(MultispeakVendor mspVendor, List<ConnectDisconnectEvent> cdEvents, 
+                                     String transactionId, String responseURL) throws MultispeakWebServiceException;
+
 }
  
