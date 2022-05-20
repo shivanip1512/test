@@ -6,6 +6,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 
+import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.transaction.annotation.Transactional;
@@ -231,5 +232,22 @@ public class NotificationGroupServiceImpl implements NotificationGroupService {
                 .createDBPersistent(liteNotificationGroup);
         dbPersistentDao.performDBChange(notificationGroup, TransactionType.DELETE);
         return notificationGroup.getNotificationGroup().getNotificationGroupID();
+    }
+
+    @Override
+    public List<NotificationGroup> retrieveAll() {
+        List<LiteNotificationGroup> liteNotificationGroup = cache.getAllContactNotificationGroups();
+        List<NotificationGroup> notificationGroupList = new ArrayList<NotificationGroup>();
+        if (!CollectionUtils.isEmpty(liteNotificationGroup)) {
+            liteNotificationGroup.forEach(liteObject -> {
+                com.cannontech.database.data.notification.NotificationGroup notificationGroupBase = (com.cannontech.database.data.notification.NotificationGroup) dbPersistentDao
+                        .retrieveDBPersistent(liteObject);
+                NotificationGroup notificationGroup = new NotificationGroup();
+                notificationGroup.buildModel(notificationGroupBase);
+                buildModelForCICustomersAndUnassignedCont(notificationGroup, notificationGroupBase);
+                notificationGroupList.add(notificationGroup);
+            });
+        }
+        return notificationGroupList;
     }
 }
