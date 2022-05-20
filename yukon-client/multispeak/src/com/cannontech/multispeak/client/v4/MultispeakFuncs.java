@@ -330,5 +330,14 @@ public class MultispeakFuncs extends MultispeakFuncsBase {
         }
         return mspRCDState.getRCDState();
     }
+    
+    public void logErrorObjects(String interfaceName, String methodName, List<ErrorObject> objects) {
+        if (CollectionUtils.isNotEmpty(objects)) {
+            for (ErrorObject errorObject : objects) {
+                log.info("Error Return from " + interfaceName + "(" + methodName + "): " + (errorObject == null ? "Null"
+                        : errorObject.getObjectID() + " - " + errorObject.getErrorString()));
+            }
+        }
+    }
 
 }

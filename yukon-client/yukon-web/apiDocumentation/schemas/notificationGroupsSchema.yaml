@@ -131,6 +131,9 @@ unassignedContactsResponse:
         id:
           type: integer
           description: 'Unique identifier of the contact.' 
+        name:
+          type: string
+          description: 'Name of the unassigned contact.'
         emailEnabled:
           type: boolean
           description: 'Flag for email notification for this contact.'
@@ -151,6 +154,9 @@ cICustomersResponse:
         id:
           type: integer
           description: 'Unique identifier of the customer.'
+        companyName:
+          type: string
+          description: 'Company Name of the CI Customer.'
         emailEnabled:
           type: boolean
           description: 'Flag for email notification for this customer.'
@@ -171,6 +177,9 @@ contactsResponse:
         id:
           type: integer
           description: 'Unique identifier of the contact.'
+        name:
+          type: string
+          description: 'Name of the contact.'
         emailEnabled:
           type: boolean
           description: 'Flag for email notification for this contact.'
@@ -190,6 +199,9 @@ notificationsResponse:
       id: 
         type: integer
         description: 'Unique identification of the contact notification.'
+      notification:
+        type: string
+        description: 'Notification detail of this contact.'
       emailEnabled:
         type: boolean
         description: 'Flag for email notification.'
@@ -269,26 +281,31 @@ components:
         enabled: true
         cICustomers:
             id: 10
+            companyName: Test Company Name
             emailEnabled: true
             phoneCallEnabled: false
             selected: false
             contacts: 
               id: 110
+              name: Test Contact Name
               emailEnabled: true
               phoneCallEnabled: false
               selected: false
               notifications:
                 id: 1110
+                notification: test@eaton.com
                 emailEnabled: true
                 phoneCallEnabled: false
                 selected: false
         unassignedContacts:
             id: 11110
+            name: Test Unassigned Contact Name
             emailEnabled: true
             phoneCallEnabled: false
             selected: false
             notifications:
                id: 111110
+               notification: "9898076800"
                emailEnabled: true
                phoneCallenabled: false
                selected: false
@@ -305,26 +322,31 @@ components:
           enabled: true
           cICustomers:
             id: 10
+            companyName: Test Company Name
             emailEnabled: true
             phoneCallEnabled: false
             selected: false
             contacts: 
               id: 110
+              name: Test Contact Name
               emailEnabled: true
               phoneCallEnabled: false
               selected: false
               notifications:
                 id: 1110
+                notification: test@eaton.com
                 emailEnabled: true
                 phoneCallEnabled: false
                 selected: false
           unassignedContacts:
             id: 11110
+            name: Test Unassinged Contact Name
             emailEnabled: true
             phoneCallEnabled: false
             selected: false
             notifications:
                id: 111110
+               notification: "9898076800"
                emailEnabled: true
                phoneCallenabled: false
                selected: false
@@ -333,26 +355,31 @@ components:
           enabled: true
           cICustomers:
             id: 10
+            companyName: Test Company Name
             emailEnabled: true
             phoneCallEnabled: false
             selected: false
             contacts: 
                id: 110
+               name: Test Contact Name
                emailEnabled: true
                phoneCallEnabled: false
                selected: false
                notifications:
                  id: 1110
+                 notification: test@eaton.com
                  emailEnabled: true
                  phoneCallEnabled: false
                  selected: false
           unassignedContacts:
              id: 11110
+             name: Test Unassinged Contact Name
              emailEnabled: true
              phoneCallEnabled: false
              selected: false
              notifications:
                id: 111110
+               notification: "9898076800"
                emailEnabled: true
                phoneCallenabled: false
                selected: false

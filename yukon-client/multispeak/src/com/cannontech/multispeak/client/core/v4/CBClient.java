@@ -8,6 +8,8 @@ import org.springframework.ws.client.core.WebServiceTemplate;
 
 import com.cannontech.msp.beans.v4.GetMeterByServiceLocationID;
 import com.cannontech.msp.beans.v4.GetMeterByServiceLocationIDResponse;
+import com.cannontech.msp.beans.v4.CDStateChangedNotification;
+import com.cannontech.msp.beans.v4.CDStateChangedNotificationResponse;
 import com.cannontech.msp.beans.v4.GetDomainMembers;
 import com.cannontech.msp.beans.v4.GetDomainMembersResponse;
 import com.cannontech.msp.beans.v4.MeterEventNotification;
@@ -121,4 +123,19 @@ public class CBClient implements ICBClient {
         }
     }
 
+    @Override
+    public CDStateChangedNotificationResponse cdStateChangedNotification(final MultispeakVendor mspVendor, String uri,
+            CDStateChangedNotification cdStateChangedNotification) throws MultispeakWebServiceClientException {
+        try {
+            multispeakFuncs.setMsgSender(webServiceTemplate, mspVendor);
+
+            CDStateChangedNotificationResponse response = (CDStateChangedNotificationResponse) webServiceTemplate.marshalSendAndReceive(
+                                                               uri,
+                                                               cdStateChangedNotification,
+                                                               customWebServiceMsgCallback.addRequestHeader(mspVendor, MultispeakDefines.CB_Server_STR));
+            return response;
+        } catch (WebServiceException | XmlMappingException e) {
+            throw new MultispeakWebServiceClientException(e.getMessage());
+        }
+    }
 }

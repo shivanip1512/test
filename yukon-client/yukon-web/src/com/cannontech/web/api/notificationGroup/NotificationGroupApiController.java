@@ -22,6 +22,11 @@ public class NotificationGroupApiController {
 
     @Autowired private NotificationGroupService notificationGroupService;
 
+    @GetMapping("/{id}")
+    public ResponseEntity<Object> retrieve(@PathVariable int id) {
+        return new ResponseEntity<>(notificationGroupService.retrieve(id), HttpStatus.OK);
+    }
+
     @PostMapping
     public ResponseEntity<Object> create(@RequestBody NotificationGroup notificationGroup) {
         return new ResponseEntity<>(notificationGroupService.create(notificationGroup), HttpStatus.CREATED);

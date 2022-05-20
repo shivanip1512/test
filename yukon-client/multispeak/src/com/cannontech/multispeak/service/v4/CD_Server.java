@@ -2,6 +2,9 @@ package com.cannontech.multispeak.service.v4;
 
 import java.util.List;
 
+import com.cannontech.msp.beans.v4.ConnectDisconnectEvent;
+import com.cannontech.msp.beans.v4.ErrorObject;
+import com.cannontech.msp.beans.v4.ExpirationTime;
 import com.cannontech.msp.beans.v4.CDState;
 import com.cannontech.msp.beans.v4.MeterID;
 import com.cannontech.msp.beans.v4.Meters;
@@ -41,4 +44,21 @@ public interface CD_Server {
      * lastSent.
      */
     public Meters getCDSupportedMeters(String lastReceived) throws MultispeakWebServiceException;
+    
+    /**
+     * CB initiates a connect or disconnect action by issuing one
+     * or more connectDisconnectEvent objects to the CD. CD returns information
+     * about failed transactions by returning an array of errorObjects.
+     * The connect/disconnect function returns infromation about this action
+     * using the CDStateChangedNotification to the URL specified in the responseURL
+     * calling parameter and references the transactionID specified to link
+     * the transaction to this Initiate request.The expiration time parameter
+     * indicates the amount of time for which the publisher should try to
+     * obtain and publish the data; if the publisher has been unsuccessful
+     * in publishing the data after the expiration time (specified in seconds),
+     * then the publisher will discard the request and the requestor should
+     * not expect a response.
+     */
+    public List<ErrorObject> initiateConnectDisconnect(List<ConnectDisconnectEvent> cdEvents, String responseURL,
+            String transactionId, ExpirationTime expirationTime) throws MultispeakWebServiceException;
 }

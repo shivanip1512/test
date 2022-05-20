@@ -4,6 +4,7 @@ import java.util.List;
 
 import com.cannontech.amr.meter.model.YukonMeter;
 import com.cannontech.common.pao.YukonDevice;
+import com.cannontech.msp.beans.v4.ConnectDisconnectEvent;
 import com.cannontech.msp.beans.v4.ErrorObject;
 import com.cannontech.msp.beans.v4.MeterGroup;
 import com.cannontech.msp.beans.v4.MeterID;
@@ -93,5 +94,13 @@ public interface MultispeakMeterService {
      * Removes (disables) a list of meters in Yukon.
      */
     public List<ErrorObject> meterRemove(MultispeakVendor mspVendor, List<MspMeter> removeMeters);
+
+    /**
+     * Send a disconnect/connect request to Porter (PLC) or submit to queue (RFN) for each meter in meterNumbers.
+     * 
+     * @return ErrorObject [] Array of errorObjects for meters that cannot be found, etc.
+     */
+    public List<ErrorObject> cdEvent(MultispeakVendor mspVendor, List<ConnectDisconnectEvent> cdEvents, 
+                                     String transactionId, String responseURL) throws MultispeakWebServiceException;
 }
  
