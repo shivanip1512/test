@@ -772,7 +772,7 @@ public class MultispeakMeterServiceImpl extends MultispeakMeterServiceBase imple
                             multispeakEventLogService.meterNotFound(mspMeter.getMeterNo(), METER_CHANGED_STRING, mspVendor.getCompanyName());
                             ErrorObject err = mspObjectDao.getNotFoundErrorObject(mspMeter.getObjectID(),
                                                                                   "MeterNumber: " + mspMeter.getMeterNo(),
-                                                                                  "Meter", METER_CHANGED_STRING, 
+                                                                                  "MspMeter", METER_CHANGED_STRING, 
                                                                                    mspVendor.getCompanyName());
                             errorObjects.add(err);
                             multispeakEventLogService.errorObject(err.getErrorString(), METER_CHANGED_STRING, mspVendor.getCompanyName());
@@ -788,7 +788,7 @@ public class MultispeakMeterServiceImpl extends MultispeakMeterServiceBase imple
                 // Transactional code threw application exception -> rollback
                 ErrorObject err = mspObjectDao.getErrorObject(mspMeter.getMeterNo(),
                                                               "X Exception: (MeterNo:" + mspMeter.getMeterNo() + ")-" + ex.getMessage(),
-                                                              "Meter", METER_CHANGED_STRING, 
+                                                              "MspMeter", METER_CHANGED_STRING, 
                                                               mspVendor.getCompanyName());
                 errorObjects.add(err);
                 multispeakEventLogService.errorObject(err.getErrorString(), METER_CHANGED_STRING, mspVendor.getCompanyName());
@@ -797,7 +797,7 @@ public class MultispeakMeterServiceImpl extends MultispeakMeterServiceBase imple
                 // Transactional code threw error -> rollback
                 ErrorObject err = mspObjectDao.getErrorObject(mspMeter.getMeterNo(),
                                                               "X Error: (MeterNo:" + mspMeter.getMeterNo() + ")-" + ex.getMessage(),
-                                                              "Meter", METER_CHANGED_STRING, 
+                                                              "MspMeter", METER_CHANGED_STRING, 
                                                               mspVendor.getCompanyName());
                 errorObjects.add(err);
                 multispeakEventLogService.errorObject(err.getErrorString(), METER_CHANGED_STRING, mspVendor.getCompanyName());
