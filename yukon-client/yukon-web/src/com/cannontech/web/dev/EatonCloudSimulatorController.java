@@ -164,7 +164,7 @@ public class EatonCloudSimulatorController {
     }
     
     private EatonCloudTokenV1 retrieveNewToken(GlobalSettingType type, String serviceAccountId) {
-        String url = EatonCloudRetrievalUrl.SECURITY_TOKEN.getUrl(settingDao, log, restTemplate);
+        String url = EatonCloudRetrievalUrl.SECURITY_TOKEN.getUrl(settingDao, restTemplate);
         EatonCloudCredentialsV1 credentials = getCredentials(type, serviceAccountId);
         EatonCloudTokenV1 newToken = restTemplate.postForObject(url, credentials, EatonCloudTokenV1.class);
         return newToken;

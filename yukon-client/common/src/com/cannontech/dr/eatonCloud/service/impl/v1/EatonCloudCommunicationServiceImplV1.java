@@ -6,6 +6,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.UUID;
 import java.util.concurrent.ExecutionException;
+import java.util.concurrent.atomic.AtomicInteger;
+import java.util.stream.Collectors;
 
 import javax.annotation.PostConstruct;
 
@@ -57,13 +59,15 @@ import com.google.gson.GsonBuilder;
 
 public class EatonCloudCommunicationServiceImplV1 implements EatonCloudCommunicationServiceV1 {
 
-    private static final Logger log = YukonLogManager.getLogger(EatonCloudCommunicationServiceImplV1.class);
+    private static final Logger commsLogger = YukonLogManager
+            .getEatonCloudCommsLogger(EatonCloudCommunicationServiceImplV1.class);
 
     private RequestReplyTemplate<EatonCloudAuthTokenResponseV1> eatonCloudAuthTokenRequestTemplate;
     @Autowired private ConfigurationSource configSource;
     @Autowired private YukonJmsTemplateFactory jmsTemplateFactory;
     @Autowired GlobalSettingDao settingDao;
     @Autowired private MappingJackson2HttpMessageConverter mappingJackson2HttpMessageConverter;
+    private static AtomicInteger requestIncrementer = new AtomicInteger(1);
     private RestTemplate restTemplate;
     private Gson jsonPrinter;
 
@@ -81,7 +85,8 @@ public class EatonCloudCommunicationServiceImplV1 implements EatonCloudCommunica
 
     @Override
     public EatonCloudTokenV1 getToken() throws EatonCloudCommunicationExceptionV1 {
-        BlockingJmsReplyHandler<EatonCloudAuthTokenResponseV1> reply = new BlockingJmsReplyHandler<>(EatonCloudAuthTokenResponseV1.class);
+        BlockingJmsReplyHandler<EatonCloudAuthTokenResponseV1> reply = new BlockingJmsReplyHandler<>(
+                EatonCloudAuthTokenResponseV1.class);
         eatonCloudAuthTokenRequestTemplate.send(new EatonCloudAuthTokenRequestV1(), reply);
         try {
             EatonCloudAuthTokenResponseV1 response = reply.waitForCompletion();
@@ -97,19 +102,20 @@ public class EatonCloudCommunicationServiceImplV1 implements EatonCloudCommunica
             throw new EatonCloudCommunicationExceptionV1(e);
         }
     }
-    
+
     @Override
     public void clearCache() throws EatonCloudCommunicationExceptionV1 {
-        BlockingJmsReplyHandler<EatonCloudAuthTokenResponseV1> reply = new BlockingJmsReplyHandler<>(EatonCloudAuthTokenResponseV1.class);
+        BlockingJmsReplyHandler<EatonCloudAuthTokenResponseV1> reply = new BlockingJmsReplyHandler<>(
+                EatonCloudAuthTokenResponseV1.class);
         eatonCloudAuthTokenRequestTemplate.send(new EatonCloudAuthTokenRequestV1(true), reply);
         try {
-           reply.waitForCompletion();
-           return;
+            reply.waitForCompletion();
+            return;
         } catch (ExecutionException e) {
             throw new EatonCloudCommunicationExceptionV1(e);
         }
     }
- 
+
     @Override
     public EatonCloudSiteDevicesV1 getSiteDevices(String siteGuid, Boolean recursive, Boolean includeDetail)
             throws EatonCloudCommunicationExceptionV1 {
@@ -124,73 +130,90 @@ public class EatonCloudCommunicationServiceImplV1 implements EatonCloudCommunica
         URI uri = getUri(Map.of("id", siteGuid), EatonCloudRetrievalUrl.DEVICES_BY_SITE);
         uri = addQueryParams(queryParams, uri);
 
-        log.debug("Getting site info. Site Guid: {} URL: {}", siteGuid, uri);
-
+        long requestIdentifier = requestIncrementer.getAndIncrement();
         try {
             HttpEntity<String> requestEntity = getEmptyRequestWithAuthHeaders();
+            commsLogger.info("<<< EC[{}] Sent request to:{} ", requestIdentifier, uri);
             ResponseEntity<EatonCloudSiteDevicesV1> response = restTemplate.exchange(uri, HttpMethod.GET, requestEntity,
                     EatonCloudSiteDevicesV1.class);
-            log.debug("Got site info. Site Guid:{} Result:{}", siteGuid,
-                    deferredJson(response.getBody()));
+            if (commsLogger.isDebugEnabled()) {
+                commsLogger.debug(">>> EC[{}] Request to:{} Response:{}", requestIdentifier, uri,
+                        deferredJson(response.getBody()));
+            } else {
+                commsLogger.info(">>> EC[{}] Request to:{} Response Site Guid:{} Devices:{}", requestIdentifier, uri,
+                        response.getBody().getSiteGuid(), response.getBody().getDevices().size());
+            }
             return response.getBody();
         } catch (EatonCloudCommunicationExceptionV1 e) {
+            commsLogger.info(">>> EC[{}] Request to:{} Response:", requestIdentifier, uri, e);
+            e.setRequestIdentifier(requestIdentifier);
             throw e;
         } catch (Exception e) {
-            throw new EatonCloudCommunicationExceptionV1(e);
+            commsLogger.info(">>> EC[{}] Request to:{} Response:", requestIdentifier, uri, e);
+            throw new EatonCloudCommunicationExceptionV1(e, requestIdentifier);
         }
     }
-    
+
     @Override
     public List<EatonCloudSiteV1> getSites(String userGuid) throws EatonCloudCommunicationExceptionV1 {
         MultiValueMap<String, String> queryParams = new LinkedMultiValueMap<>();
         queryParams.add("userId", userGuid);
         URI uri = getUri(EatonCloudRetrievalUrl.SITES);
         uri = addQueryParams(queryParams, uri);
-
-        log.debug("Getting site list. User Guid: {} URL: {}", userGuid, uri);
-
+        long requestIdentifier = requestIncrementer.getAndIncrement();
         try {
+            commsLogger.info("<<< EC[{}] Sent request to:{} ", requestIdentifier, uri);
             HttpEntity<String> requestEntity = getEmptyRequestWithAuthHeaders();
-            ResponseEntity<EatonCloudSiteV1[]> response = restTemplate.exchange(uri, HttpMethod.GET, requestEntity, EatonCloudSiteV1[].class);
-            log.debug("Got site list. User Guid:{} Result:{}", userGuid, deferredJson(response.getBody()));
+            ResponseEntity<EatonCloudSiteV1[]> response = restTemplate.exchange(uri, HttpMethod.GET, requestEntity,
+                    EatonCloudSiteV1[].class);
+            commsLogger.info(">>> EC[{}] Request to:{} Response:{}", requestIdentifier, uri, deferredJson(response.getBody()));
             return Arrays.asList(response.getBody());
         } catch (EatonCloudCommunicationExceptionV1 e) {
+            commsLogger.info(">>> EC[{}] Request to:{} Response:", requestIdentifier, uri, e);
+            e.setRequestIdentifier(requestIdentifier);
             throw e;
         } catch (Exception e) {
-            throw new EatonCloudCommunicationExceptionV1(e);
+            commsLogger.info(">>> EC[{}] Request to:{} Response:", requestIdentifier, uri, e);
+            throw new EatonCloudCommunicationExceptionV1(e, requestIdentifier);
         }
     }
 
     @Override
-    public List<EatonCloudTimeSeriesDeviceResultV1> getTimeSeriesValues(List<EatonCloudTimeSeriesDeviceV1> deviceList, Range<Instant> range) {
+    public List<EatonCloudTimeSeriesDeviceResultV1> getTimeSeriesValues(List<EatonCloudTimeSeriesDeviceV1> deviceList,
+            Range<Instant> range) {
         URI uri = getUri(EatonCloudRetrievalUrl.TREND_DATA_RETRIEVAL);
         DateTimeFormatter fmt = ISODateTimeFormat.dateTime();
         String startTime = fmt.print(range.getMin());
         String stopTime = fmt.print(range.getMax());
+        long requestIdentifier = requestIncrementer.getAndIncrement();
         try {
             EatonCloudTimeSeriesDataRequestV1 request = new EatonCloudTimeSeriesDataRequestV1(deviceList, startTime, stopTime);
             HttpEntity<EatonCloudTimeSeriesDataRequestV1> requestEntity = getRequestWithAuthHeaders(request);
-            int totalChannels = 0;
-            if (log.isDebugEnabled()) {
-                for(EatonCloudTimeSeriesDeviceV1 device: deviceList) {
-                    totalChannels = totalChannels + Arrays.asList(device.getTagTrait().split(",")).size();
-                }
-            }
-            log.debug("Getting time series data. Request:{} Total Channels:{} Start:{} Stop:{} URL:{}",
-                    deferredJson(request), totalChannels, startTime, stopTime, uri);
-            ResponseEntity<EatonCloudTimeSeriesDeviceResultV1[]> response = restTemplate.exchange(uri, HttpMethod.POST, requestEntity,
+            commsLogger.info("<<< EC[{}] Sent request to:{} {}", requestIdentifier, uri, deferredJson(request));
+            ResponseEntity<EatonCloudTimeSeriesDeviceResultV1[]> response = restTemplate.exchange(uri, HttpMethod.POST,
+                    requestEntity,
                     EatonCloudTimeSeriesDeviceResultV1[].class);
-            log.debug("Get time series data. Request:{} Start:{} Stop:{} URL:{} Result:{}",
-                    deferredJson(request), startTime, stopTime, uri,
-                    deferredJson(response.getBody()));
-            return Arrays.asList(response.getBody());
+            if (commsLogger.isDebugEnabled()) {
+                commsLogger.info(">>> EC[{}] Request to:{} Response:{}", requestIdentifier, uri, deferredJson(response.getBody())); 
+            } else {
+                Map<String, String> info = Arrays.stream(response.getBody())
+                        .collect(Collectors.toMap(k -> k.getDeviceId(), k -> k.getResults().stream()
+                                .map(v -> "tag:"+v.getTag() + ">" + v.getValues().size())
+                                .collect(Collectors.joining (","))));
+                commsLogger.info(">>> EC[{}] Request to:{} Response:{}", requestIdentifier, uri, info);
+            }
+            return Arrays.asList(response.getBody());             
+   
         } catch (EatonCloudCommunicationExceptionV1 e) {
+            commsLogger.info(">>> EC[{}] Request to:{} Response:", requestIdentifier, uri, e);
+            e.setRequestIdentifier(requestIdentifier);
             throw e;
         } catch (Exception e) {
-            throw new EatonCloudCommunicationExceptionV1(e);
+            commsLogger.info(">>> EC[{}] Request to:{} Response:", requestIdentifier, uri, e);
+            throw new EatonCloudCommunicationExceptionV1(e, requestIdentifier);
         }
     }
-    
+
     @Override
     public EatonCloudDeviceDetailV1 getDeviceDetails(String deviceGuid, Boolean recursive)
             throws EatonCloudCommunicationExceptionV1 {
@@ -202,66 +225,73 @@ public class EatonCloudCommunicationServiceImplV1 implements EatonCloudCommunica
         URI uri = getUri(Map.of("deviceId", deviceGuid), EatonCloudRetrievalUrl.DEVICE_DETAIL);
         uri = addQueryParams(queryParams, uri);
 
-        log.debug("Getting device info. Device Guid: {} URL: {}", deviceGuid, uri);
-
+        long requestIdentifier = requestIncrementer.getAndIncrement();
         try {
             HttpEntity<String> requestEntity = getEmptyRequestWithAuthHeaders();
+            commsLogger.info("<<< EC[{}] Sent request to:{} ", requestIdentifier, uri);
             ResponseEntity<EatonCloudDeviceDetailV1> response = restTemplate.exchange(uri, HttpMethod.GET, requestEntity,
                     EatonCloudDeviceDetailV1.class);
-            log.debug("Got device info. Device Guid:{} Result:{}", deviceGuid,
-                    deferredJson(response.getBody()));
+            commsLogger.info(">>> EC[{}] Request to:{} Response:{}", requestIdentifier, uri, deferredJson(response.getBody()));
             return response.getBody();
         } catch (EatonCloudCommunicationExceptionV1 e) {
+            commsLogger.info(">>> EC[{}] Request to:{} Response:", requestIdentifier, uri, e);
+            e.setRequestIdentifier(requestIdentifier);
             throw e;
         } catch (Exception e) {
-            throw new EatonCloudCommunicationExceptionV1(e);
+            commsLogger.info(">>> EC[{}] Request to:{} Response:", requestIdentifier, uri, e);
+            throw new EatonCloudCommunicationExceptionV1(e, requestIdentifier);
         }
     }
-    
+
     @Override
     public EatonCloudCommandResponseV1 sendCommand(String deviceGuid, EatonCloudCommandRequestV1 request)
             throws EatonCloudCommunicationExceptionV1 {
         String commandGuid = UUID.randomUUID().toString();
         URI uri = getUri(Map.of("id", deviceGuid, "command_instance_id", commandGuid), EatonCloudRetrievalUrl.COMMANDS);
-        log.debug("Sending command to device. Device Guid:{} Command Guid:{} Request:{} URL:{}", deviceGuid, commandGuid,
-                deferredJson(request),
-                uri);
+        long requestIdentifier = requestIncrementer.getAndIncrement();
         try {
             HttpEntity<EatonCloudCommandRequestV1> requestEntity = getRequestWithAuthHeaders(request);
+            commsLogger.info("<<< EC[{}] Sent request to:{} {}", requestIdentifier, uri, deferredJson(request));
             ResponseEntity<EatonCloudCommandResponseV1> response = restTemplate.exchange(uri, HttpMethod.PUT, requestEntity,
                     EatonCloudCommandResponseV1.class);
-            log.debug("Sent command to device. Device Guid:{} Command Guid:{} Response:{}", deviceGuid, commandGuid,
-                    deferredJson(response.getBody()));
+            commsLogger.info(">>> EC[{}] Request to:{} Response:{}", requestIdentifier, uri, deferredJson(response.getBody()));
             return response.getBody();
         } catch (EatonCloudCommunicationExceptionV1 e) {
+            commsLogger.info(">>> EC[{}] Request to:{} Response:", requestIdentifier, uri, e);
+            e.setRequestIdentifier(requestIdentifier);
             throw e;
         } catch (Exception e) {
-            throw new EatonCloudCommunicationExceptionV1(e);
+            commsLogger.info(">>> EC[{}] Request to:{} Response:", requestIdentifier, uri, e);
+            throw new EatonCloudCommunicationExceptionV1(e, requestIdentifier);
         }
     }
-    
+
     @Override
-    public EatonCloudServiceAccountDetailV1 getServiceAccountDetail()
-            throws EatonCloudCommunicationExceptionV1 {
+    public EatonCloudServiceAccountDetailV1 getServiceAccountDetail() {
         String serviceAccountId = settingDao.getString(GlobalSettingType.EATON_CLOUD_SERVICE_ACCOUNT_ID);
         URI uri = getUri(Map.of("serviceAccountId", serviceAccountId), EatonCloudRetrievalUrl.ACCOUNT_DETAIL);
 
-        log.debug("Getting account info. Service Account: {} URL: {}", serviceAccountId, uri);
-
+        long requestIdentifier = requestIncrementer.getAndIncrement();
         try {
             HttpEntity<String> requestEntity = getEmptyRequestWithAuthHeaders();
+
+            commsLogger.info("<<< EC[{}] Sent request to:{} ", requestIdentifier, uri);
+
             ResponseEntity<EatonCloudServiceAccountDetailV1> response = restTemplate.exchange(uri, HttpMethod.GET, requestEntity,
                     EatonCloudServiceAccountDetailV1.class);
-            log.debug("Got account info. Service Account:{} Result:{}", serviceAccountId,
-                    deferredJson(response.getBody()));
+
+            commsLogger.info(">>> EC[{}] Request to:{} Response:{}", requestIdentifier, uri, deferredJson(response.getBody()));
             return response.getBody();
         } catch (EatonCloudCommunicationExceptionV1 e) {
+            commsLogger.info(">>> EC[{}] Request to:{} Response:", requestIdentifier, uri, e);
+            e.setRequestIdentifier(requestIdentifier);
             throw e;
         } catch (Exception e) {
-            throw new EatonCloudCommunicationExceptionV1(e);
+            commsLogger.info(">>> EC[{}] Request to:{} Response:", requestIdentifier, uri, e);
+            throw new EatonCloudCommunicationExceptionV1(e, requestIdentifier);
         }
     }
-    
+
     @Override
     public EatonCloudSecretValueV1 rotateAccountSecret(int secretNumber)
             throws EatonCloudCommunicationExceptionV1 {
@@ -269,42 +299,44 @@ public class EatonCloudCommunicationServiceImplV1 implements EatonCloudCommunica
         String secret = "secret" + secretNumber;
         URI uri = getUri(Map.of("serviceAccountId", serviceAccountId, "secretName", secret),
                 EatonCloudRetrievalUrl.ROTATE_ACCOUNT_SECRET);
-
-        log.debug("Rotating {}. Service Account: {} Secret: {} URL: {}", secret, serviceAccountId, uri);
-
+        long requestIdentifier = requestIncrementer.getAndIncrement();
         try {
             HttpEntity<String> requestEntity = getEmptyRequestWithAuthHeaders();
+            commsLogger.info("<<< EC[{}] Sent request to:{} ", requestIdentifier, uri);
             ResponseEntity<EatonCloudSecretValueV1> response = restTemplate.exchange(uri, HttpMethod.GET, requestEntity,
                     EatonCloudSecretValueV1.class);
-            log.debug("Rotating {}. Service Account:{} Result:{}", secret, serviceAccountId,
-                    deferredJson(response.getBody()));
+            commsLogger.info(">>> EC[{}] Request to:{} Response:{}", requestIdentifier, uri, deferredJson(response.getBody()));
             return response.getBody();
         } catch (EatonCloudCommunicationExceptionV1 e) {
+            commsLogger.info(">>> EC[{}] Request to:{} Response:", requestIdentifier, uri, e);
+            e.setRequestIdentifier(requestIdentifier);
             throw e;
         } catch (Exception e) {
-            throw new EatonCloudCommunicationExceptionV1(e);
+            commsLogger.info(">>> EC[{}] Request to:{} Response:", requestIdentifier, uri, e);
+            throw new EatonCloudCommunicationExceptionV1(e, requestIdentifier);
         }
     }
-       
+
     /**
      * Creates URI
      */
     private URI getUri(Map<String, String> params, EatonCloudRetrievalUrl url) {
-        URI uri = UriComponentsBuilder.fromUriString(url.getUrl(settingDao, log, restTemplate))
+        URI uri = UriComponentsBuilder.fromUriString(url.getUrl(settingDao, restTemplate))
                 .buildAndExpand(params)
                 .toUri();
         return uri;
     }
-    
+
     /**
      * Creates URI
      */
     private URI getUri(EatonCloudRetrievalUrl url) {
-        URI uri = UriComponentsBuilder.fromUriString(url.getUrl(settingDao, log, restTemplate))
+        URI uri = UriComponentsBuilder.fromUriString(url.getUrl(settingDao, restTemplate))
                 .build()
                 .toUri();
         return uri;
     }
+
     /**
      * Adds query params to URI
      */
@@ -322,13 +354,13 @@ public class EatonCloudCommunicationServiceImplV1 implements EatonCloudCommunica
     private HttpEntity<String> getEmptyRequestWithAuthHeaders() {
         return getRequestWithAuthHeaders("");
     }
-    
+
     private <T> HttpEntity<T> getRequestWithAuthHeaders(T requestObject) {
         HttpHeaders headers = new HttpHeaders();
         headers.add("Authorization", "Bearer " + getToken().getToken());
         return new HttpEntity<>(requestObject, headers);
     }
-    
+
     private Object deferredJson(Object element) {
         return new Object() {
             @Override
