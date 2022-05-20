@@ -61,6 +61,8 @@ import com.cannontech.msp.beans.v4.IsAMRMeter;
 import com.cannontech.msp.beans.v4.IsAMRMeterResponse;
 import com.cannontech.msp.beans.v4.MeterAddNotification;
 import com.cannontech.msp.beans.v4.MeterAddNotificationResponse;
+import com.cannontech.msp.beans.v4.MeterChangedNotification;
+import com.cannontech.msp.beans.v4.MeterChangedNotificationResponse;
 import com.cannontech.msp.beans.v4.MeterGroup;
 import com.cannontech.msp.beans.v4.MeterID;
 import com.cannontech.msp.beans.v4.MeterReading;
@@ -490,6 +492,26 @@ public class MRServiceEndPoint {
             ArrayOfErrorObject arrayOfErrorObject = multispeakFuncs.toArrayOfErrorObject(errorObjects); 
             response.setRemoveMetersFromMeterGroupResult(arrayOfErrorObject);
         }
+        return response;
+    }
+    
+    @PayloadRoot(localPart = "MeterChangedNotification", namespace = MultispeakDefines.NAMESPACE_v4)
+    public @ResponsePayload
+    MeterChangedNotificationResponse meterChangedNotification(
+            @RequestPayload MeterChangedNotification meterChangedNotification) throws MultispeakWebServiceException {
+        MeterChangedNotificationResponse response = objectFactory.createMeterChangedNotificationResponse();
+        
+        List<MspMeter> mspMeters = new ArrayList<>();
+
+        if (meterChangedNotification.getChangedMeters() != null) {
+            mspMeters = multispeakFuncs.getMspMeters(meterChangedNotification.getChangedMeters());
+        }
+        
+        List<ErrorObject> errorObjects = mr_server.meterChangedNotification(ListUtils.emptyIfNull((mspMeters)));
+
+        ArrayOfErrorObject arrayOfErrorObject = objectFactory.createArrayOfErrorObject();
+        arrayOfErrorObject.getErrorObject().addAll(errorObjects);
+        response.setMeterChangedNotificationResult(arrayOfErrorObject);
         return response;
     }
 }
