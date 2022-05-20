@@ -322,10 +322,10 @@ public class YukonApiValidationUtils extends ValidationUtils {
         }
     }
 
-    public void checkIfLengthDivisibleByTwo(Errors errors, String fieldValue) {
+    public void checkIfLengthDivisibleByTwo(Errors errors, String fieldValue, String fieldName) {
         if (fieldValue.length() % 2 != 0) {
             errors.rejectValue(fieldValue, ApiErrorDetails.INVALID_LENGTH_EVEN.getCodeString(),
-                    new Object[] { fieldValue }, fieldValue + " length must be even.");
+                    new Object[] { fieldName }, fieldName + " length must be even.");
         }
     }
 
@@ -340,7 +340,7 @@ public class YukonApiValidationUtils extends ValidationUtils {
     public void checkIsValidHexByteString(Errors errors, String field, String fieldValue, String fieldName, int maxLength) {
         checkIsBlank(errors, field, fieldValue, false, fieldName);
         checkHexOnlyCharacter(errors, field, fieldValue, fieldName);
-        checkIfLengthDivisibleByTwo(errors, fieldValue);
+        checkIfLengthDivisibleByTwo(errors, fieldValue, fieldName);
         checkExceedsMaxLength(errors, field, fieldValue, maxLength * 2); // x2 since hex bytes are 2 characters
     }
 
