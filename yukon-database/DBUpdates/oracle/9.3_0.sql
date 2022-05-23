@@ -94,11 +94,11 @@ INSERT INTO DBUpdates VALUES ('YUK-26210', '9.3.0', SYSDATE);
 /* @start YUK-26210-2 */
 UPDATE YukonRoleProperty
 SET KeyName = 'DER Edge Coordinator Permission'
-WHERE RolePropertyID = -90050
+WHERE RolePropertyID = -90050;
 
 UPDATE YukonRoleProperty
 SET Description = 'Allow access to DER Edge Coordinator features and APIs.'
-WHERE RolePropertyID = -90050
+WHERE RolePropertyID = -90050;
 
 INSERT INTO DBUpdates VALUES ('YUK-26210-2', '9.3.0', SYSDATE);
 /* @end YUK-26210-2 */
