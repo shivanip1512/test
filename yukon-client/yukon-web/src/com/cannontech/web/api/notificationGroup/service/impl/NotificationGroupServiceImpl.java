@@ -238,7 +238,7 @@ public class NotificationGroupServiceImpl implements NotificationGroupService {
     public List<NotificationGroup> retrieveAll() {
         List<LiteNotificationGroup> liteNotificationGroup = cache.getAllContactNotificationGroups();
         List<NotificationGroup> notificationGroupList = new ArrayList<NotificationGroup>();
-        if (!CollectionUtils.isEmpty(liteNotificationGroup)) {
+        if (CollectionUtils.isNotEmpty(liteNotificationGroup)) {
             liteNotificationGroup.forEach(liteObject -> {
                 com.cannontech.database.data.notification.NotificationGroup notificationGroupBase = (com.cannontech.database.data.notification.NotificationGroup) dbPersistentDao
                         .retrieveDBPersistent(liteObject);
