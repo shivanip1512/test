@@ -67,7 +67,7 @@ public class MultispeakFuncs extends MultispeakFuncsBase {
     public MultiSpeakVersion version() {
         return MultiSpeakVersion.V4;
     }
-
+    
     @Override
     public void loadResponseHeader() throws MultispeakWebServiceException {
         SoapEnvelope env;
