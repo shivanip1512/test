@@ -2261,12 +2261,10 @@ public class MultispeakMeterServiceImpl extends MultispeakMeterServiceBase imple
                                 " Command:" + returnMsg.getCommandString() +
                                 " Result:" + returnMsg.getResultString() +
                                 " Status:" + returnMsg.getStatus() +
-                                " More:" + returnMsg.getExpectMore() + "]");
+                                " More:" + returnMsg.getExpectMore() + "]"); 
 
                         if (returnMsg.getExpectMore() == 0) {
-
                             log.info("Received Message From Id:" + returnMsg.getDeviceID() + " - " + returnMsg.getResultString());
-
                             boolean doneProcessing = event.messageReceived(returnMsg);
                             if (doneProcessing) {
                                 getEventsMap().remove(new Long(event.getPilMessageID()));
