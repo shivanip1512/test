@@ -143,7 +143,8 @@ public class EatonCloudCommunicationServiceImplV1 implements EatonCloudCommunica
                         deferredJson(response.getBody()));
             } else {
                 commsLogger.info(">>> EC[{}] Request to:{} Response Site Guid:{} Devices:{}", requestIdentifier, uri,
-                        response.getBody().getSiteGuid(), response.getBody().getDevices().size());
+                        response.getBody().getSiteGuid(),
+                        response.getBody().getDevices() == null ? 0 : response.getBody().getDevices().size());
             }
             return response.getBody();
         } catch (EatonCloudCommunicationExceptionV1 e) {
