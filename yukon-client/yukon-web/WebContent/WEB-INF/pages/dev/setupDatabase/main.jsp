@@ -60,6 +60,7 @@
         <li><a href="#starsTab">Stars Accounts</a></li>
         <li><a href="#amrTab">AMR</a></li>
         <li><a href="#capControlTab">Cap Control</a></li>
+        <li><a href="#demandResponseTab">Demand Response</a></li>
         <li><a href="#eventLogTab">Event Log</a></li>
     </ul>
 
@@ -67,6 +68,7 @@
     <div id="starsTab" class="clearfix"><%@include file="devStars.jspf"%></div>
     <div id="amrTab" class="clearfix"><%@include file="devAmr.jspf"%></div>
     <div id="capControlTab" class="clearfix"><%@include file="devCapControl.jspf"%></div>
+    <div id="demandResponseTab" class="clearfix"><%@include file="devDemandResponse.jspf"%></div>
     <div id="eventLogTab" class="clearfix"><%@include file="devEventLog.jspf"%></div>
     <input type="hidden" id="tabToSelect" value="${selectedTab}"/>
 </div>
@@ -86,7 +88,8 @@
             // bind form using 'ajaxForm'
             $('#setupRolePropertiesForm').ajaxForm(ajaxSubmitOptions); 
             $('#setupAMRForm').ajaxForm(ajaxSubmitOptions); 
-            $('#setupCapControlForm').ajaxForm(ajaxSubmitOptions); 
+            $('#setupCapControlForm').ajaxForm(ajaxSubmitOptions);
+            $('#setupDemandResponseForm').ajaxForm(ajaxSubmitOptions); 
             $('#setupStarsForm').ajaxForm(ajaxSubmitOptions);
             $('#setupEventLogForm').ajaxForm(ajaxSubmitOptions); 
              
@@ -141,11 +144,12 @@
                   url: "checkAvailability",
                   dataType: "json"
                 }).done(function (data) {
-                    setWidgetAvailability($("#roleProperties"),data.roleProperties);
-                    setWidgetAvailability($("#capControl"),data.capControl, data.capControlProgress);
-                    setWidgetAvailability($("#amr"),data.amr);
-                    setWidgetAvailability($("#stars"),data.stars,data.starsProgress);
-                    setWidgetAvailability($("#eventLog"),data.eventLog, data.eventLogProgress);
+                    setWidgetAvailability($("#roleProperties"), data.roleProperties);
+                    setWidgetAvailability($("#capControl"), data.capControl, data.capControlProgress);
+                    setWidgetAvailability($("#demandResponse"), data.demandResponse, data.demandResponseProgress);
+                    setWidgetAvailability($("#amr"), data.amr);
+                    setWidgetAvailability($("#stars"), data.stars, data.starsProgress);
+                    setWidgetAvailability($("#eventLog"), data.eventLog, data.eventLogProgress);
                 });
               }
             checkAvailability();
