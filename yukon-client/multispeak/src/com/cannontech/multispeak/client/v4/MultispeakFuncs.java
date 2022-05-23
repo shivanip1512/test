@@ -68,15 +68,6 @@ public class MultispeakFuncs extends MultispeakFuncsBase {
         return MultiSpeakVersion.V4;
     }
     
-    public void logErrorObjects(String intfaceName, String methodName, List<ErrorObject> objects) {
-        if (CollectionUtils.isNotEmpty(objects)) {
-            for (ErrorObject errorObject : objects) {
-                log.info("Error Return from " + intfaceName + "(" + methodName + "): " + (errorObject == null ? "Null"
-                        : errorObject.getObjectID() + " - " + errorObject.getErrorString()));
-            }
-        }
-    }
-    
     @Override
     public void loadResponseHeader() throws MultispeakWebServiceException {
         SoapEnvelope env;
