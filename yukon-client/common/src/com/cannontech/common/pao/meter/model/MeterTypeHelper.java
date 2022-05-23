@@ -105,7 +105,7 @@ public class MeterTypeHelper {
         // Remove DER Edge Coordinator device from Create Meter when Edge cparm is False
         // YUK-26189
         if (!configurationSource.getBoolean(MasterConfigBoolean.DER_EDGE_COORDINATOR)) {
-            createGroupedMeters.get(MeterGroup.RF_MESH).remove(PaoType.DER_EDGE_COORDINATOR);
+            createGroupedMeters.get(MeterGroup.RF_MESH).remove(PaoType.RFN530S4X_DER);
         }
     }
 }

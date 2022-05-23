@@ -2,7 +2,6 @@ package com.cannontech.multispeak.service.v4;
 
 import java.util.Calendar;
 import java.util.List;
-
 import com.cannontech.msp.beans.v4.ErrorObject;
 import com.cannontech.msp.beans.v4.ExpirationTime;
 import com.cannontech.msp.beans.v4.FormattedBlock;
@@ -91,7 +90,7 @@ public interface MR_Server {
      * @return the error object[]
      * @throws MultispeakWebServiceException the multispeak web service exception
      */
-    public List<ErrorObject> initiateUsageMonitoring(List<MeterID> meterIDs) throws MultispeakWebServiceException;
+    public List<ErrorObject> initiateUsageMonitoring(List<MeterID> meterIds) throws MultispeakWebServiceException;
 
     /**
      * cancel Usage Monitoring.
@@ -100,7 +99,7 @@ public interface MR_Server {
      * @return the error object[]
      * @throws MultispeakWebServiceException the multispeak web service exception
      */
-    public List<ErrorObject> cancelUsageMonitoring(List<MeterID> meterIDs) throws MultispeakWebServiceException;
+    public List<ErrorObject> cancelUsageMonitoring(List<MeterID> meterIds) throws MultispeakWebServiceException;
 
     /**
      * get AMR Supported Meters.
@@ -248,4 +247,13 @@ public interface MR_Server {
      */
     public List<ErrorObject> removeMetersFromMeterGroup(List<MeterID> meterIds, String meterGroupId)
             throws MultispeakWebServiceException;
+
+    /**
+     * meter Changed Notification.
+     * @param changedMeters the changed meters
+     * @return the error object[]
+     * @throws MultispeakWebServiceException the multispeak web service exception
+     */
+    public List<ErrorObject> meterChangedNotification(List<MspMeter> changedMeters) throws MultispeakWebServiceException;
+
 }

@@ -305,7 +305,7 @@ public enum PaoType implements DisplayableEnum, DatabaseRepresentationSource {
     RFG301A(DeviceTypes.RFG301A, "RFG-301A", PaoCategory.DEVICE, PaoClass.RFMESH),
     RFG301R(DeviceTypes.RFG301R, "RFG-301R", PaoCategory.DEVICE, PaoClass.RFMESH),
     
-    DER_EDGE_COORDINATOR(DeviceTypes.DER_EDGE_COORDINATOR, "DER Edge Coordinator", PaoCategory.DEVICE, PaoClass.RFMESH),
+    RFN530S4X_DER(DeviceTypes.RFN530S4X_DER, "RFN-530S4X-DER", PaoCategory.DEVICE, PaoClass.RFMESH),
     
     NEST(DeviceTypes.NEST, "Nest", PaoCategory.DEVICE, PaoClass.THERMOSTAT),
     
@@ -562,7 +562,7 @@ public enum PaoType implements DisplayableEnum, DatabaseRepresentationSource {
             TRANSDATA_MARKV,
             VECTRON,
             VIRTUAL_METER,
-            DER_EDGE_COORDINATOR
+            RFN530S4X_DER
             );
         
         rfTypes = ImmutableSet.of(
@@ -621,7 +621,7 @@ public enum PaoType implements DisplayableEnum, DatabaseRepresentationSource {
             LCR6700_RFN,
             RFN_RELAY,
             CRLY856,
-            DER_EDGE_COORDINATOR);
+            RFN530S4X_DER);
         
         rfMeterTypes = Sets.intersection(rfTypes, meterTypes).immutableCopy();
         
@@ -761,9 +761,9 @@ public enum PaoType implements DisplayableEnum, DatabaseRepresentationSource {
         cloudLcrTypes = ImmutableSet.of(LCR6200C,
                                            LCR6600C);
 
-        noPointSupportMeterTypes = ImmutableSet.of(DER_EDGE_COORDINATOR);
+        noPointSupportMeterTypes = ImmutableSet.of(RFN530S4X_DER);
 
-        derEdgeCoordinatorTypes = ImmutableSet.of(DER_EDGE_COORDINATOR);
+        derEdgeCoordinatorTypes = ImmutableSet.of(RFN530S4X_DER);
 
         Builder<PaoType> capControlTypeBuilder = ImmutableSet.builder();
         for (PaoType paoType : PaoType.values()) {

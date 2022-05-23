@@ -164,7 +164,7 @@ public enum RfnManufacturerModel {
     RFN_1200_NONCPS_RECLGEN(PaoType.RFN_1200, "NON-CPS", "RECL-GEN"),
     RFN_1200_NONCPS_GENDA(PaoType.RFN_1200, "NON-CPS", "GEN-DA"),
     
-    DER_EDGE_COORDINATOR(PaoType.DER_EDGE_COORDINATOR, "SETO", "EDGE")
+    RFN_530S4X_DER(PaoType.RFN530S4X_DER, "LGYR", "E650-DER")
    
     /* For documentation only */
     // RFN_GATEWAY(PaoType.RFN_GATEWAY, "EATON", "RFGateway"),

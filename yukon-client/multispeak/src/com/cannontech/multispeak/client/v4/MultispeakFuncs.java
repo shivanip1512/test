@@ -319,19 +319,16 @@ public class MultispeakFuncs extends MultispeakFuncsBase {
         try {
 
             log.debug("Returning disconnect status from cache: "
-                    + pointFormattingService.getCachedInstance().getValueString(pointValueHolder, Format.FULL,
-                            YukonUserContext.system));
+                    + pointFormattingService.getCachedInstance().getValueString(pointValueHolder, Format.FULL, YukonUserContext.system));
 
             boolean isRfnDisconnect = paoDefinitionDao.isTagSupported(yukonDevice.getPaoIdentifier().getPaoType(),
                     PaoTag.DISCONNECT_RFN);
             if (isRfnDisconnect) {
-                RfnDisconnectStatusState pointState = PointStateHelper.decodeRawState(RfnDisconnectStatusState.class,
-                        pointValueHolder.getValue());
+                RfnDisconnectStatusState pointState = PointStateHelper.decodeRawState(RfnDisconnectStatusState.class, pointValueHolder.getValue());
                 mspRCDState = MspRCDState.getForRfnState(pointState);
                 log.debug("returning mspRCDState for RFN: " + mspRCDState);
             } else { // assume everything else is PLC
-                Disconnect410State pointState = PointStateHelper.decodeRawState(Disconnect410State.class,
-                        pointValueHolder.getValue());
+                Disconnect410State pointState = PointStateHelper.decodeRawState(Disconnect410State.class, pointValueHolder.getValue());
                 mspRCDState = MspRCDState.getForPlcState(pointState);
                 log.debug("returning loadActionCode for PLC: " + mspRCDState);
             }
@@ -341,6 +338,15 @@ public class MultispeakFuncs extends MultispeakFuncsBase {
             return RCDState.UNKNOWN;
         }
         return mspRCDState.getRCDState();
+    }
+    
+    public void logErrorObjects(String interfaceName, String methodName, List<ErrorObject> objects) {
+        if (CollectionUtils.isNotEmpty(objects)) {
+            for (ErrorObject errorObject : objects) {
+                log.info("Error Return from " + interfaceName + "(" + methodName + "): " + (errorObject == null ? "Null"
+                        : errorObject.getObjectID() + " - " + errorObject.getErrorString()));
+            }
+        }
     }
 
 }
