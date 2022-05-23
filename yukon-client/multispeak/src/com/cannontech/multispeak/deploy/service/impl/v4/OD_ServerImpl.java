@@ -61,8 +61,7 @@ public class OD_ServerImpl implements OD_Server {
         if (!CollectionUtils.isEmpty(meterIds)) {
             errorObjects = multispeakMeterService.odEvent(vendor, meterIds, transactionId, actualResponseUrl);
         }
-        multispeakFuncs.logErrorObjects(MultispeakDefines.OD_Server_STR, "InitiateOutageDetectionEventRequest",
-                errorObjects);
+        multispeakFuncs.logErrorObjects(MultispeakDefines.OD_Server_STR, "InitiateOutageDetectionEventRequest", errorObjects);
         return errorObjects;
     }
 }

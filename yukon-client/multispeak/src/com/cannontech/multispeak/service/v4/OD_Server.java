@@ -1,6 +1,5 @@
 package com.cannontech.multispeak.service.v4;
 
-import java.util.Calendar;
 import java.util.List;
 
 import com.cannontech.msp.beans.v4.ErrorObject;
@@ -31,7 +30,7 @@ public interface OD_Server {
      * @return the error object[]
      * @throws MultispeakWebServiceException the multispeak web service exception
      */
-    public List<ErrorObject> initiateOutageDetectionEventRequest(List<MeterID> meterIDs,
+    public List<ErrorObject> initiateOutageDetectionEventRequest(List<MeterID> meterIds,
             String responseURL, String transactionId) throws MultispeakWebServiceException;
 
 }
