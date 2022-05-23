@@ -2112,8 +2112,6 @@ public class MultispeakMeterServiceImpl extends MultispeakMeterServiceBase imple
         String meterNumber = yukonMeter.getMeterNumber();
  
         outageDetectionEvent.setEventTime(MultispeakFuncs.toXMLGregorianCalendar(timestamp));
-
-        System.out.println("EventTime: " + timestamp.getTime());
         outageDetectionEvent.setObjectID(meterNumber);
         outageDetectionEvent.setOutageDetectionDeviceID(meterNumber);
         outageDetectionEvent.setOutageDetectionDeviceType(OutageDetectDeviceType.METER);
@@ -2147,13 +2145,7 @@ public class MultispeakMeterServiceImpl extends MultispeakMeterServiceBase imple
     public synchronized List<ErrorObject> odEvent(final MultispeakVendor mspVendor, List<MeterID> meterIds,
             final String transactionId, final String responseUrl) throws MultispeakWebServiceException {
      
-        List<String> meterNumbers = meterIds.stream().map(meterId -> {
-            if (meterId != null)
-                return meterId.getMeterNo();
-            else
-                return null;
-        }).collect(Collectors.toList());
-        meterNumbers.removeIf(Objects::isNull);
+        List<String> meterNumbers = meterIds.stream().filter(meterId -> meterId != null).map(meterId -> meterId.getMeterNo()).collect(Collectors.toList());   
         if (StringUtils.isBlank(responseUrl)) { // no need to go through all the work if we have no one to respond to.
             throw new MultispeakWebServiceException("OMS vendor unknown.  Please contact Yukon administrator" +
                     " to set the Multispeak Vendor Role Property value in Yukon.");
