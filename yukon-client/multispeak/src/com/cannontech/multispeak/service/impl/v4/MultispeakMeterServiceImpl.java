@@ -150,6 +150,7 @@ public class MultispeakMeterServiceImpl extends MultispeakMeterServiceBase imple
     // Strings to represent method calls, generally used for logging.
     private static final String SERV_LOC_CHANGED_STRING = "ServiceLocationChangedNotification";
     private static final String METER_REMOVE_STRING = "MeterRemoveNotification";
+    private static final String METER_CHANGED_STRING = "MeterChangedNotification";
 
     /** Singleton incrementor for messageIDs to send to porter connection */
     private static long messageID = 1;
@@ -737,6 +738,76 @@ public class MultispeakMeterServiceImpl extends MultispeakMeterServiceBase imple
         }
         return errorObjects;
     }
+    
+    @Override
+    public List<ErrorObject> meterChanged(final MultispeakVendor mspVendor, List<MspMeter> changedMeters) throws MultispeakWebServiceException{
+        final List<ErrorObject> errorObjects = new ArrayList<>();
+
+        for (final MspMeter mspMeter : changedMeters) {
+            try {
+                transactionTemplate.execute(new TransactionCallbackWithoutResult() {
+                    @Override
+                    protected void doInTransactionWithoutResult(TransactionStatus status) {
+
+                        validateMspMeter(mspMeter, mspVendor, METER_CHANGED_STRING);
+
+                        try {
+                            YukonMeter meterToChange = getMeterByMeterNumber(mspMeter.getMeterNo().trim());
+                            YukonMeter templateMeter = getYukonMeterForTemplate(mspMeter, mspVendor, false, METER_CHANGED_STRING); // throws MspErrorObjectException
+                            if (templateMeter == null) {
+                                // If no template found, just use this meter as the template (meaning, same meter, no type changes).
+                                templateMeter = meterToChange;
+                            }
+                            meterToChange = updateExistingMeter(mspMeter, meterToChange, templateMeter, METER_CHANGED_STRING, mspVendor, false);
+
+                            updatePaoLocation(mspMeter, meterToChange, METER_CHANGED_STRING);
+                            
+                            String mspMeterDeviceClass =(String) getModuleListFieldsForMspMeter(mspMeter).get("deviceClass");
+                            updateCISDeviceClassGroup(mspMeter.getMeterNo(), mspMeterDeviceClass, meterToChange, METER_CHANGED_STRING, mspVendor);
+                            
+                            // Must complete route locate after meter is enabled
+                            verifyAndUpdateSubstationGroupAndRoute(meterToChange, mspVendor, null, mspMeter, METER_CHANGED_STRING);
+                            
+                        } catch (NotFoundException e) {
+                            multispeakEventLogService.meterNotFound(mspMeter.getMeterNo(), METER_CHANGED_STRING, mspVendor.getCompanyName());
+                            ErrorObject err = mspObjectDao.getNotFoundErrorObject(mspMeter.getObjectID(),
+                                                                                  "MeterNumber: " + mspMeter.getMeterNo(),
+                                                                                  "MspMeter", METER_CHANGED_STRING, 
+                                                                                   mspVendor.getCompanyName());
+                            errorObjects.add(err);
+                            multispeakEventLogService.errorObject(err.getErrorString(), METER_CHANGED_STRING, mspVendor.getCompanyName());
+                            log.error(e);
+                        }
+                    };
+                });
+            } catch (MspErrorObjectException e) {
+                errorObjects.add(e.getErrorObject());
+                multispeakEventLogService.errorObject(e.getErrorObject().getErrorString(), METER_CHANGED_STRING, mspVendor.getCompanyName());
+                log.error(e);
+            } catch (RuntimeException ex) {
+                // Transactional code threw application exception -> rollback
+                ErrorObject err = mspObjectDao.getErrorObject(mspMeter.getMeterNo(),
+                                                              "X Exception: (MeterNo:" + mspMeter.getMeterNo() + ")-" + ex.getMessage(),
+                                                              "MspMeter", METER_CHANGED_STRING, 
+                                                              mspVendor.getCompanyName());
+                errorObjects.add(err);
+                multispeakEventLogService.errorObject(err.getErrorString(), METER_CHANGED_STRING, mspVendor.getCompanyName());
+                log.error(ex);
+            } catch (Error ex) {
+                // Transactional code threw error -> rollback
+                ErrorObject err = mspObjectDao.getErrorObject(mspMeter.getMeterNo(),
+                                                              "X Error: (MeterNo:" + mspMeter.getMeterNo() + ")-" + ex.getMessage(),
+                                                              "MspMeter", METER_CHANGED_STRING, 
+                                                              mspVendor.getCompanyName());
+                errorObjects.add(err);
+                multispeakEventLogService.errorObject(err.getErrorString(), METER_CHANGED_STRING, mspVendor.getCompanyName());
+                log.error(ex);
+            }
+        }// end for
+
+        return errorObjects;
+    }
+
 
     /**
      * Check for existing meter in system and update if found.
@@ -1735,5 +1806,6 @@ public class MultispeakMeterServiceImpl extends MultispeakMeterServiceBase imple
         }
         return meterNumber;
     }
+
 
 }
