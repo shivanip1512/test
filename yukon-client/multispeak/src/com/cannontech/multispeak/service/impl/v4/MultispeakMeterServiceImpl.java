@@ -1616,8 +1616,7 @@ public class MultispeakMeterServiceImpl extends MultispeakMeterServiceBase imple
                     
                     if (cdEvent.getLoadActionCode() == null) {
                         ErrorObject err = mspObjectDao.getErrorObject(meterNumber, 
-                                                                      "MeterNumber (" + meterNumber + 
-                                                                      ") - Cannot InitiateConnectDisconnect as no load action code exists.", 
+                                                                      "MeterNumber (" + meterNumber + ") - Cannot InitiateConnectDisconnect as no load action code exists.", 
                                                                       "MeterID",
                                                                       "CDEvent", 
                                                                        mspVendor.getCompanyName());
