@@ -40,4 +40,8 @@ public class NotificationGroupApiController {
         return new ResponseEntity<>(notificationGroupIdMap, HttpStatus.OK);
     }
 
+    @GetMapping
+    public ResponseEntity<Object> getAll() {
+        return new ResponseEntity<>(notificationGroupService.retrieveAll(), HttpStatus.OK);
+    }
 }
