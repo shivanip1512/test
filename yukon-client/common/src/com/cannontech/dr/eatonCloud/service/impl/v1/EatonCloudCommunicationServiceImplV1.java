@@ -1,6 +1,7 @@
 package com.cannontech.dr.eatonCloud.service.impl.v1;
 
 import java.net.URI;
+import java.text.SimpleDateFormat;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
@@ -67,6 +68,7 @@ public class EatonCloudCommunicationServiceImplV1 implements EatonCloudCommunica
     @Autowired private YukonJmsTemplateFactory jmsTemplateFactory;
     @Autowired GlobalSettingDao settingDao;
     @Autowired private MappingJackson2HttpMessageConverter mappingJackson2HttpMessageConverter;
+    private static SimpleDateFormat DATE_FORMAT = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
     private static AtomicInteger requestIncrementer = new AtomicInteger(1);
     private RestTemplate restTemplate;
     private Gson jsonPrinter;
@@ -305,7 +307,8 @@ public class EatonCloudCommunicationServiceImplV1 implements EatonCloudCommunica
             commsLogger.info("<<< EC[{}] Sent request to:{} ", requestIdentifier, uri);
             ResponseEntity<EatonCloudSecretValueV1> response = restTemplate.exchange(uri, HttpMethod.GET, requestEntity,
                     EatonCloudSecretValueV1.class);
-            commsLogger.info(">>> EC[{}] Request to:{} Response:{}", requestIdentifier, uri, deferredJson(response.getBody()));
+            commsLogger.info(">>> EC[{}] Request to:{} Response: secret:{} expiry time:{}", requestIdentifier, uri,
+                    response.getBody().getName(), DATE_FORMAT.format(response.getBody().getExpiryTime()));
             return response.getBody();
         } catch (EatonCloudCommunicationExceptionV1 e) {
             commsLogger.info(">>> EC[{}] Request to:{} Response:", requestIdentifier, uri, e);
