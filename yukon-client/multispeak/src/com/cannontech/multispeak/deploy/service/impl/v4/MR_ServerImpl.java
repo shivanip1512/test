@@ -11,6 +11,7 @@ import java.util.Map;
 import java.util.Set;
 import java.util.stream.Collectors;
 
+import org.apache.commons.collections4.CollectionUtils;
 import org.apache.logging.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
@@ -18,6 +19,7 @@ import org.springframework.beans.factory.annotation.Required;
 
 import com.cannontech.amr.demandreset.service.DemandResetService;
 import com.cannontech.amr.meter.model.YukonMeter;
+import com.cannontech.clientutils.CTILogger;
 import com.cannontech.clientutils.YukonLogManager;
 import com.cannontech.common.events.loggers.MultispeakEventLogService;
 import com.cannontech.common.pao.PaoIdentifier;
@@ -33,6 +35,7 @@ import com.cannontech.core.dynamic.PointValueQualityHolder;
 import com.cannontech.core.dynamic.exception.DynamicDataAccessException;
 import com.cannontech.database.data.lite.LitePoint;
 import com.cannontech.msp.beans.v4.ArrayOfMeterID;
+import com.cannontech.msp.beans.v4.ArrayOfMeterReading1;
 import com.cannontech.msp.beans.v4.ErrorObject;
 import com.cannontech.msp.beans.v4.ExpirationTime;
 import com.cannontech.msp.beans.v4.FormattedBlock;
@@ -42,10 +45,13 @@ import com.cannontech.msp.beans.v4.MeterReading;
 import com.cannontech.msp.beans.v4.Meters;
 import com.cannontech.msp.beans.v4.MspMeter;
 import com.cannontech.msp.beans.v4.ObjectFactory;
+import com.cannontech.msp.beans.v4.ReadingChangedNotification;
+import com.cannontech.msp.beans.v4.ReadingChangedNotificationResponse;
 import com.cannontech.msp.beans.v4.ServiceLocation;
 import com.cannontech.multispeak.block.v4.Block;
 import com.cannontech.multispeak.client.MultispeakDefines;
 import com.cannontech.multispeak.client.MultispeakVendor;
+import com.cannontech.multispeak.client.core.v4.CBClient;
 import com.cannontech.multispeak.client.v4.MultispeakFuncs;
 import com.cannontech.multispeak.dao.MspMeterDao;
 import com.cannontech.multispeak.dao.v4.FormattedBlockProcessingService;
@@ -57,6 +63,7 @@ import com.cannontech.multispeak.data.v4.FieldNamesMspV4;
 import com.cannontech.multispeak.data.v4.MspBlockReturnList;
 import com.cannontech.multispeak.data.v4.MspMeterReadingReturnList;
 import com.cannontech.multispeak.data.v4.MspMeterReturnList;
+import com.cannontech.multispeak.exceptions.MultispeakWebServiceClientException;
 import com.cannontech.multispeak.exceptions.MultispeakWebServiceException;
 import com.cannontech.multispeak.service.v4.MR_Server;
 import com.cannontech.multispeak.service.v4.MspValidationService;
@@ -83,6 +90,7 @@ public class MR_ServerImpl implements MR_Server {
     @Autowired private DemandResetService demandResetService;
     @Autowired private ObjectFactory objectFactory;
     @Autowired @Qualifier("mspMeterDaoV4") private MspMeterDao mspMeterDao;
+    @Autowired private CBClient cbClient;
     private Map<String, FormattedBlockProcessingService<Block>> formattedBlockMap;
     private BasicServerConnection porterConnection;
 
@@ -232,6 +240,35 @@ public class MR_ServerImpl implements MR_Server {
             // Don't know the responseURL as it's not provided in this method (by definition!) Using default for SEDC.
             String responseUrl = multispeakFuncs.getResponseUrl(vendor, null, MultispeakDefines.CB_Server_STR);
             MeterReading meterReading = multispeakMeterService.getLatestReadingInterrogate(vendor, meter, responseUrl);
+            
+            try {
+                //call to Reading Changed Notification
+                ReadingChangedNotification readingChangedNotification = objectFactory.createReadingChangedNotification();
+                List<MeterReading> meterReadings = Lists.newArrayList();
+                meterReadings.add(meterReading);
+                
+                ArrayOfMeterReading1 arrOfMeterReading1 = objectFactory.createArrayOfMeterReading1();
+                arrOfMeterReading1.getMeterReading().addAll(meterReadings);
+                
+                readingChangedNotification.setChangedMeterReads(arrOfMeterReading1);
+                ReadingChangedNotificationResponse response = cbClient.readingChangedNotification(vendor, responseUrl, readingChangedNotification);
+             
+                if (response != null && response.getReadingChangedNotificationResult() != null) {
+                    List<ErrorObject> responseErrorObjects = response.getReadingChangedNotificationResult().getErrorObject();
+                    if (CollectionUtils.isNotEmpty(responseErrorObjects)) {
+                        multispeakFuncs.logErrorObjects(responseUrl, 
+                                                        "ReadingChangedNotification",
+                                                        responseErrorObjects);
+                    }
+                } else {
+                    CTILogger.info("Response not received (or is null) for (" + responseUrl + "): Meter Number " + meterNo);
+                }
+            } catch (MultispeakWebServiceClientException e) {
+                CTILogger.error("TargetService: " + responseUrl + " - ReadingChangedNotification (" + vendor.getCompanyName() + ")");
+                CTILogger.error("RemoteExceptionDetail: " + e.getMessage());
+            }
+            
+            
             multispeakEventLogService.returnObject("MeterReading", 
                                                    meterNo, 
                                                    "GetLatestReadingByMeterID", 
