@@ -109,15 +109,16 @@ public class EatonCloudSimulatorController {
     }
     
     @GetMapping("/updateSecretInformation")
-    public @ResponseBody Map<String, Object> updateSecretInformation() {
+    public @ResponseBody Map<String, Object> updateSecretInformation(boolean enableTokenSecretRotationTesting) {
         Map<String, Object> json = new HashMap<>();
         String url = settingDao.getString(GlobalSettingType.EATON_CLOUD_URL);
+        boolean isSimulator = url.contains("localhost") || url.contains("127.0.0.1");
 
         json.put("secret1Token", "None");
         json.put("secret2Token", "None");
         json.put("cachedToken", "None");
         
-        if (url.contains("localhost") || url.contains("127.0.0.1")) {
+        if (isSimulator && enableTokenSecretRotationTesting) {
             if (restTemplate == null) {
                 restTemplate = new RestTemplate();
                 restTemplate.setErrorHandler(new EatonCloudErrorHandlerV1());
@@ -145,7 +146,7 @@ public class EatonCloudSimulatorController {
                 log.error("Error", e);
             }
         } else {
-            json.put("cachedBy", "Cloud");
+            json.put("cachedBy", isSimulator ? "Simulator" : "Cloud");
             json.put("secret1Expiration", null);
             json.put("secret2Expiration", null);
         }       
