@@ -21,6 +21,9 @@ yukon.highChart = (function () {
         }).done(function (response, textStatus, jqXHR) {
             yukon.highChart.buildChart($(parameters.containerIdentifier), response, parameters.title,
                 parameters.height, parameters.width);
+            if (parameters.callback) {
+                parameters.callback();
+            }
         });
     },
     
@@ -181,11 +184,13 @@ yukon.highChart = (function () {
         reloadChartIfExpired: function(params) {
             var chartId,
                 dataUrl,
+                callback,
                 newLargestTime;
             /* validation */
             _validateReloadParams(params);
             chartId = params.chartId;
             dataUrl = params.dataUrl;
+            callback = params.callback;
             //assumes data is of type Hash
             return function(data) {
                 newLargestTime = data.largestTime;
@@ -202,12 +207,13 @@ yukon.highChart = (function () {
                         title: chart.title.textStr,
                         height: chart.chartHeight,
                         width: chart.chartWidth,
-                        chartUrl: dataUrl
+                        chartUrl: dataUrl,
+                        callback: callback
                     };
                     _buildChart(parameters);
                 }
             };
-        }
+        },
         
     };
  
