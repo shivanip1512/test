@@ -207,9 +207,11 @@
   <bean id="soap11MessageFactory" class="org.springframework.ws.soap.saaj.SaajSoapMessageFactory"/>
   
   <bean id="mspWaterLeakReportV3" class="com.cannontech.web.amr.waterLeakReport.service.MspWaterLeakReportV3"/>
+  <bean id="mspWaterLeakReportV4" class="com.cannontech.web.amr.waterLeakReport.service.MspWaterLeakReportV4"/>
   <bean id="mspWaterLeakReportV5" class="com.cannontech.web.amr.waterLeakReport.service.MspWaterLeakReportV5"/>
   
   <bean id="mspAccountInformationV3" class="com.cannontech.web.widget.accountInformation.MspAccountInformationV3"/>
+  <bean id="mspAccountInformationV4" class="com.cannontech.web.widget.accountInformation.MspAccountInformationV4"/>
   <bean id="mspAccountInformationV5" class="com.cannontech.web.widget.accountInformation.MspAccountInformationV5"/>
   
 
