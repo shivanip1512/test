@@ -129,7 +129,7 @@ public enum SiteMapPage implements DisplayableEnum {
     COMMCHANNELS(SiteMapCategory.ASSETS, "yukon.web.modules.operator.commChannel.pageName", "/stars/device/commChannel/list", MatchStyle.all, YukonRoleProperty.MANAGE_INFRASTRUCTURE),
     COMPREHENSIVE_MAP(SiteMapCategory.ASSETS, "yukon.web.modules.operator.comprehensiveMap.pageName", "/stars/comprehensiveMap/home", 
                       MatchStyle.any, YukonRoleProperty.MANAGE_INFRASTRUCTURE),
-    SIGNAL_TRANSMITER(SiteMapCategory.ASSETS, "yukon.web.modules.operator.signalTransmitters.pageName", "/stars/device/signalTransmitter/list", 
+    SIGNAL_TRANSMITER(SiteMapCategory.ASSETS, "yukon.web.modules.operator.signalTransmitters.list.pageName", "/stars/device/signalTransmitter/list", 
             MatchStyle.any, YukonRoleProperty.MANAGE_INFRASTRUCTURE),
 
     CONFIGURATION(SiteMapCategory.ADMIN, "yukon.web.modules.adminSetup.config.pageName", "/admin/config/view",

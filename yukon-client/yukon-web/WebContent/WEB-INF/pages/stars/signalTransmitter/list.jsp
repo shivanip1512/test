@@ -1,7 +1,7 @@
 <%@ taglib prefix="cm" tagdir="/WEB-INF/tags/contextualMenu" %>
 <%@ taglib prefix="cti" uri="http://cannontech.com/tags/cti" %>
 
-<cti:standardPage module="operator" page="signalTransmitter.list">
+<cti:standardPage module="operator" page="signalTransmitters.list">
 
     <!-- Actions dropdown -->
     <div id="page-actions" class="dn">

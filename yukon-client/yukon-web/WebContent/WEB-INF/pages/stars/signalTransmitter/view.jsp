@@ -2,5 +2,5 @@
 <%@ taglib prefix="tags" tagdir="/WEB-INF/tags"%>
 
 <cti:standardPage module="operator" page="signalTransmitter.${mode}">
-    <tags:setFormEditMode mode="${mode}" />
+    <%@ include file="details.jsp" %>
 </cti:standardPage>
