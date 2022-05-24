@@ -67,8 +67,8 @@ yukon.da.ivvcChart = (function() {
             });
             
             $(document).on('click', '.highcharts-legend-item', function(event) {
-                _filterLines();
                 event.preventDefault();
+                _filterLines();
             });
 
             _initialized = true;
