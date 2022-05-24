@@ -1427,6 +1427,147 @@ BOOST_AUTO_TEST_CASE( test_oscore_option_value_encoding )
 //    }
 }
 
+
+Buffer encrypt_payload( const Buffer & key, const Buffer & nonce, const Buffer & plaintext, const Buffer & aad, const int tag_length )
+{
+    // The code below was adapted from:  
+    // 
+    //  https://wiki.openssl.org/index.php/EVP_Authenticated_Encryption_and_Decryption
+    //  https://wiki.openssl.org/images/e/e1/Evp-ccm-encrypt.c
+
+    // Create a new encryption context
+    EVP_CIPHER_CTX *context = EVP_CIPHER_CTX_new();
+
+    // Set cipher type and mode
+    EVP_EncryptInit_ex( context, EVP_aes_128_ccm(), nullptr, nullptr, nullptr );
+
+    // Set nonce length (it default 96 bits)
+    EVP_CIPHER_CTX_ctrl( context, EVP_CTRL_CCM_SET_IVLEN, nonce.size(), nullptr );
+
+    // Set tag length
+    EVP_CIPHER_CTX_ctrl( context, EVP_CTRL_CCM_SET_TAG, tag_length, nullptr );
+
+    // Initialise key and IV
+    EVP_EncryptInit_ex( context, nullptr, nullptr, &key[ 0 ], &nonce[ 0 ] );
+
+    int len = 0;
+
+    // Provide the total plaintext length
+    if ( 1 != EVP_EncryptUpdate( context, nullptr, &len, nullptr, plaintext.size() ) )
+    {
+       // handleErrors();   // what should we do in this and other error cases?
+    }
+
+    // Provide any AAD data. This can be called zero or one times as required
+    if ( 1 != EVP_EncryptUpdate( context, nullptr, &len, &aad[ 0 ], aad.size() ) )
+    {
+      //  handleErrors();
+    }
+
+    unsigned char ciphertext[ 512 ] = {};
+    int ciphertext_len = 0;
+
+    /*
+        Provide the message to be encrypted, and obtain the encrypted output.
+            EVP_EncryptUpdate can only be called once for this.
+    */
+    if ( 1 != EVP_EncryptUpdate( context, ciphertext, &len, &plaintext[ 0 ], plaintext.size() ) )
+    {
+     //   handleErrors();
+    }
+    ciphertext_len = len;
+
+    /*
+        Finalise the encryption. Normally ciphertext bytes may be written at
+        this stage, but this does not occur in CCM mode.
+    */
+    if ( 1 != EVP_EncryptFinal_ex( context, ciphertext + len, &len ) )
+    {
+       // handleErrors();
+    }
+    ciphertext_len += len;
+
+    unsigned char tag[ 16 ] = {};
+
+    // Get the tag
+    if ( 1 != EVP_CIPHER_CTX_ctrl( context, EVP_CTRL_CCM_GET_TAG, tag_length, tag ) )
+    {
+     //   handleErrors();
+    }
+
+    // Build the payload
+
+    Buffer payload { ciphertext, ciphertext + ciphertext_len };
+
+    boost::range::push_back( payload, Buffer { tag, tag + tag_length } );
+
+    return payload;
+}
+
+Buffer partial_iv_encode( uint64_t * value )
+{
+    if ( ! value )
+    {
+        return {  };    // no sequence number is an empty partial_iv
+    }
+
+    Buffer encoded = cbor_encode_uint( *value );
+
+    if ( encoded.size() == 1 )
+    {
+        return encoded; // the raw value (no header byte)
+    }
+
+    // we have a header byte attached, skip it, plus we want to remove leading 0x00 bytes.
+    //      find the first non-zero byte at index >= 1
+
+    auto start = encoded.begin() + 1;
+
+    while ( 0 == *start )
+    {
+        ++start;
+    }
+
+    return { start, encoded.end() };
+}
+
+BOOST_AUTO_TEST_CASE( test_oscore_partial_iv_encoding )
+{
+    static const std::map<uint64_t, Buffer>  test_cases
+    {
+        { UINT64_C(                    0 ),  { 0x00 } },
+        { UINT64_C(                    1 ),  { 0x01 } },
+        { UINT64_C(                    5 ),  { 0x05 } },
+        { UINT64_C(                   23 ),  { 0x17 } },
+        { UINT64_C(                   24 ),  { 0x18 } },
+        { UINT64_C(                  255 ),  { 0xff } },
+        { UINT64_C(                  256 ),  { 0x01, 0x00 } },
+        { UINT64_C(                  257 ),  { 0x01, 0x01 } },
+        { UINT64_C(                20000 ),  { 0x4e, 0x20 } },
+        { UINT64_C(                65534 ),  { 0xff, 0xfe } },
+        { UINT64_C(                65535 ),  { 0xff, 0xff } },
+        { UINT64_C(                65536 ),  { 0x01, 0x00, 0x00 } },
+        { UINT64_C(                65537 ),  { 0x01, 0x00, 0x01 } },
+        { UINT64_C(             10000000 ),  { 0x98, 0x96, 0x80 } },
+        { UINT64_C(            100000000 ),  { 0x05, 0xf5, 0xe1, 0x00 } },
+        { UINT64_C(           4294967294 ),  { 0xff, 0xff, 0xff, 0xfe } },
+        { UINT64_C(           4294967295 ),  { 0xff, 0xff, 0xff, 0xff } },
+        { UINT64_C(           4294967296 ),  { 0x01, 0x00, 0x00, 0x00, 0x00 } },
+        { UINT64_C(        1000000000000 ),  { 0xe8, 0xd4, 0xa5, 0x10, 0x00 } }
+    };
+
+    for ( auto test_case : test_cases )
+    {
+        uint64_t placeholder = test_case.first;
+
+        BOOST_CHECK_EQUAL_RANGES( partial_iv_encode( &placeholder ), test_case.second );
+    }
+
+    // plus the null case
+
+    BOOST_CHECK_EQUAL_RANGES( partial_iv_encode( nullptr ), Buffer {  } );
+}
+
 BOOST_AUTO_TEST_CASE( test_oscore_encrypted_request_generation_C_4   )
 {
 /* 
@@ -1483,11 +1624,9 @@ Unprotected CoAP request:
 
     // The partial iv is the sender sequence number, if it is zero then it is the bstr { 0x00 }...  seems the max is 2^40 - 1 - need 64bits...?  -- no zero padding...
 
-    int sender_sequence_number = 20;
+    uint64_t sender_sequence_number = 20;
 
-    // should function wrap this guy and turn it into a buffer....
-
-    Buffer partial_iv { (unsigned char)sender_sequence_number };       // needs work for a > 8 bit value...
+    Buffer partial_iv = partial_iv_encode( &sender_sequence_number );
 
     // The 'kid' parameter is the sender id... so { }
 
@@ -1535,9 +1674,7 @@ Unprotected CoAP request:
         Original payload ( 0xff + bytestream ) -- optional of course...
  
     0x01,                   -- Code: GET
- 
     0xb3, 0x74, 0x76, 0x31  -- Option 11 (Uri-Path), Length: 3  "tv1"
- 
 */
 
     Buffer plaintext { 0x01, 0xb3, 0x74, 0x76, 0x31 };
@@ -1551,7 +1688,7 @@ Unprotected CoAP request:
 
     BOOST_CHECK_EQUAL_RANGES( option_value, expected_option_value );
 
-    // Absolute OSCORE option -- note: the absolute option number is 9, will need to be delta adjusted when packed into a coap message
+    // Absolute OSCORE option -- note: the absolute option number is 9, will need to be delta adjusted when packed into the CoAP message
 
     Buffer oscore_option_absolute;
 
@@ -1562,41 +1699,15 @@ Unprotected CoAP request:
 
     BOOST_CHECK_EQUAL_RANGES( oscore_option_absolute, expected_option_value_absolute );
 
+    // Encryption
 
-    // TODO - how to get all the inputs to the encryption stuff...?  it's more than just the plaintext...
-
-
-    // encryption.... not working yet...
-
-    unsigned char ciph[64] = {};
-    int ciph_len = 0;
-    int temp_len = 0;
-
-
-    Buffer encryption_input
-    {
-        0x01, 0xb3, 0x74, 0x76, 0x31    // plaintext...
-    };
-
-
-
-    EVP_CIPHER_CTX *context = EVP_CIPHER_CTX_new();
-
-    EVP_EncryptInit_ex( context, EVP_aes_128_ccm(), NULL, &key[0], &common_iv[0] );
-
-    EVP_EncryptUpdate(  context, ciph, &ciph_len, &encryption_input[0], encryption_input.size() );
-
-    EVP_EncryptFinal_ex( context, ciph + ciph_len, &temp_len );
-
-    ciph_len += temp_len;
-
-    EVP_CIPHER_CTX_free( context );
-
+    Buffer ciphertext = encrypt_payload( key, nonce, plaintext, encoded_aad, 8 );
 
     Buffer expected_ciphertext  { 0x61, 0x2f, 0x10, 0x92, 0xf1, 0x77, 0x6f, 0x1c, 0x16, 0x68, 0xb3, 0x82, 0x5e };
 
-//    BOOST_CHECK_EQUAL_RANGES( Buffer {  } , expected_ciphertext );
+    BOOST_CHECK_EQUAL_RANGES( ciphertext, expected_ciphertext );
 
+    // TODO -- need to build the expected output from the given input -- but we have all the pieces now
 
     test_E2eDataTransferProtocol e2e;
 
