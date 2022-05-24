@@ -101,6 +101,9 @@
   <bean id="multispeakDeviceGroupSyncService" class="com.cannontech.multispeak.service.impl.MultispeakDeviceGroupSyncServiceImpl">
       <qualifier value="v3"/>
   </bean>
+  <bean id="multispeakDeviceGroupSyncService_v4" class="com.cannontech.multispeak.service.impl.v4.MultispeakDeviceGroupSyncServiceImpl">
+      <qualifier value="v4"/>
+  </bean>
   <bean id="multispeakDeviceGroupSyncService_v5" class="com.cannontech.multispeak.service.impl.v5.MultispeakDeviceGroupSyncServiceImpl">
       <qualifier value="v5"/>
   </bean>

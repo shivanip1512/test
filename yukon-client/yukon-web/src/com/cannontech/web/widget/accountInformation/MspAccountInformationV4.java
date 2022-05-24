@@ -20,11 +20,9 @@ import com.cannontech.core.service.DateFormattingService;
 import com.cannontech.msp.beans.v4.ArrayOfAddressItem;
 import com.cannontech.msp.beans.v4.ArrayOfBillingStatusItem;
 import com.cannontech.msp.beans.v4.ArrayOfServiceLocation1;
-import com.cannontech.msp.beans.v4.ArrayOfServiceLocation1;
-import com.cannontech.msp.beans.v4.BillingStatusInformation;
-import com.cannontech.msp.beans.v4.BillingStatusItem;
 import com.cannontech.msp.beans.v4.ContactInfo;
 import com.cannontech.msp.beans.v4.Customer;
+import com.cannontech.msp.beans.v4.EMailAddress;
 import com.cannontech.msp.beans.v4.Meters;
 import com.cannontech.msp.beans.v4.PhoneType;
 import com.cannontech.msp.beans.v4.ServiceLocation;
@@ -66,14 +64,16 @@ public class MspAccountInformationV4 implements MspAccountInformation {
         mav.addObject("homePhone", primaryContact.get(PhoneType.HOME));
         mav.addObject("dayPhone", primaryContact.get(PhoneType.BUSINESS));
 
-        if (mspCustomer.getContactInfo() != null && mspCustomer.getContactInfo().getEMailList().getEMailAddress() != null) {
-            List<String> emailAddresses = multispeakCustomerInfoService.getEmailAddresses(null, userContext).getEmailAddresses(
-                mspCustomer, userContext);
+        ContactInfo contactInfo = mspCustomer.getContactInfo();
+        if (contactInfo != null && contactInfo.getEMailList() != null) {
+            List<EMailAddress> eMailAddress = contactInfo.getEMailList().getEMailAddress();
+            List<String> emailAddresses = multispeakCustomerInfoService.getEmailAddresses(contactInfo, userContext);
+                
             mav.addObject("mspEmailAddresses", emailAddresses);
         }
 
-        if (mspCustomer.getContactInfo() != null && mspCustomer.getContactInfo().getAddressList() != null) {
-            List<Address> custAddressInfo = multispeakFuncs.getAddressList(mspCustomer.getContactInfo().getAddressList().getAddressItem());
+        if (contactInfo != null && contactInfo.getAddressList() != null) {
+            List<Address> custAddressInfo = multispeakFuncs.getAddressList(contactInfo.getAddressList().getAddressItem());
             mav.addObject("custAddressInfo", custAddressInfo.get(0));
         }
         // Customer Basic Information
@@ -90,9 +90,6 @@ public class MspAccountInformationV4 implements MspAccountInformation {
             Map<String, List<Info>> custAccountReceivableInfo =
                 getCustomerAccountReceivableInfo(mspCustomer, userContext);
             mav.addObject("custReceivableInfo", custAccountReceivableInfo);
-
-            Map<String, List<Info>> custAcountPriorityInfo = getCustomerAccountPriorityInfo(mspCustomer, userContext);
-            mav.addObject("custPriorityInfo", custAcountPriorityInfo);
 
         }
         if (mspCustomer.getAlternateContactList().getAlternateContact() != null) {
@@ -116,7 +113,7 @@ public class MspAccountInformationV4 implements MspAccountInformation {
 //            Map<AtomicInteger, List<Info>> servLocHazardInfo = getServiceLocationHazardInfo(mspServLoc, userContext);
 //            mav.addObject("servLocHazardInfo", servLocHazardInfo);
 //        }
-
+        
         if (mspServLoc.getElectricServiceList().getElectricService() != null) {
             List<Info> electricServiceListInfo = getElectricServiceListInfo(mspServLoc, userContext);
             mav.addObject("electricServiceListInfo", electricServiceListInfo);
@@ -167,11 +164,11 @@ public class MspAccountInformationV4 implements MspAccountInformation {
         if (contactInfo != null) {
             Contact contact = new Contact();
             List<String> phoneNumbers =
-                multispeakCustomerInfoService.getPhoneNumbers(contactInfo.getPhoneList().getPhoneNumber(), userContext);
+                multispeakCustomerInfoService.getPhoneNumbers(contactInfo, userContext);
             contact.setPhoneNumbers(phoneNumbers);
 
             List<String> emailAddresses =
-                multispeakCustomerInfoService.getEmailAddresses(contactInfo.getEMailList().getEMailAddress(), userContext);
+                multispeakCustomerInfoService.getEmailAddresses(contactInfo, userContext);
             contact.setEmailAddresses(emailAddresses);
             if (contactInfo.getAddressList().getAddressItem() != null) {
                 contact.setAddresses(multispeakFuncs.getAddressList(contactInfo.getAddressList().getAddressItem()));
@@ -180,19 +177,6 @@ public class MspAccountInformationV4 implements MspAccountInformation {
         }
         return info;
 
-    }
-
-    // Customer Hazards Information
-    private List<Info> getCustomerHazardInfo(Customer mspCustomer, YukonUserContext userContext) {
-
-        List<Info> info = new ArrayList<>();
-
-        mspCustomer.getCustomerHazards().getCustomerHazard().forEach(customerHazard -> {
-            add("Type", customerHazard.getCustomerHazardType(), true, info, userContext);
-            add("Sub Type", customerHazard.getCustomerHazardSubType(), true, info, userContext);
-            add("Text", customerHazard.getHazardText(), true, info, userContext);
-        });
-        return info;
     }
 
     // Customer Account Information
@@ -250,31 +234,6 @@ public class MspAccountInformationV4 implements MspAccountInformation {
         return customerAccountReceivableMap;
     }
 
-    // Customer Account Priority Information
-    private Map<String, List<Info>> getCustomerAccountPriorityInfo(Customer mspCustomer, YukonUserContext userContext) {
-
-        Map<String, List<Info>> customerAccountPriorityMap = new HashMap<>();
-
-        mspCustomer.getAccounts().getAccount().forEach(
-            accountInfo -> {
-                if (accountInfo.getAccountPriorities() != null) {
-                    List<Info> info = new ArrayList<>();
-                    accountInfo.getAccountPriorities().getAccountPriority().forEach(
-                        servicePriority -> {
-                            if (servicePriority.getServicePriorityType() != null) {
-                                add("Priority Type", servicePriority.getServicePriorityType().getValue(), true, info,
-                                    userContext);
-                            }
-                            add("Priority SubType", servicePriority.getServicePrioritySubtype(), true, info,
-                                userContext);
-                            add("Description", servicePriority.getDescription(), true, info, userContext);
-                        });
-                    customerAccountPriorityMap.put(accountInfo.getObjectID(), info);
-                }
-            });
-        return customerAccountPriorityMap;
-    }
-
     // Get the customer alternate contact information
     private List<Contact> getCustomerAlternateContactsInfo(Customer mspCustomer, YukonUserContext userContext) {
 
@@ -283,14 +242,16 @@ public class MspAccountInformationV4 implements MspAccountInformation {
         mspCustomer.getAlternateContactList().getAlternateContact().forEach(
             alternateContact -> {
                 ContactInfo contactInfo = alternateContact.getContactInfo();
+                List<EMailAddress> eMailAddress = mspCustomer.getContactInfo().getEMailList().getEMailAddress();
+                
                 List<String> phoneNumbers =
-                    multispeakCustomerInfoService.getPhoneNumbers(mspCustomer, userContext);
+                    multispeakCustomerInfoService.getPhoneNumbers(contactInfo, userContext);
                 List<String> emailAddresses =
-                    multispeakCustomerInfoService.getEmailAddresses(mspCustomer, userContext);
+                    multispeakCustomerInfoService.getEmailAddresses(contactInfo, userContext);
                 Contact contact =
                     new Contact(alternateContact.getFirstName(), alternateContact.getMName(),
-                        alternateContact.getLastName(), phoneNumbers, emailAddresses,
-                        contactInfo.getAddressList().getAddressItem() != null ? multispeakFuncs.getAddressList() : null);
+                        alternateContact.getLastName(), phoneNumbers, emailAddresses,contactInfo.getAddressList() == null?null:
+                        (contactInfo.getAddressList().getAddressItem() != null ? multispeakFuncs.getAddressList(null) : null));
                 info.add(contact);
 
             });
@@ -308,7 +269,11 @@ public class MspAccountInformationV4 implements MspAccountInformation {
         add("Account ID", mspServLoc.getObjectID(), false, infoList, userContext);
         add("SIC", mspServLoc.getSIC(), false, infoList, userContext);
         add("Site ID", mspServLoc.getSiteID(), false, infoList, userContext);
-
+        
+        if(mspServLoc.getServiceOrderList() !=null && mspServLoc.getServiceOrderList().getServiceOrder() !=null && mspServLoc.getServiceOrderList().getServiceOrder().get(0) !=null) {
+        add("ServiceOrder ID", mspServLoc.getServiceOrderList().getServiceOrder().get(0).getObjectID(), false, infoList, userContext);
+        }
+        
         add("GPS Location ", mspServLoc.getGPSLocation(), false, infoList, userContext);
         add("GML Location ", mspServLoc.getGMLLocation(), false, infoList, userContext);
         add("Grid Location ", mspServLoc.getGridLocation(), false, infoList, userContext);
@@ -318,33 +283,33 @@ public class MspAccountInformationV4 implements MspAccountInformation {
                 infoList, userContext);
         }
         // Location Information
-        if (mspServLoc.getLocationInformation() != null) {
-            add("City ", mspServLoc.getLocationInformation().getCity(), true, infoList, userContext);
-            add("County ", mspServLoc.getLocationInformation().getCounty(), true, infoList, userContext);
-            add("Township Name ", mspServLoc.getLocationInformation().getTownshipName(), true, infoList, userContext);
-            add("Sub Division ", mspServLoc.getLocationInformation().getSubdivision(), true, infoList, userContext);
-            add("Block ", mspServLoc.getLocationInformation().getBlock(), true, infoList, userContext);
-            add("Lot ", mspServLoc.getLocationInformation().getLot(), true, infoList, userContext);
-            add("State ", mspServLoc.getLocationInformation().getState(), true, infoList, userContext);
-            if (mspServLoc.getLocationInformation().getTRSQ() != null) {
-                add("Section ", mspServLoc.getLocationInformation().getTRSQ().getSection(), true, infoList,
-                    userContext);
-                add("Quater Section ", mspServLoc.getLocationInformation().getTRSQ().getQuarterSection(), true,
-                    infoList, userContext);
-                add("Range ", mspServLoc.getLocationInformation().getTRSQ().getRange(), true, infoList, userContext);
-                add("Township ", mspServLoc.getLocationInformation().getTRSQ().getTownship(), true, infoList,
-                    userContext);
-            }
-            if (mspServLoc.getLocationInformation().getTimeZone() != null) {
-                add("Time Zone - Name ", mspServLoc.getLocationInformation().getTimeZone().getName(), true, infoList,
-                    userContext);
-                add("Time Zone - Value ", mspServLoc.getLocationInformation().getTimeZone().getValue(), true,
-                    infoList, userContext);
-                add("Time Zone - UTC offset ", mspServLoc.getLocationInformation().getTimeZone().getUTCOffset(), true,
-                    infoList, userContext);
-                add("Time Zone - Comment ", mspServLoc.getLocationInformation().getTimeZone().getComment(), true,
-                    infoList, userContext);
-            }
+        if (mspServLoc.getNetwork() != null) {
+            add("City ", mspServLoc.getNetwork().getCity(), true, infoList, userContext);
+            add("County ", mspServLoc.getNetwork().getCountry(), true, infoList, userContext);
+            add("Township Name ", mspServLoc.getNetwork().getTownship(), true, infoList, userContext);
+            add("Sub Division ", mspServLoc.getNetwork().getSubdivision(), true, infoList, userContext);
+            add("Block ", mspServLoc.getNetwork().getBlock(), true, infoList, userContext);
+            add("Lot ", mspServLoc.getNetwork().getLot(), true, infoList, userContext);
+            add("State ", mspServLoc.getNetwork().getState(), true, infoList, userContext);
+//            if (mspServLoc.getLocationInformation().getTRSQ() != null) {
+//                add("Section ", mspServLoc.getLocationInformation().getTRSQ().getSection(), true, infoList,
+//                    userContext);
+//                add("Quater Section ", mspServLoc.getLocationInformation().getTRSQ().getQuarterSection(), true,
+//                    infoList, userContext);
+//                add("Range ", mspServLoc.getLocationInformation().getTRSQ().getRange(), true, infoList, userContext);
+//                add("Township ", mspServLoc.getLocationInformation().getTRSQ().getTownship(), true, infoList,
+//                    userContext);
+//            }
+//            if (mspServLoc.getLocationInformation().getTimeZone() != null) {
+//                add("Time Zone - Name ", mspServLoc.getLocationInformation().getTimeZone().getName(), true, infoList,
+//                    userContext);
+//                add("Time Zone - Value ", mspServLoc.getLocationInformation().getTimeZone().getValue(), true,
+//                    infoList, userContext);
+//                add("Time Zone - UTC offset ", mspServLoc.getLocationInformation().getTimeZone().getUTCOffset(), true,
+//                    infoList, userContext);
+//                add("Time Zone - Comment ", mspServLoc.getLocationInformation().getTimeZone().getComment(), true,
+//                    infoList, userContext);
+//            }
         }
 
         return infoList;
@@ -358,13 +323,13 @@ public class MspAccountInformationV4 implements MspAccountInformation {
         List<Info> info = new ArrayList<>();
         AtomicInteger hazardID = new AtomicInteger();
 
-        mspServLoc.getServiceHazards().getServiceHazard().forEach(locationHazard -> {
-            add("Type", locationHazard.getLocationHazardType(), true, info, userContext);
-            add("Sub Type", locationHazard.getLocationHazardSubType(), true, info, userContext);
-            add("Text", locationHazard.getHazardText(), true, info, userContext);
-            hazardID.incrementAndGet();
-            locationHazardMap.put(hazardID, info);
-        });
+//        mspServLoc.getServiceHazards().getServiceHazard().forEach(locationHazard -> {
+//            add("Type", locationHazard.getLocationHazardType(), true, info, userContext);
+//            add("Sub Type", locationHazard.getLocationHazardSubType(), true, info, userContext);
+//            add("Text", locationHazard.getHazardText(), true, info, userContext);
+//            hazardID.incrementAndGet();
+//            locationHazardMap.put(hazardID, info);
+//        });
 
         return locationHazardMap;
     }
@@ -441,9 +406,6 @@ public class MspAccountInformationV4 implements MspAccountInformation {
                     add("Communication Address",
                         electricService.getMeterBase().getElectricMeter().getMeterCommAddress(), true, info,
                         userContext);
-                    add("Communication Port",
-                        electricService.getMeterBase().getElectricMeter().getMeterCommAddress().getCommunicationsPort(),
-                        true, info, userContext);
                 }
 
                 if (electricService.getMeterBase().getElectricMeter() != null
@@ -469,37 +431,37 @@ public class MspAccountInformationV4 implements MspAccountInformation {
                     add("Accuracy Class ",
                         electricService.getMeterBase().getElectricMeter().getElectricNameplate().getAccuracyClass(), true, info,
                         userContext);
-                    if (electricService.getMeterBase().getElectricMeter().getElectricNameplate().getElementsVoltage() != null
-                        && electricService.getMeterBase().getElectricMeter().getElectricNameplate().getElementsVoltage().getUnits() != null) {
-                        add("Element Voltage",
-                            electricService.getMeterBase().getElectricMeter().getElectricNameplate().getElementsVoltage().getValue()
-                                + StringUtils.SPACE
-                                + electricService.getMeterBase().getElectricMeter().getElectricNameplate().getElementsVoltage().getUnits().value(),
-                            true, info, userContext);
-                    }
-                    if (electricService.getMeterBase().getElectricMeter().getElectricNameplate().getSupplyVoltage() != null
-                        && electricService.getMeterBase().getElectricMeter().getElectricNameplate().getSupplyVoltage().getUnits() != null) {
-                        add("Supply Voltage",
-                            electricService.getMeterBase().getElectricMeter().getElectricNameplate().getSupplyVoltage().getValue()
-                                + StringUtils.SPACE
-                                + electricService.getMeterBase().getElectricMeter().getElectricNameplate().getSupplyVoltage().getUnits().value(),
-                            true, info, userContext);
-                    }
-                    if (electricService.getMeterBase().getElectricMeter().getElectricNameplate().getMaxAmperage() != null) {
-                        add("Max Amp",
-                            electricService.getMeterBase().getElectricMeter().getElectricNameplate().getMaxAmperage()
-                                + StringUtils.SPACE
-                                + electricService.getMeterBase().getElectricMeter().getElectricNameplate().getMaxAmperage().getUnits().value(),
-                            true, info, userContext);
-                    }
-                    if (electricService.getMeterBase().getElectricMeter().getElectricNameplate().getTestAmperage() != null
-                        && electricService.getMeterBase().getElectricMeter().getElectricNameplate().getTestAmperage().getUnits() != null) {
-                        add("Test Amp",
-                            electricService.getMeterBase().getElectricMeter().getElectricNameplate().getTestAmperage().getValue()
-                                + StringUtils.SPACE
-                                + electricService.getMeterBase().getElectricMeter().getElectricNameplate().getTestAmperage().getUnits().value(),
-                            true, info, userContext);
-                    }
+//                    if (electricService.getMeterBase().getElectricMeter().getElectricNameplate().getElementsVoltage() != null
+//                        && electricService.getMeterBase().getElectricMeter().getElectricNameplate().getElementsVoltage().getUnits() != null) {
+//                        add("Element Voltage",
+//                            electricService.getMeterBase().getElectricMeter().getElectricNameplate().getElementsVoltage().getValue()
+//                                + StringUtils.SPACE
+//                                + electricService.getMeterBase().getElectricMeter().getElectricNameplate().getElementsVoltage().getUnits().value(),
+//                            true, info, userContext);
+//                    }
+//                    if (electricService.getMeterBase().getElectricMeter().getElectricNameplate().getSupplyVoltage() != null
+//                        && electricService.getMeterBase().getElectricMeter().getElectricNameplate().getSupplyVoltage().getUnits() != null) {
+//                        add("Supply Voltage",
+//                            electricService.getMeterBase().getElectricMeter().getElectricNameplate().getSupplyVoltage().getValue()
+//                                + StringUtils.SPACE
+//                                + electricService.getMeterBase().getElectricMeter().getElectricNameplate().getSupplyVoltage().getUnits().value(),
+//                            true, info, userContext);
+//                    }
+//                    if (electricService.getMeterBase().getElectricMeter().getElectricNameplate().getMaxAmperage() != null) {
+//                        add("Max Amp",
+//                            electricService.getMeterBase().getElectricMeter().getElectricNameplate().getMaxAmperage()
+//                                + StringUtils.SPACE
+//                                + electricService.getMeterBase().getElectricMeter().getElectricNameplate().getMaxAmperage().getUnits().value(),
+//                            true, info, userContext);
+//                    }
+//                    if (electricService.getMeterBase().getElectricMeter().getElectricNameplate().getTestAmperage() != null
+//                        && electricService.getMeterBase().getElectricMeter().getElectricNameplate().getTestAmperage().getUnits() != null) {
+//                        add("Test Amp",
+//                            electricService.getMeterBase().getElectricMeter().getElectricNameplate().getTestAmperage().getValue()
+//                                + StringUtils.SPACE
+//                                + electricService.getMeterBase().getElectricMeter().getElectricNameplate().getTestAmperage().getUnits().value(),
+//                            true, info, userContext);
+//                    }
                     add("Register Ratio",
                         electricService.getMeterBase().getElectricMeter().getElectricNameplate().getRegRatio(), true, info,
                         userContext);
@@ -522,10 +484,10 @@ public class MspAccountInformationV4 implements MspAccountInformation {
 
             add("Service Sub Type", electricService.getServiceSubType(), true, info, userContext);
             if (electricService.getOutageStatus() != null) {
-                add("Outage Status", electricService.getOutageStatus().getValue(), true, info, userContext);
+                add("Outage Status", electricService.getOutageStatus().value(), true, info, userContext);
             }
             add("Cogeneration Site", electricService.isIsCogenerationSite(), true, info, userContext);
-            add("Service Order ID", electricService.getServiceOrderID(), true, info, userContext);
+            //add("Service Order ID", electricService.getServiceOrderID(), true, info, userContext);
 
             add("Billing Cycle", electricService.getBillingCycle(), true, info, userContext);
             add("Route", electricService.getRoute(), true, info, userContext);
@@ -535,36 +497,33 @@ public class MspAccountInformationV4 implements MspAccountInformation {
 
             if (electricService.getServiceStatus() != null) {
                 add("Service Point Status - Service Status",
-                    electricService.getServiceStatus().getValue(), true, info,
-                    userContext);
-                add("Service Point Status - Connectivity Status",
-                    electricService.getServicePointStatus().getConnectivityStatus().getValue(), true, info,
+                    electricService.getServiceStatus(), true, info,
                     userContext);
             }
 
             // Billing Information
             if (electricService.getMeterBase().getElectricMeter().getBillingStatusInformation() != null) {
                 add(null, "Billing Information", true, info, userContext);
-                makeBillingInformation(electricService.getBillingStatusInformation(), info, userContext);
+                makeBillingInformation(electricService.getMeterBase().getElectricMeter().getBillingStatusInformation(), info, userContext);
             }
 
             // Electric Location Fields
             add(null, "Utility Information", true, info, userContext);
             if (electricService.getElectricLocationFields() != null) {
-                if (electricService.getElectricLocationFields().getSubstationRef() != null) {
+                if (electricService.getElectricLocationFields() != null) {
                     add("Substation Ref - Code",
-                        electricService.getElectricLocationFields().getSubstationRef().getSubstationCode(), false,
+                        electricService.getElectricLocationFields().getSubstationCode(), false,
                         info, userContext);
                     add("Substation Ref - Name ",
-                        electricService.getElectricLocationFields().getSubstationRef().getSubstationName(), false,
+                        electricService.getElectricLocationFields().getSubstationName(), false,
                         info, userContext);
                 }
-                if (electricService.getElectricLocationFields().getFeederRef() != null) {
+                if (electricService.getElectricLocationFields() != null) {
                     add("Feeder Ref - Code",
-                        electricService.getElectricLocationFields().getFeederRef().getPrimaryIdentifierValue(),
+                        electricService.getElectricLocationFields().getFeederCode(),
                         true, info, userContext);
-                    add("Feeder Ref - Noun", electricService.getElectricLocationFields().getFeederRef().getNoun(),
-                        true, info, userContext);
+//                    add("Feeder Ref - Noun", electricService.getElectricLocationFields().getFeederRef().getNoun(),
+//                        true, info, userContext);
                 }
 
                 add("Bus", electricService.getElectricLocationFields().getBus(), true, info, userContext);
@@ -578,44 +537,44 @@ public class MspAccountInformationV4 implements MspAccountInformation {
 
                 add("Service Location ID", electricService.getServiceLocationID(),
                     false, info, userContext);
-                add("Service Point ID", electricService.getElectricLocationFields().getElectricServicePointID(),
-                    true, info, userContext);
-
-                if (electricService.getElectricLocationFields().getNetworkModelRef() != null) {
-                    add("Network Model Ref - Code",
-                        electricService.getElectricLocationFields().getNetworkModelRef().getPrimaryIdentifierValue(),
-                        true, info, userContext);
-                    add("Network Model Ref - Noun",
-                        electricService.getElectricLocationFields().getNetworkModelRef().getNoun(), true, info,
-                        userContext);
-
-                }
+//                add("Service Point ID", electricService.getElectricLocationFields().getElectricServicePointID(),
+//                    true, info, userContext);
+//
+//                if (electricService.getElectricLocationFields().getNetworkModelRef() != null) {
+//                    add("Network Model Ref - Code",
+//                        electricService.getElectricLocationFields().getNetworkModelRef().getPrimaryIdentifierValue(),
+//                        true, info, userContext);
+//                    add("Network Model Ref - Noun",
+//                        electricService.getElectricLocationFields().getNetworkModelRef().getNoun(), true, info,
+//                        userContext);
+//
+//                }
             }
 
             // Electric Rating
-            if (electricService.getElectricalRatings() != null) {
-                if (electricService.getElectricalRatings().getRatedCurrent() != null
-                    && electricService.getElectricalRatings().getRatedCurrent().getUnits() != null) {
-                    add("Rated Current", electricService.getElectricalRatings().getRatedCurrent().getValue()
-                        + StringUtils.SPACE
-                        + electricService.getElectricalRatings().getRatedCurrent().getUnits().value(), true,
-                        info, userContext);
-                }
-                if (electricService.getElectricalRatings().getRatedVoltage() != null
-                    && electricService.getElectricalRatings().getRatedVoltage().getUnits() != null) {
-                    add("Rated Voltage", electricService.getElectricalRatings().getRatedVoltage().getValue()
-                        + StringUtils.SPACE
-                        + electricService.getElectricalRatings().getRatedVoltage().getUnits().value(), true,
-                        info, userContext);
-                }
-                if (electricService.getElectricalRatings().getRatedPower() != null
-                    && electricService.getElectricalRatings().getRatedPower().getUnits() != null) {
-                    add("Rated Power", electricService.getElectricalRatings().getRatedPower().getValue()
-                        + StringUtils.SPACE
-                        + electricService.getElectricalRatings().getRatedPower().getUnits().value(), true, info,
-                        userContext);
-                }
-            }
+//            if (electricService.getElectricalRatings() != null) {
+//                if (electricService.getElectricalRatings().getRatedCurrent() != null
+//                    && electricService.getElectricalRatings().getRatedCurrent().getUnits() != null) {
+//                    add("Rated Current", electricService.getElectricalRatings().getRatedCurrent().getValue()
+//                        + StringUtils.SPACE
+//                        + electricService.getElectricalRatings().getRatedCurrent().getUnits().value(), true,
+//                        info, userContext);
+//                }
+//                if (electricService.getElectricalRatings().getRatedVoltage() != null
+//                    && electricService.getElectricalRatings().getRatedVoltage().getUnits() != null) {
+//                    add("Rated Voltage", electricService.getElectricalRatings().getRatedVoltage().getValue()
+//                        + StringUtils.SPACE
+//                        + electricService.getElectricalRatings().getRatedVoltage().getUnits().value(), true,
+//                        info, userContext);
+//                }
+//                if (electricService.getElectricalRatings().getRatedPower() != null
+//                    && electricService.getElectricalRatings().getRatedPower().getUnits() != null) {
+//                    add("Rated Power", electricService.getElectricalRatings().getRatedPower().getValue()
+//                        + StringUtils.SPACE
+//                        + electricService.getElectricalRatings().getRatedPower().getUnits().value(), true, info,
+//                        userContext);
+//                }
+//            }
         });
         return info;
     }
@@ -629,23 +588,22 @@ public class MspAccountInformationV4 implements MspAccountInformation {
             gasServicePoint -> {
                 add(null, "Meter Information", true, info, userContext);
                 add("Gas Meter ID", gasServicePoint.getGasMeterID(), true, info, userContext);
-                add("Service Order ID", gasServicePoint.getServiceOrderID(), true, info, userContext);
+                add("Service Order ID", mspServLoc.getServiceOrderList().getServiceOrder().get(0).getObjectID(), true, info, userContext);
                 add("Revenue Class", gasServicePoint.getRevenueClass(), true, info, userContext);
                 add("Rate Code", gasServicePoint.getRateCode(), true, info, userContext);
                 add("Service Sub Type", gasServicePoint.getServiceSubType(), true, info, userContext);
-                if (gasServicePoint.getServicePointStatus() != null
-                    && gasServicePoint.getServicePointStatus().getServiceStatus() != null) {
+                if (gasServicePoint.getServiceStatus() != null) {
                     add("Service Point Status - Service Status",
-                        gasServicePoint.getServicePointStatus().getServiceStatus().getValue(), true, info, userContext);
-                    add("Service Point Status - Account Status",
-                        gasServicePoint.getServicePointStatus().getAccountStatus().getValue(), true, info, userContext);
+                        gasServicePoint.getServiceStatus(), true, info, userContext);
+//                    add("Service Point Status - Account Status",
+//                        gasServicePoint..getAccountStatus(), true, info, userContext);
                     add("Service Point Status - Connectivity Status",
-                        gasServicePoint.getServicePointStatus().getConnectivityStatus().getValue(), true, info,
+                        gasServicePoint.getGasMeter().getMeterConnectionStatus().value(), true, info,
                         userContext);
                 }
                 // Billing Information
                 add(null, "Billing Information", true, info, userContext);
-                if (gasServicePoint.getBillingStatusInformation() != null) {
+                if (gasServicePoint.getGasMeter().getBillingStatusInformation() != null) {
                     makeBillingInformation(gasServicePoint.getGasMeter().getBillingStatusInformation(), info, userContext);
                 }
                 add("Billing Cycle", gasServicePoint.getBillingCycle(), true, info, userContext);
@@ -809,9 +767,8 @@ public class MspAccountInformationV4 implements MspAccountInformation {
                 // Billing Information
                 add(null, "Billing Information", true, info, userContext);
                 ArrayOfBillingStatusItem billingStatusInformation = waterServicePoint.getWaterMeter().getBillingStatusInformation();
-                List<BillingStatusItem> billingStatusItemList = billingStatusInformation.getBillingStatusItem();
                 if (billingStatusInformation != null) {
-                    makeBillingInformation(billingStatusItemList, info, userContext);
+                    makeBillingInformation(billingStatusInformation, info, userContext);
                 }
                 add("Billing Cycle", waterServicePoint.getBillingCycle(), true, info, userContext);
                 add("Route", waterServicePoint.getRoute(), true, info, userContext);
@@ -846,10 +803,10 @@ public class MspAccountInformationV4 implements MspAccountInformation {
         return info;
     }
 
-    private void makeBillingInformation(List<BillingStatusItem> billingStatusItem, List<Info> info,
+    private void makeBillingInformation(ArrayOfBillingStatusItem billingStatusItem, List<Info> info,
             YukonUserContext userContext) {
 
-        billingStatusItem.forEach(
+        billingStatusItem.getBillingStatusItem().forEach(
             billingItem -> {
                 add("Account Receivable", billingItem.getAccountsReceivable(), true, info, userContext);
                 add("Account Receivable this Period", billingItem.getAccountsReceivableThisPeriod(), true, info,

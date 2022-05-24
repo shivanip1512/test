@@ -1,11 +1,13 @@
 package com.cannontech.multispeak.client.core.v4;
 
-import com.cannontech.msp.beans.v3.GetServiceLocationByMeterNo;
-import com.cannontech.msp.beans.v3.GetServiceLocationByMeterNoResponse;
+import com.cannontech.msp.beans.v4.GetAllServiceLocations;
+import com.cannontech.msp.beans.v4.GetAllServiceLocationsResponse;
 import com.cannontech.msp.beans.v4.GetCustomerByMeterID;
 import com.cannontech.msp.beans.v4.GetCustomerByMeterIDResponse;
 import com.cannontech.msp.beans.v4.GetMeterByMeterID;
 import com.cannontech.msp.beans.v4.GetMeterByMeterIDResponse;
+import com.cannontech.msp.beans.v4.GetMeterByServiceLocationID;
+import com.cannontech.msp.beans.v4.GetMeterByServiceLocationIDResponse;
 import com.cannontech.msp.beans.v4.GetMethods;
 import com.cannontech.msp.beans.v4.GetMethodsResponse;
 import com.cannontech.msp.beans.v4.GetServiceLocationByMeterID;
@@ -68,4 +70,28 @@ public interface ICBClient {
     public GetServiceLocationByMeterIDResponse getServiceLocationByMeterId(MultispeakVendor mspVendor, String uri,
             GetServiceLocationByMeterID getServiceLocationByMeterId) throws MultispeakWebServiceClientException;
 
+
+    /**
+     * Gets all service Locations.
+     * 
+     * @param MSP vendor details
+     * @param String the URI of the CB Server
+     * @param GetAllServiceLocations the GetAllServiceLocations used as input.
+     * @return GetAllServiceLocationsResponse
+     * @throws MultispeakWebServiceClientException
+     */
+    public GetAllServiceLocationsResponse getAllServiceLocations(MultispeakVendor mspVendor, String uri,
+            GetAllServiceLocations getAllServiceLocations) throws MultispeakWebServiceClientException;
+    
+    
+    /**
+     * 
+     * @param mspVendor           vendor details
+     * @param endpointUrl         the URI of the CB Server
+     * @param getMeterByServLocID serviceLocationID used
+     * @return Meters By ServiceLocationID
+     * @throws MultispeakWebServiceClientException
+     */
+    public GetMeterByServiceLocationIDResponse getMeterByServiceLocationID(MultispeakVendor mspVendor, String endpointUrl,
+            GetMeterByServiceLocationID getMeterByServLocID) throws MultispeakWebServiceClientException;
 }

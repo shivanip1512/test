@@ -6,14 +6,14 @@ import org.springframework.oxm.XmlMappingException;
 import org.springframework.ws.WebServiceException;
 import org.springframework.ws.client.core.WebServiceTemplate;
 
-import com.cannontech.msp.beans.v3.GetCustomerByMeterNo;
-import com.cannontech.msp.beans.v3.GetCustomerByMeterNoResponse;
-import com.cannontech.msp.beans.v3.GetServiceLocationByMeterNo;
-import com.cannontech.msp.beans.v3.GetServiceLocationByMeterNoResponse;
+import com.cannontech.msp.beans.v4.GetAllServiceLocations;
+import com.cannontech.msp.beans.v4.GetAllServiceLocationsResponse;
 import com.cannontech.msp.beans.v4.GetCustomerByMeterID;
 import com.cannontech.msp.beans.v4.GetCustomerByMeterIDResponse;
 import com.cannontech.msp.beans.v4.GetMeterByMeterID;
 import com.cannontech.msp.beans.v4.GetMeterByMeterIDResponse;
+import com.cannontech.msp.beans.v4.GetMeterByServiceLocationID;
+import com.cannontech.msp.beans.v4.GetMeterByServiceLocationIDResponse;
 import com.cannontech.msp.beans.v4.GetMethods;
 import com.cannontech.msp.beans.v4.GetMethodsResponse;
 import com.cannontech.msp.beans.v4.GetServiceLocationByMeterID;
@@ -108,4 +108,29 @@ public class CBClient implements ICBClient {
         }
     }
 
+    @Override
+    public GetAllServiceLocationsResponse getAllServiceLocations(MultispeakVendor mspVendor, String uri,
+            GetAllServiceLocations getAllServiceLocations) throws MultispeakWebServiceClientException {
+        try {
+            multispeakFuncs.setMsgSender(webServiceTemplate, mspVendor);
+            return (GetAllServiceLocationsResponse) webServiceTemplate.marshalSendAndReceive(uri,
+                getAllServiceLocations, customWebServiceMsgCallback.addRequestHeader(mspVendor, MultispeakDefines.CB_Server_STR));
+        } catch (WebServiceException | XmlMappingException e) {
+            throw new MultispeakWebServiceClientException(e.getMessage());
+        }
+    }
+
+    @Override
+    public GetMeterByServiceLocationIDResponse getMeterByServiceLocationID(MultispeakVendor mspVendor, String endpointUrl,
+            GetMeterByServiceLocationID getMeterByServLocID) throws MultispeakWebServiceClientException {
+        try {
+            multispeakFuncs.setMsgSender(webServiceTemplate, mspVendor);
+
+            return (GetMeterByServiceLocationIDResponse) webServiceTemplate.marshalSendAndReceive(endpointUrl,
+                    getMeterByServLocID,
+                    customWebServiceMsgCallback.addRequestHeader(mspVendor, MultispeakDefines.CB_Server_STR));
+        } catch (WebServiceException | XmlMappingException e) {
+            throw new MultispeakWebServiceClientException(e.getMessage());
+        }
+    }
 }

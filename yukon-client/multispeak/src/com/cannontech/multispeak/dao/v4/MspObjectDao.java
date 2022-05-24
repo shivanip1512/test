@@ -3,13 +3,12 @@ package com.cannontech.multispeak.dao.v4;
 import java.util.List;
 
 import com.cannontech.amr.meter.model.SimpleMeter;
+import com.cannontech.msp.beans.v4.ArrayOfServiceLocation1;
+import com.cannontech.msp.beans.v4.Customer;
 import com.cannontech.msp.beans.v4.ErrorObject;
-import com.cannontech.msp.beans.v4.MeterID;
 import com.cannontech.msp.beans.v4.Meters;
 import com.cannontech.msp.beans.v4.MspMeter;
 import com.cannontech.msp.beans.v4.ServiceLocation;
-import com.cannontech.msp.beans.v4.ArrayOfServiceLocation1;
-import com.cannontech.msp.beans.v4.Customer;
 import com.cannontech.multispeak.client.MultispeakVendor;
 import com.cannontech.multispeak.exceptions.MultispeakWebServiceClientException;
 
@@ -67,7 +66,6 @@ public interface MspObjectDao {
     public List<String> getMethods(MultispeakVendor mspVendor, String service, String endpointUrl)
             throws MultispeakWebServiceClientException;
     
-    
     /**
      * Creates a new (MSP) ErrorObject
      * 
@@ -80,6 +78,16 @@ public interface MspObjectDao {
     public ErrorObject getNotFoundErrorObject(String objectID, String notFoundObjectType, String nounType,
             String method, String userName, String exceptionMessage);
 
+    /**
+     * Returns a Msp ServiceLocation for the meter
+     * If the interface/method is not supported by mspVendor, or if no object is found,
+     * an empty ServiceLocation object is returned.
+     * @param meterNumber The meter to get the ServiceLocation information for.
+     * @param mspVendor The Multispeak Vendor to ask for the information from.
+     * @return
+     */
+    public ArrayOfServiceLocation1 getMspServiceLocation(String meterNumber, MultispeakVendor mspVendor);
+ 
     /**
      * Creates an entry in the System log and prints a debug statement.
      * @param method
@@ -97,8 +105,17 @@ public interface MspObjectDao {
      * @param mspVendor The MultiSpeak Vendor to ask for the information from.
      * @return Customer MSP customer
      */
-     public Customer getMspCustomer(SimpleMeter meter, MultispeakVendor mspVendor);
+    Customer getMspCustomer(SimpleMeter meter, MultispeakVendor mspVendor);
     
+    /**
+     * Returns multispeak ServiceLocation for the meterNo.
+     * If the interface/method is not supported by mspVendor, or if no object is found,
+     * an empty ServiceLocation object is returned.
+     * @param meter The Meter to get the ServiceLocation information for.
+     * @param mspVendor The Multispeak Vendor to ask for the information from.
+     * @return
+     */
+    ArrayOfServiceLocation1 getMspServiceLocation(SimpleMeter meter, MultispeakVendor mspVendor);
     /**
      * Returns a Msp Customer for the meterNo.
      * If the interface/method is not supported by mspVendor, or if no object is found, 
@@ -108,27 +125,7 @@ public interface MspObjectDao {
      * @return
      */
     public Customer getMspCustomer(String meterNumber, MultispeakVendor mspVendor);
-    
-    /**
-     * Returns a Msp ServiceLocation for the meterNo.
-     * If the interface/method is not supported by mspVendor, or if no object is found,
-     * an empty ServiceLocation object is returned.
-     * 
-     * @param meter The Meter to get the ServiceLocation information for.
-     * @param mspVendor The Multispeak Vendor to ask for the information from.
-     * @return
-     */
-    public ArrayOfServiceLocation1 getMspServiceLocation(SimpleMeter meter, MultispeakVendor mspVendor);
-    
-    /**
-     * Returns a Msp ServiceLocation for the meterNo.
-     * If the interface/method is not supported by mspVendor, or if no object is found,
-     * an empty ServiceLocation object is returned.
-     * @param meterNumber The meter number to get the ServiceLocation information for.
-     * @param mspVendor The Multispeak Vendor to ask for the information from.
-     * @return
-     */
-    public ArrayOfServiceLocation1 getMspServiceLocation(String meterNumber, MultispeakVendor mspVendor);
+
     
     /**
      * Returns a Msp Meter for the meterNo.
@@ -139,7 +136,7 @@ public interface MspObjectDao {
      * @return
      */
     public Meters getMspMeter(SimpleMeter meter, MultispeakVendor mspVendor);
-    
+
     /**
      * Returns a Msp Meter for the meterNo.
      * If the interface/method is not supported by mspVendor, or if no object is found,
@@ -148,7 +145,28 @@ public interface MspObjectDao {
      * @param mspVendor The Multispeak Vendor to ask for the information from.
      * @return
      */
+    public Meters getMspMeter(String meterNumber, MultispeakVendor mspVendor) 
+            throws MultispeakWebServiceClientException;
+
+    /**
+     * Returns a list of the MeterNumber(s) for the serviceLocation .
+     * If the interface/method is not supported by mspVendor, or if no object is found,
+     * an empty List<MspMeter> object is returned.
+     * 
+     * @param serviceLocation The serviceLocation to get the Meter information for.
+     * @param mspVendor The MultiSpeak Vendor to ask for the information from.
+     * @return
+     */
+    public List<MspMeter> getMspMetersByServiceLocation(ServiceLocation mspServiceLocation,
+            MultispeakVendor mspVendor);
+
+    /**
+     * Retrieves msp ServiceLocation objects from the mspVendor.
+     * List of msp ServiceLocation objects are given to the callback as they are retrieved in chunks from the
+     * vendor.
+     */
+    public void getAllMspServiceLocations(MultispeakVendor mspVendor, MultispeakGetAllServiceLocationsCallback callback)
+            throws MultispeakWebServiceClientException;
     
-    public Meters getMspMeter(String meterNumber, MultispeakVendor mspVendor) throws MultispeakWebServiceClientException;
 
 }

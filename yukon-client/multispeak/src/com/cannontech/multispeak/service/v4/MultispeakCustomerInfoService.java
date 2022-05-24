@@ -2,9 +2,8 @@ package com.cannontech.multispeak.service.v4;
 
 import java.util.List;
 
-import com.cannontech.msp.beans.v4.Customer;
+import com.cannontech.msp.beans.v4.ContactInfo;
 import com.cannontech.msp.beans.v4.EMailAddress;
-import com.cannontech.msp.beans.v4.PhoneNumber;
 import com.cannontech.user.YukonUserContext;
 
 public interface MultispeakCustomerInfoService {
@@ -15,7 +14,7 @@ public interface MultispeakCustomerInfoService {
      * @param phoneNumbers
      * @param yukonUserContext
      */
-    public List<String> getPhoneNumbers(List<PhoneNumber> list, YukonUserContext userContext);
+    public List<String> getPhoneNumbers(ContactInfo contactInfo, YukonUserContext userContext);
 
     /**
      * Build a List of Customer email addresses
@@ -23,5 +22,6 @@ public interface MultispeakCustomerInfoService {
      * @param emailAddresses
      * @param yukonUserContext
      */
-    List<String> getEmailAddresses(List<EMailAddress> list, YukonUserContext userContext);
+    List<String> getEmailAddresses(ContactInfo contactInfo, YukonUserContext userContext);
+
 }
