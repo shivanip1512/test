@@ -68,6 +68,34 @@ yukon.ui.fancyTree= (function () {
                             }
                         }
                     },
+                    checkbox : true,
+                    select: function(event, data) {
+                        // Get a list of all selected nodes, and convert to a key array:
+                        var selKeys = 
+                        $.map(data.tree.getSelectedNodes(), function(node){
+                          return node.key;
+                        });
+                        
+                       // var countDirectChild = 
+                       //     $.map(data.tree.getSelectedNodes(), function(node){
+                       //       return node.countChildren(false);
+                       //     });
+                        
+                        
+                        // this will process each node whether selected or not selected
+                        var countChilds = 
+                           data.tree.getRootNode().visit(function (node) {
+                        		return node.countChildren(false);
+                        		
+                         });
+                            $("#echoChildCount").text(countChilds);
+                     //     $("#countNode").text(count);
+                        
+                        $("#echoSelection").text(selKeys.join(", "));
+                        $("#echoSelectedCount").text(selKeys.length);
+                    //    $("#echoChildCount").text(countDirectChild);
+                      },
+                    
                     init: function(event, data) {
                         if (initiallySelect) {
                             //show the initially selected item
@@ -90,7 +118,7 @@ yukon.ui.fancyTree= (function () {
                         data.node.toggleExpand();
                     },
                     clickFolderMode: 2,
-                    selectMode: multiSelect ? 2 : 1,
+                    selectMode: 3,
                     activeVisible: false
                 }, JSON.parse(treeParameters) || {});
             $(this).fancytree(options);
