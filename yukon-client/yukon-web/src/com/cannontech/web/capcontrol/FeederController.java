@@ -245,6 +245,11 @@ public class FeederController {
                     flash.setError(new YukonMessageSourceResolvable(feederKey + ".delete.voltagePoint.error", feeder.getName()));
                     return "redirect:/capcontrol/feeders/" + id;
                 }
+                boolean isFeederAssignedToRegulatorPoint = feederService.isFeederAssignedToRegulatorPointForZone(id);
+                if (isFeederAssignedToRegulatorPoint) {
+                    flash.setError(new YukonMessageSourceResolvable(feederKey + ".delete.regulatorPoint.error", feeder.getName()));
+                    return "redirect:/capcontrol/feeders/" + id;
+                }
                 Integer parentId = feederDao.getParentSubBusID(id);
                 feederService.delete(id);
                 flash.setConfirm(new YukonMessageSourceResolvable(feederKey + ".delete.success", feeder.getName()));

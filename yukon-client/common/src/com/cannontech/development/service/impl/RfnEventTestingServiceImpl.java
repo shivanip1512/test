@@ -262,6 +262,9 @@ public class RfnEventTestingServiceImpl implements RfnEventTestingService {
             RfnManufacturerModel.RFN_RELAY,
             RfnManufacturerModel.CRLY_856));
         
+        groupedMeterTypesBuilder.put("DR Edge Connector", ImmutableList.of(
+                RfnManufacturerModel.RFN_530S4X_DER));
+
         groupedMeterTypesBuilder.put("RFN-1200", RfnManufacturerModel.getRfn1200Models());
           
         groupedMeterTypes = Collections.unmodifiableMap(groupedMeterTypesBuilder);

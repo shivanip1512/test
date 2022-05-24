@@ -116,6 +116,7 @@ BOOST_AUTO_TEST_CASE(test_desolveDeviceType)
         "RFG-301A",
         "RFG-301R",
         "CRLY-856",
+        "RFN-530S4X-DER",
         "CCU-700",
         "CCU-710A",
         "CCU-711",

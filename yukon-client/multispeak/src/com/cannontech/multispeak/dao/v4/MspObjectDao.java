@@ -8,6 +8,7 @@ import com.cannontech.msp.beans.v4.Customer;
 import com.cannontech.msp.beans.v4.ErrorObject;
 import com.cannontech.msp.beans.v4.Meters;
 import com.cannontech.msp.beans.v4.MspMeter;
+import com.cannontech.msp.beans.v4.MspObject;
 import com.cannontech.msp.beans.v4.ServiceLocation;
 import com.cannontech.multispeak.client.MultispeakVendor;
 import com.cannontech.multispeak.exceptions.MultispeakWebServiceClientException;
@@ -67,6 +68,15 @@ public interface MspObjectDao {
             throws MultispeakWebServiceClientException;
     
     /**
+     * Returns a list of SubstationNames for the vendor.
+     * If the interface/method is not supported by mspVendor, or if no object is found,
+     * an empty String List object is returned.
+     * @param mspVendor
+     * @return
+     */
+    public List<String> getMspSubstationName(MultispeakVendor mspVendor);
+    
+    /**
      * Creates a new (MSP) ErrorObject
      * 
      * @param objectID The Multispeak objectID
@@ -79,6 +89,7 @@ public interface MspObjectDao {
             String method, String userName, String exceptionMessage);
 
     /**
+<<<<<<< HEAD
      * Returns a Msp ServiceLocation for the meter
      * If the interface/method is not supported by mspVendor, or if no object is found,
      * an empty ServiceLocation object is returned.
@@ -87,6 +98,16 @@ public interface MspObjectDao {
      * @return
      */
     public ArrayOfServiceLocation1 getMspServiceLocation(String meterNumber, MultispeakVendor mspVendor);
+
+    /**
+     * Returns a Msp ServiceLocation for the meter
+     * If the interface/method is not supported by mspVendor, or if no object is found,
+     * an empty ServiceLocation object is returned.
+     * @param mspObject The meter to get the ServiceLocation information for.
+     * @param mspVendor The Multispeak Vendor to ask for the information from.
+     * @return
+     */
+    public ServiceLocation getMspServiceLocation(MspObject mspObject, MultispeakVendor mspVendor);
  
     /**
      * Creates an entry in the System log and prints a debug statement.

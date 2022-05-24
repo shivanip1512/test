@@ -37,6 +37,7 @@ public class MspHandler {
     @Autowired private MspAccountInformationV5 mspAccountInformationV5;
     @Autowired private MspObjectDao mspObjectDao;
     @Autowired private com.cannontech.multispeak.dao.v5.MspObjectDao mspObjectDaoV5;
+    @Autowired private com.cannontech.multispeak.dao.v4.MspObjectDao mspObjectDaoV4;
     @Autowired private MspWaterLeakReportV3 mspWaterLeakReportV3;
     @Autowired private MspWaterLeakReportV4 mspWaterLeakReportV4;
     @Autowired private MspWaterLeakReportV5 mspWaterLeakReportV5;
@@ -49,8 +50,8 @@ public class MspHandler {
     @Autowired private  MultispeakEnrollmentSyncService multispeakEnrollmentSyncService;
 
     private static final String DOMAIN_MEMBERS_SUBSTATION_CODE = "GetDomainMembers - substationCode";
-    private static final String DOMAIN_MEMBERS_SUBSTATION_CODE_V5 = "GetDomainsByDomainNames - substationCode";
     private static final String DOMAIN_MEMBERS_SUBSTATION_CODE_V4 = "GetDomainsByDomainNames - substationCode";
+    private static final String DOMAIN_MEMBERS_SUBSTATION_CODE_V5 = "GetDomainsByDomainNames - substationCode";
 
     public void startDeviceGroupSync(MultispeakSyncType type,
             YukonUserContext userContext) {
@@ -101,10 +102,10 @@ public class MspHandler {
                 if (cisVersion == MultiSpeakVersion.V3) {
                     return mspObjectDao.getMspSubstationName(mspPrimaryCISVendor);
 
+                } else if (cisVersion == MultiSpeakVersion.V4) {
+                    return mspObjectDaoV4.getMspSubstationName(mspPrimaryCISVendor);
                 }
-                else if (cisVersion == MultiSpeakVersion.V4) {
-                    return mspObjectDaoV5.getMspSubstationName(mspPrimaryCISVendor);
-                }else if (cisVersion == MultiSpeakVersion.V5) {
+                else if (cisVersion == MultiSpeakVersion.V5) {
                     return mspObjectDaoV5.getMspSubstationName(mspPrimaryCISVendor);
                 }
             }
@@ -125,7 +126,8 @@ public class MspHandler {
                 } else if (cisVersion == MultiSpeakVersion.V4) {
                     multispeakEventLogService.invalidSubstationName(DOMAIN_MEMBERS_SUBSTATION_CODE_V4,
                             mspSubstationName, mspPrimaryCISVendor.getCompanyName());
-                } else if (cisVersion == MultiSpeakVersion.V5) {
+                }
+                else if (cisVersion == MultiSpeakVersion.V5) {
                     multispeakEventLogService.invalidSubstationName(DOMAIN_MEMBERS_SUBSTATION_CODE_V5,
                             mspSubstationName, mspPrimaryCISVendor.getCompanyName());
                 }

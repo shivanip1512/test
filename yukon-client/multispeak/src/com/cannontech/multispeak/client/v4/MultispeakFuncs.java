@@ -75,7 +75,7 @@ public class MultispeakFuncs extends MultispeakFuncsBase {
     public MultiSpeakVersion version() {
         return MultiSpeakVersion.V4;
     }
-
+    
     @Override
     public void loadResponseHeader() throws MultispeakWebServiceException {
         SoapEnvelope env;
@@ -347,8 +347,7 @@ public class MultispeakFuncs extends MultispeakFuncsBase {
             }
         }
     }
-    
-    
+
     public String getLastSentFromHeader() {
         return getChildValue(QNAME_LAST_SENT, QNAME_RESULT);
     }

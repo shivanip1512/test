@@ -26,8 +26,7 @@ public class OutageBlockProcessingServiceImpl extends FormattedBlockProcessingSe
             }
         };
 
-        Map<BuiltInAttribute, ReadingProcessor<OutageBlock>> attributesToLoad = ImmutableMap.of(BuiltInAttribute.BLINK_COUNT,
-                blinkCountConverter);
+        Map<BuiltInAttribute, ReadingProcessor<OutageBlock>> attributesToLoad = ImmutableMap.of(BuiltInAttribute.BLINK_COUNT, blinkCountConverter);
 
         setAttributesToLoad(attributesToLoad);
     }

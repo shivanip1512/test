@@ -1,35 +1,8 @@
 package com.cannontech.common.util.jms.api;
 
-import static com.cannontech.common.util.jms.api.JmsApiCategory.DATA_STREAMING;
-import static com.cannontech.common.util.jms.api.JmsApiCategory.DIGI_ZIGBEE;
-import static com.cannontech.common.util.jms.api.JmsApiCategory.DR_NOTIFICATION;
-import static com.cannontech.common.util.jms.api.JmsApiCategory.MONITOR;
-import static com.cannontech.common.util.jms.api.JmsApiCategory.OTHER;
-import static com.cannontech.common.util.jms.api.JmsApiCategory.RFN_LCR;
-import static com.cannontech.common.util.jms.api.JmsApiCategory.RFN_METER;
-import static com.cannontech.common.util.jms.api.JmsApiCategory.RF_GATEWAY;
-import static com.cannontech.common.util.jms.api.JmsApiCategory.RF_MISC;
-import static com.cannontech.common.util.jms.api.JmsApiCategory.RF_NETWORK;
-import static com.cannontech.common.util.jms.api.JmsApiCategory.SIMULATOR;
-import static com.cannontech.common.util.jms.api.JmsApiCategory.SIMULATOR_MANAGEMENT;
-import static com.cannontech.common.util.jms.api.JmsApiCategory.SMART_NOTIFICATION;
-import static com.cannontech.common.util.jms.api.JmsApiCategory.WIDGET_REFRESH;
-import static com.cannontech.common.util.jms.api.JmsCommunicatingService.NETWORK_MANAGER;
-import static com.cannontech.common.util.jms.api.JmsCommunicatingService.YUKON_CLOUD_SERVICE;
-import static com.cannontech.common.util.jms.api.JmsCommunicatingService.YUKON_EIM;
-import static com.cannontech.common.util.jms.api.JmsCommunicatingService.YUKON_FIELD_SIMULATOR;
-import static com.cannontech.common.util.jms.api.JmsCommunicatingService.YUKON_LOAD_MANAGEMENT;
-import static com.cannontech.common.util.jms.api.JmsCommunicatingService.YUKON_MESSAGE_BROKER;
-import static com.cannontech.common.util.jms.api.JmsCommunicatingService.YUKON_PORTER;
-import static com.cannontech.common.util.jms.api.JmsCommunicatingService.YUKON_SERVICE_MANAGER;
-import static com.cannontech.common.util.jms.api.JmsCommunicatingService.YUKON_SIMULATORS;
-import static com.cannontech.common.util.jms.api.JmsCommunicatingService.YUKON_WATCHDOG;
-import static com.cannontech.common.util.jms.api.JmsCommunicatingService.YUKON_WEBSERVER;
-import static com.cannontech.common.util.jms.api.JmsCommunicatingService.YUKON_WEBSERVER_DEV_PAGES;
-import static com.cannontech.common.util.jms.api.JmsCommunicationPattern.NOTIFICATION;
-import static com.cannontech.common.util.jms.api.JmsCommunicationPattern.REQUEST_ACK_RESPONSE;
-import static com.cannontech.common.util.jms.api.JmsCommunicationPattern.REQUEST_MULTI_RESPONSE;
-import static com.cannontech.common.util.jms.api.JmsCommunicationPattern.REQUEST_RESPONSE;
+import static com.cannontech.common.util.jms.api.JmsApiCategory.*;
+import static com.cannontech.common.util.jms.api.JmsCommunicatingService.*;
+import static com.cannontech.common.util.jms.api.JmsCommunicationPattern.*;
 
 import java.io.Serializable;
 import java.util.ArrayList;
@@ -143,6 +116,11 @@ import com.cannontech.message.porter.message.DynamicPaoInfoRequest;
 import com.cannontech.message.porter.message.DynamicPaoInfoResponse;
 import com.cannontech.message.porter.message.MeterProgramValidationRequest;
 import com.cannontech.message.porter.message.MeterProgramValidationResponse;
+import com.cannontech.messaging.serialization.thrift.generated.EdgeDrBroadcastRequest;
+import com.cannontech.messaging.serialization.thrift.generated.EdgeDrBroadcastResponse;
+import com.cannontech.messaging.serialization.thrift.generated.EdgeDrDataNotification;
+import com.cannontech.messaging.serialization.thrift.generated.EdgeDrUnicastRequest;
+import com.cannontech.messaging.serialization.thrift.generated.EdgeDrUnicastResponse;
 import com.cannontech.services.configurationSettingMessage.model.ConfigurationSettings;
 import com.cannontech.services.ecobee.authToken.message.ZeusEcobeeAuthTokenRequest;
 import com.cannontech.services.ecobee.authToken.message.ZeusEcobeeAuthTokenResponse;
@@ -1424,6 +1402,53 @@ public final class JmsApiDirectory {
                   .sender(YUKON_WEBSERVER)
                   .receiver(YUKON_SERVICE_MANAGER)
                   .build();
+    
+    public static final JmsApi<EdgeDrUnicastRequest, ?, EdgeDrUnicastResponse> EDGE_DR_UNICAST = 
+            JmsApi.builder(EdgeDrUnicastRequest.class, EdgeDrUnicastResponse.class)
+                .name("Edge DR Unicast")
+                .description("Sends a unicast or point-to-multipoint request from Web to Porter. This initiates one "
+                        + "or more e2e messages to an edge DR meter. The reply is a simple acknowledgement that "
+                        + "indicates commands will be sent, or that there was an error that will prevent all commands "
+                        + "from sending. Final responses or errors from e2e messaging will come through async "
+                        + "EdgeDrDataNotification messages on that queue.")
+                .communicationPattern(REQUEST_RESPONSE)
+                .queue(new JmsQueue("com.eaton.eas.yukon.porter.edgeDr.unicast.request"))
+                .responseQueue(new JmsQueue("com.eaton.eas.yukon.web.edgeDr.unicast.response"))
+                .requestMessage(EdgeDrUnicastRequest.class)
+                .responseMessage(EdgeDrUnicastResponse.class)
+                .sender(YUKON_WEBSERVER)
+                .receiver(YUKON_PORTER)
+                .build();
+    
+    public static final JmsApi<EdgeDrBroadcastRequest, ?, EdgeDrBroadcastResponse> EDGE_DR_BROADCAST = 
+            JmsApi.builder(EdgeDrBroadcastRequest.class, EdgeDrBroadcastResponse.class)
+                .name("Edge DR Broadcast")
+                .description("Sends a broadcast message from Web to Porter. This initiates a broadcast to all edge DR "
+                        + "meters. The reply is a simple acknowledgement that indicates the command will be sent, or "
+                        + "that there was an error that will prevent sending. Any responses from the edge DR meters "
+                        + "will come through async EdgeDrDataNotification messages on that queue.")
+                .communicationPattern(REQUEST_RESPONSE)
+                .queue(new JmsQueue("com.eaton.eas.yukon.porter.edgeDr.broadcast.request"))
+                .responseQueue(new JmsQueue("com.eaton.eas.yukon.web.edgeDr.broadcast.response"))
+                .requestMessage(EdgeDrBroadcastRequest.class)
+                .responseMessage(EdgeDrBroadcastResponse.class)
+                .sender(YUKON_WEBSERVER)
+                .receiver(YUKON_PORTER)
+                .build();
+    
+    public static final JmsApi<EdgeDrDataNotification,?,?> EDGE_DR_DATA = 
+            JmsApi.builder(EdgeDrDataNotification.class)
+                .name("Edge DR Data")
+                .description("Sends data from an edge DR meter from Porter to Web. This can come in via E2E responses, "
+                        + "unsolicited rfn data, or data streaming. It may contain a data payload or an error, and will "
+                        + "contain an e2e correlation ID if it is an e2e response or error (such as a timeout).")
+                .communicationPattern(NOTIFICATION)
+                .queue(new JmsQueue("com.eaton.eas.yukon.web.edgeDr.data.notification"))
+                .requestMessage(EdgeDrDataNotification.class)
+                .sender(YUKON_PORTER)
+                .receiver(YUKON_WEBSERVER)
+                .build();
+    
     /*
      * WARNING: JmsApiDirectoryTest will fail if you don't add each new JmsApi to the category map below!
      */
@@ -1435,6 +1460,11 @@ public final class JmsApiDirectory {
         addApis(jmsApis, DATA_STREAMING, 
                 DATA_STREAMING_CONFIG, 
                 GATEWAY_DATA_STREAMING_INFO);
+        
+        addApis(jmsApis, EDGE_DR,
+                EDGE_DR_UNICAST,
+                EDGE_DR_BROADCAST,
+                EDGE_DR_DATA);
         
         addApis(jmsApis, DIGI_ZIGBEE, 
                 ZIGBEE_SEP_TEXT, 
