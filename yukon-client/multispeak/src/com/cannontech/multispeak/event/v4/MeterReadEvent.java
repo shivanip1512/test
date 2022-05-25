@@ -21,6 +21,7 @@ import com.cannontech.msp.beans.v4.ReadingChangedNotificationResponse;
 import com.cannontech.multispeak.client.v4.MultispeakFuncs;
 import com.cannontech.multispeak.client.MultispeakVendor;
 import com.cannontech.multispeak.client.core.v4.CBClient;
+import com.cannontech.multispeak.data.v4.MeterReadFactory;
 import com.cannontech.multispeak.data.v4.ReadableDevice;
 import com.cannontech.multispeak.exceptions.MultispeakWebServiceClientException;
 import com.cannontech.spring.YukonSpringHook;
@@ -41,6 +42,7 @@ public class MeterReadEvent extends MultispeakEvent {
     public MeterReadEvent(MultispeakVendor mspVendor_, long pilMessageID_, YukonMeter meter, int returnMessages_,
             String responseUrl) {
         super(mspVendor_, pilMessageID_, returnMessages_, null, responseUrl);
+        setDevice(MeterReadFactory.createMeterReadObject(meter));
     }
 
     /**
