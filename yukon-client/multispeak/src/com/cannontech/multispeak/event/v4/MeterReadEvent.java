@@ -30,7 +30,7 @@ public class MeterReadEvent extends MultispeakEvent {
     private ReadableDevice device = null;
     private final ObjectFactory objectFactory = YukonSpringHook.getBean("objectFactory4", ObjectFactory.class);
     private final CBClient cbClient = YukonSpringHook.getBean("cbClientV4", CBClient.class);
-    private final MeterDao meterDao = YukonSpringHook.getBean("mspMeterDaoV4", MeterDao.class);
+    private final MeterDao meterDao = YukonSpringHook.getBean("meterDao", MeterDao.class);
 
     
     /**
