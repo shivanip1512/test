@@ -41,12 +41,17 @@ public abstract class MeterReadBase implements ReadableDevice{
     }
     
     @Override
+    public void setPopulated(boolean value)
+    {
+        populated = value;        
+    }
+    
+    @Override
     public boolean isPopulated()
     {
         return populated;
     }
     
-    //TODO create classes for its implementation
     @Override
     abstract public void populate(PointIdentifier pointIdentifier, Date dateTime, Double value);
     
