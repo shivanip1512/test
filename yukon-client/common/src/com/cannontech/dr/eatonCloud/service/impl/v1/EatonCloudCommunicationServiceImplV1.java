@@ -199,10 +199,9 @@ public class EatonCloudCommunicationServiceImplV1 implements EatonCloudCommunica
             if (commsLogger.isDebugEnabled()) {
                 commsLogger.info(">>> EC[{}] Request to:{} Response:{}", requestIdentifier, uri, deferredJson(response.getBody())); 
             } else {
-                Map<String, String> info = Arrays.stream(response.getBody())
+                Map<String, Integer> info = Arrays.stream(response.getBody())
                         .collect(Collectors.toMap(k -> k.getDeviceId(), k -> k.getResults().stream()
-                                .map(v -> "tag:"+v.getTag() + ">" + v.getValues().size())
-                                .collect(Collectors.joining (","))));
+                                .collect(Collectors.summingInt(v -> v.getValues().size()))));
                 commsLogger.info(">>> EC[{}] Request to:{} Response:{}", requestIdentifier, uri, info);
             }
             return Arrays.asList(response.getBody());             
