@@ -53,6 +53,8 @@ import com.cannontech.msp.beans.v4.GetSupportedFieldNames;
 import com.cannontech.msp.beans.v4.GetSupportedFieldNamesResponse;
 import com.cannontech.msp.beans.v4.InitiateDemandReset;
 import com.cannontech.msp.beans.v4.InitiateDemandResetResponse;
+import com.cannontech.msp.beans.v4.InitiateMeterReadingsByMeterID;
+import com.cannontech.msp.beans.v4.InitiateMeterReadingsByMeterIDResponse;
 import com.cannontech.msp.beans.v4.InitiateUsageMonitoring;
 import com.cannontech.msp.beans.v4.InitiateUsageMonitoringResponse;
 import com.cannontech.msp.beans.v4.InsertMeterInMeterGroup;
@@ -513,5 +515,23 @@ public class MRServiceEndPoint {
         arrayOfErrorObject.getErrorObject().addAll(errorObjects);
         response.setMeterChangedNotificationResult(arrayOfErrorObject);
         return response;
+    }
+    
+    @PayloadRoot(localPart = "InitiateMeterReadingsByMeterID", namespace =  MultispeakDefines.NAMESPACE_v4)
+    public @ResponsePayload InitiateMeterReadingsByMeterIDResponse initiateMeterReadingsByMeterIDs(
+            @RequestPayload InitiateMeterReadingsByMeterID initiateMeterReadingsByMeterIDs)
+            throws MultispeakWebServiceException {
+        InitiateMeterReadingsByMeterIDResponse initiateMeterReadingsByMeterIDsResponse = objectFactory.createInitiateMeterReadingsByMeterIDResponse();
+
+        ExpirationTime expirationTime = initiateMeterReadingsByMeterIDs.getExpTime();
+        String responseURL = initiateMeterReadingsByMeterIDs.getResponseURL();
+        String transactionID = initiateMeterReadingsByMeterIDs.getTransactionID();
+        List<MeterID> meterIDs = (initiateMeterReadingsByMeterIDs.getMeterIDs() != null)
+                ? initiateMeterReadingsByMeterIDs.getMeterIDs().getMeterID() : null;
+
+        multispeakFuncs.toArrayOfErrorObject(mr_server.initiateMeterReadingsByMeterIDs(meterIDs,
+                        responseURL, transactionID, expirationTime));
+        
+        return initiateMeterReadingsByMeterIDsResponse;
     }
 }

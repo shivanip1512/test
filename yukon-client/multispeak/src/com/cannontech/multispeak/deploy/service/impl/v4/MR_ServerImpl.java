@@ -645,4 +645,40 @@ public class MR_ServerImpl implements MR_Server {
         List<ErrorObject> errorObject = multispeakMeterService.meterChanged(vendor, changedMeters);
         return errorObject;
     }
+
+    @Override
+    public List<ErrorObject> initiateMeterReadingsByMeterIDs(List<MeterID> meterIds, String responseURL, String transactionId,
+            ExpirationTime expirationTime) throws MultispeakWebServiceException {
+
+        init();
+
+        MultispeakVendor vendor = multispeakFuncs.getMultispeakVendorFromHeader();
+        multispeakEventLogService.methodInvoked("InitiateMeterReadingsByMeterIDs",
+                                                vendor.getCompanyName());
+
+        List<ErrorObject> errorObjects = new ArrayList<ErrorObject>();
+        
+        if (meterIds != null) {
+        String actualResponseUrl = multispeakFuncs.getResponseUrl(vendor,
+                                                                  responseURL, 
+                                                                  MultispeakDefines.NOT_Server_STR);
+
+        if (!porterConnection.isValid()) {
+            String message = "Connection to 'Yukon Port Control Service' is not valid.  Please contact your Yukon Administrator.";
+            log.error(message);
+            throw new MultispeakWebServiceException(message);
+        }
+
+        errorObjects = multispeakMeterService.meterReadEvent(vendor,
+                                                             meterIds, 
+                                                             transactionId, 
+                                                             actualResponseUrl);
+
+        }
+        multispeakFuncs.logErrorObjects(MultispeakDefines.MR_Server_STR,
+                                        "InitiateMeterReadingsByMeterIDs",
+                                        errorObjects);
+        return errorObjects;
+    
+    }
 }
