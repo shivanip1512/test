@@ -661,7 +661,7 @@ public class MR_ServerImpl implements MR_Server {
         if (meterIds != null) {
         String actualResponseUrl = multispeakFuncs.getResponseUrl(vendor,
                                                                   responseURL, 
-                                                                  MultispeakDefines.NOT_Server_STR);
+                                                                  MultispeakDefines.CB_Server_STR);
 
         if (!porterConnection.isValid()) {
             String message = "Connection to 'Yukon Port Control Service' is not valid.  Please contact your Yukon Administrator.";
