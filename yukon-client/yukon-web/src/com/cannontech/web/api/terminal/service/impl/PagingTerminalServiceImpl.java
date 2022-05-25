@@ -112,7 +112,7 @@ public class PagingTerminalServiceImpl implements PagingTerminalService {
         return terminalBase;
     }
 
-    @SuppressWarnings({ "rawtypes", "unchecked" })
+    @SuppressWarnings("rawtypes")
     @Override
     public List<TerminalBase> retrieveAll() {
         List<LiteYukonPAObject> liteObjectList = cache.getAllPaosMap().values().stream()
@@ -123,10 +123,9 @@ public class PagingTerminalServiceImpl implements PagingTerminalService {
         if (CollectionUtils.isNotEmpty(liteObjectList)) {
             liteObjectList.forEach(liteObject -> {
                 IEDBase iedBase = (IEDBase) dbPersistentDao.retrieveDBPersistent(liteObject);
-                TerminalBase terminalBase = TerminalBaseFactory.getTerminalBase(iedBase.getPaoType());
-                terminalBase.buildModel(iedBase);
-                terminalBase.getCommChannel()
-                        .setName(cache.getAllPaosMap().get(terminalBase.getCommChannel().getId()).getPaoName());
+                TerminalBase terminalBase = new TerminalBase<IEDBase>(iedBase.getPAObjectID(), iedBase.getPAOName(),
+                        iedBase.getPaoType(),
+                        !iedBase.isDisabled());
                 terminalList.add(terminalBase);
             });
 
