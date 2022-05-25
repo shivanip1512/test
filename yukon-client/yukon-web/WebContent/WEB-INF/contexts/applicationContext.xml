@@ -1502,8 +1502,6 @@
     <bean class="com.cannontech.web.stars.rfn1200.Rfn1200Validator"/>
     <bean class="com.cannontech.web.stars.signalTransmitter.SignalTransmitterValidator"/>
     
-    <bean class="com.cannontech.common.validator.PagingTerminalValidatorHelper"/>
-
     <bean class="com.cannontech.web.admin.AttributeValidator"/>
     <bean class="com.cannontech.web.api.customAttribute.CustomAttributeApiValidator"/>
     <bean class="com.cannontech.web.api.customAttribute.CustomAttributeAssignmentApiController"/>

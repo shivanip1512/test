@@ -3,7 +3,7 @@
 
 <tags:nameValueContainer2>
     <tags:nameValue2 nameKey=".login">
-        <tags:input path="login" />
+        <tags:input path="login" maxlength="20"/>
     </tags:nameValue2>
     <tags:nameValue2 nameKey=".password" data-toggle-group="passwordRequired">
         <tags:password path="password" includeShowHideButton="true"/>

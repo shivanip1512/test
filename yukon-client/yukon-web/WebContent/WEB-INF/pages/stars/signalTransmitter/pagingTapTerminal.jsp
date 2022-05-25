@@ -14,7 +14,7 @@
         </tags:nameValue2>
     </cti:displayForPageEditModes>
     <tags:nameValue2 nameKey=".password" data-toggle-group="passwordRequired">
-        <tags:password path="password" includeShowHideButton="true"/>
+        <tags:password path="password" includeShowHideButton="true" />
     </tags:nameValue2>
     <assets:signalTransmitterCommChannel items="${commChannels}"/>
 </tags:nameValueContainer2>

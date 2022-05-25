@@ -51,4 +51,16 @@ public class YukonValidationHelper {
         String message = messageSourceAccessor.getMessage(key);
         return message;
     }
+    
+    public void checkIfFieldRequired(String field, Errors errors, Object fieldValue, String fieldName) {
+        if (YukonValidationUtilsCommon.checkIfFieldRequired(fieldValue)) {
+            errors.rejectValue(field, key + "fieldrequired", new Object[] { fieldName }, "");
+        }
+    }
+    
+    public void checkExceedsMaxLength(String field, Errors errors, String fieldValue, String fieldName, int maxLength) {
+        if (YukonValidationUtilsCommon.checkExceedsMaxLength(fieldValue, maxLength)) {
+            errors.rejectValue(field, key + "fieldrequired", new Object[] { fieldName }, String.valueOf(maxLength));
+        }
+    }
 }
