@@ -95,8 +95,6 @@ export const ProjectAuthUIActions: AuthUIActionsWithSecurity = (securityHelper) 
      */
     logIn: async (email: string, password: string, rememberMe: boolean): Promise<void> => {
 
-    //const theme = useTheme();
-    
         //fetch access token
         await axios
             .post("/api/token", {
@@ -114,41 +112,11 @@ export const ProjectAuthUIActions: AuthUIActionsWithSecurity = (securityHelper) 
             .catch((error: any) => {
                 console.warn(error.response.data.detail);
                 throw new Error("LOGIN.INVALID_CREDENTIALS");
-                // uncomment this line to check custom error from API
+                // uncomment below line to check custom error from API
                 //throw new Error (error.response.data.detail)
             });
-
-        //get the theme and store in browser local storage
-        //storing in react store gets cleared after every old yukon page since it's counted as a refresh
-
-    
-        // axios.get('/api/admin/config/currentTheme')
-        //     .then(themeJson => {
-        //         if (themeJson) {
-        //             console.log(themeJson.data);
-        //             //don't change theme if default theme is used
-        //             if (themeJson.data.themeId > 0) {
-        //                 //get theme image
-        //                 axios.get('/api/theme/image/' + themeJson.data.themeId)
-        //                 .then(themeImage => {
-        //                     console.log(themeJson.data);
-        //                     themeJson.data.properties.LOGO_IMAGE = themeImage.data;
-        //                     dispatch(actions.setTheme(themeJson.data));
-        //                     dispatch(actions.setThemeImage(themeImage));
-        //                     dispatch(actions.renderDrawer());
-        //                     //Example if we want to change an entire piece of the pxblue theme
-        //                     //theme.palette.primary.main = themeJson.data.properties.PRIMARY_COLOR;
-        //                 });
-        //             } else {
-        //                 dispatch(actions.renderDrawer());
-        //             }
-        //         }
-        //     });
-    
-
+            
         securityHelper.onUserAuthenticated({ email: email, userId: email, rememberMe: rememberMe });
-
-        //it looks like we'll need to reload the page if it's not a react page - I could not figure out how to get the URL it should go to after log in
     },
     /**
      * The user has forgotten their password and wants help.

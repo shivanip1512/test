@@ -37,7 +37,7 @@ const AuthUIConfiguration = (props) => {
 
     return (
         <AuthUIContextProvider
-            authActions={ProjectAuthUIActions(securityContextActions)} //add dispatch as parameter
+            authActions={ProjectAuthUIActions(securityContextActions)}
             registrationActions={ProjectRegistrationUIActions}
             showSelfRegistration={false}
             showContactSupport={false}

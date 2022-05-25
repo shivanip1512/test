@@ -23,8 +23,7 @@ const initialAppState = {
     flashErrors: null,
     flashSuccess: null,
     validationErrors: null,
-    theme: null,
-    backgroundImage: null
+    theme: null
 };
 
 export const AppReducer = (state = initialAppState, action) => {
