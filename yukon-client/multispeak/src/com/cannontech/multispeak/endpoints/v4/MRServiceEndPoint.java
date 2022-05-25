@@ -519,18 +519,21 @@ public class MRServiceEndPoint {
     
     @PayloadRoot(localPart = "InitiateMeterReadingsByMeterID", namespace =  MultispeakDefines.NAMESPACE_v4)
     public @ResponsePayload InitiateMeterReadingsByMeterIDResponse initiateMeterReadingsByMeterIDs(
-            @RequestPayload InitiateMeterReadingsByMeterID initiateMeterReadingsByMeterIDs)
+            @RequestPayload InitiateMeterReadingsByMeterID initiateMeterReadingsByMeterIds)
             throws MultispeakWebServiceException {
         InitiateMeterReadingsByMeterIDResponse initiateMeterReadingsByMeterIDsResponse = objectFactory.createInitiateMeterReadingsByMeterIDResponse();
 
-        ExpirationTime expirationTime = initiateMeterReadingsByMeterIDs.getExpTime();
-        String responseURL = initiateMeterReadingsByMeterIDs.getResponseURL();
-        String transactionID = initiateMeterReadingsByMeterIDs.getTransactionID();
-        List<MeterID> meterIDs = (initiateMeterReadingsByMeterIDs.getMeterIDs() != null)
-                ? initiateMeterReadingsByMeterIDs.getMeterIDs().getMeterID() : null;
+        ExpirationTime expirationTime = initiateMeterReadingsByMeterIds.getExpTime();
+        String responseURL = initiateMeterReadingsByMeterIds.getResponseURL();
+        String transactionId = initiateMeterReadingsByMeterIds.getTransactionID();
+        
+        List<MeterID> meterIds = (initiateMeterReadingsByMeterIds.getMeterIDs() != null)
+                ? initiateMeterReadingsByMeterIds.getMeterIDs().getMeterID() : null;
 
-        multispeakFuncs.toArrayOfErrorObject(mr_server.initiateMeterReadingsByMeterIDs(meterIDs,
-                        responseURL, transactionID, expirationTime));
+        multispeakFuncs.toArrayOfErrorObject(mr_server.initiateMeterReadingsByMeterIDs(meterIds,
+                                                                                       responseURL, 
+                                                                                       transactionId, 
+                                                                                       expirationTime));
         
         return initiateMeterReadingsByMeterIDsResponse;
     }
