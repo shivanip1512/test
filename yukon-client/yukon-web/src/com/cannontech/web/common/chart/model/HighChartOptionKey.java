@@ -26,6 +26,7 @@ public enum HighChartOptionKey {
     MAX("max"),
     MAX_PADDING("maxPadding"),
     NAME("name"),
+    OPACITY("opacity"),
     OPPOSITE("opposite"),
     PLOT_BANDS("plotBands"),
     POINT_TOOLTIP("tooltip"), // This is our custom option and not a standard highchart option.

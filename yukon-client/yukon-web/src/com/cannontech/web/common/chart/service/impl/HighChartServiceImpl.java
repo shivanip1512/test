@@ -170,6 +170,8 @@ public class HighChartServiceImpl implements HighChartService {
         /* data */
         boolean noData = graph.getLines().isEmpty();
         List<String> lineNames = new ArrayList<String>();
+        List<Integer> feederIds = new ArrayList<Integer>();
+        double opacity = 1.2;
 
         for (VfLine line : graph.getLines()) {
             List<Object> linesArray = new ArrayList<>();
@@ -214,6 +216,10 @@ public class HighChartServiceImpl implements HighChartService {
             dataObj.put(HighChartOptionKey.NAME.getKey(), line.getLineName());
             dataObj.put(HighChartOptionKey.ID.getKey(), line.getLineName());
             dataObj.put("feederId", line.getFeederId());
+            if (!feederIds.contains(line.getFeederId())) {
+                opacity = opacity - .2;
+                feederIds.add(line.getFeederId());
+            }
             if (!lineNames.contains(line.getLineName())) {
                 //create empty line as main line so filtering does not disable phase selection
                 Map<String, Object> blankObj = new HashMap<>();    
@@ -224,6 +230,7 @@ public class HighChartServiceImpl implements HighChartService {
                 lineNames.add(line.getLineName());
                 jsonDataContainer.add(blankObj);
             }
+            dataObj.put(HighChartOptionKey.OPACITY.getKey(), opacity);
             if (lineNames.contains(line.getLineName())) {
                 dataObj.put(HighChartOptionKey.LINKED_TO.getKey(), line.getLineName());
             }
