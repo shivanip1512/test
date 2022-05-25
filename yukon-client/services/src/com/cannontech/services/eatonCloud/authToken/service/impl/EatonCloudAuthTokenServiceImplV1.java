@@ -2,6 +2,7 @@ package com.cannontech.services.eatonCloud.authToken.service.impl;
 
 import java.util.Arrays;
 import java.util.concurrent.TimeUnit;
+import java.util.concurrent.atomic.AtomicInteger;
 
 import javax.annotation.PostConstruct;
 import javax.jms.JMSException;
@@ -34,7 +35,6 @@ import com.cannontech.system.GlobalSettingType;
 import com.cannontech.system.dao.GlobalSettingDao;
 import com.google.common.cache.Cache;
 import com.google.common.cache.CacheBuilder;
-import com.google.gson.GsonBuilder;
 
 public class EatonCloudAuthTokenServiceImplV1 implements EatonCloudAuthTokenServiceV1, MessageListener {
 
@@ -46,6 +46,9 @@ public class EatonCloudAuthTokenServiceImplV1 implements EatonCloudAuthTokenServ
     @Autowired private AsyncDynamicDataSource asyncDynamicDataSource;
     @Autowired private EatonCloudCommunicationServiceV1 eatonCloudCommunicationService;
     private RestTemplate restTemplate;
+    private static final Logger commsLogger = YukonLogManager
+            .getEatonCloudCommsLogger(EatonCloudAuthTokenServiceImplV1.class);
+    private static AtomicInteger requestIncrementer = new AtomicInteger(1);
     
     @PostConstruct
     public void init() {
@@ -130,20 +133,14 @@ public class EatonCloudAuthTokenServiceImplV1 implements EatonCloudAuthTokenServ
         try {
             EatonCloudTokenV1 newToken = retrieveNewToken(GlobalSettingType.EATON_CLOUD_SECRET, serviceAccountId);
             tokenCache.put(serviceAccountId, newToken);
-            log.trace("Retrieved Eaton Cloud token for secret1.");
             sendResponse(message, newToken, null);
         } catch (EatonCloudCommunicationExceptionV1 e) {
             try {
-                log.error("Token retrieval for secret1 failed:{}",
-                        new GsonBuilder().setPrettyPrinting().create().toJson(e.getErrorMessage()));
                 EatonCloudTokenV1 newToken = retrieveNewToken(GlobalSettingType.EATON_CLOUD_SECRET2,
                         serviceAccountId);
                 tokenCache.put(serviceAccountId, newToken);
                 sendResponse(message, newToken, null);
-                log.trace("Retrieved Eaton Cloud token for secret2.");
             } catch (EatonCloudCommunicationExceptionV1 ex) {
-                log.error("Token retrieval for secret2 failed:{}",
-                        new GsonBuilder().setPrettyPrinting().create().toJson(ex.getErrorMessage()));
                 sendResponse(message, null, ex);
             }
         }
@@ -151,10 +148,22 @@ public class EatonCloudAuthTokenServiceImplV1 implements EatonCloudAuthTokenServ
     
     @Override
     public EatonCloudTokenV1 retrieveNewToken(GlobalSettingType type, String serviceAccountId) {
-        String url = EatonCloudRetrievalUrl.SECURITY_TOKEN.getUrl(settingDao, log, restTemplate);
-        EatonCloudCredentialsV1 credentials = getCredentials(type, serviceAccountId);
-        EatonCloudTokenV1 newToken = restTemplate.postForObject(url, credentials, EatonCloudTokenV1.class);
-        return newToken;
+        long requestIdentifier = requestIncrementer.getAndIncrement();
+        String url = EatonCloudRetrievalUrl.SECURITY_TOKEN.getUrl(settingDao, restTemplate);
+        try {
+            EatonCloudCredentialsV1 credentials = getCredentials(type, serviceAccountId);
+            commsLogger.info(">>> EC[{}] {} retrieval, request to:{}", requestIdentifier, type, url);
+            EatonCloudTokenV1 newToken = restTemplate.postForObject(url, credentials, EatonCloudTokenV1.class);
+            commsLogger.info(">>> EC[{}] {} retrieved, request to:{}", requestIdentifier, type, url);
+            return newToken;
+        } catch (EatonCloudCommunicationExceptionV1 e) {
+            commsLogger.info(">>> EC[{}] {} {} retrieval failed, request to:{} Response:", type, requestIdentifier, url, e);
+            e.setRequestIdentifier(requestIdentifier);
+            throw e;
+        } catch (Exception e) {
+            commsLogger.info(">>> EC[{}] {} {} retrieval failed, request to:{} Response:", type, requestIdentifier, url, e);
+            throw new EatonCloudCommunicationExceptionV1(e, requestIdentifier);
+        }
     }
 
     private void sendResponse(Message message, EatonCloudTokenV1 cachedToken, EatonCloudCommunicationExceptionV1 error)

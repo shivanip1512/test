@@ -2,9 +2,7 @@ package com.cannontech.dr.eatonCloud.model;
 
 import java.util.List;
 import java.util.Map;
-import com.google.common.collect.ImmutableMap;
 
-import org.apache.logging.log4j.core.Logger;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.client.SimpleClientHttpRequestFactory;
 import org.springframework.web.client.RestTemplate;
@@ -12,6 +10,7 @@ import org.springframework.web.client.RestTemplate;
 import com.cannontech.common.util.YukonHttpProxy;
 import com.cannontech.system.GlobalSettingType;
 import com.cannontech.system.dao.GlobalSettingDao;
+import com.google.common.collect.ImmutableMap;
 
 //Data retrieval URLs
 public enum EatonCloudRetrievalUrl {
@@ -135,9 +134,8 @@ public enum EatonCloudRetrievalUrl {
         return params;
     }
     
-    public String getUrl(GlobalSettingDao settingDao, Logger log, RestTemplate restTemplate) {
+    public String getUrl(GlobalSettingDao settingDao, RestTemplate restTemplate) {
         String url = settingDao.getString(GlobalSettingType.EATON_CLOUD_URL) + this.getSuffix();
-        log.debug("Eaton Cloud URL: {}", url);
         SimpleClientHttpRequestFactory factory = new SimpleClientHttpRequestFactory();
         factory.setOutputStreaming(false);
         if (useProxy(url)) {
