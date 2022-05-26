@@ -2293,7 +2293,7 @@ public class MultispeakMeterServiceImpl extends MultispeakMeterServiceBase imple
         log.info("Received " + meterIDs.size() + " for BlockMeterReading from " + mspVendor.getCompanyName());
         
         multispeakEventLogService.initiateMeterReadRequest(meterIDs.size(), 
-                                                           "InitiateMeterReadingsByReadingTypeCodes",
+                                                           "InitiateMeterReadingsByFieldName",
                                                            mspVendor.getCompanyName());
 
         final EnumSet<BuiltInAttribute> attributes = blockProcessingService.getAttributeSet();
@@ -2313,7 +2313,7 @@ public class MultispeakMeterServiceImpl extends MultispeakMeterServiceBase imple
                 paoToRead = mspMeterDao.getMeterForMeterNumber(meter);
             } catch (NotFoundException e) {
                 multispeakEventLogService.meterNotFound(meter, 
-                                                        "InitiateMeterReadingsByReadingTypeCodes",
+                                                        "InitiateMeterReadingsByFieldName",
                                                         mspVendor.getCompanyName());
                 
                 ErrorObject err = mspObjectDao.getNotFoundErrorObject(meter, 
@@ -2445,7 +2445,7 @@ public class MultispeakMeterServiceImpl extends MultispeakMeterServiceBase imple
             multispeakEventLogService.initiateMeterRead(meter, 
                                                         paoToRead, 
                                                         transactionId,
-                                                        "InitiateMeterReadingsByReadingTypeCodes", 
+                                                        "InitiateMeterReadingsByFieldName", 
                                                         mspVendor.getCompanyName());
             
             deviceAttributeReadService.initiateRead(Collections.singleton(paoToRead), 
