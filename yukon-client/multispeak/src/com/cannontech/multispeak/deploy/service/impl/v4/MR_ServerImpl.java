@@ -89,7 +89,6 @@ public class MR_ServerImpl implements MR_Server {
 
     private final Logger log = YukonLogManager.getLogger(MR_ServerImpl.class);
     
-    private Map<String, FormattedBlockProcessingService<Block>> readingTypesMap;
 
     private final static String[] methods = new String[] { "PingURL",
                                                            "GetMethods",
@@ -676,7 +675,7 @@ public class MR_ServerImpl implements MR_Server {
             throw new MultispeakWebServiceException(errorMessage);
         }
 
-        FormattedBlockProcessingService<Block> formattedBlockServ = mspValidationService.getProcessingServiceByFormattedBlockTemplate(readingTypesMap, 
+        FormattedBlockProcessingService<Block> formattedBlockServ = mspValidationService.getProcessingServiceByFormattedBlockTemplate(formattedBlockMap, 
                                                                                                                                       formattedBlockTemplateName);
 
         List<ErrorObject> errorObjects = multispeakMeterService.blockMeterReadEvent(vendor,
@@ -692,9 +691,4 @@ public class MR_ServerImpl implements MR_Server {
     
     }
     
-    @Required
-    public void setReadingTypesMap(
-            Map<String, FormattedBlockProcessingService<Block>> readingTypesMap) {
-        this.readingTypesMap = readingTypesMap;
-    }
 }

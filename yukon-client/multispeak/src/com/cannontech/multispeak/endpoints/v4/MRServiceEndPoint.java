@@ -536,10 +536,9 @@ public class MRServiceEndPoint {
 
 
         if (CollectionUtils.isNotEmpty(meterIds)) {
-            List<String> fieldNames = initiateMeterReadingsByFieldName.getFieldNames() != null 
-                    ? initiateMeterReadingsByFieldName.getFieldNames().getVal() : null;
+            List<String> fieldNames = initiateMeterReadingsByFieldName.getFieldNames() != null ? initiateMeterReadingsByFieldName.getFieldNames().getVal() : null;
 
-                    ArrayOfErrorObject arrayOfErrorObject=   multispeakFuncs.toArrayOfErrorObject(mr_server.InitiateMeterReadingsByFieldName(meterIds,
+                    ArrayOfErrorObject arrayOfErrorObject = multispeakFuncs.toArrayOfErrorObject(mr_server.InitiateMeterReadingsByFieldName( meterIds,
                                                                                                                                              responseURL, 
                                                                                                                                              fieldNames, 
                                                                                                                                              transactionId,
