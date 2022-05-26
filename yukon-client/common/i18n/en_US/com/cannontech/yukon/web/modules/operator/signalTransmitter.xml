@@ -21,7 +21,7 @@
     <entry key="yukon.web.modules.operator.signalTransmitter.sender">Sender</entry>
     <entry key="yukon.web.modules.operator.signalTransmitter.securityCode">Security Code</entry>
     
-    <entry key="yukon.web.modules.operator.signalTransmitter.retrieve.error">An error in retrieving signal transmitter.</entry>
+    <entry key="yukon.web.modules.operator.signalTransmitter.retrieve.error">An error occurred in retrieving signal transmitter.</entry>
     <entry key="yukon.web.modules.operator.signalTransmitter.communication.title">Communication</entry>
     
 </properties>
