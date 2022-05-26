@@ -17,6 +17,7 @@ import com.cannontech.common.config.MasterConfigBoolean;
 import com.cannontech.common.pao.YukonPao;
 import com.cannontech.core.dao.PaoDao;
 import com.cannontech.core.roleproperties.YukonRoleProperty;
+import com.cannontech.dr.edgeDr.EdgeUnicastPriority;
 import com.cannontech.user.YukonUserContext;
 import com.cannontech.web.api.der.edge.service.DerEdgeCommunicationService;
 import com.cannontech.web.security.annotation.CheckCparm;
@@ -37,8 +38,12 @@ public class DerEdgeApiController {
         
         //Convert payload string into byte[] for porter
         byte[] payload = convertPayloadToBytes(edgeUnicastRequest.getPayload());
+        
+        EdgeUnicastPriority queuePriority = edgeUnicastRequest.getQueuePriority();
+        EdgeUnicastPriority networkPriority = edgeUnicastRequest.getNetworkPriority();
+        
         //Send the request to Porter and get back the E2E ID that will correlate with the response data when it comes back.
-        short e2eId = derEdgeCommunicationService.sendUnicastRequest(pao, payload, userContext);
+        short e2eId = derEdgeCommunicationService.sendUnicastRequest(pao, payload, queuePriority, networkPriority, userContext);
         
         //TODO later - correlate E2E IDs with response GUID
         //for now, always return this temp GUID

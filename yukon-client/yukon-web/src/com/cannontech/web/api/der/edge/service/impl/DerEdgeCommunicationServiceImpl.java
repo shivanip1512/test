@@ -7,6 +7,7 @@ import org.springframework.stereotype.Service;
 
 import com.cannontech.clientutils.YukonLogManager;
 import com.cannontech.common.pao.YukonPao;
+import com.cannontech.dr.edgeDr.EdgeUnicastPriority;
 import com.cannontech.user.YukonUserContext;
 import com.cannontech.web.api.der.edge.service.DerEdgeCommunicationService;
 
@@ -15,10 +16,12 @@ public class DerEdgeCommunicationServiceImpl implements DerEdgeCommunicationServ
     private static final Logger log = YukonLogManager.getLogger(DerEdgeCommunicationServiceImpl.class);
     
     @Override
-    public short sendUnicastRequest(YukonPao pao, byte[] payload, YukonUserContext userContext) {
+    public short sendUnicastRequest(YukonPao pao, byte[] payload, EdgeUnicastPriority queuePriority, 
+            EdgeUnicastPriority networkPriority, YukonUserContext userContext) {
         
         //TODO later - clean up this logging
-        log.info("Processing DER Edge Unicast Request - Pao: {}, payload: {}", pao, Arrays.toString(payload));
+        log.info("Processing DER Edge Unicast Request - Pao: {}, queue priority: {}, net priority: {}, payload: {}", 
+                pao, queuePriority, networkPriority, Arrays.toString(payload));
         
         //TODO later - send request to porter and receive response
         

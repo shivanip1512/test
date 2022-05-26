@@ -21,6 +21,19 @@
 
 namespace Cti { namespace Messaging { namespace Serialization { namespace Thrift {
 
+struct EdgeUnicastPriority {
+  enum type {
+    HIGH = 0,
+    LOW = 1
+  };
+};
+
+extern const std::map<int, const char*> _EdgeUnicastPriority_VALUES_TO_NAMES;
+
+std::ostream& operator<<(std::ostream& out, const EdgeUnicastPriority::type& val);
+
+std::string to_string(const EdgeUnicastPriority::type& val);
+
 class EdgeDrUnicastRequest;
 
 
@@ -29,14 +42,19 @@ class EdgeDrUnicastRequest : public virtual ::apache::thrift::TBase {
 
   EdgeDrUnicastRequest(const EdgeDrUnicastRequest&);
   EdgeDrUnicastRequest& operator=(const EdgeDrUnicastRequest&);
-  EdgeDrUnicastRequest() : messageGuid(), payload(), priority(0) {
+  EdgeDrUnicastRequest() : messageGuid(), payload(), queuePriority((EdgeUnicastPriority::type)0), networkPriority((EdgeUnicastPriority::type)0) {
+    queuePriority = (EdgeUnicastPriority::type)0;
+
+    networkPriority = (EdgeUnicastPriority::type)0;
+
   }
 
   virtual ~EdgeDrUnicastRequest() noexcept;
   std::string messageGuid;
   std::vector<int32_t>  paoIds;
   std::string payload;
-  int8_t priority;
+  EdgeUnicastPriority::type queuePriority;
+  EdgeUnicastPriority::type networkPriority;
 
   void __set_messageGuid(const std::string& val);
 
@@ -44,7 +62,9 @@ class EdgeDrUnicastRequest : public virtual ::apache::thrift::TBase {
 
   void __set_payload(const std::string& val);
 
-  void __set_priority(const int8_t val);
+  void __set_queuePriority(const EdgeUnicastPriority::type val);
+
+  void __set_networkPriority(const EdgeUnicastPriority::type val);
 
   bool operator == (const EdgeDrUnicastRequest & rhs) const
   {
@@ -54,7 +74,9 @@ class EdgeDrUnicastRequest : public virtual ::apache::thrift::TBase {
       return false;
     if (!(payload == rhs.payload))
       return false;
-    if (!(priority == rhs.priority))
+    if (!(queuePriority == rhs.queuePriority))
+      return false;
+    if (!(networkPriority == rhs.networkPriority))
       return false;
     return true;
   }
