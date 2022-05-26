@@ -11,6 +11,7 @@ import java.util.Map;
 import java.util.Set;
 import java.util.stream.Collectors;
 
+import org.apache.commons.lang3.StringUtils;
 import org.apache.logging.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
@@ -87,6 +88,8 @@ public class MR_ServerImpl implements MR_Server {
     private BasicServerConnection porterConnection;
 
     private final Logger log = YukonLogManager.getLogger(MR_ServerImpl.class);
+    
+    private Map<String, FormattedBlockProcessingService<Block>> readingTypesMap;
 
     private final static String[] methods = new String[] { "PingURL",
                                                            "GetMethods",
@@ -111,7 +114,8 @@ public class MR_ServerImpl implements MR_Server {
                                                            "InsertMeterInMeterGroup",
                                                            "DeleteMeterGroup",
                                                            "RemoveMetersFromMeterGroup",
-                                                           "MeterChangedNotification"
+                                                           "MeterChangedNotification",
+                                                           "InitiateMeterReadingsByFieldName"
                                                            };
 
     private void init() throws MultispeakWebServiceException {
@@ -644,5 +648,53 @@ public class MR_ServerImpl implements MR_Server {
         multispeakEventLogService.methodInvoked("MeterChangedNotification", vendor.getCompanyName());
         List<ErrorObject> errorObject = multispeakMeterService.meterChanged(vendor, changedMeters);
         return errorObject;
+    }
+
+    @Override
+    public List<ErrorObject> InitiateMeterReadingsByFieldName(List<MeterID> meterIds, String responseURL, List<String> fieldNames,
+            String transactionId, ExpirationTime expirationTime, String formattedBlockTemplateName) throws MultispeakWebServiceException  {
+
+        init();
+
+        MultispeakVendor vendor = multispeakFuncs.getMultispeakVendorFromHeader();
+        multispeakEventLogService.methodInvoked("InitiateMeterReadingsByReadingTypeCodes",
+                                                vendor.getCompanyName());
+
+        String actualResponseUrl = multispeakFuncs.getResponseUrl(vendor,
+                                                                  responseURL, 
+                                                                  MultispeakDefines.CB_Server_STR);
+        
+        if (!porterConnection.isValid()) {
+            String message = "Connection to 'Yukon Port Control Service' is not valid.  Please contact your Yukon Administrator.";
+            log.error(message);
+            throw new MultispeakWebServiceException(message);
+        }
+
+        if (StringUtils.isBlank(formattedBlockTemplateName)) {
+            String errorMessage = "formattedBlockTemplateName is not present in request";
+            log.error(errorMessage);
+            throw new MultispeakWebServiceException(errorMessage);
+        }
+
+        FormattedBlockProcessingService<Block> formattedBlockServ = mspValidationService.getProcessingServiceByFormattedBlockTemplate(readingTypesMap, 
+                                                                                                                                      formattedBlockTemplateName);
+
+        List<ErrorObject> errorObjects = multispeakMeterService.blockMeterReadEvent(vendor,
+                                                                                    meterIds, 
+                                                                                    formattedBlockServ,
+                                                                                    transactionId, 
+                                                                                    actualResponseUrl);
+
+        multispeakFuncs.logErrorObjects(MultispeakDefines.MR_Server_STR,
+                                        "InitiateMeterReadingsByReadingTypeCodes",
+                                        errorObjects);
+        return errorObjects;
+    
+    }
+    
+    @Required
+    public void setReadingTypesMap(
+            Map<String, FormattedBlockProcessingService<Block>> readingTypesMap) {
+        this.readingTypesMap = readingTypesMap;
     }
 }

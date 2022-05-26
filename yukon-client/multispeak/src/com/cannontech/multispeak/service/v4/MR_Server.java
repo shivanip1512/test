@@ -256,4 +256,20 @@ public interface MR_Server {
      */
     public List<ErrorObject> meterChangedNotification(List<MspMeter> changedMeters) throws MultispeakWebServiceException;
 
+    /**
+     * initiate Meter Read By Reading Type.
+     * @param meterIDs to contain multiple meter references
+     * @param responseURL the response url
+     * @param fieldName the field name
+     * @param transactionID the transaction id
+     * @param expirationTime the expiration time
+     * @param formattedBlockTemplateName the formatted block TemplateName
+     * @return the error object[]
+     * @throws MultispeakWebServiceException the multispeak web service
+     *             exception
+     */
+    public List<ErrorObject> InitiateMeterReadingsByFieldName(List<MeterID> meterIds, String responseURL, List<String> fieldNames,
+            String transactionId, ExpirationTime expirationTime, String formattedBlockTemplateName)
+            throws MultispeakWebServiceException;
+
 }
