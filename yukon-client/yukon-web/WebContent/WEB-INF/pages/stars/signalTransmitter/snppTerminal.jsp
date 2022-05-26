@@ -1,4 +1,3 @@
-<%@ taglib prefix="tags" tagdir="/WEB-INF/tags"%>
 <%@ taglib prefix="assets" tagdir="/WEB-INF/tags/assets"%>
 
 <tags:nameValueContainer2>

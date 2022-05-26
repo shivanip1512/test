@@ -1,12 +1,12 @@
-yukon.namespace('yukon.dr.setup.loadGroup');
+yukon.namespace('yukon.assets.signalTransmitter');
 
 /**
- * Module that handles the behavior on the setup Load Group page.
- * @module yukon.dr.setup.loadGroup
+ * Module that handles the behavior on the Signal Transmitter page.
+ * @module yukon.assets.signalTransmitter
  * @requires JQUERY
  * @requires yukon
  */
-yukon.dr.setup.loadGroup = (function() {
+yukon.assets.signalTransmitter = (function() {
     
     'use strict';
     
@@ -48,4 +48,4 @@ yukon.dr.setup.loadGroup = (function() {
     return mod;
 })();
 
-$(function () { yukon.dr.setup.loadGroup.init(); });
+$(function () { yukon.assets.signalTransmitter.init(); });

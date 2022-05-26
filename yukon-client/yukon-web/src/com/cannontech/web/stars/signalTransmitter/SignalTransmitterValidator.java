@@ -43,7 +43,6 @@ public class SignalTransmitterValidator<T extends TerminalBase<?>> extends Simpl
 
         if (terminalBase instanceof PagingTapTerminal) {
             validatePageNumberField(terminalBase, errors);
-            PagingTapTerminal terminal = (PagingTapTerminal) terminalBase;
         }
 
         if (terminalBase instanceof SNPPTerminal) {
@@ -51,10 +50,10 @@ public class SignalTransmitterValidator<T extends TerminalBase<?>> extends Simpl
             SNPPTerminal terminal = (SNPPTerminal) terminalBase;
 
             String loginTxt = yukonValidationHelper.getMessage(key + ".login");
-            yukonValidationHelper.checkIfFieldRequired("login", errors, ((SNPPTerminal) terminalBase).getLogin(),
+            yukonValidationHelper.checkIfFieldRequired("login", errors, terminal.getLogin(),
                     loginTxt);
             if (!errors.hasFieldErrors("login")) {
-                yukonValidationHelper.checkExceedsMaxLength("login", errors, terminal.getLogin().toString(),
+                yukonValidationHelper.checkExceedsMaxLength("login", errors, terminal.getLogin(),
                         loginTxt, 20);
             }
         }

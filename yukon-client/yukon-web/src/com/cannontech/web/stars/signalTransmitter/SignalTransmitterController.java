@@ -142,9 +142,8 @@ public class SignalTransmitterController {
     }
 
     @PostMapping("/save")
-    public String save(@ModelAttribute("signalTransmitter") TerminalBase signalTransmitter, ModelMap model, BindingResult result,
-            YukonUserContext userContext,
-            FlashScope flash, RedirectAttributes redirectAttributes, HttpServletRequest request, HttpServletResponse response) {
+    public String save(@ModelAttribute("signalTransmitter") TerminalBase signalTransmitter, BindingResult result,
+            YukonUserContext userContext, FlashScope flash, RedirectAttributes redirectAttributes, HttpServletRequest request) {
 
         try {
             signalTransmitterValidator.validate(signalTransmitter, result);
@@ -202,9 +201,6 @@ public class SignalTransmitterController {
 
     }
 
-    /**
-     * Get the response for save
-     */
     private ResponseEntity<? extends Object> saveSignalTransmitter(YukonUserContext userContext, HttpServletRequest request,
             String webserverUrl, TerminalBase signalTransmitter, HttpMethod methodtype) throws RestClientException {
         ResponseEntity<? extends Object> response = apiRequestHelper.callAPIForObject(userContext, request, webserverUrl,
@@ -216,9 +212,9 @@ public class SignalTransmitterController {
         attrs.addFlashAttribute("signalTransmitter", signalTransmitter);
         attrs.addFlashAttribute(bindingResultKey, result);
         if (signalTransmitter.getId() == null) {
-                return "redirect:/stars/device/signalTransmitter/create";
+            return "redirect:/stars/device/signalTransmitter/create";
         }
-        //TODO: change this URL to edit functionality later.
+        // TODO: change this URL to edit functionality later.
         return "redirect:/stars/device/signalTransmitter/create";
     }
 
