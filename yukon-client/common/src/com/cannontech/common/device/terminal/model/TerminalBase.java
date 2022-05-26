@@ -5,11 +5,14 @@ import com.cannontech.common.dr.setup.LMDto;
 import com.cannontech.common.pao.PaoType;
 import com.cannontech.database.data.device.IEDBase;
 import com.cannontech.database.db.device.DeviceIED;
+import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonSubTypes;
 import com.fasterxml.jackson.annotation.JsonSubTypes.Type;
 import com.fasterxml.jackson.annotation.JsonTypeInfo;
+import com.fasterxml.jackson.annotation.JsonInclude.Include;
 
 @JsonTypeInfo(use = JsonTypeInfo.Id.NAME, property = "type", include = JsonTypeInfo.As.EXISTING_PROPERTY, visible = true)
+@JsonInclude(Include.NON_NULL)
 @JsonSubTypes({
         @Type(value = PagingTapTerminal.class, name = "TAPTERMINAL"),
         @Type(value = SNPPTerminal.class, name = "SNPP_TERMINAL"),
@@ -36,6 +39,13 @@ public class TerminalBase<T extends IEDBase> implements DBPersistentConverter<T>
         this.enabled = enabled;
         this.password = password;
         this.commChannel = commChannel;
+    }
+
+    public TerminalBase(Integer id, String name, PaoType type, boolean enabled) {
+        this.id = id;
+        this.name = name;
+        this.type = type;
+        this.enabled = enabled;
     }
 
     public Integer getId() {
