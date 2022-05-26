@@ -1,0 +1,54 @@
+<%@ taglib prefix="cti" uri="http://cannontech.com/tags/cti"%>
+<%@ taglib prefix="form" uri="http://www.springframework.org/tags/form" %>
+<%@ taglib prefix="tags" tagdir="/WEB-INF/tags"%>
+
+<div id="demandResponse" class="devWidget">
+    <cti:flashScopeMessages />
+    <div class="widgetMessage"></div>
+    <div class="notes">
+        <b>Program</b> - Program to clone<br/>
+        <b>Template</b> - example: entry of "Eaton Cloud" will create Eaton Cloud Program 1, Eaton Cloud Program 2, Eaton Cloud Control Area 1 ...<br/>
+        <b># of Scenarios/Control Areas/Programs</b> - Number of objects to create<br/>
+        <b># of Devices</b> - Number of Devices to enroll, each account can have maximum of 3 devices enrolled<br/>
+        <b>Device Types</b> - Device Type(s) to enroll<br/>
+        <span class="error">
+            Make sure your program setup for the program you plan to clone works. Enroll one device for each device type you plan to select manually.<br/>
+            <cti:icon icon="icon-error"/><b>Backup your database!!</b>
+        </span>
+    </div>
+    <form:form modelAttribute="devDemandResponse" action="setupDemandResponse" method="post" id="setupDemandResponseForm">
+        <cti:csrfToken/>
+        <div class="widgetContent" style="width:60%">
+            <tags:nameValueContainer>
+                <tags:nameValue name="Program">
+                    <tags:selectWithItems items="${allPrograms}" path="programId" itemValue="liteID"/>
+                </tags:nameValue>
+                <tags:nameValue name="Template">
+                    <tags:input path="templateName"/>
+                </tags:nameValue>
+                <tags:nameValue name="# of Scenarios">
+                    <tags:input path="scenarios" size="2"/>
+                </tags:nameValue>
+                <tags:nameValue name="# of Control Areas">
+                    <tags:input path="controlAreas" size="2"/>
+                </tags:nameValue>
+                <tags:nameValue name="# of Programs">
+                    <tags:input path="programs" size="2"/>
+                </tags:nameValue>
+                <tags:nameValue name="# of Devices">
+                    <tags:input path="devices" size="2"/>
+                </tags:nameValue>
+                <tags:nameValue name="Device Types">
+                    <tags:selectWithItems items="${drPaoTypes}" path="types" dataPlaceholder="Select Device Types" inputClass="js-init-chosen w300"/>
+                </tags:nameValue>
+            </tags:nameValueContainer>
+        </div>
+        <div class="page-action-area">
+            <cti:button type="submit" nameKey="runSetup" classes="action primary"/>
+        </div>
+    </form:form>
+</div>
+
+<script>
+	$('.js-init-chosen').chosen();
+</script>

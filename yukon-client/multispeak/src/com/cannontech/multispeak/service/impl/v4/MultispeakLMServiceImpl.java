@@ -23,9 +23,10 @@ import com.cannontech.common.fdr.FdrTranslation;
 import com.cannontech.common.pao.PaoType;
 import com.cannontech.common.pao.definition.dao.PaoDefinitionDao;
 import com.cannontech.common.pao.definition.model.PaoTag;
+import com.cannontech.common.point.PointQuality;
 import com.cannontech.core.dao.FdrTranslationDao;
 import com.cannontech.core.dao.NotFoundException;
-import com.cannontech.core.dao.SimplePointAccessDao;
+import com.cannontech.core.dynamic.AsyncDynamicDataSource;
 import com.cannontech.database.data.lite.LiteYukonPAObject;
 import com.cannontech.database.data.lite.LiteYukonUser;
 import com.cannontech.database.data.point.PointType;
@@ -45,6 +46,7 @@ import com.cannontech.msp.beans.v4.Duration;
 import com.cannontech.msp.beans.v4.ErrorObject;
 import com.cannontech.msp.beans.v4.LoadManagementEvent;
 import com.cannontech.msp.beans.v4.ObjectRef;
+import com.cannontech.msp.beans.v4.QualityDescription;
 import com.cannontech.msp.beans.v4.ScadaAnalog;
 import com.cannontech.msp.beans.v4.SubstationLoadControlStatus;
 import com.cannontech.multispeak.client.MultispeakVendor;
@@ -68,7 +70,6 @@ public class MultispeakLMServiceImpl extends MultispeakLMServiceBase implements 
 
     @Autowired private IDatabaseCache databaseCache;
     @Autowired private FdrTranslationDao fdrTranslationDao;
-    @Autowired private SimplePointAccessDao simplePointAccessDao;
     @Autowired private MspObjectDao mspObjectDao;
     @Autowired private MspLMGroupDao mspLMGroupDao;
     @Autowired private PaoDefinitionDao paoDefinitionDao;
@@ -76,6 +77,7 @@ public class MultispeakLMServiceImpl extends MultispeakLMServiceBase implements 
     private List<? extends String> strategiesToExcludeInReport;
     @Autowired private EnrollmentDao enrollmentDao;
     @Autowired private MspLmInterfaceMappingDao mspLMInterfaceMappingDao;
+    @Autowired private AsyncDynamicDataSource asyncDynamicDataSource;
 
     private static Logger log = YukonLogManager.getLogger(MultispeakLMServiceImpl.class);
 
@@ -85,12 +87,33 @@ public class MultispeakLMServiceImpl extends MultispeakLMServiceBase implements 
         pointData.setId(pointId);
         pointData.setValue(scadaAnalog.getValue().getValue());
         pointData.setType(PointType.Analog.getPointTypeId());
+        pointData.setPointQuality(getPointQuality(scadaAnalog.getQuality()));
         pointData.setStr("MultiSpeak ScadaAnalog Analog point update.");
         pointData.setUserName(userName);
         if (scadaAnalog.getTimeStamp() != null) {
             pointData.setTime(scadaAnalog.getTimeStamp().toGregorianCalendar().getTime());
         }
         return pointData;
+    }
+
+    @Override
+    public PointQuality getPointQuality(QualityDescription qualityDescription) {
+
+        if (qualityDescription == QualityDescription.MEASURED) {
+            return PointQuality.Normal;
+        } else if (qualityDescription == QualityDescription.ESTIMATED) {
+            return PointQuality.Manual;
+        } else if (qualityDescription == QualityDescription.FAILED) {
+            return PointQuality.NonUpdated; // Failed from SCADA means could not object the current reading
+        } else if (qualityDescription == QualityDescription.INITIAL) {
+            return PointQuality.InitDefault;
+        } else if (qualityDescription == QualityDescription.CALCULATED) {
+            return PointQuality.Estimated;
+        } else if (qualityDescription == QualityDescription.LAST) {
+            return PointQuality.InitLastKnown;
+        } else {// if (qualityDescription == QualityDescription.Default)
+            return PointQuality.Normal;
+        }
     }
 
     @Override
@@ -103,7 +126,7 @@ public class MultispeakLMServiceImpl extends MultispeakLMServiceBase implements 
             for (FdrTranslation fdrTranslation : fdrTranslations) {
                 if (fdrTranslation.getDirection() == FdrDirection.RECEIVE) {
                     PointData pointData = buildPointData(fdrTranslation.getPointId(), scadaAnalog, liteYukonUser.getUsername());
-                    simplePointAccessDao.writePointData(pointData);
+                    asyncDynamicDataSource.putValue(pointData);
                     if (pointData != null) {
                         CTILogger.debug("PointData update sent to Dispatch (" + pointData.toString() + ")");
                     }

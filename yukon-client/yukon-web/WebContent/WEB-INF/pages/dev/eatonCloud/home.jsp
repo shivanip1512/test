@@ -25,20 +25,27 @@
         <br/>The Clear Cache button will clear the cache.
         <br/>
         <br/>Configure the Brightlayer Utilities Suite Demand Response URL - Admin/Configuration/Demand Response
-        <br/>Brightlayer Utilities Suite Demand Response URL:https://eas-dev.eastus.cloudapp.azure.com/api
+        <br/>Brightlayer Utilities Suite Demand Response URL: https://eas-dev.eastus.cloudapp.azure.com/api
         <br/>Simulator URL local: http://localhost:8080/yukon/dev/api
         <br/>Simulator URL QA: http://localhost:8080/dev/api
         <br/>
         <br/>Currently using <span class="fwb bg-color-grey txt-color-white">${urlType}</span>: ${url}
      </div><br/>
+     
      <tags:alertBox classes="js-success-message dn" type="success" includeCloseButton="true"></tags:alertBox>
+
+    <tags:nameValueContainer style="width: 40%">
+        <tags:nameValue name="Enable Token/Secret Rotation Testing">
+            <tags:switchButton id="tokenSecretTesting" name="tokenSecretTesting" onNameKey=".yes.label" offNameKey=".no.label"/>
+        </tags:nameValue>
+    </tags:nameValueContainer>
      <div class="js-secret-information user-message info dn">
      	Token cached by Service Manager: <span class="js-cached-token">${cachedToken}</span>
      	<br/>
-        Token1:<span class="js-secret1Token">${secret1Token}</span> cached by <span class="js-cachedBy">${cachedBy}</span> 
+        Token1:<span class="js-secret1Token">${secret1Token}</span> cached by <span class="js-cachedBy">${cachedBy}</span>
         Secret1: <span class="js-secret1">${secret1}</span> Expiration: <span class="js-secret1Expiration"></span>
         <br/>
-        Token2:<span class="js-secret2Token">${secret2Token}</span> cached by <span class="js-cachedBy">${cachedBy}</span> 
+        Token2:<span class="js-secret2Token">${secret2Token}</span> cached by <span class="js-cachedBy">${cachedBy}</span>
         Secret2: <span class="js-secret2">${secret2}</span> Expiration: <span class="js-secret2Expiration"></span>
      </div>
      <br/>

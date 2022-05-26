@@ -559,6 +559,7 @@ public class VoltageFlatnessGraphServiceImpl implements VoltageFlatnessGraphServ
                     String phaseString = settings.getPhaseString(phase);
                     VfLine phaseLine = new VfLine(graphId.getAndIncrement(), phaseString, feeder.getCcName(), 
                                                    phase, lineSettings, phasePointList);
+                    phaseLine.setFeederId(feeder.getCcId());
                     lines.add(phaseLine);
                 }
             }
@@ -572,6 +573,7 @@ public class VoltageFlatnessGraphServiceImpl implements VoltageFlatnessGraphServ
                 String allPhases = messageSourceAccessor.getMessage("yukon.web.modules.capcontrol.ivvc.zoneDetail.phase.allPhases");
                 VfLine noPhaseLine = new VfLine(graphId.getAndIncrement(), allPhases, feeder.getCcName(), Phase.ALL, 
                                                 noPhaseLineSettings, phaseAPoints);
+                noPhaseLine.setFeederId(feeder.getCcId());
                 lines.add(noPhaseLine);
             }
         }

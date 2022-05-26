@@ -47,6 +47,8 @@ import com.cannontech.user.YukonUserContext;
 import com.cannontech.web.capcontrol.IvvcHelper;
 import com.cannontech.web.capcontrol.ivvc.models.VfGraph;
 import com.cannontech.web.capcontrol.ivvc.service.VoltageFlatnessGraphService;
+import com.cannontech.web.capcontrol.models.ViewableFeeder;
+import com.cannontech.web.capcontrol.service.BusService;
 import com.cannontech.web.common.chart.service.HighChartService;
 import com.cannontech.web.user.service.UserPreferenceService;
 import com.cannontech.web.util.JsTreeNode;
@@ -68,6 +70,7 @@ public class BusViewController {
     @Autowired private HighChartService highChartService;
     @Autowired private UserPreferenceService userPreferenceService;
     @Autowired private IvvcHelper ivvcHelper;
+    @Autowired private BusService busService;
     
     @GetMapping("detail")
     public String detail(ModelMap model, YukonUserContext userContext, int subBusId, HttpServletRequest req) throws IOException {
@@ -111,6 +114,9 @@ public class BusViewController {
             hours.put(range.name(), range.getHours());
         }
         model.put("hours", hours);
+        
+        List<ViewableFeeder> feederList = busService.getFeedersForBus(subBusId);
+        model.addAttribute("feederList", feederList);
 
     }
     
