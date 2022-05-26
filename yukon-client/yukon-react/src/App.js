@@ -2,20 +2,19 @@ import React, { useEffect } from "react";
 import { Route, Redirect, Switch, useLocation } from "react-router-dom";
 import { I18nextProvider } from "react-i18next";
 
-import yukoni18n from "./components/I18n/i18nConfig";
-
 import { DrawerLayout } from "@brightlayer-ui/react-components";
-
 import { SecurityContextProvider, AuthNavigationContainer } from "@brightlayer-ui/react-auth-workflow";
-import AuthUIConfiguration from "./components/security/AuthUIConfiguration";
-import { routes } from "./constants/routing";
 
+import AuthUIConfiguration from "./components/security/AuthUIConfiguration";
 import NavigationMenu from "./components/Navigation/NavigationMenu";
 import NavigationDrawer from "./components/Navigation/NavigationDrawer";
 import DRSetupFilterPage from "./components/YukonPage/DemandResponse/DRSetupFilter";
 import DRTestPage from "./components/YukonPage/DemandResponse/DRTestPage";
 import CommChannelCreatePage from "./components/YukonPage/Assets/CommChannelCreate";
 import DashboardPage from "./components/YukonPage/Dashboards/Dashboard";
+import yukoni18n from "./components/I18n/i18nConfig";
+
+import { routes } from "./constants/routing";
 import { getYukonApiUrl, getYukonReactUrl } from "./helpers/urlHelper";
 
 const ScrollToTop = () => {
@@ -34,7 +33,7 @@ export const App = () => {
 
     return (
         <SecurityContextProvider>
-            <AuthUIConfiguration>
+            <AuthUIConfiguration yukonPath={YUKON_API_URL}>
                 <AuthNavigationContainer routeConfig={routes}>
                     <I18nextProvider i18n={yukoni18n}>
                         <ScrollToTop />
