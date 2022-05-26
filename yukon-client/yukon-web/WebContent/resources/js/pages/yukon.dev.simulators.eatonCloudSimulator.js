@@ -86,13 +86,19 @@ yukon.dev.simulators.eatonCloudSimulator = ( function() {
             });
             
             $(document).on('change', '.js-selected-status', function () {
-            	//hide success percentage if status is not OK
+            	//hide success and unknown percentage if status is not OK
             	var okSelected = $(this).val() === 'OK';
             	$(this).siblings('.js-success-percentage-fields').toggleClass('dn', !okSelected);
+                $(this).siblings('.js-unknown-percentage-fields').toggleClass('dn', !okSelected);
                 $('#eatonCloudForm').submit();
             });
             
             $(document).on('change', '.js-success-percentage', function () {
+                //submit all settings
+                $('#eatonCloudForm').submit();
+            });
+            
+            $(document).on('change', '.js-unknown-percentage', function () {
                 //submit all settings
                 $('#eatonCloudForm').submit();
             });

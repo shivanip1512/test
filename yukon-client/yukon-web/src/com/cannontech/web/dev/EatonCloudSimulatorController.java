@@ -182,12 +182,14 @@ public class EatonCloudSimulatorController {
             EatonCloudSimulatorSettingsUpdateRequest request = new EatonCloudSimulatorSettingsUpdateRequest(EatonCloudVersion.V1);
             request.setStatuses(getStatuses(newSettings));
             request.setSuccessPercentages(newSettings.getSuccessPercentages());
+            request.setUnknownPercentages(newSettings.getUnknownPercentages());
             
             SimulatorResponse response = simulatorsCommunicationService.sendRequest(request, SimulatorResponseBase.class);
             
             if (response.isSuccessful()) {
                 settings.setSelectedStatuses(newSettings.getSelectedStatuses());
                 settings.setSuccessPercentages(newSettings.getSuccessPercentages());
+                settings.setUnknownPercentages(newSettings.getUnknownPercentages());
                 flashScope.setConfirm(YukonMessageSourceResolvable.createDefaultWithoutCode("Updated simulator settings"));
                 return "redirect:home";
             }
