@@ -269,7 +269,7 @@ public interface MR_Server {
      * @throws MultispeakWebServiceException the multispeak web service
      *             exception
      */
-    public List<ErrorObject> initiateMeterReadingsByMeterIDs(List<MeterID> meterIds,
+    public List<ErrorObject> initiateMeterReadingsByMeterID(List<MeterID> meterIds,
             String responseURL, String transactionId, ExpirationTime expirationTime)
             throws MultispeakWebServiceException;
 

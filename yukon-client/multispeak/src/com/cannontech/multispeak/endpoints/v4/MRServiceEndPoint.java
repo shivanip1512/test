@@ -530,7 +530,7 @@ public class MRServiceEndPoint {
         List<MeterID> meterIds = (initiateMeterReadingsByMeterIds.getMeterIDs() != null)
                 ? initiateMeterReadingsByMeterIds.getMeterIDs().getMeterID() : null;
 
-        multispeakFuncs.toArrayOfErrorObject(mr_server.initiateMeterReadingsByMeterIDs(meterIds,
+        multispeakFuncs.toArrayOfErrorObject(mr_server.initiateMeterReadingsByMeterID(meterIds,
                                                                                        responseURL, 
                                                                                        transactionId, 
                                                                                        expirationTime));

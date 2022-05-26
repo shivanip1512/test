@@ -647,13 +647,13 @@ public class MR_ServerImpl implements MR_Server {
     }
 
     @Override
-    public List<ErrorObject> initiateMeterReadingsByMeterIDs(List<MeterID> meterIds, String responseURL, String transactionId,
+    public List<ErrorObject> initiateMeterReadingsByMeterID(List<MeterID> meterIds, String responseURL, String transactionId,
             ExpirationTime expirationTime) throws MultispeakWebServiceException {
 
         init();
 
         MultispeakVendor vendor = multispeakFuncs.getMultispeakVendorFromHeader();
-        multispeakEventLogService.methodInvoked("InitiateMeterReadingsByMeterIDs",
+        multispeakEventLogService.methodInvoked("InitiateMeterReadingsByMeterID",
                                                 vendor.getCompanyName());
 
         List<ErrorObject> errorObjects = new ArrayList<ErrorObject>();
@@ -676,7 +676,7 @@ public class MR_ServerImpl implements MR_Server {
 
         }
         multispeakFuncs.logErrorObjects(MultispeakDefines.MR_Server_STR,
-                                        "InitiateMeterReadingsByMeterIDs",
+                                        "InitiateMeterReadingsByMeterID",
                                         errorObjects);
         return errorObjects;
     
