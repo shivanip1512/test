@@ -11,6 +11,7 @@ public enum SystemLogger {
     // Custom appender loggers
     API_LOGGER("apiLogger", LoggerLevel.INFO, CustomizedSystemLogger.CUSTOM_API_LOGGER, "yukonApiRollingFile"),
     COMMS_LOGGER("commsLogger", LoggerLevel.INFO, CustomizedSystemLogger.CUSTOM_COMMS_LOGGER, "commsRollingFile"),
+    EATON_CLOUD_COMMS_LOGGER("eatonCloudCommsLogger", LoggerLevel.INFO, CustomizedSystemLogger.CUSTOM_EATON_CLOUD_COMMS_LOGGER, "eatonCloudCommsRollingFile"),
     RFN_COMMS_LOGGER("rfnCommsLogger", LoggerLevel.INFO, CustomizedSystemLogger.CUSTOM_RFN_COMMS_LOGGER, "yukonRfnRollingFile"),
     SMART_NOTIFICATION_LOGGER("smartNotifLogger", LoggerLevel.INFO, CustomizedSystemLogger.CUSTOM_SMART_NOTIFICATION_LOGGER,
             "smartNotifRollingFile"),

@@ -54,6 +54,8 @@
     <entry key="yukon.web.modules.capcontrol.ivvc.zoneDetail.phase.allPhases">All Phases</entry>
     <entry key="yukon.web.modules.capcontrol.ivvc.zoneDetail.ignoredPoints">Ignored</entry>
     <entry key="yukon.web.modules.capcontrol.ivvc.zoneDetail.noFeeder">No Feeder</entry>
+    <entry key="yukon.web.modules.capcontrol.ivvc.zoneDetail.filterByFeeder">Filter by Feeder</entry>
+    <entry key="yukon.web.modules.capcontrol.ivvc.zoneDetail.allFeeders">All Feeders</entry>
     
     <entry key="yukon.web.modules.capcontrol.ivvc.zoneDetail.questionable.hoverText">Questionable Quality</entry>
     
