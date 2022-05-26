@@ -521,7 +521,7 @@ public class MRServiceEndPoint {
     public @ResponsePayload InitiateMeterReadingsByMeterIDResponse initiateMeterReadingsByMeterIDs(
             @RequestPayload InitiateMeterReadingsByMeterID initiateMeterReadingsByMeterIds)
             throws MultispeakWebServiceException {
-        InitiateMeterReadingsByMeterIDResponse initiateMeterReadingsByMeterIDsResponse = objectFactory.createInitiateMeterReadingsByMeterIDResponse();
+        InitiateMeterReadingsByMeterIDResponse response = objectFactory.createInitiateMeterReadingsByMeterIDResponse();
 
         ExpirationTime expirationTime = initiateMeterReadingsByMeterIds.getExpTime();
         String responseURL = initiateMeterReadingsByMeterIds.getResponseURL();
@@ -530,11 +530,11 @@ public class MRServiceEndPoint {
         List<MeterID> meterIds = (initiateMeterReadingsByMeterIds.getMeterIDs() != null)
                 ? initiateMeterReadingsByMeterIds.getMeterIDs().getMeterID() : null;
 
-        multispeakFuncs.toArrayOfErrorObject(mr_server.initiateMeterReadingsByMeterID(meterIds,
+        ArrayOfErrorObject arrayOfErrorObject = multispeakFuncs.toArrayOfErrorObject(mr_server.initiateMeterReadingsByMeterID(meterIds,
                                                                                        responseURL, 
                                                                                        transactionId, 
                                                                                        expirationTime));
-        
-        return initiateMeterReadingsByMeterIDsResponse;
+        response.setInitiateMeterReadingsByMeterIDResult(arrayOfErrorObject);
+        return response;
     }
 }

@@ -1832,7 +1832,7 @@ public class MultispeakMeterServiceImpl extends MultispeakMeterServiceBase imple
         log.info("Received " + mspMeters.size() + " Meter(s) for MeterReading from " + mspVendor.getCompanyName());
         
         multispeakEventLogService.initiateMeterReadRequest(mspMeters.size(), 
-                                                           "InitiateMeterReadingsByMeterIDs",
+                                                           "InitiateMeterReadingsByMeterID",
                                                            mspVendor.getCompanyName());
         
         List<YukonMeter> allPaosToRead = Lists.newArrayListWithCapacity(mspMeters.size());
@@ -1854,12 +1854,12 @@ public class MultispeakMeterServiceImpl extends MultispeakMeterServiceBase imple
                     multispeakEventLogService.initiateMeterRead(meterNumber, 
                                                                 meter, 
                                                                 transactionId,
-                                                                "InitiateMeterReadingsByMeterIDs", 
+                                                                "InitiateMeterReadingsByMeterID", 
                                                                 mspVendor.getCompanyName());
                 }
             } else {
                 multispeakEventLogService.meterNotFound(meterNumber, 
-                                                        "InitiateMeterReadingsByMeterIDs",
+                                                        "InitiateMeterReadingsByMeterID",
                                                         mspVendor.getCompanyName());
                 
                 errorObjects.add(mspObjectDao.getNotFoundErrorObject(meterNumber,       
