@@ -23,6 +23,7 @@ import com.cannontech.message.dispatch.message.DbChangeCategory;
 import com.cannontech.msp.beans.v4.ArrayOfErrorObject;
 import com.cannontech.msp.beans.v4.ArrayOfOutageDetectionEvent;
 import com.cannontech.msp.beans.v4.ErrorObject;
+import com.cannontech.msp.beans.v4.MeterID;
 import com.cannontech.msp.beans.v4.ODEventNotification;
 import com.cannontech.msp.beans.v4.ODEventNotificationResponse;
 import com.cannontech.msp.beans.v4.ObjectFactory;
@@ -165,8 +166,9 @@ public class OutageJmsMessageListener extends OutageJmsMessageService {
             //This is kind of cheating, we're assuming that if we have a "meter" paoType, then objectId is a MeterNumber.
             OutageLocation outageLocation = new OutageLocation();
             outageLocation.setObjectID(objectId);
-            outageLocation.getMeterID().setMeterNo(objectId);    //MeterNumber
-            //outageLocation.setMeterID(objectId);    //MeterNumber
+            MeterID meterId = new MeterID();
+            meterId.setMeterNo(objectId);
+            outageLocation.setMeterID(meterId);    //MeterNumber
             outageDetectionEvent.setOutageLocation(outageLocation);
             
             outageDetectionEvent.setOutageDetectionDeviceID(objectId); //MeterNumber
