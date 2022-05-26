@@ -174,6 +174,7 @@ public class MspObjectDaoImpl implements MspObjectDao {
             MeterID meterID = new MeterID();
             meterID.setMeterName(meterNumber);
             meterID.setRegisteredName(MultispeakDefines.REGISTERED_NAME);
+            //TODO based on type of meter
             meterID.setServiceType(ServiceKind.ELECTRIC);
             meterID.setSystemName(MultispeakDefines.MSP_APPNAME_YUKON);
             meterIds.add(meterID);

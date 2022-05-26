@@ -108,6 +108,7 @@ import com.cannontech.msp.beans.v5.multispeak.ElectricMeterExchange;
 import com.cannontech.msp.beans.v5.multispeak.ElectricServicePoint;
 import com.cannontech.msp.beans.v5.multispeak.EndDeviceState;
 import com.cannontech.msp.beans.v5.multispeak.FormattedBlock;
+import com.cannontech.msp.beans.v5.multispeak.GasServicePoint;
 import com.cannontech.msp.beans.v5.multispeak.MeterGroup;
 import com.cannontech.msp.beans.v5.multispeak.MeterReading;
 import com.cannontech.msp.beans.v5.multispeak.MspMeter;
@@ -899,6 +900,11 @@ public class MultispeakMeterServiceImpl extends MultispeakMeterServiceBase imple
                                     meterID = waterServicePoint.getWaterMeterID();
                                     mspMeter = waterServicePoint.getWaterMeter();
                                     billingCycle = waterServicePoint.getBillingCycle();
+                                } else if(servicePoint instanceof GasServicePoint) {
+                                    GasServicePoint gasServicePoint = (GasServicePoint) servicePoint;
+                                    meterID = gasServicePoint.getGasMeterID();
+                                    mspMeter = gasServicePoint.getGasMeter();
+                                    billingCycle = gasServicePoint.getBillingCycle();
                                 }
 
                                 YukonMeter meter = null;
@@ -2052,12 +2058,23 @@ public class MultispeakMeterServiceImpl extends MultispeakMeterServiceBase imple
             List<CDStateChange> cdStateChange = arrayOfCDStateChange.getCDStateChange();
             CDStateChange stateChange = new CDStateChange();
             CDDeviceIdentifier cdDeviceIdentifier = new CDDeviceIdentifier();
-            MeterID meterID = new MeterID();
-            meterID.setMeterName(yukonMeter.getMeterNumber());
-            meterID.setRegisteredName(MultispeakDefines.REGISTERED_NAME);
-            meterID.setServiceType(ServiceKind.ELECTRIC);
-            meterID.setSystemName(MultispeakDefines.MSP_APPNAME_YUKON);
-            cdDeviceIdentifier.setMeterID(meterID);
+            PaoType paoType = yukonMeter.getPaoIdentifier().getPaoType();
+            MeterID meterId = new MeterID();
+            meterId.setMeterName(yukonMeter.getMeterNumber());
+            meterId.setRegisteredName(MultispeakDefines.REGISTERED_NAME);
+            
+            if (paoType.isWaterMeter()) {
+                meterId.setServiceType(ServiceKind.WATER);
+            }
+            else if (paoType.isGasMeter()) {
+                meterId.setServiceType(ServiceKind.GAS);
+            }
+            else {
+                meterId.setServiceType(ServiceKind.ELECTRIC);
+            }
+            
+            meterId.setSystemName(MultispeakDefines.MSP_APPNAME_YUKON);
+            cdDeviceIdentifier.setMeterID(meterId);
             stateChange.setCDDeviceIdentifier(cdDeviceIdentifier);
             LoadActionCode loadActionCode = new LoadActionCode();
             loadActionCode.setValue(loadActionCodeKind);

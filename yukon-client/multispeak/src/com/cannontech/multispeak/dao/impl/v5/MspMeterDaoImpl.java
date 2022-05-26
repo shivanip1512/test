@@ -22,6 +22,7 @@ import com.cannontech.msp.beans.v5.multispeak.AssetDetails;
 import com.cannontech.msp.beans.v5.multispeak.CDDevice;
 import com.cannontech.msp.beans.v5.multispeak.CommunicationsAddress;
 import com.cannontech.msp.beans.v5.multispeak.ElectricMeter;
+import com.cannontech.msp.beans.v5.multispeak.GasMeter;
 import com.cannontech.msp.beans.v5.multispeak.Module;
 import com.cannontech.msp.beans.v5.multispeak.Modules;
 import com.cannontech.msp.beans.v5.multispeak.MspMeter;
@@ -57,6 +58,7 @@ public final class MspMeterDaoImpl extends MspMeterDaoBase {
         MspMeterReturnList mspMeters = new MspMeterReturnList();
         List<ElectricMeter> electricMeters = new ArrayList<>();
         List<WaterMeter> waterMeters = new ArrayList<>();
+        List<GasMeter> gasMeters = new ArrayList<>();
         jdbcTemplate.query(sql, new MaxRowCalbackHandlerRse(new AbstractRowCallbackHandler() {
             @Override
             public void processRow(ResultSet rs, int rowNum) throws SQLException {
@@ -65,6 +67,8 @@ public final class MspMeterDaoImpl extends MspMeterDaoBase {
                     electricMeters.add((ElectricMeter) mspMeter);
                 } else if (mspMeter instanceof WaterMeter) {
                     waterMeters.add((WaterMeter) mspMeter);
+                } else if (mspMeter instanceof GasMeter) {
+                    gasMeters.add((GasMeter) mspMeter);
                 }
 
                 // setting the last object we'll process as we loop through them.
@@ -74,6 +78,7 @@ public final class MspMeterDaoImpl extends MspMeterDaoBase {
 
         mspMeters.setElectricMeters(electricMeters);
         mspMeters.setWaterMeters(waterMeters);
+        mspMeters.setGasMeters(gasMeters);
 
         mspMeters.setReturnFields(mspMeters.getLastProcessed(), mspMeters.getSize(), maxRecords);
         return mspMeters;
@@ -154,6 +159,8 @@ public final class MspMeterDaoImpl extends MspMeterDaoBase {
         if (paoIdentifier.getPaoType().isMeter()) {
             if (paoIdentifier.getPaoType().isWaterMeter()) {
                 meterID.setServiceType(ServiceKind.WATER);
+            } else if(paoIdentifier.getPaoType().isGasMeter()) {
+                meterID.setServiceType(ServiceKind.GAS);
             } else {
                 meterID.setServiceType(ServiceKind.ELECTRIC);
             }
