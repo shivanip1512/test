@@ -70,30 +70,22 @@ yukon.ui.fancyTree= (function () {
                     },
                     checkbox : true,
                     select: function(event, data) {
-                        // Get a list of all selected nodes, and convert to a key array:
-                        var selKeys = 
-                        $.map(data.tree.getSelectedNodes(), function(node){
-                          return node.key;
-                        });
-                        
-                       // var countDirectChild = 
-                       //     $.map(data.tree.getSelectedNodes(), function(node){
-                       //       return node.countChildren(false);
-                       //     });
-                        
-                        
-                        // this will process each node whether selected or not selected
+
+                        // count selected direct childs
                         var countChilds = 
                            data.tree.getRootNode().visit(function (node) {
-                        		return node.countChildren(false);
-                        		
+                        	   if (node.children != null) {
+                        		   var count = 0;
+                                   for (var i = 0; i < node.children.length; i++) {
+                                       if(node.children[i].isSelected() == true)
+                                    	   count++;
+                                   } 
+                                   console.log(count); // reflecting in console
+                            	   return count;
+                               }
                          });
-                            $("#echoChildCount").text(countChilds);
-                     //     $("#countNode").text(count);
                         
-                        $("#echoSelection").text(selKeys.join(", "));
-                        $("#echoSelectedCount").text(selKeys.length);
-                    //    $("#echoChildCount").text(countDirectChild);
+                        $("#echoChildCount").text(countChilds);
                       },
                     
                     init: function(event, data) {
