@@ -887,42 +887,42 @@ public class MultispeakMeterServiceImpl extends MultispeakMeterServiceBase imple
                                 mspUsagePoints.addAll(mspServiceLocation.getWaterServicePoints().getWaterServicePoint());
                             }
                             for (MspUsagePoint servicePoint : mspUsagePoints) {
-                                ObjectID meterID = null;
+                                ObjectID meterId = null;
                                 MspMeter mspMeter = null;
                                 String billingCycle = null;
                                 if (servicePoint instanceof ElectricServicePoint) {
                                     ElectricServicePoint electricServicePoint = (ElectricServicePoint) servicePoint;
-                                    meterID = electricServicePoint.getElectricMeterID();
+                                    meterId = electricServicePoint.getElectricMeterID();
                                     mspMeter = electricServicePoint.getElectricMeter();
                                     billingCycle = electricServicePoint.getBillingCycle();
                                 } else if (servicePoint instanceof WaterServicePoint) {
                                     WaterServicePoint waterServicePoint = (WaterServicePoint) servicePoint;
-                                    meterID = waterServicePoint.getWaterMeterID();
+                                    meterId = waterServicePoint.getWaterMeterID();
                                     mspMeter = waterServicePoint.getWaterMeter();
                                     billingCycle = waterServicePoint.getBillingCycle();
                                 } else if(servicePoint instanceof GasServicePoint) {
                                     GasServicePoint gasServicePoint = (GasServicePoint) servicePoint;
-                                    meterID = gasServicePoint.getGasMeterID();
+                                    meterId = gasServicePoint.getGasMeterID();
                                     mspMeter = gasServicePoint.getGasMeter();
                                     billingCycle = gasServicePoint.getBillingCycle();
                                 }
 
                                 YukonMeter meter = null;
                                 // TODO probably need to update code after confirmation on actual meter field population (parent or child field)
-                                if (meterID != null) {
+                                if (meterId != null) {
                                     try {
-                                        meter = getMeterByMeterNumber(meterID.getObjectGUID());
+                                        meter = getMeterByMeterNumber(meterId.getObjectGUID());
                                         isMeterFound = true;
                                     } catch (NotFoundException e) {
-                                        if (meterID.getPrimaryIdentifier() != null) {
+                                        if (meterId.getPrimaryIdentifier() != null) {
                                             try {
-                                                meter = getMeterByMeterNumber(meterID.getPrimaryIdentifier().getValue());
+                                                meter = getMeterByMeterNumber(meterId.getPrimaryIdentifier().getValue());
                                                 isMeterFound = true;
                                             } catch (NotFoundException e1) {
-                                                multispeakEventLogService.meterNotFound(meterID.getObjectGUID(),
+                                                multispeakEventLogService.meterNotFound(meterId.getObjectGUID(),
                                                                                         SERV_LOC_CHANGED_STRING, 
                                                                                         mspVendor.getCompanyName());
-                                                ErrorObject err = mspObjectDao.getNotFoundErrorObject(meterID.getObjectGUID(), 
+                                                ErrorObject err = mspObjectDao.getNotFoundErrorObject(meterId.getObjectGUID(), 
                                                                                                      "MeterNumber", 
                                                                                                      "ServiceLocation",
                                                                                                       SERV_LOC_CHANGED_STRING, 

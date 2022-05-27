@@ -169,20 +169,20 @@ public class MspObjectDaoImpl implements MspObjectDao {
             List<MeterID> meterIds = arrayOfMeterID.getMeterID();
             String meterNumber = meter.getMeterNumber();
             PaoType paoType = meter.getPaoIdentifier().getPaoType();
-            MeterID meterID = new MeterID();
-            meterID.setMeterName(meterNumber);
-            meterID.setRegisteredName(MultispeakDefines.REGISTERED_NAME);
+            MeterID meterId = new MeterID();
+            meterId.setMeterName(meterNumber);
+            meterId.setRegisteredName(MultispeakDefines.REGISTERED_NAME);
 
             if (paoType.isWaterMeter()) {
-                meterID.setServiceType(ServiceKind.WATER);
+                meterId.setServiceType(ServiceKind.WATER);
             } else if (paoType.isGasMeter()) {
-                meterID.setServiceType(ServiceKind.GAS);
+                meterId.setServiceType(ServiceKind.GAS);
             } else {
-                meterID.setServiceType(ServiceKind.ELECTRIC);
+                meterId.setServiceType(ServiceKind.ELECTRIC);
             }
             
-            meterID.setSystemName(MultispeakDefines.MSP_APPNAME_YUKON);
-            meterIds.add(meterID);
+            meterId.setSystemName(MultispeakDefines.MSP_APPNAME_YUKON);
+            meterIds.add(meterId);
 
             getServiceLocationsByMeterIDs.setArrayOfMeterID(arrayOfMeterID);
 
@@ -208,9 +208,7 @@ public class MspObjectDaoImpl implements MspObjectDao {
     }
 
     @Override
-    public List<MspMeter> getMspMetersByServiceLocation(ServiceLocation mspServiceLocation,
-            MultispeakVendor mspVendor) {
-        //
+    public List<MspMeter> getMspMetersByServiceLocation(ServiceLocation mspServiceLocation, MultispeakVendor mspVendor) {
         List<MspMeter> meterDetails = new ArrayList<MspMeter>();
         String endpointUrl = multispeakFuncs.getEndpointUrl(mspVendor, MultispeakDefines.CB_Server_STR);
         try {
