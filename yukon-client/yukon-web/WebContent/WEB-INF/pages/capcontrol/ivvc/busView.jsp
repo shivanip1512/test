@@ -136,13 +136,14 @@
                 <cti:tab title="${tabName}">
                     <c:set var="chartId" value="sub_${subBusId}_chart" />
                     <highChart:ivvcChart chartId="${chartId}"
+                        feederList="${feederList}"
                         jsonDataAndOptions="${graphAsJSON}"
                         title="${fn:escapeXml(graphSettings.graphTitle)}" />
                     <cti:url var="url" value="/capcontrol/ivvc/bus/chart">
                         <cti:param name="subBusId" value="${subBusId}" />
                     </cti:url>
                     <cti:dataUpdaterCallback 
-                        function="yukon.highChart.reloadChartIfExpired({chartId:'${chartId}', dataUrl:'${url}'})"
+                        function="yukon.da.ivvcChart.reloadChartIfExpired({chartId:'${chartId}', dataUrl:'${url}'})"
                         initialize="false" largestTime="CAPCONTROL/${subBusId}/IVVC_LARGEST_GRAPH_TIME_FOR_SUBBUS"/>
                 </cti:tab>
                 <cti:msg2 var="voltagePointsTab" key=".voltagePoints.title" />
@@ -209,21 +210,13 @@
                     <div class="column one">
                         <tags:boxContainer2 nameKey="zones" hideEnabled="false">
                             <cti:url var="treeUrl" value="/capcontrol/ivvc/bus/${subBusId}/zoneHierarchy"/>
-                            <fancyTree:inlineTree id="zoneHierarchyTree" 
-                                                  dataUrl="${treeUrl}" 
-                                                  includeControlBar="true" 
-                                                  treeParameters='{"minExpandLevel": "1", "icon": false}' 
-                                                  highlightNodePath="${zones.zone.zoneId}" 
-                                                  scrollToHighlighted="true"/>
+                            <fancyTree:inlineTree id="zoneHierarchyTree" dataUrl="${treeUrl}" includeControlBar="true" 
+                                treeParameters='{"minExpandLevel": "1", "icon": false}' highlightNodePath="${zones.zone.zoneId}" scrollToHighlighted="true"/>
                             <c:if test="${hasEditingRole}">
                                 <div class="action-area">         
                                     <cti:button nameKey="create" onclick="yukon.da.zone.wizard.showZoneCreationWizard('${zoneCreatorUrl}', '${zoneCreationWizardTitle}');" icon="icon-add"/>
                                 </div>
                             </c:if>
-                            
-                             <div id="echoSelection"></div>
-                             <div id="echoSelectedCount"></div>
-                             <div id="echoChildCount"></div>
                         </tags:boxContainer2>
                     </div>
                     <div class="column two nogutter">
@@ -283,5 +276,6 @@
     <cti:includeScript link="/resources/js/pages/yukon.da.command.js" />
     <cti:includeScript link="/resources/js/pages/yukon.da.zone.wizard.js"/>
     <cti:includeScript link="/resources/js/pages/yukon.da.busview.js"/>
+    <cti:includeScript link="/resources/js/pages/yukon.da.ivvcChart.js"/>
 
 </cti:standardPage>
