@@ -3,6 +3,8 @@ package com.cannontech.multispeak.service.v4;
 import java.util.Calendar;
 import java.util.List;
 
+import javax.xml.datatype.XMLGregorianCalendar;
+
 import com.cannontech.msp.beans.v4.ErrorObject;
 import com.cannontech.msp.beans.v4.ExpirationTime;
 import com.cannontech.msp.beans.v4.FormattedBlock;
@@ -248,4 +250,27 @@ public interface MR_Server {
      */
     public List<ErrorObject> removeMetersFromMeterGroup(List<MeterID> meterIds, String meterGroupId)
             throws MultispeakWebServiceException;
+
+    /**
+     * meter Changed Notification.
+     * @param changedMeters the changed meters
+     * @return the error object[]
+     * @throws MultispeakWebServiceException the multispeak web service exception
+     */
+    public List<ErrorObject> meterChangedNotification(List<MspMeter> changedMeters) throws MultispeakWebServiceException;
+    
+    /**
+     * initiate Meter Read By Meter ID.
+     * @param meterIds the meter ids
+     * @param responseURL the response url
+     * @param transactionID the transaction id
+     * @param expirationTime the expiration time
+     * @return the error object[]
+     * @throws MultispeakWebServiceException the multispeak web service
+     *             exception
+     */
+    public List<ErrorObject> initiateMeterReadingsByMeterID(List<MeterID> meterIds,
+            String responseURL, String transactionId, ExpirationTime expirationTime)
+            throws MultispeakWebServiceException;
+
 }

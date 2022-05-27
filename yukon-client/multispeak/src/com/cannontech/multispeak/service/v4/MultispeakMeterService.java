@@ -36,7 +36,15 @@ public interface MultispeakMeterService {
     public List<ErrorObject> cancelUsageMonitoring(MultispeakVendor mspVendor, List<MeterID> meterIds);
 
     /**
-     * Adds meters to a group. If the group doesn't exist, a new group will be created
+     * Send a ping command to pil connection for each meter in meterNumbers.
+     * @return ErrorObject [] Array of errorObjects for meters that cannot be found, etc.
+     * @throws MultispeakWebServiceException
+     */
+    public List<ErrorObject> odEvent(MultispeakVendor mspVendor,
+            List<MeterID> meterIds,
+            String transactionId, String responseUrl) throws MultispeakWebServiceException;
+    
+    /** Adds meters to a group. If the group doesn't exist, a new group will be created
      */
     public List<ErrorObject> addMetersToGroup(MeterGroup meterGroup, String mspMethod, MultispeakVendor mspVendor);
 
@@ -96,11 +104,28 @@ public interface MultispeakMeterService {
     public List<ErrorObject> meterRemove(MultispeakVendor mspVendor, List<MspMeter> removeMeters);
 
     /**
+     * Changes the meter information.
+     * @throws MultispeakWebServiceException
+     */
+     public List<ErrorObject> meterChanged(MultispeakVendor mspVendor, List<MspMeter> changedMeters) throws MultispeakWebServiceException;
+
+     /**
      * Send a disconnect/connect request to Porter (PLC) or submit to queue (RFN) for each meter in meterNumbers.
      * 
      * @return ErrorObject [] Array of errorObjects for meters that cannot be found, etc.
      */
     public List<ErrorObject> cdEvent(MultispeakVendor mspVendor, List<ConnectDisconnectEvent> cdEvents, 
                                      String transactionId, String responseURL) throws MultispeakWebServiceException;
+    
+    /**
+     * Initiate reads for all meterIds and fire ReadingChangedNotification on
+     * callback. Callback fires for each completed read, may have multiple per
+     * meterId.
+     * @return ErrorObject [] Array of errorObjects for meters that cannot be
+     *         found, etc.
+     */
+    public List<ErrorObject> meterReadEvent(MultispeakVendor vendor, List<MeterID> meterIds, String transactionId,
+            String actualResponseUrl);
+
 }
  

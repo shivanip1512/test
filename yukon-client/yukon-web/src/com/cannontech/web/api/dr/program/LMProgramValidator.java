@@ -238,7 +238,11 @@ public class LMProgramValidator extends SimpleValidator<LoadProgram> {
                             }
 
                             yukonApiValidationUtils.checkIfFieldRequired("gearNumber", errors, gear.getGearNumber(),
-                                "Gear Number");
+                                    "Gear Number");
+                            if (!errors.hasFieldErrors("gearNumber") && gear.getGearNumber() != i + 1) {
+                                errors.rejectValue("gearNumber", ApiErrorDetails.INVALID_VALUE.getCodeString(),
+                                        new Object[] { i + 1 }, "");
+                            }
                             errors.popNestedPath();
 
                             // Validate Gear Fields

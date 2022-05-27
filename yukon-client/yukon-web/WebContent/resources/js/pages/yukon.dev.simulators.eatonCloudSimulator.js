@@ -49,8 +49,9 @@ yukon.dev.simulators.eatonCloudSimulator = ( function() {
     },
     
     _updateSecretInformation = function() {
+        var enableTokenSecretRotationTesting = $('#tokenSecretTesting').prop('checked');
         $.ajax({
-            url: yukon.url('/dev/eatonCloud/updateSecretInformation'),
+            url: yukon.url('/dev/eatonCloud/updateSecretInformation?enableTokenSecretRotationTesting=' + enableTokenSecretRotationTesting),
             type: 'get'
         }).done(function (data) {
         	var secretInformation = $('.js-secret-information').removeClass('dn');
