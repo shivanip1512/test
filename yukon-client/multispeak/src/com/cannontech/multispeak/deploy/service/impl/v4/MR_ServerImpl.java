@@ -88,7 +88,6 @@ public class MR_ServerImpl implements MR_Server {
     private BasicServerConnection porterConnection;
 
     private final Logger log = YukonLogManager.getLogger(MR_ServerImpl.class);
-    
 
     private final static String[] methods = new String[] { "PingURL",
                                                            "GetMethods",
@@ -114,6 +113,7 @@ public class MR_ServerImpl implements MR_Server {
                                                            "DeleteMeterGroup",
                                                            "RemoveMetersFromMeterGroup",
                                                            "MeterChangedNotification",
+                                                           "InitiateMeterReadingsByMeterID",
                                                            "InitiateMeterReadingsByFieldName"
                                                            };
 
@@ -649,6 +649,40 @@ public class MR_ServerImpl implements MR_Server {
         return errorObject;
     }
 
+    @Override
+    public List<ErrorObject> initiateMeterReadingsByMeterID(List<MeterID> meterIds, String responseURL, String transactionId,
+            ExpirationTime expirationTime) throws MultispeakWebServiceException {
+
+        init();
+
+        MultispeakVendor vendor = multispeakFuncs.getMultispeakVendorFromHeader();
+        multispeakEventLogService.methodInvoked("InitiateMeterReadingsByMeterID",
+                                                vendor.getCompanyName());
+
+        List<ErrorObject> errorObjects = new ArrayList<ErrorObject>();
+        
+        String actualResponseUrl = multispeakFuncs.getResponseUrl(vendor,
+                                                                  responseURL, 
+                                                                  MultispeakDefines.CB_Server_STR);
+
+        if (!porterConnection.isValid()) {
+            String message = "Connection to 'Yukon Port Control Service' is not valid.  Please contact your Yukon Administrator.";
+            log.error(message);
+            throw new MultispeakWebServiceException(message);
+        }
+
+        errorObjects = multispeakMeterService.meterReadEvent(vendor,
+                                                             meterIds, 
+                                                             transactionId, 
+                                                             actualResponseUrl);
+
+        multispeakFuncs.logErrorObjects(MultispeakDefines.MR_Server_STR,
+                                        "InitiateMeterReadingsByMeterID",
+                                        errorObjects);
+        return errorObjects;
+    
+    }
+    
     @Override
     public List<ErrorObject> InitiateMeterReadingsByFieldName(List<MeterID> meterIds, String responseURL, List<String> fieldNames,
             String transactionId, ExpirationTime expirationTime, String formattedBlockTemplateName) throws MultispeakWebServiceException  {

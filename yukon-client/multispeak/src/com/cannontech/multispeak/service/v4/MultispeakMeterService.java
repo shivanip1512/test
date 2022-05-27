@@ -120,6 +120,16 @@ public interface MultispeakMeterService {
                                      String transactionId, String responseURL) throws MultispeakWebServiceException;
     
     /**
+     * Initiate reads for all meterIds and fire ReadingChangedNotification on
+     * callback. Callback fires for each completed read, may have multiple per
+     * meterId.
+     * @return ErrorObject [] Array of errorObjects for meters that cannot be
+     *         found, etc.
+     */
+    public List<ErrorObject> meterReadEvent(MultispeakVendor vendor, List<MeterID> meterIds, String transactionId,
+            String actualResponseUrl);
+
+    /**
      * Initiate reads for meterNumber and fire FormattedBlockChangeNotification
      * on callback. Callback fires for all completed reads, will have only one
      * for meterNumber.
@@ -129,6 +139,5 @@ public interface MultispeakMeterService {
     public List<ErrorObject> blockMeterReadEvent(MultispeakVendor mspVendor,
             List<MeterID> meterIds, FormattedBlockProcessingService<Block> blockProcessingService,
             String transactionId, String responseUrl);
-
 }
  

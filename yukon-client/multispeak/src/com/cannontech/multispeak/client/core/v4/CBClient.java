@@ -144,6 +144,20 @@ public class CBClient implements ICBClient {
     }
 
     @Override
+    public ReadingChangedNotificationResponse readingChangedNotification(final MultispeakVendor mspVendor, String uri,
+            ReadingChangedNotification readingChangedNotification) throws MultispeakWebServiceClientException {
+        try {
+            multispeakFuncs.setMsgSender(webServiceTemplate, mspVendor);;
+
+            return (ReadingChangedNotificationResponse) webServiceTemplate.marshalSendAndReceive(uri,
+                readingChangedNotification, customWebServiceMsgCallback.addRequestHeader(mspVendor, MultispeakDefines.CB_Server_STR));
+        } catch (WebServiceException | XmlMappingException e) {
+            throw new MultispeakWebServiceClientException(e.getMessage());
+        }
+    
+    }
+    
+    @Override
     public FormattedBlockNotificationResponse formattedBlockNotification(MultispeakVendor mspVendor, String uri,
             String interfaceName,
             FormattedBlockNotification formattedBlockNotification) throws MultispeakWebServiceClientException {
@@ -158,16 +172,4 @@ public class CBClient implements ICBClient {
         }
     }
     
-    @Override
-    public ReadingChangedNotificationResponse readingChangedNotification(final MultispeakVendor mspVendor, String uri,
-            ReadingChangedNotification readingChangedNotification) throws MultispeakWebServiceClientException {
-        try {
-            multispeakFuncs.setMsgSender(webServiceTemplate, mspVendor);;
-
-            return (ReadingChangedNotificationResponse) webServiceTemplate.marshalSendAndReceive(uri,
-                readingChangedNotification, customWebServiceMsgCallback.addRequestHeader(mspVendor, MultispeakDefines.CB_Server_STR));
-        } catch (WebServiceException | XmlMappingException e) {
-            throw new MultispeakWebServiceClientException(e.getMessage());
-        }
-    }
 }
