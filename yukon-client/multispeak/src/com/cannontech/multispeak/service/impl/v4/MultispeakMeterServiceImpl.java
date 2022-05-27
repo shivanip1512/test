@@ -2408,14 +2408,14 @@ public class MultispeakMeterServiceImpl extends MultispeakMeterServiceBase imple
                     updater.update(meterRead);
 
                     try {
-                        log.info("Sending MeterReadingsNotification (" + responseUrl + "): Meter Number " + meterRead.getObjectID());
+                        log.info("Sending ReadingChangedNotification (" + responseUrl + "): Meter Number " + meterRead.getObjectID());
                         final ReadingChangedNotification readingChangedNotification = new ReadingChangedNotification();
                         ArrayOfMeterReading1 arrayOfMeterReading = objectFactory.createArrayOfMeterReading1();
                         arrayOfMeterReading.getMeterReading().add(meterRead);
                         readingChangedNotification.setChangedMeterReads(arrayOfMeterReading);
 
                         readingChangedNotification.setTransactionID(transactionId);
-                        log.info("Sending MeterReadingsNotification (" + responseUrl + "): Meter Number "+ meterRead.getObjectID());
+                        log.info("Sending ReadingChangedNotification (" + responseUrl + "): Meter Number "+ meterRead.getObjectID());
                         ReadingChangedNotificationResponse readingChangedNotificationResponse = cbClient.readingChangedNotification(mspVendor,
                                                                                                                                     responseUrl,
                                                                                                                                     readingChangedNotification);
@@ -2426,7 +2426,7 @@ public class MultispeakMeterServiceImpl extends MultispeakMeterServiceBase imple
                                     .getErrorObject();
                             errObjects = responseErrorObjects;
                         }
-                        multispeakEventLogService.notificationResponse("MeterReadingsNotification", 
+                        multispeakEventLogService.notificationResponse("ReadingChangedNotification", 
                                                                         transactionId,
                                                                         meterRead.getObjectID(), 
                                                                         meterRead.getMeterID().getServiceType().toString(),
@@ -2434,7 +2434,7 @@ public class MultispeakMeterServiceImpl extends MultispeakMeterServiceBase imple
                                                                         responseUrl);
                         
                         if (CollectionUtils.isNotEmpty(errObjects)) {
-                            multispeakFuncs.logErrorObjects(responseUrl, "MeterReadingsNotification", errObjects);
+                            multispeakFuncs.logErrorObjects(responseUrl, "ReadingChangedNotification", errObjects);
                         }
 
                     } catch (MultispeakWebServiceClientException e) {

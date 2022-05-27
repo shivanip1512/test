@@ -111,7 +111,8 @@ public class MR_ServerImpl implements MR_Server {
                                                            "InsertMeterInMeterGroup",
                                                            "DeleteMeterGroup",
                                                            "RemoveMetersFromMeterGroup",
-                                                           "MeterChangedNotification"
+                                                           "MeterChangedNotification",
+                                                           "InitiateMeterReadingsByMeterID"
                                                            };
 
     private void init() throws MultispeakWebServiceException {
@@ -658,7 +659,6 @@ public class MR_ServerImpl implements MR_Server {
 
         List<ErrorObject> errorObjects = new ArrayList<ErrorObject>();
         
-        if (meterIds != null) {
         String actualResponseUrl = multispeakFuncs.getResponseUrl(vendor,
                                                                   responseURL, 
                                                                   MultispeakDefines.CB_Server_STR);
@@ -674,7 +674,6 @@ public class MR_ServerImpl implements MR_Server {
                                                              transactionId, 
                                                              actualResponseUrl);
 
-        }
         multispeakFuncs.logErrorObjects(MultispeakDefines.MR_Server_STR,
                                         "InitiateMeterReadingsByMeterID",
                                         errorObjects);
