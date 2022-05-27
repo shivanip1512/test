@@ -2284,15 +2284,15 @@ public class MultispeakMeterServiceImpl extends MultispeakMeterServiceBase imple
     }
 
     @Override
-    public synchronized List<ErrorObject> blockMeterReadEvent(final MultispeakVendor mspVendor, List<MeterID> meterIDs,
+    public synchronized List<ErrorObject> blockMeterReadEvent(final MultispeakVendor mspVendor, List<MeterID> meterIds,
             final FormattedBlockProcessingService<Block> blockProcessingService, final String transactionId,
             final String responseUrl) {
 
         ArrayList<ErrorObject> errorObjects = new ArrayList<>();
 
-        log.info("Received " + meterIDs.size() + " for BlockMeterReading from " + mspVendor.getCompanyName());
+        log.info("Received " + meterIds.size() + " for BlockMeterReading from " + mspVendor.getCompanyName());
         
-        multispeakEventLogService.initiateMeterReadRequest(meterIDs.size(), 
+        multispeakEventLogService.initiateMeterReadRequest(meterIds.size(), 
                                                            "InitiateMeterReadingsByFieldName",
                                                            mspVendor.getCompanyName());
 
@@ -2306,11 +2306,11 @@ public class MultispeakMeterServiceImpl extends MultispeakMeterServiceBase imple
         // a solution could be implemented a new command for collected the "latest" profile reads available.
         attributes.retainAll(attributeService.getReadableAttributes());
 
-        for (MeterID meterId : meterIDs) {
+        for (MeterID meterId : meterIds) {
             String meterNo = meterId.getMeterNo();
             YukonMeter paoToRead;
             try {
-                if(StringUtils.isBlank(meterNo)) {
+                if (StringUtils.isBlank(meterNo)) {
                     throw new NotFoundException("meterNo can not be empty.");
                 }
                 paoToRead = mspMeterDao.getMeterForMeterNumber(meterNo);
