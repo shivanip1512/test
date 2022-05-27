@@ -656,7 +656,7 @@ public class MR_ServerImpl implements MR_Server {
         init();
 
         MultispeakVendor vendor = multispeakFuncs.getMultispeakVendorFromHeader();
-        multispeakEventLogService.methodInvoked("InitiateMeterReadingsByReadingTypeCodes",
+        multispeakEventLogService.methodInvoked("InitiateMeterReadingsByFieldName",
                                                 vendor.getCompanyName());
 
         String actualResponseUrl = multispeakFuncs.getResponseUrl(vendor,
@@ -685,7 +685,7 @@ public class MR_ServerImpl implements MR_Server {
                                                                                     actualResponseUrl);
 
         multispeakFuncs.logErrorObjects(MultispeakDefines.MR_Server_STR,
-                                        "InitiateMeterReadingsByReadingTypeCodes",
+                                        "InitiateMeterReadingsByFieldName",
                                         errorObjects);
         return errorObjects;
     
