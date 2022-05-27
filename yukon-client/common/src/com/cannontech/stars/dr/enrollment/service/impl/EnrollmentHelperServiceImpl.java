@@ -237,6 +237,7 @@ public class EnrollmentHelperServiceImpl implements EnrollmentHelperService {
 
     @Override
     public synchronized void doEnrollment(EnrollmentHelperHolder enrollmentHelperHolder, EnrollmentEnum enrollmentEnum, LiteYukonUser user){
+        
         CustomerAccount customerAccount = enrollmentHelperHolder.getCustomerAccount();
         EnrollmentHelper enrollmentHelper = enrollmentHelperHolder.getEnrollmentHelper();
         LMHardwareBase lmHardwareBase = enrollmentHelperHolder.getLmHardwareBase();
