@@ -13,6 +13,35 @@
 
 namespace Cti { namespace Messaging { namespace Serialization { namespace Thrift {
 
+int _kEdgeUnicastPriorityValues[] = {
+  EdgeUnicastPriority::HIGH,
+  EdgeUnicastPriority::LOW
+};
+const char* _kEdgeUnicastPriorityNames[] = {
+  "HIGH",
+  "LOW"
+};
+const std::map<int, const char*> _EdgeUnicastPriority_VALUES_TO_NAMES(::apache::thrift::TEnumIterator(2, _kEdgeUnicastPriorityValues, _kEdgeUnicastPriorityNames), ::apache::thrift::TEnumIterator(-1, NULL, NULL));
+
+std::ostream& operator<<(std::ostream& out, const EdgeUnicastPriority::type& val) {
+  std::map<int, const char*>::const_iterator it = _EdgeUnicastPriority_VALUES_TO_NAMES.find(val);
+  if (it != _EdgeUnicastPriority_VALUES_TO_NAMES.end()) {
+    out << it->second;
+  } else {
+    out << static_cast<int>(val);
+  }
+  return out;
+}
+
+std::string to_string(const EdgeUnicastPriority::type& val) {
+  std::map<int, const char*>::const_iterator it = _EdgeUnicastPriority_VALUES_TO_NAMES.find(val);
+  if (it != _EdgeUnicastPriority_VALUES_TO_NAMES.end()) {
+    return std::string(it->second);
+  } else {
+    return std::to_string(static_cast<int>(val));
+  }
+}
+
 
 EdgeDrUnicastRequest::~EdgeDrUnicastRequest() noexcept {
 }
@@ -30,8 +59,12 @@ void EdgeDrUnicastRequest::__set_payload(const std::string& val) {
   this->payload = val;
 }
 
-void EdgeDrUnicastRequest::__set_priority(const int8_t val) {
-  this->priority = val;
+void EdgeDrUnicastRequest::__set_queuePriority(const EdgeUnicastPriority::type val) {
+  this->queuePriority = val;
+}
+
+void EdgeDrUnicastRequest::__set_networkPriority(const EdgeUnicastPriority::type val) {
+  this->networkPriority = val;
 }
 std::ostream& operator<<(std::ostream& out, const EdgeDrUnicastRequest& obj)
 {
@@ -55,7 +88,8 @@ uint32_t EdgeDrUnicastRequest::read(::apache::thrift::protocol::TProtocol* iprot
   bool isset_messageGuid = false;
   bool isset_paoIds = false;
   bool isset_payload = false;
-  bool isset_priority = false;
+  bool isset_queuePriority = false;
+  bool isset_networkPriority = false;
 
   while (true)
   {
@@ -102,9 +136,21 @@ uint32_t EdgeDrUnicastRequest::read(::apache::thrift::protocol::TProtocol* iprot
         }
         break;
       case 4:
-        if (ftype == ::apache::thrift::protocol::T_BYTE) {
-          xfer += iprot->readByte(this->priority);
-          isset_priority = true;
+        if (ftype == ::apache::thrift::protocol::T_I32) {
+          int32_t ecast5;
+          xfer += iprot->readI32(ecast5);
+          this->queuePriority = (EdgeUnicastPriority::type)ecast5;
+          isset_queuePriority = true;
+        } else {
+          xfer += iprot->skip(ftype);
+        }
+        break;
+      case 5:
+        if (ftype == ::apache::thrift::protocol::T_I32) {
+          int32_t ecast6;
+          xfer += iprot->readI32(ecast6);
+          this->networkPriority = (EdgeUnicastPriority::type)ecast6;
+          isset_networkPriority = true;
         } else {
           xfer += iprot->skip(ftype);
         }
@@ -124,7 +170,9 @@ uint32_t EdgeDrUnicastRequest::read(::apache::thrift::protocol::TProtocol* iprot
     throw TProtocolException(TProtocolException::INVALID_DATA);
   if (!isset_payload)
     throw TProtocolException(TProtocolException::INVALID_DATA);
-  if (!isset_priority)
+  if (!isset_queuePriority)
+    throw TProtocolException(TProtocolException::INVALID_DATA);
+  if (!isset_networkPriority)
     throw TProtocolException(TProtocolException::INVALID_DATA);
   return xfer;
 }
@@ -141,10 +189,10 @@ uint32_t EdgeDrUnicastRequest::write(::apache::thrift::protocol::TProtocol* opro
   xfer += oprot->writeFieldBegin("paoIds", ::apache::thrift::protocol::T_LIST, 2);
   {
     xfer += oprot->writeListBegin(::apache::thrift::protocol::T_I32, static_cast<uint32_t>(this->paoIds.size()));
-    std::vector<int32_t> ::const_iterator _iter5;
-    for (_iter5 = this->paoIds.begin(); _iter5 != this->paoIds.end(); ++_iter5)
+    std::vector<int32_t> ::const_iterator _iter7;
+    for (_iter7 = this->paoIds.begin(); _iter7 != this->paoIds.end(); ++_iter7)
     {
-      xfer += oprot->writeI32((*_iter5));
+      xfer += oprot->writeI32((*_iter7));
     }
     xfer += oprot->writeListEnd();
   }
@@ -154,8 +202,12 @@ uint32_t EdgeDrUnicastRequest::write(::apache::thrift::protocol::TProtocol* opro
   xfer += oprot->writeBinary(this->payload);
   xfer += oprot->writeFieldEnd();
 
-  xfer += oprot->writeFieldBegin("priority", ::apache::thrift::protocol::T_BYTE, 4);
-  xfer += oprot->writeByte(this->priority);
+  xfer += oprot->writeFieldBegin("queuePriority", ::apache::thrift::protocol::T_I32, 4);
+  xfer += oprot->writeI32((int32_t)this->queuePriority);
+  xfer += oprot->writeFieldEnd();
+
+  xfer += oprot->writeFieldBegin("networkPriority", ::apache::thrift::protocol::T_I32, 5);
+  xfer += oprot->writeI32((int32_t)this->networkPriority);
   xfer += oprot->writeFieldEnd();
 
   xfer += oprot->writeFieldStop();
@@ -168,20 +220,23 @@ void swap(EdgeDrUnicastRequest &a, EdgeDrUnicastRequest &b) {
   swap(a.messageGuid, b.messageGuid);
   swap(a.paoIds, b.paoIds);
   swap(a.payload, b.payload);
-  swap(a.priority, b.priority);
+  swap(a.queuePriority, b.queuePriority);
+  swap(a.networkPriority, b.networkPriority);
 }
 
-EdgeDrUnicastRequest::EdgeDrUnicastRequest(const EdgeDrUnicastRequest& other6) {
-  messageGuid = other6.messageGuid;
-  paoIds = other6.paoIds;
-  payload = other6.payload;
-  priority = other6.priority;
+EdgeDrUnicastRequest::EdgeDrUnicastRequest(const EdgeDrUnicastRequest& other8) {
+  messageGuid = other8.messageGuid;
+  paoIds = other8.paoIds;
+  payload = other8.payload;
+  queuePriority = other8.queuePriority;
+  networkPriority = other8.networkPriority;
 }
-EdgeDrUnicastRequest& EdgeDrUnicastRequest::operator=(const EdgeDrUnicastRequest& other7) {
-  messageGuid = other7.messageGuid;
-  paoIds = other7.paoIds;
-  payload = other7.payload;
-  priority = other7.priority;
+EdgeDrUnicastRequest& EdgeDrUnicastRequest::operator=(const EdgeDrUnicastRequest& other9) {
+  messageGuid = other9.messageGuid;
+  paoIds = other9.paoIds;
+  payload = other9.payload;
+  queuePriority = other9.queuePriority;
+  networkPriority = other9.networkPriority;
   return *this;
 }
 void EdgeDrUnicastRequest::printTo(std::ostream& out) const {
@@ -190,7 +245,8 @@ void EdgeDrUnicastRequest::printTo(std::ostream& out) const {
   out << "messageGuid=" << to_string(messageGuid);
   out << ", " << "paoIds=" << to_string(paoIds);
   out << ", " << "payload=" << to_string(payload);
-  out << ", " << "priority=" << to_string(priority);
+  out << ", " << "queuePriority=" << to_string(queuePriority);
+  out << ", " << "networkPriority=" << to_string(networkPriority);
   out << ")";
 }
 
