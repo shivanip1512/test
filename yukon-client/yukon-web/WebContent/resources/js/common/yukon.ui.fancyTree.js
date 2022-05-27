@@ -46,7 +46,29 @@ yukon.ui.fancyTree= (function () {
             if (search_term !== '') search.addClass('error');
         }
     },
-        
+/*        
+    _printSelectedChild = function () {
+    	data.tree.getRootNode().visit(function (node) {
+            if (node.children != null) {
+                var count = 0;
+                for (var i = 0; i < node.children.length; i++) {
+                    if(node.children[i].isSelected() == true)
+                        count++;
+                } 
+                console.log(count); // reflecting in console
+                var title = node.data.text;
+                if(count > 0)
+                {
+                    title = title + " ( " + count + " node selected) ";
+                    node.setTitle(title);
+                }
+                else
+                {
+                    node.setTitle(title);
+                }
+             }
+         });
+    },*/
     _initializeTree = function () {
         $('.js-fancy-tree').each(function() {
             var dataUrl = $(this).data('url'),
@@ -70,22 +92,28 @@ yukon.ui.fancyTree= (function () {
                     },
                     checkbox : true,
                     select: function(event, data) {
-
                         // count selected direct childs
-                        var countChilds = 
-                           data.tree.getRootNode().visit(function (node) {
-                        	   if (node.children != null) {
-                        		   var count = 0;
-                                   for (var i = 0; i < node.children.length; i++) {
-                                       if(node.children[i].isSelected() == true)
-                                    	   count++;
-                                   } 
-                                   console.log(count); // reflecting in console
-                            	   return count;
-                               }
+                    	
+                        data.tree.getRootNode().visit(function (node) {
+                            if (node.children != null) {
+                                var count = 0;
+                                for (var i = 0; i < node.children.length; i++) {
+                                    if(node.children[i].isSelected() == true)
+                                        count++;
+                                } 
+                                console.log(count); // reflecting in console
+                                var title = node.data.text;
+                                if(count > 0)
+                                {
+                                    title = title + " ( " + count + " node selected) ";
+                                    node.setTitle(title);
+                                }
+                                else
+                                {
+                                    node.setTitle(title);
+                                }
+                             }
                          });
-                        
-                        $("#echoChildCount").text(countChilds);
                       },
                     
                     init: function(event, data) {
