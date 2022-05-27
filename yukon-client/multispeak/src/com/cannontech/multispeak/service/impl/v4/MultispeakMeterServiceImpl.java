@@ -2306,17 +2306,20 @@ public class MultispeakMeterServiceImpl extends MultispeakMeterServiceBase imple
         // a solution could be implemented a new command for collected the "latest" profile reads available.
         attributes.retainAll(attributeService.getReadableAttributes());
 
-        for (MeterID meterID : meterIDs) {
-            String meter = meterID.getMeterNo();
+        for (MeterID meterId : meterIDs) {
+            String meterNo = meterId.getMeterNo();
             YukonMeter paoToRead;
             try {
-                paoToRead = mspMeterDao.getMeterForMeterNumber(meter);
+                if(StringUtils.isBlank(meterNo)) {
+                    throw new NotFoundException("meterNo can not be empty.");
+                }
+                paoToRead = mspMeterDao.getMeterForMeterNumber(meterNo);
             } catch (NotFoundException e) {
-                multispeakEventLogService.meterNotFound(meter, 
+                multispeakEventLogService.meterNotFound(meterNo, 
                                                         "InitiateMeterReadingsByFieldName",
                                                         mspVendor.getCompanyName());
                 
-                ErrorObject err = mspObjectDao.getNotFoundErrorObject(meter, 
+                ErrorObject err = mspObjectDao.getNotFoundErrorObject(meterNo, 
                                                                      "MeterNumber", 
                                                                      "MeterID", 
                                                                      "BlockMeterReadEvent",
@@ -2442,7 +2445,7 @@ public class MultispeakMeterServiceImpl extends MultispeakMeterServiceBase imple
                 }
             };
 
-            multispeakEventLogService.initiateMeterRead(meter, 
+            multispeakEventLogService.initiateMeterRead(meterNo, 
                                                         paoToRead, 
                                                         transactionId,
                                                         "InitiateMeterReadingsByFieldName", 
