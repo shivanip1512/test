@@ -2,7 +2,7 @@
 <%@ taglib prefix="fn" uri="http://java.sun.com/jsp/jstl/functions"%>
 <%@ taglib prefix="tags" tagdir="/WEB-INF/tags" %>
 
-<%@ attribute name="items" required="true" type="java.util.List"%>
+<%@ attribute name="items" required="true" type="java.util.List" description="A List of LMDto objects to be displayed in the dropdown."%>
 
 <cti:msgScope paths="yukon.web.modules.operator.signalTransmitter">
     <tags:nameValue2 nameKey=".commChannel">

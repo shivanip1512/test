@@ -6,7 +6,6 @@ import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
 
 import org.apache.logging.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -174,7 +173,7 @@ public class SignalTransmitterController {
             flash.setError(new YukonMessageSourceResolvable(communicationKey));
             return "redirect:/stars/device/signalTransmitter/list";
         } catch (RestClientException ex) {
-            log.error("Error creating signal trasnmitter: {}. Error: {}", signalTransmitter.getName(), ex.getMessage());
+            log.error("Error creating signal transmitter: {}. Error: {}", signalTransmitter.getName(), ex.getMessage());
             flash.setError(
                     new YukonMessageSourceResolvable("yukon.web.api.save.error", signalTransmitter.getName(), ex.getMessage()));
             return "redirect:/stars/device/signalTransmitter/list";
