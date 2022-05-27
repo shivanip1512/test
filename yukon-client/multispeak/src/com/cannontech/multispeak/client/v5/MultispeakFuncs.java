@@ -66,6 +66,7 @@ import com.cannontech.msp.beans.v5.enumerations.RCDStateKind;
 import com.cannontech.msp.beans.v5.enumerations.ServiceKind;
 import com.cannontech.msp.beans.v5.multispeak.Customer;
 import com.cannontech.msp.beans.v5.multispeak.ElectricMeter;
+import com.cannontech.msp.beans.v5.multispeak.GasMeter;
 import com.cannontech.msp.beans.v5.multispeak.Meters;
 import com.cannontech.msp.beans.v5.multispeak.MspMeter;
 import com.cannontech.msp.beans.v5.multispeak.WaterMeter;
@@ -583,6 +584,11 @@ public class MultispeakFuncs extends MultispeakFuncsBase {
         List<WaterMeter> waterMeters = (null != meters.getWaterMeters()) ? meters.getWaterMeters().getWaterMeter() : null;
         if (CollectionUtils.isNotEmpty(waterMeters)) {
             mspMeters.addAll(waterMeters);
+        }
+        
+        List<GasMeter> gasMeters = (null != meters.getGasMeters()) ? meters.getGasMeters().getGasMeter() : null;
+        if (CollectionUtils.isNotEmpty(gasMeters)) {
+            mspMeters.addAll(gasMeters);
         }
         return mspMeters;
 
