@@ -22,6 +22,8 @@ import com.cannontech.msp.beans.v4.MeterEventNotification;
 import com.cannontech.msp.beans.v4.MeterEventNotificationResponse;
 import com.cannontech.msp.beans.v4.PingURL;
 import com.cannontech.msp.beans.v4.PingURLResponse;
+import com.cannontech.msp.beans.v4.ReadingChangedNotification;
+import com.cannontech.msp.beans.v4.ReadingChangedNotificationResponse;
 import com.cannontech.multispeak.client.MultispeakDefines;
 import com.cannontech.multispeak.client.MultispeakVendor;
 import com.cannontech.multispeak.client.v4.MultispeakFuncs;
@@ -151,6 +153,19 @@ public class CBClient implements ICBClient {
             return (FormattedBlockNotificationResponse) webServiceTemplate.marshalSendAndReceive(uri,
                     formattedBlockNotification,
                     customWebServiceMsgCallback.addRequestHeader(mspVendor, MultispeakDefines.CB_Server_STR));
+        } catch (WebServiceException | XmlMappingException e) {
+            throw new MultispeakWebServiceClientException(e.getMessage());
+        }
+    }
+    
+    @Override
+    public ReadingChangedNotificationResponse readingChangedNotification(final MultispeakVendor mspVendor, String uri,
+            ReadingChangedNotification readingChangedNotification) throws MultispeakWebServiceClientException {
+        try {
+            multispeakFuncs.setMsgSender(webServiceTemplate, mspVendor);;
+
+            return (ReadingChangedNotificationResponse) webServiceTemplate.marshalSendAndReceive(uri,
+                readingChangedNotification, customWebServiceMsgCallback.addRequestHeader(mspVendor, MultispeakDefines.CB_Server_STR));
         } catch (WebServiceException | XmlMappingException e) {
             throw new MultispeakWebServiceClientException(e.getMessage());
         }
