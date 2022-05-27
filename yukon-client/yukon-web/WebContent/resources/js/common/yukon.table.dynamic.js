@@ -287,7 +287,7 @@ yukon.protoDynamicTable = function (tableId, nextRowId, addItemParameters) {
             tempRequestDiv = wrapperDiv.getElementsByClassName('tempRequest'),
             newRow = $(tempRequestDiv[0]).find('tr')[0],
             newUndoRow = $(newRow).next()[0],
-            tempRow = this.table.insertRow(-1),
+            tempRow = $(this.table).find('tbody')[0].insertRow(-1),
             parentNode = tempRow.parentNode,
             noItemsMessageDiv,
             tbody;
