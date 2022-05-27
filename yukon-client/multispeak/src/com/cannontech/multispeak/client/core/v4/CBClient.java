@@ -142,9 +142,8 @@ public class CBClient implements ICBClient {
     }
 
     @Override
-    public ReadingChangedNotificationResponse readingChangedNotification(MultispeakVendor mspVendor, String uri,
+    public ReadingChangedNotificationResponse readingChangedNotification(final MultispeakVendor mspVendor, String uri,
             ReadingChangedNotification readingChangedNotification) throws MultispeakWebServiceClientException {
-
         try {
             multispeakFuncs.setMsgSender(webServiceTemplate, mspVendor);;
 

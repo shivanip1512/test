@@ -1,5 +1,7 @@
 package com.cannontech.web.api.terminal.service;
 
+import java.util.List;
+
 import com.cannontech.common.device.terminal.model.TerminalBase;
 
 public interface PagingTerminalService {
@@ -18,5 +20,10 @@ public interface PagingTerminalService {
      * Delete a paging terminal
      */
     int delete(int id);
-
+    
+    /**
+     * Retrieve all paging terminals
+     */
+    List<TerminalBase> retrieveAll();
+    
 }

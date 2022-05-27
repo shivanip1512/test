@@ -1,5 +1,10 @@
 package com.cannontech.web.api.terminal.service.impl;
 
+import java.util.ArrayList;
+import java.util.List;
+import java.util.stream.Collectors;
+
+import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.transaction.annotation.Transactional;
@@ -105,6 +110,27 @@ public class PagingTerminalServiceImpl implements PagingTerminalService {
         terminalBase.buildModel(iedBase);
         terminalBase.getCommChannel().setName(cache.getAllPaosMap().get(terminalBase.getCommChannel().getId()).getPaoName());
         return terminalBase;
+    }
+
+    @SuppressWarnings("rawtypes")
+    @Override
+    public List<TerminalBase> retrieveAll() {
+        List<LiteYukonPAObject> liteObjectList = cache.getAllPaosMap().values().stream()
+                .filter(pao -> pao.getPaoType() == PaoType.SNPP_TERMINAL || pao.getPaoType() == PaoType.TAPTERMINAL
+                        || pao.getPaoType() == PaoType.TNPP_TERMINAL || pao.getPaoType() == PaoType.WCTP_TERMINAL)
+                .collect(Collectors.toList());
+        List<TerminalBase> terminalList = new ArrayList<TerminalBase>();
+        if (CollectionUtils.isNotEmpty(liteObjectList)) {
+            liteObjectList.forEach(liteObject -> {
+                IEDBase iedBase = (IEDBase) dbPersistentDao.retrieveDBPersistent(liteObject);
+                TerminalBase terminalBase = new TerminalBase<IEDBase>(iedBase.getPAObjectID(), iedBase.getPAOName(),
+                        iedBase.getPaoType(),
+                        !iedBase.isDisabled());
+                terminalList.add(terminalBase);
+            });
+
+        }
+        return terminalList;
     }
 
 }

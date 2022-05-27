@@ -1,5 +1,7 @@
 package com.cannontech.multispeak.client.core.v4;
 
+import com.cannontech.msp.beans.v4.ReadingChangedNotification;
+import com.cannontech.msp.beans.v4.ReadingChangedNotificationResponse;
 import com.cannontech.msp.beans.v4.CDStateChangedNotification;
 import com.cannontech.msp.beans.v4.CDStateChangedNotificationResponse;
 import com.cannontech.msp.beans.v4.GetDomainMembers;
@@ -94,8 +96,8 @@ public interface ICBClient {
     /**
      * Reads the change in notification.
      * 
-     * @param MSP vendor details
-     * @param String the URI of the CB Server
+     * @param MSP                        vendor details
+     * @param String                     the URI of the CB Server
      * @param ReadingChangedNotification the ReadingChangedNotification used as input.
      * @return ReadingChangedNotificationResponse
      * @throws MultispeakWebServiceClientException

@@ -54,7 +54,8 @@ public class CD_ServerImpl implements CD_Server {
     private final static String[] methods = new String[] { "PingURL", 
                                                            "GetMethods",
                                                            "GetCDMeterState",
-                                                           "getCDSupportedMeters"};
+                                                           "getCDSupportedMeters",
+                                                           "InitiateConnectDisconnect"};
 
     private void init() throws MultispeakWebServiceException {
         multispeakFuncs.init();

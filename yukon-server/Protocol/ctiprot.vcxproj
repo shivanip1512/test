@@ -373,6 +373,7 @@ if exist $(OutDir)$(TargetName).pdb xcopy /d/y/f $(OutDir)$(TargetName).pdb $(So
     </ClCompile>
     <ClCompile Include="ansi_kv2_mtable_110.cpp">
     </ClCompile>
+    <ClCompile Include="cbor_codec.cpp" />
     <ClCompile Include="coap_helper.cpp" />
     <ClCompile Include="dll_prot.cpp">
     </ClCompile>
@@ -561,6 +562,7 @@ if exist $(OutDir)$(TargetName).pdb xcopy /d/y/f $(OutDir)$(TargetName).pdb $(So
     <ClInclude Include="include\ansi_kv2_mtable_000.h" />
     <ClInclude Include="include\ansi_kv2_mtable_070.h" />
     <ClInclude Include="include\ansi_kv2_mtable_110.h" />
+    <ClInclude Include="include\cbor_codec.h" />
     <ClInclude Include="include\coap_helper.h" />
     <ClInclude Include="include\dnp_application.h" />
     <ClInclude Include="include\dnp_configuration.h" />

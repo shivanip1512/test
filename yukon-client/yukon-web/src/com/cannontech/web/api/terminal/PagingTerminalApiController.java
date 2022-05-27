@@ -46,6 +46,11 @@ public class PagingTerminalApiController {
         return new ResponseEntity<>(paoIdMap, HttpStatus.OK);
     }
 
+    @GetMapping()
+    public ResponseEntity<Object> retrieveAll() {
+        return new ResponseEntity<>(terminalService.retrieveAll(), HttpStatus.OK);
+    }
+
     @InitBinder("terminalBase")
     public void setupBinder(WebDataBinder binder) {
         binder.addValidators(apiValidator);
