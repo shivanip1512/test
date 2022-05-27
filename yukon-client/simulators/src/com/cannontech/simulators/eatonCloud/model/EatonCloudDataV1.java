@@ -224,7 +224,7 @@ public class EatonCloudDataV1 extends EatonCloudDataGenerator {
         IntStream.range(0, devices).forEach(i -> {
             String guid = UUID.randomUUID().toString();
             int value = nextValueHelper.getNextValue("EatonCloudSimIncrementor");
-            String name = createRequest.getPaoType() + "" + value + "_SIM";
+            String name = createRequest.getPaoType() + "_" + value + "_SIM";
             String serial = createRequest.getPaoType() +""+ value + "SIM";
             EatonCloudSiteDeviceV1 siteDevice = new EatonCloudSiteDeviceV1(guid,
                     "72358726-1ed0-485b-8beb-6a27a27b58e8", name, serial, "...", "...", "...",
