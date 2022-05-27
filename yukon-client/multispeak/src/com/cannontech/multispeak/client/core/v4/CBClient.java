@@ -6,20 +6,24 @@ import org.springframework.oxm.XmlMappingException;
 import org.springframework.ws.WebServiceException;
 import org.springframework.ws.client.core.WebServiceTemplate;
 
-import com.cannontech.msp.beans.v4.GetMeterByServiceLocationID;
-import com.cannontech.msp.beans.v4.GetMeterByServiceLocationIDResponse;
 import com.cannontech.msp.beans.v4.CDStateChangedNotification;
 import com.cannontech.msp.beans.v4.CDStateChangedNotificationResponse;
+import com.cannontech.msp.beans.v4.FormattedBlockNotification;
+import com.cannontech.msp.beans.v4.FormattedBlockNotificationResponse;
 import com.cannontech.msp.beans.v4.GetDomainMembers;
 import com.cannontech.msp.beans.v4.GetDomainMembersResponse;
-import com.cannontech.msp.beans.v4.MeterEventNotification;
-import com.cannontech.msp.beans.v4.MeterEventNotificationResponse;
+import com.cannontech.msp.beans.v4.GetMeterByServiceLocationID;
+import com.cannontech.msp.beans.v4.GetMeterByServiceLocationIDResponse;
 import com.cannontech.msp.beans.v4.GetMethods;
 import com.cannontech.msp.beans.v4.GetMethodsResponse;
 import com.cannontech.msp.beans.v4.GetServiceLocationByMeterID;
 import com.cannontech.msp.beans.v4.GetServiceLocationByMeterIDResponse;
+import com.cannontech.msp.beans.v4.MeterEventNotification;
+import com.cannontech.msp.beans.v4.MeterEventNotificationResponse;
 import com.cannontech.msp.beans.v4.PingURL;
 import com.cannontech.msp.beans.v4.PingURLResponse;
+import com.cannontech.msp.beans.v4.ReadingChangedNotification;
+import com.cannontech.msp.beans.v4.ReadingChangedNotificationResponse;
 import com.cannontech.multispeak.client.MultispeakDefines;
 import com.cannontech.multispeak.client.MultispeakVendor;
 import com.cannontech.multispeak.client.v4.MultispeakFuncs;
@@ -138,4 +142,34 @@ public class CBClient implements ICBClient {
             throw new MultispeakWebServiceClientException(e.getMessage());
         }
     }
+
+    @Override
+    public ReadingChangedNotificationResponse readingChangedNotification(final MultispeakVendor mspVendor, String uri,
+            ReadingChangedNotification readingChangedNotification) throws MultispeakWebServiceClientException {
+        try {
+            multispeakFuncs.setMsgSender(webServiceTemplate, mspVendor);;
+
+            return (ReadingChangedNotificationResponse) webServiceTemplate.marshalSendAndReceive(uri,
+                readingChangedNotification, customWebServiceMsgCallback.addRequestHeader(mspVendor, MultispeakDefines.CB_Server_STR));
+        } catch (WebServiceException | XmlMappingException e) {
+            throw new MultispeakWebServiceClientException(e.getMessage());
+        }
+    
+    }
+    
+    @Override
+    public FormattedBlockNotificationResponse formattedBlockNotification(MultispeakVendor mspVendor, String uri,
+            String interfaceName,
+            FormattedBlockNotification formattedBlockNotification) throws MultispeakWebServiceClientException {
+        try {
+            multispeakFuncs.setMsgSender(webServiceTemplate, mspVendor);
+
+            return (FormattedBlockNotificationResponse) webServiceTemplate.marshalSendAndReceive(uri,
+                    formattedBlockNotification,
+                    customWebServiceMsgCallback.addRequestHeader(mspVendor, MultispeakDefines.CB_Server_STR));
+        } catch (WebServiceException | XmlMappingException e) {
+            throw new MultispeakWebServiceClientException(e.getMessage());
+        }
+    }
+    
 }

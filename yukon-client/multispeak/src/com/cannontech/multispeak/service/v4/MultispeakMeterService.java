@@ -12,7 +12,9 @@ import com.cannontech.msp.beans.v4.MeterReading;
 import com.cannontech.msp.beans.v4.MspMeter;
 import com.cannontech.msp.beans.v4.RCDState;
 import com.cannontech.msp.beans.v4.ServiceLocation;
+import com.cannontech.multispeak.block.v4.Block;
 import com.cannontech.multispeak.client.MultispeakVendor;
+import com.cannontech.multispeak.dao.v4.FormattedBlockProcessingService;
 import com.cannontech.multispeak.exceptions.MultispeakWebServiceException;
 
 public interface MultispeakMeterService {
@@ -116,6 +118,26 @@ public interface MultispeakMeterService {
      */
     public List<ErrorObject> cdEvent(MultispeakVendor mspVendor, List<ConnectDisconnectEvent> cdEvents, 
                                      String transactionId, String responseURL) throws MultispeakWebServiceException;
+    
+    /**
+     * Initiate reads for all meterIds and fire ReadingChangedNotification on
+     * callback. Callback fires for each completed read, may have multiple per
+     * meterId.
+     * @return ErrorObject [] Array of errorObjects for meters that cannot be
+     *         found, etc.
+     */
+    public List<ErrorObject> meterReadEvent(MultispeakVendor vendor, List<MeterID> meterIds, String transactionId,
+            String actualResponseUrl);
 
+    /**
+     * Initiate reads for meterNumber and fire FormattedBlockChangeNotification
+     * on callback. Callback fires for all completed reads, will have only one
+     * for meterNumber.
+     * @return ErrorObject [] Array of errorObjects for meters that cannot be
+     *         found, etc.
+     */
+    public List<ErrorObject> blockMeterReadEvent(MultispeakVendor mspVendor,
+            List<MeterID> meterIds, FormattedBlockProcessingService<Block> blockProcessingService,
+            String transactionId, String responseUrl);
 }
  

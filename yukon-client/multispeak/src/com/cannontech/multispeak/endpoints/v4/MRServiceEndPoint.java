@@ -5,6 +5,7 @@ import java.util.List;
 
 import javax.xml.datatype.XMLGregorianCalendar;
 
+import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.collections4.ListUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -53,6 +54,10 @@ import com.cannontech.msp.beans.v4.GetSupportedFieldNames;
 import com.cannontech.msp.beans.v4.GetSupportedFieldNamesResponse;
 import com.cannontech.msp.beans.v4.InitiateDemandReset;
 import com.cannontech.msp.beans.v4.InitiateDemandResetResponse;
+import com.cannontech.msp.beans.v4.InitiateMeterReadingsByFieldName;
+import com.cannontech.msp.beans.v4.InitiateMeterReadingsByFieldNameResponse;
+import com.cannontech.msp.beans.v4.InitiateMeterReadingsByMeterID;
+import com.cannontech.msp.beans.v4.InitiateMeterReadingsByMeterIDResponse;
 import com.cannontech.msp.beans.v4.InitiateUsageMonitoring;
 import com.cannontech.msp.beans.v4.InitiateUsageMonitoringResponse;
 import com.cannontech.msp.beans.v4.InsertMeterInMeterGroup;
@@ -512,6 +517,59 @@ public class MRServiceEndPoint {
         ArrayOfErrorObject arrayOfErrorObject = objectFactory.createArrayOfErrorObject();
         arrayOfErrorObject.getErrorObject().addAll(errorObjects);
         response.setMeterChangedNotificationResult(arrayOfErrorObject);
+        return response;
+    }
+    
+    @PayloadRoot(localPart = "InitiateMeterReadingsByMeterID", namespace =  MultispeakDefines.NAMESPACE_v4)
+    public @ResponsePayload InitiateMeterReadingsByMeterIDResponse initiateMeterReadingsByMeterIDs(
+            @RequestPayload InitiateMeterReadingsByMeterID initiateMeterReadingsByMeterIds)
+            throws MultispeakWebServiceException {
+        InitiateMeterReadingsByMeterIDResponse response = objectFactory.createInitiateMeterReadingsByMeterIDResponse();
+
+        ExpirationTime expirationTime = initiateMeterReadingsByMeterIds.getExpTime();
+        String responseURL = initiateMeterReadingsByMeterIds.getResponseURL();
+        String transactionId = initiateMeterReadingsByMeterIds.getTransactionID();
+        
+        List<MeterID> meterIds = (initiateMeterReadingsByMeterIds.getMeterIDs() != null)
+                ? initiateMeterReadingsByMeterIds.getMeterIDs().getMeterID() : null;
+
+        ArrayOfErrorObject arrayOfErrorObject = multispeakFuncs.toArrayOfErrorObject(mr_server.initiateMeterReadingsByMeterID(ListUtils.emptyIfNull(meterIds),
+                                                                                       responseURL, 
+                                                                                       transactionId, 
+                                                                                       expirationTime));
+        response.setInitiateMeterReadingsByMeterIDResult(arrayOfErrorObject);
+        return response;
+    }
+    
+    @PayloadRoot(localPart = "InitiateMeterReadingsByFieldName", namespace = MultispeakDefines.NAMESPACE_v4)
+    public @ResponsePayload InitiateMeterReadingsByFieldNameResponse InitiateMeterReadingsByFieldName(
+            @RequestPayload InitiateMeterReadingsByFieldName initiateMeterReadingsByFieldName)
+            throws MultispeakWebServiceException {
+        
+        InitiateMeterReadingsByFieldNameResponse response =
+            objectFactory.createInitiateMeterReadingsByFieldNameResponse();
+        
+        ExpirationTime expirationTime = initiateMeterReadingsByFieldName.getExpTime();
+        String responseURL = initiateMeterReadingsByFieldName.getResponseURL();
+        String transactionId = initiateMeterReadingsByFieldName.getTransactionID();
+        String formattedBlockTemplateName = initiateMeterReadingsByFieldName.getFormattedBlockTemplateName();
+        
+        ArrayOfMeterID1 arrOfMeterIds = initiateMeterReadingsByFieldName.getMeterIDs();
+        List<MeterID> meterIds = null != arrOfMeterIds ? arrOfMeterIds.getMeterID() : null;
+
+
+        if (CollectionUtils.isNotEmpty(meterIds)) {
+            List<String> fieldNames = initiateMeterReadingsByFieldName.getFieldNames() != null ? initiateMeterReadingsByFieldName.getFieldNames().getVal() : null;
+
+                    ArrayOfErrorObject arrayOfErrorObject = multispeakFuncs.toArrayOfErrorObject(mr_server.InitiateMeterReadingsByFieldName( meterIds,
+                                                                                                                                             responseURL, 
+                                                                                                                                             fieldNames, 
+                                                                                                                                             transactionId,
+                                                                                                                                             expirationTime, 
+                                                                                                                                             formattedBlockTemplateName));
+                    response.setInitiateMeterReadingsByFieldNameResult(arrayOfErrorObject);
+        }
+        
         return response;
     }
 }

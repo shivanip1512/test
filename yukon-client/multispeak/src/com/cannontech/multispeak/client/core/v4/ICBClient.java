@@ -2,16 +2,20 @@ package com.cannontech.multispeak.client.core.v4;
 
 import com.cannontech.msp.beans.v4.CDStateChangedNotification;
 import com.cannontech.msp.beans.v4.CDStateChangedNotificationResponse;
+import com.cannontech.msp.beans.v4.FormattedBlockNotification;
+import com.cannontech.msp.beans.v4.FormattedBlockNotificationResponse;
 import com.cannontech.msp.beans.v4.GetDomainMembers;
 import com.cannontech.msp.beans.v4.GetDomainMembersResponse;
-import com.cannontech.msp.beans.v4.MeterEventNotification;
-import com.cannontech.msp.beans.v4.MeterEventNotificationResponse;
 import com.cannontech.msp.beans.v4.GetMeterByServiceLocationID;
 import com.cannontech.msp.beans.v4.GetMeterByServiceLocationIDResponse;
 import com.cannontech.msp.beans.v4.GetMethods;
 import com.cannontech.msp.beans.v4.GetMethodsResponse;
+import com.cannontech.msp.beans.v4.MeterEventNotification;
+import com.cannontech.msp.beans.v4.MeterEventNotificationResponse;
 import com.cannontech.msp.beans.v4.PingURL;
 import com.cannontech.msp.beans.v4.PingURLResponse;
+import com.cannontech.msp.beans.v4.ReadingChangedNotification;
+import com.cannontech.msp.beans.v4.ReadingChangedNotificationResponse;
 import com.cannontech.multispeak.client.MultispeakVendor;
 import com.cannontech.multispeak.exceptions.MultispeakWebServiceClientException;
 
@@ -88,5 +92,27 @@ public interface ICBClient {
      */
     public CDStateChangedNotificationResponse cdStateChangedNotification(MultispeakVendor mspVendor, String uri,
             CDStateChangedNotification cdStateChangedNotification) throws MultispeakWebServiceClientException;
+    
+    /**
+     * Reads the change in notification.
+     * 
+     * @param MSP                        vendor details
+     * @param String                     the URI of the CB Server
+     * @param ReadingChangedNotification the ReadingChangedNotification used as input.
+     * @return ReadingChangedNotificationResponse
+     * @throws MultispeakWebServiceClientException
+     */
+    public ReadingChangedNotificationResponse readingChangedNotification(MultispeakVendor mspVendor, String uri,
+            ReadingChangedNotification readingChangedNotification) throws MultispeakWebServiceClientException;
 
+    /**
+     * Format Block Notification
+     * 
+     * @param MSP vendor details
+     * @param String the URI of the NOT Server
+     * @param FormattedBlockNotification
+     * @throws MultispeakWebServiceClientException
+     */
+    public FormattedBlockNotificationResponse formattedBlockNotification(MultispeakVendor mspVendor, String uri, String interfaceName,
+            FormattedBlockNotification formattedBlockNotification) throws MultispeakWebServiceClientException;
 }
