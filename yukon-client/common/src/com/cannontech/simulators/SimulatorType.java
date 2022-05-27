@@ -28,6 +28,7 @@ public enum SimulatorType {
     DEVICE_ARCHIVE,
     NEST,
     POINT_DATA_CACHE_CORRELATION,
-    EATON_CLOUD
+    EATON_CLOUD,
+    DEMAND_RESPONSE_SETUP
     ;
 }

@@ -4,6 +4,8 @@ import java.beans.PropertyEditorSupport;
 import java.text.DecimalFormat;
 import java.util.List;
 import java.util.Map;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 import org.apache.commons.lang3.StringUtils;
 import org.apache.logging.log4j.Logger;
@@ -45,11 +47,14 @@ import com.cannontech.i18n.YukonMessageSourceResolvable;
 import com.cannontech.simulators.RegulatorVoltageControlMode;
 import com.cannontech.simulators.message.request.AmrCreationSimulatorRequest;
 import com.cannontech.simulators.message.request.AmrCreationSimulatorStatusRequest;
+import com.cannontech.simulators.message.request.DrSetupSimulatorRequest;
 import com.cannontech.simulators.message.response.SimulatorResponse;
 import com.cannontech.simulators.message.response.SimulatorResponseBase;
 import com.cannontech.stars.core.dao.EnergyCompanyDao;
 import com.cannontech.stars.database.cache.StarsDatabaseCache;
 import com.cannontech.stars.database.data.lite.LiteStarsEnergyCompany;
+import com.cannontech.user.YukonUserContext;
+import com.cannontech.web.api.token.TokenHelper;
 import com.cannontech.web.common.flashScope.FlashScope;
 import com.cannontech.web.dev.database.objects.DevCapControl;
 import com.cannontech.web.dev.database.objects.DevEventLog;
@@ -115,7 +120,9 @@ public class SetupDevDbMethodController {
         model.addAttribute("controlModeTypes", RegulatorVoltageControlMode.values());
         
         model.addAttribute("allPrograms", databaseCache.getAllLMPrograms());
-        model.addAttribute("drPaoTypes", PaoType.getTwoWayLcrTypes());
+        model.addAttribute("drPaoTypes", Stream.of(PaoType.values())
+                .filter(p -> p.isRfLcr() || p.isCloudLcr())
+                .collect(Collectors.toList()));
         
     }
 
@@ -266,32 +273,40 @@ public class SetupDevDbMethodController {
     
     @RequestMapping("setupDemandResponse")
     public String setupDemandResponse(@ModelAttribute("devDemandResponse") DemandResponseSetup devDemandResponse,
-            BindingResult bindingResult, FlashScope flashScope, ModelMap model) {
+            BindingResult bindingResult, FlashScope flashScope, ModelMap model, YukonUserContext userContext) {
         
         demandResponseValidator.validate(devDemandResponse, bindingResult);
         
         if (bindingResult.hasErrors()) {
             flashScope.setError(YukonMessageSourceResolvable
-                            .createDefaultWithoutCode("Unable to start Setup Demand Response. Check Fields."));
-        } 
-        
-/*        else if (!devDemandResponseCreationService.isRunning()) {
+                    .createDefaultWithoutCode("Unable to start Setup Demand Response. Check Fields."));
+        } else {
             try {
-                devDemandResponseCreationService.executeSetup(devDemandResponse);
-                flashScope
-                        .setConfirm(YukonMessageSourceResolvable
-                                .createDefaultWithoutCode("Successfully setup Demand Response"));
+                String token = TokenHelper.createToken(userContext.getYukonUser().getLiteID());
+                devDemandResponse.setToken(token);
+                devDemandResponse.setUserContext(userContext);
+                DrSetupSimulatorRequest request = new DrSetupSimulatorRequest(devDemandResponse);
+                SimulatorResponse response = simulatorsCommunicationService.sendRequest(request, SimulatorResponseBase.class);
+                if (response.isSuccessful()) {
+                    flashScope.setConfirm(
+                            YukonMessageSourceResolvable
+                                    .createDefaultWithoutCode("Setup has started see the simulator log for progress."));
+                } else {
+                    flashScope.setConfirm(YukonMessageSourceResolvable.createDefaultWithoutCode(
+                            "Can't create devices. Setup Service is already running."));
+                }
             } catch (Exception e) {
-                log.warn("caught exception in Setup Demand Response", e);
-                flashScope
-                        .setError(YukonMessageSourceResolvable
-                                .createDefaultWithoutCode("Unable to setup Demand Response: "
-                                        + e.getMessage()));
+                log.error(e);
+                flashScope.setError(YukonMessageSourceResolvable.createDefaultWithoutCode(
+                        "Unable to send message to Simulator Service: " + e.getMessage()));
             }
-        }*/
+        }
+        
         
         model.addAttribute("allPrograms", databaseCache.getAllLMPrograms());
-        model.addAttribute("drPaoTypes", PaoType.getTwoWayLcrTypes());
+        model.addAttribute("drPaoTypes", Stream.of(PaoType.values())
+                .filter(p -> p.isRfLcr() || p.isCloudLcr())
+                .collect(Collectors.toList()));
 
         return "setupDatabase/demandResponseWidget.jsp";
     }

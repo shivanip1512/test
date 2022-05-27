@@ -237,7 +237,7 @@ public class EnrollmentHelperServiceImpl implements EnrollmentHelperService {
 
     @Override
     public synchronized void doEnrollment(EnrollmentHelperHolder enrollmentHelperHolder, EnrollmentEnum enrollmentEnum, LiteYukonUser user){
-
+         try {
         CustomerAccount customerAccount = enrollmentHelperHolder.getCustomerAccount();
         EnrollmentHelper enrollmentHelper = enrollmentHelperHolder.getEnrollmentHelper();
         LMHardwareBase lmHardwareBase = enrollmentHelperHolder.getLmHardwareBase();
@@ -302,6 +302,9 @@ public class EnrollmentHelperServiceImpl implements EnrollmentHelperService {
         
         // Logging the new enrollment changes.
         logEnrollmentChange(user, enrollmentEnum, enrollmentHelper);
+         }catch(Exception e) {
+             log.error("Blah", e);
+         }
     }
     
     /**
