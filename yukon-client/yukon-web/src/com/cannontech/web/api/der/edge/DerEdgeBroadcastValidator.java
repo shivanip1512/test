@@ -8,17 +8,16 @@ import com.cannontech.common.validator.SimpleValidator;
 import com.cannontech.common.validator.YukonApiValidationUtils;
 
 @Service
-public class DerEdgeUnicastValidator extends SimpleValidator<EdgeUnicastRequest> {
+public class DerEdgeBroadcastValidator extends SimpleValidator<EdgeBroadcastRequest> {
 
     @Autowired YukonApiValidationUtils validationUtils;
 
-    public DerEdgeUnicastValidator() {
-        super(EdgeUnicastRequest.class);
+    public DerEdgeBroadcastValidator() {
+        super(EdgeBroadcastRequest.class);
     }
 
     @Override
-    protected void doValidation(EdgeUnicastRequest request, Errors errors) {
-        validationUtils.checkIsValidHexByteString(errors, "payload", request.getPayload(), "Payload", 1280);
+    protected void doValidation(EdgeBroadcastRequest request, Errors errors) {
+        validationUtils.checkIsValidHexByteString(errors, "payload", request.getPayload(), "Payload", 54);
     }
-
 }
