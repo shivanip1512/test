@@ -108,6 +108,7 @@ import com.cannontech.msp.beans.v5.multispeak.ElectricMeterExchange;
 import com.cannontech.msp.beans.v5.multispeak.ElectricServicePoint;
 import com.cannontech.msp.beans.v5.multispeak.EndDeviceState;
 import com.cannontech.msp.beans.v5.multispeak.FormattedBlock;
+import com.cannontech.msp.beans.v5.multispeak.GasMeterExchange;
 import com.cannontech.msp.beans.v5.multispeak.GasServicePoint;
 import com.cannontech.msp.beans.v5.multispeak.MeterGroup;
 import com.cannontech.msp.beans.v5.multispeak.MeterReading;
@@ -443,6 +444,10 @@ public class MultispeakMeterServiceImpl extends MultispeakMeterServiceBase imple
                             WaterMeterExchange waterMeterExchange = (WaterMeterExchange) exchangeMeter;
                             existingMspMeter = waterMeterExchange.getExistingMeter();
                             replacementMspMeter = waterMeterExchange.getReplacementMeter();
+                        } else if(exchangeMeter instanceof GasMeterExchange) {
+                            GasMeterExchange gasMeterExchange = (GasMeterExchange) exchangeMeter;
+                            existingMspMeter = gasMeterExchange.getExistingMeter();
+                            replacementMspMeter = gasMeterExchange.getReplacementMeter();
                         }
 
                         if (existingMspMeter != null && replacementMspMeter != null) {
@@ -456,13 +461,15 @@ public class MultispeakMeterServiceImpl extends MultispeakMeterServiceBase imple
                                     existingMspMeter.getPrimaryIdentifier().getValue(), METER_EXCHANGED_STRING,
                                     mspVendor.getCompanyName());
                                 ErrorObject err =
-                                    mspObjectDao.getNotFoundErrorObject(
-                                        existingMspMeter.getPrimaryIdentifier().getValue().trim(),
-                                        "MeterNumber", "MspMeter", METER_EXCHANGED_STRING,
-                                        mspVendor.getCompanyName());
+                                    mspObjectDao.getNotFoundErrorObject(existingMspMeter.getPrimaryIdentifier().getValue().trim(),
+                                                                        "MeterNumber", 
+                                                                        "MspMeter", 
+                                                                        METER_EXCHANGED_STRING,
+                                                                        mspVendor.getCompanyName());
                                 errorObjects.add(err);
-                                multispeakEventLogService.errorObject(err.getDisplayString(), METER_EXCHANGED_STRING,
-                                    mspVendor.getCompanyName());
+                                multispeakEventLogService.errorObject(err.getDisplayString(), 
+                                                                      METER_EXCHANGED_STRING,
+                                                                      mspVendor.getCompanyName());
                                 log.error(e);
                             }
                             if (existingMeter != null) {
@@ -472,26 +479,29 @@ public class MultispeakMeterServiceImpl extends MultispeakMeterServiceBase imple
 
                                     try {
                                         replacementMeter = checkForExistingMeterAndUpdate(replacementMspMeter,
-                                            mspVendor, METER_EXCHANGED_STRING);
+                                                                                          mspVendor, 
+                                                                                          METER_EXCHANGED_STRING);
                                     } catch (NotFoundException e) { // and NEW meter
-                                        replacementMeter =
-                                            addNewMeter(replacementMspMeter, mspVendor, METER_EXCHANGED_STRING);
+                                        replacementMeter = addNewMeter(replacementMspMeter, mspVendor, METER_EXCHANGED_STRING);
                                     }
 
-                                    addMeterToGroup(existingMeter, SystemGroupEnum.INVENTORY, METER_EXCHANGED_STRING,
-                                        mspVendor);
-                                    removeFromGroup(replacementMeter, SystemGroupEnum.INVENTORY,
-                                        METER_EXCHANGED_STRING, mspVendor);
+                                    addMeterToGroup(existingMeter, SystemGroupEnum.INVENTORY, METER_EXCHANGED_STRING, mspVendor);
+                                    removeFromGroup(replacementMeter, SystemGroupEnum.INVENTORY, METER_EXCHANGED_STRING, mspVendor);
 
                                     if (!existingMeter.isDisabled()) {// enabled
                                         existingMeter.setDisabled(true); // update local object reference
                                         deviceUpdateService.disableDevice(existingMeter);
                                         multispeakEventLogService.disableDevice(existingMeter.getMeterNumber(),
-                                            existingMeter, METER_EXCHANGED_STRING, mspVendor.getCompanyName());
+                                                                                existingMeter, 
+                                                                                METER_EXCHANGED_STRING, 
+                                                                                mspVendor.getCompanyName());
                                     }
 
                                     updateCISDeviceClassGroup(replacementMspMeter.getPrimaryIdentifier().getValue(),
-                                        replacementMspMeter.getDeviceClass(), replacementMeter, METER_EXCHANGED_STRING, mspVendor);
+                                                              replacementMspMeter.getDeviceClass(), 
+                                                              replacementMeter, 
+                                                              METER_EXCHANGED_STRING, 
+                                                              mspVendor);
 
                                     String billingCycle = replacementMspMeter.getBillingCycle();
                                     updateBillingCyle(billingCycle, replacementMeter.getMeterNumber(), replacementMeter, METER_EXCHANGED_STRING, mspVendor);
@@ -511,11 +521,14 @@ public class MultispeakMeterServiceImpl extends MultispeakMeterServiceBase imple
                             // As Not sure which objectID could be used in error object
                             ErrorObject err =
                                 mspObjectDao.getErrorObject(exchangeMeter.getReferableID(),
-                                    "Requires both meters(existingMeter and replacementMeter)", "MspMeter",
-                                    METER_EXCHANGED_STRING, mspVendor.getCompanyName());
+                                                            "Requires both meters(existingMeter and replacementMeter)", 
+                                                            "MspMeter",
+                                                            METER_EXCHANGED_STRING, 
+                                                            mspVendor.getCompanyName());
                             errorObjects.add(err);
-                            multispeakEventLogService.errorObject(err.getDisplayString(), METER_EXCHANGED_STRING,
-                                mspVendor.getCompanyName());
+                            multispeakEventLogService.errorObject(err.getDisplayString(), 
+                                                                  METER_EXCHANGED_STRING,
+                                                                  mspVendor.getCompanyName());
 
                         }
                     }
@@ -523,22 +536,28 @@ public class MultispeakMeterServiceImpl extends MultispeakMeterServiceBase imple
             } catch (RuntimeException ex) {
                 // Transactional code threw application exception -> rollback
                 ErrorObject err =
-                    mspObjectDao.getErrorObject(exchangeMeter.getReferableID(), "X Exception: (ReferableID:"
-                        + exchangeMeter.getReferableID() + ")-" + ex.getMessage(), "MspMeterExchange",
-                        METER_EXCHANGED_STRING, mspVendor.getCompanyName());
+                    mspObjectDao.getErrorObject(exchangeMeter.getReferableID(), 
+                                                "X Exception: (ReferableID:" + exchangeMeter.getReferableID() + ")-" + ex.getMessage(), 
+                                                "MspMeterExchange",
+                                                METER_EXCHANGED_STRING, 
+                                                mspVendor.getCompanyName());
                 errorObjects.add(err);
-                multispeakEventLogService.errorObject(err.getDisplayString(), METER_EXCHANGED_STRING,
-                    mspVendor.getCompanyName());
+                multispeakEventLogService.errorObject(err.getDisplayString(), 
+                                                      METER_EXCHANGED_STRING,
+                                                      mspVendor.getCompanyName());
                 log.error(ex);
             } catch (Error ex) {
                 // Transactional code threw error -> rollback
                 ErrorObject err =
-                    mspObjectDao.getErrorObject(exchangeMeter.getReferableID(), "X Error: (ReferableID:"
-                        + exchangeMeter.getReferableID() + ")-" + ex.getMessage(), "MspMeterExchange",
-                        METER_EXCHANGED_STRING, mspVendor.getCompanyName());
+                    mspObjectDao.getErrorObject(exchangeMeter.getReferableID(), 
+                                                "X Error: (ReferableID:" + exchangeMeter.getReferableID() + ")-" + ex.getMessage(), 
+                                                "MspMeterExchange",
+                                                METER_EXCHANGED_STRING, 
+                                                mspVendor.getCompanyName());
                 errorObjects.add(err);
-                multispeakEventLogService.errorObject(err.getDisplayString(), METER_EXCHANGED_STRING,
-                    mspVendor.getCompanyName());
+                multispeakEventLogService.errorObject(err.getDisplayString(), 
+                                                      METER_EXCHANGED_STRING,
+                                                      mspVendor.getCompanyName());
                 log.error(ex);
             }
         }
