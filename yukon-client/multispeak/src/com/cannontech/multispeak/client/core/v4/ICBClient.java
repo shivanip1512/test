@@ -1,9 +1,9 @@
 package com.cannontech.multispeak.client.core.v4;
 
-import com.cannontech.msp.beans.v4.ReadingChangedNotification;
-import com.cannontech.msp.beans.v4.ReadingChangedNotificationResponse;
 import com.cannontech.msp.beans.v4.CDStateChangedNotification;
 import com.cannontech.msp.beans.v4.CDStateChangedNotificationResponse;
+import com.cannontech.msp.beans.v4.FormattedBlockNotification;
+import com.cannontech.msp.beans.v4.FormattedBlockNotificationResponse;
 import com.cannontech.msp.beans.v4.GetDomainMembers;
 import com.cannontech.msp.beans.v4.GetDomainMembersResponse;
 import com.cannontech.msp.beans.v4.GetMeterByServiceLocationID;
@@ -105,4 +105,14 @@ public interface ICBClient {
     public ReadingChangedNotificationResponse readingChangedNotification(MultispeakVendor mspVendor, String uri,
             ReadingChangedNotification readingChangedNotification) throws MultispeakWebServiceClientException;
 
+    /**
+     * Format Block Notification
+     * 
+     * @param MSP vendor details
+     * @param String the URI of the NOT Server
+     * @param FormattedBlockNotification
+     * @throws MultispeakWebServiceClientException
+     */
+    public FormattedBlockNotificationResponse formattedBlockNotification(MultispeakVendor mspVendor, String uri, String interfaceName,
+            FormattedBlockNotification formattedBlockNotification) throws MultispeakWebServiceClientException;
 }
