@@ -49,7 +49,6 @@ public class AssignedProgramDaoImpl implements AssignedProgramDao {
         final SqlStatementBuilder sql = new SqlStatementBuilder();
         sql.append(rowMapper.getBaseQuery());
         sql.append("AND p.deviceId").eq(deviceId);
-        System.out.println(sql.getDebugSql());
         AssignedProgram assignedProgram = jdbcTemplate.queryForObject(sql, rowMapper);
         WebConfiguration webConfiguration = webConfigurationDao.getForAssignedProgram(assignedProgram.getAssignedProgramId());
         assignedProgram.setWebConfiguration(webConfiguration);

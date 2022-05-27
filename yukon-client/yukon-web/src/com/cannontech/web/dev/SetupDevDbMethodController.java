@@ -285,6 +285,7 @@ public class SetupDevDbMethodController {
                 String token = TokenHelper.createToken(userContext.getYukonUser().getLiteID());
                 devDemandResponse.setToken(token);
                 devDemandResponse.setUserContext(userContext);
+                //devDemandResponse.setClean(true);
                 DrSetupSimulatorRequest request = new DrSetupSimulatorRequest(devDemandResponse);
                 SimulatorResponse response = simulatorsCommunicationService.sendRequest(request, SimulatorResponseBase.class);
                 if (response.isSuccessful()) {

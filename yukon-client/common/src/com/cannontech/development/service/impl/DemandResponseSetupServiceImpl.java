@@ -22,8 +22,6 @@ import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.http.client.SimpleClientHttpRequestFactory;
 import org.springframework.http.converter.json.MappingJackson2HttpMessageConverter;
-import org.springframework.transaction.UnexpectedRollbackException;
-import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.client.RestTemplate;
 import org.springframework.web.util.UriComponentsBuilder;
 
@@ -72,6 +70,7 @@ import com.cannontech.yukon.IDatabaseCache;
 import com.google.common.collect.Lists;
 
 public class DemandResponseSetupServiceImpl implements DemandResponseSetupService {
+    private static final int DEVICES_PER_ACCOUNT = 3;
     private static final ReentrantLock lock = new ReentrantLock();
     private static final Logger log = YukonLogManager.getLogger(DemandResponseSetupServiceImpl.class);
     @Autowired GlobalSettingDao settingDao;
@@ -103,6 +102,16 @@ public class DemandResponseSetupServiceImpl implements DemandResponseSetupServic
         restTemplate.setMessageConverters(Arrays.asList(mappingJackson2HttpMessageConverter));
     }
     
+    @Override
+    public void executeSetup(DemandResponseSetup drSetup) {
+        if(drSetup.isClean()) {
+            clean(drSetup);
+        } else {
+            setup(drSetup);
+        }
+    }
+
+    
     private String addYukon(){
         String url = webserverUrlResolver.getUrl("");
         if ((url.contains("localhost") || url.contains("127.0.0.1"))) {
@@ -112,39 +121,48 @@ public class DemandResponseSetupServiceImpl implements DemandResponseSetupServic
         }
     }
     
+    /**
+     * After the setup is done we will display a summary, in simulator log, of what happened to let us know about what the setup
+     * did.
+     * Turning debug on for DemandResponseSetupServiceImpl will display a verbose summary which will include account numbers/lm
+     * object names/device numbers.
+     * This information is useful to randomly check if by searching for devices/accounts/Lm objects etc.
+     * If debug is off then it will display just counts, which are useful to know when we attempt to load a lot of data on VM.
+     * 
+     * Example:
+     * 
+     * Setup:DemandResponseSetup[programId=364312,templateName=Sim
+     * Gen,scenarios=2,controlAreas=2,programs=5,devices=20,types=[LCR6200C,
+     * LCR6600C]]
+     * 
+     * Created programs:5
+     * Created load groups:5
+     * Created areas:2
+     * Created scenario:2
+     * Assigned to Energy Company programs:5
+     * Enrolled devices:20
+     * 
+     */
     private class Summary {
         List<String> notes = new ArrayList<>();
     }
     
+    /**
+     * The code to create the objects and enroll accounts is not transactional because we are using REST Api for part of the setup.
+     * On UI we have a "Don't press" button. This button will attempt to use the template name selected in UI to clean the database from 
+     * everything that was done previously for this template. The use case: the code during development produces the error or summary counts do not match. Press  
+     * "Don't press" button. Fix error or logic. Rerun the setup with the same parameters.
+     * For QA suggestion is to do database restore as this clean can potentially mess up the database. 
+     * Developer will look at the crude way the clean is using to find the data to delete and realize what template names he should use for this to work. 
+     */
     private void clean(DemandResponseSetup setup) {
         List<LiteYukonPAObject> programs = findPaoByTemplate(dbCache.getAllLMPrograms(), setup);
         List<LiteYukonPAObject> loadGroups = findPaoByTemplate(dbCache.getAllLMGroups(), setup);
         List<LiteYukonPAObject> areas = findPaoByTemplate(dbCache.getAllLMControlAreas(), setup);
         List<LiteYukonPAObject> scenarios = findPaoByTemplate(dbCache.getAllLMScenarios(), setup);
         
-        List<Integer> groupIds = loadGroups.stream()
-                .map(pao -> pao.getLiteID())
-                .collect(Collectors.toList());
-        Set<Integer> inventoryIds = enrollmentDao.getActiveEnrolledInventoryIdsForGroupIds(groupIds);
-        YukonEnergyCompany yukonEnergyCompany = ecDao.getEnergyCompanyByOperator(setup.getUserContext().getYukonUser());
-        LiteStarsEnergyCompany lsec = starsDatabaseCache.getEnergyCompany(yukonEnergyCompany);
-        inventoryIds.forEach(inventoryId ->{
-            LiteInventoryBase inv = inventoryBaseDao.getByInventoryId(inventoryId);
-            starsInventoryBaseService.removeDeviceFromAccount(inv, lsec, setup.getUserContext().getYukonUser());     
-        });
-        
-        
-        programs.forEach(p -> {
-            try {
-                AssignedProgram program = assignedProgramDao.getByDeviceId(p.getLiteID());
-                log.info("Unassigning program:{}", program.getProgramName());
-                applianceCategoryService.unassignProgram(program.getApplianceCategoryId(), program.getAssignedProgramId(),
-                        setup.getUserContext());
-                log.info("Unassigned program:{}", program.getProgramName());
-            } catch (Exception e) {
-                log.error("Can't unassign {}", p.getPaoName(), e);
-            }
-        });
+        removeDevicesFromAccounts(setup, loadGroups);
+        unassignProgramsFromApplianceCategory(setup, programs);
         
         HttpHeaders newheaders = new HttpHeaders();
         newheaders.setContentType(MediaType.APPLICATION_JSON);
@@ -155,6 +173,34 @@ public class DemandResponseSetupServiceImpl implements DemandResponseSetupServic
         scenarios.forEach(p -> delete(request, p, "controlScenarios"));
         areas.forEach(p -> delete(request, p, "controlAreas"));
      }
+
+    private void unassignProgramsFromApplianceCategory(DemandResponseSetup setup, List<LiteYukonPAObject> programs) {
+        programs.forEach(p -> {
+            try {
+                AssignedProgram program = assignedProgramDao.getByDeviceId(p.getLiteID());
+                applianceCategoryService.unassignProgram(program.getApplianceCategoryId(), program.getAssignedProgramId(),
+                        setup.getUserContext());
+                log.info("Unassigned program:{} from appliance category", program.getProgramName());
+            } catch (Exception e) {
+                log.error("Can't unassign {}", p.getPaoName(), e);
+            }
+        });
+    }
+
+    private void removeDevicesFromAccounts(DemandResponseSetup setup, List<LiteYukonPAObject> loadGroups) {
+        List<Integer> groupIds = loadGroups.stream()
+                .map(pao -> pao.getLiteID())
+                .collect(Collectors.toList());
+        Set<Integer> inventoryIds = enrollmentDao.getActiveEnrolledInventoryIdsForGroupIds(groupIds);
+        YukonEnergyCompany yukonEnergyCompany = ecDao.getEnergyCompanyByOperator(setup.getUserContext().getYukonUser());
+        LiteStarsEnergyCompany lsec = starsDatabaseCache.getEnergyCompany(yukonEnergyCompany);
+        inventoryIds.forEach(inventoryId ->{
+            LiteInventoryBase inv = inventoryBaseDao.getByInventoryId(inventoryId);
+            starsInventoryBaseService.removeDeviceFromAccount(inv, lsec, setup.getUserContext().getYukonUser());   
+            LiteYukonPAObject device = dbCache.getAllPaosMap().get(inv.getDeviceID());
+            log.info("Removed device:{} from account:{}", device.getPaoName(), inv.getAccountID());
+        });
+    }
 
     private void delete(HttpEntity<Object> request, LiteYukonPAObject p, String type) {
         String url = webserverUrlResolver.getUrl(addYukon() + "/api/dr/"+type+"/" + p.getLiteID());
@@ -167,19 +213,14 @@ public class DemandResponseSetupServiceImpl implements DemandResponseSetupServic
                 .filter(p -> p.getPaoName().contains(setup.getTemplateName())).collect(Collectors.toList());
     }
   
-    @Override
-    public void executeSetup(DemandResponseSetup drSetup) {
-        if(drSetup.isClean()) {
-            clean(drSetup);
-        } else {
-            setup(drSetup);
-        }
-    }
-
+    /**
+     * Per parameters selected by the user attempts to create LM Objects, Assign devices/accounts etc
+     */
     private void setup(DemandResponseSetup drSetup) {
         Summary notes = new Summary();
         notes.notes.add("Setup:" + drSetup);
-        log.info("Setup started program:{} settings:{}", dbCache.getAllPaosMap().get(drSetup.getProgramId()), drSetup);
+        LiteYukonPAObject program = dbCache.getAllPaosMap().get(drSetup.getProgramId());
+        log.info("Setup started program:{} settings:{}", program, drSetup);
         if (lock.tryLock()) {
             try {
                 List<LoadProgram> createdPrograms = createProgramsAndLoadGroups(drSetup, notes);
@@ -191,15 +232,12 @@ public class DemandResponseSetupServiceImpl implements DemandResponseSetupServic
                 // 1 account - 3 devices
                 List<Pair<CustomerAccount, List<LiteYukonPAObject>>> accountsToDevices = getDevicesPerAccount(drSetup);
                 enrollDevices(createdPrograms, accountsToDevices, drSetup.getUserContext(), notes);
-                log.info("Setup completed program:{} settings:{}", dbCache.getAllPaosMap().get(drSetup.getProgramId()), drSetup);
-                log.info("Summary:\n" + String.join("\n", notes.notes));
-            } catch (UnexpectedRollbackException e) {
-                log.error("Setup failed program:{} settings:{}", dbCache.getAllPaosMap().get(drSetup.getProgramId()), drSetup, e);
+                log.info("Setup completed program:{} settings:{}", program, drSetup);
                 log.info("Summary:\n" + String.join("\n", notes.notes));
             } catch (Exception ex) {
-                log.error("Setup failed program:{} settings:{}", dbCache.getAllPaosMap().get(drSetup.getProgramId()), drSetup, ex);
+                log.error("Setup failed program:{} settings:{}", program, drSetup, ex);
                 log.info("Summary:\n" + String.join("\n", notes.notes));
-            }finally {
+            } finally {
                 lock.unlock();
             }
 
@@ -207,21 +245,10 @@ public class DemandResponseSetupServiceImpl implements DemandResponseSetupServic
     }
 
     private void assignProgramToEnergyCompany(List<LoadProgram> createdPrograms, DemandResponseSetup drSetup, Summary notes) {
-        AssignedProgram pr = assignedProgramDao.getByDeviceId(drSetup.getProgramId());
-        AtomicInteger counter = new AtomicInteger(
-                assignedProgramDao.getHighestProgramOrder(pr.getApplianceCategoryId()));
-        
+        AssignedProgram pr = assignedProgramDao.getByDeviceId(drSetup.getProgramId());        
         List<String> programNames = new ArrayList<>();
         createdPrograms.forEach(p -> {
-            AssignedProgram program = new AssignedProgram();
-           // program.setProgramOrder(counter.incrementAndGet());
-            program.setProgramId(p.getProgramId());
-            program.setProgramName(p.getName());
-            program.setDisplayName(p.getName());
-            program.setShortName(p.getName());
-            program.setApplianceCategoryId(pr.getApplianceCategoryId());
-            program.getWebConfiguration();
-            program.setDescription(p.getName());
+            AssignedProgram program = createAssignedProgram(pr.getApplianceCategoryId(), p);
             applianceCategoryService.assignProgram(program, drSetup.getUserContext());
             programNames.add(p.getName());
         });
@@ -231,6 +258,18 @@ public class DemandResponseSetupServiceImpl implements DemandResponseSetupServic
         } else {
             notes.notes.add("Assigned to Energy Company programs:"+ programNames.size());
         }
+    }
+
+    private AssignedProgram createAssignedProgram(Integer applianceCategoryId, LoadProgram p) {
+        AssignedProgram program = new AssignedProgram();
+        program.setProgramId(p.getProgramId());
+        program.setProgramName(p.getName());
+        program.setDisplayName(p.getName());
+        program.setShortName(p.getName());
+        program.setApplianceCategoryId(applianceCategoryId);
+        program.getWebConfiguration();
+        program.setDescription(p.getName());
+        return program;
     }
     
     private void enrollDevices(List<LoadProgram> createdPrograms,
@@ -263,9 +302,17 @@ public class DemandResponseSetupServiceImpl implements DemandResponseSetupServic
             List<Pair<CustomerAccount, List<LiteYukonPAObject>>> accountsToDevices, YukonUserContext userContext,
             LiteStarsEnergyCompany energyCompany) {
         List<EnrollmentHelper> enrollments = new ArrayList<>();
+        AtomicInteger counter = new AtomicInteger(0);
         for (int i = 0; i < accountsToDevices.size(); i++) {
             try {
-                LoadProgram program = createdPrograms.get(i);
+                if(counter.get() == createdPrograms.size() - 1) {
+                    // not enough programs, start from the first one
+                    counter = new AtomicInteger(0);
+                } else {
+                    counter.incrementAndGet();
+                }
+                LoadProgram program = createdPrograms.get(counter.get());
+    
                 CustomerAccount account = accountsToDevices.get(i).getKey();
                 List<LiteYukonPAObject> threeDevices = accountsToDevices.get(i).getValue();
                 String groupName = program.getAssignedGroups().get(0).getGroupName();
@@ -294,7 +341,7 @@ public class DemandResponseSetupServiceImpl implements DemandResponseSetupServic
     }
 
     private List<Pair<CustomerAccount, List<LiteYukonPAObject>>> getDevicesPerAccount(DemandResponseSetup drSetup) {
-        int maxAccounts = (int) Math.ceil((double)drSetup.getDevices() / 3);
+        int maxAccounts = (int) Math.ceil((double)drSetup.getDevices() / DEVICES_PER_ACCOUNT);
         List<CustomerAccount> accounts = customerAccountDao.getAll()
                 .stream()
                 .filter(a -> a.getAccountId() > 0)
