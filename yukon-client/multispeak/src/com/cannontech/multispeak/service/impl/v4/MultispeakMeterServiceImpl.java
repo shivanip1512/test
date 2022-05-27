@@ -8,8 +8,8 @@ import java.util.EnumSet;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.Objects;
 import java.util.Set;
+import java.util.concurrent.ConcurrentMap;
 import java.util.stream.Collectors;
 
 import javax.annotation.PostConstruct;
@@ -95,6 +95,7 @@ import com.cannontech.message.util.Message;
 import com.cannontech.message.util.MessageEvent;
 import com.cannontech.message.util.MessageListener;
 import com.cannontech.msp.beans.v4.ArrayOfExtensionsItem;
+import com.cannontech.msp.beans.v4.ArrayOfMeterReading1;
 import com.cannontech.msp.beans.v4.ArrayOfModule;
 import com.cannontech.msp.beans.v4.ArrayOfOutageDetectionEvent;
 import com.cannontech.msp.beans.v4.CDStateChange;
@@ -122,6 +123,8 @@ import com.cannontech.msp.beans.v4.OutageDetectionEvent;
 import com.cannontech.msp.beans.v4.OutageEventType;
 import com.cannontech.msp.beans.v4.OutageLocation;
 import com.cannontech.msp.beans.v4.RCDState;
+import com.cannontech.msp.beans.v4.ReadingChangedNotification;
+import com.cannontech.msp.beans.v4.ReadingChangedNotificationResponse;
 import com.cannontech.msp.beans.v4.ServiceLocation;
 import com.cannontech.msp.beans.v4.ServiceType;
 import com.cannontech.msp.beans.v4.WaterMeter;
@@ -132,6 +135,9 @@ import com.cannontech.multispeak.client.core.v4.CBClient;
 import com.cannontech.multispeak.client.core.v4.OAClient;
 import com.cannontech.multispeak.client.v4.MultispeakFuncs;
 import com.cannontech.multispeak.dao.MspMeterDao;
+import com.cannontech.multispeak.dao.v4.MeterReadUpdater;
+import com.cannontech.multispeak.dao.v4.MeterReadUpdaterChain;
+import com.cannontech.multispeak.dao.v4.MeterReadingProcessingService;
 import com.cannontech.multispeak.dao.v4.MspObjectDao;
 import com.cannontech.multispeak.data.v4.MspErrorObjectException;
 import com.cannontech.multispeak.data.v4.MspLoadActionCode;
@@ -156,6 +162,7 @@ import com.google.common.collect.ImmutableSetMultimap;
 import com.google.common.collect.Iterables;
 import com.google.common.collect.ListMultimap;
 import com.google.common.collect.Lists;
+import com.google.common.collect.MapMaker;
 import com.google.common.collect.Maps;
 import com.google.common.collect.SetMultimap;
 import com.google.common.collect.Sets;
@@ -177,6 +184,7 @@ public class MultispeakMeterServiceImpl extends MultispeakMeterServiceBase imple
     @Autowired private AttributeService attributeService;
     @Autowired @Qualifier("mspMeterDaoV4") private MspMeterDao mspMeterDao;
     @Autowired private DeviceAttributeReadService deviceAttributeReadService;
+    @Autowired private MeterReadingProcessingService meterReadingProcessingService;
     @Autowired private PaoDefinitionDao paoDefinitionDao;
     @Autowired private ObjectFactory objectFactory;
     @Autowired private CBClient cbClient;
@@ -2274,4 +2282,189 @@ public class MultispeakMeterServiceImpl extends MultispeakMeterServiceBase imple
         }
 
     }
+    
+    @Override
+    public synchronized List<ErrorObject> meterReadEvent(final MultispeakVendor mspVendor, List<MeterID> meterIds,
+            final String transactionId, final String responseUrl){
+
+        ArrayList<ErrorObject> errorObjects = new ArrayList<>();
+
+        Set<String> mspMeters = meterIds.stream()
+                                        .map(meterId -> meterId.getMeterNo())
+                                        .collect(Collectors.toSet());
+     
+        log.info("Received " + mspMeters.size() + " Meter(s) for MeterReading from " + mspVendor.getCompanyName());
+        
+        multispeakEventLogService.initiateMeterReadRequest(mspMeters.size(), 
+                                                           "InitiateMeterReadingsByMeterID",
+                                                           mspVendor.getCompanyName());
+        
+        List<YukonMeter> allPaosToRead = Lists.newArrayListWithCapacity(mspMeters.size());
+        ListMultimap<String, YukonMeter> meterNumberToMeterMap =meterDao.getMetersMapForMeterNumbers(Lists.newArrayList(mspMeters));
+        
+        boolean excludeDisabled = globalSettingDao.getBoolean(GlobalSettingType.MSP_EXCLUDE_DISABLED_METERS);
+
+        for (String meterNumber : mspMeters) {
+            List<YukonMeter> meters = meterNumberToMeterMap.get(meterNumber); // this will most likely be size
+                                                                              // 1
+            if (CollectionUtils.isNotEmpty(meters)) {
+                for (YukonMeter meter : meters) {
+                    if (excludeDisabled && meter.isDisabled()) {
+                        log.debug("Meter " + meter.getMeterNumber() + " is disabled, skipping.");
+                        continue;
+                    }
+
+                    allPaosToRead.add(meter);
+                    multispeakEventLogService.initiateMeterRead(meterNumber, 
+                                                                meter, 
+                                                                transactionId,
+                                                                "InitiateMeterReadingsByMeterID", 
+                                                                mspVendor.getCompanyName());
+                }
+            } else {
+                multispeakEventLogService.meterNotFound(meterNumber, 
+                                                        "InitiateMeterReadingsByMeterID",
+                                                        mspVendor.getCompanyName());
+                
+                errorObjects.add(mspObjectDao.getNotFoundErrorObject(meterNumber,       
+                                                                     "MeterNumber", 
+                                                                     "MeterID",
+                                                                     "MeterReadEvent", 
+                                                                     mspVendor.getCompanyName()));
+            }
+        }
+
+        final ImmutableMap<PaoIdentifier, YukonMeter> meterLookup = PaoUtils.indexYukonPaos(allPaosToRead);
+
+        final EnumSet<BuiltInAttribute> attributes = EnumSet.of(BuiltInAttribute.USAGE, BuiltInAttribute.PEAK_DEMAND);
+
+        final ConcurrentMap<PaoIdentifier, MeterReadUpdater> updaterMap =
+            new MapMaker().concurrencyLevel(2).initialCapacity(mspMeters.size()).makeMap();
+
+        DeviceAttributeReadCallback callback = new DeviceAttributeReadCallback() {
+
+            @Override
+            public void complete() {
+                // do we need to do anything here once we received all of the data?
+                log.debug("deviceAttributeReadCallback.complete for meterReadEvent");
+            }
+
+            @Override
+            public void receivedValue(PaoIdentifier pao, PointValueHolder value) {
+                // the following is expensive but unavoidable until PointData is changed
+                PaoPointIdentifier paoPointIdentifier = pointDao.getPaoPointIdentifier(value.getId());
+                
+                Set<BuiltInAttribute> thisAttribute =
+                    attributeService.findAttributesForPoint(paoPointIdentifier.getPaoTypePointIdentifier(), 
+                                                            attributes);
+
+                if (log.isDebugEnabled()) {
+                    log.debug("deviceAttributeReadCallback.receivedValue for meterReadEvent: "+ paoPointIdentifier.toString() + " - " + value.getPointDataTimeStamp() + " - "
+                        + value.getValue());
+                }
+
+                if (thisAttribute.isEmpty()) {
+                    log.debug("data received but no attribute found for point");
+                    return;
+                }
+                for (BuiltInAttribute attribute : thisAttribute) {
+                    log.debug("data received for some attribute: " + thisAttribute.toString());
+
+                    // Get a new updater object for the current value
+                    MeterReadUpdater meterReadUpdater =
+                            meterReadingProcessingService.buildMeterReadUpdater(attribute, value, pao.getPaoType());
+                    // if the map is empty, place the updater into it
+                    MeterReadUpdater oldValue = updaterMap.putIfAbsent(pao, meterReadUpdater);
+                    while (oldValue != null) {
+                        // looks like the map was not empty, combine the existing updater with the
+                        // new one and then place it back in the map, but we must be careful
+                        // that someone hasn't changed the map out from under us (thus the while loop)
+                        MeterReadUpdaterChain chain = new MeterReadUpdaterChain(oldValue, meterReadUpdater);
+                        boolean success = updaterMap.replace(pao, oldValue, chain);
+                        if (success) {
+                            break;
+                        }
+                        oldValue = updaterMap.putIfAbsent(pao, meterReadUpdater);
+                    }
+                }
+            }
+
+            /**
+             * The unfortunate part is that this method is going to fire off a readingChangeNotification for
+             * each
+             * set of attributes that happened to be able to be collected using the same command
+             * (as derived by MeterReadCommandGenerationService.getMinimalCommandSet(...))
+             */
+            @Override
+            public void receivedLastValue(PaoIdentifier pao, String value) {
+                YukonMeter meter = meterLookup.get(pao);
+                MeterReading meterRead = meterReadingProcessingService.createMeterReading(meter);
+
+                // because we were so careful about putting updater or updater chains into the
+                // map, we know we can safely remove it and generate a MeterRead from it
+                // whenever we want; but this happens to be a perfect time
+                MeterReadUpdater updater = updaterMap.remove(pao);
+                if (updater != null) {
+                    updater.update(meterRead);
+
+                    try {
+                        log.info("Sending ReadingChangedNotification (" + responseUrl + "): Meter Number " + meterRead.getObjectID());
+                        final ReadingChangedNotification readingChangedNotification = new ReadingChangedNotification();
+                        ArrayOfMeterReading1 arrayOfMeterReading = objectFactory.createArrayOfMeterReading1();
+                        arrayOfMeterReading.getMeterReading().add(meterRead);
+                        readingChangedNotification.setChangedMeterReads(arrayOfMeterReading);
+
+                        readingChangedNotification.setTransactionID(transactionId);
+                        log.info("Sending ReadingChangedNotification (" + responseUrl + "): Meter Number "+ meterRead.getObjectID());
+                        ReadingChangedNotificationResponse readingChangedNotificationResponse = cbClient.readingChangedNotification(mspVendor,
+                                                                                                                                    responseUrl,
+                                                                                                                                    readingChangedNotification);
+
+                        List<ErrorObject> errObjects = new ArrayList<>();
+                        if (readingChangedNotificationResponse != null && readingChangedNotificationResponse.getReadingChangedNotificationResult() != null) {
+                            List<ErrorObject> responseErrorObjects = readingChangedNotificationResponse.getReadingChangedNotificationResult()
+                                    .getErrorObject();
+                            errObjects = responseErrorObjects;
+                        }
+                        multispeakEventLogService.notificationResponse("ReadingChangedNotification", 
+                                                                        transactionId,
+                                                                        meterRead.getObjectID(), 
+                                                                        meterRead.getMeterID().getServiceType().toString(),
+                                                                        CollectionUtils.size(errObjects), 
+                                                                        responseUrl);
+                        
+                        if (CollectionUtils.isNotEmpty(errObjects)) {
+                            multispeakFuncs.logErrorObjects(responseUrl, "ReadingChangedNotification", errObjects);
+                        }
+
+                    } catch (MultispeakWebServiceClientException e) {
+                        log.warn("caught exception in receivedValue of meterReadEvent", e);
+                    }
+                } else {
+                    log.info("No matching attribute to point mappings identified. No notification message triggered.");
+                }
+            }
+
+            @Override
+            public void receivedError(PaoIdentifier pao, SpecificDeviceErrorDescription error) {
+                // do we need to send something to the foreign system here?
+                log.warn("received error for " + pao + ": " + error);
+            }
+
+            @Override
+            public void receivedException(SpecificDeviceErrorDescription error) {
+                log.warn("received exception in meterReadEvent callback: " + error);
+            }
+        };
+        if (CollectionUtils.isNotEmpty(allPaosToRead)) {
+            deviceAttributeReadService.initiateRead(allPaosToRead, 
+                                                    attributes, 
+                                                    callback,
+                                                    DeviceRequestType.MULTISPEAK_METER_READ_EVENT, 
+                                                    UserUtils.getYukonUser());
+        }
+
+        return errorObjects;
+    
+  }
 }

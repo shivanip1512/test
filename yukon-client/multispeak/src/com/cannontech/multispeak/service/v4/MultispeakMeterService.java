@@ -116,6 +116,16 @@ public interface MultispeakMeterService {
      */
     public List<ErrorObject> cdEvent(MultispeakVendor mspVendor, List<ConnectDisconnectEvent> cdEvents, 
                                      String transactionId, String responseURL) throws MultispeakWebServiceException;
+    
+    /**
+     * Initiate reads for all meterIds and fire ReadingChangedNotification on
+     * callback. Callback fires for each completed read, may have multiple per
+     * meterId.
+     * @return ErrorObject [] Array of errorObjects for meters that cannot be
+     *         found, etc.
+     */
+    public List<ErrorObject> meterReadEvent(MultispeakVendor vendor, List<MeterID> meterIds, String transactionId,
+            String actualResponseUrl);
 
 }
  

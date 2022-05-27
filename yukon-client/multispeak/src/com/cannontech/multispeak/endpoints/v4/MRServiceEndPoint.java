@@ -53,6 +53,8 @@ import com.cannontech.msp.beans.v4.GetSupportedFieldNames;
 import com.cannontech.msp.beans.v4.GetSupportedFieldNamesResponse;
 import com.cannontech.msp.beans.v4.InitiateDemandReset;
 import com.cannontech.msp.beans.v4.InitiateDemandResetResponse;
+import com.cannontech.msp.beans.v4.InitiateMeterReadingsByMeterID;
+import com.cannontech.msp.beans.v4.InitiateMeterReadingsByMeterIDResponse;
 import com.cannontech.msp.beans.v4.InitiateUsageMonitoring;
 import com.cannontech.msp.beans.v4.InitiateUsageMonitoringResponse;
 import com.cannontech.msp.beans.v4.InsertMeterInMeterGroup;
@@ -512,6 +514,27 @@ public class MRServiceEndPoint {
         ArrayOfErrorObject arrayOfErrorObject = objectFactory.createArrayOfErrorObject();
         arrayOfErrorObject.getErrorObject().addAll(errorObjects);
         response.setMeterChangedNotificationResult(arrayOfErrorObject);
+        return response;
+    }
+    
+    @PayloadRoot(localPart = "InitiateMeterReadingsByMeterID", namespace =  MultispeakDefines.NAMESPACE_v4)
+    public @ResponsePayload InitiateMeterReadingsByMeterIDResponse initiateMeterReadingsByMeterIDs(
+            @RequestPayload InitiateMeterReadingsByMeterID initiateMeterReadingsByMeterIds)
+            throws MultispeakWebServiceException {
+        InitiateMeterReadingsByMeterIDResponse response = objectFactory.createInitiateMeterReadingsByMeterIDResponse();
+
+        ExpirationTime expirationTime = initiateMeterReadingsByMeterIds.getExpTime();
+        String responseURL = initiateMeterReadingsByMeterIds.getResponseURL();
+        String transactionId = initiateMeterReadingsByMeterIds.getTransactionID();
+        
+        List<MeterID> meterIds = (initiateMeterReadingsByMeterIds.getMeterIDs() != null)
+                ? initiateMeterReadingsByMeterIds.getMeterIDs().getMeterID() : null;
+
+        ArrayOfErrorObject arrayOfErrorObject = multispeakFuncs.toArrayOfErrorObject(mr_server.initiateMeterReadingsByMeterID(ListUtils.emptyIfNull(meterIds),
+                                                                                       responseURL, 
+                                                                                       transactionId, 
+                                                                                       expirationTime));
+        response.setInitiateMeterReadingsByMeterIDResult(arrayOfErrorObject);
         return response;
     }
 }

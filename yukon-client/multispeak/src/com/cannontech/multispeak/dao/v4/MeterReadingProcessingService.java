@@ -8,6 +8,7 @@ import com.cannontech.common.pao.attribute.model.BuiltInAttribute;
 import com.cannontech.core.dynamic.PointValueHolder;
 import com.cannontech.msp.beans.v4.MeterReading;
 
+
 public interface MeterReadingProcessingService {
 
     /**
@@ -29,4 +30,14 @@ public interface MeterReadingProcessingService {
      * @return list of attrinute fields
      */
     public Set<BuiltInAttribute> getAttributes();
+    
+    /**
+     * Return an immutable object that can be used at the callers discretion
+     * to update a MeterRead object with the given value for the given attribute.
+     * The primary purpose of this is to allow the caller to asynchronously process
+     * the point values into an object that can easily be stored (and can even be
+     * aggregated or chained) and then processed later in a synchronous manner.
+     */
+    public MeterReadUpdater buildMeterReadUpdater(BuiltInAttribute attribute,
+                                           PointValueHolder pointValueHolder, PaoType type);
 }
