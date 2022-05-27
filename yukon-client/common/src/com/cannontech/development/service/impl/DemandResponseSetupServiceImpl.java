@@ -352,7 +352,7 @@ public class DemandResponseSetupServiceImpl implements DemandResponseSetupServic
                 .limit(drSetup.getDevices())
                 .collect(Collectors.toList());
         
-        List<List<LiteYukonPAObject>> devicesPerAccount = Lists.partition(Lists.newArrayList(devices), 3);
+        List<List<LiteYukonPAObject>> devicesPerAccount = Lists.partition(Lists.newArrayList(devices), DEVICES_PER_ACCOUNT);
         List<Pair<CustomerAccount, List<LiteYukonPAObject>>> accountsToDevices = new ArrayList<>();
         for (int i = 0; i < devicesPerAccount.size(); i++) {
             try {
