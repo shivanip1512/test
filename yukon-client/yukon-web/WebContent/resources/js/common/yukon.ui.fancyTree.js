@@ -72,23 +72,22 @@ yukon.ui.fancyTree= (function () {
                         // count selected direct childs
                     	
                         data.tree.getRootNode().visit(function (node) {
-                            if (node.children != null) {
-                                var count = 0;
-                                for (var i = 0; i < node.children.length; i++) {
-                                    if(node.children[i].isSelected() == true)
-                                        count++;
-                                } 
-                                console.log(count); // reflecting in console
-                                var title = node.data.text;
-                                if(count > 0)
-                                {
-                                    title = title + " ( " + count + " node selected) ";
-                                    node.setTitle(title);
-                                }
-                                else
-                                {
-                                    node.setTitle(title);
-                                }
+                        	node.setTitle(node.getSelectedNodes().length + "selected nodes");
+                        	 var count = 0;
+                        	 var title = node.data.text;
+                        	 if(node.getSelectedNodes().length == 1)
+                             {
+                                 title = title + " (" + node.getSelectedNodes().length + " child selected) ";
+                                 node.setTitle(title);
+                             }
+                             if(node.getSelectedNodes().length > 1)
+                             {
+                                 title = title + " (" + node.getSelectedNodes().length + " children selected) ";
+                                 node.setTitle(title);
+                             }
+                             else
+                             {
+                                 node.setTitle(title);
                              }
                          });
                       },
