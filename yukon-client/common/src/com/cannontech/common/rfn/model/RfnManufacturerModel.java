@@ -162,7 +162,9 @@ public enum RfnManufacturerModel {
     RFN_1200_NONCPS_CBCGEN(PaoType.RFN_1200, "NON-CPS", "CBC-GEN"),
     RFN_1200_NONCPS_VRGEN(PaoType.RFN_1200, "NON-CPS", "VR-GEN"),
     RFN_1200_NONCPS_RECLGEN(PaoType.RFN_1200, "NON-CPS", "RECL-GEN"),
-    RFN_1200_NONCPS_GENDA(PaoType.RFN_1200, "NON-CPS", "GEN-DA")
+    RFN_1200_NONCPS_GENDA(PaoType.RFN_1200, "NON-CPS", "GEN-DA"),
+    
+    RFN_530S4X_DER(PaoType.RFN530S4X_DER, "LGYR", "E650-DER")
    
     /* For documentation only */
     // RFN_GATEWAY(PaoType.RFN_GATEWAY, "EATON", "RFGateway"),

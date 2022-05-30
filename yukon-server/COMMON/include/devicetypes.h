@@ -125,6 +125,9 @@ enum DeviceTypes {
     // RF Cellular IPLink Relay
     TYPE_CRLY856,
 
+    // DER_EDGE_COORDINATOR Devices
+	TYPE_RFN530S4X_DER,
+
     // Substation device identifiers
     TYPE_CCU700,
     TYPE_CCU710,

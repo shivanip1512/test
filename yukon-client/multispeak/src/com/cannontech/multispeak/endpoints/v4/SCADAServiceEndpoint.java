@@ -9,12 +9,16 @@ import org.springframework.ws.server.endpoint.annotation.PayloadRoot;
 import org.springframework.ws.server.endpoint.annotation.RequestPayload;
 import org.springframework.ws.server.endpoint.annotation.ResponsePayload;
 
+import com.cannontech.msp.beans.v4.ArrayOfScadaAnalog;
 import com.cannontech.msp.beans.v4.ArrayOfString;
+import com.cannontech.msp.beans.v4.GetAllSCADAAnalogs;
+import com.cannontech.msp.beans.v4.GetAllSCADAAnalogsResponse;
 import com.cannontech.msp.beans.v4.GetMethods;
 import com.cannontech.msp.beans.v4.GetMethodsResponse;
 import com.cannontech.msp.beans.v4.ObjectFactory;
 import com.cannontech.msp.beans.v4.PingURL;
 import com.cannontech.msp.beans.v4.PingURLResponse;
+import com.cannontech.msp.beans.v4.ScadaAnalog;
 import com.cannontech.multispeak.client.MultispeakDefines;
 import com.cannontech.multispeak.exceptions.MultispeakWebServiceException;
 import com.cannontech.multispeak.service.v4.SCADA_Server;
@@ -27,6 +31,7 @@ import com.cannontech.multispeak.service.v4.SCADA_Server;
 @RequestMapping("/multispeak/v4/SCADA_Server")
 public class SCADAServiceEndpoint {
 
+    @Autowired private SCADA_Server scada_Server;
     @Autowired private ObjectFactory objectFactory;
     @Autowired private SCADA_Server scada_server;
     private final String SCADA_V4_ENDPOINT_NAMESPACE = MultispeakDefines.NAMESPACE_v4;
@@ -40,7 +45,8 @@ public class SCADAServiceEndpoint {
     }
 
     @PayloadRoot(localPart = "GetMethods", namespace = SCADA_V4_ENDPOINT_NAMESPACE)
-    public @ResponsePayload GetMethodsResponse getMethods(@RequestPayload GetMethods getMethods) throws MultispeakWebServiceException {
+    public @ResponsePayload GetMethodsResponse getMethods(@RequestPayload GetMethods getMethods)
+            throws MultispeakWebServiceException {
         GetMethodsResponse response = objectFactory.createGetMethodsResponse();
 
         List<String> methods = scada_server.getMethods();
@@ -49,5 +55,18 @@ public class SCADAServiceEndpoint {
         response.setGetMethodsResult(arrayOfString);
         return response;
     }
-}
 
+    @PayloadRoot(localPart = "GetAllSCADAAnalogs", namespace = MultispeakDefines.NAMESPACE_v4)
+    public @ResponsePayload GetAllSCADAAnalogsResponse getAllSCADAAnalogs(@RequestPayload GetAllSCADAAnalogs getAllSCADAAnalogs)
+            throws MultispeakWebServiceException {
+        GetAllSCADAAnalogsResponse response = objectFactory.createGetAllSCADAAnalogsResponse();
+
+        String lastReceived = getAllSCADAAnalogs.getLastReceived();
+        List<ScadaAnalog> scadaAnalogs = scada_Server.getAllSCADAAnalogs(lastReceived);
+
+        ArrayOfScadaAnalog arrayOfScadaAnalog = objectFactory.createArrayOfScadaAnalog();
+        arrayOfScadaAnalog.getScadaAnalog().addAll(scadaAnalogs);
+        response.setGetAllSCADAAnalogsResult(arrayOfScadaAnalog);
+        return response;
+    }
+}

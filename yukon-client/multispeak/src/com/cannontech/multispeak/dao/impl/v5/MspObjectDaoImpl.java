@@ -15,6 +15,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 
 import com.cannontech.amr.meter.model.SimpleMeter;
 import com.cannontech.clientutils.YukonLogManager;
+import com.cannontech.common.pao.PaoType;
 import com.cannontech.database.data.point.PointTypes;
 import com.cannontech.database.db.point.SystemLog;
 import com.cannontech.message.dispatch.message.SystemLogHelper;
@@ -160,23 +161,28 @@ public class MspObjectDaoImpl implements MspObjectDao {
 
     @Override
     public ServiceLocation getMspServiceLocation(SimpleMeter meter, MultispeakVendor mspVendor) {
-        return getMspServiceLocation(meter.getMeterNumber(), mspVendor);
-    }
-
-    @Override
-    public ServiceLocation getMspServiceLocation(String meterNumber, MultispeakVendor mspVendor) {
         ServiceLocation mspServiceLocation = new ServiceLocation();
         String endpointUrl = multispeakFuncs.getEndpointUrl(mspVendor, MultispeakDefines.CB_Server_STR);
         try {
             GetServiceLocationsByMeterIDs getServiceLocationsByMeterIDs = new GetServiceLocationsByMeterIDs();
             ArrayOfMeterID arrayOfMeterID = new ArrayOfMeterID();
             List<MeterID> meterIds = arrayOfMeterID.getMeterID();
-            MeterID meterID = new MeterID();
-            meterID.setMeterName(meterNumber);
-            meterID.setRegisteredName(MultispeakDefines.REGISTERED_NAME);
-            meterID.setServiceType(ServiceKind.ELECTRIC);
-            meterID.setSystemName(MultispeakDefines.MSP_APPNAME_YUKON);
-            meterIds.add(meterID);
+            String meterNumber = meter.getMeterNumber();
+            PaoType paoType = meter.getPaoIdentifier().getPaoType();
+            MeterID meterId = new MeterID();
+            meterId.setMeterName(meterNumber);
+            meterId.setRegisteredName(MultispeakDefines.REGISTERED_NAME);
+
+            if (paoType.isWaterMeter()) {
+                meterId.setServiceType(ServiceKind.WATER);
+            } else if (paoType.isGasMeter()) {
+                meterId.setServiceType(ServiceKind.GAS);
+            } else {
+                meterId.setServiceType(ServiceKind.ELECTRIC);
+            }
+            
+            meterId.setSystemName(MultispeakDefines.MSP_APPNAME_YUKON);
+            meterIds.add(meterId);
 
             getServiceLocationsByMeterIDs.setArrayOfMeterID(arrayOfMeterID);
 
@@ -202,9 +208,7 @@ public class MspObjectDaoImpl implements MspObjectDao {
     }
 
     @Override
-    public List<MspMeter> getMspMetersByServiceLocation(ServiceLocation mspServiceLocation,
-            MultispeakVendor mspVendor) {
-        //
+    public List<MspMeter> getMspMetersByServiceLocation(ServiceLocation mspServiceLocation, MultispeakVendor mspVendor) {
         List<MspMeter> meterDetails = new ArrayList<MspMeter>();
         String endpointUrl = multispeakFuncs.getEndpointUrl(mspVendor, MultispeakDefines.CB_Server_STR);
         try {

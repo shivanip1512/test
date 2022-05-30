@@ -8,6 +8,7 @@ import java.util.stream.Collectors;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.logging.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.dao.EmptyResultDataAccessException;
 
 import com.cannontech.capcontrol.dao.FeederDao;
 import com.cannontech.capcontrol.dao.SubstationBusDao;
@@ -227,11 +228,61 @@ public class BusServiceImpl implements BusService {
         List<Integer> filteredIds = availableFeederIds.stream().filter(id -> !unassignedFeedersId.contains(id))
                                                                .collect(Collectors.toList());
         for (Integer feederId : filteredIds) {
-            isCapbankAssigned = feederService.isCapBanksAssignedToZone(feederId);
+            try {
+                isCapbankAssigned = feederService.isCapBanksAssignedToZone(feederId);
+            } catch (EmptyResultDataAccessException|NotFoundException e) {
+                log.info("Substation Bus not found for feeder.", e);
+            }
             if (isCapbankAssigned) {
                 break;
             }
         }
         return isCapbankAssigned;
+    }
+    
+    @Override
+    public boolean isFeedersAssignedToVoltagePointForZone(List<Integer> availableFeederIds) {
+        boolean isFeederAssigned = false;
+        List<Assignment> unassignedFeeders = getUnassignedFeeders();
+        List<Integer> unassignedFeedersId = unassignedFeeders.stream().map(Assignment::getId)
+                                                                      .collect(Collectors.toList());
+        // Match the available feeder id with unassigned feeder ids to get the list of ids . Using 
+        // these ids we will check if the associated cap bank is assigned to some zone.
+        List<Integer> filteredIds = availableFeederIds.stream().filter(id -> !unassignedFeedersId.contains(id))
+                                                               .collect(Collectors.toList());
+        for (Integer feederId : filteredIds) {
+            try {
+                isFeederAssigned = feederService.isFeederAssignedToVoltagePointForZone(feederId);
+            } catch (EmptyResultDataAccessException|NotFoundException e) {
+                log.info("Substation Bus not found for feeder.", e);
+            }
+            if (isFeederAssigned) {
+                break;
+            }
+        }
+        return isFeederAssigned;
+    }
+    
+    @Override
+    public boolean isFeedersAssignedToRegulatorForZone(List<Integer> availableFeederIds) {
+        boolean isFeederAssigned = false;
+        List<Assignment> unassignedFeeders = getUnassignedFeeders();
+        List<Integer> unassignedFeedersId = unassignedFeeders.stream().map(Assignment::getId)
+                                                                      .collect(Collectors.toList());
+        // Match the available feeder id with unassigned feeder ids to get the list of ids . Using 
+        // these ids we will check if the associated cap bank is assigned to some zone.
+        List<Integer> filteredIds = availableFeederIds.stream().filter(id -> !unassignedFeedersId.contains(id))
+                                                               .collect(Collectors.toList());
+        for (Integer feederId : filteredIds) {
+            try {
+                isFeederAssigned = feederService.isFeederAssignedToRegulatorPointForZone(feederId);
+            } catch (EmptyResultDataAccessException|NotFoundException e) {
+                log.info("Substation Bus not found for feeder.", e);
+            }
+            if (isFeederAssigned) {
+                break;
+            }
+        }
+        return isFeederAssigned;
     }
 }

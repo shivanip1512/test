@@ -53,6 +53,9 @@
     <entry key="yukon.web.modules.capcontrol.ivvc.zoneDetail.otherActions.voltageDeltas">Voltage Deltas</entry>
     <entry key="yukon.web.modules.capcontrol.ivvc.zoneDetail.phase.allPhases">All Phases</entry>
     <entry key="yukon.web.modules.capcontrol.ivvc.zoneDetail.ignoredPoints">Ignored</entry>
+    <entry key="yukon.web.modules.capcontrol.ivvc.zoneDetail.noFeeder">No Feeder</entry>
+    <entry key="yukon.web.modules.capcontrol.ivvc.zoneDetail.filterByFeeder">Filter by Feeder</entry>
+    <entry key="yukon.web.modules.capcontrol.ivvc.zoneDetail.allFeeders">All Feeders</entry>
     
     <entry key="yukon.web.modules.capcontrol.ivvc.zoneDetail.questionable.hoverText">Questionable Quality</entry>
     
@@ -155,7 +158,8 @@
     <entry key="yukon.web.modules.capcontrol.ivvc.zoneWizard.table.ignore">Ignore</entry>
     <entry key="yukon.web.modules.capcontrol.ivvc.zoneWizard.table.phase">Phase</entry>
     <entry key="yukon.web.modules.capcontrol.ivvc.zoneWizard.table.point.name">Name</entry>
-    <entry key="yukon.web.modules.capcontrol.ivvc.zoneWizard.table.point.device">Device</entry>    
+    <entry key="yukon.web.modules.capcontrol.ivvc.zoneWizard.table.point.device">Device</entry>
+    <entry key="yukon.web.modules.capcontrol.ivvc.zoneWizard.table.point.feeder">Feeder</entry>  
     <entry key="yukon.web.modules.capcontrol.ivvc.zoneWizard.picker.hoverText">Click To Select Regulator</entry>
     <entry key="yukon.web.modules.capcontrol.ivvc.zoneWizard.delete.hoverText">Click to remove</entry>
     <entry key="yukon.web.modules.capcontrol.ivvc.zoneWizard.error.required.zoneName">A zone name is required.</entry>
@@ -191,11 +195,12 @@
     <entry key="yukon.web.modules.capcontrol.ivvc.voltProfileGraph.values.yLeft.min">-3</entry>
     <entry key="yukon.web.modules.capcontrol.ivvc.voltProfileGraph.values.yLeft.max">3</entry>
     <entry key="yukon.web.modules.capcontrol.ivvc.voltProfileGraph.balloonText.distance">Dist: </entry>
-    <entry key="yukon.web.modules.capcontrol.ivvc.voltProfileGraph.zoneLineColorPhaseA">#993333</entry>
-    <entry key="yukon.web.modules.capcontrol.ivvc.voltProfileGraph.zoneLineColorPhaseB">#2929FF</entry>
-    <entry key="yukon.web.modules.capcontrol.ivvc.voltProfileGraph.zoneLineColorPhaseC">#006600</entry>
+    <entry key="yukon.web.modules.capcontrol.ivvc.voltProfileGraph.zoneLineColorPhaseA">#8a0a27</entry>
+    <entry key="yukon.web.modules.capcontrol.ivvc.voltProfileGraph.zoneLineColorPhaseB">#004c9a</entry>
+    <entry key="yukon.web.modules.capcontrol.ivvc.voltProfileGraph.zoneLineColorPhaseC">#1c5b16</entry>
     <entry key="yukon.web.modules.capcontrol.ivvc.voltProfileGraph.zoneLineColorNoPhase">#000000</entry>
-    <entry key="yukon.web.modules.capcontrol.ivvc.voltProfileGraph.zonePointColorIgnoredPoints">#B0B0B0</entry>
+    <entry key="yukon.web.modules.capcontrol.ivvc.voltProfileGraph.zonePointColorIgnoredPoints">#9ca5a9</entry>
+    <entry key="yukon.web.modules.capcontrol.ivvc.voltProfileGraph.zonePointColorNoFeederPoints">#5f6b71</entry>
     <entry key="yukon.web.modules.capcontrol.ivvc.voltProfileGraph.zoneTransitionDataLabel">{description}</entry>
     <entry key="yukon.web.modules.capcontrol.ivvc.voltProfileGraph.showZoneTransitionText.busGraph">true</entry>
     <entry key="yukon.web.modules.capcontrol.ivvc.voltProfileGraph.showZoneTransitionText.zoneGraph">false</entry>

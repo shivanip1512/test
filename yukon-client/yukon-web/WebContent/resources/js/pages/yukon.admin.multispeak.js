@@ -49,7 +49,7 @@ yukon.admin.multispeak = (function() {
                 data: formData
             }).done(function(data) {
                 $('#results').css('color', data.resultColor);
-                $('#results').val(data.MSP_RESULT_MSG);
+                $('#results').text(data.MSP_RESULT_MSG);
             }).fail(function(data) {
                 $('#start-simulator').removeAttr("disabled");
                 if (data.hasError) {

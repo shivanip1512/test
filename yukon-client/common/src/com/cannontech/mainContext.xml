@@ -269,6 +269,7 @@
                 <value>classpath:com/cannontech/yukon/web/modules/operator/mapNetwork</value>
                 <value>classpath:com/cannontech/yukon/web/modules/operator/comprehensiveMap</value>
                 <value>classpath:com/cannontech/yukon/web/modules/operator/commChannel</value>
+                <value>classpath:com/cannontech/yukon/web/modules/operator/signalTransmitter</value>
                 <value>classpath:com/cannontech/yukon/web/modules/operator/relay</value>
                 <value>classpath:com/cannontech/yukon/web/modules/operator/rtu</value>
                 <value>classpath:com/cannontech/yukon/web/modules/operator/scheduledDataImport</value>
@@ -300,6 +301,7 @@
                 <value>classpath:com/cannontech/yukon/web/modules/dashboards/root</value>
                 <value>classpath:com/cannontech/yukon/web/modules/smartNotifications/root</value>
                 <value>classpath:com/cannontech/yukon/web/modules/dr/rfBroadcastEventDetail</value>
+                <value>classpath:com/cannontech/yukon/web/modules/operator/pagingTerminal</value>
             </list>
         </constructor-arg>
     </bean>

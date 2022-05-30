@@ -110,6 +110,15 @@ public class YukonApiValidationUtils extends ValidationUtils {
         }
         return false;
     }
+    
+    public boolean checkHexOnlyCharacter(Errors errors, String field, String fieldValue, String fieldName) {
+        if (YukonValidationUtilsCommon.checkHexOnlyCharacter(fieldValue)) {
+            errors.rejectValue(field, ApiErrorDetails.HEXIDECIMAL_CHARACTERS.getCodeString(), new Object[] { fieldName }, 
+                    "Contains non-hexidecimal characters.");
+            return true;
+        }
+        return false;
+    }
 
     public boolean checkIsBlank(Errors errors, String field, String fieldValue, boolean fieldAllowsNull,
             String fieldName) {
@@ -311,6 +320,28 @@ public class YukonApiValidationUtils extends ValidationUtils {
             errors.rejectValue(startField, ApiErrorDetails.START_DATE_BEFORE_END_DATE.getCodeString(),
                     new Object[] { "or equal to" }, "");
         }
+    }
+
+    public void checkIfLengthDivisibleByTwo(Errors errors, String fieldValue, String fieldName) {
+        if (fieldValue.length() % 2 != 0) {
+            errors.rejectValue(fieldValue, ApiErrorDetails.INVALID_LENGTH_EVEN.getCodeString(),
+                    new Object[] { fieldName }, fieldName + " length must be even.");
+        }
+    }
+
+    /**
+     * Check if a string payload is a valid hex byte string
+     * 
+     * @param field        - model object name
+     * @param fieldValue   - value of field
+     * @param fieldName    - Name of the field
+     * @param maxLength    - Max byte length
+     */
+    public void checkIsValidHexByteString(Errors errors, String field, String fieldValue, String fieldName, int maxLength) {
+        checkIsBlank(errors, field, fieldValue, false, fieldName);
+        checkHexOnlyCharacter(errors, field, fieldValue, fieldName);
+        checkIfLengthDivisibleByTwo(errors, fieldValue, fieldName);
+        checkExceedsMaxLength(errors, field, fieldValue, maxLength * 2); // x2 since hex bytes are 2 characters
     }
 
 }

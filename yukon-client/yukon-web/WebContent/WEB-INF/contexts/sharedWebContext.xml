@@ -98,6 +98,7 @@
               <bean class="com.cannontech.web.dr.setup.LoadProgramGearConverter"/>
               <bean class="com.cannontech.web.stars.commChannel.CommChannelBaseConverter"/>
               <bean class="com.cannontech.web.stars.virtualDevice.VirtualDeviceBaseConverter"/>
+              <bean class="com.cannontech.web.stars.signalTransmitter.TerminalBaseConverter"/>
            </set>
        </property>
     </bean>

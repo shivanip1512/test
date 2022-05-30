@@ -27,7 +27,8 @@ public class RestApiWebApplicationInitializer implements WebApplicationInitializ
     
     private static final String[] contextPaths = {
             "/WEB-INF/contexts/api/api-context-ecobee.xml",
-            "/WEB-INF/contexts/api/api-context-aggregateIntervalDataReport.xml"
+            "/WEB-INF/contexts/api/api-context-aggregateIntervalDataReport.xml",
+            "/WEB-INF/contexts/api/api-context-derEdge.xml"
     };
     
     @Override
@@ -36,7 +37,7 @@ public class RestApiWebApplicationInitializer implements WebApplicationInitializ
         log.info("REST API servlet initializing.");
         if (log.isDebugEnabled()) {
             String paths = String.join(",\n", contextPaths);
-            log.info("Context paths: \n{}", paths);
+            log.debug("Context paths: \n{}", paths);
         }
         
         /*

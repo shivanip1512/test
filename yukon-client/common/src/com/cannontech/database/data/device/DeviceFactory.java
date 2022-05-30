@@ -553,6 +553,9 @@ public final class DeviceFactory {
         case VIRTUAL_METER:
             returnDevice = new VirtualMeter();
             break;
+        case RFN530S4X_DER:
+            returnDevice = new Rfn530S4XDer();
+            break;
         default:
             CTILogger.error("PaoType " + paoType + " is undefined for DeviceFactory");
             throw new IllegalArgumentException("PaoType " + paoType + " is undefined for DeviceFactory");

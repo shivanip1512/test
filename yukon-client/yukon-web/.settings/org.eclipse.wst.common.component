@@ -432,7 +432,58 @@
         
         
         
-        <dependent-module archiveName="easymock-3.0.jar" deploy-path="/WEB-INF/lib" handle="module:/classpath/lib/third-party/easymock-3.0.jar">
+        <dependent-module archiveName="easymock-4.3.jar" deploy-path="/WEB-INF/lib" handle="module:/classpath/lib/third-party/easymock-4.3.jar">
+                                                            
+            
+            
+            
+            <dependency-type>uses</dependency-type>
+                                                        
+        
+        
+        
+        </dependent-module>
+                                        
+        
+        
+        <dependent-module archiveName="mockito-core-4.5.1.jar" deploy-path="/WEB-INF/lib" handle="module:/classpath/lib/third-party/mockito-core-4.5.1.jar">
+                                                            
+            
+            
+            
+            <dependency-type>uses</dependency-type>
+                                                        
+        
+        
+        
+        </dependent-module>
+                                        
+        
+        
+                                                
+        
+        
+        <dependent-module archiveName="byte-buddy-agent-1.12.10.jar" deploy-path="/WEB-INF/lib" handle="module:/classpath/lib/third-party/byte-buddy-agent-1.12.10.jar">
+                                                            
+            
+            
+            
+            <dependency-type>uses</dependency-type>
+                                                        
+        
+        
+        
+        </dependent-module>
+                                        
+        
+        
+                                                
+        
+        
+                                                
+        
+        
+        <dependent-module archiveName="byte-buddy-1.12.10.jar" deploy-path="/WEB-INF/lib" handle="module:/classpath/lib/third-party/byte-buddy-1.12.10.jar">
                                                             
             
             

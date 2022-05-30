@@ -93,7 +93,8 @@ public class MRServerDemandResetCallback implements DemandResetCallback {
     @Override
     public void verified(SimpleDevice device, PointValueHolder pointValue) {
         log.debug("device " + device + " passed verification");
-        String meterNumber = meterNumbersByPaoId.get(device.getPaoIdentifier());
+        PaoIdentifier paoIdentifier = device.getPaoIdentifier();
+        String meterNumber = meterNumbersByPaoId.get(paoIdentifier);
         
         ArrayOfEndDeviceEventList arrayOfEndDeviceEventList = new ArrayOfEndDeviceEventList();
         List<EndDeviceEventList> endDeviceEventList = arrayOfEndDeviceEventList.getEndDeviceEventList();
@@ -128,7 +129,15 @@ public class MRServerDemandResetCallback implements DemandResetCallback {
         List<EndDeviceEventTypeItem> endDeviceEventTypeItem = deviceEventTypeList.getEndDeviceEventTypeItem();
         EndDeviceEventTypeItem deviceEventTypeItem = new EndDeviceEventTypeItem();
         EndDeviceEventType endDeviceEventType = new EndDeviceEventType();
-        endDeviceEventType.setEndDeviceDomain(EndDeviceEventDomain.ELECTRICT_METER.code);
+        
+        //TODO check on EndDeviceEventDomain values standardisation
+        if (paoIdentifier.getPaoType().isGasMeter()) {
+            endDeviceEventType.setEndDeviceDomain(EndDeviceEventDomain.GAS_METER.code);
+        } else if (paoIdentifier.getPaoType().isWaterMeter()) {
+            endDeviceEventType.setEndDeviceDomain(EndDeviceEventDomain.WATER_METER.code);
+        } else {
+            endDeviceEventType.setEndDeviceDomain(EndDeviceEventDomain.ELECTRICT_METER.code);
+        }
         endDeviceEventType.setEndDeviceSubdomain(EndDeviceEventDomainPart.DEMAND.code);
         endDeviceEventType.setEndDeviceType(com.cannontech.multispeak.constants.iec61689_9.EndDeviceEventType.COMMAND.code);
         endDeviceEventType.setEventOrAction(Action.CHANGE.value());

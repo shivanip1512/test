@@ -242,6 +242,9 @@ std::optional<DeviceTypes> resolvePaoIdXmlType( const std::string & type )
         //  --- RF Cellular IPLink Relays ---
         { "CRLY856",                     TYPE_CRLY856 },
 
+        //  --- DER Edge Coordinator Devices ---
+        { "RFN530S4X_DER",                     TYPE_RFN530S4X_DER },
+
         //  --- RTU devices ---
         { "RTU_DART",                    TYPE_DARTRTU },
         { "RTU_DNP",                     TYPE_DNPRTU },

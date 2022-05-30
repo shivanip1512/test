@@ -24,7 +24,7 @@ public class Rfn1200Validator extends SimpleValidator<Rfn1200Detail> {
         String paoId = rfn1200.getId() != null ? rfn1200.getId().toString() : null;
 
         yukonValidationHelper.validatePaoName(rfn1200.getName(), rfn1200.getPaoType(), 
-                                              errors, yukonValidationHelper.getMessage("yukon.common.name"), paoId);
+                                              errors, yukonValidationHelper.getMessage("yukon.common.name"), paoId, "name");
         
         PortValidatorHelper.validateRfnAddressField(errors, "rfnAddress.serialNumber", rfn1200.getRfnAddress().getSerialNumber(), 
                                                  yukonValidationHelper.getMessage("yukon.common.serialNumber"), true, 30);

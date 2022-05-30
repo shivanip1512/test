@@ -1,12 +1,15 @@
 package com.cannontech.multispeak.client.v4;
 
+import java.util.ArrayList;
 import java.util.Iterator;
+import java.util.List;
 
 import javax.xml.namespace.QName;
 import javax.xml.soap.MimeHeaders;
 import javax.xml.soap.SOAPException;
 import javax.xml.soap.SOAPMessage;
 
+import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.logging.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -20,8 +23,29 @@ import org.springframework.ws.soap.saaj.SaajSoapMessage;
 import org.w3c.dom.Node;
 
 import com.cannontech.clientutils.YukonLogManager;
+import com.cannontech.common.exception.BadAuthenticationException;
+import com.cannontech.common.exception.PasswordExpiredException;
+import com.cannontech.common.pao.YukonDevice;
+import com.cannontech.common.pao.definition.model.PaoTag;
 import com.cannontech.core.dao.NotFoundException;
+import com.cannontech.core.dynamic.PointValueHolder;
+import com.cannontech.core.service.PointFormattingService.Format;
 import com.cannontech.database.data.lite.LiteYukonUser;
+import com.cannontech.msp.beans.v4.ArrayOfElectricMeter;
+import com.cannontech.database.db.point.stategroup.Disconnect410State;
+import com.cannontech.database.db.point.stategroup.PointStateHelper;
+import com.cannontech.database.db.point.stategroup.RfnDisconnectStatusState;
+import com.cannontech.msp.beans.v4.ArrayOfErrorObject;
+import com.cannontech.msp.beans.v4.ArrayOfGasMeter;
+import com.cannontech.msp.beans.v4.ArrayOfWaterMeter;
+import com.cannontech.msp.beans.v4.ErrorObject;
+import com.cannontech.msp.beans.v4.Meters;
+import com.cannontech.msp.beans.v4.MspMeter;
+import com.cannontech.msp.beans.v4.ObjectFactory;
+import com.cannontech.msp.beans.v4.ElectricMeter;
+import com.cannontech.msp.beans.v4.WaterMeter;
+import com.cannontech.msp.beans.v4.GasMeter;
+import com.cannontech.msp.beans.v4.RCDState;
 import com.cannontech.multispeak.client.MessageContextHolder;
 import com.cannontech.multispeak.client.MultiSpeakVersion;
 import com.cannontech.multispeak.client.MultispeakDefines;
@@ -30,17 +54,20 @@ import com.cannontech.multispeak.client.MultispeakVendor;
 import com.cannontech.multispeak.client.YukonMultispeakMsgHeader;
 import com.cannontech.multispeak.dao.MultispeakDao;
 import com.cannontech.multispeak.data.MspReturnList;
+import com.cannontech.multispeak.data.v4.MspRCDState;
 import com.cannontech.multispeak.exceptions.MultispeakWebServiceException;
+import com.cannontech.user.YukonUserContext;
 
 public class MultispeakFuncs extends MultispeakFuncsBase {
     private final static Logger log = YukonLogManager.getLogger(MultispeakFuncs.class);
     @Autowired public MultispeakDao multispeakDao;
+    @Autowired private ObjectFactory objectFactory;
 
     @Override
     public MultiSpeakVersion version() {
         return MultiSpeakVersion.V4;
     }
-
+    
     @Override
     public void loadResponseHeader() throws MultispeakWebServiceException {
         SoapEnvelope env;
@@ -77,8 +104,18 @@ public class MultispeakFuncs extends MultispeakFuncsBase {
 
     @Override
     public LiteYukonUser authenticateMsgHeader() throws MultispeakWebServiceException {
-        // TODO Auto-generated method stub
-        return null;
+        try {
+            SoapEnvelope env = getRequestMessageSOAPEnvelope();
+            SoapHeader soapHeader = env.getHeader();
+            String username = getAtributeFromSOAPHeader(soapHeader, "UserID");
+            String password = getAtributeFromSOAPHeader(soapHeader, "Pwd");
+            LiteYukonUser user = authenticationService.login(username, password);
+            return user;
+        } catch (PasswordExpiredException e) {
+            throw new MultispeakWebServiceException("Password expired", e);
+        } catch (BadAuthenticationException e) {
+            throw new MultispeakWebServiceException("User Authentication Failed", e);
+        }
     }
 
     /**
@@ -225,6 +262,82 @@ public class MultispeakFuncs extends MultispeakFuncsBase {
         }
 
         return attributeValue;
+    }
+    
+    public ArrayOfErrorObject toArrayOfErrorObject(List<ErrorObject> errorObjects) {
+        ArrayOfErrorObject arrayOfErrorObject = objectFactory.createArrayOfErrorObject();
+        if (errorObjects != null) {
+            arrayOfErrorObject.getErrorObject().addAll(errorObjects);
+        }
+        return arrayOfErrorObject;
+    }
+
+    public List<MspMeter> getMspMeters(Meters meters) {
+        List<MspMeter> mspMeters = new ArrayList<>();
+
+        ArrayOfElectricMeter ArrOfElectricMeters = meters.getElectricMeters();
+        List<ElectricMeter> electricMeters = (null != ArrOfElectricMeters) ? ArrOfElectricMeters.getElectricMeter() : null;
+        if (CollectionUtils.isNotEmpty(electricMeters)) {
+            mspMeters.addAll(electricMeters);
+        }
+
+        ArrayOfWaterMeter ArrOfWaterMeters = meters.getWaterMeters();
+        List<WaterMeter> waterMeters = (null != ArrOfWaterMeters) ? ArrOfWaterMeters.getWaterMeter() : null;
+        if (CollectionUtils.isNotEmpty(waterMeters)) {
+            mspMeters.addAll(waterMeters);
+        }
+
+        ArrayOfGasMeter ArrOfGasMeters = meters.getGasMeters();
+        List<GasMeter> gasMeters = null != ArrOfGasMeters ? ArrOfGasMeters.getGasMeter() : null;
+        if (CollectionUtils.isNotEmpty(gasMeters)) {
+            mspMeters.addAll(gasMeters);
+        }
+
+        return mspMeters;
+    }
+    
+    /**
+     * Translates the rawState into a loadActionCode based on the type of meter
+     * and expected state group for that type. Returns loadActionCode.Unknown
+     * when cannot be determined.
+     * 
+     * @param meter
+     * @return
+     */
+    public RCDState getRCDState(YukonDevice yukonDevice, PointValueHolder pointValueHolder) {
+
+        MspRCDState mspRCDState;
+        try {
+
+            log.debug("Returning disconnect status from cache: "
+                    + pointFormattingService.getCachedInstance().getValueString(pointValueHolder, Format.FULL, YukonUserContext.system));
+
+            boolean isRfnDisconnect = paoDefinitionDao.isTagSupported(yukonDevice.getPaoIdentifier().getPaoType(),
+                    PaoTag.DISCONNECT_RFN);
+            if (isRfnDisconnect) {
+                RfnDisconnectStatusState pointState = PointStateHelper.decodeRawState(RfnDisconnectStatusState.class, pointValueHolder.getValue());
+                mspRCDState = MspRCDState.getForRfnState(pointState);
+                log.debug("returning mspRCDState for RFN: " + mspRCDState);
+            } else { // assume everything else is PLC
+                Disconnect410State pointState = PointStateHelper.decodeRawState(Disconnect410State.class, pointValueHolder.getValue());
+                mspRCDState = MspRCDState.getForPlcState(pointState);
+                log.debug("returning loadActionCode for PLC: " + mspRCDState);
+            }
+        } catch (IllegalArgumentException e) {
+            // we were unable to decode the rawState
+            log.warn("Unable to decode rawState. value:" + pointValueHolder.getValue());
+            return RCDState.UNKNOWN;
+        }
+        return mspRCDState.getRCDState();
+    }
+    
+    public void logErrorObjects(String interfaceName, String methodName, List<ErrorObject> objects) {
+        if (CollectionUtils.isNotEmpty(objects)) {
+            for (ErrorObject errorObject : objects) {
+                log.info("Error Return from " + interfaceName + "(" + methodName + "): " + (errorObject == null ? "Null"
+                        : errorObject.getObjectID() + " - " + errorObject.getErrorString()));
+            }
+        }
     }
 
 }

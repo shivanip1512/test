@@ -305,6 +305,8 @@ public enum PaoType implements DisplayableEnum, DatabaseRepresentationSource {
     RFG301A(DeviceTypes.RFG301A, "RFG-301A", PaoCategory.DEVICE, PaoClass.RFMESH),
     RFG301R(DeviceTypes.RFG301R, "RFG-301R", PaoCategory.DEVICE, PaoClass.RFMESH),
     
+    RFN530S4X_DER(DeviceTypes.RFN530S4X_DER, "RFN-530S4X-DER", PaoCategory.DEVICE, PaoClass.RFMESH),
+    
     NEST(DeviceTypes.NEST, "Nest", PaoCategory.DEVICE, PaoClass.THERMOSTAT),
     
     // WHEN ADDING A NEW PAO TYPE, REMEMBER TO ADD A NEW I18N ENTRY TO 
@@ -323,6 +325,7 @@ public enum PaoType implements DisplayableEnum, DatabaseRepresentationSource {
     private final static ImmutableSet<PaoType> itronTypes;
     private final static ImmutableSet<PaoType> rfTypes;
     private final static ImmutableSet<PaoType> rfMeterTypes;
+    private final static ImmutableSet<PaoType> rfMeterTypesThatSupportPoints;
     private final static ImmutableSet<PaoType> rfElectricTypes;
     private final static ImmutableSet<PaoType> cbcTypes;
     private final static ImmutableSet<PaoType> regulatorTypes;
@@ -362,6 +365,8 @@ public enum PaoType implements DisplayableEnum, DatabaseRepresentationSource {
     private final static ImmutableSet<PaoType> virtualTypes;
     private final static ImmutableSet<PaoType> cloudLcrTypes;
     private final static ImmutableSet<PaoType> cellularTypes;
+    private final static ImmutableSet<PaoType> noPointSupportMeterTypes;
+    private final static ImmutableSet<PaoType> derEdgeCoordinatorTypes;
 
     public final static int INVALID = -1;
     
@@ -556,7 +561,8 @@ public enum PaoType implements DisplayableEnum, DatabaseRepresentationSource {
             SIXNET,
             TRANSDATA_MARKV,
             VECTRON,
-            VIRTUAL_METER
+            VIRTUAL_METER,
+            RFN530S4X_DER
             );
         
         rfTypes = ImmutableSet.of(
@@ -614,7 +620,8 @@ public enum PaoType implements DisplayableEnum, DatabaseRepresentationSource {
             LCR6600_RFN,
             LCR6700_RFN,
             RFN_RELAY,
-            CRLY856);
+            CRLY856,
+            RFN530S4X_DER);
         
         rfMeterTypes = Sets.intersection(rfTypes, meterTypes).immutableCopy();
         
@@ -753,7 +760,11 @@ public enum PaoType implements DisplayableEnum, DatabaseRepresentationSource {
         
         cloudLcrTypes = ImmutableSet.of(LCR6200C,
                                            LCR6600C);
-        
+
+        noPointSupportMeterTypes = ImmutableSet.of(RFN530S4X_DER);
+
+        derEdgeCoordinatorTypes = ImmutableSet.of(RFN530S4X_DER);
+
         Builder<PaoType> capControlTypeBuilder = ImmutableSet.builder();
         for (PaoType paoType : PaoType.values()) {
             if (paoType.isCapControl()) {
@@ -836,6 +847,8 @@ public enum PaoType implements DisplayableEnum, DatabaseRepresentationSource {
           );
         
         rfElectricTypes = Sets.difference(rfMeterTypes, Sets.union(waterMeterTypes, gasMeterTypes)).immutableCopy();
+
+        rfMeterTypesThatSupportPoints = Sets.difference(rfMeterTypes, noPointSupportMeterTypes).immutableCopy();
     }
     
     /**
@@ -1050,6 +1063,18 @@ public enum PaoType implements DisplayableEnum, DatabaseRepresentationSource {
         return cloudLcrTypes.contains(this);
     }
     
+    public boolean supportsPoints() {
+        return rfMeterTypesThatSupportPoints.contains(this);
+    }
+
+    public boolean isNoPointSupportMeterTypes() {
+        return noPointSupportMeterTypes.contains(this);
+    }
+
+    public boolean isDerEdgeCoordinator() {
+        return derEdgeCoordinatorTypes.contains(this);
+    }
+
     private PaoType(int deviceTypeId, String dbString, PaoCategory paoCategory, PaoClass paoClass) {
         this.deviceTypeId = deviceTypeId;
         this.dbString = dbString;
@@ -1240,6 +1265,18 @@ public enum PaoType implements DisplayableEnum, DatabaseRepresentationSource {
     
     public static ImmutableSet<PaoType> getCellularTypes() {
         return cellularTypes;
+    }
+
+    public static ImmutableSet<PaoType> getRfMeterTypesThatSupportPoints() {
+        return rfMeterTypesThatSupportPoints;
+    }
+
+    public static ImmutableSet<PaoType> getNoPointSupportMeterTypes() {
+        return noPointSupportMeterTypes;
+    }
+
+    public static ImmutableSet<PaoType> getDerEdgeCoordinatorTypes() {
+        return derEdgeCoordinatorTypes;
     }
 
     /**
