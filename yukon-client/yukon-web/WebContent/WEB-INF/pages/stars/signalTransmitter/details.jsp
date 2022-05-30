@@ -51,7 +51,7 @@
                     </cti:displayForPageEditModes>
                 </tags:nameValue2>
                 <c:if test="${signalTransmitter.type == 'WCTP_TERMINAL' || signalTransmitter.type == 'SNPP_TERMINAL' ||  signalTransmitter.type == 'TAPTERMINAL'}">
-                    <tags:nameValue2 nameKey=".pageNumber" rowClass="noswitchtype">
+                    <tags:nameValue2 nameKey=".pagerNumber" rowClass="noswitchtype">
                         <tags:input path="pagerNumber" maxlength="20"/>
                     </tags:nameValue2>
                     <tags:nameValue2 nameKey=".status" rowClass="noswitchtype">

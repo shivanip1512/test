@@ -88,7 +88,7 @@ public class SignalTransmitterValidator<T extends TerminalBase<?>> extends Simpl
         } else if (terminal instanceof WCTPTerminal) {
             pageNumber = ((WCTPTerminal) terminal).getPagerNumber();
         }
-        String pageNumberFieldTxt = yukonValidationHelper.getMessage(key + ".pageNumber");
+        String pageNumberFieldTxt = yukonValidationHelper.getMessage(key + ".pagerNumber");
         yukonValidationHelper.checkIfFieldRequired("pagerNumber", errors, pageNumber,
                 pageNumberFieldTxt);
         if (!errors.hasFieldErrors("pagerNumber")) {

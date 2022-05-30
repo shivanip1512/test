@@ -12,7 +12,7 @@
     
     <entry key="yukon.web.modules.operator.signalTransmitter.name">Name</entry>
     <entry key="yukon.web.modules.operator.signalTransmitter.type">Type</entry>
-    <entry key="yukon.web.modules.operator.signalTransmitter.pageNumber">Page Number</entry>
+    <entry key="yukon.web.modules.operator.signalTransmitter.pagerNumber">Pager Number</entry>
     <entry key="yukon.web.modules.operator.signalTransmitter.status">Status</entry>
     <entry key="yukon.web.modules.operator.signalTransmitter.commChannel">Communication Channel</entry>
     <entry key="yukon.web.modules.operator.signalTransmitter.passwordRequired">Password Required</entry>
