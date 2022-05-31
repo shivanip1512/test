@@ -72,6 +72,7 @@ public class MeterReadProcessingServiceImpl implements MeterReadProcessingServic
             @Override
             public void apply(PointValueHolder value, MeterRead reading) {
                 //TODO
+                
             }
         };
 
