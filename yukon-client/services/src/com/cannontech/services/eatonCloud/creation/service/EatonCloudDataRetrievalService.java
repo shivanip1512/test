@@ -19,6 +19,8 @@ import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.util.CollectionUtils;
 
 import com.cannontech.clientutils.YukonLogManager;
+import com.cannontech.common.config.ConfigurationSource;
+import com.cannontech.common.config.MasterConfigBoolean;
 import com.cannontech.common.constants.YukonListEntry;
 import com.cannontech.common.device.creation.DeviceCreationException;
 import com.cannontech.common.inventory.Hardware;
@@ -70,6 +72,7 @@ public class EatonCloudDataRetrievalService {
     @Autowired private EatonCloudDataReadService eatonCloudDataReadService;
     @Autowired private AsyncDynamicDataSource asyncDynamicDataSource;
     @Autowired private GlobalSettingDao globalSettingDao;
+    @Autowired private ConfigurationSource configurationSource;
     private YukonJmsTemplate jmsTemplate;
 
     private static AtomicBoolean isRunningDeviceCreation = new AtomicBoolean();
@@ -197,9 +200,11 @@ public class EatonCloudDataRetrievalService {
                 return;
             }
             
+            int channelCount = configurationSource.getBoolean(MasterConfigBoolean.EATON_CLOUD_JOBS_TREND, false) ? 1000 : 10;
+            
             List<List<EatonCloudTimeSeriesDeviceV1>> timeSeriesDeviceRequests = Lists.partition(devicesToCreate.stream()
                     .map(device -> new EatonCloudTimeSeriesDeviceV1(device.getDeviceGuid(), String.valueOf(EatonCloudChannel.FREQUENCY.getChannelId())))
-                    .collect(Collectors.toList()), 10);
+                    .collect(Collectors.toList()), channelCount);
             
             List<String> guidsWithTimeSeriesData = new ArrayList<>();
             
