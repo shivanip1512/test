@@ -22,7 +22,7 @@ public enum EatonCloudRetrievalUrl {
             false,
             true,
             true,
-            true),
+            false),
     SECURITY_TOKEN2(EatonCloudVersion.V1, "/v1/security/serviceaccount/token",
             "https://eas-dev.eastus.cloudapp.azure.com/api-details#api=security&operation=post-getserviceaccounttoken",
             // 200,401
@@ -31,7 +31,7 @@ public enum EatonCloudRetrievalUrl {
             false,
             true,
             false,
-            true),
+            false),
     DEVICES_BY_SITE(EatonCloudVersion.V1, "/v1/sites/{id}/devices",
             "https://eas-dev.eastus.cloudapp.azure.com/api-details#api=devices&operation=get-getsitedevices",
             // 200, 400, 401
@@ -50,7 +50,7 @@ public enum EatonCloudRetrievalUrl {
             true,
             true,
             true,
-            true),
+            false),
     COMMANDS(EatonCloudVersion.V1, "/v1/devices/{id}/commands/{command_instance_id}",
             "https://eas-dev.eastus.cloudapp.azure.com/api-details#api=devices&operation=put-senddevicecommand",
             //200, 400, 401, 404
@@ -59,7 +59,7 @@ public enum EatonCloudRetrievalUrl {
             true, 
             true,
             true,
-            true),
+            false),
     DEVICE_DETAIL(EatonCloudVersion.V1, "/v1/devices/{deviceId}",
             "https://eas-dev.eastus.cloudapp.azure.com/api-details#api=devices&operation=get-getdevicedetails-1",
             // 200, 400, 401, 404
@@ -95,7 +95,7 @@ public enum EatonCloudRetrievalUrl {
             false, 
             true,
             false,
-            true);
+            false);
     private EatonCloudVersion version;
     private String suffix;
     private String doc;
