@@ -66,11 +66,20 @@ public class MeterReadProcessingServiceImpl implements MeterReadProcessingServic
                 // TBD
             }
         };
+        
+        
+        ReadingProcessor deliveredKWhRateA = new ReadingProcessor() {
+            @Override
+            public void apply(PointValueHolder value, MeterRead reading) {
+                //TODO
+            }
+        };
 
         attributesToLoad =
             ImmutableMap.of(BuiltInAttribute.USAGE, usageConverter,
                             BuiltInAttribute.PEAK_DEMAND, peakDemandConverter,
-                            BuiltInAttribute.BLINK_COUNT, blinkConverter);
+                            BuiltInAttribute.BLINK_COUNT, blinkConverter,
+                            BuiltInAttribute.DELIVERED_KWH_RATE_A, deliveredKWhRateA);
     }
 
     @Override

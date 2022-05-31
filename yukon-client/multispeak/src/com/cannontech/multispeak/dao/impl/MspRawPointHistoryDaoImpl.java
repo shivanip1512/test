@@ -112,7 +112,7 @@ public class MspRawPointHistoryDaoImpl implements MspRawPointHistoryDao
 
         int estimatedSize = 0;
 
-        EnumSet<BuiltInAttribute> attributesToLoad = EnumSet.of(BuiltInAttribute.USAGE, BuiltInAttribute.PEAK_DEMAND);
+        EnumSet<BuiltInAttribute> attributesToLoad = EnumSet.of(BuiltInAttribute.USAGE, BuiltInAttribute.PEAK_DEMAND, BuiltInAttribute.DELIVERED_KWH_RATE_A);
         // load up results for each attribute
         for (BuiltInAttribute attribute : attributesToLoad) {
             Map<PaoIdentifier, PointValueQualityHolder> resultsForAttribute = rawPointHistoryDao.getSingleAttributeData(meters, attribute, false, null);
