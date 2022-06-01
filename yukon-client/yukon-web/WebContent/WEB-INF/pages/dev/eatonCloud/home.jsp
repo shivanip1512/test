@@ -81,7 +81,17 @@
 	                                	</div>
                                 	</div>
 	                            </c:if>
-	                        </td>
+                                <c:if test="${endpoint.displayUnknownPercentage()}">
+                                    <c:set var="dnClass" value="${settings.selectedStatuses[endpoint] != 'OK' ? 'dn' : ''}" />
+                                    <div class="js-unknown-percentage-fields ${dnClass}">
+                                        <tags:input path="unknownPercentages[${endpoint}]" size="3" inputClass="js-unknown-percentage"
+                                            units="%" />
+                                        <cti:icon icon="icon-help" classes="fn cp ML0 MR0" data-popup="#unknownPercentageHelp" />
+                                        <div id="unknownPercentageHelp" data-title="Unknown Percentage" data-width="500" class="dn">
+                                            The percentage of responses that should return as unknown.</div>
+                                    </div>
+                                </c:if>
+                            </td>
 	                    </c:if>
                         <td>
                             <c:if test="${not empty endpoint.params}">
