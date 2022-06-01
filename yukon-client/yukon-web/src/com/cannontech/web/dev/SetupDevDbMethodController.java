@@ -2,8 +2,10 @@ package com.cannontech.web.dev;
 
 import java.beans.PropertyEditorSupport;
 import java.text.DecimalFormat;
+import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
@@ -36,12 +38,14 @@ import com.cannontech.database.TypeRowMapper;
 import com.cannontech.database.SqlParameterSink;
 import com.cannontech.database.YukonJdbcTemplate;
 import com.cannontech.database.data.lite.LiteYukonGroup;
+import com.cannontech.database.data.lite.LiteYukonPAObject;
 import com.cannontech.database.data.lite.LiteYukonUser;
 import com.cannontech.development.model.DemandResponseSetup;
 import com.cannontech.development.model.DevAmr;
 import com.cannontech.development.model.DevCCU;
 import com.cannontech.development.model.DevCommChannel;
 import com.cannontech.development.model.DevPaoType;
+import com.cannontech.development.service.DemandResponseSetupService;
 import com.cannontech.development.service.DevAmrCreationService;
 import com.cannontech.i18n.YukonMessageSourceResolvable;
 import com.cannontech.simulators.RegulatorVoltageControlMode;
@@ -53,6 +57,8 @@ import com.cannontech.simulators.message.response.SimulatorResponseBase;
 import com.cannontech.stars.core.dao.EnergyCompanyDao;
 import com.cannontech.stars.database.cache.StarsDatabaseCache;
 import com.cannontech.stars.database.data.lite.LiteStarsEnergyCompany;
+import com.cannontech.stars.dr.account.dao.CustomerAccountDao;
+import com.cannontech.stars.dr.account.model.CustomerAccount;
 import com.cannontech.user.YukonUserContext;
 import com.cannontech.web.api.token.TokenHelper;
 import com.cannontech.web.common.flashScope.FlashScope;
@@ -84,11 +90,13 @@ public class SetupDevDbMethodController {
     @Autowired private DevCapControlCreationService devCapControlCreationService;
     @Autowired private DevStarsCreationService devStarsCreationService;
     @Autowired private DevEventLogCreationService devEventLogCreationService;
+    @Autowired private DemandResponseSetupService devDemandResponseSetupService;
     @Autowired private RoleDao roleDao;
     @Autowired private EnergyCompanyDao ecDao;
     @Autowired private YukonJdbcTemplate jdbcTemplate;
     @Autowired private SimulatorsCommunicationService simulatorsCommunicationService;
     @Autowired private IDatabaseCache databaseCache;
+    @Autowired private CustomerAccountDao customerAccountDao;
 
     @RequestMapping("main")
     public void main(ModelMap model) {
@@ -119,11 +127,43 @@ public class SetupDevDbMethodController {
         model.addAttribute("eventSourceList", Lists.newArrayList(EventSource.values()));
         model.addAttribute("controlModeTypes", RegulatorVoltageControlMode.values());
         
+        addDemandResponseInfoToModel(model, new DemandResponseSetup());
+    }
+    
+    private void addDemandResponseInfoToModel(ModelMap model, DemandResponseSetup drSetup) {
         model.addAttribute("allPrograms", databaseCache.getAllLMPrograms());
         model.addAttribute("drPaoTypes", Stream.of(PaoType.values())
                 .filter(p -> p.isRfLcr() || p.isCloudLcr())
                 .collect(Collectors.toList()));
         
+        List<CustomerAccount> accounts = customerAccountDao.getAll()
+                .stream()
+                .filter(a -> a.getAccountId() > 0)
+                .collect(Collectors.toList());
+        model.addAttribute("numAccounts", accounts.size());
+        
+        model.addAttribute("numDevices", getNumberOfDevices(drSetup.getTypes()));
+    }
+    
+    private int getNumberOfDevices(List<PaoType> deviceTypes) {
+        if (deviceTypes != null) {
+            List<LiteYukonPAObject> devices = databaseCache.getAllDevices().stream()
+                    .filter(device -> deviceTypes.contains(device.getPaoType()))
+                    .collect(Collectors.toList());
+            return devices.size();
+        }
+        return 0;
+    }
+    
+    @RequestMapping("getNumDevices")
+    @ResponseBody
+    public Map<String, Object> getNumberDevices(PaoType[] deviceTypes) {
+        
+        Map<String, Object> json = Maps.newHashMapWithExpectedSize(1);
+
+        json.put("numDevices", getNumberOfDevices(Arrays.asList(deviceTypes)));
+
+        return json;
     }
 
     @RequestMapping("checkAvailability")
@@ -136,10 +176,7 @@ public class SetupDevDbMethodController {
         json.put("amr", !devAmrCreationService.isRunning());
         json.put("capControl", !devCapControlCreationService.isRunning());
         json.put("capControlProgress", devCapControlCreationService.getPercentComplete());
-        json.put("demandResponse", true);
-        json.put("demandResponseProgress", 100);
-        //json.put("demandResponse", !devDemandResponseCreationService.isRunning());
-        //json.put("demandResponseProgress", devDemandResponseCreationService.getPercentComplete());
+        json.put("demandResponse", !devDemandResponseSetupService.isRunning());
         json.put("stars", !devStarsCreationService.isRunning());
         json.put("starsProgress", devStarsCreationService.getPercentComplete());
         json.put("eventLog", !devEventLogCreationService.isRunning());
@@ -285,7 +322,6 @@ public class SetupDevDbMethodController {
                 String token = TokenHelper.createToken(userContext.getYukonUser().getLiteID());
                 devDemandResponse.setToken(token);
                 devDemandResponse.setUserContext(userContext);
-                //devDemandResponse.setClean(true);
                 DrSetupSimulatorRequest request = new DrSetupSimulatorRequest(devDemandResponse);
                 SimulatorResponse response = simulatorsCommunicationService.sendRequest(request, SimulatorResponseBase.class);
                 if (response.isSuccessful()) {
@@ -303,11 +339,7 @@ public class SetupDevDbMethodController {
             }
         }
         
-        
-        model.addAttribute("allPrograms", databaseCache.getAllLMPrograms());
-        model.addAttribute("drPaoTypes", Stream.of(PaoType.values())
-                .filter(p -> p.isRfLcr() || p.isCloudLcr())
-                .collect(Collectors.toList()));
+        addDemandResponseInfoToModel(model, devDemandResponse);
 
         return "setupDatabase/demandResponseWidget.jsp";
     }
@@ -504,6 +536,15 @@ public class SetupDevDbMethodController {
             
             if (demandResponseSetup.getTemplateName().isBlank()) {
                 errors.rejectValue("templateName", "yukon.web.modules.dev.setupDatabase.setupDevDatabase.error.empty");
+            }
+            
+            //check if template name is already used (if clean is false)
+            if (!demandResponseSetup.isClean()) {
+                Optional<LiteYukonPAObject> paoExists = databaseCache.getAllLoadManagement().stream()
+                        .filter(p -> p.getPaoName().contains(demandResponseSetup.getTemplateName())).findFirst();
+                if (paoExists.isPresent()) {
+                    errors.rejectValue("templateName", "yukon.web.error.nameConflict");
+                }
             }
 
             if (demandResponseSetup.getScenarios() < 0) {
