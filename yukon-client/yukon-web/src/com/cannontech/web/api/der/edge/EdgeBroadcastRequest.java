@@ -1,16 +1,12 @@
 package com.cannontech.web.api.der.edge;
 
+import com.cannontech.dr.edgeDr.EdgeBroadcastMessagePriority;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 
 @JsonIgnoreProperties(ignoreUnknown = true)
 public class EdgeBroadcastRequest {
-    public enum Priority {
-        NON_REAL_TIME,  // Lower priority that may be delayed when the network is congested.
-        IMMEDIATE; // High priority for immediate delivery.
-    }
-
     private String payload;
-    private Priority priority;
+    private EdgeBroadcastMessagePriority priority;
 
     public String getPayload() {
         return this.payload;
@@ -20,11 +16,11 @@ public class EdgeBroadcastRequest {
         this.payload = payload;
     }
 
-    public Priority getPriority() {
+    public EdgeBroadcastMessagePriority getPriority() {
         return this.priority;
     }
 
-    public void setPriority(Priority priority) {
+    public void setPriority(EdgeBroadcastMessagePriority priority) {
         this.priority = priority;
     }
 

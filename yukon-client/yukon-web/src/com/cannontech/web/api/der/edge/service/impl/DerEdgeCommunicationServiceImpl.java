@@ -81,8 +81,7 @@ public class DerEdgeCommunicationServiceImpl implements DerEdgeCommunicationServ
             }
 
         } catch (InterruptedException | ExecutionException | TimeoutException e) {
-            log.catching(e);
-            throw new EdgeDrCommunicationException(e, "Something went wrong");
+            throw new EdgeDrCommunicationException("An unexpected error occurred while sending a broadcast message.", e);
         }
     }
 
