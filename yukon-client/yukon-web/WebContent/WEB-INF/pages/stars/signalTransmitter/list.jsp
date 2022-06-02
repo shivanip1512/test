@@ -34,7 +34,7 @@
                     <tr>
                         <td>${fn:escapeXml(signalTransmitter.name)}</td>
                         <td><i:inline key="${signalTransmitter.type}"/></td>
-                        <td class="${cssClass}">${signalTransmitter.enabled} - ${status} - ${cssClass}</td>
+                        <td class="${cssClass}">${status}</td>
                     </tr>
                 </c:forEach>
             </tbody>
