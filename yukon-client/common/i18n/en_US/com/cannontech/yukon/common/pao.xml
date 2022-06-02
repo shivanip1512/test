@@ -136,6 +136,12 @@
     <entry key="yukon.common.pao.RFN530S4EAXR">RFN-530S4eAXR</entry>
     <entry key="yukon.common.pao.RFN530S4ERX">RFN-530S4eRX</entry>
     <entry key="yukon.common.pao.RFN530S4ERXR">RFN-530S4eRXR</entry>
+    
+    <entry key="yukon.common.pao.CRL520FAXE">CRL-520fAXe</entry>
+    <entry key="yukon.common.pao.CRL520FAXED">CRL-520fAXeD</entry>
+    <entry key="yukon.common.pao.CRL530S4X">CRL-530S4x</entry>
+    <entry key="yukon.common.pao.CRL520FRXE">CRL-520fRXe</entry>
+    <entry key="yukon.common.pao.CRL520FRXED">CRL-520fRXeD</entry>
 
     <entry key="yukon.common.pao.RFWMETER">RFW-Meter</entry>
     <entry key="yukon.common.pao.RFW201">RFW-201</entry>

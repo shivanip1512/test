@@ -129,6 +129,7 @@ public class DataStreamingAttributeHelperTest {
 
     @Test
     public void testInOrder() throws Exception {
+        System.out.println("test");        
         testUniquePaoTypes();
         testRFNAndDeviceTypeXMLs();
         testRfnPointMappingXML();

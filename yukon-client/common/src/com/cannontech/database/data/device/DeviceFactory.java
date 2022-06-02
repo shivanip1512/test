@@ -226,6 +226,10 @@ public final class DeviceFactory {
         case RFN530S4EAXR:
         case RFN530S4ERX:
         case RFN530S4ERXR:
+        case CRL520FAXE:
+        case CRL520FAXED:
+        case CRL520FRXE:
+        case CRL520FRXED:
             returnDevice = new RfnMeterBase(paoType);
             break;
             
