@@ -309,6 +309,7 @@
         <paoType value="RFN530FRXE"/>
         
         <paoType value="RFN530S4X" />
+        <paoType value="CRL530S4X" />
         <paoType value="RFN530S4EAX" />
         <paoType value="RFN530S4EAXR" />
         <paoType value="RFN530S4ERX" />
@@ -373,7 +374,7 @@
                 <modifier>Daily Max</modifier>
             </modifiers>
         </point>
-        <point name="Net kWh" icdExcludedTypes="RFN530S4X, CRL530S4X">
+        <point name="Net kWh" icdExcludedTypes="RFN530S4X,CRL530S4X">
             <uom>Wh</uom>
             <multiplier value=".001"/>
             <parseSiPrefix/>
