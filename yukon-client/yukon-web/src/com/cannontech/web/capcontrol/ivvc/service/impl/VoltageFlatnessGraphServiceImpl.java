@@ -462,6 +462,11 @@ public class VoltageFlatnessGraphServiceImpl implements VoltageFlatnessGraphServ
         List<VfPoint> ignoredPoints = Lists.newArrayList();
         List<VfPoint> noFeederPoints = Lists.newArrayList();
         
+        if (feeders.isEmpty()) {
+            //add an empty feeder so points still get added to the graph
+            feeders.add(new Feeder());
+        }
+        
         for (Feeder feeder : feeders) {
             List<VfPoint> points = Lists.newArrayList();
             for (Zone zone : zones) {
