@@ -86,7 +86,7 @@ public class MspRawPointHistoryDaoImpl implements MspRawPointHistoryDao
                     resultsPerAttribute.get(attribute).removeAll(meter.getPaoIdentifier()); // remove to keep our memory consumption somewhat in check 
                 for (PointValueQualityHolder pointValueQualityHolder : rawValues) { 
                     MeterRead meterRead = meterReadProcessingService.createMeterRead(meter); 
-                    meterReadProcessingService.updateMeterRead(meterRead, attribute, pointValueQualityHolder); 
+                    meterReadProcessingService.updateMeterRead(meterRead, attribute, pointValueQualityHolder, meter.getPaoType());
                     meterReads.add(meterRead); 
                 } 
             } 
@@ -112,7 +112,7 @@ public class MspRawPointHistoryDaoImpl implements MspRawPointHistoryDao
 
         int estimatedSize = 0;
 
-        EnumSet<BuiltInAttribute> attributesToLoad = EnumSet.of(BuiltInAttribute.USAGE, BuiltInAttribute.PEAK_DEMAND, BuiltInAttribute.DELIVERED_KWH_RATE_A);
+        EnumSet<BuiltInAttribute> attributesToLoad = EnumSet.of(BuiltInAttribute.USAGE, BuiltInAttribute.PEAK_DEMAND, BuiltInAttribute.KVAR);
         // load up results for each attribute
         for (BuiltInAttribute attribute : attributesToLoad) {
             Map<PaoIdentifier, PointValueQualityHolder> resultsForAttribute = rawPointHistoryDao.getSingleAttributeData(meters, attribute, false, null);
@@ -135,7 +135,7 @@ public class MspRawPointHistoryDaoImpl implements MspRawPointHistoryDao
                     resultsPerAttribute.get(attribute).remove(meter.getPaoIdentifier()); // remove to keep our memory consumption somewhat in check
                 
                 if (pointValueQualityHolder != null) {
-                    meterReadProcessingService.updateMeterRead(meterRead, attribute, pointValueQualityHolder);
+                    meterReadProcessingService.updateMeterRead(meterRead, attribute, pointValueQualityHolder, meter.getPaoType());
                     hasReadings = true;
                 }
             }

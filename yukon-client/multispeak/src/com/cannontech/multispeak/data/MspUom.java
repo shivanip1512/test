@@ -20,4 +20,6 @@ public class MspUom {
     public static final Uom DateTime = Uom.fromValue("Date time");
     public static final Uom Count = Uom.fromValue("Counter");
     public static final Uom NumberPowerOutage = Uom.fromValue("Nbr of power outage");
+    public static final Uom ccf = Uom.fromValue("ccf");
+    public static final Uom gallon = Uom.fromValue("US gl");
 }

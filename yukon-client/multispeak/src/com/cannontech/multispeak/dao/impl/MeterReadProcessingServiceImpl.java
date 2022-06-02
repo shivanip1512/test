@@ -11,9 +11,13 @@ import org.springframework.beans.factory.annotation.Autowired;
 
 import com.cannontech.amr.archivedValueExporter.model.YukonRoundingMode;
 import com.cannontech.amr.meter.model.YukonMeter;
+import com.cannontech.common.pao.PaoType;
 import com.cannontech.common.pao.attribute.model.BuiltInAttribute;
 import com.cannontech.core.dynamic.PointValueHolder;
 import com.cannontech.msp.beans.v3.MeterRead;
+import com.cannontech.msp.beans.v3.ReadingValue;
+import com.cannontech.msp.beans.v3.ReadingValues;
+import com.cannontech.multispeak.block.syntax.SyntaxItem;
 import com.cannontech.multispeak.client.MultispeakDefines;
 import com.cannontech.multispeak.client.MultispeakFuncs;
 import com.cannontech.multispeak.dao.MeterReadProcessingService;
@@ -28,7 +32,7 @@ public class MeterReadProcessingServiceImpl implements MeterReadProcessingServic
     private Map<BuiltInAttribute, ReadingProcessor> attributesToLoad;
 
     public interface ReadingProcessor {
-        public void apply(PointValueHolder value, MeterRead reading);
+        public void apply(PointValueHolder value, MeterRead reading, PaoType paoType);
     }
 
     @PostConstruct
@@ -39,7 +43,7 @@ public class MeterReadProcessingServiceImpl implements MeterReadProcessingServic
 
         ReadingProcessor usageConverter = new ReadingProcessor() {
             @Override
-            public void apply(PointValueHolder value, MeterRead reading) {
+            public void apply(PointValueHolder value, MeterRead reading, PaoType paoType) {
                 Calendar calendar = Calendar.getInstance();
                 calendar.setTime(value.getPointDataTimeStamp());
                 reading.setReadingDate(MultispeakFuncs.toXMLGregorianCalendar(calendar));
@@ -47,32 +51,61 @@ public class MeterReadProcessingServiceImpl implements MeterReadProcessingServic
                 BigDecimal exactValue = new BigDecimal(value.getValue());
                 BigDecimal noFractionValue = exactValue.setScale(0, roundingMode);
                 reading.setPosKWh(noFractionValue.toBigIntegerExact());
+                
+                ReadingValues readingValues = createArrayOfReadingValue(reading);
+                ReadingValue readingValue = new ReadingValue();
+                if(paoType.isGasMeter()) {
+                    readingValue.setFieldName(SyntaxItem.GAS_VOLUME.getMspFieldName());
+                } else if (paoType.isWaterMeter()){
+                    readingValue.setFieldName(SyntaxItem.WATER_VOLUME.getMspFieldName());
+                } else {
+                    readingValue.setFieldName(SyntaxItem.KWH.getMspFieldName());
+                }
+                
+                readingValues.getReadingValue().add(readingValue);
+                reading.setReadingValues(readingValues);
             }
         };
 
         ReadingProcessor peakDemandConverter = new ReadingProcessor() {
             @Override
-            public void apply(PointValueHolder value, MeterRead reading) {
+            public void apply(PointValueHolder value, MeterRead reading, PaoType paoType) {
                 Calendar calendar = Calendar.getInstance();
                 calendar.setTime(value.getPointDataTimeStamp());
                 reading.setKWDateTime(MultispeakFuncs.toXMLGregorianCalendar(calendar));
                 reading.setKW((float) value.getValue());
+                
+                ReadingValues readingValues = createArrayOfReadingValue(reading);
+                ReadingValue readingValue = new ReadingValue();
+                readingValue.setFieldName(SyntaxItem.PEAK_DEMAND.getMspFieldName());
+                readingValues.getReadingValue().add(readingValue);
+                reading.setReadingValues(readingValues);
             }
         };
 
         ReadingProcessor blinkConverter = new ReadingProcessor() {
             @Override
-            public void apply(PointValueHolder value, MeterRead reading) {
+            public void apply(PointValueHolder value, MeterRead reading, PaoType paoType) {
                 // TBD
             }
         };
         
         
-        ReadingProcessor deliveredKWhRateA = new ReadingProcessor() {
+        ReadingProcessor KVArConverter = new ReadingProcessor() {
             @Override
-            public void apply(PointValueHolder value, MeterRead reading) {
-                //TODO
+            public void apply(PointValueHolder value, MeterRead reading, PaoType paoType) {
+                Calendar calendar = Calendar.getInstance();
+                calendar.setTime(value.getPointDataTimeStamp());
                 
+                ReadingValues readingValues = createArrayOfReadingValue(reading);
+                ReadingValue readingValue = new ReadingValue();
+                readingValue.setFieldName(SyntaxItem.KVAR.getMspFieldName());
+                readingValue.setDateTime(MultispeakFuncs.toXMLGregorianCalendar(calendar));
+                BigDecimal valueWithPrecision = new BigDecimal(value.getValue()).setScale(3, roundingMode).stripTrailingZeros();
+                readingValue.setValue(valueWithPrecision.toString());
+                readingValues.getReadingValue().add(readingValue);
+                reading.setReadingValues(readingValues);            
+//                reading.setTOUReadings();
             }
         };
 
@@ -80,12 +113,20 @@ public class MeterReadProcessingServiceImpl implements MeterReadProcessingServic
             ImmutableMap.of(BuiltInAttribute.USAGE, usageConverter,
                             BuiltInAttribute.PEAK_DEMAND, peakDemandConverter,
                             BuiltInAttribute.BLINK_COUNT, blinkConverter,
-                            BuiltInAttribute.DELIVERED_KWH_RATE_A, deliveredKWhRateA);
+                            BuiltInAttribute.KVAR, KVArConverter);
+    }
+    
+    private ReadingValues createArrayOfReadingValue(MeterRead reading) {
+        ReadingValues readingValues = reading.getReadingValues();
+        if(readingValues ==  null) {
+            readingValues = new ReadingValues();
+        }
+        return readingValues;
     }
 
     @Override
     public MeterReadUpdater buildMeterReadUpdater(BuiltInAttribute attribute,
-                                           final PointValueHolder pointValueHolder) {
+                                           final PointValueHolder pointValueHolder, PaoType paoType) {
         final ReadingProcessor processor = attributesToLoad.get(attribute);
         if (processor == null) {
             throw new IllegalArgumentException("Attribute " + attribute + " is not supported");
@@ -93,18 +134,18 @@ public class MeterReadProcessingServiceImpl implements MeterReadProcessingServic
         return new MeterReadUpdater() {
             @Override
             public void update(MeterRead reading) {
-                processor.apply(pointValueHolder, reading);
+                processor.apply(pointValueHolder, reading,paoType);
             }
         };
     }
 
     @Override
-    public void updateMeterRead(MeterRead reading, BuiltInAttribute attribute, PointValueHolder pointValueHolder) {
+    public void updateMeterRead(MeterRead reading, BuiltInAttribute attribute, PointValueHolder pointValueHolder, PaoType paoType) {
         final ReadingProcessor processor = attributesToLoad.get(attribute);
         if (processor == null) {
             throw new IllegalArgumentException("Attribute " + attribute + " is not supported");
         }
-        processor.apply(pointValueHolder, reading);
+        processor.apply(pointValueHolder, reading, paoType);
 
     }
 
