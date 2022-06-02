@@ -22,7 +22,10 @@
 <title>${fn:escapeXml(pageDetail.pageTitle)}</title>
 
 <link rel="shortcut icon" href="<cti:url value="/resources/favicon.ico"/>" type="image/x-icon">
-<link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Open+Sans">
+
+<cti:checkRolesAndProperties value="!DISABLE_GOOGLE_FONTS">
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Open+Sans">
+</cti:checkRolesAndProperties>
 
 <%-- Standard CSS Files --%>
 <c:forEach items="${standardCssFiles}" var="file">
