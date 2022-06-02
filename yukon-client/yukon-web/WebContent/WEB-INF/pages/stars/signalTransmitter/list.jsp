@@ -32,7 +32,10 @@
                         <cti:msg2 var="status" key="yukon.common.enabled"/>
                     </c:if>
                     <tr>
-                        <td>${fn:escapeXml(signalTransmitter.name)}</td>
+                        <td>
+                            <cti:url value="/stars/device/signalTransmitter/${signalTransmitter.id}" var="viewUrl"/>
+                            <a href="${viewUrl}">${fn:escapeXml(signalTransmitter.name)}</a>
+                        </td>
                         <td><i:inline key="${signalTransmitter.type}"/></td>
                         <td class="${cssClass}">${status}</td>
                     </tr>
