@@ -11,6 +11,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import com.cannontech.common.device.model.SimpleDevice;
 import com.cannontech.common.device.terminal.model.TerminalBase;
+import com.cannontech.common.device.terminal.model.TerminalCopy;
 import com.cannontech.common.exception.DeletionFailureException;
 import com.cannontech.common.pao.PaoType;
 import com.cannontech.common.pao.service.impl.PaoCreationHelper;
@@ -131,6 +132,31 @@ public class PagingTerminalServiceImpl implements PagingTerminalService {
 
         }
         return terminalList;
+    }
+
+    @SuppressWarnings({ "unchecked", "rawtypes" })
+    @Override
+    public TerminalBase<?> copy(int id, TerminalCopy terminalCopy) {
+        LiteYukonPAObject terminal = cache.getAllPaosMap().get(id);
+        if (terminal == null || !terminal.getPaoType().isTransmitter()) {
+            throw new NotFoundException("Terminal Id not found");
+        }
+        IEDBase iedBase = (IEDBase) dbPersistentDao.retrieveDBPersistent(terminal);
+        terminalCopy.buildDBPersistent(iedBase);
+        iedBase.setDeviceID(null);
+        dbPersistentDao.performDBChange(iedBase, TransactionType.INSERT);
+        // Copy points if true
+        if (terminalCopy.getCopyPoints()) {
+            SimpleDevice device = SimpleDevice.of(iedBase.getPAObjectID(), iedBase.getPaoType());
+            paoCreationHelper.addDefaultPointsToPao(device);
+        }
+        // Create Route
+        createRoute(iedBase);
+        TerminalBase terminalBase = TerminalBaseFactory.getTerminalBase(iedBase.getPaoType());
+        // Build model object
+        terminalBase.buildModel(iedBase);
+        terminalBase.getCommChannel().setName(cache.getAllPaosMap().get(terminalBase.getCommChannel().getId()).getPaoName());
+        return terminalBase;
     }
 
 }
