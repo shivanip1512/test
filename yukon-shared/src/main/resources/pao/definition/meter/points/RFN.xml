@@ -2604,27 +2604,20 @@ Note: Look at BuiltInAttribute as that follows the same convention.
         <decimalplaces value="3"/>
     </point>
     <point offset="516" type="Analog">
-        <name>RSSI</name>
-        <archive interval="ZERO" type="ON_CHANGE"/>
-        <multiplier value="1"/>
-        <unitofmeasure value="DBM"/>
-        <decimalplaces value="0"/>
-    </point>
-    <point offset="517" type="Analog">
         <name>RSRP</name>
         <archive interval="ZERO" type="ON_CHANGE"/>
         <multiplier value="1"/>
         <unitofmeasure value="DBM"/>
         <decimalplaces value="0"/>
     </point>
-    <point offset="518" type="Analog">
+    <point offset="517" type="Analog">
         <name>RSRQ</name>
         <archive interval="ZERO" type="ON_CHANGE"/>
         <multiplier value="1"/>
         <unitofmeasure value="DB"/>
         <decimalplaces value="0"/>
     </point>
-    <point offset="519" type="Analog">
+    <point offset="518" type="Analog">
         <name>SINR</name>
         <archive interval="ZERO" type="ON_CHANGE"/>
         <multiplier value="1"/>
