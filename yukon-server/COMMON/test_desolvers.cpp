@@ -89,6 +89,10 @@ BOOST_AUTO_TEST_CASE(test_desolveDeviceType)
         "RFN-530FAXE",
         "RFN-530FRXE",
         //
+        "CRL-520FAXE",
+        "CRL-520FAXED",
+        "CRL-520FRXE",
+        "CRL-520FRXED",
         "RFN-410CL",
         "RFN-420CL",
         "WRL-420CL",
@@ -105,6 +109,7 @@ BOOST_AUTO_TEST_CASE(test_desolveDeviceType)
         "RFN-430SL3",
         "RFN-430SL4",
         "RFN-530S4X",
+        "CRL-530S4X",
         "RFN-530S4EAX",
         "RFN-530S4EAXR",
         "RFN-530S4ERX",
