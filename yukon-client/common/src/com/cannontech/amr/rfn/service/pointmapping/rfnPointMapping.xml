@@ -374,7 +374,7 @@
                 <modifier>Daily Max</modifier>
             </modifiers>
         </point>
-        <point name="Net kWh" icdExcludedTypes="RFN530S4X,CRL530S4X">
+        <point name="Net kWh" icdExcludedTypes="RFN530S4X">
             <uom>Wh</uom>
             <multiplier value=".001"/>
             <parseSiPrefix/>

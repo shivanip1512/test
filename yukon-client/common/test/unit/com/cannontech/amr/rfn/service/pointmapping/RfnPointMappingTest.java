@@ -145,7 +145,7 @@ public class RfnPointMappingTest {
     @Test
     @Order(3)
     public void confirmPointsExistOnDevices() throws JDOMException, IOException {
-        
+    
         Map<PaoType, Map<PointMapping, NameScale>> rfnPointMapping = getRfnPointMapping();
 
         Map<Boolean, List<Pair<PaoType, String>>> pointLookupAttempts =
@@ -174,6 +174,7 @@ public class RfnPointMappingTest {
                     .map(e -> e.getKey() + "/" + e.getValue())
                     .collect(Collectors.joining("\n"));
 
+        
         assertTrue(unexpectedSuccess.isEmpty(), "Points listed in knownMissingRfnPointMappingPoints but were successfully found:\n" + unexpectedSuccess);
         assertTrue(unexpectedFailure.isEmpty(), "Points not found:\n" + unexpectedFailure);
     }
@@ -224,7 +225,12 @@ public class RfnPointMappingTest {
                 || pointName.equals("Blink Restore Count")
                 // Populated by PerIntervalAndLoadProfileCalculator
                 || pointName.endsWith("per Interval")
-                || pointName.endsWith("Profile");
+                || pointName.endsWith("Profile")
+                // not in rfnPointMapping.xml
+                || pointName.equals("RSRP")
+                || pointName.equals("RSRQ")
+                || pointName.equals("RSSI")
+                || pointName.equals("SINR");
 
         Multimap<PaoType, String> paoDefinitionPointNames = HashMultimap.create();
 
