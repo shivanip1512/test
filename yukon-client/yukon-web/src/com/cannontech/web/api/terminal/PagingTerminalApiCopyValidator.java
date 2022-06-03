@@ -16,7 +16,6 @@ public class PagingTerminalApiCopyValidator extends SimpleValidator<TerminalCopy
 
     @Autowired private YukonApiValidationUtils yukonApiValidationUtils;
     @Autowired private YukonUserContextMessageSourceResolver messageResolver;
-    protected static final String baseKey = "yukon.web.api.error";
     private MessageSourceAccessor accessor;
     private final static String commonkey = "yukon.common.";
 
@@ -30,11 +29,8 @@ public class PagingTerminalApiCopyValidator extends SimpleValidator<TerminalCopy
     }
 
     protected void doValidation(TerminalCopy terminalCopy, Errors errors) {
-
-        if (!errors.hasFieldErrors("name")) {
-            String nameI18nText = accessor.getMessage(commonkey + "name");
-            yukonApiValidationUtils.validateCopyPaoName(terminalCopy.getName(), errors, nameI18nText);
-        }
+        String nameI18nText = accessor.getMessage(commonkey + "name");
+        yukonApiValidationUtils.validateCopyPaoName(terminalCopy.getName(), errors, nameI18nText);
         yukonApiValidationUtils.checkIfFieldRequired("copyPoints", errors, terminalCopy.getCopyPoints(), "Copy Points");
 
     }

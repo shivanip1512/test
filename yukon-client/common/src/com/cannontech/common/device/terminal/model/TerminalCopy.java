@@ -1,10 +1,7 @@
 package com.cannontech.common.device.terminal.model;
 
 import com.cannontech.database.data.device.IEDBase;
-import com.fasterxml.jackson.annotation.JsonInclude;
-import com.fasterxml.jackson.annotation.JsonInclude.Include;
 
-@JsonInclude(Include.NON_NULL)
 public class TerminalCopy {
 
     private String name;
