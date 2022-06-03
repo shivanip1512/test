@@ -243,4 +243,9 @@ public interface DeviceDao {
      * Returns a list of all the devices ids that have guids
      */
     List<Integer> getDeviceIdsWithGuids();
+
+    /**
+     * Returns devicesId by paoName
+     */
+    int getDeviceIdByName(String name);
 }
