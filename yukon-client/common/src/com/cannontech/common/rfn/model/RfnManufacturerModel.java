@@ -129,7 +129,7 @@ public enum RfnManufacturerModel {
     
     CRL_520FAXE(PaoType.CRL520FAXE, "LGYR", "FocusAXRe-C"),
     CRL_520FAXED(PaoType.CRL520FAXED, "LGYR", "FocusAXRe-SD-C"),
-    CRL_520FRXE(PaoType.CRL520FRXE, "LGYR", "   FocusRXRe-C"),
+    CRL_520FRXE(PaoType.CRL520FRXE, "LGYR", "FocusRXRe-C"),
     CRL_520FRXED(PaoType.CRL520FRXED, "LGYR", "FocusRXRe-SD-C"),
     
     //  RFN-530 Focus AXe/RXe Polyphase
