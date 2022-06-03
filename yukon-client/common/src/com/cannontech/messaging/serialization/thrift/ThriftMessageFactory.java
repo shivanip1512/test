@@ -2,7 +2,6 @@ package com.cannontech.messaging.serialization.thrift;
 
 import java.util.Collection;
 
-import org.apache.qpid.proton.engine.TransportException;
 import org.apache.thrift.TBase;
 import org.apache.thrift.protocol.TBinaryProtocol;
 import org.apache.thrift.protocol.TProtocol;
@@ -10,6 +9,7 @@ import org.apache.thrift.transport.TMemoryInputTransport;
 import org.apache.thrift.transport.TTransport;
 import org.apache.thrift.transport.TTransportException;
 
+import com.cannontech.messaging.connection.transport.TransportException;
 import com.cannontech.messaging.serialization.MessageFactory;
 import com.cannontech.messaging.serialization.SerializationException;
 import com.cannontech.messaging.serialization.thrift.util.ThriftConverterHelper;
