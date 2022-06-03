@@ -21,7 +21,10 @@
 <title><cti:msg2 key=".pageTitle"/></title>
 
 <link rel="shortcut icon" href="<cti:url value="/resources/favicon.ico"/>" type="image/x-icon">
-<link href="https://fonts.googleapis.com/css?family=Open+Sans" rel="stylesheet">
+
+<cti:checkMasterConfigBoolean setting="!DISABLE_GOOGLE_FONTS">
+    <link href="https://fonts.googleapis.com/css?family=Open+Sans" rel="stylesheet">
+</cti:checkMasterConfigBoolean>
 
 <cti:includeCss link="NORMALIZE" force="true"/>
 <cti:includeCss link="LAYOUT" force="true"/>

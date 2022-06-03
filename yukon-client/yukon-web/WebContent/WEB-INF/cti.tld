@@ -217,6 +217,17 @@
           <rtexprvalue>true</rtexprvalue>
       </attribute>    
   </tag>
+
+	<tag>
+		<name>checkMasterConfigBoolean</name>
+		<tag-class>com.cannontech.web.taglib.CheckMasterConfigBooleanTag
+		</tag-class>
+		<attribute>
+			<name>setting</name>
+			<required>true</required>
+			<rtexprvalue>true</rtexprvalue>
+		</attribute>
+	</tag>
   
   <tag>
     <name>checkGlobalRolesAndProperties</name>
