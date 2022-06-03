@@ -251,7 +251,10 @@ public class MR_ServerImpl implements MR_Server {
                         LitePoint litePoint = attributeService.getPointForAttribute(meter, attribute);
                         PointValueQualityHolder pointValueQualityHolder = asyncDynamicDataSource.getPointValue(litePoint.getPointID());
                         if( pointValueQualityHolder != null && pointValueQualityHolder.getPointQuality() != PointQuality.Uninitialized) {
-                            meterReadingProcessingService.updateMeterReading(meterReading, attribute, pointValueQualityHolder, meter.getPaoType());
+                            meterReadingProcessingService.updateMeterReading(meterReading, 
+                                                                             attribute, 
+                                                                             pointValueQualityHolder,
+                                                                             meter.getPaoType());
                         }
                     } catch (IllegalUseOfAttribute e) {
                         //it's okay...just skip
