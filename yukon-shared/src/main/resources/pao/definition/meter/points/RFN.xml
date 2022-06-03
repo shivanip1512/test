@@ -10,10 +10,10 @@ Note: For attributes that reference the modifiers of "Quadrant" directly, the mo
 Note: Look at BuiltInAttribute as that follows the same convention. 
 -->
     <highestOffsets>
-        <analog offset="515"/>
+        <analog offset="518"/>
         <calcAnalog offset="0"/>
         <demandAccumulator offset="251"/>
-        <status offset="103"/>
+        <status offset="107"/>
         <systemStatus offset="2000"/>
     </highestOffsets>
     <!--- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -Analog- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -->
