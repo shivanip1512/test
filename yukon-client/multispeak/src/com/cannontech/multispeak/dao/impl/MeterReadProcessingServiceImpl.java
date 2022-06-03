@@ -106,13 +106,32 @@ public class MeterReadProcessingServiceImpl implements MeterReadProcessingServic
                 reading.setReadingValues(readingValues);            
             }
         };
-
-        attributesToLoad =
-            ImmutableMap.of(BuiltInAttribute.USAGE, usageConverter,
-                            BuiltInAttribute.PEAK_DEMAND, peakDemandConverter,
-                            BuiltInAttribute.BLINK_COUNT, blinkConverter,
-                            BuiltInAttribute.KVAR, KVArConverter,
-                            BuiltInAttribute.SUM_KWH, sumKwhConverter);
+        
+        ReadingProcessor netKwhConverter = new ReadingProcessor() {
+            @Override
+            public void apply(PointValueHolder value, MeterRead reading, PaoType paoType) {
+                Calendar calendar = Calendar.getInstance();
+                calendar.setTime(value.getPointDataTimeStamp());
+                
+                ReadingValues readingValues = createArrayOfReadingValue(reading);
+                ReadingValue readingValue = new ReadingValue();
+                readingValue.setFieldName(SyntaxItem.NET_KWH.getMspFieldName());
+                readingValue.setDateTime(MultispeakFuncs.toXMLGregorianCalendar(calendar));
+                BigDecimal valueWithPrecision = new BigDecimal(value.getValue()).setScale(3, roundingMode).stripTrailingZeros();
+                readingValue.setValue(valueWithPrecision.toString());
+                readingValues.getReadingValue().add(readingValue);
+                reading.setReadingValues(readingValues);            
+            }
+        };
+        
+        attributesToLoad = ImmutableMap.<BuiltInAttribute, ReadingProcessor>builder()
+                                       .put(BuiltInAttribute.USAGE, usageConverter)
+                                       .put(BuiltInAttribute.PEAK_DEMAND, peakDemandConverter)
+                                       .put(BuiltInAttribute.BLINK_COUNT, blinkConverter)
+                                       .put(BuiltInAttribute.KVAR, KVArConverter)
+                                       .put(BuiltInAttribute.SUM_KWH, sumKwhConverter)
+                                       .put( BuiltInAttribute.NET_KWH, netKwhConverter)
+                                       .build();
     }
     
     private ReadingValues createArrayOfReadingValue(MeterRead reading) {

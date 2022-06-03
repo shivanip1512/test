@@ -27,9 +27,8 @@ public enum SyntaxItem {
         MULTIPLIER("multiplier", null),
         VOLTAGE_PROFILE("voltageProfile", MspUom.Volts),
         VOLTAGE_PROFILE_DATETIME("voltageProfileDateTime", MspUom.DateTime),
-        WATER_VOLUME ("WaterVolume", MspUom.gallon),
-        GAS_VOLUME("GasVolume", MspUom.ccf),
-        SUM_KWH("Sum KWh", MspUom.kWh);
+        SUM_KWH("Sum KWh", MspUom.kWh),
+        NET_KWH("Net KWh", MspUom.kWh);
     
     private String mspFieldName;
     private Uom mspUom;
