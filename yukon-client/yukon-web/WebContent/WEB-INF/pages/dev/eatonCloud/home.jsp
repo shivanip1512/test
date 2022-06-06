@@ -34,31 +34,31 @@
      
      <tags:alertBox classes="js-success-message dn" type="success" includeCloseButton="true"></tags:alertBox>
 
-    <tags:nameValueContainer style="width: 40%">
-        <tags:nameValue name="Enable Token/Secret Rotation Testing">
-            <tags:switchButton id="tokenSecretTesting" name="tokenSecretTesting" onNameKey=".yes.label" offNameKey=".no.label"/>
-        </tags:nameValue>
-    </tags:nameValueContainer>
-     <div class="js-secret-information user-message info dn">
-     	Token cached by Service Manager: <span class="js-cached-token">${cachedToken}</span>
-     	<br/>
-        Token1:<span class="js-secret1Token">${secret1Token}</span> cached by <span class="js-cachedBy">${cachedBy}</span>
-        Secret1: <span class="js-secret1">${secret1}</span> Expiration: <span class="js-secret1Expiration"></span>
-        <br/>
-        Token2:<span class="js-secret2Token">${secret2Token}</span> cached by <span class="js-cachedBy">${cachedBy}</span>
-        Secret2: <span class="js-secret2">${secret2}</span> Expiration: <span class="js-secret2Expiration"></span>
-     </div>
-     <br/>
-	    
-    <cti:url var="updateSettingsUrl" value="updateSettings"/>
-	<form:form id="eatonCloudForm" action="${updateSettingsUrl}" modelAttribute="settings" method="post">
-        <cti:csrfToken/>
+    <cti:url var="updateSettingsUrl" value="updateSettings" />
+    <form:form id="eatonCloudForm" action="${updateSettingsUrl}" modelAttribute="settings" method="post">
+        <cti:csrfToken />
+
+        <tags:nameValueContainer style="width: 40%">
+            <tags:nameValue name="Enable Token/Secret Rotation Testing">
+                <tags:switchButton id="tokenSecretTesting" path="enableTokenSecretRotationTesting" onNameKey=".yes.label" offNameKey=".no.label" />
+            </tags:nameValue>
+        </tags:nameValueContainer>
+        <div class="js-secret-information user-message info dn">
+            Token cached by Service Manager: <span class="js-cached-token">${cachedToken}</span> <br /> Token1:<span class="js-secret1Token">${secret1Token}</span>
+            cached by <span class="js-cachedBy">${cachedBy}</span> Secret1: <span class="js-secret1">${secret1}</span> Expiration: <span
+                class="js-secret1Expiration"></span> <br /> Token2:<span class="js-secret2Token">${secret2Token}</span> cached by <span
+                class="js-cachedBy">${cachedBy}</span> Secret2: <span class="js-secret2">${secret2}</span> Expiration: <span
+                class="js-secret2Expiration"></span>
+        </div>
+        <br />
+
+
         <table class="compact-results-table no-stripes">
             <thead>
                 <tr>
                     <th>Endpoint</th>
-                     <c:if test="${isLocalHost}">
-                        <th style="width:100px;">Simulated Status</th>
+                    <c:if test="${isLocalHost}">
+                        <th style="width: 100px;">Simulated Status</th>
                     </c:if>
                     <th>Parameters</th>
                     <th width="15%"></th>
@@ -67,21 +67,19 @@
             <tbody>
                 <c:forEach var="endpoint" items="${endpoints}" varStatus="status">
                     <tr>
-                        <td style="width:200px" class="wbba"><a href="${endpoint.doc}" target="_blank">${endpoint.suffix}</a></td>
+                        <td style="width: 200px" class="wbba"><a href="${endpoint.doc}" target="_blank">${endpoint.suffix}</a></td>
                         <c:if test="${isLocalHost}">
-	                        <td>
-	                            <tags:selectWithItems path="selectedStatuses[${endpoint}]" items="${endpoint.statuses}" inputClass="js-selected-status w100"/>
-	                            <c:if test="${endpoint.displaySuccessPercentage()}">
-	                            	<c:set var="dnClass" value="${settings.selectedStatuses[endpoint] != 'OK' ? 'dn' : ''}"/>
-	                            	<div class="js-success-percentage-fields ${dnClass}">
-		                            	<tags:input path="successPercentages[${endpoint}]" size="3" inputClass="js-success-percentage" units="%"/>
-		                            	<cti:icon icon="icon-help" classes="fn cp ML0 MR0" data-popup="#successPercentageHelp"/>
-	                                	<div id="successPercentageHelp" data-title="Success Percentage" data-width="500" class="dn">
-	                                		The percentage of responses that should return a success.
-	                                	</div>
-                                	</div>
-	                            </c:if>
-                                <c:if test="${endpoint.displayUnknownPercentage()}">
+                            <td><tags:selectWithItems path="selectedStatuses[${endpoint}]" items="${endpoint.statuses}"
+                                    inputClass="js-selected-status w100" /> <c:if test="${endpoint.displaySuccessPercentage()}">
+                                    <c:set var="dnClass" value="${settings.selectedStatuses[endpoint] != 'OK' ? 'dn' : ''}" />
+                                    <div class="js-success-percentage-fields ${dnClass}">
+                                        <tags:input path="successPercentages[${endpoint}]" size="3" inputClass="js-success-percentage"
+                                            units="%" />
+                                        <cti:icon icon="icon-help" classes="fn cp ML0 MR0" data-popup="#successPercentageHelp" />
+                                        <div id="successPercentageHelp" data-title="Success Percentage" data-width="500" class="dn">
+                                            The percentage of responses that should return a success.</div>
+                                    </div>
+                                </c:if> <c:if test="${endpoint.displayUnknownPercentage()}">
                                     <c:set var="dnClass" value="${settings.selectedStatuses[endpoint] != 'OK' ? 'dn' : ''}" />
                                     <div class="js-unknown-percentage-fields ${dnClass}">
                                         <tags:input path="unknownPercentages[${endpoint}]" size="3" inputClass="js-unknown-percentage"
@@ -90,60 +88,58 @@
                                         <div id="unknownPercentageHelp" data-title="Unknown Percentage" data-width="500" class="dn">
                                             The percentage of responses that should return as unknown.</div>
                                     </div>
-                                </c:if>
-                            </td>
-	                    </c:if>
-                        <td>
-                            <c:if test="${not empty endpoint.params}">
-                                <c:set var="params" value=""/>
+                                </c:if></td>
+                        </c:if>
+                        <td><c:if test="${not empty endpoint.params}">
+                                <c:set var="params" value="" />
                                 <c:forEach var="endpointParam" items="${endpoint.params}">
-                                    <c:set var="params" value="${not empty params ? params += ',' += endpointParam.value : endpointParam.value}"/>
+                                    <c:set var="params"
+                                        value="${not empty params ? params += ',' += endpointParam.value : endpointParam.value}" />
                                 </c:forEach>
-                                <input type="text" id="${endpoint}_parameters" size="40" value="${params}"/>
-                                <cti:uniqueIdentifier var="uid" prefix="parameter-help-"/>
-                                <cti:icon icon="icon-help" classes="fn cp ML0 MR0" data-popup="#${uid}"/>
+                                <input type="text" id="${endpoint}_parameters" size="40" value="${params}" />
+                                <cti:uniqueIdentifier var="uid" prefix="parameter-help-" />
+                                <cti:icon icon="icon-help" classes="fn cp ML0 MR0" data-popup="#${uid}" />
                                 <div id="${uid}" data-title="Parameters Help" data-width="500" class="dn">
-                                    <c:set var="containsOptionalParams" value="false"/>
-                                    <b>Parameters must be a comma separated string.</b><br/>
-                                    <b>Parameters text box must contain valid:</b><br/>
+                                    <c:set var="containsOptionalParams" value="false" />
+                                    <b>Parameters must be a comma separated string.</b><br /> <b>Parameters text box must contain valid:</b><br />
                                     <c:forEach var="testParam" items="${endpoint.params}">
                                         <c:choose>
                                             <c:when test="${!fn:contains(testParam.key, '*')}">
-                                                <span class="ML15">- ${testParam.key}</span><br/>
+                                                <span class="ML15">- ${testParam.key}</span>
+                                                <br />
                                             </c:when>
                                             <c:otherwise>
-                                                <c:set var="containsOptionalParams" value="true"/>
+                                                <c:set var="containsOptionalParams" value="true" />
                                             </c:otherwise>
                                         </c:choose>
                                     </c:forEach>
                                     <c:if test="${containsOptionalParams}">
-                                        <b>Optional Parameters are as follows:</b><br/>
+                                        <b>Optional Parameters are as follows:</b>
+                                        <br />
                                         <c:forEach var="testParam" items="${endpoint.params}">
                                             <c:if test="${fn:contains(testParam.key, '*')}">
-                                                <span class="ML15">- ${testParam.key}</span><br/>
+                                                <span class="ML15">- ${testParam.key}</span>
+                                                <br />
                                             </c:if>
                                         </c:forEach>
                                     </c:if>
                                 </div>
-                            </c:if>
-                            <c:if test="${endpoint.hasJsonParam()}">
-                                <cti:button label="Show/Hide JSON" classes="js-enter-json fn ML0 MR0 PR5 PL5" data-endpoint="${endpoint}"/>
-                                <div><textarea id="${endpoint}_json" cols="60" rows="10" class="dn js-json-text" data-endpoint="${endpoint}"></textarea></div>
-                            </c:if>
-                        </td>
-                        <td>
-                        	<c:if test="${endpoint.showTestButton()}">
-                            	<cti:button label="Test" classes="js-test-endpoint MR0" data-endpoint="${endpoint}" data-params="${params}"/>
-                            </c:if>
-                            <c:if test="${endpoint == 'SECURITY_TOKEN'}">
-                                <cti:button label="Clear" classes="js-clear-cache MR0"/>
-                            </c:if>
-                        </td>
+                            </c:if> <c:if test="${endpoint.hasJsonParam()}">
+                                <cti:button label="Show/Hide JSON" classes="js-enter-json fn ML0 MR0 PR5 PL5" data-endpoint="${endpoint}" />
+                                <div>
+                                    <textarea id="${endpoint}_json" cols="60" rows="10" class="dn js-json-text" data-endpoint="${endpoint}"></textarea>
+                                </div>
+                            </c:if></td>
+                        <td><c:if test="${endpoint.showTestButton()}">
+                                <cti:button label="Test" classes="js-test-endpoint MR0" data-endpoint="${endpoint}" data-params="${params}" />
+                            </c:if> <c:if test="${endpoint == 'SECURITY_TOKEN'}">
+                                <cti:button label="Clear" classes="js-clear-cache MR0" />
+                            </c:if></td>
                     </tr>
                 </c:forEach>
             </tbody>
         </table>
-	</form:form>
+    </form:form>
 
     <br/>
     
