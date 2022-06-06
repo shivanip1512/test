@@ -65,7 +65,7 @@ public class EatonCloudMessageHandler extends SimulatorMessageHandler {
                         }
 
                     } else {
-                        log.info("Header:{} ", request.getHeader());
+                        log.debug("Header:{} ", request.getHeader());
                         String token = request.getHeader().replaceAll("Bearer ", "");
                         checkTokenRetrievalFailure(generator.getToken1(), token,
                                 EatonCloudRetrievalUrl.SECURITY_TOKEN, generator);

@@ -20,6 +20,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.util.CollectionUtils;
 
 import com.cannontech.clientutils.YukonLogManager;
+import com.cannontech.common.config.ConfigurationSource;
+import com.cannontech.common.config.MasterConfigBoolean;
 import com.cannontech.common.pao.PaoIdentifier;
 import com.cannontech.common.pao.PaoType;
 import com.cannontech.common.pao.attribute.model.BuiltInAttribute;
@@ -64,7 +66,8 @@ public class EatonCloudDataReadServiceImpl implements EatonCloudDataReadService 
     @Autowired private PaoDefinitionDao paoDefinitionDao;
     @Autowired private EatonCloudCommunicationServiceV1 eatonCloudCommunicationService;
     @Autowired private RecentEventParticipationDao recentEventParticipationDao;
- 
+    @Autowired private ConfigurationSource configurationSource;
+
     @Override
     public Multimap<PaoIdentifier, PointData> collectDataForRead(Integer deviceId, Range<Instant> range) {
         return collectDataForRead(Set.of(deviceId), range, true, "SINGLE DEVICE");
@@ -107,7 +110,8 @@ public class EatonCloudDataReadServiceImpl implements EatonCloudDataReadService 
 
         List<EatonCloudTimeSeriesDeviceResultV1> timeSeriesResults = new ArrayList<EatonCloudTimeSeriesDeviceResultV1>();
         Set<String> tags = EatonCloudChannel.getTagsForAttributes(attribtues);
-        List<EatonCloudTimeSeriesDeviceV1> chunkedRequests = buildRequests(deviceIdGuid.values(), tags);
+        List<EatonCloudTimeSeriesDeviceV1> chunkedRequests = configurationSource.getBoolean(MasterConfigBoolean.EATON_CLOUD_JOBS_TREND, false) ? 
+                buildRequests(deviceIdGuid.values(), tags) : buildRequestsLegacy(deviceIdGuid.values(), tags);
         for (EatonCloudTimeSeriesDeviceV1 request : chunkedRequests) {
             try {
                 List<EatonCloudTimeSeriesDeviceResultV1> result = eatonCloudCommunicationService
@@ -296,7 +300,7 @@ public class EatonCloudDataReadServiceImpl implements EatonCloudDataReadService 
      * Helps optimize the requests that are built by taking a set of GUIDs and a set of 
      * tags that are being requested for those GUIDs and building the minimum number of requests
      */
-    private List<EatonCloudTimeSeriesDeviceV1> buildRequests(Collection<String> guids, Set<String> tagSet) {
+    private List<EatonCloudTimeSeriesDeviceV1> buildRequestsLegacy(Collection<String> guids, Set<String> tagSet) {
         List<EatonCloudTimeSeriesDeviceV1> chunkedRequests = new ArrayList<>();
         List<List<String>> chunkedTags = Lists.partition(new ArrayList<>(tagSet), 10);
         for (List<String> tagSubset : chunkedTags) {
@@ -307,6 +311,23 @@ public class EatonCloudDataReadServiceImpl implements EatonCloudDataReadService 
         }
         return chunkedRequests;
     }
+    
+    /**
+     * Helps optimize the requests that are built by taking a set of GUIDs and a set of 
+     * tags that are being requested for those GUIDs and building the minimum number of requests
+     */
+    private List<EatonCloudTimeSeriesDeviceV1> buildRequests(Collection<String> guids, Set<String> tagSet) {
+        List<EatonCloudTimeSeriesDeviceV1> chunkedRequests = new ArrayList<>();
+        List<List<String>> chunkedTags = Lists.partition(new ArrayList<>(tagSet), 1000);
+        for (List<String> tagSubset : chunkedTags) {
+            String tagCSV = buildTagString(tagSubset);
+            for (String guid : guids) {
+                chunkedRequests.add(new EatonCloudTimeSeriesDeviceV1(guid, tagCSV));
+            }
+        }
+        return chunkedRequests;
+    }
+    
     /**
      * Takes a paoTypes and gets all of the tags that have a builtInAttribute for that paoType
      */
