@@ -96,6 +96,8 @@ public class MeterReadProcessingServiceImpl implements MeterReadProcessingServic
         ReadingProcessor netKwhConverter = new ReadingProcessor() {
             @Override
             public void apply(PointValueHolder value, MeterRead reading, PaoType paoType) {
+                Calendar calendar = Calendar.getInstance();
+                calendar.setTime(value.getPointDataTimeStamp());
                 
                 ReadingValues readingValues = createArrayOfReadingValue(reading);
                 ReadingValue readingValue = new ReadingValue();

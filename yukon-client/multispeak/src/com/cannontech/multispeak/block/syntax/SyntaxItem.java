@@ -44,8 +44,7 @@ public enum SyntaxItem {
         DELIVERED_KWH_RATE_A("Delivered kWh Rate A", MspUom.kWh),
         DELIVERED_KWH_RATE_B("Delivered kWh Rate B", MspUom.kWh),
         DELIVERED_KWH_RATE_C("Delivered kWh Rate C", MspUom.kWh),
-        DELIVERED_KWH_RATE_D("Delivered kWh Rate D", MspUom.kWh)
-        ;
+        DELIVERED_KWH_RATE_D("Delivered kWh Rate D", MspUom.kWh);
     
     private String mspFieldName;
     private Uom mspUom;
