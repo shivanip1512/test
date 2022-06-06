@@ -160,6 +160,20 @@ public class DataStreamingAttributeHelper {
                 BuiltInAttribute.AVERAGE_VOLTAGE_PHASE_B, //metric 120
                 BuiltInAttribute.AVERAGE_VOLTAGE_PHASE_C  //metric 121
                 ),
+        
+        CRL_530S4X(PaoType.CRL530S4X,
+                BuiltInAttribute.DELIVERED_KWH,   //metric 1
+                BuiltInAttribute.RECEIVED_KWH,    //metric 2
+                BuiltInAttribute.SUM_KVARH,       //metric 23
+                /*Var Hour Net*/                  //metric 24
+                BuiltInAttribute.SUM_KVAH,        //metric 43
+                BuiltInAttribute.VOLTAGE_PHASE_A, //metric 100
+                BuiltInAttribute.VOLTAGE_PHASE_B, //metric 101
+                BuiltInAttribute.VOLTAGE_PHASE_C, //metric 102
+                BuiltInAttribute.AVERAGE_VOLTAGE_PHASE_A, //metric 119
+                BuiltInAttribute.AVERAGE_VOLTAGE_PHASE_B, //metric 120
+                BuiltInAttribute.AVERAGE_VOLTAGE_PHASE_C  //metric 121
+                ),
         //Focus AXD-500
         //Focus AXT-500
         //Focus AXR-500

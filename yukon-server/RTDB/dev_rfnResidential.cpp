@@ -48,6 +48,10 @@ const std::map<DeviceTypes, bool> typeIsDisconnect
     { TYPE_RFN520FRXE,  false },
     { TYPE_RFN520FAXED, true },
     { TYPE_RFN520FRXED, true },
+    { TYPE_CRL520FAXE,  false },
+    { TYPE_CRL520FAXED, true },
+    { TYPE_CRL520FRXE,  false },
+    { TYPE_CRL520FRXED, true },
     { TYPE_RFN530FAXE,  false },
     { TYPE_RFN530FRXE,  false },
     //  RFN Centron

@@ -44,15 +44,19 @@
         - &axde-500 LGYR FocusAXDe-500
         - &axte-500 LGYR FocusAXTe-500
         - &axre-500 LGYR FocusAXRe-500
+        - &axre-c   LGYR FocusAXRe-C
         - &axde-sd-500 LGYR FocusAXDe-SD-500
         - &axte-sd-500 LGYR FocusAXTe-SD-500
         - &axre-sd-500 LGYR FocusAXRe-SD-500
+        - &axre-sd-c   LGYR FocusAXRe-SD-C
         - &rxde-500 LGYR FocusRXDe-500
         - &rxte-500 LGYR FocusRXTe-500
         - &rxre-500 LGYR FocusRXRe-500
+        - &rxre-c   LGYR FocusRXRe-C
         - &rxde-sd-500 LGYR FocusRXDe-SD-500
         - &rxte-sd-500 LGYR FocusRXTe-SD-500
         - &rxre-sd-500 LGYR FocusRXRe-SD-500
+        - &rxre-sd-c   LGYR FocusRXRe-SD-C
         - &axde-530 LGYR FocusAXDe-530
         - &axte-530 LGYR FocusAXTe-530
         - &axre-530 LGYR FocusAXRe-530
@@ -67,6 +71,7 @@
         - &s4e_rt LGYR S4-RT
         - &s4e_rr LGYR S4-RR
         - &s4x LGYR E650
+        - &s4x-c LGYR E650-C
     Elster A3:
         - &a3d EE A3D
         - &a3t EE A3T
@@ -99,22 +104,22 @@ Meter combinations:
     - &__234 [ *sl4, *sl3, *sl2 ]
     - &___34 [ *sl4, *sl3 ]
     - &____4 [ *sl4 ]
-    - &ADTR-RDTR-___ [ *s4e_ad, *s4e_at, *s4e_ar, *s4e_rd, *s4e_rt, *s4e_rr       ]
-    - &ADTR-RDTR-650 [ *s4e_ad, *s4e_at, *s4e_ar, *s4e_rd, *s4e_rt, *s4e_rr, *s4x ]
-    - &____-RDTR-___ [                            *s4e_rd, *s4e_rt, *s4e_rr       ]
-    - &____-RDTR-650 [                            *s4e_rd, *s4e_rt, *s4e_rr, *s4x ]
-    - &A_TR-R_TR-___ [          *s4e_at, *s4e_ar,          *s4e_rt, *s4e_rr       ]
-    - &A_TR-R_TR-650 [          *s4e_at, *s4e_ar,          *s4e_rt, *s4e_rr, *s4x ]
-    - &____-R_TR-___ [                                     *s4e_rt, *s4e_rr       ]
-    - &____-R_TR-650 [                                     *s4e_rt, *s4e_rr, *s4x ]
-    - &____-____-650 [                                                       *s4x ]
+    - &ADTR-RDTR-___ [ *s4e_ad, *s4e_at, *s4e_ar, *s4e_rd, *s4e_rt, *s4e_rr               ]
+    - &ADTR-RDTR-650 [ *s4e_ad, *s4e_at, *s4e_ar, *s4e_rd, *s4e_rt, *s4e_rr, *s4x, *s4x-c ]
+    - &____-RDTR-___ [                            *s4e_rd, *s4e_rt, *s4e_rr               ]
+    - &____-RDTR-650 [                            *s4e_rd, *s4e_rt, *s4e_rr, *s4x, *s4x-c ]
+    - &A_TR-R_TR-___ [          *s4e_at, *s4e_ar,          *s4e_rt, *s4e_rr               ]
+    - &A_TR-R_TR-650 [          *s4e_at, *s4e_ar,          *s4e_rt, *s4e_rr, *s4x, *s4x-c ]
+    - &____-R_TR-___ [                                     *s4e_rt, *s4e_rr               ]
+    - &____-R_TR-650 [                                     *s4e_rt, *s4e_rr, *s4x, *s4x-c ]
+    - &____-____-650 [                                                       *s4x, *s4x-c ]
     # Focus AX (Gen 1)
     - &__-RX-23 [ *rxd-500, *rxt-500, *rxr-500, *rxd-sd-500, *rxt-sd-500, *rxr-sd-500, *rxd-530, *rxd-530, *rxd-530 ]
     - &AX-RX-23 [ *rxd-500, *rxt-500, *rxr-500, *rxd-sd-500, *rxt-sd-500, *rxr-sd-500, *rxd-530, *rxd-530, *rxd-530, *axd-500, *axt-500, *axr-500, *axd-sd-500, *axt-sd-500, *axr-sd-500, *axd-530, *axd-530, *axd-530 ]
     - &AX-RX-_3 [ *rxd-530, *rxd-530, *rxd-530, *axd-530, *axd-530, *axd-530 ]
     # Focus AXe (Gen 2)
-    - &___-RXe-23 [ *rxde-500, *rxte-500, *rxre-500, *rxde-sd-500, *rxte-sd-500, *rxre-sd-500, *rxde-530, *rxde-530, *rxde-530 ]
-    - &AXe-RXe-23 [ *rxde-500, *rxte-500, *rxre-500, *rxde-sd-500, *rxte-sd-500, *rxre-sd-500, *rxde-530, *rxde-530, *rxde-530, *axde-500, *axte-500, *axre-500, *axde-sd-500, *axte-sd-500, *axre-sd-500, *axde-530, *axde-530, *axde-530 ]
+    - &___-RXe-23 [ *rxde-500, *rxte-500, *rxre-500, *rxre-c, *rxde-sd-500, *rxte-sd-500, *rxre-sd-500, *rxre-sd-c, *rxde-530, *rxde-530, *rxde-530 ]
+    - &AXe-RXe-23 [ *rxde-500, *rxte-500, *rxre-500, *rxre-c, *rxde-sd-500, *rxte-sd-500, *rxre-sd-500, *rxre-sd-c, *rxde-530, *rxde-530, *rxde-530, *axde-500, *axte-500, *axre-500, *axre-c, *axde-sd-500, *axte-sd-500, *axre-sd-500, *axre-sd-c, *axde-530, *axde-530, *axde-530 ]
     - &AXe-RXe-_3 [ *rxde-530, *rxde-530, *rxde-530, *axde-530, *axde-530, *axde-530 ]
 
     - &ELO-123 [ *elo2131TD, *elo2132TD, *elo2133TD ]

@@ -10,10 +10,10 @@ Note: For attributes that reference the modifiers of "Quadrant" directly, the mo
 Note: Look at BuiltInAttribute as that follows the same convention. 
 -->
     <highestOffsets>
-        <analog offset="515"/>
+        <analog offset="518"/>
         <calcAnalog offset="0"/>
         <demandAccumulator offset="251"/>
-        <status offset="103"/>
+        <status offset="107"/>
         <systemStatus offset="2000"/>
     </highestOffsets>
     <!--- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -Analog- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -->
@@ -2603,6 +2603,27 @@ Note: Look at BuiltInAttribute as that follows the same convention.
         <unitofmeasure value="KVARH"/>
         <decimalplaces value="3"/>
     </point>
+    <point offset="516" type="Analog">
+        <name>RSRP</name>
+        <archive interval="ZERO" type="ON_CHANGE"/>
+        <multiplier value="1"/>
+        <unitofmeasure value="DBM"/>
+        <decimalplaces value="0"/>
+    </point>
+    <point offset="517" type="Analog">
+        <name>RSRQ</name>
+        <archive interval="ZERO" type="ON_CHANGE"/>
+        <multiplier value="1"/>
+        <unitofmeasure value="DB"/>
+        <decimalplaces value="0"/>
+    </point>
+    <point offset="518" type="Analog">
+        <name>SINR</name>
+        <archive interval="ZERO" type="ON_CHANGE"/>
+        <multiplier value="1"/>
+        <unitofmeasure value="DB"/>
+        <decimalplaces value="0"/>
+    </point>
     <!--- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -CalcAnalog- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -->
     <point offset="0" type="CalcAnalog">
         <name>Total Outage Count</name>
@@ -3107,6 +3128,26 @@ Note: Look at BuiltInAttribute as that follows the same convention.
     <point offset="103" type="Status">
         <name>Blink Reported</name>
         <archive interval="ZERO" type="ON_CHANGE"/>
+        <stategroup value="Event Status"/>
+    </point>
+    <point offset="104" type="Status">
+        <name>Cellular Connection Failed</name>
+        <archive interval="ZERO" type="ON_UPDATE"/>
+        <stategroup value="Event Status"/>
+    </point>
+    <point offset="105" type="Status">
+        <name>Cellular Modem Disabled</name>
+        <archive interval="ZERO" type="ON_UPDATE"/>
+        <stategroup value="Event Status"/>
+    </point>
+    <point offset="106" type="Status">
+        <name>Cellular Sim Card Inserted Removed</name>
+        <archive interval="ZERO" type="ON_UPDATE"/>
+        <stategroup value="Event Status"/>
+    </point>
+    <point offset="107" type="Status">
+        <name>Cellular APN Changed</name>
+        <archive interval="ZERO" type="ON_UPDATE"/>
         <stategroup value="Event Status"/>
     </point>
     <point offset="1000" type="Status">
