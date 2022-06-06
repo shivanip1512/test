@@ -101,7 +101,7 @@ public class EatonCloudDataReadServiceImpl implements EatonCloudDataReadService 
     }
 
     private Multimap<PaoIdentifier, PointData> retrievePointData(Iterable<LiteYukonPAObject> paos,
-            Set<BuiltInAttribute> attribtues, Range<Instant> queryRange, boolean throwErrorIfFailed) {
+            Set<BuiltInAttribute> attributes, Range<Instant> queryRange, boolean throwErrorIfFailed) {
 
         Map<Integer, LiteYukonPAObject> deviceIdToPao = StreamSupport.stream(paos.spliterator(), false)
                 .collect(Collectors.toMap(LiteYukonPAObject::getYukonID, liteYukonPao -> liteYukonPao));
@@ -109,19 +109,19 @@ public class EatonCloudDataReadServiceImpl implements EatonCloudDataReadService 
 
 
         List<EatonCloudTimeSeriesDeviceResultV1> timeSeriesResults = new ArrayList<EatonCloudTimeSeriesDeviceResultV1>();
-        Set<String> tags = EatonCloudChannel.getTagsForAttributes(attribtues);
-        List<EatonCloudTimeSeriesDeviceV1> chunkedRequests = configurationSource.getBoolean(MasterConfigBoolean.EATON_CLOUD_JOBS_TREND, false) ? 
-                buildRequests(deviceIdGuid.values(), tags) : buildRequestsLegacy(deviceIdGuid.values(), tags);
-        for (EatonCloudTimeSeriesDeviceV1 request : chunkedRequests) {
-            try {
-                List<EatonCloudTimeSeriesDeviceResultV1> result = eatonCloudCommunicationService
-                        .getTimeSeriesValues(List.of(request), queryRange);
-                timeSeriesResults.addAll(result);
-            } catch (Exception e) {
-                log.error("Guid:" + request.getDeviceGuid(), e);
-                if(throwErrorIfFailed) {
-                    throw e;
-                }
+        Set<String> tags = EatonCloudChannel.getTagsForAttributes(attributes);
+        List<EatonCloudTimeSeriesDeviceV1> chunkedRequests = 
+                configurationSource.getBoolean(MasterConfigBoolean.EATON_CLOUD_JOBS_TREND, false) 
+                    ? buildRequests(deviceIdGuid.values(), tags) 
+                    : buildRequestsLegacy(deviceIdGuid.values(), tags);
+        try {
+            List<EatonCloudTimeSeriesDeviceResultV1> result = eatonCloudCommunicationService
+                    .getTimeSeriesValues(chunkedRequests, queryRange);
+            timeSeriesResults.addAll(result);
+        } catch (Exception e) {
+            log.error("Chunked requests failed", e);
+            if(throwErrorIfFailed) {
+                throw e;
             }
         }
 
@@ -144,7 +144,7 @@ public class EatonCloudDataReadServiceImpl implements EatonCloudDataReadService 
                         updateEventParticipation(device, result.getValues());
                     } else if (InfoKey.hasKey(mwChannel)) {
                         updatePaoInfo(InfoKey.getKey(mwChannel), device, result.getValues());
-                    } else if (attribtues.contains(mwChannel.getBuiltInAttribute())) {
+                    } else if (attributes.contains(mwChannel.getBuiltInAttribute())) {
                         createPointData(pointMap, deviceResult.getDeviceId(), device, result, mwChannel);
                     }
                 } catch (Exception e) {
