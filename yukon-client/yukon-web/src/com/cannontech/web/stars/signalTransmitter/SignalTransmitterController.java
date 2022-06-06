@@ -61,7 +61,7 @@ public class SignalTransmitterController {
     private static final String communicationKey = "yukon.exception.apiCommunicationException.communicationError";
     private static final String bindingResultKey = "org.springframework.validation.BindingResult.signalTransmitter";
     private static final String baseKey = "yukon.web.modules.operator.signalTransmitter.";
-    private static final String listPageLink = "/stars/device/signalTransmitter/list";
+    private static final String redirectListPageLink = "redirect:/stars/device/signalTransmitter/list";
 
     private static final List<PaoType> webSupportedSignalTransmitterTypes = Stream
             .of(PaoType.WCTP_TERMINAL, PaoType.TAPTERMINAL, PaoType.SNPP_TERMINAL)
@@ -69,7 +69,26 @@ public class SignalTransmitterController {
             .collect(Collectors.toList());
 
     @GetMapping("list")
-    public String list() {
+    public String list(ModelMap model, YukonUserContext userContext, FlashScope flash, HttpServletRequest request) {
+        ResponseEntity<? extends Object> response = null;
+        try {
+            String url = helper.findWebServerUrl(request, userContext, ApiURL.pagingTerminalUrl);
+            response = apiRequestHelper.callAPIForList(userContext, request, url, TerminalBase.class, HttpMethod.GET, TerminalBase.class);
+        } catch (ApiCommunicationException e) {
+            log.error(e.getMessage());
+            flash.setError(new YukonMessageSourceResolvable(communicationKey));
+            return redirectListPageLink;
+        } catch (RestClientException ex) {
+            log.error("Error retrieving details: " + ex.getMessage());
+            flash.setError(new YukonMessageSourceResolvable("yukon.web.modules.operator.signalTransmitter.filter.error", ex.getMessage()));
+            return redirectListPageLink;
+        }
+        
+        List<TerminalBase> signalTransmitters = new ArrayList<>();
+        if (response.getStatusCode() == HttpStatus.OK) {
+            signalTransmitters = (List<TerminalBase>) response.getBody();
+        }
+        model.addAttribute("signalTransmitters", signalTransmitters);
         return "/signalTransmitter/list.jsp";
     }
 
@@ -83,7 +102,7 @@ public class SignalTransmitterController {
             TerminalBase terminalBase = retrieveSignalTransmitter(userContext, request, id, url);
             if (terminalBase == null) {
                 flash.setError(new YukonMessageSourceResolvable(baseKey + "retrieve.error"));
-                return "redirect:" + listPageLink;
+                return redirectListPageLink;
             }
             model.addAttribute("selectedSignalTransmitterType", terminalBase.getType());
             model.addAttribute("signalTransmitter", terminalBase);
@@ -91,7 +110,7 @@ public class SignalTransmitterController {
         } catch (ApiCommunicationException e) {
             log.error(e.getMessage());
             flash.setError(new YukonMessageSourceResolvable(communicationKey));
-            return "redirect:" + listPageLink;
+            return redirectListPageLink;
         }
 
     }
@@ -171,12 +190,12 @@ public class SignalTransmitterController {
         } catch (ApiCommunicationException e) {
             log.error(e.getMessage());
             flash.setError(new YukonMessageSourceResolvable(communicationKey));
-            return "redirect:/stars/device/signalTransmitter/list";
+            return redirectListPageLink;
         } catch (RestClientException ex) {
             log.error("Error creating signal transmitter: {}. Error: {}", signalTransmitter.getName(), ex.getMessage());
             flash.setError(
                     new YukonMessageSourceResolvable("yukon.web.api.save.error", signalTransmitter.getName(), ex.getMessage()));
-            return "redirect:/stars/device/signalTransmitter/list";
+            return redirectListPageLink;
         }
         return null;
     }
