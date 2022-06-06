@@ -6337,7 +6337,7 @@ C++ :
 
   - project : Boost 
     path : BOOST
-    version : 1.76.0
+    version : 1.79.0
     project URL : "https://www.boost.org/"
     license : Boost
     license URLs : "https://www.boost.org/users/license.html"
