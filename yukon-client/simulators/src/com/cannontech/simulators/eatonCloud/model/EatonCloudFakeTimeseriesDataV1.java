@@ -39,7 +39,7 @@ public class EatonCloudFakeTimeseriesDataV1 {
      */
     private void load() {
         if (!channels.isEmpty()) {
-           // return;
+          return;
         }
         channels.clear();
 
