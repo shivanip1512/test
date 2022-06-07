@@ -243,6 +243,7 @@ public class MR_ServerImpl implements MR_Server{
                                                                         BuiltInAttribute.SUM_KWH,
                                                                         BuiltInAttribute.NET_KWH,
                                                                         BuiltInAttribute.KVA,
+                                                                        BuiltInAttribute.KVARH,
                                                                         BuiltInAttribute.POWER_FACTOR,
                                                                         BuiltInAttribute.RECEIVED_KWH,
                                                                         BuiltInAttribute.PEAK_DEMAND_RATE_A,
@@ -264,7 +265,7 @@ public class MR_ServerImpl implements MR_Server{
                         PointValueQualityHolder pointValueQualityHolder = asyncDynamicDataSource.getPointValue(litePoint.getPointID());
                         if( pointValueQualityHolder != null && 
                                 pointValueQualityHolder.getPointQuality() != PointQuality.Uninitialized) {
-                            meterReadProcessingService.updateMeterRead(meterRead, attribute, pointValueQualityHolder,meter.getPaoType());
+                            meterReadProcessingService.updateMeterRead(meterRead, attribute, pointValueQualityHolder, meter.getPaoType());
                         }
                     } catch (IllegalUseOfAttribute e) {
                         //it's okay...just skip

@@ -118,6 +118,7 @@ public class MspRawPointHistoryDaoImpl implements MspRawPointHistoryDao
                                                                 BuiltInAttribute.SUM_KWH,
                                                                 BuiltInAttribute.NET_KWH,
                                                                 BuiltInAttribute.KVA,
+                                                                BuiltInAttribute.KVARH,
                                                                 BuiltInAttribute.POWER_FACTOR,
                                                                 BuiltInAttribute.RECEIVED_KWH,
                                                                 BuiltInAttribute.PEAK_DEMAND_RATE_A,
