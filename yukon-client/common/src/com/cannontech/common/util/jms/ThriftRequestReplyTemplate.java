@@ -41,7 +41,24 @@ public class ThriftRequestReplyTemplate<Q, R> {
             log.trace("RequestReplyTemplateBase execute Start " + requestPayload.toString());
             jmsTemplate.execute(session -> {
                     try {
-                        doJmsWork(session, requestPayload, callback);
+                        doJmsWork(session, requestPayload, callback, null);
+                    } catch (Exception e) {
+                        ExceptionHelper.throwOrWrap(e);
+                    }
+                    return null;
+                }, true);
+            log.trace("RequestReplyTemplateBase execute End " + requestPayload.toString());
+        } catch (Exception e) {
+            callback.completeExceptionally(e);
+        }
+    }
+    
+    public void send(final Q requestPayload, final CompletableFuture<R> callback, TemporaryQueue replyQueue) {
+        try {
+            log.trace("RequestReplyTemplateBase execute Start " + requestPayload.toString());
+            jmsTemplate.execute(session -> {
+                    try {
+                        doJmsWork(session, requestPayload, callback, replyQueue);
                     } catch (Exception e) {
                         ExceptionHelper.throwOrWrap(e);
                     }
@@ -54,11 +71,13 @@ public class ThriftRequestReplyTemplate<Q, R> {
     }
 
     private void doJmsWork(Session session,
-        final Q requestPayload, final CompletableFuture<R> callback) throws JMSException {
+        final Q requestPayload, final CompletableFuture<R> callback, TemporaryQueue replyQueue) throws JMSException {
 
         var resolver = new DynamicDestinationResolver();
         Destination destination = resolver.resolveDestinationName(session, jmsTemplate.getDefaultDestinationName(), jmsTemplate.isPubSubDomain());
-        TemporaryQueue replyQueue = session.createTemporaryQueue();
+        if(replyQueue.equals(null)) {
+            replyQueue = session.createTemporaryQueue();
+        }
         try ( 
             MessageProducer producer = session.createProducer(destination);
             MessageConsumer replyConsumer = session.createConsumer(replyQueue);
