@@ -1,0 +1,171 @@
+Season Schedule:
+  title: Season Schedule
+  required:
+    - name
+  type: object
+  properties:
+    name:
+      type: string
+      maxLength: 40
+      description: "Name of season schedule ."
+    seasons:
+      description: "Seasons assigned to season schedule."
+      $ref: "#/SeasonRequest"
+
+Season Schedule Response Schema:
+  type: object
+  properties:
+    id:
+      type: integer
+      description: "Unique identifier of the season schedule."
+    name:
+      type: string
+      maxLength: 40
+      description: "Name of season schedule ."
+    seasons:
+      description: "Seasons assigned to season schedule."
+      $ref: "#/SeasonResponse"
+
+SeasonRequest:
+  type: array
+  items:
+    required:
+      - name
+    type: object
+    properties:
+      name:
+        type: string
+        maxLength: 20
+        description: "Name of season."
+      startMonth:
+        type: integer
+        minimum: 1
+        maximum: 12
+        description: "Start Month of season."
+      startDay:
+        type: integer
+        minimum: 1
+        maximum: 31
+        description: "Start Day of Season. The maximum value of day will be changed as per month selected."
+      endMonth:
+        type: integer
+        minimum: 1
+        maximum: 12
+        description: "End Month of season."
+      endDay:
+        type: integer
+        minimum: 1
+        maximum: 31
+        description: "End Day of season. The maximum value of day will be changed as per month selected."
+
+SeasonResponse:
+  type: array
+  items:
+    type: object
+    properties:
+      name:
+        type: string
+        maxLength: 20
+        description: "Name of season."
+      startMonth:
+        type: integer
+        minimum: 1
+        maximum: 12
+        description: "Start Month of season."
+      startDay:
+        type: integer
+        minimum: 1
+        maximum: 31
+        description: "Start Day of Season. The maximum value of day will be changed as per month selected."
+      endMonth:
+        type: integer
+        minimum: 1
+        maximum: 12
+        description: "End Month of season."
+      endDay:
+        type: integer
+        minimum: 1
+        maximum: 31
+        description: "End Day of season. The maximum value of day will be changed as per month selected."
+
+id:
+  title: id
+  type: object
+  properties:
+    id:
+      type: integer
+      description: "Unique identifier for Season Schedule."
+
+Season Schedules List Response Schema:
+  type: object
+  properties:
+    pagerNumber:
+      type: integer
+      default: 1
+      description: "Number of Pages for the season schedules."
+    itemsPerPage:
+      type: integer
+      default: 250
+      description: "Total number of items per page for the season schedules."
+    totalItems:
+      type: integer
+      description: "Total items or (number ) of the season schedules present in the system."
+    items:
+      type: array
+      items:
+        type: object
+        properties:
+          Season Schedules:
+            type: object
+            properties:
+              id:
+                type: integer
+                description: "Unique identifier of the season schedule."
+              name:
+                type: string
+                maxLength: 40
+                description: "Name of season schedule ."
+
+components:
+  examples:
+    Season Schedule Request:
+      value:
+        name: Test Season_Schedule_1
+        seasons:
+          name: season1
+          startMonth: 2
+          startDay: 12
+          endMonth: 4
+          endDay: 21
+
+    Season Schedule Response:
+      value:
+        id: 1233
+        name: Test Season_Schedule_1
+        seasons:
+          name: season1
+          startMonth: 2
+          startDay: 12
+          endMonth: 4
+          endDay: 21
+
+    SeasonScheduleId:
+      value:
+        id: 1233
+
+    List of Season Schedules:
+      value:
+        pagerNumber: 1
+        itemsPerPage: 250
+        totalItems: 5
+        items:
+          - id: 1233
+            name: Test Season_Schedule_1
+          - id: 1234
+            name: Test Season_Schedule_2
+          - id: 1235
+            name: Season Schedule 4
+          - id: 11355
+            name: Season Schedule 5
+          - id: 11358
+            name: Test Season_Schedule_7
