@@ -70,7 +70,7 @@ public class EatonCloudDataReadServiceImpl implements EatonCloudDataReadService 
     @Autowired private RecentEventParticipationDao recentEventParticipationDao;
     @Autowired private ConfigurationSource configurationSource;
 
-    private static int TAGS_PER_JOB = 1000;
+    private static int TAGS_PER_TIMESERIES_REQUEST = 1000;
 
     @Override
     public Multimap<PaoIdentifier, PointData> collectDataForRead(Integer deviceId, Range<Instant> range) {
@@ -184,7 +184,7 @@ public class EatonCloudDataReadServiceImpl implements EatonCloudDataReadService 
         List<List<EatonCloudTimeSeriesDeviceV1>> chunkedRequests = new ArrayList<>();
         List<EatonCloudTimeSeriesDeviceV1> chunk = new ArrayList<>();
         // TAGS_PER_JOB = 75; <-- set to different values to test
-        BigInteger counter = BigInteger.valueOf(TAGS_PER_JOB);
+        BigInteger counter = BigInteger.valueOf(TAGS_PER_TIMESERIES_REQUEST);
         for (EatonCloudTimeSeriesDeviceV1 request : requests) {
             if(Strings.isNullOrEmpty(request.getTagTrait())) {
                 //shouldn't happen
@@ -193,7 +193,7 @@ public class EatonCloudDataReadServiceImpl implements EatonCloudDataReadService 
             int tagCount = request.getTagTrait().split(",").length;
             counter = counter.subtract(BigInteger.valueOf(tagCount));
             if (counter.intValue() < 0) {
-                counter = BigInteger.valueOf(TAGS_PER_JOB);
+                counter = BigInteger.valueOf(TAGS_PER_TIMESERIES_REQUEST);
                 chunkedRequests.add(chunk);
                 chunk = new ArrayList<>();
             }
