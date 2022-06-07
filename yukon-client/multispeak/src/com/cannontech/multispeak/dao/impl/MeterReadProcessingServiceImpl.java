@@ -78,7 +78,7 @@ public class MeterReadProcessingServiceImpl implements MeterReadProcessingServic
                 ReadingValues readingValues = createArrayOfReadingValue(reading);
                 ReadingValue readingValue = new ReadingValue();
                 readingValue.setFieldName(SyntaxItem.KVAR.getMspFieldName());
-                setTimestampAndValuesForMeterRead(roundingMode, value, reading, readingValues, readingValue);            
+                setTimestampAndValuesForMeterRead(value, reading, readingValues, readingValue);            
             }
 
         };
@@ -89,7 +89,7 @@ public class MeterReadProcessingServiceImpl implements MeterReadProcessingServic
                 ReadingValues readingValues = createArrayOfReadingValue(reading);
                 ReadingValue readingValue = new ReadingValue();
                 readingValue.setFieldName(SyntaxItem.SUM_KWH.getMspFieldName());
-                setTimestampAndValuesForMeterRead(roundingMode, value, reading, readingValues, readingValue);           
+                setTimestampAndValuesForMeterRead(value, reading, readingValues, readingValue);           
             }
         };
         
@@ -102,7 +102,7 @@ public class MeterReadProcessingServiceImpl implements MeterReadProcessingServic
                 ReadingValues readingValues = createArrayOfReadingValue(reading);
                 ReadingValue readingValue = new ReadingValue();
                 readingValue.setFieldName(SyntaxItem.NET_KWH.getMspFieldName());
-                setTimestampAndValuesForMeterRead(roundingMode, value, reading, readingValues, readingValue);      
+                setTimestampAndValuesForMeterRead(value, reading, readingValues, readingValue);      
             }
         };
         
@@ -112,7 +112,7 @@ public class MeterReadProcessingServiceImpl implements MeterReadProcessingServic
                 ReadingValues readingValues = createArrayOfReadingValue(reading);
                 ReadingValue readingValue = new ReadingValue();
                 readingValue.setFieldName(SyntaxItem.KVA.getMspFieldName());
-                setTimestampAndValuesForMeterRead(roundingMode, value, reading, readingValues, readingValue);             
+                setTimestampAndValuesForMeterRead(value, reading, readingValues, readingValue);             
             }
         };
         
@@ -122,7 +122,7 @@ public class MeterReadProcessingServiceImpl implements MeterReadProcessingServic
                 ReadingValues readingValues = createArrayOfReadingValue(reading);
                 ReadingValue readingValue = new ReadingValue();
                 readingValue.setFieldName(SyntaxItem.KVARH.getMspFieldName());
-                setTimestampAndValuesForMeterRead(roundingMode, value, reading, readingValues, readingValue);             
+                setTimestampAndValuesForMeterRead(value, reading, readingValues, readingValue);             
             }
         };
         
@@ -132,7 +132,7 @@ public class MeterReadProcessingServiceImpl implements MeterReadProcessingServic
                 ReadingValues readingValues = createArrayOfReadingValue(reading);
                 ReadingValue readingValue = new ReadingValue();
                 readingValue.setFieldName(SyntaxItem.POWER_FACTOR.getMspFieldName());
-                setTimestampAndValuesForMeterRead(roundingMode, value, reading, readingValues, readingValue);             
+                setTimestampAndValuesForMeterRead(value, reading, readingValues, readingValue);             
             }
         };
         
@@ -142,7 +142,7 @@ public class MeterReadProcessingServiceImpl implements MeterReadProcessingServic
                 ReadingValues readingValues = createArrayOfReadingValue(reading);
                 ReadingValue readingValue = new ReadingValue();
                 readingValue.setFieldName(SyntaxItem.RECEIVED_KWH.getMspFieldName());
-                setTimestampAndValuesForMeterRead(roundingMode, value, reading, readingValues, readingValue);              
+                setTimestampAndValuesForMeterRead(value, reading, readingValues, readingValue);              
             }
         };
         
@@ -152,7 +152,7 @@ public class MeterReadProcessingServiceImpl implements MeterReadProcessingServic
                 ReadingValues readingValues = createArrayOfReadingValue(reading);
                 ReadingValue readingValue = new ReadingValue();
                 readingValue.setFieldName(SyntaxItem.PEAK_DEMAND_RATE_A.getMspFieldName());
-                setTimestampAndValuesForMeterRead(roundingMode, value, reading, readingValues, readingValue);              
+                setTimestampAndValuesForMeterRead(value, reading, readingValues, readingValue);              
             }
         };
         
@@ -162,7 +162,7 @@ public class MeterReadProcessingServiceImpl implements MeterReadProcessingServic
                 ReadingValues readingValues = createArrayOfReadingValue(reading);
                 ReadingValue readingValue = new ReadingValue();
                 readingValue.setFieldName(SyntaxItem.PEAK_DEMAND_RATE_B.getMspFieldName());
-                setTimestampAndValuesForMeterRead(roundingMode, value, reading, readingValues, readingValue);              
+                setTimestampAndValuesForMeterRead(value, reading, readingValues, readingValue);              
             }
         };
         
@@ -172,7 +172,7 @@ public class MeterReadProcessingServiceImpl implements MeterReadProcessingServic
                 ReadingValues readingValues = createArrayOfReadingValue(reading);
                 ReadingValue readingValue = new ReadingValue();
                 readingValue.setFieldName(SyntaxItem.PEAK_DEMAND_RATE_C.getMspFieldName());
-                setTimestampAndValuesForMeterRead(roundingMode, value, reading, readingValues, readingValue);              
+                setTimestampAndValuesForMeterRead(value, reading, readingValues, readingValue);              
             }
         };
         
@@ -182,7 +182,7 @@ public class MeterReadProcessingServiceImpl implements MeterReadProcessingServic
                 ReadingValues readingValues = createArrayOfReadingValue(reading);
                 ReadingValue readingValue = new ReadingValue();
                 readingValue.setFieldName(SyntaxItem.PEAK_DEMAND_RATE_D.getMspFieldName());
-                setTimestampAndValuesForMeterRead(roundingMode, value, reading, readingValues, readingValue);              
+                setTimestampAndValuesForMeterRead(value, reading, readingValues, readingValue);              
             }
         };
         
@@ -192,7 +192,7 @@ public class MeterReadProcessingServiceImpl implements MeterReadProcessingServic
                 ReadingValues readingValues = createArrayOfReadingValue(reading);
                 ReadingValue readingValue = new ReadingValue();
                 readingValue.setFieldName(SyntaxItem.RECEIVED_KWH_RATE_A.getMspFieldName());
-                setTimestampAndValuesForMeterRead(roundingMode, value, reading, readingValues, readingValue);              
+                setTimestampAndValuesForMeterRead(value, reading, readingValues, readingValue);              
             }
         };
         
@@ -202,7 +202,7 @@ public class MeterReadProcessingServiceImpl implements MeterReadProcessingServic
                 ReadingValues readingValues = createArrayOfReadingValue(reading);
                 ReadingValue readingValue = new ReadingValue();
                 readingValue.setFieldName(SyntaxItem.RECEIVED_KWH_RATE_B.getMspFieldName());
-                setTimestampAndValuesForMeterRead(roundingMode, value, reading, readingValues, readingValue);              
+                setTimestampAndValuesForMeterRead(value, reading, readingValues, readingValue);              
             }
         };
         ReadingProcessor receivedKwhRateCConverter = new ReadingProcessor() {
@@ -211,7 +211,7 @@ public class MeterReadProcessingServiceImpl implements MeterReadProcessingServic
                 ReadingValues readingValues = createArrayOfReadingValue(reading);
                 ReadingValue readingValue = new ReadingValue();
                 readingValue.setFieldName(SyntaxItem.RECEIVED_KWH_RATE_C.getMspFieldName());
-                setTimestampAndValuesForMeterRead(roundingMode, value, reading, readingValues, readingValue);              
+                setTimestampAndValuesForMeterRead(value, reading, readingValues, readingValue);              
             }
         };
         
@@ -221,7 +221,7 @@ public class MeterReadProcessingServiceImpl implements MeterReadProcessingServic
                 ReadingValues readingValues = createArrayOfReadingValue(reading);
                 ReadingValue readingValue = new ReadingValue();
                 readingValue.setFieldName(SyntaxItem.RECEIVED_KWH_RATE_D.getMspFieldName());
-                setTimestampAndValuesForMeterRead(roundingMode, value, reading, readingValues, readingValue);              
+                setTimestampAndValuesForMeterRead(value, reading, readingValues, readingValue);              
             }
         };
         
@@ -231,7 +231,7 @@ public class MeterReadProcessingServiceImpl implements MeterReadProcessingServic
                 ReadingValues readingValues = createArrayOfReadingValue(reading);
                 ReadingValue readingValue = new ReadingValue();
                 readingValue.setFieldName(SyntaxItem.DELIVERED_KWH_RATE_A.getMspFieldName());
-                setTimestampAndValuesForMeterRead(roundingMode, value, reading, readingValues, readingValue);              
+                setTimestampAndValuesForMeterRead(value, reading, readingValues, readingValue);              
             }
         };
         
@@ -241,7 +241,7 @@ public class MeterReadProcessingServiceImpl implements MeterReadProcessingServic
                 ReadingValues readingValues = createArrayOfReadingValue(reading);
                 ReadingValue readingValue = new ReadingValue();
                 readingValue.setFieldName(SyntaxItem.DELIVERED_KWH_RATE_B.getMspFieldName());
-                setTimestampAndValuesForMeterRead(roundingMode, value, reading, readingValues, readingValue);              
+                setTimestampAndValuesForMeterRead(value, reading, readingValues, readingValue);             
             }
         };
         
@@ -251,7 +251,7 @@ public class MeterReadProcessingServiceImpl implements MeterReadProcessingServic
                 ReadingValues readingValues = createArrayOfReadingValue(reading);
                 ReadingValue readingValue = new ReadingValue();
                 readingValue.setFieldName(SyntaxItem.DELIVERED_KWH_RATE_C.getMspFieldName());
-                setTimestampAndValuesForMeterRead(roundingMode, value, reading, readingValues, readingValue);              
+                setTimestampAndValuesForMeterRead(value, reading, readingValues, readingValue);           
             }
         };
         
@@ -261,7 +261,7 @@ public class MeterReadProcessingServiceImpl implements MeterReadProcessingServic
                 ReadingValues readingValues = createArrayOfReadingValue(reading);
                 ReadingValue readingValue = new ReadingValue();
                 readingValue.setFieldName(SyntaxItem.DELIVERED_KWH_RATE_D.getMspFieldName());
-                setTimestampAndValuesForMeterRead(roundingMode, value, reading, readingValues, readingValue);              
+                setTimestampAndValuesForMeterRead(value, reading, readingValues, readingValue);              
             }
         };
         
@@ -291,8 +291,10 @@ public class MeterReadProcessingServiceImpl implements MeterReadProcessingServic
                                        .build();
     }
     
-    private void setTimestampAndValuesForMeterRead(final RoundingMode roundingMode, PointValueHolder value, MeterRead reading,
+    private void setTimestampAndValuesForMeterRead(PointValueHolder value, MeterRead reading,
             ReadingValues readingValues, ReadingValue readingValue) {
+        final RoundingMode roundingMode = globalSettingDao.getEnum(GlobalSettingType.DEFAULT_ROUNDING_MODE, YukonRoundingMode.class)
+                                                          .getRoundingMode();
         Calendar calendar = Calendar.getInstance();
         calendar.setTime(value.getPointDataTimeStamp());
         readingValue.setDateTime(MultispeakFuncs.toXMLGregorianCalendar(calendar));
