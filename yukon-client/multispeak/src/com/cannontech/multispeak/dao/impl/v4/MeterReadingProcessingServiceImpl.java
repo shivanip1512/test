@@ -3,7 +3,6 @@ package com.cannontech.multispeak.dao.impl.v4;
 import java.math.BigDecimal;
 import java.math.RoundingMode;
 import java.util.Calendar;
-import java.util.Map;
 import java.util.Set;
 
 import javax.annotation.PostConstruct;
@@ -32,7 +31,7 @@ import com.google.common.collect.ImmutableMap;
 public class MeterReadingProcessingServiceImpl implements MeterReadingProcessingService {
     @Autowired private GlobalSettingDao globalSettingDao;
 
-    private Map<BuiltInAttribute, ReadingProcessor> attributesToLoad;
+    private ImmutableMap<BuiltInAttribute, ReadingProcessor> attributesToLoad;
 
     public interface ReadingProcessor {
         public void apply(PointValueHolder value, MeterReading reading, PaoType type);
@@ -107,10 +106,374 @@ public class MeterReadingProcessingServiceImpl implements MeterReadingProcessing
                 reading.setReadingValues(readingValues);
             }
         };
+        
+        ReadingProcessor powerFactorConverter = new ReadingProcessor() {
+            @Override
+            public void apply(PointValueHolder value, MeterReading reading, PaoType type) {
+                Calendar calendar = Calendar.getInstance();
+                calendar.setTime(value.getPointDataTimeStamp());
 
-        attributesToLoad = ImmutableMap.of(BuiltInAttribute.USAGE, usageConverter,
-                                           BuiltInAttribute.PEAK_DEMAND, peakDemandConverter,
-                                           BuiltInAttribute.BLINK_COUNT, blinkConverter);
+                ArrayOfReadingValue readingValues = createArrayOfReadingValue(reading);
+                ReadingValue readingValue = new ReadingValue();
+                readingValue.setFieldName(SyntaxItem.POWER_FACTOR.getMspFieldName());
+                readingValue.setTimeStamp(MultispeakFuncs.toXMLGregorianCalendar(calendar));
+
+                BigDecimal valueWithPrecision = new BigDecimal(value.getValue()).setScale(3, roundingMode).stripTrailingZeros();
+                readingValue.setValue(valueWithPrecision.toString());
+                readingValues.getReadingValue().add(readingValue);
+                reading.setReadingValues(readingValues);
+            }
+        };
+
+        ReadingProcessor sumKwhConverter = new ReadingProcessor() {
+            @Override
+            public void apply(PointValueHolder value, MeterReading reading, PaoType type) {
+                Calendar calendar = Calendar.getInstance();
+                calendar.setTime(value.getPointDataTimeStamp());
+
+                ArrayOfReadingValue readingValues = createArrayOfReadingValue(reading);
+                ReadingValue readingValue = new ReadingValue();
+                readingValue.setFieldName(SyntaxItem.SUM_KWH.getMspFieldName());
+                readingValue.setTimeStamp(MultispeakFuncs.toXMLGregorianCalendar(calendar));
+
+                BigDecimal valueWithPrecision = new BigDecimal(value.getValue()).setScale(3, roundingMode).stripTrailingZeros();
+                readingValue.setValue(valueWithPrecision.toString());
+                readingValues.getReadingValue().add(readingValue);
+                reading.setReadingValues(readingValues);
+            }
+        };
+
+        ReadingProcessor netKwhConverter = new ReadingProcessor() {
+            @Override
+            public void apply(PointValueHolder value, MeterReading reading, PaoType type) {
+                Calendar calendar = Calendar.getInstance();
+                calendar.setTime(value.getPointDataTimeStamp());
+
+                ArrayOfReadingValue readingValues = createArrayOfReadingValue(reading);
+                ReadingValue readingValue = new ReadingValue();
+                readingValue.setFieldName(SyntaxItem.NET_KWH.getMspFieldName());
+                readingValue.setTimeStamp(MultispeakFuncs.toXMLGregorianCalendar(calendar));
+
+                BigDecimal valueWithPrecision = new BigDecimal(value.getValue()).setScale(3, roundingMode).stripTrailingZeros();
+                readingValue.setValue(valueWithPrecision.toString());
+                readingValues.getReadingValue().add(readingValue);
+                reading.setReadingValues(readingValues);
+            }
+        };
+
+        ReadingProcessor kvaConverter = new ReadingProcessor() {
+            @Override
+            public void apply(PointValueHolder value, MeterReading reading, PaoType type) {
+                Calendar calendar = Calendar.getInstance();
+                calendar.setTime(value.getPointDataTimeStamp());
+
+                ArrayOfReadingValue readingValues = createArrayOfReadingValue(reading);
+                ReadingValue readingValue = new ReadingValue();
+                readingValue.setFieldName(SyntaxItem.KVA.getMspFieldName());
+                readingValue.setTimeStamp(MultispeakFuncs.toXMLGregorianCalendar(calendar));
+
+                BigDecimal valueWithPrecision = new BigDecimal(value.getValue()).setScale(3, roundingMode).stripTrailingZeros();
+                readingValue.setValue(valueWithPrecision.toString());
+                readingValues.getReadingValue().add(readingValue);
+                reading.setReadingValues(readingValues);
+            }
+        };
+
+        ReadingProcessor kvarConverter = new ReadingProcessor() {
+            @Override
+            public void apply(PointValueHolder value, MeterReading reading, PaoType type) {
+                Calendar calendar = Calendar.getInstance();
+                calendar.setTime(value.getPointDataTimeStamp());
+
+                ArrayOfReadingValue readingValues = createArrayOfReadingValue(reading);
+                ReadingValue readingValue = new ReadingValue();
+                readingValue.setFieldName(SyntaxItem.KVAR.getMspFieldName());
+                readingValue.setTimeStamp(MultispeakFuncs.toXMLGregorianCalendar(calendar));
+
+                BigDecimal valueWithPrecision = new BigDecimal(value.getValue()).setScale(3, roundingMode).stripTrailingZeros();
+                readingValue.setValue(valueWithPrecision.toString());
+                readingValues.getReadingValue().add(readingValue);
+                reading.setReadingValues(readingValues);
+            }
+        };
+
+        ReadingProcessor kvarhConverter = new ReadingProcessor() {
+            @Override
+            public void apply(PointValueHolder value, MeterReading reading, PaoType type) {
+                Calendar calendar = Calendar.getInstance();
+                calendar.setTime(value.getPointDataTimeStamp());
+
+                ArrayOfReadingValue readingValues = createArrayOfReadingValue(reading);
+                ReadingValue readingValue = new ReadingValue();
+                readingValue.setFieldName(SyntaxItem.KVARH.getMspFieldName());
+                readingValue.setTimeStamp(MultispeakFuncs.toXMLGregorianCalendar(calendar));
+
+                BigDecimal valueWithPrecision = new BigDecimal(value.getValue()).setScale(3, roundingMode).stripTrailingZeros();
+                readingValue.setValue(valueWithPrecision.toString());
+                readingValues.getReadingValue().add(readingValue);
+                reading.setReadingValues(readingValues);
+            }
+        };
+
+        ReadingProcessor deliveredKwhRateAConverter = new ReadingProcessor() {
+            @Override
+            public void apply(PointValueHolder value, MeterReading reading, PaoType type) {
+                Calendar calendar = Calendar.getInstance();
+                calendar.setTime(value.getPointDataTimeStamp());
+
+                ArrayOfReadingValue readingValues = createArrayOfReadingValue(reading);
+                ReadingValue readingValue = new ReadingValue();
+                readingValue.setFieldName(SyntaxItem.DELIVERED_KWH_RATE_A.getMspFieldName());
+                readingValue.setTimeStamp(MultispeakFuncs.toXMLGregorianCalendar(calendar));
+
+                BigDecimal valueWithPrecision = new BigDecimal(value.getValue()).setScale(3, roundingMode).stripTrailingZeros();
+                readingValue.setValue(valueWithPrecision.toString());
+                readingValues.getReadingValue().add(readingValue);
+                reading.setReadingValues(readingValues);
+            }
+        };
+
+        ReadingProcessor deliveredKwhRateBConverter = new ReadingProcessor() {
+            @Override
+            public void apply(PointValueHolder value, MeterReading reading, PaoType type) {
+                Calendar calendar = Calendar.getInstance();
+                calendar.setTime(value.getPointDataTimeStamp());
+
+                ArrayOfReadingValue readingValues = createArrayOfReadingValue(reading);
+                ReadingValue readingValue = new ReadingValue();
+                readingValue.setFieldName(SyntaxItem.DELIVERED_KWH_RATE_B.getMspFieldName());
+                readingValue.setTimeStamp(MultispeakFuncs.toXMLGregorianCalendar(calendar));
+
+                BigDecimal valueWithPrecision = new BigDecimal(value.getValue()).setScale(3, roundingMode).stripTrailingZeros();
+                readingValue.setValue(valueWithPrecision.toString());
+                readingValues.getReadingValue().add(readingValue);
+                reading.setReadingValues(readingValues);
+            }
+        };
+
+        ReadingProcessor deliveredKwhRateCConverter = new ReadingProcessor() {
+            @Override
+            public void apply(PointValueHolder value, MeterReading reading, PaoType type) {
+                Calendar calendar = Calendar.getInstance();
+                calendar.setTime(value.getPointDataTimeStamp());
+
+                ArrayOfReadingValue readingValues = createArrayOfReadingValue(reading);
+                ReadingValue readingValue = new ReadingValue();
+                readingValue.setFieldName(SyntaxItem.DELIVERED_KWH_RATE_C.getMspFieldName());
+                readingValue.setTimeStamp(MultispeakFuncs.toXMLGregorianCalendar(calendar));
+
+                BigDecimal valueWithPrecision = new BigDecimal(value.getValue()).setScale(3, roundingMode).stripTrailingZeros();
+                readingValue.setValue(valueWithPrecision.toString());
+                readingValues.getReadingValue().add(readingValue);
+                reading.setReadingValues(readingValues);
+            }
+        };
+
+        ReadingProcessor deliveredKwhRateDConverter = new ReadingProcessor() {
+            @Override
+            public void apply(PointValueHolder value, MeterReading reading, PaoType type) {
+                Calendar calendar = Calendar.getInstance();
+                calendar.setTime(value.getPointDataTimeStamp());
+
+                ArrayOfReadingValue readingValues = createArrayOfReadingValue(reading);
+                ReadingValue readingValue = new ReadingValue();
+                readingValue.setFieldName(SyntaxItem.DELIVERED_KWH_RATE_D.getMspFieldName());
+                readingValue.setTimeStamp(MultispeakFuncs.toXMLGregorianCalendar(calendar));
+
+                BigDecimal valueWithPrecision = new BigDecimal(value.getValue()).setScale(3, roundingMode).stripTrailingZeros();
+                readingValue.setValue(valueWithPrecision.toString());
+                readingValues.getReadingValue().add(readingValue);
+                reading.setReadingValues(readingValues);
+            }
+        };
+
+        ReadingProcessor receivedKwhConverter = new ReadingProcessor() {
+            @Override
+            public void apply(PointValueHolder value, MeterReading reading, PaoType type) {
+                Calendar calendar = Calendar.getInstance();
+                calendar.setTime(value.getPointDataTimeStamp());
+
+                ArrayOfReadingValue readingValues = createArrayOfReadingValue(reading);
+                ReadingValue readingValue = new ReadingValue();
+                readingValue.setFieldName(SyntaxItem.RECEIVED_KWH.getMspFieldName());
+                readingValue.setTimeStamp(MultispeakFuncs.toXMLGregorianCalendar(calendar));
+
+                BigDecimal valueWithPrecision = new BigDecimal(value.getValue()).setScale(3, roundingMode).stripTrailingZeros();
+                readingValue.setValue(valueWithPrecision.toString());
+                readingValues.getReadingValue().add(readingValue);
+                reading.setReadingValues(readingValues);
+            }
+        };
+
+        ReadingProcessor receivedKwhRateAConverter = new ReadingProcessor() {
+            @Override
+            public void apply(PointValueHolder value, MeterReading reading, PaoType type) {
+                Calendar calendar = Calendar.getInstance();
+                calendar.setTime(value.getPointDataTimeStamp());
+
+                ArrayOfReadingValue readingValues = createArrayOfReadingValue(reading);
+                ReadingValue readingValue = new ReadingValue();
+                readingValue.setFieldName(SyntaxItem.RECEIVED_KWH_RATE_A.getMspFieldName());
+                readingValue.setTimeStamp(MultispeakFuncs.toXMLGregorianCalendar(calendar));
+
+                BigDecimal valueWithPrecision = new BigDecimal(value.getValue()).setScale(3, roundingMode).stripTrailingZeros();
+                readingValue.setValue(valueWithPrecision.toString());
+                readingValues.getReadingValue().add(readingValue);
+                reading.setReadingValues(readingValues);
+            }
+        };
+
+        ReadingProcessor receivedKwhRateBConverter = new ReadingProcessor() {
+            @Override
+            public void apply(PointValueHolder value, MeterReading reading, PaoType type) {
+                Calendar calendar = Calendar.getInstance();
+                calendar.setTime(value.getPointDataTimeStamp());
+
+                ArrayOfReadingValue readingValues = createArrayOfReadingValue(reading);
+                ReadingValue readingValue = new ReadingValue();
+                readingValue.setFieldName(SyntaxItem.RECEIVED_KWH_RATE_B.getMspFieldName());
+                readingValue.setTimeStamp(MultispeakFuncs.toXMLGregorianCalendar(calendar));
+
+                BigDecimal valueWithPrecision = new BigDecimal(value.getValue()).setScale(3, roundingMode).stripTrailingZeros();
+                readingValue.setValue(valueWithPrecision.toString());
+                readingValues.getReadingValue().add(readingValue);
+                reading.setReadingValues(readingValues);
+            }
+        };
+
+        ReadingProcessor receivedKwhRateCConverter = new ReadingProcessor() {
+            @Override
+            public void apply(PointValueHolder value, MeterReading reading, PaoType type) {
+                Calendar calendar = Calendar.getInstance();
+                calendar.setTime(value.getPointDataTimeStamp());
+
+                ArrayOfReadingValue readingValues = createArrayOfReadingValue(reading);
+                ReadingValue readingValue = new ReadingValue();
+                readingValue.setFieldName(SyntaxItem.RECEIVED_KWH_RATE_C.getMspFieldName());
+                readingValue.setTimeStamp(MultispeakFuncs.toXMLGregorianCalendar(calendar));
+
+                BigDecimal valueWithPrecision = new BigDecimal(value.getValue()).setScale(3, roundingMode).stripTrailingZeros();
+                readingValue.setValue(valueWithPrecision.toString());
+                readingValues.getReadingValue().add(readingValue);
+                reading.setReadingValues(readingValues);
+            }
+        };
+
+        ReadingProcessor receivedKwhRateDConverter = new ReadingProcessor() {
+            @Override
+            public void apply(PointValueHolder value, MeterReading reading, PaoType type) {
+                Calendar calendar = Calendar.getInstance();
+                calendar.setTime(value.getPointDataTimeStamp());
+
+                ArrayOfReadingValue readingValues = createArrayOfReadingValue(reading);
+                ReadingValue readingValue = new ReadingValue();
+                readingValue.setFieldName(SyntaxItem.RECEIVED_KWH_RATE_D.getMspFieldName());
+                readingValue.setTimeStamp(MultispeakFuncs.toXMLGregorianCalendar(calendar));
+
+                BigDecimal valueWithPrecision = new BigDecimal(value.getValue()).setScale(3, roundingMode).stripTrailingZeros();
+                readingValue.setValue(valueWithPrecision.toString());
+                readingValues.getReadingValue().add(readingValue);
+                reading.setReadingValues(readingValues);
+            }
+        };
+
+        ReadingProcessor peakDemandRateAConverter = new ReadingProcessor() {
+            @Override
+            public void apply(PointValueHolder value, MeterReading reading, PaoType type) {
+                Calendar calendar = Calendar.getInstance();
+                calendar.setTime(value.getPointDataTimeStamp());
+
+                ArrayOfReadingValue readingValues = createArrayOfReadingValue(reading);
+                ReadingValue readingValue = new ReadingValue();
+                readingValue.setFieldName(SyntaxItem.PEAK_DEMAND_RATE_A.getMspFieldName());
+                readingValue.setTimeStamp(MultispeakFuncs.toXMLGregorianCalendar(calendar));
+
+                BigDecimal valueWithPrecision = new BigDecimal(value.getValue()).setScale(3, roundingMode).stripTrailingZeros();
+                readingValue.setValue(valueWithPrecision.toString());
+                readingValues.getReadingValue().add(readingValue);
+                reading.setReadingValues(readingValues);
+            }
+        };
+
+        ReadingProcessor peakDemandRateBConverter = new ReadingProcessor() {
+            @Override
+            public void apply(PointValueHolder value, MeterReading reading, PaoType type) {
+                Calendar calendar = Calendar.getInstance();
+                calendar.setTime(value.getPointDataTimeStamp());
+
+                ArrayOfReadingValue readingValues = createArrayOfReadingValue(reading);
+                ReadingValue readingValue = new ReadingValue();
+                readingValue.setFieldName(SyntaxItem.PEAK_DEMAND_RATE_B.getMspFieldName());
+                readingValue.setTimeStamp(MultispeakFuncs.toXMLGregorianCalendar(calendar));
+
+                BigDecimal valueWithPrecision = new BigDecimal(value.getValue()).setScale(3, roundingMode).stripTrailingZeros();
+                readingValue.setValue(valueWithPrecision.toString());
+                readingValues.getReadingValue().add(readingValue);
+                reading.setReadingValues(readingValues);
+            }
+        };
+
+        ReadingProcessor peakDemandRateCConverter = new ReadingProcessor() {
+            @Override
+            public void apply(PointValueHolder value, MeterReading reading, PaoType type) {
+                Calendar calendar = Calendar.getInstance();
+                calendar.setTime(value.getPointDataTimeStamp());
+
+                ArrayOfReadingValue readingValues = createArrayOfReadingValue(reading);
+                ReadingValue readingValue = new ReadingValue();
+                readingValue.setFieldName(SyntaxItem.PEAK_DEMAND_RATE_C.getMspFieldName());
+                readingValue.setTimeStamp(MultispeakFuncs.toXMLGregorianCalendar(calendar));
+
+                BigDecimal valueWithPrecision = new BigDecimal(value.getValue()).setScale(3, roundingMode).stripTrailingZeros();
+                readingValue.setValue(valueWithPrecision.toString());
+                readingValues.getReadingValue().add(readingValue);
+                reading.setReadingValues(readingValues);
+            }
+        };
+
+        ReadingProcessor peakDemandRateDConverter = new ReadingProcessor() {
+            @Override
+            public void apply(PointValueHolder value, MeterReading reading, PaoType type) {
+                Calendar calendar = Calendar.getInstance();
+                calendar.setTime(value.getPointDataTimeStamp());
+
+                ArrayOfReadingValue readingValues = createArrayOfReadingValue(reading);
+                ReadingValue readingValue = new ReadingValue();
+                readingValue.setFieldName(SyntaxItem.PEAK_DEMAND_RATE_D.getMspFieldName());
+                readingValue.setTimeStamp(MultispeakFuncs.toXMLGregorianCalendar(calendar));
+
+                BigDecimal valueWithPrecision = new BigDecimal(value.getValue()).setScale(3, roundingMode).stripTrailingZeros();
+                readingValue.setValue(valueWithPrecision.toString());
+                readingValues.getReadingValue().add(readingValue);
+                reading.setReadingValues(readingValues);
+            }
+        };
+        
+        attributesToLoad = ImmutableMap.<BuiltInAttribute, ReadingProcessor>builder()
+                                                                            .put(BuiltInAttribute.USAGE, usageConverter)
+                                                                            .put(BuiltInAttribute.PEAK_DEMAND, peakDemandConverter)
+                                                                            .put(BuiltInAttribute.BLINK_COUNT, blinkConverter)
+                                                                            .put(BuiltInAttribute.POWER_FACTOR, powerFactorConverter)
+                                                                            .put(BuiltInAttribute.SUM_KWH, sumKwhConverter)
+                                                                            .put(BuiltInAttribute.NET_KWH, netKwhConverter)
+                                                                            .put(BuiltInAttribute.KVA, kvaConverter)
+                                                                            .put(BuiltInAttribute.KVAR, kvarConverter)
+                                                                            .put(BuiltInAttribute.KVARH, kvarhConverter)
+                                                                            .put(BuiltInAttribute.DELIVERED_KWH_RATE_A, deliveredKwhRateAConverter)
+                                                                            .put(BuiltInAttribute.DELIVERED_KWH_RATE_B, deliveredKwhRateBConverter)
+                                                                            .put(BuiltInAttribute.DELIVERED_KWH_RATE_C, deliveredKwhRateCConverter)
+                                                                            .put(BuiltInAttribute.DELIVERED_KWH_RATE_D, deliveredKwhRateDConverter)
+                                                                            .put(BuiltInAttribute.RECEIVED_KWH_RATE_A, receivedKwhRateAConverter)
+                                                                            .put(BuiltInAttribute.RECEIVED_KWH_RATE_B, receivedKwhRateBConverter)
+                                                                            .put(BuiltInAttribute.RECEIVED_KWH_RATE_C, receivedKwhRateCConverter)
+                                                                            .put(BuiltInAttribute.RECEIVED_KWH_RATE_D, receivedKwhRateDConverter)
+                                                                            .put(BuiltInAttribute.RECEIVED_KWH, receivedKwhConverter)
+                                                                            .put(BuiltInAttribute.PEAK_DEMAND_RATE_A, peakDemandRateAConverter)
+                                                                            .put(BuiltInAttribute.PEAK_DEMAND_RATE_B, peakDemandRateBConverter)
+                                                                            .put(BuiltInAttribute.PEAK_DEMAND_RATE_C, peakDemandRateCConverter)
+                                                                            .put(BuiltInAttribute.PEAK_DEMAND_RATE_D, peakDemandRateDConverter)
+                                                                            .build();
+
     }
 
     @Override
