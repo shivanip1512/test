@@ -75,7 +75,7 @@ public class ThriftRequestReplyTemplate<Q, R> {
 
         var resolver = new DynamicDestinationResolver();
         Destination destination = resolver.resolveDestinationName(session, jmsTemplate.getDefaultDestinationName(), jmsTemplate.isPubSubDomain());
-        if(replyQueue.equals(null)) {
+        if (replyQueue.equals(null)) {
             replyQueue = session.createTemporaryQueue();
         }
         try ( 
