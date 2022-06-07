@@ -69,8 +69,7 @@ public class DerEdgeCommunicationServiceImpl implements DerEdgeCommunicationServ
 
         var requestMsg = new EdgeDrUnicastRequest(pao.getPaoIdentifier().getPaoId(), messageGuid, payload, queuePriority, networkPriority);
         var f = new CompletableFuture<EdgeDrUnicastResponse>();
-        //TODO - Need to change method signature to send specific reply queue
-        thriftUnicastMessanger.send(requestMsg, f);
+        thriftUnicastMessanger.send(requestMsg, f, JmsApiDirectory.EDGE_DR_UNICAST.getResponseQueueName());
 
         try {
             var responseMsg = f.get(DEFAULT_TIMEOUT_MINUTES, TimeUnit.MINUTES);

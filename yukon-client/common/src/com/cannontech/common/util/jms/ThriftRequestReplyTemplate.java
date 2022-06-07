@@ -8,7 +8,6 @@ import javax.jms.JMSException;
 import javax.jms.MessageConsumer;
 import javax.jms.MessageProducer;
 import javax.jms.Session;
-import javax.jms.TemporaryQueue;
 
 import org.apache.logging.log4j.Logger;
 import org.joda.time.Duration;
@@ -53,12 +52,12 @@ public class ThriftRequestReplyTemplate<Q, R> {
         }
     }
     
-    public void send(final Q requestPayload, final CompletableFuture<R> callback, TemporaryQueue replyQueue) {
+    public void send(final Q requestPayload, final CompletableFuture<R> callback, String responseQueueName) {
         try {
             log.trace("RequestReplyTemplateBase execute Start " + requestPayload.toString());
             jmsTemplate.execute(session -> {
                     try {
-                        doJmsWork(session, requestPayload, callback, replyQueue);
+                        doJmsWork(session, requestPayload, callback, responseQueueName);
                     } catch (Exception e) {
                         ExceptionHelper.throwOrWrap(e);
                     }
@@ -71,27 +70,26 @@ public class ThriftRequestReplyTemplate<Q, R> {
     }
 
     private void doJmsWork(Session session,
-        final Q requestPayload, final CompletableFuture<R> callback, TemporaryQueue replyQueue) throws JMSException {
+        final Q requestPayload, final CompletableFuture<R> callback, String responseQueueName) throws JMSException {
 
         var resolver = new DynamicDestinationResolver();
         Destination destination = resolver.resolveDestinationName(session, jmsTemplate.getDefaultDestinationName(), jmsTemplate.isPubSubDomain());
-        if (replyQueue.equals(null)) {
-            replyQueue = session.createTemporaryQueue();
+        Destination responseDestination = session.createTemporaryQueue();
+        if (!responseQueueName.isBlank()) {
+            responseDestination = resolver.resolveDestinationName(session, responseQueueName, false);
         }
         try ( 
             MessageProducer producer = session.createProducer(destination);
-            MessageConsumer replyConsumer = session.createConsumer(replyQueue);
+            MessageConsumer replyConsumer = session.createConsumer(responseDestination);
         ) {
             BytesMessage requestMessage = session.createBytesMessage();
             
             requestMessage.writeBytes(requestSerializer.toBytes(requestPayload));
-            requestMessage.setJMSReplyTo(replyQueue);
+            requestMessage.setJMSReplyTo(responseDestination);
             
             producer.send(requestMessage);
             
             handleReplyOrTimeout(callback, timeout, replyConsumer);
-        } finally {
-            replyQueue.delete();
         }
     }
 
