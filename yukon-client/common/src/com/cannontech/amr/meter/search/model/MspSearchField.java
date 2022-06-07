@@ -6,7 +6,7 @@ public enum MspSearchField {
     EA_LOCATION("EA Location", "GetMetersByEALocation", "TBU", "GetMetersByNetworkModelRef"),
     FACILITY_ID("Facility ID", "GetMetersByFacilityId", "TBU", "GetMetersByContactInfo"),
     ACCOUNT_NUMBER("Account Number", "GetMeterByAccountNumber", "TBU", "GetMetersByAccountIDs"),
-    CUSTOMER_ID("Customer ID", "GetMeterByCustId", "TBU", "GetMetersByCustomerIDs"),
+    CUSTOMER_ID("Customer ID", "GetMeterByCustId", "GetMeterByCustomerID", "GetMetersByCustomerIDs"),
     CIS_SEARCH("CIS Search", "GetMetersBySearchString", "TBU", "GetMetersBySearchString"),
 	;
 	
