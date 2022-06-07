@@ -1,6 +1,7 @@
 package com.cannontech.multispeak.dao.impl.v4;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.Date;
 import java.util.Iterator;
 import java.util.List;
@@ -32,6 +33,8 @@ import com.cannontech.msp.beans.v4.GetAllServiceLocations;
 import com.cannontech.msp.beans.v4.GetAllServiceLocationsResponse;
 import com.cannontech.msp.beans.v4.GetDomainMembers;
 import com.cannontech.msp.beans.v4.GetDomainMembersResponse;
+import com.cannontech.msp.beans.v4.GetMeterByCustomerID;
+import com.cannontech.msp.beans.v4.GetMeterByCustomerIDResponse;
 import com.cannontech.msp.beans.v4.GetMeterByServiceLocationID;
 import com.cannontech.msp.beans.v4.GetMeterByServiceLocationIDResponse;
 import com.cannontech.msp.beans.v4.GetMethods;
@@ -445,5 +448,43 @@ public class MspObjectDaoImpl implements MspObjectDao {
             attributeValue = element.getAttributeValue(new QName(name));
         }
         return attributeValue;
+    }
+    
+    @Override
+    public List<String> findMethods(String mspServer, MultispeakVendor mspVendor) {
+
+        try {
+            return getMethods(mspVendor, mspServer, null);
+        } catch (MultispeakWebServiceClientException e) {
+            log.error("Exception processing GetMethods (" + mspVendor.getCompanyName() + ") for Server: " + mspServer);
+            log.error("MultispeakWebServiceClientException: " + e.getMessage());
+        }
+        return Collections.emptyList();
+    }
+    
+    @Override
+    public List<MspMeter> getMspMetersByCustomerId(String custId, MultispeakVendor mspVendor) {
+
+        List<MspMeter> meters = new ArrayList<>();
+        String endpointUrl = multispeakFuncs.getEndpointUrl(mspVendor, MultispeakDefines.CB_Server_STR);
+        try {
+            GetMeterByCustomerID getMeterByCustomerID = objectFactory.createGetMeterByCustomerID();
+            getMeterByCustomerID.setCustomerID(custId);
+
+            GetMeterByCustomerIDResponse response =
+                cbClient.getMeterByCustomerID(mspVendor, endpointUrl, getMeterByCustomerID);
+            if (response != null) {
+                if (response.getGetMeterByCustomerIDResult() != null) {
+                    meters = multispeakFuncs.getMspMeters(response.getGetMeterByCustomerIDResult());
+                }
+            } else {
+                log.error("Response not received for (" + mspVendor.getCompanyName() + ")");
+            }
+        } catch (MultispeakWebServiceClientException e) {
+            log.error("TargetService: " + endpointUrl + " - getMspMetersByCustomerId (" + mspVendor.getCompanyName()
+                + ") for custId: " + custId);
+            log.error("MultispeakWebServiceClientException: " + e.getMessage());
+        }
+        return meters;
     }
 }

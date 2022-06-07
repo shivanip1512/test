@@ -119,5 +119,23 @@ public interface MspObjectDao {
      */
     public void getAllMspServiceLocations(MultispeakVendor mspVendor, MultispeakGetAllServiceLocationsCallback callback)
             throws MultispeakWebServiceClientException;
+    
+    /**
+     * Returns a list of supported method names for mspVendor
+     * Catches any MultispeakWebServiceClientException and returns emptyList.
+     * 
+     * @param mspVendor
+     */
+    List<String> findMethods(String mspServer, MultispeakVendor mspVendor);
+    
+    /**
+     * Returns a list of the MeterNumber(s) for the custId.
+     * If the interface/method is not supported by mspVendor, or if no object is found,
+     * an empty List<Meter> object is returned.
+     * @param custId The custId to get the Meter information for.
+     * @param mspVendor The MultiSpeak Vendor to ask for the information from.
+     * @return
+     */
+    public List<MspMeter> getMspMetersByCustomerId(String custId, MultispeakVendor mspVendor);
 
 }

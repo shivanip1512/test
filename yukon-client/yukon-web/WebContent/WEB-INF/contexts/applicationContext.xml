@@ -983,6 +983,7 @@
     <!-- MULTISPEAK -->
     <bean id="mspMeterSearchService" class="com.cannontech.web.amr.meter.service.impl.MspMeterSearchServiceImpl"/>
     <bean id="mspSearchFieldsProviderV3" class="com.cannontech.web.amr.meter.service.impl.MspSearchFieldsProviderV3"/>
+     <bean id="mspSearchFieldsProviderV4" class="com.cannontech.web.amr.meter.service.impl.MspSearchFieldsProviderV4"/>
     <bean id="mspSearchFieldsProviderV5" class="com.cannontech.web.amr.meter.service.impl.MspSearchFieldsProviderV5"/>
     <bean id="mspHandler" class="com.cannontech.web.multispeak.MspHandler"/>
 
