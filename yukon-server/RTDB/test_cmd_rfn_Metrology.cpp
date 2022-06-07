@@ -64,6 +64,10 @@ BOOST_AUTO_TEST_CASE( supported_devices )
         { TYPE_RFN520FRXE,   true  },
         { TYPE_RFN520FAXED,  true  },
         { TYPE_RFN520FRXED,  true  },
+        { TYPE_CRL520FAXE,   true  },
+        { TYPE_CRL520FAXED,  true  },
+        { TYPE_CRL520FRXE,   true  },
+        { TYPE_CRL520FRXED,  true  },
         { TYPE_RFN530FAXE,   true  },
         { TYPE_RFN530FRXE,   true  },
         //  RFN Centron

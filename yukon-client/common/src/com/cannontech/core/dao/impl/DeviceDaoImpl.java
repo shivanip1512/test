@@ -73,7 +73,7 @@ public final class DeviceDaoImpl implements DeviceDao {
             return new SimpleDevice(deviceId, paoType);
         }
     };
-
+    
     public static final YukonRowMapper<DisplayableDevice> DISPLAYABLE_DEVICE_MAPPER = rs ->
         new DisplayableDevice(rs.getPaoIdentifier("PAObjectID", "Type"), rs.getString("PAOName"));
 
@@ -134,6 +134,15 @@ public final class DeviceDaoImpl implements DeviceDao {
         jdbcTemplate.update(updateCreateSql);
     }
     
+    @Override
+    public int getDeviceIdByName(String name) {
+        SqlStatementBuilder sql = new SqlStatementBuilder();
+        sql.append("SELECT PAO.PAObjectId");
+        sql.append("FROM YukonPAObject PAO");
+        sql.append("WHERE UPPER(PAO.PAOName) = UPPER(").appendArgument(name).append(")");
+        return jdbcTemplate.queryForInt(sql);
+    }
+
     @Override
     public String getDeviceMacAddress(int deviceId) {
         SqlStatementBuilder sql = new SqlStatementBuilder();

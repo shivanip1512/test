@@ -905,6 +905,9 @@ public class MultispeakMeterServiceImpl extends MultispeakMeterServiceBase imple
                             if (mspServiceLocation.getWaterServicePoints() != null) {
                                 mspUsagePoints.addAll(mspServiceLocation.getWaterServicePoints().getWaterServicePoint());
                             }
+                            if (mspServiceLocation.getGasServicePoints() != null) {
+                                mspUsagePoints.addAll(mspServiceLocation.getGasServicePoints().getGasServicePoint());
+                            }
                             for (MspUsagePoint servicePoint : mspUsagePoints) {
                                 ObjectID meterId = null;
                                 MspMeter mspMeter = null;
@@ -961,9 +964,9 @@ public class MultispeakMeterServiceImpl extends MultispeakMeterServiceBase imple
                                     try {
                                         meter = getMeterByMeterNumber(mspMeter.getPrimaryIdentifier().getValue());
                                     } catch (NotFoundException e) {
-                                        multispeakEventLogService.meterNotFound(
-                                            mspMeter.getPrimaryIdentifier().getValue(), SERV_LOC_CHANGED_STRING,
-                                            mspVendor.getCompanyName());
+                                        multispeakEventLogService.meterNotFound(mspMeter.getPrimaryIdentifier().getValue(), 
+                                                                                SERV_LOC_CHANGED_STRING,
+                                                                                mspVendor.getCompanyName());
                                         ErrorObject err = mspObjectDao.getNotFoundErrorObject(mspMeter.getPrimaryIdentifier().getValue(), 
                                                                                              "MeterNumber",
                                                                                              "ServiceLocation", 
@@ -1033,43 +1036,51 @@ public class MultispeakMeterServiceImpl extends MultispeakMeterServiceBase imple
                                                                                 "GetMetersByServiceLocationIDs", 
                                                                                  SERV_LOC_CHANGED_STRING,
                                                                                  mspVendor.getCompanyName());
-                                ErrorObject err = mspObjectDao.getErrorObject(
-                                        mspServiceLocation.getObjectGUID(),
-                                        paoAlias.getDisplayName() + " ServiceLocation("
-                                            + mspServiceLocation.getObjectGUID()
-                                            + ") - No meters returned from vendor for location.", "ServiceLocation",
-                                        SERV_LOC_CHANGED_STRING, mspVendor.getCompanyName());
+                                ErrorObject err = mspObjectDao.getErrorObject(mspServiceLocation.getObjectGUID(),
+                                                                              paoAlias.getDisplayName() + " ServiceLocation(" + 
+                                                                              mspServiceLocation.getObjectGUID() + 
+                                                                              ") - No meters returned from vendor for location.", "ServiceLocation",
+                                                                              SERV_LOC_CHANGED_STRING, 
+                                                                              mspVendor.getCompanyName());
                                 errorObjects.add(err);
-                                multispeakEventLogService.errorObject(err.getDisplayString(), SERV_LOC_CHANGED_STRING,
-                                    mspVendor.getCompanyName());
+                                multispeakEventLogService.errorObject(err.getDisplayString(), 
+                                                                      SERV_LOC_CHANGED_STRING,
+                                                                      mspVendor.getCompanyName());
                             }
                         }
                     };
                 });
             } catch (MspErrorObjectException e) {
                 errorObjects.add(e.getErrorObject());
-                multispeakEventLogService.errorObject(e.getErrorObject().getDisplayString(), SERV_LOC_CHANGED_STRING,
-                    mspVendor.getCompanyName());
+                multispeakEventLogService.errorObject(e.getErrorObject().getDisplayString(), 
+                                                      SERV_LOC_CHANGED_STRING,
+                                                      mspVendor.getCompanyName());
                 log.error(e);
             } catch (RuntimeException ex) {
                 // Transactional code threw application exception -> rollback
                 ErrorObject err =
-                    mspObjectDao.getErrorObject(mspServiceLocation.getObjectGUID(), "X Exception: (ServiceLocationID:"
-                        + mspServiceLocation.getObjectGUID() + ")-" + ex.getMessage(), "ServiceLocation",
-                        SERV_LOC_CHANGED_STRING, mspVendor.getCompanyName());
+                    mspObjectDao.getErrorObject(mspServiceLocation.getObjectGUID(),
+                                                "X Exception: (ServiceLocationID:" + mspServiceLocation.getObjectGUID() + ")-" + ex.getMessage(), 
+                                                "ServiceLocation",
+                                                SERV_LOC_CHANGED_STRING, 
+                                                mspVendor.getCompanyName());
                 errorObjects.add(err);
-                multispeakEventLogService.errorObject(err.getDisplayString(), SERV_LOC_CHANGED_STRING,
-                    mspVendor.getCompanyName());
+                multispeakEventLogService.errorObject(err.getDisplayString(), 
+                                                      SERV_LOC_CHANGED_STRING,
+                                                      mspVendor.getCompanyName());
                 log.error(ex);
             } catch (Error ex) {
                 // Transactional code threw error -> rollback
                 ErrorObject err =
-                    mspObjectDao.getErrorObject(mspServiceLocation.getObjectGUID(), "X Error: (ServiceLocationID:"
-                        + mspServiceLocation.getObjectGUID() + ")-" + ex.getMessage(), "ServiceLocation",
-                        SERV_LOC_CHANGED_STRING, mspVendor.getCompanyName());
+                    mspObjectDao.getErrorObject(mspServiceLocation.getObjectGUID(), 
+                                                "X Error: (ServiceLocationID:" + mspServiceLocation.getObjectGUID() + ")-" + ex.getMessage(), 
+                                                "ServiceLocation",
+                                                SERV_LOC_CHANGED_STRING, 
+                                                mspVendor.getCompanyName());
                 errorObjects.add(err);
-                multispeakEventLogService.errorObject(err.getDisplayString(), SERV_LOC_CHANGED_STRING,
-                    mspVendor.getCompanyName());
+                multispeakEventLogService.errorObject(err.getDisplayString(), 
+                                                      SERV_LOC_CHANGED_STRING,
+                                                      mspVendor.getCompanyName());
                 log.error(ex);
             }
         }

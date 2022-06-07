@@ -42,6 +42,7 @@ public class MspHandler {
     @Autowired private MultispeakDao multispeakDao;
     @Autowired @Qualifier("v3") private MultispeakDeviceGroupSyncServiceBase multispeakDeviceGroupSyncServiceV3;
     @Autowired @Qualifier("v5") private MultispeakDeviceGroupSyncServiceBase multispeakDeviceGroupSyncServiceV5;
+    @Autowired @Qualifier("v4") private MultispeakDeviceGroupSyncServiceBase multispeakDeviceGroupSyncServiceV4;
     @Autowired private  MultispeakEnrollmentSyncService multispeakEnrollmentSyncService;
 
     private static final String DOMAIN_MEMBERS_SUBSTATION_CODE = "GetDomainMembers - substationCode";
@@ -57,6 +58,8 @@ public class MspHandler {
             if (cisVersion != null) {
                 if (cisVersion == MultiSpeakVersion.V3) {
                     multispeakDeviceGroupSyncServiceV3.startSyncForType(type, userContext);
+                } else if (cisVersion == MultiSpeakVersion.V4) {
+                    multispeakDeviceGroupSyncServiceV4.startSyncForType(type, userContext);
                 } else if (cisVersion == MultiSpeakVersion.V5) {
                     multispeakDeviceGroupSyncServiceV5.startSyncForType(type, userContext);
                 }
@@ -71,6 +74,8 @@ public class MspHandler {
             if (cisVersion != null) {
                 if (cisVersion == MultiSpeakVersion.V3) {
                     return multispeakDeviceGroupSyncServiceV3;
+                } else if (cisVersion == MultiSpeakVersion.V4) {
+                    return multispeakDeviceGroupSyncServiceV4;
                 } else if (cisVersion == MultiSpeakVersion.V5) {
                     return multispeakDeviceGroupSyncServiceV5;
                 } else {

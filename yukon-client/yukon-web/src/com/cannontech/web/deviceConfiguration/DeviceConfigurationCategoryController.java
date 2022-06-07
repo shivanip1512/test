@@ -73,7 +73,9 @@ public class DeviceConfigurationCategoryController {
         PaoType.RFN420FX, PaoType.RFN420FD, PaoType.RFN420FL, PaoType.RFN420FRX, PaoType.RFN420FRD, PaoType.RFN420CD, PaoType.WRL420CD,
         PaoType.RFN510FL, 
         PaoType.RFN520FAX, PaoType.RFN520FRX, PaoType.RFN520FAXD, PaoType.RFN520FRXD,
-        PaoType.RFN520FAXE, PaoType.RFN520FRXE, PaoType.RFN520FAXED, PaoType.RFN520FRXED);
+        PaoType.RFN520FAXE, PaoType.RFN520FRXE, PaoType.RFN520FAXED, PaoType.RFN520FRXED, 
+        PaoType.CRL520FAXE,  PaoType.CRL520FAXE, PaoType.CRL520FRXE,  PaoType.CRL520FRXED
+        );
     private final Set<PaoType> disconnectDisplayDisabledTypes =
         ImmutableSet.of(PaoType.RFN420CD, PaoType.WRL420CD, PaoType.MCT420FD, PaoType.MCT420CD);
     private final Set<Class<?>> specialFields = ImmutableSet.of(RateMapField.class, RfnChannelField.class, AttributeMappingField.class);

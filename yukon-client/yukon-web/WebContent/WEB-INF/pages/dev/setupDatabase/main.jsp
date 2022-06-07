@@ -146,14 +146,35 @@
                 }).done(function (data) {
                     setWidgetAvailability($("#roleProperties"), data.roleProperties);
                     setWidgetAvailability($("#capControl"), data.capControl, data.capControlProgress);
-                    setWidgetAvailability($("#demandResponse"), data.demandResponse, data.demandResponseProgress);
+                    setWidgetAvailability($("#demandResponse"), data.demandResponse);
                     setWidgetAvailability($("#amr"), data.amr);
                     setWidgetAvailability($("#stars"), data.stars, data.starsProgress);
                     setWidgetAvailability($("#eventLog"), data.eventLog, data.eventLogProgress);
                 });
               }
+            
             checkAvailability();
             setInterval(checkAvailability,1500);
+            
+            $(document).on('click', '.js-run-clean', function () {
+                $('#runClean').val(true);
+                $('#setupDemandResponseForm').submit();
+            });
+            
+            $(document).on('click', '.js-run-setup', function () {
+                $('#runClean').val(false);
+                $('#setupDemandResponseForm').submit();
+            });
+            
+            $(document).on('change', '.js-selected-device-types', function () {
+                var deviceTypes = $(this).val();
+                $.ajax({
+                    url: "getNumDevices?deviceTypes=" + deviceTypes,
+                    dataType: "json"
+                  }).done(function (data) {
+                      $('.js-num-devices').html(data.numDevices);
+                  });
+            });
     	});
     </script>
 

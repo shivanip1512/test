@@ -16,6 +16,7 @@ import org.springframework.stereotype.Controller;
 import org.springframework.ui.ModelMap;
 import org.springframework.validation.BindException;
 import org.springframework.validation.BindingResult;
+import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -34,6 +35,7 @@ import com.cannontech.common.device.terminal.model.SignalTransmitterModelFactory
 import com.cannontech.common.device.terminal.model.TNPPTerminal;
 import com.cannontech.common.device.terminal.model.TerminalBase;
 import com.cannontech.common.device.terminal.model.WCTPTerminal;
+import com.cannontech.common.dr.setup.LMDelete;
 import com.cannontech.common.dr.setup.LMDto;
 import com.cannontech.common.pao.PaoType;
 import com.cannontech.core.roleproperties.HierarchyPermissionLevel;
@@ -61,7 +63,7 @@ public class SignalTransmitterController {
     private static final String communicationKey = "yukon.exception.apiCommunicationException.communicationError";
     private static final String bindingResultKey = "org.springframework.validation.BindingResult.signalTransmitter";
     private static final String baseKey = "yukon.web.modules.operator.signalTransmitter.";
-    private static final String listPageLink = "/stars/device/signalTransmitter/list";
+    private static final String redirectListPageLink = "redirect:/stars/device/signalTransmitter/list";
 
     private static final List<PaoType> webSupportedSignalTransmitterTypes = Stream
             .of(PaoType.WCTP_TERMINAL, PaoType.TAPTERMINAL, PaoType.SNPP_TERMINAL)
@@ -69,7 +71,26 @@ public class SignalTransmitterController {
             .collect(Collectors.toList());
 
     @GetMapping("list")
-    public String list() {
+    public String list(ModelMap model, YukonUserContext userContext, FlashScope flash, HttpServletRequest request) {
+        ResponseEntity<? extends Object> response = null;
+        try {
+            String url = helper.findWebServerUrl(request, userContext, ApiURL.pagingTerminalUrl);
+            response = apiRequestHelper.callAPIForList(userContext, request, url, TerminalBase.class, HttpMethod.GET, TerminalBase.class);
+        } catch (ApiCommunicationException e) {
+            log.error(e.getMessage());
+            flash.setError(new YukonMessageSourceResolvable(communicationKey));
+            return redirectListPageLink;
+        } catch (RestClientException ex) {
+            log.error("Error retrieving details: " + ex.getMessage());
+            flash.setError(new YukonMessageSourceResolvable("yukon.web.modules.operator.signalTransmitter.filter.error", ex.getMessage()));
+            return redirectListPageLink;
+        }
+        
+        List<TerminalBase> signalTransmitters = new ArrayList<>();
+        if (response.getStatusCode() == HttpStatus.OK) {
+            signalTransmitters = (List<TerminalBase>) response.getBody();
+        }
+        model.addAttribute("signalTransmitters", signalTransmitters);
         return "/signalTransmitter/list.jsp";
     }
 
@@ -83,7 +104,7 @@ public class SignalTransmitterController {
             TerminalBase terminalBase = retrieveSignalTransmitter(userContext, request, id, url);
             if (terminalBase == null) {
                 flash.setError(new YukonMessageSourceResolvable(baseKey + "retrieve.error"));
-                return "redirect:" + listPageLink;
+                return redirectListPageLink;
             }
             model.addAttribute("selectedSignalTransmitterType", terminalBase.getType());
             model.addAttribute("signalTransmitter", terminalBase);
@@ -91,7 +112,7 @@ public class SignalTransmitterController {
         } catch (ApiCommunicationException e) {
             log.error(e.getMessage());
             flash.setError(new YukonMessageSourceResolvable(communicationKey));
-            return "redirect:" + listPageLink;
+            return redirectListPageLink;
         }
 
     }
@@ -171,14 +192,39 @@ public class SignalTransmitterController {
         } catch (ApiCommunicationException e) {
             log.error(e.getMessage());
             flash.setError(new YukonMessageSourceResolvable(communicationKey));
-            return "redirect:/stars/device/signalTransmitter/list";
+            return redirectListPageLink;
         } catch (RestClientException ex) {
             log.error("Error creating signal transmitter: {}. Error: {}", signalTransmitter.getName(), ex.getMessage());
             flash.setError(
                     new YukonMessageSourceResolvable("yukon.web.api.save.error", signalTransmitter.getName(), ex.getMessage()));
-            return "redirect:/stars/device/signalTransmitter/list";
+            return redirectListPageLink;
         }
         return null;
+    }
+    
+    @DeleteMapping("/{id}/delete")
+    public String delete(@PathVariable int id, @ModelAttribute LMDelete lmDelete, YukonUserContext userContext,
+            FlashScope flash, HttpServletRequest request) {
+
+        try {
+            String url = helper.findWebServerUrl(request, userContext, ApiURL.pagingTerminalUrl + "/" + id);
+            ResponseEntity<? extends Object> response = apiRequestHelper.callAPIForObject(userContext, request,
+                    url, HttpMethod.DELETE, Object.class, lmDelete);
+
+            if (response.getStatusCode() == HttpStatus.OK) {
+                flash.setConfirm(new YukonMessageSourceResolvable("yukon.common.delete.success", lmDelete.getName()));
+                return redirectListPageLink;
+            }
+        } catch (ApiCommunicationException e) {
+            log.error(e.getMessage());
+            flash.setError(new YukonMessageSourceResolvable(communicationKey));
+            return redirectListPageLink;
+        } catch (RestClientException ex) {
+            log.error("Error deleting signal transmitter : {}. Error: {}", lmDelete.getName(), ex.getMessage());
+            flash.setError(new YukonMessageSourceResolvable("yukon.web.api.delete.error", lmDelete.getName(), ex.getMessage()));
+            return redirectListPageLink;
+        }
+        return redirectListPageLink;
     }
 
     private void setupModel(ModelMap model, HttpServletRequest request, YukonUserContext userContext) {

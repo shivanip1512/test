@@ -477,6 +477,7 @@
     <bean class="com.cannontech.database.db.pao.dao.impl.StaticPaoInfoDaoImpl"/>
     
     <bean id="jacksonHttpMessageConverter" class="com.cannontech.spring.JacksonHttpMessageConverter"/>
+    <bean class="com.cannontech.development.service.impl.DemandResponseSetupServiceImpl"/>
     
     <bean id="meterTypeHelper" class="com.cannontech.common.pao.meter.model.MeterTypeHelper"/>
     <bean class="com.cannontech.common.config.YukonHttpProxyHandler"/>

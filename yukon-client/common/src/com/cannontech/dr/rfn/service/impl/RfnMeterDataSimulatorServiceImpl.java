@@ -42,6 +42,7 @@ import com.cannontech.common.util.jms.YukonJmsTemplateFactory;
 import com.cannontech.common.util.jms.api.JmsApiDirectory;
 import com.cannontech.dr.rfn.model.RfnDataSimulatorStatus;
 import com.cannontech.dr.rfn.model.SimulatorSettings;
+import com.cannontech.dr.rfn.model.SimulatorSettings.RecordingInterval;
 import com.cannontech.dr.rfn.model.SimulatorSettings.ReportingInterval;
 import com.cannontech.dr.rfn.service.RfnMeterDataSimulatorService;
 import com.cannontech.simulators.dao.YukonSimulatorSettingsDao;
@@ -184,6 +185,7 @@ public class RfnMeterDataSimulatorServiceImpl extends RfnDataSimulatorService im
         log.debug("Saving RFN_METER settings to the YukonSimulatorSettings table.");
         yukonSimulatorSettingsDao.setValue(YukonSimulatorSettingsKey.RFN_METER_SIMULATOR_METER_TYPE, settings.getPaoType());
         yukonSimulatorSettingsDao.setValue(YukonSimulatorSettingsKey.RFN_METER_SIMULATOR_DUPLICATE_PERCENTAGE, settings.getPercentOfDuplicates());
+        yukonSimulatorSettingsDao.setValue(YukonSimulatorSettingsKey.RFN_METER_SIMULATOR_RECORDING_INTERVAL, settings.getRecordingInterval());
         yukonSimulatorSettingsDao.setValue(YukonSimulatorSettingsKey.RFN_METER_SIMULATOR_REPORTING_INTERVAL, settings.getReportingInterval());
     }
     
@@ -194,6 +196,7 @@ public class RfnMeterDataSimulatorServiceImpl extends RfnDataSimulatorService im
             SimulatorSettings simulatorSettings = new SimulatorSettings();
             simulatorSettings.setPaoType(yukonSimulatorSettingsDao.getStringValue(YukonSimulatorSettingsKey.RFN_METER_SIMULATOR_METER_TYPE));
             simulatorSettings.setPercentOfDuplicates(yukonSimulatorSettingsDao.getIntegerValue(YukonSimulatorSettingsKey.RFN_METER_SIMULATOR_DUPLICATE_PERCENTAGE));
+            simulatorSettings.setRecordingInterval(RecordingInterval.valueOf(yukonSimulatorSettingsDao.getStringValue(YukonSimulatorSettingsKey.RFN_METER_SIMULATOR_RECORDING_INTERVAL)));
             simulatorSettings.setReportingInterval(ReportingInterval.valueOf(yukonSimulatorSettingsDao.getStringValue(YukonSimulatorSettingsKey.RFN_METER_SIMULATOR_REPORTING_INTERVAL)));
             settings = simulatorSettings;
         }
@@ -234,20 +237,21 @@ public class RfnMeterDataSimulatorServiceImpl extends RfnDataSimulatorService im
             createAndAddArchiveRequest(device, currentDateTime, RfnMeterReadingType.BILLING, now, requests);
         }
         
-        final ReportingInterval reportingIntervalEnum =
+        final ReportingInterval reportingInterval =
                 (settings == null ? ReportingInterval.REPORTING_INTERVAL_24_HOURS : settings.getReportingInterval());
-        if (reportingIntervalEnum == ReportingInterval.REPORTING_INTERVAL_24_HOURS) {
+        if (reportingInterval == ReportingInterval.REPORTING_INTERVAL_24_HOURS) {
             // generate only 1 data point for 1 day
             intervalTime = now.withTime(now.getHourOfDay(), 0, 0, 0);
             createAndAddArchiveRequest(device, intervalTime, RfnMeterReadingType.INTERVAL, now, requests);
         } else {
+            final var recordingInterval = (settings == null ? RecordingInterval.RECORDING_INTERVAL_60_MINUTES : settings.getRecordingInterval());
             // Generate data point as per the interval mentioned 4 hr / 1 hr
             // Example with 4 hour reporting interval: 6:45 (-:45) -> 6 (-4 +1 ) -> 3 -- Generate time for 3, 4, 5, 6
             intervalTime = now.withTime(now.getHourOfDay(), 0, 0, 0).minusHours(
-                settings.getReportingInterval().getDuration().toStandardHours().getHours() - 1);
+                reportingInterval.getDuration().toStandardHours().getHours() - 1);
             while (intervalTime.isBefore(now) || intervalTime.isEqual(now)) {
                 createAndAddArchiveRequest(device, intervalTime, RfnMeterReadingType.INTERVAL, now, requests);
-                intervalTime = intervalTime.plusHours(1);
+                intervalTime = intervalTime.plus(recordingInterval.getDuration());
             }
         }
         return requests;
@@ -358,7 +362,7 @@ public class RfnMeterDataSimulatorServiceImpl extends RfnDataSimulatorService im
 
             if (storedTimestampValue != null) {
                 if (RfnMeterSimulatorConfiguration.valueOf(attribute.toString()).generationType == GenerationType.HOURLY) {
-                    if (storedTimestampValue.getTimestamp().isAfter(time.minusHours(1))) {
+                    if (storedTimestampValue.getTimestamp().isAfter(time.minus(settings.getRecordingInterval().getDuration()))) {
                         return storedTimestampValue;
                     }
                 } else if (RfnMeterSimulatorConfiguration.valueOf(attribute.toString()).generationType == GenerationType.DAILY) {

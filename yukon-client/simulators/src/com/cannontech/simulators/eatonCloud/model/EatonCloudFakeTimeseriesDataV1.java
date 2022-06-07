@@ -51,9 +51,11 @@ public class EatonCloudFakeTimeseriesDataV1 {
 
         int fileNum = 1;
         while (true) {
+            //simulators/src/com/cannontech/simulators/eatonCloud/model/timeseries_data_LCR6200C_2.json
             String path = "src/com/cannontech/simulators/eatonCloud/model/timeseries_data_" + type + "_" + fileNum + ".json";
             File file = new File(path);
             if (!file.exists()) {
+                log.info("Can't find file:{}. File might not be needed search code for timeseries_data_", file);
                 break;
             }
             try {

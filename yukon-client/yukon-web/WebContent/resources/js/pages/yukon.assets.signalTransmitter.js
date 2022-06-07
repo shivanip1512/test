@@ -41,6 +41,11 @@ yukon.assets.signalTransmitter = (function() {
                 }
             });
             
+            $(document).on("yukon:signal-transmitter:delete", function () {
+                yukon.ui.blockPage();
+                $("#js-delete-form").submit();
+            });
+            
             _initialized = true;
         }
     };
