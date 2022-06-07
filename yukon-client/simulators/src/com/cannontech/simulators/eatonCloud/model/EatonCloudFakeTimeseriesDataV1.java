@@ -1,6 +1,7 @@
 package com.cannontech.simulators.eatonCloud.model;
 
 import java.io.File;
+import java.net.URL;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
@@ -38,7 +39,7 @@ public class EatonCloudFakeTimeseriesDataV1 {
      */
     private void load() {
         if (!channels.isEmpty()) {
-            return;
+           // return;
         }
         channels.clear();
 
@@ -51,9 +52,12 @@ public class EatonCloudFakeTimeseriesDataV1 {
 
         int fileNum = 1;
         while (true) {
-            //simulators/src/com/cannontech/simulators/eatonCloud/model/timeseries_data_LCR6200C_2.json
-            String path = "src/com/cannontech/simulators/eatonCloud/model/timeseries_data_" + type + "_" + fileNum + ".json";
-            File file = new File(path);
+            URL path = this.getClass().getResource("timeseries_data_" + type + "_" + fileNum + ".json");
+            if (path == null) {
+                log.info("Can't find path:{}. File might not be needed search code for timeseries_data_", path);
+                break;
+            }
+            File file = new File(path.getPath());
             if (!file.exists()) {
                 log.info("Can't find file:{}. File might not be needed search code for timeseries_data_", file);
                 break;
