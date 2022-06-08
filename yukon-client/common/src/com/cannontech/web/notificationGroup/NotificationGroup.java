@@ -10,7 +10,10 @@ import com.cannontech.database.data.notification.ContactNotifGroupMap;
 import com.cannontech.database.data.notification.CustomerNotifGroupMap;
 import com.cannontech.database.data.notification.NotifDestinationMap;
 import com.cannontech.database.data.notification.NotifMap;
+import com.fasterxml.jackson.annotation.JsonInclude;
+import com.fasterxml.jackson.annotation.JsonInclude.Include;
 
+@JsonInclude(Include.NON_NULL)
 public class NotificationGroup implements DBPersistentConverter<com.cannontech.database.data.notification.NotificationGroup> {
     private int id;
     private String name;
@@ -20,6 +23,12 @@ public class NotificationGroup implements DBPersistentConverter<com.cannontech.d
 
     public NotificationGroup() {
         super();
+    }
+
+    public NotificationGroup(Integer notificationGroupID, String groupName, String disableFlag) {
+        id = notificationGroupID;
+        name = groupName;
+        enabled = disableFlag.equals("N") ? true : false;
     }
 
     public int getId() {
