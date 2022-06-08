@@ -180,10 +180,10 @@ public class EatonCloudDataReadServiceImpl implements EatonCloudDataReadService 
         return pointMap;
     }
 
-    private List<List<EatonCloudTimeSeriesDeviceV1>> chunkRequests(List<EatonCloudTimeSeriesDeviceV1> requests) {
+    protected List<List<EatonCloudTimeSeriesDeviceV1>> chunkRequests(List<EatonCloudTimeSeriesDeviceV1> requests) {
         List<List<EatonCloudTimeSeriesDeviceV1>> chunkedRequests = new ArrayList<>();
         List<EatonCloudTimeSeriesDeviceV1> chunk = new ArrayList<>();
-        // TAGS_PER_JOB = 75; <-- set to different values to test
+
         BigInteger counter = BigInteger.valueOf(TAGS_PER_TIMESERIES_REQUEST);
         for (EatonCloudTimeSeriesDeviceV1 request : requests) {
             if(Strings.isNullOrEmpty(request.getTagTrait())) {
@@ -196,6 +196,7 @@ public class EatonCloudDataReadServiceImpl implements EatonCloudDataReadService 
                 counter = BigInteger.valueOf(TAGS_PER_TIMESERIES_REQUEST);
                 chunkedRequests.add(chunk);
                 chunk = new ArrayList<>();
+                counter = counter.subtract(BigInteger.valueOf(tagCount));
             }
             chunk.add(request);
         }

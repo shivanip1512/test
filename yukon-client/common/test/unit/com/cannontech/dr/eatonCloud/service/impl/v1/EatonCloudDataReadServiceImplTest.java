@@ -6,24 +6,32 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
-import java.util.Arrays;
-import java.util.Collection;
+import java.util.ArrayList;
 import java.util.Date;
-import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
+import java.util.UUID;
+import java.util.stream.Collectors;
 
+import org.apache.commons.lang3.StringUtils;
 import org.apache.logging.log4j.Logger;
 import org.junit.jupiter.api.Test;
 
 import com.cannontech.clientutils.YukonLogManager;
+import com.cannontech.common.pao.PaoType;
+import com.cannontech.common.pao.attribute.model.BuiltInAttribute;
+import com.cannontech.common.pao.definition.dao.PaoDefinitionDao;
+import com.cannontech.common.pao.definition.dao.PaoDefinitionDaoImplTest;
 import com.cannontech.database.data.lite.LiteYukonPAObject;
 import com.cannontech.dr.eatonCloud.model.EatonCloudChannel;
 import com.cannontech.dr.eatonCloud.model.v1.EatonCloudTimeSeriesDeviceV1;
 import com.cannontech.dr.eatonCloud.model.v1.EatonCloudTimeSeriesValueV1;
-import com.cannontech.dr.eatonCloud.service.impl.v1.EatonCloudDataReadServiceImpl;
+import com.google.common.base.Splitter;
+import com.google.common.collect.Lists;
 
 public class EatonCloudDataReadServiceImplTest {
+    
+    private PaoDefinitionDao paoDefinitionDao;
     
     private static final Logger log = YukonLogManager.getLogger(EatonCloudDataReadServiceImplTest.class);
     private static final String testGuid = "415c885c-e5fc-4bc4-b7e1-f39356eb813a";
@@ -82,47 +90,45 @@ public class EatonCloudDataReadServiceImplTest {
         assertNull(pointData);
     }
     
-    @SuppressWarnings("unchecked")
     @Test
-    public void testBuildRequests() throws NoSuchMethodException, SecurityException, IllegalAccessException,
+    public void testChunkRequests() throws NoSuchMethodException, SecurityException, IllegalAccessException,
             IllegalArgumentException, InvocationTargetException {
-        Method buildRequestsMethod = EatonCloudDataReadServiceImpl.class.getDeclaredMethod("buildRequests", Collection.class,
-                Set.class);
+        Method chunkRequestsMethod = EatonCloudDataReadServiceImpl.class.getDeclaredMethod("chunkRequests", List.class);
         EatonCloudDataReadServiceImpl dataReadService = new EatonCloudDataReadServiceImpl();
-        buildRequestsMethod.setAccessible(true);
+        paoDefinitionDao = PaoDefinitionDaoImplTest.getTestPaoDefinitionDao();
 
-        Set<String> guids = new HashSet<>(Arrays.asList("d87e6130-d2d4-4b28-8fb0-5b774e15e69e",
-                "b241990b-3766-4ede-bd78-686aa4512a2c",
-                "816c0b6d-f696-4229-a92d-149ba2ab852e",
-                "c619ee6f-b254-4ccb-b5d5-fa60892ce7f6",
-                "53c0c599-ecf3-4462-9472-9bfae2bc25d8"));
-
-        Set<String> fiveElementTagList = new HashSet<String>(Arrays.asList("111222", "222333", "333444", "444555", "555666"));
-        Set<String> twelveElementTagList = new HashSet<String>(Arrays.asList("111222", "222333", "333444",
-                "444555", "555666", "666777",
-                "777888", "888999", "999111",
-                "101010", "111111", "121212"));
-
-        List<EatonCloudTimeSeriesDeviceV1> requests = (List<EatonCloudTimeSeriesDeviceV1>) buildRequestsMethod.invoke(dataReadService, guids,
-                fiveElementTagList);
-        Set<String> requestGuids = new HashSet<>();
-        Set<String> requestTags = new HashSet<>();
-
-        for (EatonCloudTimeSeriesDeviceV1 device : requests) {
-            requestGuids.add(device.getDeviceGuid());
-            requestTags.addAll(new HashSet<String>(Arrays.asList(device.getTagTrait().split(","))));
+        List<EatonCloudTimeSeriesDeviceV1> requests = new ArrayList<>();
+        
+        // Can change to adjust number of devices added
+        int numDevices = 200;
+        for (int i = 0; i < numDevices; i++) {
+            String randGuid = UUID.randomUUID().toString();
+            
+            // Can change to test other devices
+            PaoType device = PaoType.LCR6200C;
+            Set<BuiltInAttribute> deviceAttributes = paoDefinitionDao.getDefinedAttributes(device).stream()
+                    .map(attributeDefinition -> attributeDefinition.getAttribute())
+                    .collect(Collectors.toSet());;
+            Set<String> deviceTags = EatonCloudChannel.getTagsForAttributes(deviceAttributes);
+            
+            requests.add(new EatonCloudTimeSeriesDeviceV1(randGuid, StringUtils.join(deviceTags, ',')));
         }
-
-        assertEquals(requestTags, fiveElementTagList);
-        assertEquals(requestGuids, guids);
-
-        requests = (List<EatonCloudTimeSeriesDeviceV1>) buildRequestsMethod.invoke(dataReadService, guids, twelveElementTagList);
-        for (EatonCloudTimeSeriesDeviceV1 device : requests) {
-            requestGuids.add(device.getDeviceGuid());
-            requestTags.addAll(Arrays.asList(device.getTagTrait().split(",")));
+        
+        List<List<EatonCloudTimeSeriesDeviceV1>> chunkedRequests = (List<List<EatonCloudTimeSeriesDeviceV1>>) chunkRequestsMethod.invoke(dataReadService, requests);
+        
+        // Calculated from max of 1000 tags/chunk
+        int numChunks = 4;
+        int tagsPerChunk = 990;
+        int tagsInLastChunk = 630;
+        
+        assertEquals(numChunks, chunkedRequests.size());
+        
+        for (int i = 0; i < numChunks-1; i++) {
+            assertEquals(tagsPerChunk, chunkedRequests.get(i)
+                    .stream().collect(Collectors.summingInt(d -> Lists.newArrayList(Splitter.on(",").split(d.getTagTrait())).size())));
         }
-
-        assertEquals(requestTags, twelveElementTagList);
-        assertEquals(requestGuids, guids);
+        
+        assertEquals(tagsInLastChunk, chunkedRequests.get(numChunks-1)
+                .stream().collect(Collectors.summingInt(d -> Lists.newArrayList(Splitter.on(",").split(d.getTagTrait())).size())));
     }
 }
