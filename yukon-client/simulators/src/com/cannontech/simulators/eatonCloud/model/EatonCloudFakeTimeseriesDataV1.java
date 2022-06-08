@@ -38,9 +38,9 @@ public class EatonCloudFakeTimeseriesDataV1 {
      * Parses template with sample data
      */
     private void load() {
-        if (!channels.isEmpty()) {
+        /*if (!channels.isEmpty()) {
           return;
-        }
+        }*/
         channels.clear();
 
         load(PaoType.LCR6200C);
