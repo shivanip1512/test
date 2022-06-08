@@ -70,7 +70,7 @@ public class EatonCloudDataReadServiceImpl implements EatonCloudDataReadService 
     @Autowired private RecentEventParticipationDao recentEventParticipationDao;
     @Autowired private ConfigurationSource configurationSource;
 
-    private static int TAGS_PER_TIMESERIES_REQUEST = 1000;
+    public static int TAGS_PER_TIMESERIES_REQUEST = 1000;
 
     @Override
     public Multimap<PaoIdentifier, PointData> collectDataForRead(Integer deviceId, Range<Instant> range) {

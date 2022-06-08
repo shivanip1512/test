@@ -1,8 +1,9 @@
 package com.cannontech.dr.eatonCloud.service.impl.v1;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.junit.jupiter.api.Assertions.assertTrue;
+
+import static com.cannontech.dr.eatonCloud.service.impl.v1.EatonCloudDataReadServiceImpl.TAGS_PER_TIMESERIES_REQUEST;
 
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
@@ -11,6 +12,7 @@ import java.util.Date;
 import java.util.List;
 import java.util.Set;
 import java.util.UUID;
+import java.util.concurrent.ThreadLocalRandom;
 import java.util.stream.Collectors;
 
 import org.apache.commons.lang3.StringUtils;
@@ -28,6 +30,7 @@ import com.cannontech.dr.eatonCloud.model.v1.EatonCloudTimeSeriesDeviceV1;
 import com.cannontech.dr.eatonCloud.model.v1.EatonCloudTimeSeriesValueV1;
 import com.google.common.base.Splitter;
 import com.google.common.collect.Lists;
+
 
 public class EatonCloudDataReadServiceImplTest {
     
@@ -99,31 +102,35 @@ public class EatonCloudDataReadServiceImplTest {
 
         List<EatonCloudTimeSeriesDeviceV1> requests = new ArrayList<>();
         Set<PaoType> devices = PaoType.getCloudTypes();
-        int numDevices = 1000;
-        int maxTagsPerChunk = 1000;
-        
-        for (PaoType device : devices) {
-            for (int i = 0; i < numDevices; i++) {
-                String randGuid = UUID.randomUUID().toString();
-                
-                
-                Set<BuiltInAttribute> deviceAttributes = paoDefinitionDao.getDefinedAttributes(device).stream()
-                        .map(attributeDefinition -> attributeDefinition.getAttribute())
-                        .collect(Collectors.toSet());;
-                Set<String> deviceTags = EatonCloudChannel.getTagsForAttributes(deviceAttributes);
-                
-                requests.add(new EatonCloudTimeSeriesDeviceV1(randGuid, StringUtils.join(deviceTags, ',')));
-            }
-            
-            List<List<EatonCloudTimeSeriesDeviceV1>> chunkedRequests = (List<List<EatonCloudTimeSeriesDeviceV1>>) chunkRequestsMethod.invoke(dataReadService, requests);
-            
-            for (List<EatonCloudTimeSeriesDeviceV1> chunk : chunkedRequests) {
-                int tagsInChunk = chunk.stream().collect(Collectors.summingInt(d -> 
-                        Lists.newArrayList(Splitter.on(",").split(d.getTagTrait())).size()));
-                
-                assertTrue(tagsInChunk <= maxTagsPerChunk, tagsInChunk + " exceeds max of " + maxTagsPerChunk 
-                        + " for " + device.getPaoTypeName() + " device type");
-                
+
+        int maxTagsPerChunk = TAGS_PER_TIMESERIES_REQUEST;
+        int numTestLoops = 3;
+
+        for (int i = 0; i < numTestLoops; i++) {
+            int numDevices = ThreadLocalRandom.current().nextInt(TAGS_PER_TIMESERIES_REQUEST / 2, TAGS_PER_TIMESERIES_REQUEST);
+
+            for (PaoType device : devices) {
+                for (int j = 0; j < numDevices; j++) {
+                    String randGuid = UUID.randomUUID().toString();
+
+                    Set<BuiltInAttribute> deviceAttributes = paoDefinitionDao.getDefinedAttributes(device).stream()
+                            .map(attributeDefinition -> attributeDefinition.getAttribute())
+                            .collect(Collectors.toSet());;
+                    Set<String> deviceTags = EatonCloudChannel.getTagsForAttributes(deviceAttributes);
+                    
+                    requests.add(new EatonCloudTimeSeriesDeviceV1(randGuid, StringUtils.join(deviceTags, ',')));
+                }
+
+                List<List<EatonCloudTimeSeriesDeviceV1>> chunkedRequests = (List<List<EatonCloudTimeSeriesDeviceV1>>) chunkRequestsMethod.invoke(dataReadService, requests);
+
+                for (List<EatonCloudTimeSeriesDeviceV1> chunk : chunkedRequests) {
+                    int tagsInChunk = chunk.stream().collect(Collectors.summingInt(d -> 
+                            Lists.newArrayList(Splitter.on(",").split(d.getTagTrait())).size()));
+
+                    assertTrue(tagsInChunk <= maxTagsPerChunk, tagsInChunk + " exceeds max of " + maxTagsPerChunk 
+                            + " for " + device.getPaoTypeName() + " device type");
+                    
+                }
             }
         }
     }
