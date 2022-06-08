@@ -18,6 +18,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.cannontech.common.device.terminal.model.TerminalBase;
+import com.cannontech.common.device.terminal.model.TerminalCopy;
 import com.cannontech.stars.util.ServletUtils;
 import com.cannontech.web.api.terminal.service.PagingTerminalService;
 
@@ -27,6 +28,7 @@ public class PagingTerminalApiController {
     @Autowired private PagingTerminalService terminalService;
     @Autowired private PagingTerminalApiCreateValidator<? extends TerminalBase<?>> createApiValidator;
     @Autowired private PagingTerminalApiValidator<? extends TerminalBase<?>> apiValidator;
+    @Autowired private PagingTerminalApiCopyValidator copyApiValidator;
 
     @GetMapping("/{id}")
     public ResponseEntity<Object> retrieve(@PathVariable int id) {
@@ -51,6 +53,11 @@ public class PagingTerminalApiController {
         return new ResponseEntity<>(terminalService.retrieveAll(), HttpStatus.OK);
     }
 
+    @PostMapping("/{id}/copy")
+    public ResponseEntity<Object> copy(@PathVariable int id, @Valid @RequestBody TerminalCopy terminalCopy) {
+        return new ResponseEntity<>(terminalService.copy(id, terminalCopy), HttpStatus.OK);
+    }
+
     @InitBinder("terminalBase")
     public void setupBinder(WebDataBinder binder) {
         binder.addValidators(apiValidator);
@@ -59,5 +66,10 @@ public class PagingTerminalApiController {
         if (portId == null) {
             binder.addValidators(createApiValidator);
         }
+    }
+
+    @InitBinder("terminalCopy")
+    public void setupBinderCopy(WebDataBinder binder) {
+        binder.addValidators(copyApiValidator);
     }
 }

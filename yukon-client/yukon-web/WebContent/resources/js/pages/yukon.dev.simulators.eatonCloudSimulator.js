@@ -103,6 +103,11 @@ yukon.dev.simulators.eatonCloudSimulator = ( function() {
                 $('#eatonCloudForm').submit();
             });
             
+            $(document).on('change', '#tokenSecretTesting', function () {
+                //submit all settings
+                $('#eatonCloudForm').submit();
+            });
+            
             $(document).on('click', '.js-test-endpoint', function () {
                 var endpoint = $(this).data('endpoint'),
                 params = $('#' + endpoint + '_parameters').val(),

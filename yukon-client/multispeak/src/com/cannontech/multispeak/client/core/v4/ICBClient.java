@@ -4,6 +4,8 @@ import com.cannontech.msp.beans.v4.CDStateChangedNotification;
 import com.cannontech.msp.beans.v4.CDStateChangedNotificationResponse;
 import com.cannontech.msp.beans.v4.FormattedBlockNotification;
 import com.cannontech.msp.beans.v4.FormattedBlockNotificationResponse;
+import com.cannontech.msp.beans.v4.GetAllServiceLocations;
+import com.cannontech.msp.beans.v4.GetAllServiceLocationsResponse;
 import com.cannontech.msp.beans.v4.GetDomainMembers;
 import com.cannontech.msp.beans.v4.GetDomainMembersResponse;
 import com.cannontech.msp.beans.v4.GetMeterByServiceLocationID;
@@ -115,4 +117,15 @@ public interface ICBClient {
      */
     public FormattedBlockNotificationResponse formattedBlockNotification(MultispeakVendor mspVendor, String uri, String interfaceName,
             FormattedBlockNotification formattedBlockNotification) throws MultispeakWebServiceClientException;
+    /**
+     * Gets all service Locations.
+     * 
+     * @param MSP vendor details
+     * @param String the URI of the CB Server
+     * @param GetAllServiceLocations the GetAllServiceLocations used as input.
+     * @return GetAllServiceLocationsResponse
+     * @throws MultispeakWebServiceClientException
+     */
+    public GetAllServiceLocationsResponse getAllServiceLocations(MultispeakVendor mspVendor, String uri,
+            GetAllServiceLocations getAllServiceLocations) throws MultispeakWebServiceClientException;
 }

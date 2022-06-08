@@ -2,25 +2,38 @@ package com.cannontech.multispeak.dao.impl.v4;
 
 import java.util.ArrayList;
 import java.util.Date;
+import java.util.Iterator;
 import java.util.List;
 
+import javax.xml.namespace.QName;
+
+import org.apache.commons.lang3.StringUtils;
 import org.apache.logging.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.ws.WebServiceMessage;
+import org.springframework.ws.context.MessageContext;
+import org.springframework.ws.soap.AbstractSoapMessage;
+import org.springframework.ws.soap.SoapEnvelope;
+import org.springframework.ws.soap.SoapHeader;
+import org.springframework.ws.soap.SoapHeaderElement;
+import org.springframework.ws.soap.saaj.SaajSoapMessage;
 
 import com.cannontech.clientutils.YukonLogManager;
 import com.cannontech.database.data.point.PointTypes;
 import com.cannontech.database.db.point.SystemLog;
 import com.cannontech.message.dispatch.message.SystemLogHelper;
+import com.cannontech.msp.beans.v4.ArrayOfDomainMember;
 import com.cannontech.msp.beans.v4.ArrayOfServiceLocation1;
+import com.cannontech.msp.beans.v4.DomainMember;
 import com.cannontech.msp.beans.v4.ElectricService;
 import com.cannontech.msp.beans.v4.ErrorObject;
 import com.cannontech.msp.beans.v4.GasService;
-import com.cannontech.msp.beans.v4.GetMeterByServiceLocationID;
-import com.cannontech.msp.beans.v4.GetMeterByServiceLocationIDResponse;
-import com.cannontech.msp.beans.v4.ArrayOfDomainMember;
-import com.cannontech.msp.beans.v4.DomainMember;
+import com.cannontech.msp.beans.v4.GetAllServiceLocations;
+import com.cannontech.msp.beans.v4.GetAllServiceLocationsResponse;
 import com.cannontech.msp.beans.v4.GetDomainMembers;
 import com.cannontech.msp.beans.v4.GetDomainMembersResponse;
+import com.cannontech.msp.beans.v4.GetMeterByServiceLocationID;
+import com.cannontech.msp.beans.v4.GetMeterByServiceLocationIDResponse;
 import com.cannontech.msp.beans.v4.GetMethods;
 import com.cannontech.msp.beans.v4.GetMethodsResponse;
 import com.cannontech.msp.beans.v4.GetServiceLocationByMeterID;
@@ -34,6 +47,7 @@ import com.cannontech.msp.beans.v4.PingURL;
 import com.cannontech.msp.beans.v4.PingURLResponse;
 import com.cannontech.msp.beans.v4.ServiceLocation;
 import com.cannontech.msp.beans.v4.WaterService;
+import com.cannontech.multispeak.client.MessageContextHolder;
 import com.cannontech.multispeak.client.MultispeakDefines;
 import com.cannontech.multispeak.client.MultispeakVendor;
 import com.cannontech.multispeak.client.core.v4.CBClient;
@@ -48,6 +62,7 @@ import com.cannontech.multispeak.client.core.v4.ODClient;
 import com.cannontech.multispeak.client.core.v4.SCADAClient;
 import com.cannontech.multispeak.client.v4.MultispeakFuncs;
 import com.cannontech.multispeak.dao.v4.MspObjectDao;
+import com.cannontech.multispeak.dao.v4.MultispeakGetAllServiceLocationsCallback;
 import com.cannontech.multispeak.exceptions.MultispeakWebServiceClientException;
 import com.google.common.collect.Lists;
 
@@ -327,5 +342,108 @@ public class MspObjectDaoImpl implements MspObjectDao {
         }
         return substationNames;
     }
+    
+    @Override
+    public void getAllMspServiceLocations(MultispeakVendor mspVendor, MultispeakGetAllServiceLocationsCallback callback)
+            throws MultispeakWebServiceClientException {
 
+        boolean firstGet = true;
+        String lastReceived = null;
+
+        while (firstGet || lastReceived != null) {
+
+            // kill before gathering more substations if callback is canceled
+            if (callback.isCanceled()) {
+                log.info("MultispeakGetAllServiceLocationsCallback in canceled state, aborting next call to getMoreServiceLocations");
+                return;
+            }
+
+            log.info("Calling getMoreServiceLocations, lastReceived = " + lastReceived);
+            lastReceived = getMoreServiceLocations(mspVendor, lastReceived, callback);
+            firstGet = false;
+        }
+
+        callback.finish();
+    }
+    
+    private String getMoreServiceLocations(MultispeakVendor mspVendor, String lastReceived,
+            MultispeakGetAllServiceLocationsCallback callback) throws MultispeakWebServiceClientException {
+
+        String lastSent = null;
+        String endpointUrl = multispeakFuncs.getEndpointUrl(mspVendor, MultispeakDefines.CB_Server_STR);
+        try {
+            GetAllServiceLocations getAllServiceLocations = objectFactory.createGetAllServiceLocations();
+            getAllServiceLocations.setLastReceived(lastReceived);
+            // get service locations
+            GetAllServiceLocationsResponse getAllServiceLocationsResponse = cbClient.getAllServiceLocations(mspVendor, 
+                                                                                                            endpointUrl, 
+                                                                                                            getAllServiceLocations);
+            
+            List<ServiceLocation> serviceLocations = getAllServiceLocationsResponse.getGetAllServiceLocationsResult()
+                                                                                   .getServiceLocation();
+            int serviceLocationCount = 0;
+            if (serviceLocations != null) {
+                serviceLocationCount = serviceLocations.size();
+            }
+
+            // objectsRemaining
+            int objectsRemaining = 0;
+            String objectsRemainingStr = getAttributeValue("ObjectsRemaining");
+            if (!StringUtils.isBlank(objectsRemainingStr)) {
+                try {
+                    objectsRemaining = Integer.valueOf(objectsRemainingStr);
+                } catch (NumberFormatException e) {
+                    log.error("Non-integer value in header for ObjectsRemaining: " + objectsRemainingStr, e);
+                }
+            }
+
+            if (objectsRemaining != 0) {
+                lastSent = getAttributeValue("LastSent");
+                log.info("getMoreServiceLocations responded, received " + serviceLocationCount
+                    + " ServiceLocations using lastReceived = " + lastReceived + ". Response: ObjectsRemaining = "
+                    + objectsRemaining + ", LastSent = " + lastSent);
+            } else {
+                log.info("getMoreServiceLocations responded, received " + serviceLocationCount
+                    + " ServiceLocations using LastSent = " + lastReceived + ". Response: ObjectsRemaining = "
+                    + objectsRemaining);
+            }
+
+            // process service locations
+            if (serviceLocationCount > 0) {
+                callback.processServiceLocations(serviceLocations);
+            }
+        } catch (MultispeakWebServiceClientException e) {
+
+            log.error("TargetService: " + endpointUrl + " - getAllServiceLocations (" + mspVendor.getCompanyName()
+                + ") for LastReceived: " + lastReceived);
+            log.error("MultispeakWebServiceClientException: " + e.getMessage());
+            log.info("A default(empty) is being used for ServiceLocation");
+
+            throw e;
+        }
+
+        return lastSent;
+    }
+    
+    /**
+     * This method returns an Attribute value of response header.
+     * 
+     * @param name - attribute name.
+     * @return String - Attribute value.
+     **/
+    public String getAttributeValue(String name) {
+        String attributeValue = null;
+        MessageContext message = MessageContextHolder.getMessageContext();
+        WebServiceMessage responseMessage = message.getResponse();
+        AbstractSoapMessage abstractSoapMessage = (AbstractSoapMessage) responseMessage;
+        SaajSoapMessage saajSoapMessage = (SaajSoapMessage) abstractSoapMessage;
+        SoapEnvelope soapEnvelop = saajSoapMessage.getEnvelope();
+        SoapHeader soapHeader = soapEnvelop.getHeader();
+        Iterator<SoapHeaderElement> iterator = soapHeader.examineAllHeaderElements();
+        while (iterator.hasNext()) {
+            SoapHeaderElement element = iterator.next();
+            attributeValue = element.getAttributeValue(new QName(name));
+        }
+        return attributeValue;
+    }
 }
