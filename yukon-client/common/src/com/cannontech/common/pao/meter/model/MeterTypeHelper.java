@@ -1,8 +1,8 @@
 package com.cannontech.common.pao.meter.model;
 
 import java.util.Comparator;
-import java.util.HashMap;
-import java.util.HashSet;
+import java.util.LinkedHashMap;
+import java.util.LinkedHashSet;
 import java.util.Map;
 import java.util.Set;
 import java.util.stream.Collectors;
@@ -59,27 +59,27 @@ public class MeterTypeHelper {
     
     private void buildCreateMeterGroups() { 
         
-        HashMap<MeterGroup, Set<PaoType>> allGroupedBuilder = new HashMap<>();
+        Map<MeterGroup, Set<PaoType>> allGroupedBuilder = new LinkedHashMap<>();
         
         Set<PaoDefinition> creatableDefs = paoDefDao.getCreatablePaoDefinitions();
-        Set<PaoType> creatable = new HashSet<>(); 
+        Set<PaoType> creatable = new LinkedHashSet<>(); 
         creatableDefs.stream().forEach(def -> creatable.add(def.getType()));
         
         Comparator<PaoType> byDbString = (PaoType o1, PaoType o2) -> o1.getDbString().compareTo(o2.getDbString());
 
-        HashSet<PaoType> mctMetersBuilder = new HashSet<>();
-        mctMetersBuilder.addAll(PaoType.getMctTypes().stream()
-                 .filter(type -> creatable.contains(type))
-                 .sorted(byDbString).collect(Collectors.toList()));
-        allGroupedBuilder.put(MeterGroup.MCT, mctMetersBuilder);
-        
-        HashSet<PaoType> rfMetersBuilder = new HashSet<>();
+        Set<PaoType> rfMetersBuilder = new LinkedHashSet<>();
         rfMetersBuilder.addAll(PaoType.getRfMeterTypes().stream()
                   .filter(type -> creatable.contains(type))
                   .sorted(byDbString).collect(Collectors.toList()));
         allGroupedBuilder.put(MeterGroup.RF_MESH, rfMetersBuilder);
         
-        HashSet<PaoType> virtualMeterBuilder = new HashSet<>();
+        Set<PaoType> mctMetersBuilder = new LinkedHashSet<>();
+        mctMetersBuilder.addAll(PaoType.getMctTypes().stream()
+                 .filter(type -> creatable.contains(type))
+                 .sorted(byDbString).collect(Collectors.toList()));
+        allGroupedBuilder.put(MeterGroup.MCT, mctMetersBuilder);
+        
+        Set<PaoType> virtualMeterBuilder = new LinkedHashSet<>();
         virtualMeterBuilder.add(PaoType.VIRTUAL_METER);
         allGroupedBuilder.put(MeterGroup.VIRTUAL, virtualMeterBuilder);
 
