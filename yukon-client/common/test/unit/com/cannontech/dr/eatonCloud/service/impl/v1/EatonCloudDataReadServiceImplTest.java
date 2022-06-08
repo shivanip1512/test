@@ -98,37 +98,33 @@ public class EatonCloudDataReadServiceImplTest {
         paoDefinitionDao = PaoDefinitionDaoImplTest.getTestPaoDefinitionDao();
 
         List<EatonCloudTimeSeriesDeviceV1> requests = new ArrayList<>();
+        Set<PaoType> devices = PaoType.getCloudTypes();
+        int numDevices = 1000;
+        int maxTagsPerChunk = 1000;
         
-        // Can change to adjust number of devices added
-        int numDevices = 200;
-        for (int i = 0; i < numDevices; i++) {
-            String randGuid = UUID.randomUUID().toString();
+        for (PaoType device : devices) {
+            for (int i = 0; i < numDevices; i++) {
+                String randGuid = UUID.randomUUID().toString();
+                
+                
+                Set<BuiltInAttribute> deviceAttributes = paoDefinitionDao.getDefinedAttributes(device).stream()
+                        .map(attributeDefinition -> attributeDefinition.getAttribute())
+                        .collect(Collectors.toSet());;
+                Set<String> deviceTags = EatonCloudChannel.getTagsForAttributes(deviceAttributes);
+                
+                requests.add(new EatonCloudTimeSeriesDeviceV1(randGuid, StringUtils.join(deviceTags, ',')));
+            }
             
-            // Can change to test other devices
-            PaoType device = PaoType.LCR6200C;
-            Set<BuiltInAttribute> deviceAttributes = paoDefinitionDao.getDefinedAttributes(device).stream()
-                    .map(attributeDefinition -> attributeDefinition.getAttribute())
-                    .collect(Collectors.toSet());;
-            Set<String> deviceTags = EatonCloudChannel.getTagsForAttributes(deviceAttributes);
+            List<List<EatonCloudTimeSeriesDeviceV1>> chunkedRequests = (List<List<EatonCloudTimeSeriesDeviceV1>>) chunkRequestsMethod.invoke(dataReadService, requests);
             
-            requests.add(new EatonCloudTimeSeriesDeviceV1(randGuid, StringUtils.join(deviceTags, ',')));
+            for (List<EatonCloudTimeSeriesDeviceV1> chunk : chunkedRequests) {
+                int tagsInChunk = chunk.stream().collect(Collectors.summingInt(d -> 
+                        Lists.newArrayList(Splitter.on(",").split(d.getTagTrait())).size()));
+                
+                assertTrue(tagsInChunk <= maxTagsPerChunk, tagsInChunk + " exceeds max of " + maxTagsPerChunk 
+                        + " for " + device.getPaoTypeName() + " device type");
+                
+            }
         }
-        
-        List<List<EatonCloudTimeSeriesDeviceV1>> chunkedRequests = (List<List<EatonCloudTimeSeriesDeviceV1>>) chunkRequestsMethod.invoke(dataReadService, requests);
-        
-        // Calculated from max of 1000 tags/chunk
-        int numChunks = 4;
-        int tagsPerChunk = 990;
-        int tagsInLastChunk = 630;
-        
-        assertEquals(numChunks, chunkedRequests.size());
-        
-        for (int i = 0; i < numChunks-1; i++) {
-            assertEquals(tagsPerChunk, chunkedRequests.get(i)
-                    .stream().collect(Collectors.summingInt(d -> Lists.newArrayList(Splitter.on(",").split(d.getTagTrait())).size())));
-        }
-        
-        assertEquals(tagsInLastChunk, chunkedRequests.get(numChunks-1)
-                .stream().collect(Collectors.summingInt(d -> Lists.newArrayList(Splitter.on(",").split(d.getTagTrait())).size())));
     }
 }
