@@ -1,6 +1,7 @@
 package com.cannontech.simulators.eatonCloud.model;
 
 import java.io.File;
+import java.io.IOException;
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -16,6 +17,9 @@ import org.apache.commons.lang3.StringUtils;
 import org.apache.logging.log4j.core.Logger;
 import org.joda.time.DateTime;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.ApplicationContext;
+import org.springframework.core.io.Resource;
+import org.springframework.core.io.ResourceLoader;
 
 import com.cannontech.clientutils.YukonLogManager;
 import com.cannontech.common.pao.PaoType;
@@ -33,6 +37,8 @@ public class EatonCloudFakeTimeseriesDataV1 {
     @Autowired private YukonJdbcTemplate jdbcTemplate;
     private Map<PaoType, Map<String, EatonCloudTimeSeriesResultV1>> channels = new HashMap<>();
     private final Logger log = YukonLogManager.getLogger(EatonCloudDataV1.class);
+    @Autowired private ApplicationContext ctx;
+    @Autowired private ResourceLoader resourceLoader;
 
     /**
      * Parses template with sample data
@@ -48,11 +54,27 @@ public class EatonCloudFakeTimeseriesDataV1 {
     }
 
     private void load(PaoType type) {
-        URL p1 = EatonCloudFakeTimeseriesDataV1.class.getResource("/com/cannontech/simulators/eatonCloud/model/timeseries_data_" + type + "_" + 1 + ".json");
-        URL p2 = EatonCloudFakeTimeseriesDataV1.class.getResource("/timeseries_data_" + type + "_" + 1 + ".json");
-        URL p3 = EatonCloudFakeTimeseriesDataV1.class.getResource("timeseries_data_" + type + "_" + 1 + ".json");
-        log.info("p1:{}, p2:{}, p3:{}", p1, p2, p3);
+        URL p0 = EatonCloudFakeTimeseriesDataV1.class.getResource("/src/com/cannontech/simulators/eatonCloud/model/timeseries_data_LCR6200C_1.json");
+        URL p1 = EatonCloudFakeTimeseriesDataV1.class.getResource("/com/cannontech/simulators/eatonCloud/model/timeseries_data_LCR6200C_1.json");
+        URL p2 = EatonCloudFakeTimeseriesDataV1.class.getResource("/timeseries_data_LCR6200C_1.json");
+        URL p3 = EatonCloudFakeTimeseriesDataV1.class.getResource("timeseries_data_LCR6200C_1.json");
+        URL p4 = EatonCloudFakeTimeseriesDataV1.class.getResource("com/cannontech/simulators/eatonCloud/model/timeseries_data_LCR6200C_1.json");
+      
+        log.info("p0:{}, p1:{}, p2:{}, p3:{}, p4:{}", p0, p1, p2, p3, p4);
+        try {
+            Resource r1 =resourceLoader.getResource("classpath:com/cannontech/simulators/eatonCloud/model/timeseries_data_LCR6200C_1.json");
+            log.info("p5:{}", r1.getURL());
+        } catch (IOException e1) {
+            log.error("p5", e1);
+        }
         
+        try {
+            Resource r2 =
+                ctx.getResource("classpath:com/cannontech/simulators/eatonCloud/model/timeseries_data_LCR6200C_1.json");
+            log.info("p6:{}", r2.getURL());
+        } catch (IOException e1) {
+            log.error("p6", e1);
+        }
         
         Map<String, EatonCloudTimeSeriesResultV1> parsedChannels = new HashMap<>();
         int fileNum = 1;
