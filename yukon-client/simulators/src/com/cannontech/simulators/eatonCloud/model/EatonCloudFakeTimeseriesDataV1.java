@@ -48,18 +48,24 @@ public class EatonCloudFakeTimeseriesDataV1 {
     }
 
     private void load(PaoType type) {
+        URL p1 = EatonCloudFakeTimeseriesDataV1.class.getResource("/com/cannontech/simulators/eatonCloud/model/timeseries_data_" + type + "_" + 1 + ".json");
+        URL p2 = EatonCloudFakeTimeseriesDataV1.class.getResource("/timeseries_data_" + type + "_" + 1 + ".json");
+        URL p3 = EatonCloudFakeTimeseriesDataV1.class.getResource("timeseries_data_" + type + "_" + 1 + ".json");
+        log.info("p1:{}, p2:{}, p3:{}", p1, p2, p3);
+        
+        
         Map<String, EatonCloudTimeSeriesResultV1> parsedChannels = new HashMap<>();
-
         int fileNum = 1;
         while (true) {
-            URL path = EatonCloudFakeTimeseriesDataV1.class.getResource("/com/cannontech/simulators/eatonCloud/model/timeseries_data_" + type + "_" + fileNum + ".json");
+            String resource = "/com/cannontech/simulators/eatonCloud/model/timeseries_data_" + type + "_" + fileNum + ".json";
+            URL path = EatonCloudFakeTimeseriesDataV1.class.getResource(resource);
             if (path == null) {
-                log.info("Can't find path:{}. File might not be needed search code for timeseries_data_", path);
+                log.info("Can't find path:{}. File might not be needed search code for " + resource, path);
                 break;
             }
             File file = new File(path.getPath());
             if (!file.exists()) {
-                log.info("Can't find file:{}. File might not be needed search code for timeseries_data_", file);
+                log.info("Can't find file:{}. File might not be needed search code for " + resource, file);
                 break;
             }
             try {
