@@ -52,7 +52,7 @@ public class EatonCloudFakeTimeseriesDataV1 {
 
         int fileNum = 1;
         while (true) {
-            URL path = this.getClass().getResource("timeseries_data_" + type + "_" + fileNum + ".json");
+            URL path = EatonCloudFakeTimeseriesDataV1.class.getResource("/com/cannontech/simulators/eatonCloud/model/timeseries_data_" + type + "_" + fileNum + ".json");
             if (path == null) {
                 log.info("Can't find path:{}. File might not be needed search code for timeseries_data_", path);
                 break;
