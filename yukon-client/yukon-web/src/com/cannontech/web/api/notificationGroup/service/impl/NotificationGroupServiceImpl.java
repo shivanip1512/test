@@ -242,9 +242,10 @@ public class NotificationGroupServiceImpl implements NotificationGroupService {
             liteNotificationGroup.forEach(liteObject -> {
                 com.cannontech.database.data.notification.NotificationGroup notificationGroupBase = (com.cannontech.database.data.notification.NotificationGroup) dbPersistentDao
                         .retrieveDBPersistent(liteObject);
-                NotificationGroup notificationGroup = new NotificationGroup();
-                notificationGroup.buildModel(notificationGroupBase);
-                buildModelForCICustomersAndUnassignedCont(notificationGroup, notificationGroupBase);
+                NotificationGroup notificationGroup = new NotificationGroup(
+                        notificationGroupBase.getNotificationGroup().getNotificationGroupID(),
+                        notificationGroupBase.getNotificationGroup().getGroupName(),
+                        notificationGroupBase.getNotificationGroup().getDisableFlag());
                 notificationGroupList.add(notificationGroup);
             });
         }
