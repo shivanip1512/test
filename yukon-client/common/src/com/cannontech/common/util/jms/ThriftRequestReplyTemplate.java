@@ -8,6 +8,7 @@ import javax.jms.JMSException;
 import javax.jms.MessageConsumer;
 import javax.jms.MessageProducer;
 import javax.jms.Session;
+import javax.jms.TemporaryQueue;
 
 import org.apache.logging.log4j.Logger;
 import org.joda.time.Duration;
@@ -74,9 +75,11 @@ public class ThriftRequestReplyTemplate<Q, R> {
 
         var resolver = new DynamicDestinationResolver();
         Destination destination = resolver.resolveDestinationName(session, jmsTemplate.getDefaultDestinationName(), jmsTemplate.isPubSubDomain());
-        Destination responseDestination = session.createTemporaryQueue();
+        Destination responseDestination;
         if (!responseQueueName.isBlank()) {
             responseDestination = resolver.resolveDestinationName(session, responseQueueName, false);
+        } else {
+            responseDestination = session.createTemporaryQueue();
         }
         try ( 
             MessageProducer producer = session.createProducer(destination);
@@ -90,6 +93,10 @@ public class ThriftRequestReplyTemplate<Q, R> {
             producer.send(requestMessage);
             
             handleReplyOrTimeout(callback, timeout, replyConsumer);
+        } finally {
+            if (responseDestination instanceof TemporaryQueue) {
+                ((TemporaryQueue) responseDestination).delete();
+            }
         }
     }
 

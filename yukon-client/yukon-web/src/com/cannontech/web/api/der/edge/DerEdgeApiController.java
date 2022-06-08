@@ -48,9 +48,9 @@ public class DerEdgeApiController {
         Map<Integer, Short> e2eId = derEdgeCommunicationService.sendUnicastRequest(pao, payload, queuePriority, networkPriority, userContext);
         
         //TODO later - correlate E2E IDs with response GUID
-
-        //TODO Ensure I created this response correctly
-        return new ResponseEntity<>(new EdgeUnicastResponse(e2eId.get(0).toString()), HttpStatus.OK);
+        //for now, always return this temp GUID
+        String tempGUID = "692c8e7d-bd82-49f2-ace2-a6a9600f6347";
+        return new ResponseEntity<>(new EdgeUnicastResponse(tempGUID), HttpStatus.OK);
     }
     
     @PostMapping("/broadcastMessage")
