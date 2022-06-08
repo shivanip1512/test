@@ -28,7 +28,7 @@ post-get-all-operation:
     tags:
       - Holiday Schedules
     summary: Retrieve all the Holiday Schedules
-    description: API to retrieve list of Holiday Schedules. 
+    description: API to retrieve list of holiday schedules. 
 
     responses:
       '200':
@@ -107,7 +107,7 @@ get-update-delete-operation:
         schema:
           type: integer
         required: true
-        description: 'Unique identifier for Holiday Schedule.'
+        description: 'Unique identifier for holiday schedule.'
     responses:
       '200':
         description: OK

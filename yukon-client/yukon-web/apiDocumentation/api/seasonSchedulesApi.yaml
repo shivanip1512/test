@@ -28,7 +28,7 @@ post-get-all-operation:
     tags:
       - Season Schedules
     summary: Retrieve all the Season Schedules
-    description: API to retrieve list of Season Schedules. 
+    description: API to retrieve list of season schedules. 
 
     responses:
       '200':
@@ -107,7 +107,7 @@ get-update-delete-operation:
         schema:
           type: integer
         required: true
-        description: 'Unique identifier for Season Schedule.'
+        description: 'Unique identifier for season schedule.'
     responses:
       '200':
         description: OK

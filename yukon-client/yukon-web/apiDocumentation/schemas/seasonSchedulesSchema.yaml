@@ -9,7 +9,7 @@ Season Schedule:
       maxLength: 40
       description: "Name of season schedule ."
     seasons:
-      description: "Seasons assigned to season schedule."
+      description: "Seasons assigned to season schedule.  It can be 0 or more than one seasons."
       $ref: "#/SeasonRequest"
 
 Season Schedule Response Schema:
@@ -23,7 +23,7 @@ Season Schedule Response Schema:
       maxLength: 40
       description: "Name of season schedule ."
     seasons:
-      description: "Seasons assigned to season schedule."
+      description: "Seasons assigned to season schedule. It can be 0 or more than one seasons."
       $ref: "#/SeasonResponse"
 
 SeasonRequest:
@@ -39,24 +39,28 @@ SeasonRequest:
         description: "Name of season."
       startMonth:
         type: integer
+        default: 1
         minimum: 1
         maximum: 12
-        description: "Start Month of season."
+        description: "Start month of season."
       startDay:
         type: integer
+        default: 1
         minimum: 1
         maximum: 31
-        description: "Start Day of Season. The maximum value of day will be changed as per month selected."
+        description: "Start day of season. The maximum value of day will be changed as per month selected."
       endMonth:
         type: integer
+        default: 1
         minimum: 1
         maximum: 12
-        description: "End Month of season."
+        description: "End month of season."
       endDay:
         type: integer
+        default: 1
         minimum: 1
         maximum: 31
-        description: "End Day of season. The maximum value of day will be changed as per month selected."
+        description: "End day of season. The maximum value of day will be changed as per month selected."
 
 SeasonResponse:
   type: array
@@ -69,24 +73,28 @@ SeasonResponse:
         description: "Name of season."
       startMonth:
         type: integer
+        default: 1
         minimum: 1
         maximum: 12
-        description: "Start Month of season."
+        description: "Start month of season."
       startDay:
         type: integer
+        default: 1
         minimum: 1
         maximum: 31
-        description: "Start Day of Season. The maximum value of day will be changed as per month selected."
+        description: "Start day of Season. The maximum value of day will be changed as per month selected."
       endMonth:
         type: integer
+        default: 1
         minimum: 1
         maximum: 12
-        description: "End Month of season."
+        description: "End month of season."
       endDay:
         type: integer
+        default: 1
         minimum: 1
         maximum: 31
-        description: "End Day of season. The maximum value of day will be changed as per month selected."
+        description: "End day of season. The maximum value of day will be changed as per month selected."
 
 id:
   title: id
@@ -102,7 +110,7 @@ Season Schedules List Response Schema:
     pagerNumber:
       type: integer
       default: 1
-      description: "Number of Pages for the season schedules."
+      description: "Number of pages for the season schedules."
     itemsPerPage:
       type: integer
       default: 250
@@ -132,22 +140,22 @@ components:
       value:
         name: Test Season_Schedule_1
         seasons:
-          name: season1
-          startMonth: 2
-          startDay: 12
-          endMonth: 4
-          endDay: 21
+          - name: season1
+            startMonth: 2
+            startDay: 12
+            endMonth: 4
+            endDay: 21
 
     Season Schedule Response:
       value:
         id: 1233
         name: Test Season_Schedule_1
         seasons:
-          name: season1
-          startMonth: 2
-          startDay: 12
-          endMonth: 4
-          endDay: 21
+          - name: season1
+            startMonth: 2
+            startDay: 12
+            endMonth: 4
+            endDay: 21
 
     SeasonScheduleId:
       value:
