@@ -1,5 +1,6 @@
 package com.cannontech.multispeak.client.core.v4;
 
+
 import com.cannontech.msp.beans.v4.CDStateChangedNotification;
 import com.cannontech.msp.beans.v4.CDStateChangedNotificationResponse;
 import com.cannontech.msp.beans.v4.FormattedBlockNotification;
@@ -12,6 +13,8 @@ import com.cannontech.msp.beans.v4.GetMeterByCustomerID;
 import com.cannontech.msp.beans.v4.GetMeterByCustomerIDResponse;
 import com.cannontech.msp.beans.v4.GetMeterByServiceLocationID;
 import com.cannontech.msp.beans.v4.GetMeterByServiceLocationIDResponse;
+import com.cannontech.msp.beans.v4.GetMetersBySearchString;
+import com.cannontech.msp.beans.v4.GetMetersBySearchStringResponse;
 import com.cannontech.msp.beans.v4.GetMethods;
 import com.cannontech.msp.beans.v4.GetMethodsResponse;
 import com.cannontech.msp.beans.v4.MeterEventNotification;
@@ -142,5 +145,17 @@ public interface ICBClient {
      */
     public GetMeterByCustomerIDResponse getMeterByCustomerID(MultispeakVendor mspVendor, String uri,
             GetMeterByCustomerID getMeterByCustomerID) throws MultispeakWebServiceClientException;
+    
+    /**
+     * Gets Meters by SearchString.
+     * 
+     * @param MSP vendor details
+     * @param String the URI of the CB Server
+     * @param GetMetersBySearchString the GetMetersBySearchString used as input.
+     * @return GetMetersBySearchStringResponse
+     * @throws MultispeakWebServiceClientException
+     */
+    GetMetersBySearchStringResponse getMetersBySearchString(MultispeakVendor mspVendor, String uri,
+            GetMetersBySearchString getMetersBySearchString) throws MultispeakWebServiceClientException;
 
 }

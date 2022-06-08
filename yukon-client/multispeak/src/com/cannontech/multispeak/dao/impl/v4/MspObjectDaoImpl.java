@@ -37,6 +37,8 @@ import com.cannontech.msp.beans.v4.GetMeterByCustomerID;
 import com.cannontech.msp.beans.v4.GetMeterByCustomerIDResponse;
 import com.cannontech.msp.beans.v4.GetMeterByServiceLocationID;
 import com.cannontech.msp.beans.v4.GetMeterByServiceLocationIDResponse;
+import com.cannontech.msp.beans.v4.GetMetersBySearchString;
+import com.cannontech.msp.beans.v4.GetMetersBySearchStringResponse;
 import com.cannontech.msp.beans.v4.GetMethods;
 import com.cannontech.msp.beans.v4.GetMethodsResponse;
 import com.cannontech.msp.beans.v4.GetServiceLocationByMeterID;
@@ -484,6 +486,36 @@ public class MspObjectDaoImpl implements MspObjectDao {
             log.error("TargetService: " + endpointUrl + " - getMspMetersByCustomerId (" + mspVendor.getCompanyName()
                 + ") for custId: " + custId);
             log.error("MultispeakWebServiceClientException: " + e.getMessage());
+        }
+        return meters;
+    }
+    
+    @Override
+    public List<MspMeter> getMetersBySearchString(String searchString, MultispeakVendor mspVendor) {
+        List<MspMeter> meters = new ArrayList<>();
+        String endpointUrl = multispeakFuncs.getEndpointUrl(mspVendor, MultispeakDefines.CB_Server_STR);
+        try {
+            long start = System.currentTimeMillis();
+            log.debug("Begin call to getMetersBySearchString for SearchString: %s" + searchString);
+            
+            GetMetersBySearchString getMetersBySearchString = objectFactory.createGetMetersBySearchString();
+            getMetersBySearchString.setSearchString(searchString);
+            
+            GetMetersBySearchStringResponse response =
+                cbClient.getMetersBySearchString(mspVendor, endpointUrl, getMetersBySearchString);
+            
+            log.debug("End call to getMetersBySearchString for SearchString:" + searchString + "  (took "
+                + (System.currentTimeMillis() - start) + " millis)");
+            
+            if (response != null) {
+                if (response.getGetMetersBySearchStringResult() != null) {
+                    meters = multispeakFuncs.getMspMeters(response.getGetMetersBySearchStringResult());
+                }
+            }
+        } catch (MultispeakWebServiceClientException e) {
+            log.error("TargetService: " + endpointUrl + " - getMetersBySearchString (" + mspVendor.getCompanyName()
+                + ") for SearchString: " + searchString);
+            log.error("RemoteExceptionDetail: " + e.getMessage());
         }
         return meters;
     }
