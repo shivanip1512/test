@@ -12,10 +12,11 @@
         <tags:nameValue2 nameKey=".name">
             <c:if test="${not empty mspCustomer.firstName}">${fn:escapeXml(mspCustomer.firstName)}&ensp;</c:if>
 
-            <c:if test="${not empty mspCustomer.middleName}">${fn:escapeXml(mspCustomer.middleName)}&ensp;</c:if>
+            <c:if test="${not empty mspCustomer.MName}">${fn:escapeXml(mspCustomer.MName)}&ensp;</c:if>
 
             <c:if test="${not empty mspCustomer.lastName}">${fn:escapeXml(mspCustomer.lastName)}</c:if>
         </tags:nameValue2>
+        
         <c:if test="${not empty mspCustomer.DBAName}">
             <tags:nameValue2 nameKey=".dba">${fn:escapeXml(mspCustomer.DBAName)}</tags:nameValue2>
         </c:if>
@@ -41,18 +42,20 @@
 <tags:sectionContainer title="${serviceLocation}">
     <tags:nameValueContainer2 tableClass="row-highlighting striped two-column-table">
 
-        <c:if test="${not empty mspServLoc.objectGUID}">
-            <tags:nameValue2 nameKey=".serviceLocation">${fn:escapeXml(mspServLoc.objectGUID)}</tags:nameValue2>
+        <c:if test="${not empty mspServLoc.objectID}">
+            <tags:nameValue2 nameKey=".serviceLocation">${fn:escapeXml(mspServLoc.objectID)}</tags:nameValue2>
         </c:if>
-        <c:if test="${not empty mspServLoc.customerID.objectGUID}">
-            <tags:nameValue2 nameKey=".custNumber">${fn:escapeXml(mspServLoc.customerID.objectGUID)}</tags:nameValue2>
+        <c:if test="${not empty mspServLoc.customerID}">
+            <tags:nameValue2 nameKey=".custId">${fn:escapeXml(mspServLoc.customerID)}</tags:nameValue2>
         </c:if>
-        <c:if test="${not empty mspServLoc.accountID.objectGUID}">
-            <tags:nameValue2 nameKey=".acctNumber">${fn:escapeXml(mspServLoc.accountID.objectGUID)}</tags:nameValue2>
-        </c:if>
-
         <c:if test="${not empty mspServLoc.siteID}">
             <tags:nameValue2 nameKey=".siteNumber">${fn:escapeXml(mspServLoc.siteID)}</tags:nameValue2>
+        </c:if>
+        <c:if test="${not empty mspServLoc.facilityID}">
+            <tags:nameValue2 nameKey=".facilityId">${fn:escapeXml(mspServLoc.facilityID)}</tags:nameValue2>
+        </c:if>
+        <c:if test="${not empty mspServLoc.facilityName}">
+            <tags:nameValue2 nameKey=".facilityName">${fn:escapeXml(mspServLoc.facilityName)}</tags:nameValue2>
         </c:if>
         <c:if test="${not empty mspServLoc.gridLocation}">
             <tags:nameValue2 nameKey=".mapLocation">${fn:escapeXml(mspServLoc.gridLocation)}</tags:nameValue2>

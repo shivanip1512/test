@@ -3,7 +3,6 @@ package com.cannontech.multispeak.service.v4;
 import java.util.List;
 
 import com.cannontech.msp.beans.v4.ContactInfo;
-import com.cannontech.msp.beans.v4.EMailAddress;
 import com.cannontech.user.YukonUserContext;
 
 public interface MultispeakCustomerInfoService {

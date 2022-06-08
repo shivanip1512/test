@@ -24,11 +24,11 @@ public class MultispeakCustomerInfoServiceImpl implements MultispeakCustomerInfo
             
             if (p != null) {
                 if (p.getPhone() != null) {
-                    fullPhone.append(p.getPhone());
+                    fullPhone.append(
+                            p.getPhone().getAreaCode() + " " + p.getPhone().getCityCode() + " " + p.getPhone().getCountryCode()
+                                    + " " + p.getPhone().getExtension() + " " + p.getPhone().getLocalNumber());
                 }
-                if (p.getPhoneType() != null) {
-                    fullPhone.append(p.getPhoneType());
-                }
+                
                 if (!StringUtils.isBlank(fullPhone)) {
                     phoneNumbers.add(fullPhone.toString());
                 }

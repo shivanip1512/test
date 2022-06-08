@@ -200,6 +200,7 @@
   <bean id="mspMeterDaoV4" class="com.cannontech.multispeak.dao.impl.v4.MspMeterDaoImpl"/>
   
   <bean id="multispeakCustomerInfoService" class="com.cannontech.multispeak.service.impl.MultispeakCustomerInfoServiceImpl"/>
+  <bean id="multispeakCustomerInfoServiceV4" class="com.cannontech.multispeak.service.impl.v4.MultispeakCustomerInfoServiceImpl"/>
   <bean id="multispeakCustomerInfoServiceV5" class="com.cannontech.multispeak.service.impl.v5.MultispeakCustomerInfoServiceImpl"/>
 
   <bean id="messageSender" class="org.springframework.ws.transport.http.HttpComponentsMessageSender"/>

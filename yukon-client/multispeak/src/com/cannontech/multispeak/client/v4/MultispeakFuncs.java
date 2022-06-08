@@ -1,8 +1,10 @@
 package com.cannontech.multispeak.client.v4;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Map;
 
 import javax.xml.namespace.QName;
 import javax.xml.soap.MimeHeaders;
@@ -28,15 +30,18 @@ import org.w3c.dom.Node;
 import com.cannontech.clientutils.YukonLogManager;
 import com.cannontech.common.exception.BadAuthenticationException;
 import com.cannontech.common.exception.PasswordExpiredException;
+import com.cannontech.common.model.Address;
 import com.cannontech.common.pao.YukonDevice;
 import com.cannontech.common.pao.definition.model.PaoTag;
 import com.cannontech.core.dao.NotFoundException;
 import com.cannontech.core.dynamic.PointValueHolder;
+import com.cannontech.core.service.PhoneNumberFormattingService;
 import com.cannontech.core.service.PointFormattingService.Format;
 import com.cannontech.database.data.lite.LiteYukonUser;
 import com.cannontech.database.db.point.stategroup.Disconnect410State;
 import com.cannontech.database.db.point.stategroup.PointStateHelper;
 import com.cannontech.database.db.point.stategroup.RfnDisconnectStatusState;
+import com.cannontech.msp.beans.v4.AddressItem;
 import com.cannontech.msp.beans.v4.ArrayOfElectricMeter;
 import com.cannontech.msp.beans.v4.ArrayOfErrorObject;
 import com.cannontech.msp.beans.v4.ArrayOfGasMeter;
@@ -47,8 +52,12 @@ import com.cannontech.msp.beans.v4.GasMeter;
 import com.cannontech.msp.beans.v4.Meters;
 import com.cannontech.msp.beans.v4.MspMeter;
 import com.cannontech.msp.beans.v4.ObjectFactory;
+import com.cannontech.msp.beans.v4.PhoneType;
 import com.cannontech.msp.beans.v4.RCDState;
 import com.cannontech.msp.beans.v4.WaterMeter;
+import com.cannontech.msp.beans.v4.PhoneNumber;
+import com.cannontech.msp.beans.v4.PhoneType;
+import com.cannontech.msp.beans.v4.Customer;
 import com.cannontech.multispeak.client.MessageContextHolder;
 import com.cannontech.multispeak.client.MultiSpeakVersion;
 import com.cannontech.multispeak.client.MultispeakDefines;
@@ -65,6 +74,7 @@ public class MultispeakFuncs extends MultispeakFuncsBase {
     private final static Logger log = YukonLogManager.getLogger(MultispeakFuncs.class);
     @Autowired public MultispeakDao multispeakDao;
     @Autowired private ObjectFactory objectFactory;
+    @Autowired private PhoneNumberFormattingService phoneNumberFormattingService;
     
     private static final QName QNAME_LAST_SENT = new QName("http://www.multispeak.org/Version_4.1_Release/commonTypes", "lastSent");
     private static final QName QNAME_OBJECT_REMAINING = new QName("http://www.multispeak.org/Version_4.1_Release/commonTypes",
@@ -417,5 +427,45 @@ public class MultispeakFuncs extends MultispeakFuncsBase {
         }
 
         return childSoapElement;
+    }
+    
+    // Returns phone number (Home and Business) of the primary contact
+    public Map<PhoneType, String> getPrimaryContacts(Customer mspCustomer) {
+        Map<PhoneType, String> allPhoneNumbers = new HashMap<>();
+
+        List<PhoneNumber> phoneNumber = new ArrayList<>();
+        if (mspCustomer.getContactInfo() != null && mspCustomer.getContactInfo().getPhoneList() != null) {
+            phoneNumber = mspCustomer.getContactInfo().getPhoneList().getPhoneNumber();
+
+            phoneNumber.forEach(phNo -> {
+                if (phNo.getPhoneType() != null) {
+                    if (phNo.getPhoneType() == PhoneType.HOME
+                        || phNo.getPhoneType() == PhoneType.BUSINESS) {
+
+                        allPhoneNumbers.put(phNo.getPhoneType(), phoneNumberFormattingService.formatPhone(
+                            phNo.getPhone().getAreaCode(), phNo.getPhone().getLocalNumber()));
+                    }
+                }
+            });
+        }
+        return allPhoneNumbers;
+    }
+    
+
+    public List<Address> getAddressList(List<AddressItem> addressItems) {
+        List<Address> addressList = new ArrayList<>();
+        addressItems.forEach(addressItem -> {
+            if (addressItem.getAddress() != null) {
+                Address address = new Address();
+                address.setLocationAddress1(addressItem.getAddress().getAddress1());
+                address.setLocationAddress2(addressItem.getAddress().getAddress2());
+                address.setCityName(addressItem.getAddress().getCity());
+                address.setStateCode(addressItem.getAddress().getState());
+                address.setCounty(addressItem.getAddress().getCountry());
+                address.setZipCode(addressItem.getAddress().getPostalCode());
+                addressList.add(address);
+            }
+        });
+        return addressList;
     }
 }

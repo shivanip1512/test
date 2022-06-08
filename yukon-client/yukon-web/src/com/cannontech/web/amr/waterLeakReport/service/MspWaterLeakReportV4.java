@@ -10,13 +10,13 @@ import org.springframework.ui.ModelMap;
 import com.cannontech.amr.meter.dao.MeterDao;
 import com.cannontech.amr.meter.model.YukonMeter;
 import com.cannontech.common.model.Address;
-import com.cannontech.msp.beans.v5.enumerations.PhoneTypeKind;
-import com.cannontech.msp.beans.v5.multispeak.Customer;
-import com.cannontech.msp.beans.v5.multispeak.ServiceLocation;
+import com.cannontech.msp.beans.v4.PhoneType;
+import com.cannontech.msp.beans.v4.Customer;
+import com.cannontech.msp.beans.v4.ServiceLocation;
 import com.cannontech.multispeak.client.MultispeakVendor;
-import com.cannontech.multispeak.client.v5.MultispeakFuncs;
-import com.cannontech.multispeak.dao.v5.MspObjectDao;
-import com.cannontech.multispeak.service.v5.MultispeakCustomerInfoService;
+import com.cannontech.multispeak.client.v4.MultispeakFuncs;
+import com.cannontech.multispeak.dao.v4.MspObjectDao;
+import com.cannontech.multispeak.service.v4.MultispeakCustomerInfoService;
 import com.cannontech.user.YukonUserContext;
 import com.google.common.cache.Cache;
 import com.google.common.cache.CacheBuilder;
@@ -47,14 +47,14 @@ public class MspWaterLeakReportV4 extends MspWaterLeakReport {
 
             mspMeterAccountInfo = new MspMeterAccountInfo();
             mspMeterAccountInfo.mspCustomer = mspObjectDao.getMspCustomer(meter, mspVendor);
-            mspMeterAccountInfo.mspServLoc = mspObjectDao.getMspServiceLocation(meter, mspVendor);
+            mspMeterAccountInfo.mspServLoc = mspObjectDao.getMspServiceLocation(meter, mspVendor).getServiceLocation().get(0);
             if (mspMeterAccountInfo.mspCustomer.getContactInfo() != null) {
                 mspMeterAccountInfo.phoneNumbers =
                     mspCustomerInfoService.getPhoneNumbers(
-                        mspMeterAccountInfo.mspCustomer.getContactInfo().getPhoneNumbers(), userContext);
+                        mspMeterAccountInfo.mspCustomer.getContactInfo(), userContext);
                 mspMeterAccountInfo.emailAddresses =
                     mspCustomerInfoService.getEmailAddresses(
-                        mspMeterAccountInfo.mspCustomer.getContactInfo().getEMailAddresses(), userContext);
+                        mspMeterAccountInfo.mspCustomer.getContactInfo(), userContext);
             }
             mspMeterAccountInfoMap.put(paoId, mspMeterAccountInfo);
 
@@ -65,20 +65,20 @@ public class MspWaterLeakReportV4 extends MspWaterLeakReport {
         model.addAttribute("mspServLoc", mspMeterAccountInfo.mspServLoc);
         
         if (mspMeterAccountInfo.mspCustomer.getContactInfo() != null
-            && mspMeterAccountInfo.mspCustomer.getContactInfo().getAddressItems() != null) {
-            List<Address> custAddressInfo = multispeakFuncs.getAddressList(mspMeterAccountInfo.mspCustomer.getContactInfo().getAddressItems());
+            && mspMeterAccountInfo.mspCustomer.getContactInfo().getAddressList() != null) {
+            List<Address> custAddressInfo = multispeakFuncs.getAddressList(mspMeterAccountInfo.mspCustomer.getContactInfo().getAddressList().getAddressItem());
             model.addAttribute("custAddressInfo", custAddressInfo.get(0));
         }
 
         if (mspMeterAccountInfo.mspServLoc != null && mspMeterAccountInfo.mspServLoc.getContactInfo() != null
-            && mspMeterAccountInfo.mspServLoc.getContactInfo().getAddressItems() != null) {
-            List<Address> servLocAddresses = multispeakFuncs.getAddressList(mspMeterAccountInfo.mspServLoc.getContactInfo().getAddressItems());
+            && mspMeterAccountInfo.mspServLoc.getContactInfo().getAddressList() != null) {
+            List<Address> servLocAddresses = multispeakFuncs.getAddressList(mspMeterAccountInfo.mspServLoc.getContactInfo().getAddressList().getAddressItem());
             model.addAttribute("servLocAddresses", servLocAddresses.get(0));
         }
         
-        Map<PhoneTypeKind, String> primaryContact = multispeakFuncs.getPrimaryContacts(mspMeterAccountInfo.mspCustomer);
-        model.addAttribute("homePhone", primaryContact.get(PhoneTypeKind.HOME));
-        model.addAttribute("dayPhone", primaryContact.get(PhoneTypeKind.BUSINESS));
+        Map<PhoneType, String> primaryContact = multispeakFuncs.getPrimaryContacts(mspMeterAccountInfo.mspCustomer);
+        model.addAttribute("homePhone", primaryContact.get(PhoneType.HOME));
+        model.addAttribute("dayPhone", primaryContact.get(PhoneType.BUSINESS));
 
         setupMspVendorModelInfo(userContext, model);
         return "waterLeakReport/accountInfoAjax.jsp";
