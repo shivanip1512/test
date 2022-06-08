@@ -38,6 +38,19 @@ Notification Group Response Schema:
     unassignedContacts:
        description: 'Contacts that can be assigned to the notification group.'
        $ref: '#/unassignedContactsResponse'
+       
+Notification Group Retreive All Response Schema:
+  type: object
+  properties:
+    id:
+      type: integer
+      description: 'Unique identifier of the notification group.'
+    name:
+      type: string
+      description: 'Name of the notification group.'
+    enabled:
+      type: boolean
+      description: 'Status of the notification group.'
 
 unassignedContactsRequest:
     type: array
@@ -50,16 +63,16 @@ unassignedContactsRequest:
           description: 'Unique identifier of the contact. Mandatory if unassigned contacts are added.' 
         emailEnabled:
           type: boolean
-          description: 'Flag for email notification for this contact.'
+          description: 'Flag for email notification for this contact. Default: false.'
         phoneCallEnabled:
           type: boolean
-          description: 'Flag for phone call notification for this contact.'
+          description: 'Flag for phone call notification for this contact. Deafult: false.'
         selected:
           type: boolean
-          description: 'Notification status of this contact.'
+          description: 'Notification status of this contact. Default: false.'
         notifications:
           description: 'Notifications associated with this contact.'
-          $ref: '#/notificationsRequest'
+          $ref: '#/notificationsRequestUnassignedContact'
         
 cICustomersRequest:
     type: array
@@ -72,13 +85,13 @@ cICustomersRequest:
           description: 'Unique identifier of the customer. Mandatory if CI Customers are added.'
         emailEnabled:
           type: boolean
-          description: 'Flag for email notification for this customer.'
+          description: 'Flag for email notification for this customer. Default: false.'
         phoneCallEnabled:
           type: boolean
-          description: 'Flag for phone call notification for this customer.'
+          description: 'Flag for phone call notification for this customer. Default: false.'
         selected:
           type: boolean
-          description: 'Notification status of this Customer.'
+          description: 'Notification status of this Customer. Default: false.'
         contacts:
           description: 'Contacts associated with this customer.'
           $ref: '#/contactsRequest'
@@ -94,35 +107,54 @@ contactsRequest:
           description: 'Unique identifier of the contact. Mandatory if contacts are added.'
         emailEnabled:
           type: boolean
-          description: 'Flag for email notification for this contact.'
+          description: 'Flag for email notification for this contact. If selected is true for CI Customer, it depends on parent field. Else, it is false.'
         phoneCallEnabled:
           type: boolean
-          description: 'Flag for phone call notification for this contact.'
+          description: 'Flag for phone call notification for this contact. If selected is true for CI Customer, it depends on parent field. Else, it is false.'
         selected:
           type: boolean
-          description: 'Notification status of this contact.'
+          description: 'Notification status of this contact. Default: false.'
         notifications:
            description: 'Notifications associated with this contact.'
            $ref: '#/notificationsRequest'
         
 notificationsRequest:
-    type: object
+    type: array
     items:
-    required:
+     required:
         - id
-    properties:
+     properties:
       id:
         type: integer
         description: 'Unique identifier of the contact notification. Mandatory if notifications are added.'
       emailEnabled:
         type: boolean
-        description: 'Flag for email notification.'
+        description: 'Flag for email notification. If selected is true for Contact or CI Customer, it depends on parent field. Else, it is false.'
       phoneCallEnabled:
         type: boolean
-        description: 'Flag for phone call notification.'
+        description: 'Flag for phone call notification. If selected is true for Contact or CI Customer, it depends on parent field. Else, it is false.'
       selected:
         type: boolean
-        description: 'Notification status.'
+        description: 'Notification status. Default: false.'
+        
+notificationsRequestUnassignedContact:
+    type: array
+    items:
+     required:
+        - id
+     properties:
+      id:
+        type: integer
+        description: 'Unique identifier of the contact notification. Mandatory if notifications are added.'
+      emailEnabled:
+        type: boolean
+        description: 'Flag for email notification. If selected is true for Contact, it depends on parent field. Else, it is false.'
+      phoneCallEnabled:
+        type: boolean
+        description: 'Flag for phone call notification. If selected is true for Contact, it depends on parent field. Else, it is false.'
+      selected:
+        type: boolean
+        description: 'Notification status. Default: false.'
         
 unassignedContactsResponse:
     type: array
@@ -136,16 +168,16 @@ unassignedContactsResponse:
           description: 'Name of the unassigned contact.'
         emailEnabled:
           type: boolean
-          description: 'Flag for email notification for this contact.'
+          description: 'Flag for email notification for this contact. Default: false.'
         phoneCallEnabled:
           type: boolean
-          description: 'Flag for phone call notification for this contact.'
+          description: 'Flag for phone call notification for this contact. Default: false.'
         selected:
           type: boolean
-          description: 'Notification status of this contact.'
+          description: 'Notification status of this contact. Default: false.'
         notifications:
           description: 'Notifications associated with this contact.'
-          $ref: '#/notificationsResponse'
+          $ref: '#/notificationsResponseUnassignedContact'
           
 cICustomersResponse:
     type: array
@@ -159,13 +191,13 @@ cICustomersResponse:
           description: 'Company Name of the CI Customer.'
         emailEnabled:
           type: boolean
-          description: 'Flag for email notification for this customer.'
+          description: 'Flag for email notification for this customer. Default: false.'
         phoneCallEnabled:
           type: boolean
-          description: 'Flag for phone call notification for this customer.'
+          description: 'Flag for phone call notification for this customer. Default: false.'
         selected:
           type: boolean
-          description: 'Notification status of this customer.'
+          description: 'Notification status of this customer. Default: false.'
         contacts:
           description: 'Contacts associated with this customer.'
           $ref: '#/contactsResponse'
@@ -182,20 +214,20 @@ contactsResponse:
           description: 'Name of the contact.'
         emailEnabled:
           type: boolean
-          description: 'Flag for email notification for this contact.'
+          description: 'Flag for email notification for this contact. If selected is true for CI Customer, it depends on parent field. Else, it is false.'
         phoneCallEnabled:
           type: boolean
-          description: 'Flag for phone call notification for this contact.'
+          description: 'Flag for phone call notification for this contact. If selected is true for CI Customer, it depends on parent field. Else, it is false.'
         selected:
           type: boolean
-          description: 'Notification status of this contact.'
+          description: 'Notification status of this contact. Default: false.'
         notifications:
            description: 'Notifications associated with this contact.'
            $ref: '#/notificationsResponse'
 notificationsResponse:
-    type: object
+    type: array
     items:
-    properties: 
+     properties: 
       id: 
         type: integer
         description: 'Unique identification of the contact notification.'
@@ -204,14 +236,34 @@ notificationsResponse:
         description: 'Notification detail of this contact.'
       emailEnabled:
         type: boolean
-        description: 'Flag for email notification.'
+        description: 'Flag for email notification. If selected is true for Contact or CI Customer, it depends on parent field. Else, it is false.'
       phoneCallEnabled:
         type: boolean
-        description: 'Flag for phone call notification.'
+        description: 'Flag for phone call notification. If selected is true for Contact or CI Customer, it depends on parent field. Else, it is false.'
       selected:
         type: boolean
-        description: 'Notification status.'
+        description: 'Notification status. Default: false.'
         
+notificationsResponseUnassignedContact:
+    type: array
+    items:
+     properties: 
+      id: 
+        type: integer
+        description: 'Unique identification of the contact notification.'
+      notification:
+        type: string
+        description: 'Notification detail of this contact.'
+      emailEnabled:
+        type: boolean
+        description: 'Flag for email notification. If selected is true for Contact, it depends on parent field. Else, it is false.'
+      phoneCallEnabled:
+        type: boolean
+        description: 'Flag for phone call notification. If selected is true for Contact, it depends on parent field. Else, it is false.'
+      selected:
+        type: boolean
+        description: 'Notification status. Default: false.'
+                
 id:
   title: id
   type: object
@@ -240,7 +292,7 @@ Notification Group List Response Schema:
         type: object
         properties:
           Notification Group:
-            $ref: '#/Notification Group Response Schema'
+            $ref: '#/Notification Group Retreive All Response Schema'
           
 components:
   examples:
@@ -249,30 +301,30 @@ components:
         name: Test Notification Group
         enabled: true
         cICustomers:
-            id: 10
-            emailEnabled: true
-            phoneCallEnabled: false
-            selected: false
-            contacts: 
-              id: 110
+            - id: 10
               emailEnabled: true
               phoneCallEnabled: false
-              selected: false
-              notifications:
-                id: 1110
-                emailEnabled: true
-                phoneCallEnabled: false
-                selected: false
+              selected: true
+              contacts: 
+               - id: 110
+                 emailEnabled: true
+                 phoneCallEnabled: false
+                 selected: false
+                 notifications:
+                   - id: 1110
+                     emailEnabled: true
+                     phoneCallEnabled: false
+                     selected: false
         unassignedContacts:
-            id: 11110
-            emailEnabled: true
-            phoneCallEnabled: false
-            selected: false
-            notifications:
-               id: 111110
-               emailEnabled: true
-               phoneCallenabled: false
-               selected: false
+            - id: 11110
+              emailEnabled: true
+              phoneCallEnabled: false
+              selected: true
+              notifications:
+               - id: 111110
+                 emailEnabled: true
+                 phoneCallenabled: false
+                 selected: false
 
     Notification Group Response:
       value:
@@ -280,35 +332,35 @@ components:
         name: Test Notification Group
         enabled: true
         cICustomers:
-            id: 10
-            companyName: Test Company Name
-            emailEnabled: true
-            phoneCallEnabled: false
-            selected: false
-            contacts: 
-              id: 110
-              name: Test Contact Name
+            - id: 10
+              companyName: Test Company Name
               emailEnabled: true
               phoneCallEnabled: false
-              selected: false
-              notifications:
-                id: 1110
-                notification: test@eaton.com
-                emailEnabled: true
-                phoneCallEnabled: false
-                selected: false
+              selected: true
+              contacts: 
+                -  id: 110
+                   name: Test Contact Name
+                   emailEnabled: true
+                   phoneCallEnabled: false
+                   selected: false
+                   notifications:
+                    - id: 1110
+                      notification: test@eaton.com
+                      emailEnabled: true
+                      phoneCallEnabled: false
+                      selected: false
         unassignedContacts:
-            id: 11110
-            name: Test Unassigned Contact Name
-            emailEnabled: true
-            phoneCallEnabled: false
-            selected: false
-            notifications:
-               id: 111110
-               notification: "9898076800"
-               emailEnabled: true
-               phoneCallenabled: false
-               selected: false
+            - id: 11110
+              name: Test Unassigned Contact Name
+              emailEnabled: true
+              phoneCallEnabled: false
+              selected: true
+              notifications:
+               - id: 111110
+                 notification: "9898076800"
+                 emailEnabled: true
+                 phoneCallenabled: false
+                 selected: false
                
         
     List of Notification Groups:
@@ -320,69 +372,9 @@ components:
         - id: 1
           name: Test Notification Group 1
           enabled: true
-          cICustomers:
-            id: 10
-            companyName: Test Company Name
-            emailEnabled: true
-            phoneCallEnabled: false
-            selected: false
-            contacts: 
-              id: 110
-              name: Test Contact Name
-              emailEnabled: true
-              phoneCallEnabled: false
-              selected: false
-              notifications:
-                id: 1110
-                notification: test@eaton.com
-                emailEnabled: true
-                phoneCallEnabled: false
-                selected: false
-          unassignedContacts:
-            id: 11110
-            name: Test Unassinged Contact Name
-            emailEnabled: true
-            phoneCallEnabled: false
-            selected: false
-            notifications:
-               id: 111110
-               notification: "9898076800"
-               emailEnabled: true
-               phoneCallenabled: false
-               selected: false
         - id: 2
           name: Test Notification Group 2
           enabled: true
-          cICustomers:
-            id: 10
-            companyName: Test Company Name
-            emailEnabled: true
-            phoneCallEnabled: false
-            selected: false
-            contacts: 
-               id: 110
-               name: Test Contact Name
-               emailEnabled: true
-               phoneCallEnabled: false
-               selected: false
-               notifications:
-                 id: 1110
-                 notification: test@eaton.com
-                 emailEnabled: true
-                 phoneCallEnabled: false
-                 selected: false
-          unassignedContacts:
-             id: 11110
-             name: Test Unassinged Contact Name
-             emailEnabled: true
-             phoneCallEnabled: false
-             selected: false
-             notifications:
-               id: 111110
-               notification: "9898076800"
-               emailEnabled: true
-               phoneCallenabled: false
-               selected: false
                
     NotificationGroupId:
       value:
