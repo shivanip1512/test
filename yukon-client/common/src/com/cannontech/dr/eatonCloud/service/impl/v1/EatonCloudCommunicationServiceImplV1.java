@@ -22,6 +22,7 @@ import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpMethod;
 import org.springframework.http.ResponseEntity;
 import org.springframework.http.converter.json.MappingJackson2HttpMessageConverter;
+import org.springframework.util.CollectionUtils;
 import org.springframework.util.LinkedMultiValueMap;
 import org.springframework.util.MultiValueMap;
 import org.springframework.web.client.RestTemplate;
@@ -203,13 +204,17 @@ public class EatonCloudCommunicationServiceImplV1 implements EatonCloudCommunica
                     commsLogger.info(">>> EC[{}] Request to:{} Response:{} Total Tags:{} ", requestIdentifier, uri,
                     deferredJson(response.getBody()), totalTags);
             } else {
+                try {
                     Map<String, Integer> info = Arrays.stream(response.getBody())
-                            .collect(Collectors.toMap(k -> k.getDeviceId(), k -> k.getResults().stream()
-                            .collect(Collectors.summingInt(v -> v.getValues().size()))));
-                    commsLogger.info(">>> EC[{}] Request to:{} Response:{} Total Tags:{}", requestIdentifier, uri, info, totalTags);
+                            .collect(Collectors.toMap(k -> k.getDeviceId(),
+                                    k -> k.getResults().stream().filter(v -> !CollectionUtils.isEmpty(v.getValues()))
+                                            .collect(Collectors.summingInt(v -> v.getValues().size()))));
+                    commsLogger.info(">>> EC[{}] Request to:{} Response:{}", requestIdentifier, uri, info);
+                } catch (Exception e) {
+                    commsLogger.info(">>> EC[{}] Request to:{} Response:{}", requestIdentifier, uri, deferredJson(response.getBody()));
+                }
             }
-            return Arrays.asList(response.getBody());             
-   
+            return Arrays.asList(response.getBody());
         } catch (EatonCloudCommunicationExceptionV1 e) {
             commsLogger.info(">>> EC[{}] Request to:{} Response:", requestIdentifier, uri, e);
             e.setRequestIdentifier(requestIdentifier);
