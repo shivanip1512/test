@@ -78,131 +78,131 @@ public class MeterReadProcessingServiceImpl implements MeterReadProcessingServic
                 ReadingValues readingValues = createArrayOfReadingValue(reading);
                 ReadingValue readingValue = new ReadingValue();
                 readingValue.setFieldName(SyntaxItem.KVAR.getMspFieldName());
-                setTimestampAndValuesForMeterRead(value, reading, readingValues, readingValue);            
+                setTimestampAndValuesForMeterRead(value, reading, readingValues, readingValue);
             }
 
         };
-        
+
         ReadingProcessor sumKwhConverter = new ReadingProcessor() {
             @Override
             public void apply(PointValueHolder value, MeterRead reading, PaoType paoType) {
                 ReadingValues readingValues = createArrayOfReadingValue(reading);
                 ReadingValue readingValue = new ReadingValue();
                 readingValue.setFieldName(SyntaxItem.SUM_KWH.getMspFieldName());
-                setTimestampAndValuesForMeterRead(value, reading, readingValues, readingValue);           
+                setTimestampAndValuesForMeterRead(value, reading, readingValues, readingValue);
             }
         };
-        
+
         ReadingProcessor netKwhConverter = new ReadingProcessor() {
             @Override
             public void apply(PointValueHolder value, MeterRead reading, PaoType paoType) {
                 Calendar calendar = Calendar.getInstance();
                 calendar.setTime(value.getPointDataTimeStamp());
-                
+
                 ReadingValues readingValues = createArrayOfReadingValue(reading);
                 ReadingValue readingValue = new ReadingValue();
                 readingValue.setFieldName(SyntaxItem.NET_KWH.getMspFieldName());
-                setTimestampAndValuesForMeterRead(value, reading, readingValues, readingValue);      
+                setTimestampAndValuesForMeterRead(value, reading, readingValues, readingValue);
             }
         };
-        
+
         ReadingProcessor kvaConverter = new ReadingProcessor() {
             @Override
             public void apply(PointValueHolder value, MeterRead reading, PaoType paoType) {
                 ReadingValues readingValues = createArrayOfReadingValue(reading);
                 ReadingValue readingValue = new ReadingValue();
                 readingValue.setFieldName(SyntaxItem.KVA.getMspFieldName());
-                setTimestampAndValuesForMeterRead(value, reading, readingValues, readingValue);             
+                setTimestampAndValuesForMeterRead(value, reading, readingValues, readingValue);
             }
         };
-        
+
         ReadingProcessor kvarhConverter = new ReadingProcessor() {
             @Override
             public void apply(PointValueHolder value, MeterRead reading, PaoType paoType) {
                 ReadingValues readingValues = createArrayOfReadingValue(reading);
                 ReadingValue readingValue = new ReadingValue();
                 readingValue.setFieldName(SyntaxItem.KVARH.getMspFieldName());
-                setTimestampAndValuesForMeterRead(value, reading, readingValues, readingValue);             
+                setTimestampAndValuesForMeterRead(value, reading, readingValues, readingValue);
             }
         };
-        
+
         ReadingProcessor powerFactorConverter = new ReadingProcessor() {
             @Override
             public void apply(PointValueHolder value, MeterRead reading, PaoType paoType) {
                 ReadingValues readingValues = createArrayOfReadingValue(reading);
                 ReadingValue readingValue = new ReadingValue();
                 readingValue.setFieldName(SyntaxItem.POWER_FACTOR.getMspFieldName());
-                setTimestampAndValuesForMeterRead(value, reading, readingValues, readingValue);             
+                setTimestampAndValuesForMeterRead(value, reading, readingValues, readingValue);
             }
         };
-        
+
         ReadingProcessor receivedKwhConverter = new ReadingProcessor() {
             @Override
             public void apply(PointValueHolder value, MeterRead reading, PaoType paoType) {
                 ReadingValues readingValues = createArrayOfReadingValue(reading);
                 ReadingValue readingValue = new ReadingValue();
                 readingValue.setFieldName(SyntaxItem.RECEIVED_KWH.getMspFieldName());
-                setTimestampAndValuesForMeterRead(value, reading, readingValues, readingValue);              
+                setTimestampAndValuesForMeterRead(value, reading, readingValues, readingValue);
             }
         };
-        
+
         ReadingProcessor peakDemandRateAConverter = new ReadingProcessor() {
             @Override
             public void apply(PointValueHolder value, MeterRead reading, PaoType paoType) {
                 ReadingValues readingValues = createArrayOfReadingValue(reading);
                 ReadingValue readingValue = new ReadingValue();
                 readingValue.setFieldName(SyntaxItem.PEAK_DEMAND_RATE_A.getMspFieldName());
-                setTimestampAndValuesForMeterRead(value, reading, readingValues, readingValue);              
+                setTimestampAndValuesForMeterRead(value, reading, readingValues, readingValue);
             }
         };
-        
+
         ReadingProcessor peakDemandRateBConverter = new ReadingProcessor() {
             @Override
             public void apply(PointValueHolder value, MeterRead reading, PaoType paoType) {
                 ReadingValues readingValues = createArrayOfReadingValue(reading);
                 ReadingValue readingValue = new ReadingValue();
                 readingValue.setFieldName(SyntaxItem.PEAK_DEMAND_RATE_B.getMspFieldName());
-                setTimestampAndValuesForMeterRead(value, reading, readingValues, readingValue);              
+                setTimestampAndValuesForMeterRead(value, reading, readingValues, readingValue);
             }
         };
-        
+
         ReadingProcessor peakDemandRateCConverter = new ReadingProcessor() {
             @Override
             public void apply(PointValueHolder value, MeterRead reading, PaoType paoType) {
                 ReadingValues readingValues = createArrayOfReadingValue(reading);
                 ReadingValue readingValue = new ReadingValue();
                 readingValue.setFieldName(SyntaxItem.PEAK_DEMAND_RATE_C.getMspFieldName());
-                setTimestampAndValuesForMeterRead(value, reading, readingValues, readingValue);              
+                setTimestampAndValuesForMeterRead(value, reading, readingValues, readingValue);
             }
         };
-        
+
         ReadingProcessor peakDemandRateDConverter = new ReadingProcessor() {
             @Override
             public void apply(PointValueHolder value, MeterRead reading, PaoType paoType) {
                 ReadingValues readingValues = createArrayOfReadingValue(reading);
                 ReadingValue readingValue = new ReadingValue();
                 readingValue.setFieldName(SyntaxItem.PEAK_DEMAND_RATE_D.getMspFieldName());
-                setTimestampAndValuesForMeterRead(value, reading, readingValues, readingValue);              
+                setTimestampAndValuesForMeterRead(value, reading, readingValues, readingValue);
             }
         };
-        
+
         ReadingProcessor receivedKwhRateAConverter = new ReadingProcessor() {
             @Override
             public void apply(PointValueHolder value, MeterRead reading, PaoType paoType) {
                 ReadingValues readingValues = createArrayOfReadingValue(reading);
                 ReadingValue readingValue = new ReadingValue();
                 readingValue.setFieldName(SyntaxItem.RECEIVED_KWH_RATE_A.getMspFieldName());
-                setTimestampAndValuesForMeterRead(value, reading, readingValues, readingValue);              
+                setTimestampAndValuesForMeterRead(value, reading, readingValues, readingValue);
             }
         };
-        
+
         ReadingProcessor receivedKwhRateBConverter = new ReadingProcessor() {
             @Override
             public void apply(PointValueHolder value, MeterRead reading, PaoType paoType) {
                 ReadingValues readingValues = createArrayOfReadingValue(reading);
                 ReadingValue readingValue = new ReadingValue();
                 readingValue.setFieldName(SyntaxItem.RECEIVED_KWH_RATE_B.getMspFieldName());
-                setTimestampAndValuesForMeterRead(value, reading, readingValues, readingValue);              
+                setTimestampAndValuesForMeterRead(value, reading, readingValues, readingValue);
             }
         };
         ReadingProcessor receivedKwhRateCConverter = new ReadingProcessor() {
@@ -211,57 +211,57 @@ public class MeterReadProcessingServiceImpl implements MeterReadProcessingServic
                 ReadingValues readingValues = createArrayOfReadingValue(reading);
                 ReadingValue readingValue = new ReadingValue();
                 readingValue.setFieldName(SyntaxItem.RECEIVED_KWH_RATE_C.getMspFieldName());
-                setTimestampAndValuesForMeterRead(value, reading, readingValues, readingValue);              
+                setTimestampAndValuesForMeterRead(value, reading, readingValues, readingValue);
             }
         };
-        
+
         ReadingProcessor receivedKwhRateDConverter = new ReadingProcessor() {
             @Override
             public void apply(PointValueHolder value, MeterRead reading, PaoType paoType) {
                 ReadingValues readingValues = createArrayOfReadingValue(reading);
                 ReadingValue readingValue = new ReadingValue();
                 readingValue.setFieldName(SyntaxItem.RECEIVED_KWH_RATE_D.getMspFieldName());
-                setTimestampAndValuesForMeterRead(value, reading, readingValues, readingValue);              
+                setTimestampAndValuesForMeterRead(value, reading, readingValues, readingValue);
             }
         };
-        
+
         ReadingProcessor deliveredKwhRateAConverter = new ReadingProcessor() {
             @Override
             public void apply(PointValueHolder value, MeterRead reading, PaoType paoType) {
                 ReadingValues readingValues = createArrayOfReadingValue(reading);
                 ReadingValue readingValue = new ReadingValue();
                 readingValue.setFieldName(SyntaxItem.DELIVERED_KWH_RATE_A.getMspFieldName());
-                setTimestampAndValuesForMeterRead(value, reading, readingValues, readingValue);              
+                setTimestampAndValuesForMeterRead(value, reading, readingValues, readingValue);
             }
         };
-        
+
         ReadingProcessor deliveredKwhRateBConverter = new ReadingProcessor() {
             @Override
             public void apply(PointValueHolder value, MeterRead reading, PaoType paoType) {
                 ReadingValues readingValues = createArrayOfReadingValue(reading);
                 ReadingValue readingValue = new ReadingValue();
                 readingValue.setFieldName(SyntaxItem.DELIVERED_KWH_RATE_B.getMspFieldName());
-                setTimestampAndValuesForMeterRead(value, reading, readingValues, readingValue);             
+                setTimestampAndValuesForMeterRead(value, reading, readingValues, readingValue);
             }
         };
-        
+
         ReadingProcessor deliveredKwhRateCConverter = new ReadingProcessor() {
             @Override
             public void apply(PointValueHolder value, MeterRead reading, PaoType paoType) {
                 ReadingValues readingValues = createArrayOfReadingValue(reading);
                 ReadingValue readingValue = new ReadingValue();
                 readingValue.setFieldName(SyntaxItem.DELIVERED_KWH_RATE_C.getMspFieldName());
-                setTimestampAndValuesForMeterRead(value, reading, readingValues, readingValue);           
+                setTimestampAndValuesForMeterRead(value, reading, readingValues, readingValue);
             }
         };
-        
+
         ReadingProcessor deliveredKwhRateDConverter = new ReadingProcessor() {
             @Override
             public void apply(PointValueHolder value, MeterRead reading, PaoType paoType) {
                 ReadingValues readingValues = createArrayOfReadingValue(reading);
                 ReadingValue readingValue = new ReadingValue();
                 readingValue.setFieldName(SyntaxItem.DELIVERED_KWH_RATE_D.getMspFieldName());
-                setTimestampAndValuesForMeterRead(value, reading, readingValues, readingValue);              
+                setTimestampAndValuesForMeterRead(value, reading, readingValues, readingValue);
             }
         };
         
