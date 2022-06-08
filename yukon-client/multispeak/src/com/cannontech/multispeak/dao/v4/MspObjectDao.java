@@ -113,4 +113,11 @@ public interface MspObjectDao {
      */
     public void logMSPActivity(String method, String description, String userName);
 
+    /**
+     * Retrieves msp ServiceLocation objects from the mspVendor.
+     * Lists of msp ServiceLocation objects are given to the callback as they are retrieved in chunks from the vendor.
+     */
+    public void getAllMspServiceLocations(MultispeakVendor mspVendor, MultispeakGetAllServiceLocationsCallback callback)
+            throws MultispeakWebServiceClientException;
+
 }

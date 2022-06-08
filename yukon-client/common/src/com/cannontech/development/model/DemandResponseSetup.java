@@ -7,6 +7,7 @@ import org.apache.commons.lang3.builder.ToStringBuilder;
 import org.apache.commons.lang3.builder.ToStringStyle;
 
 import com.cannontech.common.pao.PaoType;
+import com.cannontech.user.YukonUserContext;
 
 public class DemandResponseSetup implements Serializable {
     private static final long serialVersionUID = 1L;
@@ -18,6 +19,8 @@ public class DemandResponseSetup implements Serializable {
     private int devices = 7;
     private List<PaoType> types;
     private String token;
+    private boolean clean;
+    private YukonUserContext userContext;
     
     public int getProgramId() {
         return programId;
@@ -62,11 +65,23 @@ public class DemandResponseSetup implements Serializable {
         this.types = types;
     }
     
+    public boolean isClean() {
+        return clean;
+    }
+    public void setClean(boolean clean) {
+        this.clean = clean;
+    }
     public String getToken() {
         return token;
     }
     public void setToken(String token) {
         this.token = token;
+    }
+    public YukonUserContext getUserContext() {
+        return userContext;
+    }
+    public void setUserContext(YukonUserContext userContext) {
+        this.userContext = userContext;
     }
     @Override
     public String toString() {

@@ -174,6 +174,7 @@ public class RfnEventTestingServiceImpl implements RfnEventTestingService {
         
         groupedMeterTypesBuilder.put("Landis & Gyr Focus Gen 2 single phase", ImmutableList.of(
             RfnManufacturerModel.RFN_520FAXDE,
+            RfnManufacturerModel.RFN_520FAXDE,
             RfnManufacturerModel.RFN_520FAXTE,
             RfnManufacturerModel.RFN_520FAXRE,
             RfnManufacturerModel.RFN_520FRXDE,
@@ -184,7 +185,9 @@ public class RfnEventTestingServiceImpl implements RfnEventTestingService {
             RfnManufacturerModel.RFN_520FAXRE_SD,
             RfnManufacturerModel.RFN_520FRXDE_SD,
             RfnManufacturerModel.RFN_520FRXTE_SD,
-            RfnManufacturerModel.RFN_520FRXRE_SD));
+            RfnManufacturerModel.RFN_520FRXRE_SD,
+            RfnManufacturerModel.CRL_520FAXE,
+            RfnManufacturerModel.CRL_520FAXED));
 
         groupedMeterTypesBuilder.put("Landis & Gyr Focus Gen 1 polyphase", ImmutableList.of(
             RfnManufacturerModel.RFN_530FAXD,
@@ -221,7 +224,8 @@ public class RfnEventTestingServiceImpl implements RfnEventTestingService {
             RfnManufacturerModel.RFN_530S4AR,
             RfnManufacturerModel.RFN_530S4RD,
             RfnManufacturerModel.RFN_530S4RT,
-            RfnManufacturerModel.RFN_530S4RR));
+            RfnManufacturerModel.RFN_530S4RR,
+            RfnManufacturerModel.CRL_530S4X));
 
         groupedMeterTypesBuilder.put("Elster A3", ImmutableList.of(
             RfnManufacturerModel.RFN_430A3D,

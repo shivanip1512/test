@@ -107,6 +107,7 @@ import com.cannontech.dr.rfn.model.RfnDataSimulatorStatus;
 import com.cannontech.dr.rfn.model.RfnMeterReadAndControlDisconnectSimulatorSettings;
 import com.cannontech.dr.rfn.model.RfnMeterReadAndControlReadSimulatorSettings;
 import com.cannontech.dr.rfn.model.SimulatorSettings;
+import com.cannontech.dr.rfn.model.SimulatorSettings.RecordingInterval;
 import com.cannontech.dr.rfn.model.SimulatorSettings.ReportingInterval;
 import com.cannontech.dr.rfn.service.RfnPerformanceVerificationService;
 import com.cannontech.i18n.YukonMessageSourceResolvable;
@@ -680,6 +681,7 @@ public class NmIntegrationController {
     public String viewRfnMeterSimulator(ModelMap model, FlashScope flash) {
         ImmutableSet<PaoType> paoTypes = PaoType.getRfMeterTypes();
         model.addAttribute("paoTypes", paoTypes);
+        model.addAttribute("rfnMeterRecordingIntervals",RecordingInterval.values());
         model.addAttribute("rfnMeterReportingIntervals",ReportingInterval.values());
         model.addAttribute("rfnMeterReadReplies", RfnMeterReadingReplyType.values());
         model.addAttribute("rfnMeterReadDataReplies", RfnMeterReadingDataReplyType.values());
@@ -706,6 +708,7 @@ public class NmIntegrationController {
         }
         
         model.addAttribute("currentSettings", rfnMeterResponse.getSettings());
+        model.addAttribute("selectedRecordingInterval", rfnMeterResponse.getSettings().getRecordingInterval());
         model.addAttribute("selectedReportingInterval", rfnMeterResponse.getSettings().getReportingInterval());
         model.addAttribute("rfnMeterSimulatorStatus", buildSimulatorStatusJson(rfnMeterResponse.getStatus()));
         

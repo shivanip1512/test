@@ -38,6 +38,19 @@ Notification Group Response Schema:
     unassignedContacts:
        description: 'Contacts that can be assigned to the notification group.'
        $ref: '#/unassignedContactsResponse'
+       
+Notification Group Retreive All Response Schema:
+  type: object
+  properties:
+    id:
+      type: integer
+      description: 'Unique identifier of the notification group.'
+    name:
+      type: string
+      description: 'Name of the notification group.'
+    enabled:
+      type: boolean
+      description: 'Status of the notification group.'
 
 unassignedContactsRequest:
     type: array
@@ -240,7 +253,7 @@ Notification Group List Response Schema:
         type: object
         properties:
           Notification Group:
-            $ref: '#/Notification Group Response Schema'
+            $ref: '#/Notification Group Retreive All Response Schema'
           
 components:
   examples:
@@ -320,69 +333,9 @@ components:
         - id: 1
           name: Test Notification Group 1
           enabled: true
-          cICustomers:
-            id: 10
-            companyName: Test Company Name
-            emailEnabled: true
-            phoneCallEnabled: false
-            selected: false
-            contacts: 
-              id: 110
-              name: Test Contact Name
-              emailEnabled: true
-              phoneCallEnabled: false
-              selected: false
-              notifications:
-                id: 1110
-                notification: test@eaton.com
-                emailEnabled: true
-                phoneCallEnabled: false
-                selected: false
-          unassignedContacts:
-            id: 11110
-            name: Test Unassinged Contact Name
-            emailEnabled: true
-            phoneCallEnabled: false
-            selected: false
-            notifications:
-               id: 111110
-               notification: "9898076800"
-               emailEnabled: true
-               phoneCallenabled: false
-               selected: false
         - id: 2
           name: Test Notification Group 2
           enabled: true
-          cICustomers:
-            id: 10
-            companyName: Test Company Name
-            emailEnabled: true
-            phoneCallEnabled: false
-            selected: false
-            contacts: 
-               id: 110
-               name: Test Contact Name
-               emailEnabled: true
-               phoneCallEnabled: false
-               selected: false
-               notifications:
-                 id: 1110
-                 notification: test@eaton.com
-                 emailEnabled: true
-                 phoneCallEnabled: false
-                 selected: false
-          unassignedContacts:
-             id: 11110
-             name: Test Unassinged Contact Name
-             emailEnabled: true
-             phoneCallEnabled: false
-             selected: false
-             notifications:
-               id: 111110
-               notification: "9898076800"
-               emailEnabled: true
-               phoneCallenabled: false
-               selected: false
                
     NotificationGroupId:
       value:

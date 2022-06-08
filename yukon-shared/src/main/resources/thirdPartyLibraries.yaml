@@ -1687,18 +1687,18 @@ Java :
     jira : YUK-25377
     notes : pentaho libfonts
   
-  - filename : libthrift-0.13.0.jar
+  - filename : libthrift-0.16.0.jar
     yukon group : Thrift
     project : Thrift
-    version : 0.13.0
+    version : 0.16.0
     project URL : "http://thrift.apache.org/"
     license : Apache 2.0
     license URLs : "https://opensource.org/licenses/Apache-2.0"
-    maven URL : "https://mvnrepository.com/artifact/org.apache.thrift/libthrift/0.13.0"
-    md5 : 31132a57eacc3e7cd2b7af626b5f1ff9
-    sha1 : 0e5af3b6dc164eb2c699b70bf67a0babef507faf
-    updated : 2019-12-16
-    jira : YUK-21105
+    maven URL : "https://mvnrepository.com/artifact/org.apache.thrift/libthrift/0.16.0"
+    md5 : 19226bcfae19557ec080e098f87a1340
+    sha1 : 995b1788bf9d954a77a24db5619a065ed1a455e9
+    updated : 2022-05-31
+    jira : YUK-25140
     notes : 
     
   - filename : libserializer-9.3.0.0-257.jar
@@ -6435,16 +6435,16 @@ C++ :
     
   - project : Eaton Remote Meter Programming Converter
     path : RMP_CONVERTER
-    version : 1.0.2
+    version : 1.0.3
     project URL : none
     license : Eaton-owned
     license URLs : none
-    md5 : 2bca7e9542592b2901af9477c1a5333c
-    sha1 : 4fe99a1af377a806888a7f1f943155f0c2281797
+    md5 : c734743081f9cd3acbfb2ec8dbe59027
+    sha1 : ef0f6d1c2c68ad07577b68aef21d3e1d597be58d
     fileCount : 4
-    totalSize : 1126870
-    updated : 2020-07-21
-    jira : YUK-22553
+    totalSize : 1036246
+    updated : 2022-06-02
+    jira : YUK-26420
     notes : 
     
   - project : SQLAPI 

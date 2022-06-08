@@ -2,6 +2,7 @@
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
 <%@ taglib prefix="cm" tagdir="/WEB-INF/tags/contextualMenu" %>
 <%@ taglib prefix="cti" uri="http://cannontech.com/tags/cti" %>
+<%@ taglib prefix="d" tagdir="/WEB-INF/tags/dialog"%>
 <%@ taglib prefix="form" uri="http://www.springframework.org/tags/form"%>
 <%@ taglib prefix="i" tagdir="/WEB-INF/tags/i18n"%>
 <%@ taglib prefix="tags" tagdir="/WEB-INF/tags"%>
@@ -21,8 +22,14 @@
                                icon="icon-disk-multiple"/>
                            
             <li class="divider"></li>
-            <cm:dropdownOption icon="icon-delete"
-                               key="yukon.web.components.button.delete.label"/>
+            <cm:dropdownOption icon="icon-delete" key="yukon.web.components.button.delete.label" id="js-delete"
+                               data-ok-event="yukon:signal-transmitter:delete" classes="js-hide-dropdown"/>
+            <d:confirm on="#js-delete" nameKey="confirmDelete" argument="${signalTransmitter.name}" />
+            <cti:url var="deleteUrl" value="/stars/device/signalTransmitter/${signalTransmitter.id}/delete" />
+            <form:form id="js-delete-form" action="${deleteUrl}" method="delete" modelAttribute="signalTransmitter">
+                <tags:hidden path="name" />
+                <cti:csrfToken />
+            </form:form>
         </div>
     </cti:displayForPageEditModes>
     
