@@ -86,6 +86,12 @@ yukon.mapping = (function () {
                 scale: _deviceScale, 
                 anchor: _anchor }), 
             zIndex: _iconZIndex }),
+        'METER_CELL_ELECTRIC': new ol.style.Style({ 
+                image: new ol.style.Icon({ 
+                    src: yukon.url('/WebConfig/yukon/Icons/marker-meter-cell-grey.svg'), 
+                    scale: _deviceScale, 
+                    anchor: _anchor }), 
+                zIndex: _iconZIndex }),
         'METER_WIFI_ELECTRIC': new ol.style.Style({ 
             image: new ol.style.Icon({ 
                 src: yukon.url('/WebConfig/yukon/Icons/marker-meter-wifi-grey.svg'), 
