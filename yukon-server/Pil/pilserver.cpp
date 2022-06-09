@@ -40,6 +40,7 @@
 #include "RfnDataStreamingUpdate.h"
 #include "RfnMeterDisconnectMsg.h"
 #include "RfnMeterReadMsg.h"
+#include "RfnEdgeDrMessaging.h"
 
 #include "mgr_rfn_request.h"
 #include "cmd_rfn_ConfigNotification.h"
@@ -179,6 +180,16 @@ int PilServer::execute()
             in_q::RfnMeterReadRequest,
             [this](const amq_cm::MessageDescriptor& md, amq_cm::ReplyCallback callback) {
                 return handleRfnMeterReadRequest(md, callback);
+            });
+        amq_cm::registerReplyHandler(
+            in_q::RfnEdgeDrUnicastRequest,
+            [this](const amq_cm::MessageDescriptor& md, amq_cm::ReplyCallback callback) {
+                return handleRfnEdgeDrUnicastRequest(md, callback);
+            });
+        amq_cm::registerReplyHandler(
+            in_q::RfnEdgeDrBroadcastRequest,
+            [this](const amq_cm::MessageDescriptor& md, amq_cm::ReplyCallback callback) {
+                return handleRfnEdgeDrBroadcastRequest(md, callback);
             });
 
         _periodicActionThread.start();
@@ -1245,6 +1256,139 @@ void PilServer::handleRfnMeterReadRequest(const amq_cm::MessageDescriptor& md, a
     }
 
     callback(std::move(serializedRsp1));
+}
+
+void PilServer::handleRfnEdgeDrUnicastRequest( const amq_cm::MessageDescriptor & md, amq_cm::ReplyCallback callback )
+{
+    using namespace Messaging::Rfn;
+    using Messaging::Serialization::MessageSerializer;
+
+    auto req = MessageSerializer<EdgeDrUnicastRequest>::deserialize( md.msg );
+
+    if ( ! req )
+    {
+        CTILOG_WARN( dout, "Could not deserialize request message" );
+
+        return;
+    }
+
+    // Log the incoming request (for now)...
+    {
+        // wheel re-invention...
+        std::string paos = std::to_string( req->paoIds.size() ) + ": ";
+        for ( auto p : req->paoIds )
+        {
+            paos += std::to_string( p ) + " ";
+        }
+
+        std::string payload = "0x";
+        for ( auto b : req->payload )
+        {
+            payload += toAsciiHex( (b >> 4) & 0x0f );
+            payload += toAsciiHex(  b       & 0x0f );
+        }
+        // end wheel re-invention...
+
+        CTILOG_DEBUG( dout, "Received EdgeDR unicast request:" << FormattedList::of(
+            "Message GUID: ",       req->messageGuid,
+            "PaoID(s): ",           paos,
+            "Payload: ",            payload,
+            "Queue Priority: ",     ( req->queuePriority   == EdgeUnicastPriority::HIGH ? "HIGH": "LOW" ),
+            "Network Priority: ",   ( req->networkPriority == EdgeUnicastPriority::HIGH ? "HIGH": "LOW" ) ) );
+    }
+
+
+
+    // TODO - stuff to send out the messages  --  'putvalue oscore 0x{hex string}' or something?
+
+
+
+
+    EdgeDrUnicastResponse resp
+    {
+        req->messageGuid,
+        { },
+        std::nullopt    // no error...
+    };
+
+    for ( auto ID : req->paoIds )
+    {
+        resp.paoToE2eId.emplace( ID, 0 );   // bogus '0' e2e message ID here...
+    }
+
+    auto serializedResponse = Messaging::Serialization::serialize( resp );
+
+    if ( serializedResponse.empty() )
+    {
+        CTILOG_WARN( dout, "Could not serialize response message" << FormattedList::of(
+            "Message GUID", req->messageGuid
+            // error info..?
+            ) );
+
+        return;
+    }
+
+    callback( std::move( serializedResponse ) );
+}
+
+void PilServer::handleRfnEdgeDrBroadcastRequest( const amq_cm::MessageDescriptor & md, amq_cm::ReplyCallback callback )
+{
+    using namespace Messaging::Rfn;
+    using Messaging::Serialization::MessageSerializer;
+
+    auto req = MessageSerializer<EdgeDrBroadcastRequest>::deserialize( md.msg );
+
+    if ( ! req )
+    {
+        CTILOG_WARN( dout, "Could not deserialize request message" );
+
+        return;
+    }
+
+    // Log the incoming request (for now)...
+    {
+        // wheel re-invention...
+        std::string payload = "0x";
+        for ( auto b : req->payload )
+        {
+            payload += toAsciiHex( (b >> 4) & 0x0f );
+            payload += toAsciiHex(  b       & 0x0f );
+        }
+        // end wheel re-invention...
+
+        CTILOG_DEBUG( dout, "Received EdgeDR unicast request:" << FormattedList::of(
+            "Message GUID: ",   req->messageGuid,
+            "Payload: ",        payload,
+            "Priority: ",       ( req->priority == EdgeBroadcastMessagePriority::IMMEDIATE ? "IMMEDIATE": "NON_REAL_TIME" ) ) );
+    }
+
+
+
+
+    // TODO - stuff to send message(s)
+
+
+
+
+    EdgeDrBroadcastResponse resp
+    {
+        req->messageGuid,
+        std::nullopt    // no error...
+    };
+
+    auto serializedResponse = Messaging::Serialization::serialize( resp );
+
+    if ( serializedResponse.empty() )
+    {
+        CTILOG_WARN( dout, "Could not serialize response message" << FormattedList::of(
+            "Message GUID", req->messageGuid
+            // error info..?
+            ) );
+
+        return;
+    }
+
+    callback( std::move( serializedResponse ) );
 }
 
 void PilServer::submitOutMessages(CtiDeviceBase::OutMessageList& outList)

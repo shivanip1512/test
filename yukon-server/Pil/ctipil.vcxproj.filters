@@ -45,6 +45,9 @@
     <ClCompile Include="RfnMeterDisconnectMsg_serialization.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="RfnEdgeDrMessaging_serialization.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="include\exe_pcreq.h">
