@@ -28,37 +28,31 @@ public class ThriftRequestReplyTemplate<Q, R> {
 
     private ThriftByteSerializer<Q> requestSerializer;
     private ThriftByteDeserializer<R> replyDeserializer;
-    
+    private String responseQueueName;
+
     public ThriftRequestReplyTemplate(YukonJmsTemplate jmsTemplate, 
             ThriftByteSerializer<Q> requestSerializer, ThriftByteDeserializer<R> replyDeserializer) {
         this.jmsTemplate = jmsTemplate;
         this.requestSerializer = requestSerializer;
         this.replyDeserializer = replyDeserializer;
+        this.responseQueueName = null;
     }
-    
+
+    public ThriftRequestReplyTemplate(YukonJmsTemplate jmsTemplate, 
+            ThriftByteSerializer<Q> requestSerializer, ThriftByteDeserializer<R> replyDeserializer, String responseQueueName) {
+        this.jmsTemplate = jmsTemplate;
+        this.requestSerializer = requestSerializer;
+        this.replyDeserializer = replyDeserializer;
+        this.responseQueueName = responseQueueName;
+        
+    }
+
     public void send(final Q requestPayload, final CompletableFuture<R> callback) {
         try {
             log.trace("RequestReplyTemplateBase execute Start " + requestPayload.toString());
             jmsTemplate.execute(session -> {
                     try {
-                        doJmsWork(session, requestPayload, callback, null);
-                    } catch (Exception e) {
-                        ExceptionHelper.throwOrWrap(e);
-                    }
-                    return null;
-                }, true);
-            log.trace("RequestReplyTemplateBase execute End " + requestPayload.toString());
-        } catch (Exception e) {
-            callback.completeExceptionally(e);
-        }
-    }
-    
-    public void send(final Q requestPayload, final CompletableFuture<R> callback, String responseQueueName) {
-        try {
-            log.trace("RequestReplyTemplateBase execute Start " + requestPayload.toString());
-            jmsTemplate.execute(session -> {
-                    try {
-                        doJmsWork(session, requestPayload, callback, responseQueueName);
+                        doJmsWork(session, requestPayload, callback);
                     } catch (Exception e) {
                         ExceptionHelper.throwOrWrap(e);
                     }
@@ -71,8 +65,7 @@ public class ThriftRequestReplyTemplate<Q, R> {
     }
 
     private void doJmsWork(Session session,
-        final Q requestPayload, final CompletableFuture<R> callback, String responseQueueName) throws JMSException {
-
+        final Q requestPayload, final CompletableFuture<R> callback) throws JMSException {
         var resolver = new DynamicDestinationResolver();
         Destination destination = resolver.resolveDestinationName(session, jmsTemplate.getDefaultDestinationName(), jmsTemplate.isPubSubDomain());
         Destination responseDestination;

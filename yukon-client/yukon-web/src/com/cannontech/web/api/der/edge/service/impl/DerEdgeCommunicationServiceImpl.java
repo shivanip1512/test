@@ -42,7 +42,7 @@ public class DerEdgeCommunicationServiceImpl implements DerEdgeCommunicationServ
     @Autowired private YukonJmsTemplateFactory jmsTemplateFactory;
 
     private ThriftRequestReplyTemplate<EdgeDrBroadcastRequest, EdgeDrBroadcastResponse> thriftBroadcastMessenger;
-    private ThriftRequestReplyTemplate<EdgeDrUnicastRequest, EdgeDrUnicastResponse> thriftUnicastMessanger;
+    private ThriftRequestReplyTemplate<EdgeDrUnicastRequest, EdgeDrUnicastResponse> thriftUnicastMessenger;
 
     @PostConstruct
     public void initialize() {
@@ -51,10 +51,11 @@ public class DerEdgeCommunicationServiceImpl implements DerEdgeCommunicationServ
                 new EdgeDrBroadcastRequestSerializer(),
                 new EdgeDrBroadcastResponseSerializer());
 
-        thriftUnicastMessanger = new ThriftRequestReplyTemplate<EdgeDrUnicastRequest, EdgeDrUnicastResponse>(
+        thriftUnicastMessenger = new ThriftRequestReplyTemplate<EdgeDrUnicastRequest, EdgeDrUnicastResponse>(
                 jmsTemplateFactory.createTemplate(JmsApiDirectory.EDGE_DR_UNICAST), 
                 new EdgeDrUnicastRequestSerializer(),
-                new EdgeDrUnicastResponseSerializer());
+                new EdgeDrUnicastResponseSerializer(),
+                JmsApiDirectory.EDGE_DR_UNICAST.getResponseQueueName());
     }
 
     @Override
@@ -68,11 +69,11 @@ public class DerEdgeCommunicationServiceImpl implements DerEdgeCommunicationServ
         final String messageGuid = UUID.randomUUID().toString();
 
         var requestMsg = new EdgeDrUnicastRequest(pao.getPaoIdentifier().getPaoId(), messageGuid, payload, queuePriority, networkPriority);
-        var f = new CompletableFuture<EdgeDrUnicastResponse>();
-        thriftUnicastMessanger.send(requestMsg, f, JmsApiDirectory.EDGE_DR_UNICAST.getResponseQueueName());
+        var completableFuture = new CompletableFuture<EdgeDrUnicastResponse>();
+        thriftUnicastMessenger.send(requestMsg, completableFuture);
 
         try {
-            var responseMsg = f.get(DEFAULT_TIMEOUT_MINUTES, TimeUnit.MINUTES);
+            var responseMsg = completableFuture.get(DEFAULT_TIMEOUT_MINUTES, TimeUnit.MINUTES);
 
             log.debug("Received info from Porter: {}", responseMsg);
 
@@ -96,11 +97,11 @@ public class DerEdgeCommunicationServiceImpl implements DerEdgeCommunicationServ
         final String messageGuid = UUID.randomUUID().toString();
 
         var requestMsg = new EdgeDrBroadcastRequest(messageGuid, payload, priority);
-        var f = new CompletableFuture<EdgeDrBroadcastResponse>();
-        thriftBroadcastMessenger.send(requestMsg, f);
+        var completableFuture = new CompletableFuture<EdgeDrBroadcastResponse>();
+        thriftBroadcastMessenger.send(requestMsg, completableFuture);
 
         try {
-            var responseMsg = f.get(DEFAULT_TIMEOUT_MINUTES, TimeUnit.MINUTES);
+            var responseMsg = completableFuture.get(DEFAULT_TIMEOUT_MINUTES, TimeUnit.MINUTES);
 
             log.debug("Received info from Porter: {}", responseMsg);
 
