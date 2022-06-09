@@ -111,11 +111,14 @@ public class EatonCloudDataReadServiceImplTest {
                         .map(attributeDefinition -> attributeDefinition.getAttribute())
                         .collect(Collectors.toSet());;
                 Set<String> deviceTags = EatonCloudChannel.getTagsForAttributes(deviceAttributes);
-                int numDevices = ThreadLocalRandom.current().nextInt(TAGS_PER_TIMESERIES_REQUEST / deviceTags.size(), (TAGS_PER_TIMESERIES_REQUEST / deviceTags.size()) * 2);
+                String tagString = StringUtils.join(deviceTags, ',');
+
+                int minDevices = (TAGS_PER_TIMESERIES_REQUEST / deviceTags.size()) + 1;
+                int numDevices = ThreadLocalRandom.current().nextInt(minDevices, minDevices * 2);
 
                 for (int j = 0; j < numDevices; j++) {
                     String randGuid = UUID.randomUUID().toString();
-                    requests.add(new EatonCloudTimeSeriesDeviceV1(randGuid, StringUtils.join(deviceTags, ',')));
+                    requests.add(new EatonCloudTimeSeriesDeviceV1(randGuid, tagString));
                 }
 
                 List<List<EatonCloudTimeSeriesDeviceV1>> chunkedRequests = (List<List<EatonCloudTimeSeriesDeviceV1>>) chunkRequestsMethod.invoke(dataReadService, requests);
