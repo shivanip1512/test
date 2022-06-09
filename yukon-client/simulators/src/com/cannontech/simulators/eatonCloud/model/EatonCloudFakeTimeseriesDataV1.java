@@ -1,6 +1,8 @@
 package com.cannontech.simulators.eatonCloud.model;
 
-import java.io.File;
+import static org.junit.jupiter.api.DynamicTest.stream;
+
+import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
@@ -54,25 +56,25 @@ public class EatonCloudFakeTimeseriesDataV1 {
         int fileNum = 1;
         while (true) {
             String path = defaultPath + "timeseries_data_" + type + "_" + fileNum + ".json";
-            File file = null;
+            InputStream stream = null;
             try {
-                file = loader.getResource(path).getFile();
-                log.info("Loaded {}", file);
-            } catch (Exception ioe) {
-                log.error("Could not open {}", path, ioe);
+                stream = loader.getResource(path).getInputStream();
+                log.info("Loaded stream {}", path);
+            } catch (Exception e) {
+                log.error("Could not open {}", path, e);
                 break;
             }
             
             try {
-                EatonCloudTimeSeriesDeviceResultV1[] template = new ObjectMapper().readValue(file,
+                EatonCloudTimeSeriesDeviceResultV1[] template = new ObjectMapper().readValue(stream,
                         EatonCloudTimeSeriesDeviceResultV1[].class);
                 parsedChannels.putAll(template[0].getResults()
                         .stream()
                         .collect(Collectors.toMap(t -> t.getTag(), t -> t)));
-                log.info("Parsed file:{}", file);
+                log.info("Parsed file:{}", path);
                 fileNum++;
             } catch (Exception e) {
-                log.info("Error parsing:" + file, e);
+                log.info("Error parsing:{}", path, e);
             }
         }
 
