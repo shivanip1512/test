@@ -1,12 +1,6 @@
 package com.cannontech.simulators.eatonCloud.model;
 
-import java.io.BufferedInputStream;
 import java.io.File;
-import java.io.FileInputStream;
-import java.io.FileNotFoundException;
-import java.io.IOException;
-import java.io.InputStream;
-import java.net.URL;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
@@ -21,15 +15,10 @@ import org.apache.commons.lang3.StringUtils;
 import org.apache.logging.log4j.core.Logger;
 import org.joda.time.DateTime;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.context.ApplicationContext;
-import org.springframework.core.io.Resource;
 import org.springframework.core.io.ResourceLoader;
 
 import com.cannontech.clientutils.YukonLogManager;
-import com.cannontech.common.config.dao.RfnPointMappingDao;
-import com.cannontech.common.login.ClientSession;
 import com.cannontech.common.pao.PaoType;
-import com.cannontech.common.util.CtiUtilities;
 import com.cannontech.common.util.SqlStatementBuilder;
 import com.cannontech.database.TypeRowMapper;
 import com.cannontech.database.YukonJdbcTemplate;
@@ -44,15 +33,14 @@ public class EatonCloudFakeTimeseriesDataV1 {
     @Autowired private YukonJdbcTemplate jdbcTemplate;
     private Map<PaoType, Map<String, EatonCloudTimeSeriesResultV1>> channels = new HashMap<>();
     private final Logger log = YukonLogManager.getLogger(EatonCloudDataV1.class);
-    @Autowired private ApplicationContext ctx;
+    private final static String defaultPath = "classpath:com/cannontech/simulators/model/";
     @Autowired private ResourceLoader loader;
-
     /**
      * Parses template with sample data
      */
     private void load() {
         /*if (!channels.isEmpty()) {
-          return;
+            return;
         }*/
         channels.clear();
 
@@ -60,78 +48,21 @@ public class EatonCloudFakeTimeseriesDataV1 {
         load(PaoType.LCR6600C);
     }
 
-    private final static String defaultPath = "classpath:com/cannontech/amr/rfn/service/pointmapping/rfnPointMapping.xml";
-    private final static String defaultPath1 = "classpath:com/cannontech/simulators/model/timeseries_data_LCR6200C_1.json";
-    
-    private final static File customFile = new File(CtiUtilities.getYukonBase()  + "/Server/Config/rfnPointMapping.xml");
-
-
-    public void getPointMappingFile() {
-        // Check for a custom RFN point mapping file, use if there, otherwise use default.
-       /* if (customFile.exists() && customFile.isFile()) {
-            log.info("Loading custom rfnPointMapping.xml");
-            try {
-                return new BufferedInputStream(new FileInputStream(customFile));
-            } catch (FileNotFoundException e) {
-                log.error("could not find custom rfnPointMapping.xml even though Java said it was available", e);
-            }
-        }*/
-        log.info("Loading rfnPointMapping.xml");
-        try {
-            loader.getResource(defaultPath).getInputStream();
-            log.info("Loaded rfnPointMapping.xml" + defaultPath);
-        } catch (IOException ioe) {
-            // This should never happen.
-            log.error("could not open default rfnPointMapping.xml file", ioe);
-        }
-        try {
-            loader.getResource(defaultPath1).getInputStream();
-            log.info("Loaded timeseries_data_LCR6200C_1.json "+ loader.getResource(defaultPath1).getURL());
-        } catch (IOException ioe) {
-            // This should never happen.
-            log.error("could not open timeseries_data_LCR6200C_1.json file", ioe);
-        }
-    }
-    
     private void load(PaoType type) {
-        getPointMappingFile();
-        log.info("Loaded rfnPointMapping.xml");
-        URL p0 = EatonCloudFakeTimeseriesDataV1.class.getResource("/src/com/cannontech/simulators/eatonCloud/model/timeseries_data_LCR6200C_1.json");
-        URL p1 = EatonCloudFakeTimeseriesDataV1.class.getResource("/com/cannontech/simulators/eatonCloud/model/timeseries_data_LCR6200C_1.json");
-        URL p2 = EatonCloudFakeTimeseriesDataV1.class.getResource("/timeseries_data_LCR6200C_1.json");
-        URL p3 = EatonCloudFakeTimeseriesDataV1.class.getResource("timeseries_data_LCR6200C_1.json");
-        URL p4 = EatonCloudFakeTimeseriesDataV1.class.getResource("com/cannontech/simulators/eatonCloud/model/timeseries_data_LCR6200C_1.json");
-      
-        log.info("p0:{}, p1:{}, p2:{}, p3:{}, p4:{}", p0, p1, p2, p3, p4);
-        try {
-            Resource r1 =loader.getResource("classpath:com/cannontech/simulators/eatonCloud/model/timeseries_data_LCR6200C_1.json");
-            log.info("p5:{}", r1.getURL());
-        } catch (IOException e1) {
-            log.error("p5", e1);
-        }
-        
-        try {
-            Resource r2 =
-                ctx.getResource("classpath:com/cannontech/simulators/eatonCloud/model/timeseries_data_LCR6200C_1.json");
-            log.info("p6:{}", r2.getURL());
-        } catch (IOException e1) {
-            log.error("p6", e1);
-        }
-        
         Map<String, EatonCloudTimeSeriesResultV1> parsedChannels = new HashMap<>();
+
         int fileNum = 1;
         while (true) {
-            String resource = "/com/cannontech/simulators/eatonCloud/model/timeseries_data_" + type + "_" + fileNum + ".json";
-            URL path = EatonCloudFakeTimeseriesDataV1.class.getResource(resource);
-            if (path == null) {
-                log.info("Can't find path:{}. File might not be needed search code for " + resource, path);
+            String path = defaultPath + "timeseries_data_" + type + "_" + fileNum + ".json";
+            File file = null;
+            try {
+                file = loader.getResource(path).getFile();
+                log.info("Loaded {}", file);
+            } catch (Exception ioe) {
+                log.error("Could not open {}", path, ioe);
                 break;
             }
-            File file = new File(path.getPath());
-            if (!file.exists()) {
-                log.info("Can't find file:{}. File might not be needed search code for " + resource, file);
-                break;
-            }
+            
             try {
                 EatonCloudTimeSeriesDeviceResultV1[] template = new ObjectMapper().readValue(file,
                         EatonCloudTimeSeriesDeviceResultV1[].class);
