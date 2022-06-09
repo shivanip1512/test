@@ -264,6 +264,9 @@
     <entry key="yukon.web.modules.amr.gasServicePointsInfo">Gas Service Point Information</entry>
     <entry key="yukon.web.modules.amr.propaneServicePointsInfo">Propane Service Point Information</entry>
     <entry key="yukon.web.modules.amr.waterServicePointsInfo">Water Service Point Information</entry>
+    <entry key="yukon.web.modules.amr.electricService">Electric Service</entry>
+    <entry key="yukon.web.modules.amr.gasService">Gas Service</entry>
+    <entry key="yukon.web.modules.amr.waterService">Water Service</entry>
     <entry key="yukon.web.modules.amr.namePlateInfo">Nameplate</entry>
     <entry key="yukon.web.modules.amr.noResults">No Data</entry>
     <entry key="yukon.web.modules.amr.customerHazardType">Customer Hazard Type</entry>

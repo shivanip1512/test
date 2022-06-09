@@ -80,7 +80,7 @@
              <!-- Electric Service Point Information -->
                 <c:if test="${not empty electricServicePointsInfo}">
                 <h3>
-                        <i:inline key=".electricServicePointInfo" />
+                        <i:inline key=".electricService" />
                 </h3>
                 <tags:nameValueContainer tableClass="name-value-table natural-width  stacked-md natural-width">
                         <c:forEach var="electricServicePoint" items="${electricServicePointsInfo}"
@@ -100,7 +100,7 @@
               <!-- Water Service Point Information -->
                 <c:if test="${not empty waterServiceListInfo}">
                     <h3>
-                        <i:inline key=".waterServicePointsInfo" />
+                        <i:inline key=".waterService" />
                     </h3>
                     <tags:nameValueContainer tableClass="name-value-table natural-width  stacked-md natural-width">
                         <c:forEach var="waterService" items="${waterServiceListInfo}">
@@ -119,7 +119,7 @@
                 <!-- Gas Service Point Information -->
                 <c:if test="${not empty gasServiceListInfo}">
                     <h3>
-                        <i:inline key=".gasServicePointsInfo" />
+                        <i:inline key=".gasService" />
                     </h3>
                     <tags:nameValueContainer tableClass="name-value-table natural-width  stacked-md natural-width">
                         <c:forEach var="gasService" items="${gasServiceListInfo}">
