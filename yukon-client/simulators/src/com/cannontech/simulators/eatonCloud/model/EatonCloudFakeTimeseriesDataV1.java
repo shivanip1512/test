@@ -1,7 +1,5 @@
 package com.cannontech.simulators.eatonCloud.model;
 
-import static org.junit.jupiter.api.DynamicTest.stream;
-
 import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.Arrays;
