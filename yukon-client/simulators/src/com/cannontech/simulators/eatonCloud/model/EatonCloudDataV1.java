@@ -210,7 +210,7 @@ public class EatonCloudDataV1 extends EatonCloudDataGenerator {
         AtomicInteger total = new AtomicInteger();
         resultList.forEach(r -> r.getResults().forEach(a -> total.addAndGet(a.getValues().size())));
         
-        log.info("timeseries:{} total values:{}", statistics, total);
+        log.debug("timeseries:{} total values:{}", statistics, total);
         
         return new EatonCloudSimulatorResponse(resultList.toArray(), status);
     }
@@ -223,14 +223,15 @@ public class EatonCloudDataV1 extends EatonCloudDataGenerator {
 
         IntStream.range(0, devices).forEach(i -> {
             String guid = UUID.randomUUID().toString();
-            int value = nextValueHelper.getNextValue("EatonCloudSimulatorNameIncrementor");
-            String name = createRequest.getPaoType() + "_SIM_" + value;
-            String serial = createRequest.getPaoType() + "SIM" + value;
+            int value = nextValueHelper.getNextValue("EatonCloudSimIncrementor");
+            String name = createRequest.getPaoType() + "_" + value + "_SIM";
+            String serial = createRequest.getPaoType() +""+ value + "SIM";
             EatonCloudSiteDeviceV1 siteDevice = new EatonCloudSiteDeviceV1(guid,
                     "72358726-1ed0-485b-8beb-6a27a27b58e8", name, serial, "...", "...", "...",
                     paoTypeToHardware.get(createRequest.getPaoType()).toString(), "...", "...", "...", "...",
                     "...");
             siteDeviceList.add(siteDevice);
+            log.info("Creating device {}", name);
         });
         return siteDeviceList;
     }
@@ -290,7 +291,7 @@ public class EatonCloudDataV1 extends EatonCloudDataGenerator {
         
         
         SimpleDateFormat sm = new SimpleDateFormat("MM-dd-yyyy HH:mm:ss.SSS");
-        log.info("expiryTime1=" + sm.format(expiryTime1) + " expiryTime2=" + sm.format(expiryTime2));
+        log.debug("expiryTime1=" + sm.format(expiryTime1) + " expiryTime2=" + sm.format(expiryTime2));
 
         if (status == HttpStatus.NOT_FOUND.value()) {
             EatonCloudErrorV1 error = new EatonCloudErrorV1(List.of(), "Given Service Account Not found.","624b5e65-5e4c-4196-8a8a-54f833c9fc42", status, "2021-03-10T07:27:38.2222228+00:00", 11418);

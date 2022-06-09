@@ -23,6 +23,7 @@ import com.cannontech.msp.beans.v4.ServiceType;
 import com.cannontech.multispeak.block.syntax.v4.SyntaxItem;
 import com.cannontech.multispeak.client.MultispeakDefines;
 import com.cannontech.multispeak.client.v4.MultispeakFuncs;
+import com.cannontech.multispeak.dao.v4.MeterReadUpdater;
 import com.cannontech.multispeak.dao.v4.MeterReadingProcessingService;
 import com.cannontech.system.GlobalSettingType;
 import com.cannontech.system.dao.GlobalSettingDao;
@@ -157,5 +158,21 @@ public class MeterReadingProcessingServiceImpl implements MeterReadingProcessing
     public Set<BuiltInAttribute> getAttributes() {
         return attributesToLoad.keySet();
     }
+
+    @Override
+    public MeterReadUpdater buildMeterReadUpdater(BuiltInAttribute attribute, PointValueHolder pointValueHolder, PaoType type) {
+        final ReadingProcessor processor = attributesToLoad.get(attribute);
+        if (processor == null) {
+            throw new IllegalArgumentException("Attribute " + attribute + " is not supported");
+        }
+        return new MeterReadUpdater() {
+            @Override
+            public void update(MeterReading reading) {
+                processor.apply(pointValueHolder, reading, type);
+            }
+        };
+    }
+    
+    
 
 }

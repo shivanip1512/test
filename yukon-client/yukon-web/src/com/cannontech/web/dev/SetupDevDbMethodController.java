@@ -2,8 +2,12 @@ package com.cannontech.web.dev;
 
 import java.beans.PropertyEditorSupport;
 import java.text.DecimalFormat;
+import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 import org.apache.commons.lang3.StringUtils;
 import org.apache.logging.log4j.Logger;
@@ -15,6 +19,7 @@ import org.springframework.validation.Errors;
 import org.springframework.validation.Validator;
 import org.springframework.web.bind.WebDataBinder;
 import org.springframework.web.bind.annotation.InitBinder;
+import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
@@ -33,21 +38,29 @@ import com.cannontech.database.TypeRowMapper;
 import com.cannontech.database.SqlParameterSink;
 import com.cannontech.database.YukonJdbcTemplate;
 import com.cannontech.database.data.lite.LiteYukonGroup;
+import com.cannontech.database.data.lite.LiteYukonPAObject;
 import com.cannontech.database.data.lite.LiteYukonUser;
+import com.cannontech.development.model.DemandResponseSetup;
 import com.cannontech.development.model.DevAmr;
 import com.cannontech.development.model.DevCCU;
 import com.cannontech.development.model.DevCommChannel;
 import com.cannontech.development.model.DevPaoType;
+import com.cannontech.development.service.DemandResponseSetupService;
 import com.cannontech.development.service.DevAmrCreationService;
 import com.cannontech.i18n.YukonMessageSourceResolvable;
 import com.cannontech.simulators.RegulatorVoltageControlMode;
 import com.cannontech.simulators.message.request.AmrCreationSimulatorRequest;
 import com.cannontech.simulators.message.request.AmrCreationSimulatorStatusRequest;
+import com.cannontech.simulators.message.request.DrSetupSimulatorRequest;
 import com.cannontech.simulators.message.response.SimulatorResponse;
 import com.cannontech.simulators.message.response.SimulatorResponseBase;
 import com.cannontech.stars.core.dao.EnergyCompanyDao;
 import com.cannontech.stars.database.cache.StarsDatabaseCache;
 import com.cannontech.stars.database.data.lite.LiteStarsEnergyCompany;
+import com.cannontech.stars.dr.account.dao.CustomerAccountDao;
+import com.cannontech.stars.dr.account.model.CustomerAccount;
+import com.cannontech.user.YukonUserContext;
+import com.cannontech.web.api.token.TokenHelper;
 import com.cannontech.web.common.flashScope.FlashScope;
 import com.cannontech.web.dev.database.objects.DevCapControl;
 import com.cannontech.web.dev.database.objects.DevEventLog;
@@ -77,11 +90,13 @@ public class SetupDevDbMethodController {
     @Autowired private DevCapControlCreationService devCapControlCreationService;
     @Autowired private DevStarsCreationService devStarsCreationService;
     @Autowired private DevEventLogCreationService devEventLogCreationService;
+    @Autowired private DemandResponseSetupService devDemandResponseSetupService;
     @Autowired private RoleDao roleDao;
     @Autowired private EnergyCompanyDao ecDao;
     @Autowired private YukonJdbcTemplate jdbcTemplate;
     @Autowired private SimulatorsCommunicationService simulatorsCommunicationService;
     @Autowired private IDatabaseCache databaseCache;
+    @Autowired private CustomerAccountDao customerAccountDao;
 
     @RequestMapping("main")
     public void main(ModelMap model) {
@@ -89,6 +104,7 @@ public class SetupDevDbMethodController {
         model.addAttribute("devRoleProperties",new DevRoleProperties());
         model.addAttribute("devAmr",  new DevAmr());
         model.addAttribute("devCapControl", new DevCapControl());
+        model.addAttribute("devDemandResponse", new DemandResponseSetup());
         model.addAttribute("devStars", new DevStars());
         model.addAttribute("devEventLog",new DevEventLog());
 
@@ -111,7 +127,43 @@ public class SetupDevDbMethodController {
         model.addAttribute("eventSourceList", Lists.newArrayList(EventSource.values()));
         model.addAttribute("controlModeTypes", RegulatorVoltageControlMode.values());
         
+        addDemandResponseInfoToModel(model, new DemandResponseSetup());
+    }
+    
+    private void addDemandResponseInfoToModel(ModelMap model, DemandResponseSetup drSetup) {
+        model.addAttribute("allPrograms", databaseCache.getAllLMPrograms());
+        model.addAttribute("drPaoTypes", Stream.of(PaoType.values())
+                .filter(p -> p.isRfLcr() || p.isCloudLcr())
+                .collect(Collectors.toList()));
         
+        List<CustomerAccount> accounts = customerAccountDao.getAll()
+                .stream()
+                .filter(a -> a.getAccountId() > 0)
+                .collect(Collectors.toList());
+        model.addAttribute("numAccounts", accounts.size());
+        
+        model.addAttribute("numDevices", getNumberOfDevices(drSetup.getTypes()));
+    }
+    
+    private int getNumberOfDevices(List<PaoType> deviceTypes) {
+        if (deviceTypes != null) {
+            List<LiteYukonPAObject> devices = databaseCache.getAllDevices().stream()
+                    .filter(device -> deviceTypes.contains(device.getPaoType()))
+                    .collect(Collectors.toList());
+            return devices.size();
+        }
+        return 0;
+    }
+    
+    @RequestMapping("getNumDevices")
+    @ResponseBody
+    public Map<String, Object> getNumberDevices(PaoType[] deviceTypes) {
+        
+        Map<String, Object> json = Maps.newHashMapWithExpectedSize(1);
+
+        json.put("numDevices", getNumberOfDevices(Arrays.asList(deviceTypes)));
+
+        return json;
     }
 
     @RequestMapping("checkAvailability")
@@ -124,6 +176,7 @@ public class SetupDevDbMethodController {
         json.put("amr", !devAmrCreationService.isRunning());
         json.put("capControl", !devCapControlCreationService.isRunning());
         json.put("capControlProgress", devCapControlCreationService.getPercentComplete());
+        json.put("demandResponse", !devDemandResponseSetupService.isRunning());
         json.put("stars", !devStarsCreationService.isRunning());
         json.put("starsProgress", devStarsCreationService.getPercentComplete());
         json.put("eventLog", !devEventLogCreationService.isRunning());
@@ -254,6 +307,42 @@ public class SetupDevDbMethodController {
         model.addAttribute("controlModeTypes", RegulatorVoltageControlMode.values());
         return "setupDatabase/capControlWidget.jsp";
     }
+    
+    @RequestMapping("setupDemandResponse")
+    public String setupDemandResponse(@ModelAttribute("devDemandResponse") DemandResponseSetup devDemandResponse,
+            BindingResult bindingResult, FlashScope flashScope, ModelMap model, YukonUserContext userContext) {
+        
+        demandResponseValidator.validate(devDemandResponse, bindingResult);
+        
+        if (bindingResult.hasErrors()) {
+            flashScope.setError(YukonMessageSourceResolvable
+                    .createDefaultWithoutCode("Unable to start Setup Demand Response. Check Fields."));
+        } else {
+            try {
+                String token = TokenHelper.createToken(userContext.getYukonUser().getLiteID());
+                devDemandResponse.setToken(token);
+                devDemandResponse.setUserContext(userContext);
+                DrSetupSimulatorRequest request = new DrSetupSimulatorRequest(devDemandResponse);
+                SimulatorResponse response = simulatorsCommunicationService.sendRequest(request, SimulatorResponseBase.class);
+                if (response.isSuccessful()) {
+                    flashScope.setConfirm(
+                            YukonMessageSourceResolvable
+                                    .createDefaultWithoutCode("Setup has started see the simulator log for progress."));
+                } else {
+                    flashScope.setConfirm(YukonMessageSourceResolvable.createDefaultWithoutCode(
+                            "Can't create devices. Setup Service is already running."));
+                }
+            } catch (Exception e) {
+                log.error(e);
+                flashScope.setError(YukonMessageSourceResolvable.createDefaultWithoutCode(
+                        "Unable to send message to Simulator Service: " + e.getMessage()));
+            }
+        }
+        
+        addDemandResponseInfoToModel(model, devDemandResponse);
+
+        return "setupDatabase/demandResponseWidget.jsp";
+    }
 
     @RequestMapping("setupEventLog")
     public String setupEventLog(DevEventLog devEventLog,
@@ -358,43 +447,43 @@ public class SetupDevDbMethodController {
             if (devCapControl.getNumAreas() == null
                     || devCapControl.getNumAreas() < 0) {
                 errors.rejectValue("numAreas",
-                        "yukon.web.modules.support.setupDatabase.setupDevDatabase.error.mustBePositive");
+                        "yukon.web.modules.dev.setupDatabase.setupDevDatabase.error.mustBePositive");
             }
 
             if (devCapControl.getNumSubs() == null
                     || devCapControl.getNumSubs() < 0) {
                 errors.rejectValue("numSubs",
-                        "yukon.web.modules.support.setupDatabase.setupDevDatabase.error.mustBePositive");
+                        "yukon.web.modules.dev.setupDatabase.setupDevDatabase.error.mustBePositive");
             }
 
             if (devCapControl.getNumSubBuses() == null
                     || devCapControl.getNumSubBuses() < 0) {
                 errors.rejectValue("numSubBuses",
-                        "yukon.web.modules.support.setupDatabase.setupDevDatabase.error.mustBePositive");
+                        "yukon.web.modules.dev.setupDatabase.setupDevDatabase.error.mustBePositive");
             }
 
             if (devCapControl.getNumFeeders() == null
                     || devCapControl.getNumFeeders() < 0) {
                 errors.rejectValue("numFeeders",
-                        "yukon.web.modules.support.setupDatabase.setupDevDatabase.error.mustBePositive");
+                        "yukon.web.modules.dev.setupDatabase.setupDevDatabase.error.mustBePositive");
             }
 
             if (devCapControl.getNumCapBanks() == null
                     || devCapControl.getNumCapBanks() < 0) {
                 errors.rejectValue("numCapBanks",
-                        "yukon.web.modules.support.setupDatabase.setupDevDatabase.error.mustBePositive");
+                        "yukon.web.modules.dev.setupDatabase.setupDevDatabase.error.mustBePositive");
             }
 
             if (devCapControl.getNumRegulators() == null
                     || devCapControl.getNumRegulators() < 0) {
                 errors.rejectValue("numRegulators",
-                        "yukon.web.modules.support.setupDatabase.setupDevDatabase.error.mustBePositive");
+                        "yukon.web.modules.dev.setupDatabase.setupDevDatabase.error.mustBePositive");
             }
 
             if (devCapControl.getOffset() == null
                     || devCapControl.getOffset() < 0) {
                 errors.rejectValue("offset",
-                        "yukon.web.modules.support.setupDatabase.setupDevDatabase.error.mustBePositive");
+                        "yukon.web.modules.dev.setupDatabase.setupDevDatabase.error.mustBePositive");
             }
         }
     };
@@ -407,19 +496,19 @@ public class SetupDevDbMethodController {
             if (devAmr.getNumAdditionalMeters() == null
                     || devAmr.getNumAdditionalMeters() < 0) {
                 errors.rejectValue("numAdditionalMeters",
-                        "yukon.web.modules.support.setupDatabase.setupDevDatabase.error.mustBePositive");
+                        "yukon.web.modules.dev.setupDatabase.setupDevDatabase.error.mustBePositive");
             }
 
             if (devAmr.getAddressRangeMax() == null
                     || devAmr.getAddressRangeMax() < 0) {
                 errors.rejectValue("addressRangeMax",
-                        "yukon.web.modules.support.setupDatabase.setupDevDatabase.error.mustBePositive");
+                        "yukon.web.modules.dev.setupDatabase.setupDevDatabase.error.mustBePositive");
             }
 
             if (devAmr.getAddressRangeMin() == null
                     || devAmr.getAddressRangeMin() < 0) {
                 errors.rejectValue("addressRangeMin",
-                        "yukon.web.modules.support.setupDatabase.setupDevDatabase.error.mustBePositive");
+                        "yukon.web.modules.dev.setupDatabase.setupDevDatabase.error.mustBePositive");
             }
 
             if (devAmr.getAddressRangeMin() != null
@@ -429,13 +518,57 @@ public class SetupDevDbMethodController {
                 String[] arg = { "Must be smaller than Address Range Min" };
                 errors.rejectValue(
                         "addressRangeMin",
-                        "yukon.web.modules.support.setupDatabase.setupDevDatabase.generic",
+                        "yukon.web.modules.dev.setupDatabase.setupDevDatabase.generic",
                         arg, "");
                 String[] arg2 = { "Must be larger than Address Range Max" };
                 errors.rejectValue(
                         "addressRangeMax",
-                        "yukon.web.modules.support.setupDatabase.setupDevDatabase.generic",
+                        "yukon.web.modules.dev.setupDatabase.setupDevDatabase.generic",
                         arg2, "");
+            }
+        }
+    };
+    
+    private final Validator demandResponseValidator = new SimpleValidator<DemandResponseSetup>(DemandResponseSetup.class) {
+
+        @Override
+        public void doValidation(DemandResponseSetup demandResponseSetup, Errors errors) {
+            
+            if (demandResponseSetup.getTemplateName().isBlank()) {
+                errors.rejectValue("templateName", "yukon.web.modules.dev.setupDatabase.setupDevDatabase.error.empty");
+            }
+            
+            //check if template name is already used (if clean is false)
+            if (!demandResponseSetup.isClean()) {
+                Optional<LiteYukonPAObject> paoExists = databaseCache.getAllLoadManagement().stream()
+                        .filter(p -> p.getPaoName().contains(demandResponseSetup.getTemplateName())).findFirst();
+                if (paoExists.isPresent()) {
+                    errors.rejectValue("templateName", "yukon.web.error.nameConflict");
+                }
+            }
+
+            if (demandResponseSetup.getScenarios() < 0) {
+                errors.rejectValue("scenarios",
+                        "yukon.web.modules.dev.setupDatabase.setupDevDatabase.error.mustBePositive");
+            }
+            
+            if (demandResponseSetup.getControlAreas() < 0) {
+                errors.rejectValue("controlAreas",
+                        "yukon.web.modules.dev.setupDatabase.setupDevDatabase.error.mustBePositive");
+            }
+            
+            if (demandResponseSetup.getPrograms() < 0) {
+                errors.rejectValue("programs",
+                        "yukon.web.modules.dev.setupDatabase.setupDevDatabase.error.mustBePositive");
+            }
+            
+            if (demandResponseSetup.getDevices() < 0) {
+                errors.rejectValue("devices",
+                        "yukon.web.modules.dev.setupDatabase.setupDevDatabase.error.mustBePositive");
+            }
+            
+            if (demandResponseSetup.getTypes().isEmpty()) {
+                errors.rejectValue("types", "yukon.web.modules.dev.setupDatabase.setupDevDatabase.error.empty");
             }
         }
     };
@@ -448,7 +581,7 @@ public class SetupDevDbMethodController {
 
             if (devStars.getDevStarsAccounts().getAccountNumMax() == null) {
                 errors.rejectValue("devStarsAccounts.accountNumMax",
-                        "yukon.web.modules.support.setupDatabase.setupDevDatabase.error.empty");
+                        "yukon.web.modules.dev.setupDatabase.setupDevDatabase.error.empty");
             } else {
                 if (devStars.getDevStarsAccounts().getAccountNumMin() != null
                         && devStars.getDevStarsAccounts().getAccountNumMin()
@@ -457,40 +590,40 @@ public class SetupDevDbMethodController {
                     String[] arg = { "Must be smaller than Account Range # End" };
                     errors.rejectValue(
                             "devStarsAccounts.accountNumMin",
-                            "yukon.web.modules.support.setupDatabase.setupDevDatabase.generic",
+                            "yukon.web.modules.dev.setupDatabase.setupDevDatabase.generic",
                             arg, "");
                     String[] arg2 = { "Must be larger than Account Range # Start" };
                     errors.rejectValue(
                             "devStarsAccounts.accountNumMax",
-                            "yukon.web.modules.support.setupDatabase.setupDevDatabase.generic",
+                            "yukon.web.modules.dev.setupDatabase.setupDevDatabase.generic",
                             arg2, "");
                 }
                 if (devStars.getDevStarsAccounts().getAccountNumMax() < 0) {
                     errors.rejectValue("devStarsAccounts.accountNumMax",
-                            "yukon.web.modules.support.setupDatabase.setupDevDatabase.error.mustBePositive");
+                            "yukon.web.modules.dev.setupDatabase.setupDevDatabase.error.mustBePositive");
                 }
             }
 
             if (devStars.getDevStarsAccounts().getAccountNumMin() == null) {
                 errors.rejectValue("devStarsAccounts.accountNumMin",
-                        "yukon.web.modules.support.setupDatabase.setupDevDatabase.error.empty");
+                        "yukon.web.modules.dev.setupDatabase.setupDevDatabase.error.empty");
             } else if (devStars.getDevStarsAccounts().getAccountNumMin() < 0) {
                 errors.rejectValue("devStarsAccounts.accountNumMin",
-                        "yukon.web.modules.support.setupDatabase.setupDevDatabase.error.mustBePositive");
+                        "yukon.web.modules.dev.setupDatabase.setupDevDatabase.error.mustBePositive");
             }
 
             if (devStars.getDevStarsAccounts().getNumAccounts() == null) {
                 errors.rejectValue("devStarsAccounts.numAccounts",
-                        "yukon.web.modules.support.setupDatabase.setupDevDatabase.error.empty");
+                        "yukon.web.modules.dev.setupDatabase.setupDevDatabase.error.empty");
             } else if (devStars.getDevStarsAccounts().getNumAccounts() <= 0) {
                 errors.rejectValue("devStarsAccounts.numAccounts",
-                        "yukon.web.modules.support.setupDatabase.setupDevDatabase.error.mustBePositive");
+                        "yukon.web.modules.dev.setupDatabase.setupDevDatabase.error.mustBePositive");
             }
 
             // HARDWARE
             if (devStars.getDevStarsHardware().getSerialNumMax() == null) {
                 errors.rejectValue("devStarsHardware.serialNumMax",
-                        "yukon.web.modules.support.setupDatabase.setupDevDatabase.error.empty");
+                        "yukon.web.modules.dev.setupDatabase.setupDevDatabase.error.empty");
             } else {
                 if (devStars.getDevStarsHardware().getSerialNumMin() != null
                         && devStars.getDevStarsHardware().getSerialNumMin()
@@ -499,52 +632,52 @@ public class SetupDevDbMethodController {
                     String[] arg = { "Must be smaller than Serial Range # End" };
                     errors.rejectValue(
                             "devStarsHardware.serialNumMin",
-                            "yukon.web.modules.support.setupDatabase.setupDevDatabase.generic",
+                            "yukon.web.modules.dev.setupDatabase.setupDevDatabase.generic",
                             arg, "");
                     String[] arg2 = { "Must be larger than Serial Range # Start" };
                     errors.rejectValue(
                             "devStarsHardware.serialNumMax",
-                            "yukon.web.modules.support.setupDatabase.setupDevDatabase.generic",
+                            "yukon.web.modules.dev.setupDatabase.setupDevDatabase.generic",
                             arg2, "");
                 }
                 if (devStars.getDevStarsHardware().getSerialNumMax() <= 0) {
                     errors.rejectValue("devStarsHardware.serialNumMax",
-                            "yukon.web.modules.support.setupDatabase.setupDevDatabase.error.mustBePositive");
+                            "yukon.web.modules.dev.setupDatabase.setupDevDatabase.error.mustBePositive");
                 }
             }
 
             if (devStars.getDevStarsHardware().getSerialNumMin() == null) {
                 errors.rejectValue("devStarsHardware.serialNumMin",
-                        "yukon.web.modules.support.setupDatabase.setupDevDatabase.error.empty");
+                        "yukon.web.modules.dev.setupDatabase.setupDevDatabase.error.empty");
             } else if (devStars.getDevStarsHardware().getSerialNumMin() <= 0) {
                 errors.rejectValue("devStarsHardware.serialNumMin",
-                        "yukon.web.modules.support.setupDatabase.setupDevDatabase.error.mustBePositive");
+                        "yukon.web.modules.dev.setupDatabase.setupDevDatabase.error.mustBePositive");
             }
 
             if (devStars.getDevStarsHardware().getNumPerAccount() == null) {
                 errors.rejectValue("devStarsHardware.numPerAccount",
-                        "yukon.web.modules.support.setupDatabase.setupDevDatabase.error.empty");
+                        "yukon.web.modules.dev.setupDatabase.setupDevDatabase.error.empty");
             } else if (devStars.getDevStarsHardware().getNumPerAccount() < 0) {
                 errors.rejectValue("devStarsHardware.numPerAccount",
-                        "yukon.web.modules.support.setupDatabase.setupDevDatabase.error.mustBePositive");
+                        "yukon.web.modules.dev.setupDatabase.setupDevDatabase.error.mustBePositive");
             }
 
             if (devStars.getDevStarsHardware().getNumExtra() == null) {
                 errors.rejectValue("devStarsHardware.numExtra",
-                        "yukon.web.modules.support.setupDatabase.setupDevDatabase.error.empty");
+                        "yukon.web.modules.dev.setupDatabase.setupDevDatabase.error.empty");
             } else if (devStars.getDevStarsHardware().getNumExtra() < 0) {
                 errors.rejectValue("devStarsHardware.numExtra",
-                        "yukon.web.modules.support.setupDatabase.setupDevDatabase.error.mustBePositive");
+                        "yukon.web.modules.dev.setupDatabase.setupDevDatabase.error.mustBePositive");
             }
 
             if (devStars.getEnergyCompany() == null) {
                 if (StringUtils.isBlank(devStars.getNewEnergyCompanyName())) {
                     errors.rejectValue("energyCompany",
-                            "yukon.web.modules.support.setupDatabase.setupDevDatabase.error.empty");
+                            "yukon.web.modules.dev.setupDatabase.setupDevDatabase.error.empty");
                 } else if (ecDao.findEnergyCompany(devStars
                         .getNewEnergyCompanyName()) != null) {
                     errors.rejectValue("energyCompany",
-                            "yukon.web.modules.support.setupDatabase.setupDevDatabase.error.unavailable");
+                            "yukon.web.modules.dev.setupDatabase.setupDevDatabase.error.unavailable");
                 }
 
             }
@@ -562,7 +695,7 @@ public class SetupDevDbMethodController {
                         String[] arg = { Integer.toString(accountId) };
                         errors.rejectValue(
                                 "devStarsAccounts.accountNumMin",
-                                "yukon.web.modules.support.setupDatabase.setupDevDatabase.error.accountExists",
+                                "yukon.web.modules.dev.setupDatabase.setupDevDatabase.error.accountExists",
                                 arg, "");
                         break;
                     }

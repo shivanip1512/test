@@ -61,10 +61,9 @@ public class MspHandler {
             if (cisVersion != null) {
                 if (cisVersion == MultiSpeakVersion.V3) {
                     multispeakDeviceGroupSyncServiceV3.startSyncForType(type, userContext);
-                } 
-                else if (cisVersion == MultiSpeakVersion.V4) {
+                } else if (cisVersion == MultiSpeakVersion.V4) {
                     multispeakDeviceGroupSyncServiceV4.startSyncForType(type, userContext);
-                }else if (cisVersion == MultiSpeakVersion.V5) {
+                } else if (cisVersion == MultiSpeakVersion.V5) {
                     multispeakDeviceGroupSyncServiceV5.startSyncForType(type, userContext);
                 }
             }
@@ -78,8 +77,7 @@ public class MspHandler {
             if (cisVersion != null) {
                 if (cisVersion == MultiSpeakVersion.V3) {
                     return multispeakDeviceGroupSyncServiceV3;
-                }
-                else if (cisVersion == MultiSpeakVersion.V4) {
+                } else if (cisVersion == MultiSpeakVersion.V4) {
                     return multispeakDeviceGroupSyncServiceV4;
                 } else if (cisVersion == MultiSpeakVersion.V5) {
                     return multispeakDeviceGroupSyncServiceV5;

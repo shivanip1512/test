@@ -1501,7 +1501,8 @@
     <bean class="com.cannontech.web.stars.commChannel.CommChannelValidator"/>
     <bean class="com.cannontech.web.stars.rtu.validator.RtuDnpValidationUtil"/>
     <bean class="com.cannontech.web.stars.rfn1200.Rfn1200Validator"/>
-
+    <bean class="com.cannontech.web.stars.signalTransmitter.SignalTransmitterValidator"/>
+    
     <bean class="com.cannontech.web.admin.AttributeValidator"/>
     <bean class="com.cannontech.web.api.customAttribute.CustomAttributeApiValidator"/>
     <bean class="com.cannontech.web.api.customAttribute.CustomAttributeAssignmentApiController"/>
@@ -1565,6 +1566,7 @@
     <bean class="com.cannontech.web.api.terminal.PagingTerminalApiCreateValidator"/>
     <bean class="com.cannontech.web.api.terminal.PagingTerminalApiValidator"/>
     <bean class="com.cannontech.web.api.terminal.service.impl.PagingTerminalServiceImpl"/>
+    <bean class="com.cannontech.web.api.terminal.PagingTerminalApiCopyValidator"/>
     
     <bean class="com.cannontech.web.api.notificationGroup.service.impl.NotificationGroupServiceImpl"/>
     

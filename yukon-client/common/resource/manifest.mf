@@ -91,7 +91,7 @@ Class-Path: ./
  bcpkix-fips-1.0.3.jar 
  bc-fips-1.0.2.jar 
  bcpg-fips-1.0.3.jar 
- libthrift-0.13.0.jar 
+ libthrift-0.16.0.jar 
  yukon-shared.jar 
  applicationisights-web-1.0.2.jar 
  azure-core-1.23.1.jar 

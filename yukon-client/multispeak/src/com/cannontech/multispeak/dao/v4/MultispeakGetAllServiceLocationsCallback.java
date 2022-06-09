@@ -8,4 +8,9 @@ import com.cannontech.msp.beans.v4.ServiceLocation;
 public interface MultispeakGetAllServiceLocationsCallback extends MultispeakSynsProcessCallback {
 
     public void processServiceLocations(List<ServiceLocation> mspServiceLocations);
+
+    public boolean isCanceled();
+
+    public void finish();
+
 }

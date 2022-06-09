@@ -2,6 +2,9 @@ package com.cannontech.multispeak.service.v4;
 
 import java.util.Calendar;
 import java.util.List;
+
+import javax.xml.datatype.XMLGregorianCalendar;
+
 import com.cannontech.msp.beans.v4.ErrorObject;
 import com.cannontech.msp.beans.v4.ExpirationTime;
 import com.cannontech.msp.beans.v4.FormattedBlock;
@@ -255,5 +258,35 @@ public interface MR_Server {
      * @throws MultispeakWebServiceException the multispeak web service exception
      */
     public List<ErrorObject> meterChangedNotification(List<MspMeter> changedMeters) throws MultispeakWebServiceException;
+    
+    /**
+     * initiate Meter Read By Meter ID.
+     * @param meterIds the meter ids
+     * @param responseURL the response url
+     * @param transactionID the transaction id
+     * @param expirationTime the expiration time
+     * @return the error object[]
+     * @throws MultispeakWebServiceException the multispeak web service
+     *             exception
+     */
+    public List<ErrorObject> initiateMeterReadingsByMeterID(List<MeterID> meterIds,
+            String responseURL, String transactionId, ExpirationTime expirationTime)
+            throws MultispeakWebServiceException;
+
+    /**
+     * initiate Meter Read By Reading Type.
+     * @param meterIDs to contain multiple meter references
+     * @param responseURL the response url
+     * @param fieldName the field name
+     * @param transactionID the transaction id
+     * @param expirationTime the expiration time
+     * @param formattedBlockTemplateName the formatted block TemplateName
+     * @return the error object[]
+     * @throws MultispeakWebServiceException the multispeak web service
+     *             exception
+     */
+    public List<ErrorObject> InitiateMeterReadingsByFieldName(List<MeterID> meterIds, String responseURL, List<String> fieldNames,
+            String transactionId, ExpirationTime expirationTime, String formattedBlockTemplateName)
+            throws MultispeakWebServiceException;
 
 }

@@ -462,6 +462,11 @@ public class VoltageFlatnessGraphServiceImpl implements VoltageFlatnessGraphServ
         List<VfPoint> ignoredPoints = Lists.newArrayList();
         List<VfPoint> noFeederPoints = Lists.newArrayList();
         
+        if (feeders.isEmpty()) {
+            //add an empty feeder so points still get added to the graph
+            feeders.add(new Feeder());
+        }
+        
         for (Feeder feeder : feeders) {
             List<VfPoint> points = Lists.newArrayList();
             for (Zone zone : zones) {
@@ -559,6 +564,7 @@ public class VoltageFlatnessGraphServiceImpl implements VoltageFlatnessGraphServ
                     String phaseString = settings.getPhaseString(phase);
                     VfLine phaseLine = new VfLine(graphId.getAndIncrement(), phaseString, feeder.getCcName(), 
                                                    phase, lineSettings, phasePointList);
+                    phaseLine.setFeederId(feeder.getCcId());
                     lines.add(phaseLine);
                 }
             }
@@ -572,6 +578,7 @@ public class VoltageFlatnessGraphServiceImpl implements VoltageFlatnessGraphServ
                 String allPhases = messageSourceAccessor.getMessage("yukon.web.modules.capcontrol.ivvc.zoneDetail.phase.allPhases");
                 VfLine noPhaseLine = new VfLine(graphId.getAndIncrement(), allPhases, feeder.getCcName(), Phase.ALL, 
                                                 noPhaseLineSettings, phaseAPoints);
+                noPhaseLine.setFeederId(feeder.getCcId());
                 lines.add(noPhaseLine);
             }
         }

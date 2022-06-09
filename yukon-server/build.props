@@ -22,7 +22,7 @@
     <MICROSOFT_GSL>$(MICROSOFT)\gsl\3.1.0</MICROSOFT_GSL>
     <DBGHELP>$(MICROSOFT)\dbghelp\6.12.2.633-vc140-1</DBGHELP>
     <YAML_CPP>$(CPP_LIBRARIES)\yaml-cpp\0.6.2-vc141</YAML_CPP>
-    <RMP_CONVERTER>$(CPP_LIBRARIES)\eaton\eas\rfn\meter-program-converter\1.0.2</RMP_CONVERTER>
+    <RMP_CONVERTER>$(CPP_LIBRARIES)\eaton\eas\rfn\meter-program-converter\1.0.3</RMP_CONVERTER>
   </PropertyGroup>
   <PropertyGroup />
   <ItemDefinitionGroup>

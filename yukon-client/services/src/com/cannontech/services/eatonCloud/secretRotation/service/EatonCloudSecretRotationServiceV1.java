@@ -3,7 +3,6 @@ package com.cannontech.services.eatonCloud.secretRotation.service;
 import java.text.DateFormat;
 import java.util.ArrayList;
 import java.util.Date;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
@@ -43,7 +42,6 @@ import com.cannontech.system.dao.GlobalSettingUpdateDao;
 import com.cannontech.system.model.GlobalSetting;
 import com.cannontech.user.YukonUserContext;
 import com.google.common.base.Strings;
-import com.google.gson.GsonBuilder;
 
 public class EatonCloudSecretRotationServiceV1 {
 

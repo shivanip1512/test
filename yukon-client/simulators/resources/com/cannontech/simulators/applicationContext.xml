@@ -31,6 +31,7 @@
     <bean class="com.cannontech.simulators.handler.DeviceArchiveSimulatorMessageHandler"/>
     <bean class="com.cannontech.simulators.handler.FieldSimulatorMessageHandler"/>
     <bean class="com.cannontech.simulators.handler.EatonCloudMessageHandler"/>
+    <bean class="com.cannontech.simulators.handler.DrSetupMessageHandler"/>
     
     <bean class="com.cannontech.dr.rfn.service.impl.RfnLcrDataSimulatorServiceImpl"/>
     <bean class="com.cannontech.dr.rfn.service.impl.RfnMeterDataSimulatorServiceImpl"/>

@@ -186,6 +186,15 @@ public interface MspObjectDao {
      */
     public void getAllMspServiceLocations(MultispeakVendor mspVendor, MultispeakGetAllServiceLocationsCallback callback)
             throws MultispeakWebServiceClientException; 
+
+    /**
+    * Returns a Msp ArrayOfServiceLocation1 for the meter
+    * If the interface/method is not supported by mspVendor, or if no object is found,
+    * an empty ServiceLocation object is returned.
+    * @param meterNumber The meterNumber to get the ServiceLocation information for.
+    * @param mspVendor The Multispeak Vendor to ask for the information from.
+    * @return Array of ServiceLocation for meter
+    */
     
     public ArrayOfServiceLocation1 getMspServiceLocation(String meterNumber, MultispeakVendor mspVendor);
 

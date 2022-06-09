@@ -51,9 +51,10 @@ public class DeviceEditorPanel extends com.cannontech.common.editor.PropertyPane
             PaoType.RFN510FL, 
             PaoType.RFN520FAX, PaoType.RFN520FRX, PaoType.RFN520FAXD, PaoType.RFN520FRXD,
             PaoType.RFN520FAXE, PaoType.RFN520FRXE, PaoType.RFN520FAXED, PaoType.RFN520FRXED,
+            PaoType.CRL520FAXE, PaoType.CRL520FRXE, PaoType.CRL520FAXED, PaoType.CRL520FRXED,
             PaoType.RFN530FAX, PaoType.RFN530FRX, 
             PaoType.RFN530FAXE, PaoType.RFN530FRXE, 
-            PaoType.RFN530S4X, PaoType.RFN530S4EAX, PaoType.RFN530S4EAXR, PaoType.RFN530S4ERX, PaoType.RFN530S4ERXR,
+            PaoType.RFN530S4X, PaoType.CRL530S4X, PaoType.RFN530S4EAX, PaoType.RFN530S4EAXR, PaoType.RFN530S4ERX, PaoType.RFN530S4ERXR,
             PaoType.RFN_1200,
 		},
 		{ 	//1 - DeviceMeterGroupEditorPanel
@@ -78,7 +79,7 @@ public class DeviceEditorPanel extends com.cannontech.common.editor.PropertyPane
             PaoType.RFN430SL0, PaoType.RFN430SL1, PaoType.RFN430SL2, PaoType.RFN430SL3, PaoType.RFN430SL4,
             PaoType.RFN510FL, PaoType.RFN520FAX, PaoType.RFN520FRX, PaoType.RFN520FAXD, PaoType.RFN520FRXD,
             PaoType.RFN530FAX, PaoType.RFN530FRX, 
-            PaoType.RFN530S4X, PaoType.RFN530S4EAX, PaoType.RFN530S4EAXR, PaoType.RFN530S4ERX, PaoType.RFN530S4ERXR
+            PaoType.RFN530S4X, PaoType.CRL530S4X, PaoType.RFN530S4EAX, PaoType.RFN530S4EAXR, PaoType.RFN530S4ERX, PaoType.RFN530S4ERXR
 		},
       	{   //2 - CapBankController
          PaoType.CAPBANKCONTROLLER, PaoType.CBC_FP_2800, PaoType.CBC_EXPRESSCOM,

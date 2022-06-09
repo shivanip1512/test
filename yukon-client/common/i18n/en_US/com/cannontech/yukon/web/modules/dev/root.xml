@@ -308,6 +308,7 @@
     <entry key="yukon.web.modules.dev.rfnTest.lcrDataSimulator.serialNumberRangeLcr6601S">LCR 6601S Serial Number Range</entry>
     <entry key="yukon.web.modules.dev.rfnTest.lcrDataSimulator.duplicates">Duplicates</entry>
     <entry key="yukon.web.modules.dev.rfnTest.lcrDataSimulator.tlvVersion">TLV Version</entry>
+    <entry key="yukon.web.modules.dev.rfnTest.rfnMeterSimulator.data.recordingInterval">Recording Interval</entry>
     <entry key="yukon.web.modules.dev.rfnTest.rfnMeterSimulator.data.reportingInterval">Reporting Interval</entry>
     <entry key="yukon.web.modules.dev.rfnTest.sendLcrDeviceMessages.label">Simulate Existing Devices</entry>
     <entry key="yukon.web.modules.dev.rfnTest.sendRfnMeterMessages.label">Simulate Existing RFN Meters</entry>
@@ -616,8 +617,13 @@
     <entry key="yukon.web.modules.dev.email">Email</entry>
     
     <entry key="yukon.web.modules.dev.rfnMeterSimulator.reportingInterval.types.REPORTING_INTERVAL_24_HOURS">1 Day</entry>
+    <entry key="yukon.web.modules.dev.rfnMeterSimulator.reportingInterval.types.REPORTING_INTERVAL_6_HOURS">6 Hours</entry>
     <entry key="yukon.web.modules.dev.rfnMeterSimulator.reportingInterval.types.REPORTING_INTERVAL_4_HOURS">4 Hours</entry>
     <entry key="yukon.web.modules.dev.rfnMeterSimulator.reportingInterval.types.REPORTING_INTERVAL_1_HOURS">1 Hour</entry>
+
+    <entry key="yukon.web.modules.dev.rfnMeterSimulator.recordingInterval.types.RECORDING_INTERVAL_15_MINUTES">15 Minutes</entry>
+    <entry key="yukon.web.modules.dev.rfnMeterSimulator.recordingInterval.types.RECORDING_INTERVAL_30_MINUTES">30 Minutes</entry>
+    <entry key="yukon.web.modules.dev.rfnMeterSimulator.recordingInterval.types.RECORDING_INTERVAL_60_MINUTES">60 Minutes</entry>
     
     <entry key="yukon.web.modules.dev.deviceGroupSimulator.pageName">Device Group Generator</entry>
     <entry key="yukon.web.modules.dev.deviceGroupGenerator.helpText"><![CDATA[The Device Group Generator Tool generates device groups based on the below mentioned parameters:

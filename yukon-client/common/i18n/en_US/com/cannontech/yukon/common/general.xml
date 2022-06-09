@@ -297,6 +297,7 @@
 <entry key="yukon.common.status">Status</entry>
 <entry key="yukon.common.start">Start</entry>
 <entry key="yukon.common.stop">Stop</entry>
+<entry key="yukon.common.selectTypes">Select Type(s)</entry>
 <entry key="yukon.common.successful">Successful</entry>
 <entry key="yukon.common.successful.partial">Partially Successful</entry>
 <entry key="yukon.common.thermostat.mode.AUTO">Auto</entry>
