@@ -86,7 +86,7 @@ public class MspRawPointHistoryDaoImpl implements MspRawPointHistoryDao
                     resultsPerAttribute.get(attribute).removeAll(meter.getPaoIdentifier()); // remove to keep our memory consumption somewhat in check 
                 for (PointValueQualityHolder pointValueQualityHolder : rawValues) { 
                     MeterRead meterRead = meterReadProcessingService.createMeterRead(meter); 
-                    meterReadProcessingService.updateMeterRead(meterRead, attribute, pointValueQualityHolder, meter.getPaoType());
+                    meterReadProcessingService.updateMeterRead(meterRead, attribute, pointValueQualityHolder);
                     meterReads.add(meterRead); 
                 } 
             } 
@@ -155,7 +155,7 @@ public class MspRawPointHistoryDaoImpl implements MspRawPointHistoryDao
                     resultsPerAttribute.get(attribute).remove(meter.getPaoIdentifier()); // remove to keep our memory consumption somewhat in check
                 
                 if (pointValueQualityHolder != null) {
-                    meterReadProcessingService.updateMeterRead(meterRead, attribute, pointValueQualityHolder, meter.getPaoType());
+                    meterReadProcessingService.updateMeterRead(meterRead, attribute, pointValueQualityHolder);
                     hasReadings = true;
                 }
             }
