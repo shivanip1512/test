@@ -56,6 +56,8 @@ import com.cannontech.dr.eatonCloud.model.v1.EatonCloudTokenV1;
 import com.cannontech.dr.eatonCloud.service.v1.EatonCloudCommunicationServiceV1;
 import com.cannontech.system.GlobalSettingType;
 import com.cannontech.system.dao.GlobalSettingDao;
+import com.google.common.base.Splitter;
+import com.google.common.collect.Lists;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 
@@ -193,12 +195,14 @@ public class EatonCloudCommunicationServiceImplV1 implements EatonCloudCommunica
         try {
             EatonCloudTimeSeriesDataRequestV1 request = new EatonCloudTimeSeriesDataRequestV1(deviceList, startTime, stopTime);
             HttpEntity<EatonCloudTimeSeriesDataRequestV1> requestEntity = getRequestWithAuthHeaders(request);
-            commsLogger.info("<<< EC[{}] Sent request to:{} {}", requestIdentifier, uri, deferredJson(request));
-            ResponseEntity<EatonCloudTimeSeriesDeviceResultV1[]> response = restTemplate.exchange(uri, HttpMethod.POST,
-                    requestEntity,
-                    EatonCloudTimeSeriesDeviceResultV1[].class);
+            int totalTags = requestEntity.getBody().getDevices().stream()
+                            .collect(Collectors.summingInt(d -> Lists.newArrayList(Splitter.on(",").split(d.getTagTrait())).size()));
+            commsLogger.info("<<< EC[{}] Sent request to:{} {} Total Tags:{}", requestIdentifier, uri, deferredJson(request), totalTags);
+            ResponseEntity<EatonCloudTimeSeriesDeviceResultV1[]> response = restTemplate.exchange(uri, HttpMethod.POST,     requestEntity,
+                            EatonCloudTimeSeriesDeviceResultV1[].class);
             if (commsLogger.isDebugEnabled()) {
-                commsLogger.info(">>> EC[{}] Request to:{} Response:{}", requestIdentifier, uri, deferredJson(response.getBody())); 
+                    commsLogger.info(">>> EC[{}] Request to:{} Response:{} Total Tags:{} ", requestIdentifier, uri,
+                    deferredJson(response.getBody()), totalTags);
             } else {
                 try {
                     Map<String, Integer> info = Arrays.stream(response.getBody())
@@ -210,8 +214,7 @@ public class EatonCloudCommunicationServiceImplV1 implements EatonCloudCommunica
                     commsLogger.info(">>> EC[{}] Request to:{} Response:{}", requestIdentifier, uri, deferredJson(response.getBody()));
                 }
             }
-            return Arrays.asList(response.getBody());             
-   
+            return Arrays.asList(response.getBody());
         } catch (EatonCloudCommunicationExceptionV1 e) {
             commsLogger.info(">>> EC[{}] Request to:{} Response:", requestIdentifier, uri, e);
             e.setRequestIdentifier(requestIdentifier);
