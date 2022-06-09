@@ -61,7 +61,7 @@ public class EatonCloudFakeTimeseriesDataV1 {
     }
 
     private final static String defaultPath = "classpath:com/cannontech/amr/rfn/service/pointmapping/rfnPointMapping.xml";
-    private final static String defaultPath1 = "classpath:com/cannontech/simulators/eatonCloud/model/timeseries_data_LCR6200C_1.json";
+    private final static String defaultPath1 = "classpath:com/cannontech/simulators/model/timeseries_data_LCR6200C_1.json";
     
     private final static File customFile = new File(CtiUtilities.getYukonBase()  + "/Server/Config/rfnPointMapping.xml");
 
@@ -79,14 +79,14 @@ public class EatonCloudFakeTimeseriesDataV1 {
         log.info("Loading rfnPointMapping.xml");
         try {
             loader.getResource(defaultPath).getInputStream();
-            log.info("Loaded rfnPointMapping.xml");
+            log.info("Loaded rfnPointMapping.xml" + defaultPath);
         } catch (IOException ioe) {
             // This should never happen.
             log.error("could not open default rfnPointMapping.xml file", ioe);
         }
         try {
             loader.getResource(defaultPath1).getInputStream();
-            log.info("Loaded timeseries_data_LCR6200C_1.json");
+            log.info("Loaded timeseries_data_LCR6200C_1.json "+ loader.getResource(defaultPath1).getURL());
         } catch (IOException ioe) {
             // This should never happen.
             log.error("could not open timeseries_data_LCR6200C_1.json file", ioe);
