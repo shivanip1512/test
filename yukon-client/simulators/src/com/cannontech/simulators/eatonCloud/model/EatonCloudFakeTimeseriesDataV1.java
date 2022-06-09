@@ -1,7 +1,11 @@
 package com.cannontech.simulators.eatonCloud.model;
 
+import java.io.BufferedInputStream;
 import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
 import java.io.IOException;
+import java.io.InputStream;
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -22,7 +26,10 @@ import org.springframework.core.io.Resource;
 import org.springframework.core.io.ResourceLoader;
 
 import com.cannontech.clientutils.YukonLogManager;
+import com.cannontech.common.config.dao.RfnPointMappingDao;
+import com.cannontech.common.login.ClientSession;
 import com.cannontech.common.pao.PaoType;
+import com.cannontech.common.util.CtiUtilities;
 import com.cannontech.common.util.SqlStatementBuilder;
 import com.cannontech.database.TypeRowMapper;
 import com.cannontech.database.YukonJdbcTemplate;
@@ -38,7 +45,7 @@ public class EatonCloudFakeTimeseriesDataV1 {
     private Map<PaoType, Map<String, EatonCloudTimeSeriesResultV1>> channels = new HashMap<>();
     private final Logger log = YukonLogManager.getLogger(EatonCloudDataV1.class);
     @Autowired private ApplicationContext ctx;
-    @Autowired private ResourceLoader resourceLoader;
+    @Autowired private ResourceLoader loader;
 
     /**
      * Parses template with sample data
@@ -53,7 +60,42 @@ public class EatonCloudFakeTimeseriesDataV1 {
         load(PaoType.LCR6600C);
     }
 
+    private final static String defaultPath = "classpath:com/cannontech/amr/rfn/service/pointmapping/rfnPointMapping.xml";
+    private final static String defaultPath1 = "classpath:com/cannontech/simulators/eatonCloud/model/timeseries_data_LCR6200C_1.json";
+    
+    private final static File customFile = new File(CtiUtilities.getYukonBase()  + "/Server/Config/rfnPointMapping.xml");
+
+
+    public void getPointMappingFile() {
+        // Check for a custom RFN point mapping file, use if there, otherwise use default.
+       /* if (customFile.exists() && customFile.isFile()) {
+            log.info("Loading custom rfnPointMapping.xml");
+            try {
+                return new BufferedInputStream(new FileInputStream(customFile));
+            } catch (FileNotFoundException e) {
+                log.error("could not find custom rfnPointMapping.xml even though Java said it was available", e);
+            }
+        }*/
+        log.info("Loading rfnPointMapping.xml");
+        try {
+            loader.getResource(defaultPath).getInputStream();
+            log.info("Loaded rfnPointMapping.xml");
+        } catch (IOException ioe) {
+            // This should never happen.
+            log.error("could not open default rfnPointMapping.xml file", ioe);
+        }
+        try {
+            loader.getResource(defaultPath1).getInputStream();
+            log.info("Loaded timeseries_data_LCR6200C_1.json");
+        } catch (IOException ioe) {
+            // This should never happen.
+            log.error("could not open timeseries_data_LCR6200C_1.json file", ioe);
+        }
+    }
+    
     private void load(PaoType type) {
+        getPointMappingFile();
+        log.info("Loaded rfnPointMapping.xml");
         URL p0 = EatonCloudFakeTimeseriesDataV1.class.getResource("/src/com/cannontech/simulators/eatonCloud/model/timeseries_data_LCR6200C_1.json");
         URL p1 = EatonCloudFakeTimeseriesDataV1.class.getResource("/com/cannontech/simulators/eatonCloud/model/timeseries_data_LCR6200C_1.json");
         URL p2 = EatonCloudFakeTimeseriesDataV1.class.getResource("/timeseries_data_LCR6200C_1.json");
@@ -62,7 +104,7 @@ public class EatonCloudFakeTimeseriesDataV1 {
       
         log.info("p0:{}, p1:{}, p2:{}, p3:{}, p4:{}", p0, p1, p2, p3, p4);
         try {
-            Resource r1 =resourceLoader.getResource("classpath:com/cannontech/simulators/eatonCloud/model/timeseries_data_LCR6200C_1.json");
+            Resource r1 =loader.getResource("classpath:com/cannontech/simulators/eatonCloud/model/timeseries_data_LCR6200C_1.json");
             log.info("p5:{}", r1.getURL());
         } catch (IOException e1) {
             log.error("p5", e1);
