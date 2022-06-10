@@ -96,7 +96,7 @@ public class MeterReadProcessingServiceImpl implements MeterReadProcessingServic
             }
         };
 
-        ReadingProcessor KVArConverter = new DefaultReadingProcessor(SyntaxItem.KVAR, roundingMode);
+        ReadingProcessor kvarConverter = new DefaultReadingProcessor(SyntaxItem.KVAR, roundingMode);
 
         ReadingProcessor sumKwhConverter = new DefaultReadingProcessor(SyntaxItem.SUM_KWH, roundingMode);
 
@@ -138,7 +138,7 @@ public class MeterReadProcessingServiceImpl implements MeterReadProcessingServic
                                        .put(BuiltInAttribute.USAGE, usageConverter)
                                        .put(BuiltInAttribute.PEAK_DEMAND, peakDemandConverter)
                                        .put(BuiltInAttribute.BLINK_COUNT, blinkConverter)
-                                       .put(BuiltInAttribute.KVAR, KVArConverter)
+                                       .put(BuiltInAttribute.KVAR, kvarConverter)
                                        .put(BuiltInAttribute.SUM_KWH, sumKwhConverter)
                                        .put(BuiltInAttribute.NET_KWH, netKwhConverter)
                                        .put(BuiltInAttribute.KVA, kvaConverter)
