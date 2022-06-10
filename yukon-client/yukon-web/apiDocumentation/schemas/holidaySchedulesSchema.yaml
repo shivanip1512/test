@@ -51,7 +51,7 @@ HolidayRequest:
         description: 'Day of holiday. The maximum value of day will be changed as per month selected.'
       year:
         type: integer
-        default: (none)
+        default: -1
         minimum: value of current year
         maximum: value of current year + 150
         description: 'Year of holiday. Its minimum value will be current year and maximum value will be current year + 150.'
@@ -79,7 +79,7 @@ HolidayResponse:
         description: 'Day of holiday. The maximum value of day will be changed as per month selected.'
       year:
         type: integer
-        default: (none)
+        default: -1
         minimum: value of current year
         maximum: value of current year + 150
         description: 'Year of holiday. Its minimum value will be current year and maximum value will be current year + 150.'
