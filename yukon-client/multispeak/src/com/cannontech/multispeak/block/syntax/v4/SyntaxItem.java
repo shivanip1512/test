@@ -7,8 +7,8 @@ public enum SyntaxItem {
     METER_NUMBER("meterNo", null),
     PHYSICAL_ADDRESS("transponderID", null),
     KWH("posKWh", MspUom.kWh),
-    WATER_VOLUME ("WaterVolume", MspUom.gallon),
-    GAS_VOLUME ("GasVolume", MspUom.ccf),
+    WATER_VOLUME ("waterVolume", MspUom.gallon),
+    GAS_VOLUME ("gasVolume", MspUom.ccf),
     KWH_DATETIME("posKWhDateTime", MspUom.DateTime),
     LAST_INTERVAL_DEMAND("kW", MspUom.kW),
     LAST_INTERVAL_DEMAND_DATETIME("kWDateTime", MspUom.DateTime),
@@ -30,28 +30,25 @@ public enum SyntaxItem {
     VOLTAGE_PROFILE("voltageProfile", MspUom.Volts),
     VOLTAGE_PROFILE_DATETIME("voltageProfileDateTime", MspUom.DateTime),
     
-    KVA("kVA", MspUom.kVA),
-    NET_KWH("Net KWh", MspUom.kWh),
-    SUM_KWH("Sum kWh", MspUom.kWh),
-    KVARH("kVArh",  MspUom.kVARh),
-    POWER_FACTOR("Power factor", MspUom.PowerFactor),
-    RECEIVED_KWH_RATE_A("Received kWh Rate A", MspUom.kWh),
-    RECEIVED_KWH_RATE_B("Received kWh Rate B", MspUom.kWh),
-    RECEIVED_KWH_RATE_C("Received kWh Rate C", MspUom.kWh),
-    RECEIVED_KWH_RATE_D("Received kWh Rate D", MspUom.kWh),
-    RECEIVED_KWH("Received KWh", MspUom.kWh),
+    KVA("kva", MspUom.kVA),
+    NET_KWH("netKwh", MspUom.kWh),
+    SUM_KWH("sumKwh", MspUom.kWh),
+    KVARH("kvarh",  MspUom.kVARh),
+    POWER_FACTOR("powerFactor", MspUom.PowerFactor),
+    RECEIVED_KWH_RATE_A("receivedKwhRateA", MspUom.kWh),
+    RECEIVED_KWH_RATE_B("receivedKwhRateB", MspUom.kWh),
+    RECEIVED_KWH_RATE_C("receivedKwhRateC", MspUom.kWh),
+    RECEIVED_KWH_RATE_D("receivedKwhRateD", MspUom.kWh),
+    RECEIVED_KWH("receivedKwh", MspUom.kWh),
+    DELIVERED_KWH_RATE_A("deliveredKwhRateA", MspUom.kWh),
+    DELIVERED_KWH_RATE_B("deliveredKwhRateB", MspUom.kWh),
+    DELIVERED_KWH_RATE_C("deliveredKwhRateC", MspUom.kWh),
+    DELIVERED_KWH_RATE_D("deliveredKwhRateD", MspUom.kWh),
+    PEAK_DEMAND_RATE_A("peakDemandRateA", MspUom.kW),
+    PEAK_DEMAND_RATE_B("peakDemandRateB", MspUom.kW),
+    PEAK_DEMAND_RATE_C("peakDemandRateC", MspUom.kW),
+    PEAK_DEMAND_RATE_D("peakDemandRateD", MspUom.kW);
     
-    DELIVERED_KWH_RATE_A("Delivered kWh Rate A", MspUom.kWh),
-    DELIVERED_KWH_RATE_B("Delivered kWh Rate B", MspUom.kWh),
-    DELIVERED_KWH_RATE_C("Delivered kWh Rate C", MspUom.kWh),
-    DELIVERED_KWH_RATE_D("Delivered kWh Rate D", MspUom.kWh),
-    
-    PEAK_DEMAND_RATE_A("Peak Demand Rate A", MspUom.kW),
-    PEAK_DEMAND_RATE_B("Peak Demand Rate B", MspUom.kW),
-    PEAK_DEMAND_RATE_C("Peak Demand Rate C", MspUom.kW),
-    PEAK_DEMAND_RATE_D("Peak Demand Rate D", MspUom.kW);
-    
-
     private String mspFieldName;
     private Uom mspUom;
 
