@@ -34,6 +34,32 @@ public class MeterReadProcessingServiceImpl implements MeterReadProcessingServic
     public interface ReadingProcessor {
         public void apply(PointValueHolder value, MeterRead reading);
     }
+    
+    class DefaultReadingProcessor implements ReadingProcessor {
+        private SyntaxItem syntaxItem;
+        private RoundingMode roundingMode;
+        
+        public DefaultReadingProcessor(SyntaxItem syntaxItem, RoundingMode roundingMode) {
+            this.syntaxItem = syntaxItem;
+            this.roundingMode = roundingMode;
+        }
+        
+        @Override
+        public void apply(PointValueHolder value, MeterRead reading) {
+            
+            ReadingValues readingValues = createArrayOfReadingValue(reading);
+            Calendar calendar = Calendar.getInstance();
+            calendar.setTime(value.getPointDataTimeStamp());
+           
+            ReadingValue readingValue = new ReadingValue();
+            readingValue.setDateTime(MultispeakFuncs.toXMLGregorianCalendar(calendar));
+            BigDecimal valueWithPrecision = new BigDecimal(value.getValue()).setScale(3, roundingMode).stripTrailingZeros();
+            readingValue.setValue(valueWithPrecision.toString());
+            readingValue.setFieldName(syntaxItem.getMspFieldName());
+            readingValues.getReadingValue().add(readingValue);
+            reading.setReadingValues(readingValues);
+        }
+    }
 
     @PostConstruct
     public void setup() {
@@ -71,176 +97,43 @@ public class MeterReadProcessingServiceImpl implements MeterReadProcessingServic
             }
         };
 
-        ReadingProcessor KVArConverter = new ReadingProcessor() {
-            @Override
-            public void apply(PointValueHolder value, MeterRead reading) {
-                ReadingValue readingValue = new ReadingValue();
-                readingValue.setFieldName(SyntaxItem.KVAR.getMspFieldName());
-                setTimestampAndValuesForMeterRead(value, reading, readingValue);
-            }
+        ReadingProcessor KVArConverter = new DefaultReadingProcessor(SyntaxItem.KVAR, roundingMode);
 
-        };
+        ReadingProcessor sumKwhConverter = new DefaultReadingProcessor(SyntaxItem.SUM_KWH, roundingMode);
 
-        ReadingProcessor sumKwhConverter = new ReadingProcessor() {
-            @Override
-            public void apply(PointValueHolder value, MeterRead reading) {
-                ReadingValue readingValue = new ReadingValue();
-                readingValue.setFieldName(SyntaxItem.SUM_KWH.getMspFieldName());
-                setTimestampAndValuesForMeterRead(value, reading, readingValue);
-            }
-        };
+        ReadingProcessor netKwhConverter = new DefaultReadingProcessor(SyntaxItem.NET_KWH, roundingMode);
 
-        ReadingProcessor netKwhConverter = new ReadingProcessor() {
-            @Override
-            public void apply(PointValueHolder value, MeterRead reading) {
-                ReadingValue readingValue = new ReadingValue();
-                readingValue.setFieldName(SyntaxItem.NET_KWH.getMspFieldName());
-                setTimestampAndValuesForMeterRead(value, reading, readingValue);
-            }
-        };
+        ReadingProcessor kvaConverter = new DefaultReadingProcessor(SyntaxItem.KVA, roundingMode);
 
-        ReadingProcessor kvaConverter = new ReadingProcessor() {
-            @Override
-            public void apply(PointValueHolder value, MeterRead reading) {
-                ReadingValue readingValue = new ReadingValue();
-                readingValue.setFieldName(SyntaxItem.KVA.getMspFieldName());
-                setTimestampAndValuesForMeterRead(value, reading, readingValue);
-            }
-        };
+        ReadingProcessor kvarhConverter = new DefaultReadingProcessor(SyntaxItem.KVARH, roundingMode);
 
-        ReadingProcessor kvarhConverter = new ReadingProcessor() {
-            @Override
-            public void apply(PointValueHolder value, MeterRead reading) {
-                ReadingValue readingValue = new ReadingValue();
-                readingValue.setFieldName(SyntaxItem.KVARH.getMspFieldName());
-                setTimestampAndValuesForMeterRead(value, reading, readingValue);
-            }
-        };
+        ReadingProcessor powerFactorConverter = new DefaultReadingProcessor(SyntaxItem.POWER_FACTOR, roundingMode);
 
-        ReadingProcessor powerFactorConverter = new ReadingProcessor() {
-            @Override
-            public void apply(PointValueHolder value, MeterRead reading) {
-                ReadingValue readingValue = new ReadingValue();
-                readingValue.setFieldName(SyntaxItem.POWER_FACTOR.getMspFieldName());
-                setTimestampAndValuesForMeterRead(value, reading, readingValue);
-            }
-        };
+        ReadingProcessor receivedKwhConverter = new DefaultReadingProcessor(SyntaxItem.RECEIVED_KWH, roundingMode);
 
-        ReadingProcessor receivedKwhConverter = new ReadingProcessor() {
-            @Override
-            public void apply(PointValueHolder value, MeterRead reading) {
-                ReadingValue readingValue = new ReadingValue();
-                readingValue.setFieldName(SyntaxItem.RECEIVED_KWH.getMspFieldName());
-                setTimestampAndValuesForMeterRead(value, reading, readingValue);
-            }
-        };
+        ReadingProcessor peakDemandRateAConverter = new DefaultReadingProcessor(SyntaxItem.PEAK_DEMAND_RATE_A, roundingMode);
 
-        ReadingProcessor peakDemandRateAConverter = new ReadingProcessor() {
-            @Override
-            public void apply(PointValueHolder value, MeterRead reading) {
-                ReadingValue readingValue = new ReadingValue();
-                readingValue.setFieldName(SyntaxItem.PEAK_DEMAND_RATE_A.getMspFieldName());
-                setTimestampAndValuesForMeterRead(value, reading, readingValue);
-            }
-        };
+        ReadingProcessor peakDemandRateBConverter = new DefaultReadingProcessor(SyntaxItem.PEAK_DEMAND_RATE_B, roundingMode);
 
-        ReadingProcessor peakDemandRateBConverter = new ReadingProcessor() {
-            @Override
-            public void apply(PointValueHolder value, MeterRead reading) {
-                ReadingValue readingValue = new ReadingValue();
-                readingValue.setFieldName(SyntaxItem.PEAK_DEMAND_RATE_B.getMspFieldName());
-                setTimestampAndValuesForMeterRead(value, reading, readingValue);
-            }
-        };
+        ReadingProcessor peakDemandRateCConverter = new DefaultReadingProcessor(SyntaxItem.PEAK_DEMAND_RATE_C, roundingMode);
 
-        ReadingProcessor peakDemandRateCConverter = new ReadingProcessor() {
-            @Override
-            public void apply(PointValueHolder value, MeterRead reading) {
-                ReadingValue readingValue = new ReadingValue();
-                readingValue.setFieldName(SyntaxItem.PEAK_DEMAND_RATE_C.getMspFieldName());
-                setTimestampAndValuesForMeterRead(value, reading, readingValue);
-            }
-        };
+        ReadingProcessor peakDemandRateDConverter = new DefaultReadingProcessor(SyntaxItem.PEAK_DEMAND_RATE_D, roundingMode);
 
-        ReadingProcessor peakDemandRateDConverter = new ReadingProcessor() {
-            @Override
-            public void apply(PointValueHolder value, MeterRead reading) {
-                ReadingValue readingValue = new ReadingValue();
-                readingValue.setFieldName(SyntaxItem.PEAK_DEMAND_RATE_D.getMspFieldName());
-                setTimestampAndValuesForMeterRead(value, reading, readingValue);
-            }
-        };
+        ReadingProcessor receivedKwhRateAConverter = new DefaultReadingProcessor(SyntaxItem.RECEIVED_KWH_RATE_A, roundingMode);
 
-        ReadingProcessor receivedKwhRateAConverter = new ReadingProcessor() {
-            @Override
-            public void apply(PointValueHolder value, MeterRead reading) {
-                ReadingValue readingValue = new ReadingValue();
-                readingValue.setFieldName(SyntaxItem.RECEIVED_KWH_RATE_A.getMspFieldName());
-                setTimestampAndValuesForMeterRead(value, reading, readingValue);
-            }
-        };
+        ReadingProcessor receivedKwhRateBConverter = new DefaultReadingProcessor(SyntaxItem.RECEIVED_KWH_RATE_B, roundingMode);
 
-        ReadingProcessor receivedKwhRateBConverter = new ReadingProcessor() {
-            @Override
-            public void apply(PointValueHolder value, MeterRead reading) {
-                ReadingValue readingValue = new ReadingValue();
-                readingValue.setFieldName(SyntaxItem.RECEIVED_KWH_RATE_B.getMspFieldName());
-                setTimestampAndValuesForMeterRead(value, reading, readingValue);
-            }
-        };
-        ReadingProcessor receivedKwhRateCConverter = new ReadingProcessor() {
-            @Override
-            public void apply(PointValueHolder value, MeterRead reading) {
-                ReadingValue readingValue = new ReadingValue();
-                readingValue.setFieldName(SyntaxItem.RECEIVED_KWH_RATE_C.getMspFieldName());
-                setTimestampAndValuesForMeterRead(value, reading, readingValue);
-            }
-        };
+        ReadingProcessor receivedKwhRateCConverter = new DefaultReadingProcessor(SyntaxItem.RECEIVED_KWH_RATE_C, roundingMode);
 
-        ReadingProcessor receivedKwhRateDConverter = new ReadingProcessor() {
-            @Override
-            public void apply(PointValueHolder value, MeterRead reading) {
-                ReadingValue readingValue = new ReadingValue();
-                readingValue.setFieldName(SyntaxItem.RECEIVED_KWH_RATE_D.getMspFieldName());
-                setTimestampAndValuesForMeterRead(value, reading, readingValue);
-            }
-        };
+        ReadingProcessor receivedKwhRateDConverter = new DefaultReadingProcessor(SyntaxItem.RECEIVED_KWH_RATE_D, roundingMode);
 
-        ReadingProcessor deliveredKwhRateAConverter = new ReadingProcessor() {
-            @Override
-            public void apply(PointValueHolder value, MeterRead reading) {
-                ReadingValue readingValue = new ReadingValue();
-                readingValue.setFieldName(SyntaxItem.DELIVERED_KWH_RATE_A.getMspFieldName());
-                setTimestampAndValuesForMeterRead(value, reading, readingValue);
-            }
-        };
+        ReadingProcessor deliveredKwhRateAConverter = new DefaultReadingProcessor(SyntaxItem.DELIVERED_KWH_RATE_A, roundingMode);
 
-        ReadingProcessor deliveredKwhRateBConverter = new ReadingProcessor() {
-            @Override
-            public void apply(PointValueHolder value, MeterRead reading) {
-                ReadingValue readingValue = new ReadingValue();
-                readingValue.setFieldName(SyntaxItem.DELIVERED_KWH_RATE_B.getMspFieldName());
-                setTimestampAndValuesForMeterRead(value, reading, readingValue);
-            }
-        };
+        ReadingProcessor deliveredKwhRateBConverter = new DefaultReadingProcessor(SyntaxItem.DELIVERED_KWH_RATE_B, roundingMode);
 
-        ReadingProcessor deliveredKwhRateCConverter = new ReadingProcessor() {
-            @Override
-            public void apply(PointValueHolder value, MeterRead reading) {
-                ReadingValue readingValue = new ReadingValue();
-                readingValue.setFieldName(SyntaxItem.DELIVERED_KWH_RATE_C.getMspFieldName());
-                setTimestampAndValuesForMeterRead(value, reading, readingValue);
-            }
-        };
+        ReadingProcessor deliveredKwhRateCConverter = new DefaultReadingProcessor(SyntaxItem.DELIVERED_KWH_RATE_C, roundingMode);
 
-        ReadingProcessor deliveredKwhRateDConverter = new ReadingProcessor() {
-            @Override
-            public void apply(PointValueHolder value, MeterRead reading) {
-                ReadingValue readingValue = new ReadingValue();
-                readingValue.setFieldName(SyntaxItem.DELIVERED_KWH_RATE_D.getMspFieldName());
-                setTimestampAndValuesForMeterRead(value, reading, readingValue);
-            }
-        };
+        ReadingProcessor deliveredKwhRateDConverter = new DefaultReadingProcessor(SyntaxItem.DELIVERED_KWH_RATE_D, roundingMode);
 
         attributesToLoad = ImmutableMap.<BuiltInAttribute, ReadingProcessor>builder()
                                        .put(BuiltInAttribute.USAGE, usageConverter)
