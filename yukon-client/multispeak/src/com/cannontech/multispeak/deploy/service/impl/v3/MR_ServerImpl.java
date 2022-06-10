@@ -233,10 +233,10 @@ public class MR_ServerImpl implements MR_Server{
             MeterRead meterRead = multispeakMeterService.getLatestReadingInterrogate(vendor, meter, responseUrl);
             multispeakEventLogService.returnObject("MeterRead", meterNo, "GetLatestReadingByMeterNo", vendor.getCompanyName());
             return meterRead;
-        } else { //THIS SHOULD BE WHERE EVERYONE ELSE GOES!!!
+        } else { // THIS SHOULD BE WHERE EVERYONE ELSE GOES!!!
             try {
                 MeterRead meterRead = meterReadProcessingService.createMeterRead(meter);
-                
+
                 EnumSet<BuiltInAttribute> attributesToLoad = EnumSet.of(BuiltInAttribute.USAGE, 
                                                                         BuiltInAttribute.PEAK_DEMAND, 
                                                                         BuiltInAttribute.KVAR, 
@@ -258,7 +258,7 @@ public class MR_ServerImpl implements MR_Server{
                                                                         BuiltInAttribute.DELIVERED_KWH_RATE_B,
                                                                         BuiltInAttribute.DELIVERED_KWH_RATE_C,
                                                                         BuiltInAttribute.DELIVERED_KWH_RATE_D);
-    
+
                 for (BuiltInAttribute attribute : attributesToLoad) {
                     try {
                         LitePoint litePoint = attributeService.getPointForAttribute(meter, attribute);
