@@ -190,6 +190,7 @@ public class EatonCloudSimulatorController {
                 settings.setSelectedStatuses(newSettings.getSelectedStatuses());
                 settings.setSuccessPercentages(newSettings.getSuccessPercentages());
                 settings.setUnknownPercentages(newSettings.getUnknownPercentages());
+                settings.setEnableTokenSecretRotationTesting(newSettings.isEnableTokenSecretRotationTesting());
                 flashScope.setConfirm(YukonMessageSourceResolvable.createDefaultWithoutCode("Updated simulator settings"));
                 return "redirect:home";
             }

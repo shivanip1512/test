@@ -1,7 +1,6 @@
 package com.cannontech.simulators.eatonCloud.model;
 
-import java.io.File;
-import java.net.URL;
+import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
@@ -16,6 +15,7 @@ import org.apache.commons.lang3.StringUtils;
 import org.apache.logging.log4j.core.Logger;
 import org.joda.time.DateTime;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.core.io.ResourceLoader;
 
 import com.cannontech.clientutils.YukonLogManager;
 import com.cannontech.common.pao.PaoType;
@@ -33,13 +33,14 @@ public class EatonCloudFakeTimeseriesDataV1 {
     @Autowired private YukonJdbcTemplate jdbcTemplate;
     private Map<PaoType, Map<String, EatonCloudTimeSeriesResultV1>> channels = new HashMap<>();
     private final Logger log = YukonLogManager.getLogger(EatonCloudDataV1.class);
-
+    private final static String defaultPath = "classpath:com/cannontech/simulators/model/";
+    @Autowired private ResourceLoader loader;
     /**
      * Parses template with sample data
      */
     private void load() {
         if (!channels.isEmpty()) {
-          return;
+            return;
         }
         channels.clear();
 
@@ -52,26 +53,26 @@ public class EatonCloudFakeTimeseriesDataV1 {
 
         int fileNum = 1;
         while (true) {
-            URL path = this.getClass().getResource("timeseries_data_" + type + "_" + fileNum + ".json");
-            if (path == null) {
-                log.info("Can't find path:{}. File might not be needed search code for timeseries_data_", path);
-                break;
-            }
-            File file = new File(path.getPath());
-            if (!file.exists()) {
-                log.info("Can't find file:{}. File might not be needed search code for timeseries_data_", file);
-                break;
-            }
+            String path = defaultPath + "timeseries_data_" + type + "_" + fileNum + ".json";
+            InputStream stream = null;
             try {
-                EatonCloudTimeSeriesDeviceResultV1[] template = new ObjectMapper().readValue(file,
+                stream = loader.getResource(path).getInputStream();
+                log.info("Loaded stream {}", path);
+            } catch (Exception e) {
+                log.error("Could not open {}", path, e);
+                break;
+            }
+            
+            try {
+                EatonCloudTimeSeriesDeviceResultV1[] template = new ObjectMapper().readValue(stream,
                         EatonCloudTimeSeriesDeviceResultV1[].class);
                 parsedChannels.putAll(template[0].getResults()
                         .stream()
                         .collect(Collectors.toMap(t -> t.getTag(), t -> t)));
-                log.info("Parsed file:{}", file);
+                log.info("Parsed file:{}", path);
                 fileNum++;
             } catch (Exception e) {
-                log.info("Error parsing:" + file, e);
+                log.info("Error parsing:{}", path, e);
             }
         }
 
