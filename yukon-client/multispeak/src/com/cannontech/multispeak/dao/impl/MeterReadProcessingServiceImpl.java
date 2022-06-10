@@ -11,7 +11,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 
 import com.cannontech.amr.archivedValueExporter.model.YukonRoundingMode;
 import com.cannontech.amr.meter.model.YukonMeter;
-import com.cannontech.common.pao.PaoType;
 import com.cannontech.common.pao.attribute.model.BuiltInAttribute;
 import com.cannontech.core.dynamic.PointValueHolder;
 import com.cannontech.msp.beans.v3.MeterRead;
@@ -159,19 +158,6 @@ public class MeterReadProcessingServiceImpl implements MeterReadProcessingServic
                                        .put(BuiltInAttribute.DELIVERED_KWH_RATE_C, deliveredKwhRateCConverter)
                                        .put(BuiltInAttribute.DELIVERED_KWH_RATE_D, deliveredKwhRateDConverter)
                                        .build();
-    }
-
-    private void setTimestampAndValuesForMeterRead(PointValueHolder value, MeterRead reading, ReadingValue readingValue) {
-        final RoundingMode roundingMode = globalSettingDao.getEnum(GlobalSettingType.DEFAULT_ROUNDING_MODE, YukonRoundingMode.class)
-                                                          .getRoundingMode();
-        ReadingValues readingValues = createArrayOfReadingValue(reading);
-        Calendar calendar = Calendar.getInstance();
-        calendar.setTime(value.getPointDataTimeStamp());
-        readingValue.setDateTime(MultispeakFuncs.toXMLGregorianCalendar(calendar));
-        BigDecimal valueWithPrecision = new BigDecimal(value.getValue()).setScale(3, roundingMode).stripTrailingZeros();
-        readingValue.setValue(valueWithPrecision.toString());
-        readingValues.getReadingValue().add(readingValue);
-        reading.setReadingValues(readingValues);
     }
 
     private ReadingValues createArrayOfReadingValue(MeterRead reading) {
