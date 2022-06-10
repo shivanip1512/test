@@ -157,5 +157,25 @@ public interface MspObjectDao {
      * @return
      */
     public List<MspMeter> getMspMetersByFacilityId(String facilityId, MultispeakVendor mspVendor);
+    
+    /**
+     * Returns a list of the MeterNumber(s) for the eaLocation.
+     * If the interface/method is not supported by mspVendor, or if no object is found,
+     * an empty List<Meter> object is returned.
+     * @param eaLocation The eaLocation to get the Meter information for.
+     * @param mspVendor The MultiSpeak Vendor to ask for the information from.
+     * @return
+     */
+    public List<MspMeter> getMspMetersByEALocation(String eaLocation, MultispeakVendor mspVendor);
+    
+    /**
+     * Returns a list of the MeterNumber(s) for the accountNumber.
+     * If the interface/method is not supported by mspVendor, or if no object is found,
+     * an empty List<Meter> object is returned.
+     * @param accountNumber The accountNumber to get the Meter information for.
+     * @param mspVendor The MultiSpeak Vendor to ask for the information from.
+     * @return
+     */
+    public List<MspMeter> getMspMetersByAccountNumber(String accountNumber, MultispeakVendor mspVendor);
 
 }

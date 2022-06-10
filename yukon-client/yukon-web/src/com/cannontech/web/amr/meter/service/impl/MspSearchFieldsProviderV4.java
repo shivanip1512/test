@@ -25,7 +25,7 @@ public class MspSearchFieldsProviderV4 implements MspSearchFieldsProvider {
 
             for (String mspMethodName : mspMethodNames) {
 
-                if (mspSearchField.getRequiredMspMethodNameV4().equalsIgnoreCase(mspMethodName) && mspSearchField.getRequiredMspMethodNameV4() == "GetMeterByServiceLocationID" ) {
+                if (mspSearchField.getRequiredMspMethodNameV4().equalsIgnoreCase(mspMethodName)) {
 
                     if (!supportedMspSearchFields.contains(mspSearchField)) {
                         throw new IllegalArgumentException("MspSearchField (" + mspSearchField

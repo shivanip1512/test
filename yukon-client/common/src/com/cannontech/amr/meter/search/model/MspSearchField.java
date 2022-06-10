@@ -3,9 +3,9 @@ package com.cannontech.amr.meter.search.model;
 public enum MspSearchField {
 
     SERVICE_LOCATION("Service Location", "GetMeterByServLoc", "GetMeterByServiceLocationID", "GetMetersByServiceLocationIDs"),
-    EA_LOCATION("EA Location", "GetMetersByEALocation", "TBU", "GetMetersByNetworkModelRef"),
+    EA_LOCATION("EA Location", "GetMetersByEALocation", "GetMetersByEALocation", "GetMetersByNetworkModelRef"),
     FACILITY_ID("Facility ID", "GetMetersByFacilityId", "GetMetersByFacilityID", "GetMetersByContactInfo"),
-    ACCOUNT_NUMBER("Account Number", "GetMeterByAccountNumber", "TBU", "GetMetersByAccountIDs"),
+    ACCOUNT_NUMBER("Account Number", "GetMeterByAccountNumber", "GetMetersByAccountNumberAndServiceType", "GetMetersByAccountIDs"),
     CUSTOMER_ID("Customer ID", "GetMeterByCustId", "GetMeterByCustomerID", "GetMetersByCustomerIDs"),
     CIS_SEARCH("CIS Search", "GetMetersBySearchString", "GetMetersBySearchString", "GetMetersBySearchString"),
 	;

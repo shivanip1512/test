@@ -1005,6 +1005,8 @@
     <bean id="cisSearchMspMeterSearchMethodResultProviderV4" class="com.cannontech.web.amr.meter.service.impl.CisSearchMspMeterSearchMethodResultProviderV4"/>
     <bean id="facilityIdMspMeterSearchMethodResultProviderV4" class="com.cannontech.web.amr.meter.service.impl.FacilityIdMspMeterSearchMethodResultProviderv4"/>
     <bean id="serviceLocationMspMeterSearchMethodResultProviderV4" class="com.cannontech.web.amr.meter.service.impl.ServiceLocationMspMeterSearchMethodResultProviderV4"/>
+    <bean id="eaLocationMspMeterSearchMethodResultProviderV4" class="com.cannontech.web.amr.meter.service.impl.EaLocationMspMeterSearchMethodResultProviderV4"/>
+    <bean id="accountNumberMspMeterSearchMethodResultProviderv4" class="com.cannontech.web.amr.meter.service.impl.AccountNumberMspMeterSearchMethodResultProviderV4"/>
     
     <bean id="multispeakDeviceGroupSyncBackingService" class="com.cannontech.web.updater.multispeak.deviceGroupSync.MultispeakDeviceGroupSyncBackingService"/>
     <bean id="multispeakEnrollmentSyncBackingService" class="com.cannontech.web.updater.multispeak.enrollment.MultispeakEnrollmentSyncBackingService"/>

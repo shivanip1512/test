@@ -23,6 +23,9 @@ import com.cannontech.clientutils.YukonLogManager;
 import com.cannontech.database.data.point.PointTypes;
 import com.cannontech.database.db.point.SystemLog;
 import com.cannontech.message.dispatch.message.SystemLogHelper;
+import com.cannontech.msp.beans.v3.GetMeterByAccountNumber;
+import com.cannontech.msp.beans.v3.GetMeterByAccountNumberResponse;
+import com.cannontech.msp.beans.v3.Meter;
 import com.cannontech.msp.beans.v4.ArrayOfDomainMember;
 import com.cannontech.msp.beans.v4.ArrayOfServiceLocation1;
 import com.cannontech.msp.beans.v4.DomainMember;
@@ -37,6 +40,10 @@ import com.cannontech.msp.beans.v4.GetMeterByCustomerID;
 import com.cannontech.msp.beans.v4.GetMeterByCustomerIDResponse;
 import com.cannontech.msp.beans.v4.GetMeterByServiceLocationID;
 import com.cannontech.msp.beans.v4.GetMeterByServiceLocationIDResponse;
+import com.cannontech.msp.beans.v4.GetMetersByAccountNumberAndServiceType;
+import com.cannontech.msp.beans.v4.GetMetersByAccountNumberAndServiceTypeResponse;
+import com.cannontech.msp.beans.v4.GetMetersByEALocation;
+import com.cannontech.msp.beans.v4.GetMetersByEALocationResponse;
 import com.cannontech.msp.beans.v4.GetMetersByFacilityID;
 import com.cannontech.msp.beans.v4.GetMetersByFacilityIDResponse;
 import com.cannontech.msp.beans.v4.GetMetersBySearchString;
@@ -543,6 +550,61 @@ public class MspObjectDaoImpl implements MspObjectDao {
         } catch (MultispeakWebServiceClientException e) {
             log.error("TargetService: " + endpointUrl + " - getMspMetersByFacilityId (" + mspVendor.getCompanyName()
                 + ") for facilityId: " + facilityId);
+            log.error("MultispeakWebServiceClientException: " + e.getMessage());
+        }
+        return meters;
+    }
+    
+    @Override
+    public List<MspMeter> getMspMetersByEALocation(String eaLocation, MultispeakVendor mspVendor) {
+
+        List<MspMeter> meters = new ArrayList<>();
+        String endpointUrl = multispeakFuncs.getEndpointUrl(mspVendor, MultispeakDefines.CB_Server_STR);
+
+        try {
+            GetMetersByEALocation getMetersByEALocation = objectFactory.createGetMetersByEALocation();
+            getMetersByEALocation.setEaLoc(eaLocation);
+            
+            GetMetersByEALocationResponse response =
+                cbClient.getMetersByEALocation(mspVendor, endpointUrl, getMetersByEALocation);
+            
+            if (response != null) {
+                if (response.getGetMetersByEALocationResult() != null) {
+                    meters = multispeakFuncs.getMspMeters(response.getGetMetersByEALocationResult());
+                }
+            } else {
+                log.error("Response not received for (" + mspVendor.getCompanyName() + ")");
+            }
+        } catch (MultispeakWebServiceClientException e) {
+            log.error("TargetService: " + endpointUrl + " - getMetersByEALocation (" + mspVendor.getCompanyName()
+                + ") for EALocation: " + eaLocation);
+            log.error("MultispeakWebServiceClientException: " + e.getMessage());
+        }
+        return meters;
+    }
+    
+    @Override
+    public List<MspMeter> getMspMetersByAccountNumber(String accountNumber, MultispeakVendor mspVendor) {
+
+        List<MspMeter> meters = new ArrayList<>();
+        String endpointUrl = multispeakFuncs.getEndpointUrl(mspVendor, MultispeakDefines.CB_Server_STR);
+
+        try {
+            GetMetersByAccountNumberAndServiceType getMeterByAccountNumber = objectFactory.createGetMetersByAccountNumberAndServiceType();
+            getMeterByAccountNumber.setAccountNumber(accountNumber);
+
+            GetMetersByAccountNumberAndServiceTypeResponse response =
+                cbClient.getMeterByAccountNumber(mspVendor, endpointUrl, getMeterByAccountNumber);
+            if (response != null) {
+                if (response.getGetMetersByAccountNumberAndServiceTypeResult() != null) {
+                    meters = multispeakFuncs.getMspMeters(response.getGetMetersByAccountNumberAndServiceTypeResult());
+                }
+            } else {
+                log.error("Response not received for (" + mspVendor.getCompanyName() + ")");
+            }
+        } catch (MultispeakWebServiceClientException e) {
+            log.error("TargetService: " + endpointUrl + " - getMspMetersByAccountNumber (" + mspVendor.getCompanyName()
+                + ") for accountNumber: " + accountNumber);
             log.error("MultispeakWebServiceClientException: " + e.getMessage());
         }
         return meters;
