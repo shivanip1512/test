@@ -63,13 +63,16 @@ unassignedContactsRequest:
           description: 'Unique identifier of the contact. Mandatory if unassigned contacts are added.' 
         emailEnabled:
           type: boolean
-          description: 'Flag for email notification for this contact. Default: false.'
+          description: 'Flag for email notification for this contact.'
+          default: false
         phoneCallEnabled:
           type: boolean
-          description: 'Flag for phone call notification for this contact. Deafult: false.'
+          description: 'Flag for phone call notification for this contact.'
+          default: false
         selected:
           type: boolean
-          description: 'Notification status of this contact. Default: false.'
+          description: 'Notification status of this contact.'
+          default: false
         notifications:
           description: 'Notifications associated with this contact.'
           $ref: '#/notificationsRequestUnassignedContact'
@@ -85,13 +88,16 @@ cICustomersRequest:
           description: 'Unique identifier of the customer. Mandatory if CI Customers are added.'
         emailEnabled:
           type: boolean
-          description: 'Flag for email notification for this customer. Default: false.'
+          description: 'Flag for email notification for this customer.'
+          default: false
         phoneCallEnabled:
           type: boolean
-          description: 'Flag for phone call notification for this customer. Default: false.'
+          description: 'Flag for phone call notification for this customer.'
+          default: false
         selected:
           type: boolean
-          description: 'Notification status of this Customer. Default: false.'
+          description: 'Notification status of this Customer.'
+          default: false
         contacts:
           description: 'Contacts associated with this customer.'
           $ref: '#/contactsRequest'
@@ -113,7 +119,8 @@ contactsRequest:
           description: 'Flag for phone call notification for this contact. If selected is true for CI Customer, it depends on parent field. Else, it is false.'
         selected:
           type: boolean
-          description: 'Notification status of this contact. Default: false.'
+          description: 'Notification status of this contact.'
+          default: false
         notifications:
            description: 'Notifications associated with this contact.'
            $ref: '#/notificationsRequest'
@@ -135,7 +142,8 @@ notificationsRequest:
         description: 'Flag for phone call notification. If selected is true for Contact or CI Customer, it depends on parent field. Else, it is false.'
       selected:
         type: boolean
-        description: 'Notification status. Default: false.'
+        description: 'Notification status.'
+        default: false
         
 notificationsRequestUnassignedContact:
     type: array
@@ -154,7 +162,8 @@ notificationsRequestUnassignedContact:
         description: 'Flag for phone call notification. If selected is true for Contact, it depends on parent field. Else, it is false.'
       selected:
         type: boolean
-        description: 'Notification status. Default: false.'
+        description: 'Notification status.'
+        default: false
         
 unassignedContactsResponse:
     type: array
@@ -168,13 +177,16 @@ unassignedContactsResponse:
           description: 'Name of the unassigned contact.'
         emailEnabled:
           type: boolean
-          description: 'Flag for email notification for this contact. Default: false.'
+          description: 'Flag for email notification for this contact.'
+          default: false
         phoneCallEnabled:
           type: boolean
-          description: 'Flag for phone call notification for this contact. Default: false.'
+          description: 'Flag for phone call notification for this contact.'
+          default: false
         selected:
           type: boolean
-          description: 'Notification status of this contact. Default: false.'
+          description: 'Notification status of this contact.'
+          default: false
         notifications:
           description: 'Notifications associated with this contact.'
           $ref: '#/notificationsResponseUnassignedContact'
@@ -191,13 +203,16 @@ cICustomersResponse:
           description: 'Company Name of the CI Customer.'
         emailEnabled:
           type: boolean
-          description: 'Flag for email notification for this customer. Default: false.'
+          description: 'Flag for email notification for this customer.'
+          default: false
         phoneCallEnabled:
           type: boolean
-          description: 'Flag for phone call notification for this customer. Default: false.'
+          description: 'Flag for phone call notification for this customer.'
+          default: false
         selected:
           type: boolean
-          description: 'Notification status of this customer. Default: false.'
+          description: 'Notification status of this customer.'
+          default: false
         contacts:
           description: 'Contacts associated with this customer.'
           $ref: '#/contactsResponse'
@@ -220,7 +235,8 @@ contactsResponse:
           description: 'Flag for phone call notification for this contact. If selected is true for CI Customer, it depends on parent field. Else, it is false.'
         selected:
           type: boolean
-          description: 'Notification status of this contact. Default: false.'
+          description: 'Notification status of this contact.'
+          default: false
         notifications:
            description: 'Notifications associated with this contact.'
            $ref: '#/notificationsResponse'
@@ -242,7 +258,8 @@ notificationsResponse:
         description: 'Flag for phone call notification. If selected is true for Contact or CI Customer, it depends on parent field. Else, it is false.'
       selected:
         type: boolean
-        description: 'Notification status. Default: false.'
+        description: 'Notification status.'
+        default: false
         
 notificationsResponseUnassignedContact:
     type: array
@@ -262,7 +279,8 @@ notificationsResponseUnassignedContact:
         description: 'Flag for phone call notification. If selected is true for Contact, it depends on parent field. Else, it is false.'
       selected:
         type: boolean
-        description: 'Notification status. Default: false.'
+        description: 'Notification status.'
+        default: false
                 
 id:
   title: id
