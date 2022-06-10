@@ -9,7 +9,7 @@ Season Schedule:
       maxLength: 40
       description: "Name of season schedule ."
     seasons:
-      description: "Seasons assigned to season schedule.  It can be 0 or more than one seasons."
+      description: "Seasons assigned to season schedule. Zero or more seasons can be assigned to a schedule."
       $ref: "#/SeasonRequest"
 
 Season Schedule Response Schema:
@@ -23,7 +23,7 @@ Season Schedule Response Schema:
       maxLength: 40
       description: "Name of season schedule ."
     seasons:
-      description: "Seasons assigned to season schedule. It can be 0 or more than one seasons."
+      description: "Seasons assigned to season schedule. Zero or more seasons can be assigned to a schedule."
       $ref: "#/SeasonResponse"
 
 SeasonRequest:

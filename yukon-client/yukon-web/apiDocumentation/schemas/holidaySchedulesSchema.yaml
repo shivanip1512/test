@@ -9,7 +9,7 @@ Holiday Schedule:
       maxLength: 40
       description: 'Name of holiday schedule .'
     holidays:
-      description: 'Holidays assigned to holiday schedule.  It can be 0 or more than one holidays.'
+      description: 'Holidays assigned to holiday schedule. Zero or more holidays can be assigned to a schedule.'
       $ref: '#/HolidayRequest'
 
 Holiday Schedule Response Schema:
@@ -23,7 +23,7 @@ Holiday Schedule Response Schema:
       maxLength: 40
       description: 'Name of holiday schedule .'
     holidays:
-      description: 'Holiday assigned to holiday schedule. It can be 0 or more than one holidays.'
+      description: 'Holiday assigned to holiday schedule. Zero or more holidays can be assigned to a schedule.'
       $ref: '#/HolidayResponse'
 
 HolidayRequest:
