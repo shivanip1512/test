@@ -145,6 +145,16 @@ paths:
   /notificationGroups/{id}:
     $ref: 'api/notificationGroupsApi.yaml#/get-update-delete-operation'
     
+  /holidaySchedules:
+    $ref: 'api/holidaySchedulesApi.yaml#/post-get-all-operation'
+  /holidaySchedules/{id}:
+    $ref: 'api/holidaySchedulesApi.yaml#/get-update-delete-operation'
+    
+  /seasonSchedules:
+    $ref: 'api/seasonSchedulesApi.yaml#/post-get-all-operation'
+  /seasonSchedules/{id}:
+    $ref: 'api/seasonSchedulesApi.yaml#/get-update-delete-operation'
+    
 components:
   securitySchemes:
     bearerAuth:
@@ -173,4 +183,6 @@ tags:
   - name: Macro Route
   - name: Terminals
   - name: Notification Groups
+  - name: Holiday Schedules
+  - name: Season Schedules
 
