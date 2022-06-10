@@ -13,6 +13,8 @@ import com.cannontech.msp.beans.v4.GetMeterByCustomerID;
 import com.cannontech.msp.beans.v4.GetMeterByCustomerIDResponse;
 import com.cannontech.msp.beans.v4.GetMeterByServiceLocationID;
 import com.cannontech.msp.beans.v4.GetMeterByServiceLocationIDResponse;
+import com.cannontech.msp.beans.v4.GetMetersByFacilityID;
+import com.cannontech.msp.beans.v4.GetMetersByFacilityIDResponse;
 import com.cannontech.msp.beans.v4.GetMetersBySearchString;
 import com.cannontech.msp.beans.v4.GetMetersBySearchStringResponse;
 import com.cannontech.msp.beans.v4.GetMethods;
@@ -157,5 +159,18 @@ public interface ICBClient {
      */
     GetMetersBySearchStringResponse getMetersBySearchString(MultispeakVendor mspVendor, String uri,
             GetMetersBySearchString getMetersBySearchString) throws MultispeakWebServiceClientException;
+    
+    /**
+     * Gets Meters by facility.
+     * 
+     * @param MSP vendor details
+     * @param String the URI of the CB Server
+     * @param GetMetersByFacilityID the GetMetersByFacilityID used as input.
+     * @return GetMetersByFacilityIDResponse
+     * @throws MultispeakWebServiceClientException
+     */
+    public GetMetersByFacilityIDResponse getMetersByFacilityID(MultispeakVendor mspVendor, String uri,
+            GetMetersByFacilityID getMetersByFacilityId) throws MultispeakWebServiceClientException;
+    
 
 }

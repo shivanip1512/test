@@ -18,6 +18,8 @@ import com.cannontech.msp.beans.v4.GetMeterByCustomerID;
 import com.cannontech.msp.beans.v4.GetMeterByCustomerIDResponse;
 import com.cannontech.msp.beans.v4.GetMeterByServiceLocationID;
 import com.cannontech.msp.beans.v4.GetMeterByServiceLocationIDResponse;
+import com.cannontech.msp.beans.v4.GetMetersByFacilityID;
+import com.cannontech.msp.beans.v4.GetMetersByFacilityIDResponse;
 import com.cannontech.msp.beans.v4.GetMetersBySearchString;
 import com.cannontech.msp.beans.v4.GetMetersBySearchStringResponse;
 import com.cannontech.msp.beans.v4.GetMethods;
@@ -214,5 +216,18 @@ public class CBClient implements ICBClient {
             throw new MultispeakWebServiceClientException(e.getMessage());
         }
     }
+    
+    @Override
+    public GetMetersByFacilityIDResponse getMetersByFacilityID(final MultispeakVendor mspVendor, String uri,
+            GetMetersByFacilityID getMetersByFacilityID) throws MultispeakWebServiceClientException {
+        try {
+            multispeakFuncs.setMsgSender(webServiceTemplate, mspVendor);
 
+            return (GetMetersByFacilityIDResponse) webServiceTemplate.marshalSendAndReceive(uri, getMetersByFacilityID,
+                customWebServiceMsgCallback.addRequestHeader(mspVendor, MultispeakDefines.CB_Server_STR));
+        } catch (WebServiceException | XmlMappingException e) {
+            throw new MultispeakWebServiceClientException(e.getMessage());
+        }
+    }
+    
 }

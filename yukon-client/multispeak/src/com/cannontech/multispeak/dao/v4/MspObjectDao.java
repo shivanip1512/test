@@ -147,5 +147,15 @@ public interface MspObjectDao {
      * @return
      */
     public List<MspMeter> getMetersBySearchString(String searchString, MultispeakVendor mspVendor);
+    
+    /**
+     * Returns a list of the MeterNumber(s) for the facilityId.
+     * If the interface/method is not supported by mspVendor, or if no object is found,
+     * an empty List<Meter> object is returned.
+     * @param facilityId The facilityId to get the Meter information for.
+     * @param mspVendor The MultiSpeak Vendor to ask for the information from.
+     * @return
+     */
+    public List<MspMeter> getMspMetersByFacilityId(String facilityId, MultispeakVendor mspVendor);
 
 }

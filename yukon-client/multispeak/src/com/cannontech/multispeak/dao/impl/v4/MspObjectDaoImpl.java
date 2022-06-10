@@ -37,6 +37,8 @@ import com.cannontech.msp.beans.v4.GetMeterByCustomerID;
 import com.cannontech.msp.beans.v4.GetMeterByCustomerIDResponse;
 import com.cannontech.msp.beans.v4.GetMeterByServiceLocationID;
 import com.cannontech.msp.beans.v4.GetMeterByServiceLocationIDResponse;
+import com.cannontech.msp.beans.v4.GetMetersByFacilityID;
+import com.cannontech.msp.beans.v4.GetMetersByFacilityIDResponse;
 import com.cannontech.msp.beans.v4.GetMetersBySearchString;
 import com.cannontech.msp.beans.v4.GetMetersBySearchStringResponse;
 import com.cannontech.msp.beans.v4.GetMethods;
@@ -516,6 +518,32 @@ public class MspObjectDaoImpl implements MspObjectDao {
             log.error("TargetService: " + endpointUrl + " - getMetersBySearchString (" + mspVendor.getCompanyName()
                 + ") for SearchString: " + searchString);
             log.error("RemoteExceptionDetail: " + e.getMessage());
+        }
+        return meters;
+    }
+    
+    @Override
+    public List<MspMeter> getMspMetersByFacilityId(String facilityId, MultispeakVendor mspVendor) {
+
+        List<MspMeter> meters = new ArrayList<>();
+        String endpointUrl = multispeakFuncs.getEndpointUrl(mspVendor, MultispeakDefines.CB_Server_STR);
+
+        try {
+            GetMetersByFacilityID facility = objectFactory.createGetMetersByFacilityID();
+            facility.setFacilityID(facilityId);
+
+            GetMetersByFacilityIDResponse response = cbClient.getMetersByFacilityID(mspVendor, endpointUrl, facility);
+            if (response != null) {
+                if (response.getGetMetersByFacilityIDResult() != null) {
+                    meters = multispeakFuncs.getMspMeters(response.getGetMetersByFacilityIDResult());
+                }
+            } else {
+                log.error("Response not received for (" + mspVendor.getCompanyName() + ")");
+            }
+        } catch (MultispeakWebServiceClientException e) {
+            log.error("TargetService: " + endpointUrl + " - getMspMetersByFacilityId (" + mspVendor.getCompanyName()
+                + ") for facilityId: " + facilityId);
+            log.error("MultispeakWebServiceClientException: " + e.getMessage());
         }
         return meters;
     }
