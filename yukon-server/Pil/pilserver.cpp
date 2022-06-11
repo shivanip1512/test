@@ -1274,27 +1274,12 @@ void PilServer::handleRfnEdgeDrUnicastRequest( const amq_cm::MessageDescriptor &
 
     // Log the incoming request (for now)...
     {
-        // wheel re-invention...
-        std::string paos = std::to_string( req->paoIds.size() ) + ": ";
-        for ( auto p : req->paoIds )
-        {
-            paos += std::to_string( p ) + " ";
-        }
-
-        std::string payload = "0x";
-        for ( auto b : req->payload )
-        {
-            payload += toAsciiHex( (b >> 4) & 0x0f );
-            payload += toAsciiHex(  b       & 0x0f );
-        }
-        // end wheel re-invention...
-
         CTILOG_DEBUG( dout, "Received EdgeDR unicast request:" << FormattedList::of(
-            "Message GUID: ",       req->messageGuid,
-            "PaoID(s): ",           paos,
-            "Payload: ",            payload,
-            "Queue Priority: ",     ( req->queuePriority   == EdgeUnicastPriority::HIGH ? "HIGH": "LOW" ),
-            "Network Priority: ",   ( req->networkPriority == EdgeUnicastPriority::HIGH ? "HIGH": "LOW" ) ) );
+            "Message GUID",       req->messageGuid,
+            "PaoID(s)",           req->paoIds,
+            "Payload",            req->payload,
+            "Queue Priority",     to_string( req->queuePriority ),
+            "Network Priority",   to_string( req->networkPriority ) ) );
     }
 
 
@@ -1347,19 +1332,10 @@ void PilServer::handleRfnEdgeDrBroadcastRequest( const amq_cm::MessageDescriptor
 
     // Log the incoming request (for now)...
     {
-        // wheel re-invention...
-        std::string payload = "0x";
-        for ( auto b : req->payload )
-        {
-            payload += toAsciiHex( (b >> 4) & 0x0f );
-            payload += toAsciiHex(  b       & 0x0f );
-        }
-        // end wheel re-invention...
-
         CTILOG_DEBUG( dout, "Received EdgeDR unicast request:" << FormattedList::of(
-            "Message GUID: ",   req->messageGuid,
-            "Payload: ",        payload,
-            "Priority: ",       ( req->priority == EdgeBroadcastMessagePriority::IMMEDIATE ? "IMMEDIATE": "NON_REAL_TIME" ) ) );
+            "Message GUID", req->messageGuid,
+            "Payload",      req->payload,
+            "Priority",     req->priority ? to_string( req->priority.value() ) : "<empty>" ) );
     }
 
 

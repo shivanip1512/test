@@ -18,6 +18,13 @@ enum class EdgeUnicastPriority
     LOW
 };
 
+inline auto to_string(EdgeUnicastPriority eup)
+{
+    return eup == EdgeUnicastPriority::HIGH 
+        ? "HIGH" 
+        : "LOW";
+}
+
 struct EdgeDrUnicastRequest
 {
     std::string messageGuid;
@@ -43,6 +50,13 @@ enum class EdgeBroadcastMessagePriority
     IMMEDIATE,
     NON_REAL_TIME
 };
+
+inline auto to_string(EdgeBroadcastMessagePriority ebmp)
+{
+    return ebmp == EdgeBroadcastMessagePriority::IMMEDIATE
+        ? "IMMEDIATE"
+        : "NON_REAL_TIME";
+}
 
 struct EdgeDrBroadcastRequest
 {
