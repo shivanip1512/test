@@ -14,8 +14,7 @@ public interface MeterReadProcessingService {
      * the point values into an object that can easily be stored (and can even be
      * aggregated or chained) and then processed later in a synchronous manner.
      */
-    public MeterReadUpdater buildMeterReadUpdater(BuiltInAttribute attribute,
-                                           PointValueHolder pointValueHolder);
+    public MeterReadUpdater buildMeterReadUpdater(BuiltInAttribute attribute, PointValueHolder pointValueHolder);
 
     /**
      * Simple helper to create a blank MeterRead for a given Meter.
@@ -27,7 +26,7 @@ public interface MeterReadProcessingService {
      * object directly with the given value for the given attribute. This method
      * is not appropriate in a multi-threaded environment when the MeterRead may
      * be shared across threads.
+     * @param paoType 
      */
-    public void updateMeterRead(MeterRead reading, BuiltInAttribute attribute,
-                         PointValueHolder pointValueHolder);
+    public void updateMeterRead(MeterRead reading, BuiltInAttribute attribute, PointValueHolder pointValueHolder);
 }

@@ -64,8 +64,9 @@ ProgramConstraint:
         - FRIDAY
         - SATURDAY
     holidaySchedule:
+      description: 'Schedule that defines the load control holidays.'
       required:
-        -id
+        - id
       type: object
       properties:
         name:
@@ -164,8 +165,6 @@ ProgramConstraint Response Schema:
       description: 'Name of the program constraint.'
     seasonSchedule:
       description: 'Schedule that defines the load control seasons.'
-      required:
-        - id
       type: object
       properties: 
         name:
@@ -207,8 +206,6 @@ ProgramConstraint Response Schema:
         - FRIDAY
         - SATURDAY
     holidaySchedule:
-      required:
-        -id
       type: object
       properties:
         name:

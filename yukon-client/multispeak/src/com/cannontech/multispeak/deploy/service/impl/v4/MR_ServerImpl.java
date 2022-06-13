@@ -244,14 +244,38 @@ public class MR_ServerImpl implements MR_Server {
             try {
                 MeterReading meterReading = meterReadingProcessingService.createMeterReading(meter);
                 
-                EnumSet<BuiltInAttribute> attributesToLoad = EnumSet.of(BuiltInAttribute.USAGE, BuiltInAttribute.PEAK_DEMAND);
+                EnumSet<BuiltInAttribute> attributesToLoad = EnumSet.of(BuiltInAttribute.USAGE, 
+                                                                        BuiltInAttribute.PEAK_DEMAND,
+                                                                        BuiltInAttribute.KVA, 
+                                                                        BuiltInAttribute.KVAR,
+                                                                        BuiltInAttribute.POWER_FACTOR,
+                                                                        BuiltInAttribute.SUM_KWH,
+                                                                        BuiltInAttribute.KVARH,
+                                                                        BuiltInAttribute.NET_KWH,
+                                                                        BuiltInAttribute.DELIVERED_KWH_RATE_A,
+                                                                        BuiltInAttribute.DELIVERED_KWH_RATE_B,
+                                                                        BuiltInAttribute.DELIVERED_KWH_RATE_C,
+                                                                        BuiltInAttribute.DELIVERED_KWH_RATE_D,
+                                                                        BuiltInAttribute.RECEIVED_KWH,
+                                                                        BuiltInAttribute.RECEIVED_KWH_RATE_A,
+                                                                        BuiltInAttribute.RECEIVED_KWH_RATE_B,
+                                                                        BuiltInAttribute.RECEIVED_KWH_RATE_C,
+                                                                        BuiltInAttribute.RECEIVED_KWH_RATE_D,
+                                                                        BuiltInAttribute.PEAK_DEMAND_RATE_A,
+                                                                        BuiltInAttribute.PEAK_DEMAND_RATE_B,
+                                                                        BuiltInAttribute.PEAK_DEMAND_RATE_C,
+                                                                        BuiltInAttribute.PEAK_DEMAND_RATE_D
+                                                                        );
     
                 for (BuiltInAttribute attribute : attributesToLoad) {
                     try {
                         LitePoint litePoint = attributeService.getPointForAttribute(meter, attribute);
                         PointValueQualityHolder pointValueQualityHolder = asyncDynamicDataSource.getPointValue(litePoint.getPointID());
                         if( pointValueQualityHolder != null && pointValueQualityHolder.getPointQuality() != PointQuality.Uninitialized) {
-                            meterReadingProcessingService.updateMeterReading(meterReading, attribute, pointValueQualityHolder, meter.getPaoType());
+                            meterReadingProcessingService.updateMeterReading(meterReading, 
+                                                                             attribute, 
+                                                                             pointValueQualityHolder,
+                                                                             meter.getPaoType());
                         }
                     } catch (IllegalUseOfAttribute e) {
                         //it's okay...just skip

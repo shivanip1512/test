@@ -1,5 +1,6 @@
 package com.cannontech.dr.eatonCloud.service.impl.v1;
 
+import java.math.BigInteger;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
@@ -50,6 +51,7 @@ import com.cannontech.dr.recenteventparticipation.dao.RecentEventParticipationDa
 import com.cannontech.message.dispatch.message.PointData;
 import com.cannontech.user.YukonUserContext;
 import com.google.common.base.Splitter;
+import com.google.common.base.Strings;
 import com.google.common.collect.HashMultimap;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Multimap;
@@ -67,6 +69,8 @@ public class EatonCloudDataReadServiceImpl implements EatonCloudDataReadService 
     @Autowired private EatonCloudCommunicationServiceV1 eatonCloudCommunicationService;
     @Autowired private RecentEventParticipationDao recentEventParticipationDao;
     @Autowired private ConfigurationSource configurationSource;
+
+    public static int TAGS_PER_TIMESERIES_REQUEST = 1000;
 
     @Override
     public Multimap<PaoIdentifier, PointData> collectDataForRead(Integer deviceId, Range<Instant> range) {
@@ -101,7 +105,7 @@ public class EatonCloudDataReadServiceImpl implements EatonCloudDataReadService 
     }
 
     private Multimap<PaoIdentifier, PointData> retrievePointData(Iterable<LiteYukonPAObject> paos,
-            Set<BuiltInAttribute> attribtues, Range<Instant> queryRange, boolean throwErrorIfFailed) {
+            Set<BuiltInAttribute> attributes, Range<Instant> queryRange, boolean throwErrorIfFailed) {
 
         Map<Integer, LiteYukonPAObject> deviceIdToPao = StreamSupport.stream(paos.spliterator(), false)
                 .collect(Collectors.toMap(LiteYukonPAObject::getYukonID, liteYukonPao -> liteYukonPao));
@@ -109,18 +113,39 @@ public class EatonCloudDataReadServiceImpl implements EatonCloudDataReadService 
 
 
         List<EatonCloudTimeSeriesDeviceResultV1> timeSeriesResults = new ArrayList<EatonCloudTimeSeriesDeviceResultV1>();
-        Set<String> tags = EatonCloudChannel.getTagsForAttributes(attribtues);
-        List<EatonCloudTimeSeriesDeviceV1> chunkedRequests = configurationSource.getBoolean(MasterConfigBoolean.EATON_CLOUD_JOBS_TREND, false) ? 
-                buildRequests(deviceIdGuid.values(), tags) : buildRequestsLegacy(deviceIdGuid.values(), tags);
-        for (EatonCloudTimeSeriesDeviceV1 request : chunkedRequests) {
-            try {
-                List<EatonCloudTimeSeriesDeviceResultV1> result = eatonCloudCommunicationService
-                        .getTimeSeriesValues(List.of(request), queryRange);
-                timeSeriesResults.addAll(result);
-            } catch (Exception e) {
-                log.error("Guid:" + request.getDeviceGuid(), e);
-                if(throwErrorIfFailed) {
-                    throw e;
+        Set<String> tags = EatonCloudChannel.getTagsForAttributes(attributes);
+
+        if (configurationSource.getBoolean(MasterConfigBoolean.EATON_CLOUD_JOBS_TREND, false)) {
+            List<EatonCloudTimeSeriesDeviceV1> requests = deviceIdGuid.values().stream()
+                    .map(guid -> new EatonCloudTimeSeriesDeviceV1(guid, StringUtils.join(tags, ',')))
+                    .collect(Collectors.toList());
+            List<List<EatonCloudTimeSeriesDeviceV1>> chunkedRequests = chunkRequests(requests);
+            for (List<EatonCloudTimeSeriesDeviceV1> request : chunkedRequests) {
+                try {
+                    List<EatonCloudTimeSeriesDeviceResultV1> result = eatonCloudCommunicationService
+                            .getTimeSeriesValues(request, queryRange);
+                    timeSeriesResults.addAll(result);
+                } catch (Exception e) {
+                    String guids = request.stream().map(r -> r.getDeviceGuid()).collect(Collectors.joining(","));
+                    log.error("Guid:{}", guids, e);
+                    if (throwErrorIfFailed) {
+                        throw e;
+                    }
+                }
+            }
+        } else {
+            // Legacy, to be deleted
+            List<EatonCloudTimeSeriesDeviceV1> chunkedRequests = buildRequests(deviceIdGuid.values(), tags);
+            for (EatonCloudTimeSeriesDeviceV1 request : chunkedRequests) {
+                try {
+                    List<EatonCloudTimeSeriesDeviceResultV1> result = eatonCloudCommunicationService
+                            .getTimeSeriesValues(List.of(request), queryRange);
+                    timeSeriesResults.addAll(result);
+                } catch (Exception e) {
+                    log.error("Guid:" + request.getDeviceGuid(), e);
+                    if(throwErrorIfFailed) {
+                        throw e;
+                    }
                 }
             }
         }
@@ -144,7 +169,7 @@ public class EatonCloudDataReadServiceImpl implements EatonCloudDataReadService 
                         updateEventParticipation(device, result.getValues());
                     } else if (InfoKey.hasKey(mwChannel)) {
                         updatePaoInfo(InfoKey.getKey(mwChannel), device, result.getValues());
-                    } else if (attribtues.contains(mwChannel.getBuiltInAttribute())) {
+                    } else if (attributes.contains(mwChannel.getBuiltInAttribute())) {
                         createPointData(pointMap, deviceResult.getDeviceId(), device, result, mwChannel);
                     }
                 } catch (Exception e) {
@@ -153,6 +178,44 @@ public class EatonCloudDataReadServiceImpl implements EatonCloudDataReadService 
             }
         }
         return pointMap;
+    }
+
+    protected List<List<EatonCloudTimeSeriesDeviceV1>> chunkRequests(List<EatonCloudTimeSeriesDeviceV1> requests) {
+        List<List<EatonCloudTimeSeriesDeviceV1>> chunkedRequests = new ArrayList<>();
+        List<EatonCloudTimeSeriesDeviceV1> chunk = new ArrayList<>();
+
+        BigInteger counter = BigInteger.valueOf(TAGS_PER_TIMESERIES_REQUEST);
+        for (EatonCloudTimeSeriesDeviceV1 request : requests) {
+            if(Strings.isNullOrEmpty(request.getTagTrait())) {
+                //shouldn't happen
+                continue;
+            }
+            int tagCount = request.getTagTrait().split(",").length;
+            counter = counter.subtract(BigInteger.valueOf(tagCount));
+            if (counter.intValue() < 0) {
+                counter = BigInteger.valueOf(TAGS_PER_TIMESERIES_REQUEST);
+                chunkedRequests.add(chunk);
+                chunk = new ArrayList<>();
+                counter = counter.subtract(BigInteger.valueOf(tagCount));
+            }
+            chunk.add(request);
+        }
+        // add last chunk
+        if (!chunk.isEmpty()) {
+            chunkedRequests.add(chunk);
+        }
+        //Debug or info?
+        int totalTags = getTagsCount(requests);
+        int totalTagsPerGuid = getTagsCount(List.of(chunkedRequests.get(0).get(0)));
+        log.info("Total Tags:{} Tags Per Guid:{} Tags Per Request:{}", totalTags, totalTagsPerGuid,
+                chunkedRequests.stream().map(r -> getTagsCount(r))
+                        .collect(Collectors.toList()));
+        return chunkedRequests;
+    }
+
+    private int getTagsCount(List<EatonCloudTimeSeriesDeviceV1> requests) {
+        return requests.stream()
+                .collect(Collectors.summingInt(d -> Lists.newArrayList(Splitter.on(",").split(d.getTagTrait())).size()));
     }
 
     private void createPointData(Multimap<PaoIdentifier, PointData> pointMap, String guid,
@@ -300,25 +363,9 @@ public class EatonCloudDataReadServiceImpl implements EatonCloudDataReadService 
      * Helps optimize the requests that are built by taking a set of GUIDs and a set of 
      * tags that are being requested for those GUIDs and building the minimum number of requests
      */
-    private List<EatonCloudTimeSeriesDeviceV1> buildRequestsLegacy(Collection<String> guids, Set<String> tagSet) {
-        List<EatonCloudTimeSeriesDeviceV1> chunkedRequests = new ArrayList<>();
-        List<List<String>> chunkedTags = Lists.partition(new ArrayList<>(tagSet), 10);
-        for (List<String> tagSubset : chunkedTags) {
-            String tagCSV = buildTagString(tagSubset);
-            for (String guid : guids) {
-                chunkedRequests.add(new EatonCloudTimeSeriesDeviceV1(guid, tagCSV));
-            }
-        }
-        return chunkedRequests;
-    }
-    
-    /**
-     * Helps optimize the requests that are built by taking a set of GUIDs and a set of 
-     * tags that are being requested for those GUIDs and building the minimum number of requests
-     */
     private List<EatonCloudTimeSeriesDeviceV1> buildRequests(Collection<String> guids, Set<String> tagSet) {
         List<EatonCloudTimeSeriesDeviceV1> chunkedRequests = new ArrayList<>();
-        List<List<String>> chunkedTags = Lists.partition(new ArrayList<>(tagSet), 1000);
+        List<List<String>> chunkedTags = Lists.partition(new ArrayList<>(tagSet), 10);
         for (List<String> tagSubset : chunkedTags) {
             String tagCSV = buildTagString(tagSubset);
             for (String guid : guids) {

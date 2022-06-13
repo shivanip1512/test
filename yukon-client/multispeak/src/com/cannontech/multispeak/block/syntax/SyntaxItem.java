@@ -26,7 +26,25 @@ public enum SyntaxItem {
         MAX_VOLTAGE_DATETIME("maxVoltageDateTime", MspUom.DateTime),
         MULTIPLIER("multiplier", null),
         VOLTAGE_PROFILE("voltageProfile", MspUom.Volts),
-        VOLTAGE_PROFILE_DATETIME("voltageProfileDateTime", MspUom.DateTime);
+        VOLTAGE_PROFILE_DATETIME("voltageProfileDateTime", MspUom.DateTime),
+        SUM_KWH("sumKwh", MspUom.kWh),
+        NET_KWH("netKwh", MspUom.kWh),
+        KVA("kVA", MspUom.kVA),
+        KVARH("kVArh", MspUom.kVARh),
+        POWER_FACTOR("powerFactor", MspUom.PowerFactor),
+        RECEIVED_KWH("receivedKwh", MspUom.kWh),
+        PEAK_DEMAND_RATE_A("peakDemandRateA", MspUom.kW),
+        PEAK_DEMAND_RATE_B("peakDemandRateB", MspUom.kW),
+        PEAK_DEMAND_RATE_C("peakDemandRateC", MspUom.kW),
+        PEAK_DEMAND_RATE_D("peakDemandRateD", MspUom.kW),
+        RECEIVED_KWH_RATE_A("receivedKwhRateA", MspUom.kWh),
+        RECEIVED_KWH_RATE_B("receivedKwhRateB", MspUom.kWh),
+        RECEIVED_KWH_RATE_C("receivedKwhRateC", MspUom.kWh),
+        RECEIVED_KWH_RATE_D("receivedKwhRateD", MspUom.kWh),
+        DELIVERED_KWH_RATE_A("deliveredKwhRateA", MspUom.kWh),
+        DELIVERED_KWH_RATE_B("deliveredKwhRateB", MspUom.kWh),
+        DELIVERED_KWH_RATE_C("deliveredKwhRateC", MspUom.kWh),
+        DELIVERED_KWH_RATE_D("deliveredKwhRateD", MspUom.kWh);
     
     private String mspFieldName;
     private Uom mspUom;
