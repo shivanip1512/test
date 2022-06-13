@@ -31,7 +31,7 @@ public class CisSearchMspMeterSearchMethodResultProviderV4 implements MspMeterSe
         List<String> meterNumbers = new ArrayList<>();
 
         MultispeakVendor mspVendor = multispeakDao.getMultispeakVendor(multispeakFuncs.getPrimaryCIS());
-        List<MspMeter> meters = mspObjectDao.getMspMetersByCustomerId(filterValue, mspVendor);
+        List<MspMeter> meters = mspObjectDao.getMetersBySearchString(filterValue, mspVendor);
         for (MspMeter meter : meters) {
             meterNumbers.add(meter.getMeterNo());
         }
