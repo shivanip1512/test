@@ -7,6 +7,7 @@ import java.util.Iterator;
 import java.util.List;
 
 import javax.xml.namespace.QName;
+
 import org.apache.commons.lang3.StringUtils;
 import org.apache.logging.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -36,12 +37,10 @@ import com.cannontech.msp.beans.v4.GetCustomerByMeterID;
 import com.cannontech.msp.beans.v4.GetCustomerByMeterIDResponse;
 import com.cannontech.msp.beans.v4.GetDomainMembers;
 import com.cannontech.msp.beans.v4.GetDomainMembersResponse;
-import com.cannontech.msp.beans.v4.GetMeterByMeterID;
-import com.cannontech.msp.beans.v4.GetMeterByMeterIDResponse;
-import com.cannontech.msp.beans.v4.GetDomainMembers;
-import com.cannontech.msp.beans.v4.GetDomainMembersResponse;
 import com.cannontech.msp.beans.v4.GetMeterByCustomerID;
 import com.cannontech.msp.beans.v4.GetMeterByCustomerIDResponse;
+import com.cannontech.msp.beans.v4.GetMeterByMeterID;
+import com.cannontech.msp.beans.v4.GetMeterByMeterIDResponse;
 import com.cannontech.msp.beans.v4.GetMeterByServiceLocationID;
 import com.cannontech.msp.beans.v4.GetMeterByServiceLocationIDResponse;
 import com.cannontech.msp.beans.v4.GetMetersByAccountNumberAndServiceType;
@@ -80,7 +79,8 @@ import com.cannontech.multispeak.client.core.v4.ODClient;
 import com.cannontech.multispeak.client.core.v4.SCADAClient;
 import com.cannontech.multispeak.client.v4.MultispeakFuncs;
 import com.cannontech.multispeak.dao.v4.MspObjectDao;
-import com.cannontech.multispeak.dao.v4.MultispeakGetAllServiceLocationsCallback;
+import com.cannontech.multispeak.dao.v4.MultispeakSyncProcessCallback;
+import com.cannontech.multispeak.dao.v5.MultispeakSynsProcessCallback;
 import com.cannontech.multispeak.exceptions.MultispeakWebServiceClientException;
 import com.google.common.collect.Lists;
 
@@ -335,7 +335,7 @@ public class MspObjectDaoImpl implements MspObjectDao {
     }
     
     @Override
-    public void getAllMspServiceLocations(MultispeakVendor mspVendor, MultispeakGetAllServiceLocationsCallback callback)
+    public void getAllMspServiceLocations(MultispeakVendor mspVendor, MultispeakSyncProcessCallback callback)
             throws MultispeakWebServiceClientException {
 
         boolean firstGet = true;
@@ -345,7 +345,7 @@ public class MspObjectDaoImpl implements MspObjectDao {
 
             // kill before gathering more substations if callback is canceled
             if (callback.isCanceled()) {
-                log.info("MultispeakGetAllServiceLocationsCallback in canceled state, aborting next call to getMoreServiceLocations");
+                log.info("MultispeakSyncProcessCallback in canceled state, aborting next call to getMoreServiceLocations");
                 return;
             }
 
@@ -358,7 +358,7 @@ public class MspObjectDaoImpl implements MspObjectDao {
     }
     
     private String getMoreServiceLocations(MultispeakVendor mspVendor, String lastReceived,
-            MultispeakGetAllServiceLocationsCallback callback) throws MultispeakWebServiceClientException {
+            MultispeakSyncProcessCallback callback) throws MultispeakWebServiceClientException {
         String lastSent = null;
         String endpointUrl = multispeakFuncs.getEndpointUrl(mspVendor, MultispeakDefines.CB_Server_STR);
         try {
