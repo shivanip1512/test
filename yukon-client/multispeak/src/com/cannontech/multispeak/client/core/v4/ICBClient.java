@@ -1,5 +1,6 @@
 package com.cannontech.multispeak.client.core.v4;
 
+
 import com.cannontech.msp.beans.v4.CDStateChangedNotification;
 import com.cannontech.msp.beans.v4.CDStateChangedNotificationResponse;
 import com.cannontech.msp.beans.v4.FormattedBlockNotification;
@@ -8,8 +9,18 @@ import com.cannontech.msp.beans.v4.GetAllServiceLocations;
 import com.cannontech.msp.beans.v4.GetAllServiceLocationsResponse;
 import com.cannontech.msp.beans.v4.GetDomainMembers;
 import com.cannontech.msp.beans.v4.GetDomainMembersResponse;
+import com.cannontech.msp.beans.v4.GetMeterByCustomerID;
+import com.cannontech.msp.beans.v4.GetMeterByCustomerIDResponse;
 import com.cannontech.msp.beans.v4.GetMeterByServiceLocationID;
 import com.cannontech.msp.beans.v4.GetMeterByServiceLocationIDResponse;
+import com.cannontech.msp.beans.v4.GetMetersByAccountNumberAndServiceType;
+import com.cannontech.msp.beans.v4.GetMetersByAccountNumberAndServiceTypeResponse;
+import com.cannontech.msp.beans.v4.GetMetersByEALocation;
+import com.cannontech.msp.beans.v4.GetMetersByEALocationResponse;
+import com.cannontech.msp.beans.v4.GetMetersByFacilityID;
+import com.cannontech.msp.beans.v4.GetMetersByFacilityIDResponse;
+import com.cannontech.msp.beans.v4.GetMetersBySearchString;
+import com.cannontech.msp.beans.v4.GetMetersBySearchStringResponse;
 import com.cannontech.msp.beans.v4.GetMethods;
 import com.cannontech.msp.beans.v4.GetMethodsResponse;
 import com.cannontech.msp.beans.v4.MeterEventNotification;
@@ -128,4 +139,65 @@ public interface ICBClient {
      */
     public GetAllServiceLocationsResponse getAllServiceLocations(MultispeakVendor mspVendor, String uri,
             GetAllServiceLocations getAllServiceLocations) throws MultispeakWebServiceClientException;
+    
+    /**
+     * Gets Meter by Customer.
+     * 
+     * @param MSP vendor details
+     * @param String the URI of the CB Server
+     * @param GetMeterByCustID the GetMeterByCustID used as input.
+     * @return GetMeterByCustIDResponse
+     * @throws MultispeakWebServiceClientException
+     */
+    public GetMeterByCustomerIDResponse getMeterByCustomerID(MultispeakVendor mspVendor, String uri,
+            GetMeterByCustomerID getMeterByCustomerID) throws MultispeakWebServiceClientException;
+    
+    /**
+     * Gets Meters by SearchString.
+     * 
+     * @param MSP vendor details
+     * @param String the URI of the CB Server
+     * @param GetMetersBySearchString the GetMetersBySearchString used as input.
+     * @return GetMetersBySearchStringResponse
+     * @throws MultispeakWebServiceClientException
+     */
+    GetMetersBySearchStringResponse getMetersBySearchString(MultispeakVendor mspVendor, String uri,
+            GetMetersBySearchString getMetersBySearchString) throws MultispeakWebServiceClientException;
+    
+    /**
+     * Gets Meters by facility.
+     * 
+     * @param MSP vendor details
+     * @param String the URI of the CB Server
+     * @param GetMetersByFacilityID the GetMetersByFacilityID used as input.
+     * @return GetMetersByFacilityIDResponse
+     * @throws MultispeakWebServiceClientException
+     */
+    public GetMetersByFacilityIDResponse getMetersByFacilityID(MultispeakVendor mspVendor, String uri,
+            GetMetersByFacilityID getMetersByFacilityId) throws MultispeakWebServiceClientException;
+    
+    /**
+     * Gets meters by EA Location.
+     * 
+     * @param MSP vendor details
+     * @param String the URI of the CB Server
+     * @param GetMetersByEALocation the GetMetersByEALocation used as input.
+     * @return GetMetersByEALocationResponse
+     * @throws MultispeakWebServiceClientException
+     */
+    public GetMetersByEALocationResponse getMetersByEALocation(MultispeakVendor mspVendor, String uri,
+            GetMetersByEALocation getMetersByEALocation) throws MultispeakWebServiceClientException;
+    
+    /**
+     * Gets Meter by Account Number.
+     * 
+     * @param MSP vendor details
+     * @param String the URI of the CB Server
+     * @param GetMeterByAccountNumber the GetMeterByAccountNumber used as input.
+     * @return GetMeterByAccountNumberResponse
+     * @throws MultispeakWebServiceClientException
+     */
+    public GetMetersByAccountNumberAndServiceTypeResponse getMeterByAccountNumber(MultispeakVendor mspVendor, String uri,
+            GetMetersByAccountNumberAndServiceType getMeterByAccountNumber) throws MultispeakWebServiceClientException;
+
 }
