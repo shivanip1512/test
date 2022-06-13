@@ -313,20 +313,18 @@ public class MspAccountInformationV4 implements MspAccountInformation {
             // Electric Meter
             
                 if (electricService.getElectricMeterID() != null) {
-                    add("Meter ID", electricService.getElectricMeterID(), false,
-                        info, userContext);
+                    add("Meter ID", electricService.getElectricMeterID(), false, info, userContext);
                 }
                 
                 if (electricService.getAccountNumber() != null) {
-                    add("meterAccNo", electricService.getAccountNumber(), false,
-                        info, userContext);
+                    add("meterAccNo", electricService.getAccountNumber(), false, info, userContext);
                 }
                 
                 add("Meter Base ID", electricService.getMeterBaseID(), false, info, userContext);
                 
                 
-            ElectricMeter electricMeter = electricService.getMeterBase().getElectricMeter();
-            if (electricService.getMeterBase() != null && electricMeter != null) {
+            if (electricService.getMeterBase() != null && electricService.getMeterBase().getElectricMeter() != null) {
+                ElectricMeter electricMeter = electricService.getMeterBase().getElectricMeter();
                 if (electricMeter.getMeterConnectionStatus() != null) {
                     add("Connection Status", electricMeter.getMeterConnectionStatus(), true, info,
                             userContext);
@@ -377,76 +375,52 @@ public class MspAccountInformationV4 implements MspAccountInformation {
                 }
 
                 if (electricMeter.getMeterCommAddress() != null) {
-                    add("Communication Address",
-                            electricMeter.getMeterCommAddress(), true, info,
-                            userContext);
+                    add("Communication Address", electricMeter.getMeterCommAddress(), true, info, userContext);
                 }
 
                 ElectricNameplate electricNameplate = electricMeter.getElectricNameplate();
-                if (electricMeter != null
-                        && electricNameplate != null) {
+                if (electricMeter != null && electricNameplate != null) {
                     add(null, "Nameplate Information", true, info, userContext);
-                    add("kh", electricNameplate.getKh(), true, info,
-                            userContext);
-                    add("kr", electricNameplate.getKr(), true, info,
-                            userContext);
-                    if (electricNameplate.getFrequency() != null
-                            && electricNameplate.getFrequency()
-                                    .getUnits() != null) {
-                        add("Frequency",
-                                electricNameplate.getFrequency().getValue()
+                    add("kh", electricNameplate.getKh(), true, info, userContext);
+                    add("kr", electricNameplate.getKr(), true, info, userContext);
+                    if (electricNameplate.getFrequency() != null && electricNameplate.getFrequency().getUnits() != null) {
+                        add("Frequency", electricNameplate.getFrequency().getValue()
                                         + StringUtils.SPACE
                                         + electricNameplate.getFrequency()
-                                                .getUnits().value(),
-                                true, info, userContext);
+                                                .getUnits().value(), true, info, userContext);
                     }
                     add("Number of elements",
-                            electricNameplate.getNumberOfElements(), true,
-                            info, userContext);
-                    add("Base Type", electricNameplate.getBaseType(),
-                            true, info, userContext);
-                    add("Accuracy Class ",
-                            electricNameplate.getAccuracyClass(), true,
-                            info,
-                            userContext);
+                            electricNameplate.getNumberOfElements(), true, info, userContext);
+                    add("Base Type", electricNameplate.getBaseType(), true, info, userContext);
+                    add("Accuracy Class ", electricNameplate.getAccuracyClass(), true, info, userContext);
 
                     if (electricNameplate.getElementsVoltage() != null) {
-                        add("Element Voltage",
-                                electricNameplate.getElementsVoltage(),
-                                true, info, userContext);
+                        add("Element Voltage", electricNameplate.getElementsVoltage(), true, info, userContext);
                     }
 
                     if (electricNameplate.getSupplyVoltage() != null) {
-                        add("Supply Voltage",
-                                electricNameplate.getSupplyVoltage(),
-                                true, info, userContext);
+                        add("Supply Voltage", electricNameplate.getSupplyVoltage(), true, info, userContext);
                     }
                     if (electricNameplate.getMaxAmperage() != null) {
-                        add("Max Amp",
-                                electricNameplate.getMaxAmperage(),
-                                true, info, userContext);
+                        add("Max Amp", electricNameplate.getMaxAmperage(), true, info, userContext);
                     }
                     if (electricNameplate.getTestAmperage() != null) {
-                        add("Test Amp",
-                                electricNameplate.getTestAmperage(),
-                                true, info, userContext);
+                        add("Test Amp", electricNameplate.getTestAmperage(), true, info, userContext);
                     }
-                    add("Register Ratio",
-                            electricNameplate.getRegRatio(), true, info,
-                            userContext);
-                    add("Phases", electricNameplate.getPhases(), true,
+                    add("Register Ratio", electricNameplate.getRegRatio(), true, info, userContext);
+                    add("Phases", electricNameplate.getPhases(), true, info, userContext);
+                    add("Wire", electricNameplate.getWires(), true, info, userContext);
+                    add("Dials", electricNameplate.getDials(), true, info, userContext);
+                    add("Form", electricNameplate.getForm(), true, info, userContext);
+                    add("Multiplier", electricNameplate.getMultiplier(), false, info, userContext);
+                    add("Demand Multiplier", electricNameplate.getDemandMult(), false,
                             info, userContext);
-                    add("Wire", electricNameplate.getWires(), true, info,
-                            userContext);
-                    add("Dials", electricNameplate.getDials(), true,
-                            info, userContext);
-                    add("Form", electricNameplate.getForm(), true, info,
-                            userContext);
-                    add("Multiplier", electricNameplate.getMultiplier(),
-                            false, info, userContext);
-                    add("Demand Multiplier",
-                            electricNameplate.getDemandMult(), false,
-                            info, userContext);
+                }
+            
+             // Billing Information
+                if (electricMeter.getBillingStatusInformation() != null) {
+                    add(null, "Billing Information", true, info, userContext);
+                    makeBillingInformation(electricMeter.getBillingStatusInformation(), info, userContext);
                 }
             }
             
@@ -466,12 +440,6 @@ public class MspAccountInformationV4 implements MspAccountInformation {
                 add("Service Point Status - Service Status",
                     electricService.getServiceStatus(), true, info,
                     userContext);
-            }
-
-            // Billing Information
-            if (electricMeter.getBillingStatusInformation() != null) {
-                add(null, "Billing Information", true, info, userContext);
-                makeBillingInformation(electricMeter.getBillingStatusInformation(), info, userContext);
             }
 
             // Electric Location Fields
