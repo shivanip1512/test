@@ -21,7 +21,6 @@
             </tags:sectionContainer>
             <cti:msg2 var="customerContactInfo" key=".customerContactInfo" />
             <c:forEach var="custBasicContact" items="${custBasicContactInfo}" varStatus="status">
-                <cti:msg2 var="customerContactInfo" key=".customerContactInfo" />
                 <tags:sectionContainer title="${customerContactInfo}">
                     <tags:nameValueContainer2 tableClass="name-value-table natural-width  stacked-md natural-width">
                         <c:if test="${not empty custBasicContact.phoneNumbers}">

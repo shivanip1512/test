@@ -80,8 +80,8 @@ public interface ICBClient {
     /**
      * Gets Customer by Meter Number.
      * 
-     * @param MSP vendor details
-     * @param String the URI of the CB Server
+     * @param MSP         vendor details
+     * @param uri         the URI of the CB Server
      * @param GetCustomerByMeterID the GetCustomerByMeterID used as input.
      * @return GetCustomerByMeterNoResponse
      * @throws MultispeakWebServiceClientException
