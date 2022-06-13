@@ -5,9 +5,9 @@
     <CPP_LIBRARIES>$(DEV_ENVIRONMENT)\libraries</CPP_LIBRARIES>
     <XERCES>$(CPP_LIBRARIES)\apache\xerces-c\3.2.2-vc141-1</XERCES>
     <TCL>$(CPP_LIBRARIES)\tcl\8.6.9-vc141-1</TCL>
-    <BOOST>$(CPP_LIBRARIES)\boost\1.76.0-vc142-1</BOOST>
+    <BOOST>$(CPP_LIBRARIES)\boost\1.79.0-vc142-1</BOOST>
     <BOOST_DEBUG Condition="'$(Configuration)'=='Debug'">-gd</BOOST_DEBUG>
-    <BOOST_VERSION>vc142-mt$(BOOST_DEBUG)-x32-1_76</BOOST_VERSION>
+    <BOOST_VERSION>vc142-mt$(BOOST_DEBUG)-x32-1_79</BOOST_VERSION>
     <SQLAPI>$(CPP_LIBRARIES)\sqlapi\5.1.4-vc142-1</SQLAPI>
     <ACTIVEMQ>$(CPP_LIBRARIES)\apache\activemq-cpp\3.9.5-vc142-1</ACTIVEMQ>
     <APR>$(CPP_LIBRARIES)\apache\apr\1.7.0-vc142-1</APR>
