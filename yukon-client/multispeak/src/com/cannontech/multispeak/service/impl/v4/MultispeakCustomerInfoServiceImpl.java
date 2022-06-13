@@ -2,12 +2,14 @@ package com.cannontech.multispeak.service.impl.v4;
 
 import java.util.List;
 
+import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
 
 import com.cannontech.msp.beans.v4.ContactInfo;
 import com.cannontech.msp.beans.v4.Customer;
 import com.cannontech.msp.beans.v4.EMailAddress;
 import com.cannontech.msp.beans.v4.PhoneNumber;
+import com.cannontech.msp.beans.v4.TelephoneNumber;
 import com.cannontech.multispeak.service.v4.MultispeakCustomerInfoService;
 import com.cannontech.user.YukonUserContext;
 import com.google.common.collect.Lists;
@@ -23,10 +25,11 @@ public class MultispeakCustomerInfoServiceImpl implements MultispeakCustomerInfo
             StringBuilder fullPhone =  new StringBuilder();
             
             if (p != null) {
-                if (p.getPhone() != null) {
+                TelephoneNumber phone = p.getPhone();
+                if (phone != null) {
                     fullPhone.append(
-                            p.getPhone().getAreaCode() + " " + p.getPhone().getCityCode() + " " + p.getPhone().getCountryCode()
-                                    + " " + p.getPhone().getExtension() + " " + p.getPhone().getLocalNumber());
+                            phone.getAreaCode() + " " + phone.getCityCode() + " " + phone.getCountryCode()
+                                    + " " + phone.getExtension() + " " + phone.getLocalNumber());
                 }
                 
                 if (!StringUtils.isBlank(fullPhone)) {
@@ -38,12 +41,11 @@ public class MultispeakCustomerInfoServiceImpl implements MultispeakCustomerInfo
     }
 
     @Override
-    public List<String> getEmailAddresses(ContactInfo contactInfo,
-                                          YukonUserContext userContext) {
+    public List<String> getEmailAddresses(ContactInfo contactInfo, YukonUserContext userContext) {
         List<String> emails = Lists.newArrayList();
         
         if (contactInfo.getEMailList() == null) return emails;
-        if (contactInfo.getEMailList() != null) {
+        if (CollectionUtils.isNotEmpty(contactInfo.getEMailList().getEMailAddress())) {
             for (EMailAddress e : contactInfo.getEMailList().getEMailAddress()) {
                 StringBuilder fullEmail =  new StringBuilder();
                 if (e.getEMail() != null) {

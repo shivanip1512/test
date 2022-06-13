@@ -266,10 +266,10 @@ public class MspObjectDaoImpl implements MspObjectDao {
     }
     
     @Override
-    public ServiceLocation getServiceLocationByMeterNo(String meterNo,MultispeakVendor mspVendor){
+    public ServiceLocation getServiceLocationByMeterNo(String meterNo, MultispeakVendor mspVendor) {
         ServiceLocation mspServiceLocation = new ServiceLocation();
         String endpointUrl = multispeakFuncs.getEndpointUrl(mspVendor, MultispeakDefines.CB_Server_STR);
-        
+
         try {
             GetServiceLocationByMeterID getServiceLocationByMspMeterId = objectFactory.createGetServiceLocationByMeterID();
 
@@ -427,8 +427,7 @@ public class MspObjectDaoImpl implements MspObjectDao {
                 + ") for MeterNo: " + meterNumber);
             log.error("MultispeakWebServiceClientException: " + e.getMessage());
             log.info("A default(empty) is being used for Customer");
-        } catch (Exception e) 
-            {e.printStackTrace();}
+        }
         return mspCustomer;
     }
 

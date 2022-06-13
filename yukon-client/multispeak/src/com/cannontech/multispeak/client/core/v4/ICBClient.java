@@ -57,15 +57,15 @@ public interface ICBClient {
     /**
      * Gets Meter by Meter ID response .
      * 
-     * @param MSP vendor
-     * @param uri - the URI of the CB Server
+     * @param MSP               vendor
+     * @param uri               - the URI of the CB Server
      * @param GetMeterByMeterID the GetMeterByMeterID used as input.
      * @return GetCustomerByMeterNoResponse
      * @throws MultispeakWebServiceClientException
      */
     public GetMeterByMeterIDResponse getMeterByMeterID(final MultispeakVendor mspVendor, String uri,
-            GetMeterByMeterID getMeterByMeterId) throws MultispeakWebServiceClientException ;
-    
+            GetMeterByMeterID getMeterByMeterId) throws MultispeakWebServiceClientException;
+
     /**
      * Gets Customer by Meter Number.
      * 
@@ -155,8 +155,8 @@ public interface ICBClient {
     /**
      * Reads the change in notification.
      * 
-     * @param MSP vendor details
-     * @param String the URI of the CB Server
+     * @param MSP                        vendor details
+     * @param uri                        the URI of the CB Server
      * @param ReadingChangedNotification the ReadingChangedNotification used as input.
      * @return ReadingChangedNotificationResponse
      * @throws MultispeakWebServiceClientException
@@ -168,7 +168,7 @@ public interface ICBClient {
      * Format Block Notification
      * 
      * @param MSP                        vendor details
-     * @param String                     the URI of the NOT Server
+     * @param uri                        the URI of the NOT Server
      * @param FormattedBlockNotification
      * @throws MultispeakWebServiceClientException
      */

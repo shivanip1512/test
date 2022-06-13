@@ -72,13 +72,18 @@ public class MspWaterLeakReportV4 extends MspWaterLeakReport {
         if (mspMeterAccountInfo.mspCustomer.getContactInfo() != null
             && mspMeterAccountInfo.mspCustomer.getContactInfo().getAddressList() != null) {
             List<Address> custAddressInfo = multispeakFuncs.getAddressList(mspMeterAccountInfo.mspCustomer.getContactInfo().getAddressList().getAddressItem());
-            model.addAttribute("custAddressInfo", custAddressInfo.get(0));
+            if (CollectionUtils.isNotEmpty(custAddressInfo)) {
+                model.addAttribute("custAddressInfo", custAddressInfo.get(0));
+            }
         }
 
         if (mspMeterAccountInfo.mspServLoc != null && mspMeterAccountInfo.mspServLoc.getContactInfo() != null
             && mspMeterAccountInfo.mspServLoc.getContactInfo().getAddressList() != null) {
             List<Address> servLocAddresses = multispeakFuncs.getAddressList(mspMeterAccountInfo.mspServLoc.getContactInfo().getAddressList().getAddressItem());
-            model.addAttribute("servLocAddresses", servLocAddresses.get(0));
+            if(CollectionUtils.isNotEmpty(servLocAddresses)) {
+                model.addAttribute("servLocAddresses", servLocAddresses.get(0));
+            }
+            
         }
         
         Map<PhoneType, String> primaryContact = multispeakFuncs.getPrimaryContacts(mspMeterAccountInfo.mspCustomer);

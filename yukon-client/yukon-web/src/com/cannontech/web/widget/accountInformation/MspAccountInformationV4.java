@@ -29,6 +29,7 @@ import com.cannontech.msp.beans.v4.ElectricMeter;
 import com.cannontech.msp.beans.v4.ElectricNameplate;
 import com.cannontech.msp.beans.v4.GasNameplate;
 import com.cannontech.msp.beans.v4.Meters;
+import com.cannontech.msp.beans.v4.Network;
 import com.cannontech.msp.beans.v4.PhoneType;
 import com.cannontech.msp.beans.v4.ServiceLocation;
 import com.cannontech.msp.beans.v4.WaterNameplate;
@@ -270,9 +271,12 @@ public class MspAccountInformationV4 implements MspAccountInformation {
         add("SIC", mspServLoc.getSIC(), false, infoList, userContext);
         add("Site ID", mspServLoc.getSiteID(), false, infoList, userContext);
         
-        if (mspServLoc.getServiceOrderList() != null && mspServLoc.getServiceOrderList().getServiceOrder() != null
-                && mspServLoc.getServiceOrderList().getServiceOrder().get(0) != null) {
-            add("ServiceOrder ID", mspServLoc.getServiceOrderList().getServiceOrder().get(0).getObjectID(), false, infoList,
+        if (mspServLoc.getServiceOrderList() != null && 
+                CollectionUtils.isNotEmpty(mspServLoc.getServiceOrderList().getServiceOrder()) && 
+                mspServLoc.getServiceOrderList().getServiceOrder().get(0) != null) {
+            
+            add("ServiceOrder ID", mspServLoc.getServiceOrderList().getServiceOrder().get(0).getObjectID(),
+                    false, infoList,
                     userContext);
         }
         
@@ -280,19 +284,18 @@ public class MspAccountInformationV4 implements MspAccountInformation {
         add("GML Location ", mspServLoc.getGMLLocation(), false, infoList, userContext);
         add("Grid Location ", mspServLoc.getGridLocation(), false, infoList, userContext);
         if (mspServLoc.getRotation() != null) {
-            add("Rotation ", mspServLoc.getRotation() + StringUtils.SPACE
-                + (mspServLoc.getRotation() != null ? mspServLoc.getRotation() : ""), true,
-                infoList, userContext);
+            add("Rotation ", mspServLoc.getRotation(), true, infoList, userContext);
         }
         // Location Information
-        if (mspServLoc.getNetwork() != null) {
-            add("City ", mspServLoc.getNetwork().getCity(), true, infoList, userContext);
-            add("County ", mspServLoc.getNetwork().getCountry(), true, infoList, userContext);
-            add("Township Name ", mspServLoc.getNetwork().getTownship(), true, infoList, userContext);
-            add("Sub Division ", mspServLoc.getNetwork().getSubdivision(), true, infoList, userContext);
-            add("Block ", mspServLoc.getNetwork().getBlock(), true, infoList, userContext);
-            add("Lot ", mspServLoc.getNetwork().getLot(), true, infoList, userContext);
-            add("State ", mspServLoc.getNetwork().getState(), true, infoList, userContext);
+        Network network = mspServLoc.getNetwork();
+        if (network != null) {
+            add("City ", network.getCity(), true, infoList, userContext);
+            add("County ", network.getCountry(), true, infoList, userContext);
+            add("Township Name ", network.getTownship(), true, infoList, userContext);
+            add("Sub Division ", network.getSubdivision(), true, infoList, userContext);
+            add("Block ", network.getBlock(), true, infoList, userContext);
+            add("Lot ", network.getLot(), true, infoList, userContext);
+            add("State ", network.getState(), true, infoList, userContext);
 
         }
 
@@ -324,8 +327,7 @@ public class MspAccountInformationV4 implements MspAccountInformation {
                 
             ElectricMeter electricMeter = electricService.getMeterBase().getElectricMeter();
             if (electricService.getMeterBase() != null && electricMeter != null) {
-                if (electricService.getMeterBase() != null && electricMeter != null
-                        && electricMeter.getMeterConnectionStatus() != null) {
+                if (electricMeter.getMeterConnectionStatus() != null) {
                     add("Connection Status",
                             electricMeter.getMeterConnectionStatus(), true, info,
                             userContext);
@@ -356,23 +358,24 @@ public class MspAccountInformationV4 implements MspAccountInformation {
                     }
 
                 }
-                if (electricMeter.getParentMeterList() != null) {
+                if (electricMeter.getParentMeterList() != null && electricMeter.getParentMeterList().getMeterID() != null) {
                     electricMeter.getParentMeterList().getMeterID().forEach(meterID -> {
                         add("Parent Meter", meterID, true, info, userContext);
                     });
                 }
-                if (electricMeter.getSubMeterList() != null) {
+                if (electricMeter.getSubMeterList() != null && electricMeter.getSubMeterList().getMeterID() != null) {
                     electricMeter.getSubMeterList().getMeterID().forEach(meterID -> {
                         add("Sub Meter", meterID, true, info, userContext);
                     });
                 }
-                if (electricMeter.getModuleList() != null) {
+                if (electricMeter.getModuleList() != null && electricMeter.getModuleList().getModule() != null) {
                     electricMeter.getModuleList().getModule().forEach(module -> {
                         add("Module", module.getDescription(), true, info, userContext);
                     });
                 }
 
-                if (electricMeter.getConfiguredReadingTypes() != null) {
+                if (electricMeter.getConfiguredReadingTypes() != null
+                        && electricMeter.getConfiguredReadingTypes().getConfiguredReadingType() != null) {
                     electricMeter.getConfiguredReadingTypes().getConfiguredReadingType()
                             .forEach(
                                     configuredReadingType -> {
