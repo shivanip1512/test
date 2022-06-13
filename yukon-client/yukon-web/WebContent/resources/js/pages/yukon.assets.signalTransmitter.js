@@ -41,6 +41,23 @@ yukon.assets.signalTransmitter = (function() {
                 }
             });
             
+            $(document).on("yukon:signalTransmitter:copy", function () {
+                yukon.ui.blockPage();
+                $('#js-signal-transmitter-copy-form').ajaxSubmit({
+                    success: function (data, status, xhr, $form) {
+                        if (!$.isEmptyObject(data.redirectUrl))
+                            window.location.href=yukon.url(data.redirectUrl);
+                        else
+                            window.location.href=yukon.url('/stars/device/signalTransmitter/' + data.signalTransmitterId);
+                    },
+                    error: function (xhr, status, error, $form) {
+                        $('#js-copy-signal-transmitter-popup').html(xhr.responseText);
+                        yukon.ui.initContent('#js-copy-signal-transmitter-popup');
+                        yukon.ui.unblockPage();
+                    }
+                });
+            });
+            
             $(document).on("yukon:signal-transmitter:delete", function () {
                 yukon.ui.blockPage();
                 $("#js-delete-form").submit();

@@ -1,11 +1,15 @@
 package com.cannontech.web.stars.signalTransmitter;
 
+import java.io.IOException;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
 
 import org.apache.logging.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -34,13 +38,18 @@ import com.cannontech.common.device.terminal.model.SNPPTerminal;
 import com.cannontech.common.device.terminal.model.SignalTransmitterModelFactory;
 import com.cannontech.common.device.terminal.model.TNPPTerminal;
 import com.cannontech.common.device.terminal.model.TerminalBase;
+import com.cannontech.common.device.terminal.model.TerminalCopy;
 import com.cannontech.common.device.terminal.model.WCTPTerminal;
 import com.cannontech.common.dr.setup.LMDelete;
 import com.cannontech.common.dr.setup.LMDto;
+import com.cannontech.common.i18n.MessageSourceAccessor;
 import com.cannontech.common.pao.PaoType;
+import com.cannontech.common.util.JsonUtils;
 import com.cannontech.core.roleproperties.HierarchyPermissionLevel;
 import com.cannontech.core.roleproperties.YukonRoleProperty;
+import com.cannontech.database.data.lite.LiteYukonPAObject;
 import com.cannontech.i18n.YukonMessageSourceResolvable;
+import com.cannontech.i18n.YukonUserContextMessageSourceResolver;
 import com.cannontech.user.YukonUserContext;
 import com.cannontech.web.PageEditMode;
 import com.cannontech.web.api.ApiRequestHelper;
@@ -49,6 +58,7 @@ import com.cannontech.web.api.validation.ApiCommunicationException;
 import com.cannontech.web.api.validation.ApiControllerHelper;
 import com.cannontech.web.common.flashScope.FlashScope;
 import com.cannontech.web.security.annotation.CheckPermissionLevel;
+import com.cannontech.yukon.IDatabaseCache;
 
 @Controller
 @CheckPermissionLevel(property = YukonRoleProperty.MANAGE_INFRASTRUCTURE, level = HierarchyPermissionLevel.VIEW)
@@ -58,6 +68,8 @@ public class SignalTransmitterController {
     @Autowired private ApiControllerHelper helper;
     @Autowired private ApiRequestHelper apiRequestHelper;
     @Autowired private SignalTransmitterValidator<? extends TerminalBase<?>> signalTransmitterValidator;
+    @Autowired private IDatabaseCache dbCache;
+    @Autowired private YukonUserContextMessageSourceResolver messageResolver;
 
     private static final Logger log = YukonLogManager.getLogger(SignalTransmitterController.class);
     private static final String communicationKey = "yukon.exception.apiCommunicationException.communicationError";
@@ -226,6 +238,65 @@ public class SignalTransmitterController {
         }
         return redirectListPageLink;
     }
+    
+    @GetMapping("/{id}/renderCopyDialog")
+    public String renderCopyDialog(@PathVariable int id, ModelMap model, YukonUserContext userContext,
+            HttpServletRequest request) {
+
+        PaoType selectedSignalTransmitterType = getPaoTypeForPaoId(id);
+        TerminalCopy terminalCopy = new TerminalCopy();
+
+        LiteYukonPAObject litePao = dbCache.getAllPaosMap().get(id);
+        MessageSourceAccessor messageSourceAccessor = messageResolver.getMessageSourceAccessor(userContext);
+        terminalCopy.setName(messageSourceAccessor.getMessage("yukon.common.copyof", litePao.getPaoName()));
+        model.addAttribute("terminalCopy", terminalCopy);
+        model.addAttribute("signalTransmitterId", id);
+        model.addAttribute("selectedSignalTransmitterType", selectedSignalTransmitterType);
+        return "/signalTransmitter/copySignalTransmitter.jsp";
+    }
+    
+    @PostMapping("/{id}/copy")
+    public String copy(@ModelAttribute("terminalCopy") TerminalCopy terminalCopy, @PathVariable int id, BindingResult result,
+            YukonUserContext userContext, FlashScope flash, ModelMap model, HttpServletRequest request,
+            HttpServletResponse servletResponse) throws IOException {
+        Map<String, String> json = new HashMap<>();
+        try {
+            String url = helper.findWebServerUrl(request, userContext, ApiURL.pagingTerminalUrl + "/" + id + "/copy" );
+            ResponseEntity<? extends Object> response = 
+                    apiRequestHelper.callAPIForObject(userContext, request, url, HttpMethod.POST, Object.class, terminalCopy);
+
+            if (response.getStatusCode() == HttpStatus.UNPROCESSABLE_ENTITY) {
+                BindException error = new BindException(terminalCopy, "terminalCopy");
+                result = helper.populateBindingErrorForApiErrorModel(result, error, response, "yukon.web.error.");
+                return bindAndForwardForCopy(terminalCopy, result, model, servletResponse, id);
+            }
+
+            if (response.getStatusCode() == HttpStatus.OK) {
+                Map<String, Object> map = (Map<String, Object>) response.getBody();
+                json.put("signalTransmitterId", map.get("id").toString());
+                servletResponse.setContentType("application/json");
+                JsonUtils.getWriter().writeValue(servletResponse.getOutputStream(), json);
+                flash.setConfirm(new YukonMessageSourceResolvable(baseKey + "copy.success", String.valueOf(map.get("name"))));
+                return null;
+            }
+
+        } catch (ApiCommunicationException e) {
+            log.error(e.getMessage());
+            flash.setError(new YukonMessageSourceResolvable(communicationKey));
+            json.put("redirectUrl", redirectListPageLink);
+            servletResponse.setContentType("application/json");
+            JsonUtils.getWriter().writeValue(servletResponse.getOutputStream(), json);
+            return null;
+        } catch (RestClientException ex) {
+            log.error("Error copying load group: {}. Error: {}", terminalCopy.getName(), ex.getMessage());
+            flash.setError(new YukonMessageSourceResolvable(baseKey + "copy.error", terminalCopy.getName(), ex.getMessage()));
+            json.put("redirectUrl", redirectListPageLink);
+            servletResponse.setContentType("application/json");
+            JsonUtils.getWriter().writeValue(servletResponse.getOutputStream(), json);
+            return null;
+        }
+        return null;
+    }
 
     private void setupModel(ModelMap model, HttpServletRequest request, YukonUserContext userContext) {
         model.addAttribute("types", webSupportedSignalTransmitterTypes);
@@ -278,5 +349,21 @@ public class SignalTransmitterController {
             log.error("Error retrieving signal transmitter: " + ex.getMessage());
         }
         return terminalBase;
+    }
+    
+    private PaoType getPaoTypeForPaoId(int signalTransmitterId) {
+        LiteYukonPAObject litePao = dbCache.getAllPaosMap().get(signalTransmitterId);
+        return litePao.getPaoType();
+    }
+    
+    private String bindAndForwardForCopy(TerminalCopy terminalCopy, BindingResult result, ModelMap model,
+            HttpServletResponse response, int id) {
+        PaoType selectedSignalTransmitterType = getPaoTypeForPaoId(id);
+        model.addAttribute("terminalCopy", terminalCopy);
+        model.addAttribute("selectedSignalTransmitterType", selectedSignalTransmitterType);
+        model.addAttribute("org.springframework.validation.BindingResult.terminalCopy", result);
+        model.addAttribute("signalTransmitterId", id);
+        response.setStatus(HttpStatus.BAD_REQUEST.value());
+        return "/signalTransmitter/copySignalTransmitter.jsp";
     }
 }
