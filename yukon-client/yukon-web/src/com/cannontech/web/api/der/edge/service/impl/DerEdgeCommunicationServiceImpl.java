@@ -1,6 +1,7 @@
 package com.cannontech.web.api.der.edge.service.impl;
 
 import java.util.Arrays;
+import java.util.Map;
 import java.util.UUID;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ExecutionException;
@@ -22,9 +23,13 @@ import com.cannontech.dr.edgeDr.EdgeBroadcastMessagePriority;
 import com.cannontech.dr.edgeDr.EdgeDrBroadcastRequest;
 import com.cannontech.dr.edgeDr.EdgeDrBroadcastResponse;
 import com.cannontech.dr.edgeDr.EdgeDrCommunicationException;
+import com.cannontech.dr.edgeDr.EdgeDrUnicastRequest;
+import com.cannontech.dr.edgeDr.EdgeDrUnicastResponse;
 import com.cannontech.dr.edgeDr.EdgeUnicastPriority;
 import com.cannontech.messaging.serialization.thrift.serializer.porter.edgeDr.EdgeDrBroadcastRequestSerializer;
 import com.cannontech.messaging.serialization.thrift.serializer.porter.edgeDr.EdgeDrBroadcastResponseSerializer;
+import com.cannontech.messaging.serialization.thrift.serializer.porter.edgeDr.EdgeDrUnicastRequestSerializer;
+import com.cannontech.messaging.serialization.thrift.serializer.porter.edgeDr.EdgeDrUnicastResponseSerializer;
 import com.cannontech.user.YukonUserContext;
 import com.cannontech.web.api.der.edge.service.DerEdgeCommunicationService;
 
@@ -37,6 +42,7 @@ public class DerEdgeCommunicationServiceImpl implements DerEdgeCommunicationServ
     @Autowired private YukonJmsTemplateFactory jmsTemplateFactory;
 
     private ThriftRequestReplyTemplate<EdgeDrBroadcastRequest, EdgeDrBroadcastResponse> thriftBroadcastMessenger;
+    private ThriftRequestReplyTemplate<EdgeDrUnicastRequest, EdgeDrUnicastResponse> thriftUnicastMessenger;
 
     @PostConstruct
     public void initialize() {
@@ -44,19 +50,42 @@ public class DerEdgeCommunicationServiceImpl implements DerEdgeCommunicationServ
                 jmsTemplateFactory.createTemplate(JmsApiDirectory.EDGE_DR_BROADCAST),
                 new EdgeDrBroadcastRequestSerializer(),
                 new EdgeDrBroadcastResponseSerializer());
+
+        thriftUnicastMessenger = new ThriftRequestReplyTemplate<EdgeDrUnicastRequest, EdgeDrUnicastResponse>(
+                jmsTemplateFactory.createTemplate(JmsApiDirectory.EDGE_DR_UNICAST), 
+                new EdgeDrUnicastRequestSerializer(),
+                new EdgeDrUnicastResponseSerializer(),
+                JmsApiDirectory.EDGE_DR_UNICAST.getResponseQueueName());
     }
 
     @Override
-    public short sendUnicastRequest(YukonPao pao, byte[] payload, EdgeUnicastPriority queuePriority, 
+    public Map<Integer, Short> sendUnicastRequest(YukonPao pao, byte[] payload, EdgeUnicastPriority queuePriority, 
             EdgeUnicastPriority networkPriority, YukonUserContext userContext) {
         
         //TODO later - clean up this logging
         log.info("Processing DER Edge Unicast Request - Pao: {}, queue priority: {}, net priority: {}, payload: {}", 
                 pao, queuePriority, networkPriority, Arrays.toString(payload));
-        
-        //TODO later - send request to porter and receive response
-        
-        return (short) 0; //TODO return real e2e ID
+
+        final String messageGuid = UUID.randomUUID().toString();
+
+        var requestMsg = new EdgeDrUnicastRequest(pao.getPaoIdentifier().getPaoId(), messageGuid, payload, queuePriority, networkPriority);
+        var completableFuture = new CompletableFuture<EdgeDrUnicastResponse>();
+        thriftUnicastMessenger.send(requestMsg, completableFuture);
+
+        try {
+            var responseMsg = completableFuture.get(DEFAULT_TIMEOUT_MINUTES, TimeUnit.MINUTES);
+
+            log.debug("Received info from Porter: {}", responseMsg);
+
+            if (responseMsg.getError() != null) {
+                throw new EdgeDrCommunicationException(responseMsg.getError().getErrorMessage());
+            }
+            
+            return responseMsg.getPaoToE2eId();
+
+        } catch (InterruptedException | ExecutionException | TimeoutException e) {
+            throw new EdgeDrCommunicationException("An unexpected error occurred while sending a broadcast message.", e);
+        }
     }
 
     @Override
@@ -68,11 +97,11 @@ public class DerEdgeCommunicationServiceImpl implements DerEdgeCommunicationServ
         final String messageGuid = UUID.randomUUID().toString();
 
         var requestMsg = new EdgeDrBroadcastRequest(messageGuid, payload, priority);
-        var f = new CompletableFuture<EdgeDrBroadcastResponse>();
-        thriftBroadcastMessenger.send(requestMsg, f);
+        var completableFuture = new CompletableFuture<EdgeDrBroadcastResponse>();
+        thriftBroadcastMessenger.send(requestMsg, completableFuture);
 
         try {
-            var responseMsg = f.get(DEFAULT_TIMEOUT_MINUTES, TimeUnit.MINUTES);
+            var responseMsg = completableFuture.get(DEFAULT_TIMEOUT_MINUTES, TimeUnit.MINUTES);
 
             log.debug("Received info from Porter: {}", responseMsg);
 

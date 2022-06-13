@@ -28,14 +28,25 @@ public class ThriftRequestReplyTemplate<Q, R> {
 
     private ThriftByteSerializer<Q> requestSerializer;
     private ThriftByteDeserializer<R> replyDeserializer;
-    
+    private String responseQueueName;
+
     public ThriftRequestReplyTemplate(YukonJmsTemplate jmsTemplate, 
             ThriftByteSerializer<Q> requestSerializer, ThriftByteDeserializer<R> replyDeserializer) {
         this.jmsTemplate = jmsTemplate;
         this.requestSerializer = requestSerializer;
         this.replyDeserializer = replyDeserializer;
+        this.responseQueueName = null;
     }
-    
+
+    public ThriftRequestReplyTemplate(YukonJmsTemplate jmsTemplate, 
+            ThriftByteSerializer<Q> requestSerializer, ThriftByteDeserializer<R> replyDeserializer, String responseQueueName) {
+        this.jmsTemplate = jmsTemplate;
+        this.requestSerializer = requestSerializer;
+        this.replyDeserializer = replyDeserializer;
+        this.responseQueueName = responseQueueName;
+        
+    }
+
     public void send(final Q requestPayload, final CompletableFuture<R> callback) {
         try {
             log.trace("RequestReplyTemplateBase execute Start " + requestPayload.toString());
@@ -55,24 +66,30 @@ public class ThriftRequestReplyTemplate<Q, R> {
 
     private void doJmsWork(Session session,
         final Q requestPayload, final CompletableFuture<R> callback) throws JMSException {
-
         var resolver = new DynamicDestinationResolver();
         Destination destination = resolver.resolveDestinationName(session, jmsTemplate.getDefaultDestinationName(), jmsTemplate.isPubSubDomain());
-        TemporaryQueue replyQueue = session.createTemporaryQueue();
+        Destination responseDestination;
+        if (!responseQueueName.isBlank()) {
+            responseDestination = resolver.resolveDestinationName(session, responseQueueName, false);
+        } else {
+            responseDestination = session.createTemporaryQueue();
+        }
         try ( 
             MessageProducer producer = session.createProducer(destination);
-            MessageConsumer replyConsumer = session.createConsumer(replyQueue);
+            MessageConsumer replyConsumer = session.createConsumer(responseDestination);
         ) {
             BytesMessage requestMessage = session.createBytesMessage();
             
             requestMessage.writeBytes(requestSerializer.toBytes(requestPayload));
-            requestMessage.setJMSReplyTo(replyQueue);
+            requestMessage.setJMSReplyTo(responseDestination);
             
             producer.send(requestMessage);
             
             handleReplyOrTimeout(callback, timeout, replyConsumer);
         } finally {
-            replyQueue.delete();
+            if (responseDestination instanceof TemporaryQueue) {
+                ((TemporaryQueue) responseDestination).delete();
+            }
         }
     }
 

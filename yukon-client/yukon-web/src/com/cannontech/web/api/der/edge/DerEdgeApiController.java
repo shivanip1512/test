@@ -1,6 +1,7 @@
 package com.cannontech.web.api.der.edge;
 
 import java.math.BigInteger;
+import java.util.Map;
 
 import javax.validation.Valid;
 
@@ -44,7 +45,7 @@ public class DerEdgeApiController {
         EdgeUnicastPriority networkPriority = edgeUnicastRequest.getNetworkPriority();
         
         //Send the request to Porter and get back the E2E ID that will correlate with the response data when it comes back.
-        short e2eId = derEdgeCommunicationService.sendUnicastRequest(pao, payload, queuePriority, networkPriority, userContext);
+        Map<Integer, Short> e2eId = derEdgeCommunicationService.sendUnicastRequest(pao, payload, queuePriority, networkPriority, userContext);
         
         //TODO later - correlate E2E IDs with response GUID
         //for now, always return this temp GUID
