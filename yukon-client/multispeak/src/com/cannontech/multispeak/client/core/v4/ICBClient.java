@@ -53,6 +53,16 @@ public interface ICBClient {
     public GetMethodsResponse getMethods(MultispeakVendor mspVendor, String uri, GetMethods getMethods)
             throws MultispeakWebServiceClientException;
 
+    
+    /**
+     * Gets Meter by Meter ID response .
+     * 
+     * @param MSP vendor
+     * @param uri - the URI of the CB Server
+     * @param GetMeterByMeterID the GetMeterByMeterID used as input.
+     * @return GetCustomerByMeterNoResponse
+     * @throws MultispeakWebServiceClientException
+     */
     public GetMeterByMeterIDResponse getMeterByMeterID(final MultispeakVendor mspVendor, String uri,
             GetMeterByMeterID getMeterByMeterId) throws MultispeakWebServiceClientException ;
     
@@ -61,7 +71,7 @@ public interface ICBClient {
      * 
      * @param MSP vendor details
      * @param String the URI of the CB Server
-     * @param GetCustomerByMeterNo the GetCustomerByMeterNo used as input.
+     * @param GetCustomerByMeterID the GetCustomerByMeterID used as input.
      * @return GetCustomerByMeterNoResponse
      * @throws MultispeakWebServiceClientException
      */
@@ -73,7 +83,7 @@ public interface ICBClient {
      * 
      * @param MSP vendor details
      * @param String the URI of the CB Server
-     * @param GetServiceLocationByMeterNo the GetServiceLocationByMeterNo used as input.
+     * @param GetServiceLocationByMeterID the GetServiceLocationByMeterID used as input.
      * @return GetServiceLocationByMeterNoResponse
      * @throws MultispeakWebServiceClientException
      */
@@ -145,8 +155,8 @@ public interface ICBClient {
     /**
      * Reads the change in notification.
      * 
-     * @param MSP                        vendor details
-     * @param String                     the URI of the CB Server
+     * @param MSP vendor details
+     * @param String the URI of the CB Server
      * @param ReadingChangedNotification the ReadingChangedNotification used as input.
      * @return ReadingChangedNotificationResponse
      * @throws MultispeakWebServiceClientException

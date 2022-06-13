@@ -128,7 +128,8 @@ public interface MspObjectDao {
     Customer getMspCustomer(SimpleMeter meter, MultispeakVendor mspVendor);
     
     /**
-     * Returns multispeak ServiceLocation for the meterNo.     * If the interface/method is not supported by mspVendor, or if no object is found,
+     * Returns multispeak ServiceLocation for the meterNo.     
+     * If the interface/method is not supported by mspVendor, or if no object is found,
      * an empty ServiceLocation object is returned.
      * @param meter The Meter to get the ServiceLocation information for.
      * @param mspVendor The Multispeak Vendor to ask for the information from.

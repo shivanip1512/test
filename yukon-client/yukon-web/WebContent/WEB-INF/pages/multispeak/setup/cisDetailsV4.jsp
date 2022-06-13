@@ -1,10 +1,5 @@
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core"%>
-<%@ taglib prefix="cm" tagdir="/WEB-INF/tags/contextualMenu"%>
 <%@ taglib prefix="cti" uri="http://cannontech.com/tags/cti"%>
-<%@ taglib prefix="d" tagdir="/WEB-INF/tags/dialog"%>
-<%@ taglib prefix="dt" tagdir="/WEB-INF/tags/dateTime"%>
-<%@ taglib prefix="fn" uri="http://java.sun.com/jsp/jstl/functions"%>
-<%@ taglib prefix="form" uri="http://www.springframework.org/tags/form"%>
 <%@ taglib prefix="i" tagdir="/WEB-INF/tags/i18n"%>
 <%@ taglib prefix="tags" tagdir="/WEB-INF/tags"%>
 
@@ -78,23 +73,23 @@
             <tags:sectionContainer title="${meterInfo}">
             
              <!-- Electric Service Point Information -->
-                <c:if test="${not empty electricServicePointsInfo}">
-                <h3>
-                        <i:inline key=".electricService" />
-                </h3>
-                <tags:nameValueContainer tableClass="name-value-table natural-width  stacked-md natural-width">
-                        <c:forEach var="electricServicePoint" items="${electricServicePointsInfo}"
-                            varStatus="electricStatus">
-                            <c:choose>
-                                <c:when test="${empty electricServicePoint.label}">
-                                    <td><h3>${electricServicePoint.value}</h3></td>
-                                </c:when>
-                                <c:otherwise>
-                                    <tags:nameValue name="${electricServicePoint.label}">${electricServicePoint.value}</tags:nameValue>
-                                </c:otherwise>
-                            </c:choose>
-                        </c:forEach>
-                </tags:nameValueContainer>
+	            <c:if test="${not empty electricServicePointsInfo}">
+	                <h3>
+	                        <i:inline key="yukon.web.modules.amr.electricService" />
+	                </h3>
+	                <tags:nameValueContainer tableClass="name-value-table natural-width  stacked-md natural-width">
+	                        <c:forEach var="electricServicePoint" items="${electricServicePointsInfo}"
+	                            varStatus="electricStatus">
+	                            <c:choose>
+	                                <c:when test="${empty electricServicePoint.label}">
+	                                    <td><h3>${electricServicePoint.value}</h3></td>
+	                                </c:when>
+	                                <c:otherwise>
+	                                    <tags:nameValue name="${electricServicePoint.label}">${electricServicePoint.value}</tags:nameValue>
+	                                </c:otherwise>
+	                            </c:choose>
+	                        </c:forEach>
+	                </tags:nameValueContainer>
                 </c:if>
                 
               <!-- Water Service Point Information -->

@@ -105,7 +105,6 @@
     <entry key="yukon.web.widgets.accountInformationWidget.dba">DBA</entry>
     <entry key="yukon.web.widgets.accountInformationWidget.custNumber">Customer Number</entry>
     <entry key="yukon.web.widgets.accountInformationWidget.custId">Customer ID</entry>
-    <entry key="yukon.web.widgets.accountInformationWidget.acctNumber">service list</entry>
     <entry key="yukon.web.widgets.accountInformationWidget.acctNumber">Account Number</entry>
     <entry key="yukon.web.widgets.accountInformationWidget.siteNumber">Site Number</entry>
     <entry key="yukon.web.widgets.accountInformationWidget.facilityId">Facility ID</entry>

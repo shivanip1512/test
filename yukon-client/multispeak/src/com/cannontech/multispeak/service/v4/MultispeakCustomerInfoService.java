@@ -9,16 +9,14 @@ public interface MultispeakCustomerInfoService {
 
     /**
      * Build a List of Customer phone numbers
-     * 
-     * @param phoneNumbers
+     * @param ContactInfo
      * @param yukonUserContext
      */
     public List<String> getPhoneNumbers(ContactInfo contactInfo, YukonUserContext userContext);
 
     /**
      * Build a List of Customer email addresses
-     * 
-     * @param emailAddresses
+     * @param ContactInfo
      * @param yukonUserContext
      */
     List<String> getEmailAddresses(ContactInfo contactInfo, YukonUserContext userContext);

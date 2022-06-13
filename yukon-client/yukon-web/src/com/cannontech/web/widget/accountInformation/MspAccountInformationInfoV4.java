@@ -211,16 +211,16 @@ public enum MspAccountInformationInfoV4 {
 
         StringBuffer location = new StringBuffer();
         if (pointType.getCoord() != null) {
-            location.append("X=" + pointType.getCoord().getX());
-            location.append("Y=" + pointType.getCoord().getY());
-            location.append("Z=" + pointType.getCoord().getZ());
+            location.append("X=" + pointType.getCoord().getX()  + StringUtils.SPACE);
+            location.append("Y=" + pointType.getCoord().getY()  + StringUtils.SPACE);
+            location.append("Z=" + pointType.getCoord().getZ()  + StringUtils.SPACE);
             location.append("Buldge=" + pointType.getCoord().getBulge());
         }
 
         if (pointType.getCoordinates() != null) {
-            location.append("Value=" + pointType.getCoordinates().getValue());
-            location.append("CS=" + pointType.getCoordinates().getCs());
-            location.append("TS=" + pointType.getCoordinates().getTs());
+            location.append("Value=" + pointType.getCoordinates().getValue()  + StringUtils.SPACE);
+            location.append("CS=" + pointType.getCoordinates().getCs()  + StringUtils.SPACE);
+            location.append("TS=" + pointType.getCoordinates().getTs()  + StringUtils.SPACE);
         }
         return location.toString();
     }
@@ -229,9 +229,9 @@ public enum MspAccountInformationInfoV4 {
     private static String makeMapLocation(GPSLocation gpsLocation) {
 
         StringBuffer location = new StringBuffer();
-        location.append("Latitude=" + gpsLocation.getLatitude());
-        location.append(" Longitude=" + gpsLocation.getLongitude());
-        location.append(" Altitude=" + gpsLocation.getAltitude());
+        location.append("Latitude=" + gpsLocation.getLatitude()  + StringUtils.SPACE);
+        location.append("Longitude=" + gpsLocation.getLongitude()  + StringUtils.SPACE);
+        location.append("Altitude=" + gpsLocation.getAltitude()  + StringUtils.SPACE);
 
         return location.toString();
     }

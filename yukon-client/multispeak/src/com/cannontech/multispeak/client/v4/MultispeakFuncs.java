@@ -77,8 +77,7 @@ public class MultispeakFuncs extends MultispeakFuncsBase {
     @Autowired private PhoneNumberFormattingService phoneNumberFormattingService;
     
     private static final QName QNAME_LAST_SENT = new QName("http://www.multispeak.org/Version_4.1_Release/commonTypes", "lastSent");
-    private static final QName QNAME_OBJECT_REMAINING = new QName("http://www.multispeak.org/Version_4.1_Release/commonTypes",
-        "objectsRemaining");
+    private static final QName QNAME_OBJECT_REMAINING = new QName("http://www.multispeak.org/Version_4.1_Release/commonTypes", "objectsRemaining");
     private static final QName QNAME_RESULT = new QName("http://www.multispeak.org/Version_4.1_Release/response", "Result");
 
     @Override
@@ -436,36 +435,42 @@ public class MultispeakFuncs extends MultispeakFuncsBase {
         List<PhoneNumber> phoneNumber = new ArrayList<>();
         if (mspCustomer.getContactInfo() != null && mspCustomer.getContactInfo().getPhoneList() != null) {
             phoneNumber = mspCustomer.getContactInfo().getPhoneList().getPhoneNumber();
-
-            phoneNumber.forEach(phNo -> {
-                if (phNo.getPhoneType() != null) {
-                    if (phNo.getPhoneType() == PhoneType.HOME
-                        || phNo.getPhoneType() == PhoneType.BUSINESS) {
-
-                        allPhoneNumbers.put(phNo.getPhoneType(), phoneNumberFormattingService.formatPhone(
-                            phNo.getPhone().getAreaCode(), phNo.getPhone().getLocalNumber()));
+            if(phoneNumber != null) {
+                phoneNumber.forEach(phNo -> {
+                    if (phNo.getPhoneType() != null && phNo.getPhone() != null) {
+                        if (phNo.getPhoneType() == PhoneType.HOME
+                            || phNo.getPhoneType() == PhoneType.BUSINESS) {
+    
+                            allPhoneNumbers.put(phNo.getPhoneType(), phoneNumberFormattingService.formatPhone(
+                                phNo.getPhone().getAreaCode(), phNo.getPhone().getLocalNumber()));
+                        }
                     }
-                }
-            });
+                });
+            }
         }
         return allPhoneNumbers;
     }
     
-
+    
     public List<Address> getAddressList(List<AddressItem> addressItems) {
         List<Address> addressList = new ArrayList<>();
-        addressItems.forEach(addressItem -> {
-            if (addressItem.getAddress() != null) {
-                Address address = new Address();
-                address.setLocationAddress1(addressItem.getAddress().getAddress1());
-                address.setLocationAddress2(addressItem.getAddress().getAddress2());
-                address.setCityName(addressItem.getAddress().getCity());
-                address.setStateCode(addressItem.getAddress().getState());
-                address.setCounty(addressItem.getAddress().getCountry());
-                address.setZipCode(addressItem.getAddress().getPostalCode());
-                addressList.add(address);
-            }
-        });
+        if(CollectionUtils.isNotEmpty(addressItems)) {
+            addressItems.forEach(addressItem -> {
+                if (addressItem.getAddress() != null) {
+                    com.cannontech.msp.beans.v4.Address fetchAddress = addressItem.getAddress();
+                    Address address = new Address();
+                    address.setLocationAddress1(fetchAddress.getAddress1());
+                    address.setLocationAddress2(fetchAddress.getAddress2());
+                    address.setCityName(fetchAddress.getCity());
+                    address.setStateCode(fetchAddress.getState());
+                    address.setCounty(fetchAddress.getCountry());
+                    address.setZipCode(fetchAddress.getPostalCode());
+                    addressList.add(address);
+                }
+            
+            });
+        }
+
         return addressList;
     }
 }

@@ -267,7 +267,7 @@ public class MspObjectDaoImpl implements MspObjectDao {
     
     @Override
     public ServiceLocation getServiceLocationByMeterNo(String meterNo,MultispeakVendor mspVendor){
-        ServiceLocation mspSerLoction = new ServiceLocation();
+        ServiceLocation mspServiceLocation = new ServiceLocation();
         String endpointUrl = multispeakFuncs.getEndpointUrl(mspVendor, MultispeakDefines.CB_Server_STR);
         
         try {
@@ -284,14 +284,14 @@ public class MspObjectDaoImpl implements MspObjectDao {
             ArrayOfServiceLocation1 locationByMeterIDResult = getServiceLocationByMeterNoResponse
                     .getGetServiceLocationByMeterIDResult();
             List<ServiceLocation> serviceLocation = locationByMeterIDResult.getServiceLocation();
-            mspSerLoction = serviceLocation != null ? serviceLocation.get(0) : null;
+            mspServiceLocation = serviceLocation != null ? serviceLocation.get(0) : null;
         } catch (MultispeakWebServiceClientException e) {
             log.error("TargetService: " + endpointUrl + " - GetServiceLocationByMeterID (" + mspVendor.getCompanyName()
                     + ") for MeterID: " + meterNo);
             log.error("MultispeakWebServiceClientException: " + e.getMessage());
             log.info("A default(empty) is being used for ServiceLocation");
         }
-        return mspSerLoction;
+        return mspServiceLocation;
     }
     
     public List<String> getMspSubstationName(MultispeakVendor mspVendor) {
@@ -359,7 +359,7 @@ public class MspObjectDaoImpl implements MspObjectDao {
                                                                                                             getAllServiceLocations);
 
             List<ServiceLocation> serviceLocations = getAllServiceLocationsResponse.getGetAllServiceLocationsResult()
-                    .getServiceLocation();
+                                                                                   .getServiceLocation();
             int serviceLocationCount = 0;
             if (serviceLocations != null) {
                 serviceLocationCount = serviceLocations.size();

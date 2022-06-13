@@ -4,6 +4,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.concurrent.TimeUnit;
 
+import org.apache.commons.collections4.CollectionUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.ui.ModelMap;
 
@@ -47,7 +48,11 @@ public class MspWaterLeakReportV4 extends MspWaterLeakReport {
 
             mspMeterAccountInfo = new MspMeterAccountInfo();
             mspMeterAccountInfo.mspCustomer = mspObjectDao.getMspCustomer(meter, mspVendor);
-            mspMeterAccountInfo.mspServLoc = mspObjectDao.getMspServiceLocation(meter, mspVendor).getServiceLocation().get(0);
+            
+            List<ServiceLocation> serviceLocation = mspObjectDao.getMspServiceLocation(meter, mspVendor).getServiceLocation();
+            if(CollectionUtils.isNotEmpty(serviceLocation)) {
+                mspMeterAccountInfo.mspServLoc = serviceLocation.get(0);
+            }
             if (mspMeterAccountInfo.mspCustomer.getContactInfo() != null) {
                 mspMeterAccountInfo.phoneNumbers =
                     mspCustomerInfoService.getPhoneNumbers(
