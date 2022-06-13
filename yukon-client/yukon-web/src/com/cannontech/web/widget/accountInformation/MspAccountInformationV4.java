@@ -328,15 +328,12 @@ public class MspAccountInformationV4 implements MspAccountInformation {
             ElectricMeter electricMeter = electricService.getMeterBase().getElectricMeter();
             if (electricService.getMeterBase() != null && electricMeter != null) {
                 if (electricMeter.getMeterConnectionStatus() != null) {
-                    add("Connection Status",
-                            electricMeter.getMeterConnectionStatus(), true, info,
+                    add("Connection Status", electricMeter.getMeterConnectionStatus(), true, info,
                             userContext);
 
-                    add("Metrology Firmware Version",
-                            electricMeter.getMetrologyFirmwareVersion(), true, info,
+                    add("Metrology Firmware Version", electricMeter.getMetrologyFirmwareVersion(), true, info,
                             userContext);
-                    add("Metrology Firmware Revision",
-                            electricMeter.getMetrologyFirmwareRevision(), true, info,
+                    add("Metrology Firmware Revision", electricMeter.getMetrologyFirmwareRevision(), true, info,
                             userContext);
                     add("AMI Device Type", electricMeter.getAMRDeviceType(), false, info,
                             userContext);
@@ -345,15 +342,11 @@ public class MspAccountInformationV4 implements MspAccountInformation {
                             userContext);
                 }
                 if (electricMeter.getUtilityInfo() != null) {
-                    add("Owner", electricMeter.getUtilityInfo().getOwner(), true, info,
-                            userContext);
+                    add("Owner", electricMeter.getUtilityInfo().getOwner(), true, info, userContext);
                     if (electricMeter.getUtilityInfo().getServiceID() != null) {
-                        add("Service Point Value",
-                                electricMeter.getUtilityInfo().getServiceID().getValue(),
+                        add("Service Point Value", electricMeter.getUtilityInfo().getServiceID().getValue(),
                                 true, info, userContext);
-                        add("Service Point Type",
-                                electricMeter.getUtilityInfo().getServiceID()
-                                        .getServiceType(),
+                        add("Service Point Type", electricMeter.getUtilityInfo().getServiceID().getServiceType(),
                                 true, info, userContext);
                     }
 
@@ -539,28 +532,23 @@ public class MspAccountInformationV4 implements MspAccountInformation {
                     add(null, "Nameplate Information", true, info, userContext);
                     if (gasNameplate.getMechanicalForm() != null) {
                         add("Mechanical Form",
-                            gasNameplate.getMechanicalForm().value(), true, info,
-                            userContext);
+                            gasNameplate.getMechanicalForm().value(), true, info, userContext);
                     }
                     if (gasNameplate.getMeasurementSystem() != null) {
                         add("Measurement System",
-                            gasNameplate.getMeasurementSystem().value(), true,
-                            info, userContext);
+                            gasNameplate.getMeasurementSystem().value(), true, info, userContext);
                     }
                     if (gasNameplate.getGasPressure() != null
                         && gasNameplate.getGasPressure().getMaxPressureUOM() != null) {
-                        add("Gas Pressure",
-                            gasNameplate.getGasPressure().getValue()
+                        add("Gas Pressure", gasNameplate.getGasPressure().getValue()
                                 + StringUtils.SPACE
-                                + gasNameplate.getGasPressure().getMaxPressureUOM().value(),
-                            true, info, userContext);
+                                + gasNameplate.getGasPressure().getMaxPressureUOM().value(), true, info, userContext);
                     }
                     if (gasNameplate.getGasFlow() != null
                         && gasNameplate.getGasFlow().getMaxFlowRateUOM() != null) {
                         add("Gas Flow", gasNameplate.getGasFlow().getValue()
                             + StringUtils.SPACE
-                            + gasNameplate.getGasFlow().getMaxFlowRateUOM().value(),
-                            true, info, userContext);
+                            + gasNameplate.getGasFlow().getMaxFlowRateUOM().value(), true, info, userContext);
                     }
                     if (gasNameplate.getGearDriveSize() != null) {
                         add("Gas Drive Size",
