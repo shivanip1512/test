@@ -88,7 +88,8 @@ public class SignalTransmitterValidator<T extends TerminalBase<?>> extends Simpl
                 YukonValidationUtils.checkRange(errors, "originAddress", terminal.getOriginAddress(), 0, 65535, true);
             }
             String destinationAddressTxt = yukonValidationHelper.getMessage(key + ".destinationAddress");
-            yukonValidationHelper.checkIfFieldRequired("destinationAddress", errors, terminal.getDestinationAddress(), destinationAddressTxt);
+            yukonValidationHelper.checkIfFieldRequired("destinationAddress", errors, terminal.getDestinationAddress(),
+                    destinationAddressTxt);
             if (!errors.hasFieldErrors("destinationAddress")) {
                 YukonValidationUtils.checkRange(errors, "destinationAddress", terminal.getDestinationAddress(), 0, 65535, true);
             }
@@ -109,10 +110,15 @@ public class SignalTransmitterValidator<T extends TerminalBase<?>> extends Simpl
             
             if (!errors.hasFieldErrors("pagerId")) {
                 if (terminal.getIdentifierFormat() == IdentifierFormat.CAP_PAGE) {
+                    try {
                         Integer pagerId = Integer.valueOf(terminal.getPagerId());
                         YukonValidationUtils.checkRange(errors, "pagerId", pagerId, -9999999, 99999999, true);
+                    } catch (Exception e) {
+                        errors.rejectValue("pagerId", key + ".pagerId.invalidValue");
+                    }
                 } else {
-                    yukonValidationHelper.checkExceedsMaxLength("pagerId", errors, String.valueOf(terminal.getPagerId()), pagerIdTxt, 10);
+                    yukonValidationHelper.checkExceedsMaxLength("pagerId", errors, String.valueOf(terminal.getPagerId()),
+                            pagerIdTxt, 10);
                 }
             }
             String channelTxt = yukonValidationHelper.getMessage(key + ".channel");
