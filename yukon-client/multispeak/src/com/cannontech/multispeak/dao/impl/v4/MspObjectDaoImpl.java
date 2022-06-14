@@ -78,7 +78,7 @@ import com.cannontech.multispeak.exceptions.MultispeakWebServiceClientException;
 import com.google.common.collect.Lists;
 
 public class MspObjectDaoImpl implements MspObjectDao {
-    private static final Logger log = YukonLogManager.getLogger(MspObjectDaoImpl.class);
+    private static final Logger log =  YukonLogManager.getLogger(MspObjectDaoImpl.class);
 
     @Autowired private ObjectFactory objectFactory;
     @Autowired private MultispeakFuncs multispeakFuncs;
