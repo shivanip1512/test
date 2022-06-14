@@ -378,8 +378,10 @@ public class MspAccountInformationV4 implements MspAccountInformation {
                     add("Communication Address", electricMeter.getMeterCommAddress(), true, info, userContext);
                 }
 
-                ElectricNameplate electricNameplate = electricMeter.getElectricNameplate();
-                if (electricMeter != null && electricNameplate != null) {
+                
+                if (electricMeter != null && electricMeter.getElectricNameplate() != null) {
+                    ElectricNameplate electricNameplate = electricMeter.getElectricNameplate();
+                    
                     add(null, "Nameplate Information", true, info, userContext);
                     add("kh", electricNameplate.getKh(), true, info, userContext);
                     add("kr", electricNameplate.getKr(), true, info, userContext);
@@ -495,8 +497,9 @@ public class MspAccountInformationV4 implements MspAccountInformation {
                 add("Disconnect Date", gasServicePoint.getDisconnectDate(), true, info, userContext);
 
                 // Gas Meter
-                GasNameplate gasNameplate = gasServicePoint.getGasMeter().getGasNameplate();
-                if (gasServicePoint.getGasMeter() != null && gasNameplate != null) {
+                ;
+                if (gasServicePoint.getGasMeter() != null && gasServicePoint.getGasMeter().getGasNameplate() != null) {
+                    GasNameplate gasNameplate = gasServicePoint.getGasMeter().getGasNameplate();
                     add(null, "Nameplate Information", true, info, userContext);
                     if (gasNameplate.getMechanicalForm() != null) {
                         add("Mechanical Form",
