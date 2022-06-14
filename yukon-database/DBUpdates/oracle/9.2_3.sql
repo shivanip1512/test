@@ -6,4 +6,4 @@
 /* VERSION INFO                                               */
 /* Inserted when update script is run                         */
 /**************************************************************/
-/*INSERT INTO CTIDatabase VALUES ('9.2', '23-May-2022', 'Latest Update', 3, SYSDATE);*/
+INSERT INTO CTIDatabase VALUES ('9.2', '08-JUN-2022', 'Latest Update', 3, SYSDATE);
