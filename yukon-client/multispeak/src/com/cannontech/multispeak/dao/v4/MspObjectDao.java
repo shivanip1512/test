@@ -185,7 +185,7 @@ public interface MspObjectDao {
      * List of msp ServiceLocation objects are given to the callback as they are retrieved in chunks from the
      * vendor.
      */
-    public void getAllMspServiceLocations(MultispeakVendor mspVendor, MultispeakSyncProcessCallback callback)
+    public void getAllMspServiceLocations(MultispeakVendor mspVendor, MultispeakGetAllServiceLocationsCallback callback)
             throws MultispeakWebServiceClientException; 
 
     /**

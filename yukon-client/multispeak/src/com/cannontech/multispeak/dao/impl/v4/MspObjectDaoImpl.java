@@ -79,8 +79,7 @@ import com.cannontech.multispeak.client.core.v4.ODClient;
 import com.cannontech.multispeak.client.core.v4.SCADAClient;
 import com.cannontech.multispeak.client.v4.MultispeakFuncs;
 import com.cannontech.multispeak.dao.v4.MspObjectDao;
-import com.cannontech.multispeak.dao.v4.MultispeakSyncProcessCallback;
-import com.cannontech.multispeak.dao.v5.MultispeakSynsProcessCallback;
+import com.cannontech.multispeak.dao.v4.MultispeakGetAllServiceLocationsCallback;
 import com.cannontech.multispeak.exceptions.MultispeakWebServiceClientException;
 import com.google.common.collect.Lists;
 
@@ -335,7 +334,7 @@ public class MspObjectDaoImpl implements MspObjectDao {
     }
     
     @Override
-    public void getAllMspServiceLocations(MultispeakVendor mspVendor, MultispeakSyncProcessCallback callback)
+    public void getAllMspServiceLocations(MultispeakVendor mspVendor, MultispeakGetAllServiceLocationsCallback callback)
             throws MultispeakWebServiceClientException {
 
         boolean firstGet = true;
@@ -358,7 +357,7 @@ public class MspObjectDaoImpl implements MspObjectDao {
     }
     
     private String getMoreServiceLocations(MultispeakVendor mspVendor, String lastReceived,
-            MultispeakSyncProcessCallback callback) throws MultispeakWebServiceClientException {
+            MultispeakGetAllServiceLocationsCallback callback) throws MultispeakWebServiceClientException {
         String lastSent = null;
         String endpointUrl = multispeakFuncs.getEndpointUrl(mspVendor, MultispeakDefines.CB_Server_STR);
         try {

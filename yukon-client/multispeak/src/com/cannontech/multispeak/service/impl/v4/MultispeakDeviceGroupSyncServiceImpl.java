@@ -24,7 +24,7 @@ import com.cannontech.multispeak.client.MultispeakVendor;
 import com.cannontech.multispeak.client.v4.MultispeakFuncs;
 import com.cannontech.multispeak.dao.MultispeakDao;
 import com.cannontech.multispeak.dao.v4.MspObjectDao;
-import com.cannontech.multispeak.dao.v4.MultispeakSyncProcessCallback;
+import com.cannontech.multispeak.dao.v4.MultispeakGetAllServiceLocationsCallback;
 import com.cannontech.multispeak.service.MultispeakDeviceGroupSyncProgress;
 import com.cannontech.multispeak.service.MultispeakDeviceGroupSyncTypeProcessor;
 import com.cannontech.multispeak.service.MultispeakSyncType;
@@ -59,7 +59,7 @@ public class MultispeakDeviceGroupSyncServiceImpl extends MultispeakDeviceGroupS
 
         // MultispeakGetAllServiceLocationsCallback
         // processes the list of msp meters as they are retrieved from the cis vendor
-        final MultispeakSyncProcessCallback callback = new MultispeakSyncProcessCallback() {
+        final MultispeakGetAllServiceLocationsCallback callback = new MultispeakGetAllServiceLocationsCallback() {
                 
                 // FINISH
                 @Override
