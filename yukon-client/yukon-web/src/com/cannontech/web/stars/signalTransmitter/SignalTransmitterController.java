@@ -240,8 +240,7 @@ public class SignalTransmitterController {
     }
     
     @GetMapping("/{id}/renderCopyDialog")
-    public String renderCopyDialog(@PathVariable int id, ModelMap model, YukonUserContext userContext,
-            HttpServletRequest request) {
+    public String renderCopyDialog(@PathVariable int id, ModelMap model, YukonUserContext userContext) {
 
         PaoType selectedSignalTransmitterType = getPaoTypeForPaoId(id);
         TerminalCopy terminalCopy = new TerminalCopy();
@@ -276,7 +275,7 @@ public class SignalTransmitterController {
                 json.put("signalTransmitterId", map.get("id").toString());
                 servletResponse.setContentType("application/json");
                 JsonUtils.getWriter().writeValue(servletResponse.getOutputStream(), json);
-                flash.setConfirm(new YukonMessageSourceResolvable(baseKey + "copy.success", String.valueOf(map.get("name"))));
+                flash.setConfirm(new YukonMessageSourceResolvable("yukon.common.copy.success", String.valueOf(map.get("name"))));
                 return null;
             }
 
@@ -289,7 +288,7 @@ public class SignalTransmitterController {
             return null;
         } catch (RestClientException ex) {
             log.error("Error copying load group: {}. Error: {}", terminalCopy.getName(), ex.getMessage());
-            flash.setError(new YukonMessageSourceResolvable(baseKey + "copy.error", terminalCopy.getName(), ex.getMessage()));
+            flash.setError(new YukonMessageSourceResolvable("yukon.common.copy.error", terminalCopy.getName(), ex.getMessage()));
             json.put("redirectUrl", redirectListPageLink);
             servletResponse.setContentType("application/json");
             JsonUtils.getWriter().writeValue(servletResponse.getOutputStream(), json);

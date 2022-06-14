@@ -388,6 +388,8 @@
 <entry key="yukon.common.units.ms">ms</entry>
 <entry key="yukon.common.units.sec">sec</entry>
 
+<entry key="yukon.common.copy.success">{0} copied successfully.</entry>
+<entry key="yukon.common.copy.error">{0} could not be copied. Error: {1}.</entry>
 <entry key="yukon.common.save.success">{0} saved successfully.</entry>
 <entry key="yukon.common.delete.success">{0} deleted successfully.</entry>
 
