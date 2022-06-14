@@ -287,7 +287,7 @@ public class SignalTransmitterController {
             JsonUtils.getWriter().writeValue(servletResponse.getOutputStream(), json);
             return null;
         } catch (RestClientException ex) {
-            log.error("Error copying load group: {}. Error: {}", terminalCopy.getName(), ex.getMessage());
+            log.error("Error copying signal transmitter: {}. Error: {}", terminalCopy.getName(), ex.getMessage());
             flash.setError(new YukonMessageSourceResolvable("yukon.common.copy.error", terminalCopy.getName(), ex.getMessage()));
             json.put("redirectUrl", redirectListPageLink);
             servletResponse.setContentType("application/json");
