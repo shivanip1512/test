@@ -48,6 +48,32 @@ if ($thrift_files.Length -eq 0) {
 
 Write-Host "Updating" (Pluralize ($thrift_files).count file)
 
+function ValidateOutPath {
+    param (
+        [string]$Type,
+        [string]$Path
+    )
+    if (Test-Path -Path $Path) {
+        Write-Host "Found $Type output folder at" (Resolve-Path -Path $Path)
+        $true
+    } else {
+        $NormalizedPath = $ExecutionContext.SessionState.Path.GetUnresolvedProviderPathFromPSPath($Path)
+        Write-Host "Can't find $Type output folder at $NormalizedPath"
+        $false
+    }
+}
+
+switch ($types) {
+    "java" { 
+        if ( ! (ValidateOutPath "Java" $JAVA_OUT) ) {
+            throw "Can't find Java output folder"
+        }}
+    "cpp" { 
+        if ( ! (ValidateOutPath "C++" $CPP_OUT) ) {
+            throw "Can't find C++ output folder"
+        }}
+}
+
 # Reusable function to log and invoke the Thrift compiler
 function CompileThrift {
     param (
@@ -60,9 +86,8 @@ function CompileThrift {
     & $THRIFT_EXE -out $Out --gen $Gen $ThriftFile.FullName
 }
 
-# Add any new source types here
 switch ($types) {
-    "java" { $thrift_files | % { CompileThrift $_ "Java" $JAVA_OUT $JAVA_GEN } }
-    "cpp"  { $thrift_files | % { CompileThrift $_ "C++"  $CPP_OUT  $CPP_GEN  } }
+    "java" { $thrift_files | Foreach-Object { CompileThrift $_ "Java" $JAVA_OUT $JAVA_GEN } }
+    "cpp"  { $thrift_files | Foreach-Object { CompileThrift $_ "C++"  $CPP_OUT  $CPP_GEN  } }
     default { throw "Unknown type $_" }
 }

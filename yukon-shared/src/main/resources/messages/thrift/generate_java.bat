@@ -9,4 +9,4 @@ if not [%1] == [] (
     set _files=-Files """%*"""
 )
 
-powershell -Command .\generate.ps1 -Type java %_all% %_files%
+powershell -NoProfile -ExecutionPolicy Bypass -Command .\generate.ps1 -Type java %_all% %_files%
