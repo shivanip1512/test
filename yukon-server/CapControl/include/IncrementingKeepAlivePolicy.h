@@ -19,7 +19,7 @@ struct IncrementingKeepAlivePolicy : KeepAlivePolicy
 
     AttributeList getSupportedAttributes() const override;
 
-    Actions SendKeepAlive( const long keepAliveValue ) override;
+    Actions SendKeepAlive( const long keepAliveValue, long regulatorTimeout) override;
 
     Actions StopKeepAlive() override;
 
@@ -31,7 +31,7 @@ protected:
 
     long readKeepAliveValue();
     long getNextKeepAliveValue();
-    virtual bool needsAutoBlockEnable();
+    virtual bool needsAutoBlockEnable(long regulatorTimeout);
     const AutoBlock _autoBlockBehavior;
 };
 

@@ -124,7 +124,8 @@ VoltageRegulator::VoltageRegulator()
     _installOrientation( InstallOrientation::Forward ),
     _controlPolicy( std::make_unique<StandardControlPolicy>() ),
     _keepAlivePolicy( std::make_unique<CountdownKeepAlivePolicy>() ),
-    _scanPolicy( std::make_unique<LoadOnlyScanPolicy>() )
+    _scanPolicy( std::make_unique<LoadOnlyScanPolicy>() ),
+    _regulatorTimeout(0)
 {
     // empty...
 }
@@ -1007,7 +1008,7 @@ try
 {
     _lastCommandedOperatingMode = RemoteMode;
 
-    long delay = submitKeepAliveCommands( _keepAlivePolicy->SendKeepAlive( _keepAliveValue ) );
+    long delay = submitKeepAliveCommands( _keepAlivePolicy->SendKeepAlive( _keepAliveValue , _regulatorTimeout) );
 
     CTILOG_DEBUG( dout, "Sending KeepAlive for regulator: " << getPaoName() );
 
@@ -1342,7 +1343,10 @@ VoltageRegulator::PowerFlowSituations VoltageRegulator::determinePowerFlowSituat
     return status.code;
 }
 
-
+void VoltageRegulator::setRegulatorTimeout(long regulatorTimeout)
+{
+    _regulatorTimeout = regulatorTimeout;
+}
 }
 }
 

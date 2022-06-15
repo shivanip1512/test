@@ -11,7 +11,7 @@ struct CountdownKeepAlivePolicy : KeepAlivePolicy
 {
     AttributeList getSupportedAttributes() const override;
 
-    Actions SendKeepAlive( const long keepAliveValue ) override;
+    Actions SendKeepAlive( const long keepAliveValue, long regulatorTimeout) override;
 
     Actions StopKeepAlive() override;
 

@@ -183,6 +183,7 @@ public:
 
     double getSetPointValue() const;
     Policy::Action setSetPointValue( const double newSetPoint );
+    void setRegulatorTimeout(long regulatorTimeout);
 
     std::string detailedDescription();
 
@@ -211,6 +212,7 @@ protected:
 
     long    _keepAlivePeriod;
     long    _keepAliveValue;
+    long    _regulatorTimeout;
 
     Phase   _phase;
 
