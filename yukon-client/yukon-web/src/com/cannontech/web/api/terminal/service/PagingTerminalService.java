@@ -32,4 +32,9 @@ public interface PagingTerminalService {
      */
     TerminalBase<?> copy(int id, TerminalCopy terminalCopy);
 
+    /**
+     * Update a terminal.
+     */
+    TerminalBase<?> update(int id, TerminalBase<?> terminalBase);
+
 }
