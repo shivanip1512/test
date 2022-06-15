@@ -112,11 +112,11 @@
   <bean id="multispeakDeviceGroupSyncService" class="com.cannontech.multispeak.service.impl.MultispeakDeviceGroupSyncServiceImpl">
       <qualifier value="v3"/>
   </bean>
-  <bean id="multispeakDeviceGroupSyncService_v5" class="com.cannontech.multispeak.service.impl.v5.MultispeakDeviceGroupSyncServiceImpl">
-      <qualifier value="v5"/>
-  </bean>
   <bean id="multispeakDeviceGroupSyncService_v4" class="com.cannontech.multispeak.service.impl.v4.MultispeakDeviceGroupSyncServiceImpl">
       <qualifier value="v4"/>
+  </bean>
+  <bean id="multispeakDeviceGroupSyncService_v5" class="com.cannontech.multispeak.service.impl.v5.MultispeakDeviceGroupSyncServiceImpl">
+      <qualifier value="v5"/>
   </bean>
   <bean class="com.cannontech.multispeak.service.impl.v5.MultispeakEnrollmentSyncService"/>
   <bean class="com.cannontech.multispeak.service.impl.v5.MultispeakEnrollmentSyncHelper"/>
@@ -211,6 +211,7 @@
   <bean id="mspMeterDaoV4" class="com.cannontech.multispeak.dao.impl.v4.MspMeterDaoImpl"/>
   
   <bean id="multispeakCustomerInfoService" class="com.cannontech.multispeak.service.impl.MultispeakCustomerInfoServiceImpl"/>
+  <bean id="multispeakCustomerInfoServiceV4" class="com.cannontech.multispeak.service.impl.v4.MultispeakCustomerInfoServiceImpl"/>
   <bean id="multispeakCustomerInfoServiceV5" class="com.cannontech.multispeak.service.impl.v5.MultispeakCustomerInfoServiceImpl"/>
 
   <bean id="messageSender" class="org.springframework.ws.transport.http.HttpComponentsMessageSender"/>
@@ -218,9 +219,11 @@
   <bean id="soap11MessageFactory" class="org.springframework.ws.soap.saaj.SaajSoapMessageFactory"/>
   
   <bean id="mspWaterLeakReportV3" class="com.cannontech.web.amr.waterLeakReport.service.MspWaterLeakReportV3"/>
+  <bean id="mspWaterLeakReportV4" class="com.cannontech.web.amr.waterLeakReport.service.MspWaterLeakReportV4"/>
   <bean id="mspWaterLeakReportV5" class="com.cannontech.web.amr.waterLeakReport.service.MspWaterLeakReportV5"/>
   
   <bean id="mspAccountInformationV3" class="com.cannontech.web.widget.accountInformation.MspAccountInformationV3"/>
+  <bean id="mspAccountInformationV4" class="com.cannontech.web.widget.accountInformation.MspAccountInformationV4"/>
   <bean id="mspAccountInformationV5" class="com.cannontech.web.widget.accountInformation.MspAccountInformationV5"/>
   
 

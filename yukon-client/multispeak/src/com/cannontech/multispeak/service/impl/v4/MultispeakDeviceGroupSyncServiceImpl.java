@@ -20,7 +20,6 @@ import com.cannontech.msp.beans.v4.ElectricLocationFields;
 import com.cannontech.msp.beans.v4.ElectricMeter;
 import com.cannontech.msp.beans.v4.MspMeter;
 import com.cannontech.msp.beans.v4.ServiceLocation;
-import com.cannontech.msp.beans.v5.commontypes.SubstationRef;
 import com.cannontech.multispeak.client.MultispeakVendor;
 import com.cannontech.multispeak.client.v4.MultispeakFuncs;
 import com.cannontech.multispeak.dao.MultispeakDao;
