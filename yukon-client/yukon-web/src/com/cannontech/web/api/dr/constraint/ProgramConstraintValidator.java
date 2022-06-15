@@ -77,15 +77,13 @@ public class ProgramConstraintValidator extends SimpleValidator<ProgramConstrain
 
         // Holiday schedule and holiday usage check.Holiday usage is mandatory when holiday schedule is
         // selected. When none select is selected id will be sent as 0
-        if (!errors.hasFieldErrors("holidaySchedule")) {
+        if (!errors.hasFieldErrors("holidaySchedule") && !errors.hasFieldErrors("holidaySchedule.id")) {
             Integer holidayScheduleId = programConstraint.getHolidaySchedule().getId();
             if (holidayScheduleId != null && holidayScheduleId.compareTo(0) > 0) {
                 yukonApiValidationUtils.checkIsBlank(errors, "holidayUsage", programConstraint.getHolidayUsage().toString(), false, "Holiday Usage");
                 if (programConstraint.getHolidayUsage() == HolidayUsage.NONE) {
-                    errors.rejectValue("holidayUsage", ApiErrorDetails.FIELD_REQUIRED.getCodeString(), new Object[] { "Holiday Usage" }, "");
+                    errors.rejectValue("holidayUsage", ApiErrorDetails.INVALID_VALUE.getCodeString(), new Object[] { "Holiday Usage" }, "");
                 }
-            } else if (programConstraint.getHolidayUsage() != HolidayUsage.NONE) {
-                errors.rejectValue("holidayUsage", ApiErrorDetails.INVALID_VALUE.getCodeString(), new Object[] { "Holiday Usage" }, "");
             }
         }
         yukonApiValidationUtils.checkIfFieldRequired("maxActivateSeconds", errors, programConstraint.getMaxActivateSeconds(), "Max Activate");
