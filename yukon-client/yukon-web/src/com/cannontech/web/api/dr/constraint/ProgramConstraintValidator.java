@@ -1,10 +1,14 @@
 package com.cannontech.web.api.dr.constraint;
 
+import java.util.Optional;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.validation.Errors;
 
 import com.cannontech.api.error.model.ApiErrorDetails;
 import com.cannontech.common.dr.setup.HolidayUsage;
+import com.cannontech.common.dr.setup.LMDto;
+import com.cannontech.common.dr.setup.LMServiceHelper;
 import com.cannontech.common.dr.setup.ProgramConstraint;
 import com.cannontech.common.validator.SimpleValidator;
 import com.cannontech.common.validator.YukonApiValidationUtils;
@@ -14,6 +18,7 @@ public class ProgramConstraintValidator extends SimpleValidator<ProgramConstrain
 
     @Autowired private IDatabaseCache dbCache;
     @Autowired private YukonApiValidationUtils yukonApiValidationUtils;
+    @Autowired private LMServiceHelper lmServiceHelper;
 
     public ProgramConstraintValidator() {
         super(ProgramConstraint.class);
@@ -35,15 +40,41 @@ public class ProgramConstraintValidator extends SimpleValidator<ProgramConstrain
                         }
                     });
         }
-        
-        if (programConstraint.getSeasonSchedule() == null || programConstraint.getSeasonSchedule().getId() == null) {
-            errors.rejectValue("seasonSchedule.id", ApiErrorDetails.FIELD_REQUIRED.getCodeString(),
+
+        if (programConstraint.getSeasonSchedule() == null) {
+            errors.rejectValue("seasonSchedule", ApiErrorDetails.FIELD_REQUIRED.getCodeString(),
                     new Object[] { "Season Schedule" }, "");
+        } else if (programConstraint.getSeasonSchedule().getId() == null) {
+            errors.rejectValue("seasonSchedule.id", ApiErrorDetails.FIELD_REQUIRED.getCodeString(),
+                    new Object[] { "Season Schedule Id" }, "");
+        } else {
+            Integer seasonScheduleId = programConstraint.getSeasonSchedule().getId();
+            if (seasonScheduleId != 0) {
+                Optional<LMDto> seasonSchedule = lmServiceHelper.getSeasonSchedule(seasonScheduleId);
+                if (seasonSchedule.isEmpty()) {
+                    errors.rejectValue("seasonSchedule.id", ApiErrorDetails.INVALID_VALUE.getCodeString(),
+                            new Object[] { "Season Schedule Id" }, "");
+                }
+            }
         }
-        if (programConstraint.getHolidaySchedule() == null || programConstraint.getHolidaySchedule().getId() == null) {
-            errors.rejectValue("holidaySchedule.id", ApiErrorDetails.FIELD_REQUIRED.getCodeString(),
+
+        if (programConstraint.getHolidaySchedule() == null) {
+            errors.rejectValue("holidaySchedule", ApiErrorDetails.FIELD_REQUIRED.getCodeString(),
                     new Object[] { "Holiday Schedule" }, "");
+        } else if (programConstraint.getHolidaySchedule().getId() == null) {
+            errors.rejectValue("holidaySchedule.id", ApiErrorDetails.FIELD_REQUIRED.getCodeString(),
+                    new Object[] { "Holiday Schedule Id" }, "");
+        } else {
+            Integer holidayScheduleId = programConstraint.getHolidaySchedule().getId();
+            if (holidayScheduleId != 0) {
+                Optional<LMDto> holidaySchedule = lmServiceHelper.getHolidaySchedule(holidayScheduleId);
+                if (holidaySchedule.isEmpty()) {
+                    errors.rejectValue("holidaySchedule.id", ApiErrorDetails.INVALID_VALUE.getCodeString(),
+                            new Object[] { "Holiday Schedule Id" }, "");
+                }
+            }
         }
+
         // Holiday schedule and holiday usage check.Holiday usage is mandatory when holiday schedule is
         // selected. When none select is selected id will be sent as 0
         if (!errors.hasFieldErrors("holidaySchedule")) {
