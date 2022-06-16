@@ -19,22 +19,28 @@ import org.springframework.ws.soap.SoapHeader;
 import org.springframework.ws.soap.SoapHeaderElement;
 import org.springframework.ws.soap.saaj.SaajSoapMessage;
 
+import com.cannontech.amr.meter.model.SimpleMeter;
 import com.cannontech.clientutils.YukonLogManager;
 import com.cannontech.database.data.point.PointTypes;
 import com.cannontech.database.db.point.SystemLog;
 import com.cannontech.message.dispatch.message.SystemLogHelper;
 import com.cannontech.msp.beans.v4.ArrayOfDomainMember;
 import com.cannontech.msp.beans.v4.ArrayOfServiceLocation1;
+import com.cannontech.msp.beans.v4.Customer;
 import com.cannontech.msp.beans.v4.DomainMember;
 import com.cannontech.msp.beans.v4.ElectricService;
 import com.cannontech.msp.beans.v4.ErrorObject;
 import com.cannontech.msp.beans.v4.GasService;
 import com.cannontech.msp.beans.v4.GetAllServiceLocations;
 import com.cannontech.msp.beans.v4.GetAllServiceLocationsResponse;
+import com.cannontech.msp.beans.v4.GetCustomerByMeterID;
+import com.cannontech.msp.beans.v4.GetCustomerByMeterIDResponse;
 import com.cannontech.msp.beans.v4.GetDomainMembers;
 import com.cannontech.msp.beans.v4.GetDomainMembersResponse;
 import com.cannontech.msp.beans.v4.GetMeterByCustomerID;
 import com.cannontech.msp.beans.v4.GetMeterByCustomerIDResponse;
+import com.cannontech.msp.beans.v4.GetMeterByMeterID;
+import com.cannontech.msp.beans.v4.GetMeterByMeterIDResponse;
 import com.cannontech.msp.beans.v4.GetMeterByServiceLocationID;
 import com.cannontech.msp.beans.v4.GetMeterByServiceLocationIDResponse;
 import com.cannontech.msp.beans.v4.GetMetersByAccountNumberAndServiceType;
@@ -250,46 +256,10 @@ public class MspObjectDaoImpl implements MspObjectDao {
                                       "Was NOT found in Yukon");
     }
 
-    @Override
-    public List<MspMeter> getMspMetersByServiceLocation(ServiceLocation mspServiceLocation, MultispeakVendor vendor) {
-        return getMspMetersByServiceLocation(mspServiceLocation.getObjectID(), vendor);
-
-    }
-    
-    
-    private List<MspMeter> getMspMetersByServiceLocation(String serviceLocation, MultispeakVendor mspVendor) {
-
-        List<MspMeter> listOfMeters = new ArrayList<>();
-        String endpointUrl = multispeakFuncs.getEndpointUrl(mspVendor, MultispeakDefines.CB_Server_STR);
-
-        try {
-            long start = System.currentTimeMillis();
-            log.debug("Begin call to getMspMetersByServiceLocation for ServLoc: " + serviceLocation);
-   
-            GetMeterByServiceLocationID getMeterByServLocID = objectFactory.createGetMeterByServiceLocationID();
-            getMeterByServLocID.setServiceLocationID(serviceLocation);
-            GetMeterByServiceLocationIDResponse getMeterByMeterNoResponse = cbClient.getMeterByServiceLocationID(mspVendor, endpointUrl, getMeterByServLocID);
-            Meters meters = getMeterByMeterNoResponse.getGetMeterByServiceLocationIDResult();
-       
-            if (meters != null) {
-                listOfMeters = multispeakFuncs.getMspMeters(meters);
-            }
-       
-            log.debug("End call to getMspMetersByServiceLocation for ServLoc:" + serviceLocation + "  (took "
-                    + (System.currentTimeMillis() - start) + " millis)");
-
-        } catch (MultispeakWebServiceClientException e) {
-            log.error("TargetService: " + endpointUrl + " - getMeterByServiceLocationID (" + mspVendor.getCompanyName()
-                    + ") for ServLoc: " + serviceLocation);
-            log.error("MultispeakWebServiceClientException: " + e.getMessage());
-        }
-        return listOfMeters;
-    }
     
     @Override
     public ServiceLocation getMspServiceLocation(MspObject mspObject, MultispeakVendor mspVendor) {
         ServiceLocation mspServiceLocation = new ServiceLocation();
-        String endpointUrl = multispeakFuncs.getEndpointUrl(mspVendor, MultispeakDefines.CB_Server_STR);
 
         String meterNo = null;
         if (mspObject instanceof ElectricService) {
@@ -299,6 +269,16 @@ public class MspObjectDaoImpl implements MspObjectDao {
         } else if (mspObject instanceof GasService) {
             meterNo = ((GasService) mspObject).getGasMeterID();
         }
+
+        mspServiceLocation = getServiceLocationByMeterNo(meterNo, mspVendor);
+            
+        return mspServiceLocation;
+    }
+    
+    @Override
+    public ServiceLocation getServiceLocationByMeterNo(String meterNo, MultispeakVendor mspVendor) {
+        ServiceLocation mspServiceLocation = new ServiceLocation();
+        String endpointUrl = multispeakFuncs.getEndpointUrl(mspVendor, MultispeakDefines.CB_Server_STR);
 
         try {
             GetServiceLocationByMeterID getServiceLocationByMspMeterId = objectFactory.createGetServiceLocationByMeterID();
@@ -314,8 +294,7 @@ public class MspObjectDaoImpl implements MspObjectDao {
             ArrayOfServiceLocation1 locationByMeterIDResult = getServiceLocationByMeterNoResponse
                     .getGetServiceLocationByMeterIDResult();
             List<ServiceLocation> serviceLocation = locationByMeterIDResult.getServiceLocation();
-            return serviceLocation != null ? serviceLocation.get(0) : null;
-
+            mspServiceLocation = serviceLocation != null ? serviceLocation.get(0) : null;
         } catch (MultispeakWebServiceClientException e) {
             log.error("TargetService: " + endpointUrl + " - GetServiceLocationByMeterID (" + mspVendor.getCompanyName()
                     + ") for MeterID: " + meterNo);
@@ -365,7 +344,7 @@ public class MspObjectDaoImpl implements MspObjectDao {
 
             // kill before gathering more substations if callback is canceled
             if (callback.isCanceled()) {
-                log.info("MultispeakGetAllServiceLocationsCallback in canceled state, aborting next call to getMoreServiceLocations");
+                log.info("MultispeakSyncProcessCallback in canceled state, aborting next call to getMoreServiceLocations");
                 return;
             }
 
@@ -379,17 +358,16 @@ public class MspObjectDaoImpl implements MspObjectDao {
     
     private String getMoreServiceLocations(MultispeakVendor mspVendor, String lastReceived,
             MultispeakGetAllServiceLocationsCallback callback) throws MultispeakWebServiceClientException {
-
         String lastSent = null;
         String endpointUrl = multispeakFuncs.getEndpointUrl(mspVendor, MultispeakDefines.CB_Server_STR);
         try {
             GetAllServiceLocations getAllServiceLocations = objectFactory.createGetAllServiceLocations();
             getAllServiceLocations.setLastReceived(lastReceived);
             // get service locations
-            GetAllServiceLocationsResponse getAllServiceLocationsResponse = cbClient.getAllServiceLocations(mspVendor, 
-                                                                                                            endpointUrl, 
+            GetAllServiceLocationsResponse getAllServiceLocationsResponse = cbClient.getAllServiceLocations(mspVendor,
+                                                                                                            endpointUrl,
                                                                                                             getAllServiceLocations);
-            
+
             List<ServiceLocation> serviceLocations = getAllServiceLocationsResponse.getGetAllServiceLocationsResult()
                                                                                    .getServiceLocation();
             int serviceLocationCount = 0;
@@ -411,12 +389,12 @@ public class MspObjectDaoImpl implements MspObjectDao {
             if (objectsRemaining != 0) {
                 lastSent = getAttributeValue("LastSent");
                 log.info("getMoreServiceLocations responded, received " + serviceLocationCount
-                    + " ServiceLocations using lastReceived = " + lastReceived + ". Response: ObjectsRemaining = "
-                    + objectsRemaining + ", LastSent = " + lastSent);
+                        + " ServiceLocations using lastReceived = " + lastReceived + ". Response: ObjectsRemaining = "
+                        + objectsRemaining + ", LastSent = " + lastSent);
             } else {
                 log.info("getMoreServiceLocations responded, received " + serviceLocationCount
-                    + " ServiceLocations using LastSent = " + lastReceived + ". Response: ObjectsRemaining = "
-                    + objectsRemaining);
+                        + " ServiceLocations using LastSent = " + lastReceived + ". Response: ObjectsRemaining = "
+                        + objectsRemaining);
             }
 
             // process service locations
@@ -426,7 +404,7 @@ public class MspObjectDaoImpl implements MspObjectDao {
         } catch (MultispeakWebServiceClientException e) {
 
             log.error("TargetService: " + endpointUrl + " - getAllServiceLocations (" + mspVendor.getCompanyName()
-                + ") for LastReceived: " + lastReceived);
+                    + ") for LastReceived: " + lastReceived);
             log.error("MultispeakWebServiceClientException: " + e.getMessage());
             log.info("A default(empty) is being used for ServiceLocation");
 
@@ -434,6 +412,129 @@ public class MspObjectDaoImpl implements MspObjectDao {
         }
 
         return lastSent;
+    }
+    
+    @Override
+    public Customer getMspCustomer(SimpleMeter meter, MultispeakVendor mspVendor) {
+        return getMspCustomer(meter.getMeterNumber(), mspVendor);
+    }
+    
+    @Override
+    public Customer getMspCustomer(String meterNumber, MultispeakVendor mspVendor) {
+
+        Customer mspCustomer = new Customer();
+        GetCustomerByMeterID getCustomerByMeterId = objectFactory.createGetCustomerByMeterID();
+        MeterID meterId = objectFactory.createMeterID();
+        meterId.setMeterNo(meterNumber);
+        getCustomerByMeterId.setMeterID(meterId);
+        String endpointUrl = multispeakFuncs.getEndpointUrl(mspVendor, MultispeakDefines.CB_Server_STR);
+        try {
+            GetCustomerByMeterIDResponse getCustomerByMeterIdResponse =
+                cbClient.getCustomerByMeterId(mspVendor, endpointUrl, getCustomerByMeterId);
+            mspCustomer = getCustomerByMeterIdResponse.getGetCustomerByMeterIDResult();
+        } catch (MultispeakWebServiceClientException e) {
+            log.error("TargetService: " + endpointUrl + " - getCustomerByMeterID(" + mspVendor.getCompanyName()
+                + ") for MeterNo: " + meterNumber);
+            log.error("MultispeakWebServiceClientException: " + e.getMessage());
+            log.info("A default(empty) is being used for Customer");
+        }
+        return mspCustomer;
+    }
+
+    
+    @Override
+    public ArrayOfServiceLocation1 getMspServiceLocation(SimpleMeter meter, MultispeakVendor mspVendor) {
+        return getMspServiceLocation(meter.getMeterNumber(), mspVendor);
+    }
+
+    @Override
+    public ArrayOfServiceLocation1 getMspServiceLocation(String meterNumber, MultispeakVendor mspVendor) {
+        ArrayOfServiceLocation1 mspServiceLocation = objectFactory.createArrayOfServiceLocation1();
+        String endpointUrl = multispeakFuncs.getEndpointUrl(mspVendor, MultispeakDefines.CB_Server_STR);
+
+        log.debug("Calling " + mspVendor.getCompanyName()
+                + " CB_Server.getServiceLocationByMeterID for meterNumber: " + meterNumber);
+
+        try {
+            GetServiceLocationByMeterID getServiceLocationByMeterId = objectFactory.createGetServiceLocationByMeterID();
+            MeterID meterId = objectFactory.createMeterID();
+            meterId.setMeterNo(meterNumber);
+            getServiceLocationByMeterId.setMeterID(meterId);
+
+            GetServiceLocationByMeterIDResponse getServiceLocationByMeterNoResponse = cbClient
+                    .getServiceLocationByMeterId(mspVendor, endpointUrl, getServiceLocationByMeterId);
+            mspServiceLocation = getServiceLocationByMeterNoResponse.getGetServiceLocationByMeterIDResult();
+        } catch (MultispeakWebServiceClientException e) {
+            log.error("TargetService: " + endpointUrl + " - getServiceLocationByMeterID (" + mspVendor.getCompanyName()
+                    + ") for MeterNo: " + meterNumber);
+            log.error("MultispeakWebServiceClientException: " + e.getMessage());
+            log.info("A default(empty) is being used for ServiceLocation");
+        }
+        return mspServiceLocation;
+    }
+     
+    @Override
+    public Meters getMspMeter(SimpleMeter meter, MultispeakVendor mspVendor) {
+        String endpointUrl = multispeakFuncs.getEndpointUrl(mspVendor, MultispeakDefines.CB_Server_STR);
+        try {
+            return getMspMeter(meter.getMeterNumber(), mspVendor);
+        } catch (MultispeakWebServiceClientException e) {
+            log.error("TargetService: " + endpointUrl + " - getMeterByMeterID (" + mspVendor.getCompanyName()
+                    + ") for MeterNo: " + meter.getMeterNumber());
+            log.error("MultispeakWebServiceClientException: " + e.getMessage());
+            log.info("A default(empty) is being used for Meter");
+        }
+        return null;
+    }
+    
+    @Override
+    public Meters getMspMeter(String meterNumber, MultispeakVendor mspVendor) throws MultispeakWebServiceClientException {
+        Meters mspMeter = new Meters();
+        String endpointUrl = multispeakFuncs.getEndpointUrl(mspVendor, MultispeakDefines.CB_Server_STR);
+        MeterID meterId = new MeterID();
+        meterId.setMeterNo(meterNumber);
+        GetMeterByMeterID getMeterByMeterId = objectFactory.createGetMeterByMeterID();
+        getMeterByMeterId.setMeterID(meterId);
+        GetMeterByMeterIDResponse getMeterByMeterIdResponse = cbClient.getMeterByMeterID(mspVendor, endpointUrl,
+                getMeterByMeterId);
+        mspMeter = getMeterByMeterIdResponse.getGetMeterByMeterIDResult();
+        return mspMeter;
+    }
+
+
+    @Override
+    public List<MspMeter> getMspMetersByServiceLocation(ServiceLocation mspServiceLocation, MultispeakVendor vendor) {
+        return getMspMetersByServiceLocation(mspServiceLocation.getObjectID(), vendor);
+    }
+    
+    private List<MspMeter> getMspMetersByServiceLocation(String serviceLocation, MultispeakVendor mspVendor) {
+
+        List<MspMeter> listOfMeters = new ArrayList<>();
+        String endpointUrl = multispeakFuncs.getEndpointUrl(mspVendor, MultispeakDefines.CB_Server_STR);
+
+        try {
+            long start = System.currentTimeMillis();
+            log.debug("Begin call to getMspMetersByServiceLocation for ServLoc: " + serviceLocation);
+
+            GetMeterByServiceLocationID getMeterByServLocID = objectFactory.createGetMeterByServiceLocationID();
+            getMeterByServLocID.setServiceLocationID(serviceLocation);
+            GetMeterByServiceLocationIDResponse getMeterByMeterNoResponse = cbClient.getMeterByServiceLocationID(mspVendor,
+                    endpointUrl, getMeterByServLocID);
+            Meters meters = getMeterByMeterNoResponse.getGetMeterByServiceLocationIDResult();
+
+            if (meters != null) {
+                listOfMeters = multispeakFuncs.getMspMeters(meters);
+            }
+
+            log.debug("End call to getMspMetersByServiceLocation for ServLoc:" + serviceLocation + " (took "
+                    + (System.currentTimeMillis() - start) + " millis)");
+
+        } catch (MultispeakWebServiceClientException e) {
+            log.error("TargetService: " + endpointUrl + " - getMeterByServiceLocationID (" + mspVendor.getCompanyName()
+                    + ") for ServLoc: " + serviceLocation);
+            log.error("MultispeakWebServiceClientException: " + e.getMessage());
+        }
+        return listOfMeters;
     }
     
     /**

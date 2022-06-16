@@ -21,8 +21,10 @@ import com.cannontech.multispeak.service.impl.MultispeakDeviceGroupSyncServiceBa
 import com.cannontech.multispeak.service.impl.v5.MultispeakEnrollmentSyncService;
 import com.cannontech.user.YukonUserContext;
 import com.cannontech.web.amr.waterLeakReport.service.MspWaterLeakReportV3;
+import com.cannontech.web.amr.waterLeakReport.service.MspWaterLeakReportV4;
 import com.cannontech.web.amr.waterLeakReport.service.MspWaterLeakReportV5;
 import com.cannontech.web.widget.accountInformation.MspAccountInformationV3;
+import com.cannontech.web.widget.accountInformation.MspAccountInformationV4;
 import com.cannontech.web.widget.accountInformation.MspAccountInformationV5;
 
 /**
@@ -31,24 +33,25 @@ import com.cannontech.web.widget.accountInformation.MspAccountInformationV5;
 public class MspHandler {
 
     @Autowired private MspAccountInformationV3 mspAccountInformationV3;
+    @Autowired private MspAccountInformationV4 mspAccountInformationV4;
     @Autowired private MspAccountInformationV5 mspAccountInformationV5;
     @Autowired private MspObjectDao mspObjectDao;
     @Autowired private com.cannontech.multispeak.dao.v5.MspObjectDao mspObjectDaoV5;
     @Autowired private com.cannontech.multispeak.dao.v4.MspObjectDao mspObjectDaoV4;
     @Autowired private MspWaterLeakReportV3 mspWaterLeakReportV3;
+    @Autowired private MspWaterLeakReportV4 mspWaterLeakReportV4;
     @Autowired private MspWaterLeakReportV5 mspWaterLeakReportV5;
     @Autowired private MultispeakEventLogService multispeakEventLogService;
     @Autowired private MultispeakFuncs multispeakFuncs;
     @Autowired private MultispeakDao multispeakDao;
     @Autowired @Qualifier("v3") private MultispeakDeviceGroupSyncServiceBase multispeakDeviceGroupSyncServiceV3;
-    @Autowired @Qualifier("v5") private MultispeakDeviceGroupSyncServiceBase multispeakDeviceGroupSyncServiceV5;
     @Autowired @Qualifier("v4") private MultispeakDeviceGroupSyncServiceBase multispeakDeviceGroupSyncServiceV4;
+    @Autowired @Qualifier("v5") private MultispeakDeviceGroupSyncServiceBase multispeakDeviceGroupSyncServiceV5;
     @Autowired private  MultispeakEnrollmentSyncService multispeakEnrollmentSyncService;
 
     private static final String DOMAIN_MEMBERS_SUBSTATION_CODE = "GetDomainMembers - substationCode";
     private static final String DOMAIN_MEMBERS_SUBSTATION_CODE_V4 = "GetDomainsByDomainNames - substationCode";
     private static final String DOMAIN_MEMBERS_SUBSTATION_CODE_V5 = "GetDomainsByDomainNames - substationCode";
- 
 
     public void startDeviceGroupSync(MultispeakSyncType type,
             YukonUserContext userContext) {
@@ -138,6 +141,8 @@ public class MspHandler {
             if (cisVersion != null) {
                 if (cisVersion == MultiSpeakVersion.V3) {
                     return mspWaterLeakReportV3.getCisDetails(model, userContext, paoId, mspPrimaryCISVendor);
+                } else if (cisVersion == MultiSpeakVersion.V4) {
+                    return mspWaterLeakReportV4.getCisDetails(model, userContext, paoId, mspPrimaryCISVendor);
                 } else if (cisVersion == MultiSpeakVersion.V5) {
                     return mspWaterLeakReportV5.getCisDetails(model, userContext, paoId, mspPrimaryCISVendor);
                 }
@@ -154,6 +159,8 @@ public class MspHandler {
             if (cisVersion != null) {
                 if (cisVersion == MultiSpeakVersion.V3) {
                     return mspAccountInformationV3.getMspInformation(meter, mspPrimaryCISVendor, mav, userContext);
+                } else if (cisVersion == MultiSpeakVersion.V4) {
+                    return mspAccountInformationV4.getMspInformation(meter, mspPrimaryCISVendor, mav, userContext);
                 } else if (cisVersion == MultiSpeakVersion.V5) {
                     return mspAccountInformationV5.getMspInformation(meter, mspPrimaryCISVendor, mav, userContext);
                 }
