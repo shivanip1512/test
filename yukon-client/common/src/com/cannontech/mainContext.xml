@@ -302,6 +302,7 @@
                 <value>classpath:com/cannontech/yukon/web/modules/smartNotifications/root</value>
                 <value>classpath:com/cannontech/yukon/web/modules/dr/rfBroadcastEventDetail</value>
                 <value>classpath:com/cannontech/yukon/web/modules/operator/pagingTerminal</value>
+                <value>classpath:com/cannontech/yukon/web/modules/tools/notificationGroup</value>
             </list>
         </constructor-arg>
     </bean>
