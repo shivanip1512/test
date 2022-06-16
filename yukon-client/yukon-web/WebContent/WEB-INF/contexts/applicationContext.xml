@@ -1576,5 +1576,6 @@
     <bean class="com.cannontech.web.api.terminal.PagingTerminalApiCopyValidator"/>
     
     <bean class="com.cannontech.web.api.notificationGroup.service.impl.NotificationGroupServiceImpl"/>
+    <bean class="com.cannontech.web.api.schedules.service.impl.SeasonScheduleServiceImpl"/>
     
 </beans>
