@@ -20,6 +20,7 @@ import com.cannontech.common.validator.SimpleValidator;
 import com.cannontech.common.validator.YukonApiValidationUtils;
 import com.cannontech.database.data.lite.LiteYukonPAObject;
 import com.cannontech.i18n.YukonUserContextMessageSourceResolver;
+import com.cannontech.stars.util.ServletUtils;
 import com.cannontech.user.YukonUserContext;
 import com.cannontech.yukon.IDatabaseCache;
 
@@ -64,6 +65,17 @@ public class PagingTerminalApiValidator<T extends TerminalBase<?>> extends Simpl
                     new Object[] { "TAPTERMINAL, SNPP_TERMINAL, TNPP_TERMINAL & WCTP_TERMINAL" },
                     typeI18nText);
         }
+        // Validate type in update flow.
+        if (!errors.hasFieldErrors("type")) {
+            String terminalId = ServletUtils.getPathVariable("id");
+            if (terminalId != null) {
+                PaoType oldTerminalType = databaseCache.getAllPaosMap().get(Integer.valueOf(terminalId)).getPaoType();
+                if (oldTerminalType != terminalBase.getType()) {
+                    errors.rejectValue("type", ApiErrorDetails.TYPE_MISMATCH.getCodeString(),
+                            new Object[] { terminalBase.getType(), oldTerminalType }, typeI18nText);
+                }
+            }
+        }
 
         // validate password
         if (terminalBase.getPassword() == null) {
@@ -95,7 +107,7 @@ public class PagingTerminalApiValidator<T extends TerminalBase<?>> extends Simpl
         String pagerNumberI18nText = accessor.getMessage(pagingTerminalKey + "pagerNumber");
 
         // validate PagingTapTerminal fields
-        if (terminalBase instanceof PagingTapTerminal) {
+        if (terminalBase instanceof PagingTapTerminal && !errors.hasFieldErrors("type")) {
             PagingTapTerminal terminal = (PagingTapTerminal) terminalBase;
             yukonApiValidationUtils.checkIfFieldRequired("pagerNumber", errors, terminal.getPagerNumber(), pagerNumberI18nText);
             if (!errors.hasFieldErrors("pagerNumber")) {
@@ -104,7 +116,7 @@ public class PagingTerminalApiValidator<T extends TerminalBase<?>> extends Simpl
         }
 
         // validate SNPPTerminal fields
-        if (terminalBase instanceof SNPPTerminal) {
+        if (terminalBase instanceof SNPPTerminal && !errors.hasFieldErrors("type")) {
             SNPPTerminal terminal = (SNPPTerminal) terminalBase;
             yukonApiValidationUtils.checkIfFieldRequired("pagerNumber", errors, terminal.getPagerNumber(), pagerNumberI18nText);
             if (!errors.hasFieldErrors("pagerNumber")) {
@@ -120,7 +132,7 @@ public class PagingTerminalApiValidator<T extends TerminalBase<?>> extends Simpl
         }
 
         // validate TNPPTerminal fields
-        if (terminalBase instanceof TNPPTerminal) {
+        if (terminalBase instanceof TNPPTerminal && !errors.hasFieldErrors("type")) {
             TNPPTerminal terminal = (TNPPTerminal) terminalBase;
             yukonApiValidationUtils.checkRange(errors, "originAddress", terminal.getOriginAddress(), 0, 65535, true);
             yukonApiValidationUtils.checkRange(errors, "destinationAddress", terminal.getDestinationAddress(), 0, 65535,
@@ -159,7 +171,7 @@ public class PagingTerminalApiValidator<T extends TerminalBase<?>> extends Simpl
         }
 
         // validate WCTPTerminal fields
-        if (terminalBase instanceof WCTPTerminal) {
+        if (terminalBase instanceof WCTPTerminal && !errors.hasFieldErrors("type")) {
             WCTPTerminal terminal = (WCTPTerminal) terminalBase;
             yukonApiValidationUtils.checkIfFieldRequired("pagerNumber", errors, terminal.getPagerNumber(), pagerNumberI18nText);
             if (!errors.hasFieldErrors("pagerNumber")) {

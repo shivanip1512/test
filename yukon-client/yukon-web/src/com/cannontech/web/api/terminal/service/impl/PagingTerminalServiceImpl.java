@@ -172,4 +172,20 @@ public class PagingTerminalServiceImpl implements PagingTerminalService {
         return terminalBase;
     }
 
+    @SuppressWarnings({ "unchecked", "rawtypes" })
+    @Override
+    public TerminalBase update(int id, TerminalBase terminalBase) {
+        LiteYukonPAObject terminal = cache.getAllPaosMap().get(id);
+        if (terminal == null || !(terminal.getPaoType() == PaoType.SNPP_TERMINAL || terminal.getPaoType() == PaoType.TAPTERMINAL
+                || terminal.getPaoType() == PaoType.TNPP_TERMINAL || terminal.getPaoType() == PaoType.WCTP_TERMINAL)) {
+            throw new NotFoundException("Terminal Id not found");
+        }
+        IEDBase iedBase = (IEDBase) dbPersistentDao.retrieveDBPersistent(terminal);
+        terminalBase.buildDBPersistent(iedBase);
+        dbPersistentDao.performDBChange(iedBase, TransactionType.UPDATE);
+        terminalBase.buildModel(iedBase);
+        terminalBase.getCommChannel().setName(cache.getAllPaosMap().get(terminalBase.getCommChannel().getId()).getPaoName());
+        return terminalBase;
+    }
+
 }
