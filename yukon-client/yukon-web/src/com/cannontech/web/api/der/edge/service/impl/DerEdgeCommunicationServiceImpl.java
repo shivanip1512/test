@@ -96,7 +96,7 @@ public class DerEdgeCommunicationServiceImpl implements DerEdgeCommunicationServ
     public Map<Integer, Short> sendMultiUnicastRequest(Set<SimpleDevice> simpleDeviceList, byte[] payload, EdgeUnicastPriority queuePriority, 
             EdgeUnicastPriority networkPriority, YukonUserContext userContext) {
         
-        //Convert Set of SimpleDevices into List of PaoIDs
+        //Convert Set of SimpleDevices into List of PaoID's
         List<Integer> paoIds = simpleDeviceList.stream()
                                                .map(device -> device.getPaoIdentifier().getPaoId())
                                                .collect(Collectors.toList());
