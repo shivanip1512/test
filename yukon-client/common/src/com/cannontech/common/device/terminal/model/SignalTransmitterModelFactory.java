@@ -15,6 +15,7 @@ public class SignalTransmitterModelFactory {
             break;
         case TNPP_TERMINAL:
             terminalBase = new TNPPTerminal();
+            break;
         case TAPTERMINAL:
             terminalBase = new PagingTapTerminal();
             break;
