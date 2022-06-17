@@ -53,8 +53,7 @@ yukon.mapping = (function () {
     _allRoutesLines = [],
     _allRoutesLineFeatures = [],
     _allRoutesDashedLineFeatures = [],
-    _devicePrimaryRouteLayer,
-    _devicePrimaryRouteDashedLayer,
+    _devicePrimaryRouteLines = [],
     _descendantIcons = [],
     _descendantLines = [],
     _descendantLineFeatures = [],
@@ -177,6 +176,95 @@ yukon.mapping = (function () {
               })
           })
     ],
+    
+    _getPrimaryRouteNeighborData = function (currentDevice, deviceIds) {
+        $.getJSON(yukon.url('/stars/comprehensiveMap/primaryNeighborDataForDevices?deviceIds=' + deviceIds))
+        .done(function (json) {
+            //check for error
+            if (json.errorMsg) {
+                yukon.ui.alertError(json.errorMsg);
+            } else {
+                var neighborDeviceData = json.neighborData;
+                for (var deviceId in neighborDeviceData) {
+                    var device = yukon.mapping.findFocusDevice(deviceId, false),
+                        deviceNeighborData = neighborDeviceData[deviceId],
+                        properties = { etxBand: deviceNeighborData.etxBand, numSamples: deviceNeighborData.numSamples};
+                    device.set("primaryRoute", properties);
+                }
+                _displayDevicePrimaryRoute(currentDevice);
+            }
+        });
+    },
+    
+    _displayDevicePrimaryRoute = function (currentDevice) {
+        var currentPoints = currentDevice.getGeometry().getCoordinates(),
+            parentId = currentDevice.get('parentId'),
+            primaryRoutePreviousPoints = null,
+            routeColor = _highlightRouteColor,
+            routeLineWidth = 2.5,
+            deviceNeighborData = currentDevice.get('primaryRoute');
+    
+        if (deviceNeighborData != null) {
+            var etxBand = deviceNeighborData.etxBand,
+                numSamples = deviceNeighborData.numSamples,
+                properties = { etxBand: etxBand, numSamples: numSamples};
+            mod.displayPrimaryRoutePopupProperties(properties);
+            if (etxBand != null && numSamples != null) {
+                routeColor = yukon.mapping.getNeighborLineColor(deviceNeighborData.etxBand);
+                routeLineWidth = yukon.mapping.getNeighborLineThickness(deviceNeighborData.numSamples);
+            }
+        }
+        
+        while (parentId != null) {
+            var parentDevice = yukon.mapping.findFocusDevice(parentId, false),
+                dashedLine = currentDevice.get('dashedLine'),
+                points = [];
+    
+            points.push(parentDevice.getGeometry().getCoordinates());
+            if (primaryRoutePreviousPoints != null) {
+                points.push(primaryRoutePreviousPoints);
+            } else {
+                points.push(currentPoints);
+            }
+            
+            var layerLines = new ol.layer.Vector({
+                source: new ol.source.Vector({
+                    features: [new ol.Feature({
+                        geometry: new ol.geom.LineString(points),
+                        name: 'Line'
+                    })]
+                }),
+                style: new ol.style.Style({
+                    stroke: new ol.style.Stroke({
+                        color: routeColor,
+                        width: routeLineWidth,
+                        lineDash: dashedLine ? [10,10] : null
+                    })
+                })
+            });
+            
+            layerLines.setZIndex(_deviceLineZIndex);
+            _map.addLayer(layerLines);
+            _devicePrimaryRouteLines.push(layerLines);
+            
+            deviceNeighborData = parentDevice.get('primaryRoute');
+            
+            if (deviceNeighborData != null) {
+                var etxBand = deviceNeighborData.etxBand,
+                    numSamples = deviceNeighborData.numSamples;
+                if (etxBand != null && numSamples != null) {
+                    routeColor = yukon.mapping.getNeighborLineColor(deviceNeighborData.etxBand);
+                    routeLineWidth = yukon.mapping.getNeighborLineThickness(deviceNeighborData.numSamples);
+                }
+            }
+            
+            primaryRoutePreviousPoints = parentDevice.getGeometry().getCoordinates();
+            parentId = parentDevice.get('parentId');
+            currentDevice = parentDevice;
+        }
+    
+        mod.displayNeighborsLegend();
+    },
     
     mod = {
         
@@ -334,6 +422,13 @@ yukon.mapping = (function () {
             $('.js-distance').text(neighbor.distance);
         },
         
+        displayPrimaryRoutePopupProperties: function(primaryRoute) {
+            $('.js-num-samples-display').toggleClass('dn', primaryRoute.numSamples === null);
+            $('.js-num-samples').text(primaryRoute.numSamples);
+            $('.js-etx-band-display').toggleClass('dn', primaryRoute.etxBand === null);
+            $('.js-etx-band').text(primaryRoute.etxBand);
+        },
+        
         displayParentNodePopupProperties: function(parent) {
             $('.js-distance-display').toggleClass('dn', parent.distance === null);
             $('.js-distance').text(parent.distance);
@@ -434,6 +529,13 @@ yukon.mapping = (function () {
                 if (parent != null) {
                     mod.displayParentNodePopupProperties(parent);
                 }
+                //highlight specific device primary route if viewing all routes
+                if (allRoutesChecked) {
+                    yukon.mapping.addPrimaryRouteToMap(paoId);
+                }
+                if (includePrimaryRoute && properties.primaryRoute) {
+                    mod.displayPrimaryRoutePopupProperties(properties.primaryRoute);
+                }
                 $('#device-info').show();
                 $('#marker-info').show();
                 overlay.setPosition(coord);
@@ -444,11 +546,6 @@ yukon.mapping = (function () {
             var deleteDialog = $('#confirm-delete');
             if (deleteDialog.hasClass('ui-dialog-content')) {
                 deleteDialog.dialog('destroy');
-            }
-
-            //highlight specific device primary route if viewing all routes
-            if (allRoutesChecked) {
-                yukon.mapping.addPrimaryRouteToMap(paoId);
             }
         },
         
@@ -939,7 +1036,7 @@ yukon.mapping = (function () {
                                         features: _allRoutesLineFeatures
                                     }),
                                     style: new ol.style.Style({
-                                        stroke: new ol.style.Stroke({ color: _routeColor, width: 2.5 })
+                                        stroke: new ol.style.Stroke({ color: _routeColor, width: 1.5 })
                                     })
                                 });
                                 
@@ -958,7 +1055,7 @@ yukon.mapping = (function () {
                                         features: _allRoutesDashedLineFeatures
                                     }),
                                     style: new ol.style.Style({
-                                        stroke: new ol.style.Stroke({ color: _routeColor, width: 2.5, lineDash: [10,10] })
+                                        stroke: new ol.style.Stroke({ color: _routeColor, width: 1.5, lineDash: [10,10] })
                                     })
                                 });
                                 
@@ -1003,8 +1100,9 @@ yukon.mapping = (function () {
             _allRoutesIcons = [];
             _allRoutesLines = [];
             
-            _map.removeLayer(_devicePrimaryRouteLayer);
-            _map.removeLayer(_devicePrimaryRouteDashedLayer);
+            _devicePrimaryRouteLines.forEach(function (line) {
+                _map.removeLayer(line);
+            });
         },
         
         adjustMapForFullScreenModeChange: function(mapContainer, paddingTop) {
@@ -1036,71 +1134,32 @@ yukon.mapping = (function () {
         
         addPrimaryRouteToMap: function(deviceId) {
             var currentDevice = yukon.mapping.findFocusDevice(deviceId, false),
-                currentPoints = currentDevice.getGeometry().getCoordinates(),
                 parentId = currentDevice.get('parentId'),
-                routeLineWidth = 2.5,
-                primaryRoutePreviousPoints = null,
-                routeFeatures = [],
-                routeDashedFeatures = [];
-
-            _map.removeLayer(_devicePrimaryRouteLayer);
-            _map.removeLayer(_devicePrimaryRouteDashedLayer);
+                routeDeviceIds = [];
             
-            while (parentId != null) {
-                var parentDevice = yukon.mapping.findFocusDevice(parentId, false),
-                    dashedLine = currentDevice.get('dashedLine'),
-                    points = [];
-                
-                points.push(parentDevice.getGeometry().getCoordinates());
-                if (primaryRoutePreviousPoints != null) {
-                    points.push(primaryRoutePreviousPoints);
-                } else {
-                    points.push(currentPoints);
-                }
-                
-                var lineFeature = new ol.Feature({
-                    geometry: new ol.geom.LineString(points),
-                    name: 'Line'
-                })
-                
-                if (dashedLine){
-                    routeDashedFeatures.push(lineFeature);
-                } else {
-                    routeFeatures.push(lineFeature);
-                }
-                
-                primaryRoutePreviousPoints = parentDevice.getGeometry().getCoordinates();
-                parentId = parentDevice.get('parentId');
-                currentDevice = parentDevice;
-            }
-            
-            var layerLines = new ol.layer.Vector({
-                source: new ol.source.Vector({
-                    features: routeFeatures
-                }),
-                style: new ol.style.Style({
-                    stroke: new ol.style.Stroke({ color: _highlightRouteColor, width: routeLineWidth })
-                })
+            _devicePrimaryRouteLines.forEach(function (line) {
+                _map.removeLayer(line);
             });
             
-            layerLines.setZIndex(_deviceLineZIndex);
-            _map.addLayer(layerLines);
-            _devicePrimaryRouteLayer = layerLines;
-            
-            if (routeDashedFeatures) {
-                var dashedLines = new ol.layer.Vector({
-                    source: new ol.source.Vector({
-                        features: routeDashedFeatures
-                    }),
-                    style: new ol.style.Style({
-                        stroke: new ol.style.Stroke({ color: _highlightRouteColor, width: routeLineWidth, lineDash: [10,10] })
-                    })
-                });
-                dashedLines.setZIndex(_deviceLineZIndex);
-                _map.addLayer(dashedLines);
-                _devicePrimaryRouteDashedLayer = dashedLines;
+            if (currentDevice.get('primaryRoute') == null) {
+                routeDeviceIds.push(deviceId);
+            }
+            while(parentId != null) {
+                var parentDevice = yukon.mapping.findFocusDevice(parentId, false),
+                    parentHasParent = parentDevice.get('parentId');
+                if (parentHasParent != null && parentDevice.get('primaryRoute') == null) {
+                    routeDeviceIds.push(parentId);
+                }
+                parentId = parentDevice.get('parentId');
             }
             
+            parentId = currentDevice.get('parentId');
+            
+            if (routeDeviceIds.length > 0) {
+                _getPrimaryRouteNeighborData(currentDevice, routeDeviceIds);
+            } else {
+                _displayDevicePrimaryRoute(currentDevice);
+            }
         },
 
     };
