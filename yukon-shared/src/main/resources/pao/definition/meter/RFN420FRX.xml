@@ -78,10 +78,10 @@
         <pointInfo name="Power Factor Degrees Phase A" init="true"/>
         <pointInfo name="Power Failure" attributes="POWER_FAIL_FLAG"/>
         <pointInfo name="Ram Error" attributes="RAM_ERROR"/>
-        <pointInfo name="Rate A kWh" init="true" attributes="USAGE_RATE_A"/>
-        <pointInfo name="Rate B kWh" attributes="USAGE_RATE_B"/>
-        <pointInfo name="Rate C kWh" attributes="USAGE_RATE_C"/>
-        <pointInfo name="Rate D kWh" attributes="USAGE_RATE_D"/>
+        <pointInfo name="Rate A kWh" init="true" attributes="USAGE_RATE_A,DELIVERED_KWH_RATE_A"/>
+        <pointInfo name="Rate B kWh" attributes="USAGE_RATE_B,DELIVERED_KWH_RATE_B"/>
+        <pointInfo name="Rate C kWh" attributes="USAGE_RATE_C,DELIVERED_KWH_RATE_C"/>
+        <pointInfo name="Rate D kWh" attributes="USAGE_RATE_D,DELIVERED_KWH_RATE_D"/>
         <pointInfo name="Received kVArh" attributes="RECEIVED_KVARH"/>
         <pointInfo name="Received kW Load Profile" attributes="RECEIVED_KW_LOAD_PROFILE"/>
         <pointInfo name="Received kWh" attributes="RECEIVED_KWH"/>
