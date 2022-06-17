@@ -117,6 +117,7 @@ struct load_tap_changer_fixture
         regulator->setPaoName( "Test Regulator #1" );
         regulator->setPaoCategory( "CAPCONTROL" );
         regulator->setPaoType( VoltageRegulator::LoadTapChanger );
+        regulator->setRegulatorTimeout( 100 );
     }
 };
 

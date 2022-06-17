@@ -161,6 +161,7 @@ struct phase_operated_voltage_regulator_fixture_core
         regulator->setPaoName( "Test Regulator #1" );
         regulator->setPaoCategory( "CAPCONTROL" );
         regulator->setPaoType( VoltageRegulator::PhaseOperatedVoltageRegulator );
+        regulator->setRegulatorTimeout( 100 );
     }
 };
 
