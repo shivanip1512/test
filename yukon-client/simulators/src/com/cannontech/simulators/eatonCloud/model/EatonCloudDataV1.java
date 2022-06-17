@@ -4,8 +4,10 @@ import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Random;
 import java.util.UUID;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicInteger;
@@ -25,6 +27,10 @@ import com.cannontech.dr.eatonCloud.model.v1.EatonCloudCommandRequestV1;
 import com.cannontech.dr.eatonCloud.model.v1.EatonCloudCommandResponseV1;
 import com.cannontech.dr.eatonCloud.model.v1.EatonCloudDeviceDetailV1;
 import com.cannontech.dr.eatonCloud.model.v1.EatonCloudErrorV1;
+import com.cannontech.dr.eatonCloud.model.v1.EatonCloudJobDeviceErrorV1;
+import com.cannontech.dr.eatonCloud.model.v1.EatonCloudJobRequestV1;
+import com.cannontech.dr.eatonCloud.model.v1.EatonCloudJobResponseV1;
+import com.cannontech.dr.eatonCloud.model.v1.EatonCloudJobStatusResponseV1;
 import com.cannontech.dr.eatonCloud.model.v1.EatonCloudSecretV1;
 import com.cannontech.dr.eatonCloud.model.v1.EatonCloudSecretValueV1;
 import com.cannontech.dr.eatonCloud.model.v1.EatonCloudServiceAccountDetailV1;
@@ -47,6 +53,10 @@ public class EatonCloudDataV1 extends EatonCloudDataGenerator {
     private EatonCloudVersion version = EatonCloudVersion.V1;
     
     private static final Logger log = YukonLogManager.getLogger(EatonCloudDataV1.class);
+    
+    //job guid/request
+    private final Cache<String, EatonCloudJobRequestV1> jobRequestCache = CacheBuilder.newBuilder()
+            .expireAfterWrite(1, TimeUnit.DAYS).build();
     
     //Simulator has 2 sites
     private List<String> siteGuids = List.of("eccdcf03-2ca8-40a9-a5f3-9446a52f515d", "616ff40f-63b2-4d3c-87e2-16b3c40614ed");
@@ -76,6 +86,17 @@ public class EatonCloudDataV1 extends EatonCloudDataGenerator {
             int randomPercentage = (int) (Math.random() * 100);
             log.debug("Random Percentage:{} Success Percentage:{}", randomPercentage, successPercentage);
             if (randomPercentage > successPercentage) { 
+                return true;
+            }
+        }
+        return false;
+    }
+    
+    private boolean isUnknown() {
+        if(unknownPercentage != 0) {
+            int randomPercentage = (int) (Math.random() * 100);
+            log.debug("Random Percentage:{} Unknown Percentage:{}", randomPercentage, unknownPercentage);
+            if (randomPercentage < unknownPercentage) { 
                 return true;
             }
         }
@@ -256,6 +277,73 @@ public class EatonCloudDataV1 extends EatonCloudDataGenerator {
                     new EatonCloudCommandResponseV1(status, "Success sending command for device guid:" + id + " command guid:" + command_instance_id),
                     status);
         
+    }
+    
+    public EatonCloudSimulatorResponse createJobV1(EatonCloudJobRequestV1 eatonCloudJobRequestV1) {
+        if (status == HttpStatus.BAD_REQUEST.value() || displayError()) {
+            EatonCloudErrorV1 error = new EatonCloudErrorV1(List.of("id"), "Invalid device command payload, id=123.",
+                    "f5f61b63-68aa-42be-b8a1-a84a171ca38e", status, "2021-02-24T08:23:35.7124876+00:00", null);
+            return new EatonCloudSimulatorResponse(error, HttpStatus.BAD_REQUEST.value());
+        }
+        if (status == HttpStatus.UNAUTHORIZED.value()) {
+            return new EatonCloudSimulatorResponse(
+                    new EatonCloudErrorV1(status,
+                            "Authorization has been denied for this request. User token is invalid or expired. Please renew the token."),
+                    status);
+        } 
+        if (status == HttpStatus.NOT_FOUND.value()) {
+            return new EatonCloudSimulatorResponse(new EatonCloudCommandResponseV1(status, "Resource not found"), HttpStatus.OK.value());
+        }
+        String jobGuid = UUID.randomUUID().toString();
+        jobRequestCache.put(jobGuid, eatonCloudJobRequestV1);
+        return new EatonCloudSimulatorResponse(new EatonCloudJobResponseV1(jobGuid), status);
+    }
+    
+    public EatonCloudSimulatorResponse jobStatusV1(String jobGuid) {
+        if (status == HttpStatus.BAD_REQUEST.value()) {
+            EatonCloudErrorV1 error = new EatonCloudErrorV1(List.of("Id"), "Invalid UUID "+ jobGuid, "b970fd57-8097-4159-b1b0-34630bce891", status, "2021-02-26T10:52:16.0799958+00:00", 11417);
+            return new EatonCloudSimulatorResponse(error, status);
+
+        }
+        if (status == HttpStatus.UNAUTHORIZED.value()) {
+            return new EatonCloudSimulatorResponse(
+                    new EatonCloudErrorV1(status,"Authorization has been denied for this request. User token is invalid or expired. Please renew the token."),
+                    status);
+        } 
+        
+        Map<String, EatonCloudJobDeviceErrorV1> failures = new HashMap<>();
+        List<String> success = new ArrayList<>();
+        Map<String, EatonCloudJobDeviceErrorV1> map = new HashMap<>(); 
+        
+        Map<Integer, Integer> errors = new HashMap<>();
+        errors.put(404, 15703);
+        errors.put(404, 10068);
+        errors.put(501, 11617);
+        errors.put(400, 15518);
+        
+        EatonCloudJobRequestV1 request = jobRequestCache.getIfPresent(jobGuid);
+        if (request == null) {
+            EatonCloudErrorV1 error = new EatonCloudErrorV1(List.of("Id"), "Exired job, create new Job",
+                    "b970fd57-8097-4159-b1b0-34630bce891", HttpStatus.BAD_REQUEST.value(), "2021-02-26T10:52:16.0799958+00:00", 11417);
+            return new EatonCloudSimulatorResponse(error, HttpStatus.BAD_REQUEST.value());
+        }
+        log.info("unknown {}%", unknownPercentage);
+        log.info("success {}%", successPercentage);
+        log.info("device guids {}", request.getDeviceGuids().size());
+        List<String> allGuids = new ArrayList<>();
+        allGuids.addAll(request.getDeviceGuids());
+        allGuids.removeIf(guid -> isUnknown());
+        allGuids.forEach(deviceGuid -> {
+            if (displayError()) {
+                Object[] error = errors.keySet().toArray();
+                Object key = error[new Random().nextInt(error.length)];
+                failures.put(deviceGuid, new EatonCloudJobDeviceErrorV1((Integer) key, (Integer) errors.get(key)));
+            } else {
+                success.add(deviceGuid);
+            }
+        });
+        EatonCloudJobStatusResponseV1 response = new EatonCloudJobStatusResponseV1(jobGuid, success, failures);
+        return new EatonCloudSimulatorResponse(response, status);
     }
     
     public EatonCloudSimulatorResponse detailsV1(String deviceId, Boolean recursive) {

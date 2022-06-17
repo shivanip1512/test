@@ -6,6 +6,29 @@ import com.cannontech.common.util.TransactionExecutor.ExecutorTransactionality;
 import com.cannontech.database.data.lite.LiteYukonUser;
 
 public interface EatonCloudEventLogService {
+    
+    @YukonEventLog(transactionality = ExecutorTransactionality.FORCED, category = "dr.eatoncloud")
+    public void sendShedJob(@Arg(ArgEnum.deviceLabel) String deviceLabel,
+            String deviceGuid,
+            String externalEventId,
+            String tryNumber,
+            String jobGuid,
+            int dutyCyclePercent,
+            int dutyCyclePeriod,
+            int criticality,
+            int relay);
+
+    @YukonEventLog(transactionality = ExecutorTransactionality.FORCED, category = "dr.eatoncloud")
+    public void sendShedJobFailed(@Arg(ArgEnum.deviceLabel) String deviceLabel,
+            String deviceGuid,
+            String externalEventId,
+            String tryNumber,
+            int dutyCyclePercent,
+            int dutyCyclePeriod,
+            int criticality,
+            int relay,
+            String error,
+            String jobGuid);
 
     @YukonEventLog(transactionality = ExecutorTransactionality.FORCED, category = "dr.eatoncloud")
     public void sendShed(@Arg(ArgEnum.deviceLabel) String deviceLabel,

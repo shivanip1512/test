@@ -204,10 +204,10 @@ public class EatonCloudDataReadServiceImpl implements EatonCloudDataReadService 
         if (!chunk.isEmpty()) {
             chunkedRequests.add(chunk);
         }
-        //Debug or info?
+
         int totalTags = getTagsCount(requests);
         int totalTagsPerGuid = getTagsCount(List.of(chunkedRequests.get(0).get(0)));
-        log.info("Total Tags:{} Tags Per Guid:{} Tags Per Request:{}", totalTags, totalTagsPerGuid,
+        log.debug("Total Tags:{} Tags Per Guid:{} Tags Per Request:{}", totalTags, totalTagsPerGuid,
                 chunkedRequests.stream().map(r -> getTagsCount(r))
                         .collect(Collectors.toList()));
         return chunkedRequests;

@@ -288,7 +288,7 @@ public class EatonCloudSendControlServiceImpl implements EatonCloudSendControlSe
                 totalFailed,
                 totalSucceeded,
                 readTimeFromNowInMinutes,
-                nextReadTime.toDateTime().toString("MM-dd-yyyy HH:mm:ss.SSS"));
+                nextReadTime.toDateTime().toString("MM-dd-yyyy HH:mm:ss"));
 
         return totalFailed.intValue();
     }
