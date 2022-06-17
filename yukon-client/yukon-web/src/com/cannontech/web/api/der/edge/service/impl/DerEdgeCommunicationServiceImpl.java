@@ -1,12 +1,15 @@
 package com.cannontech.web.api.der.edge.service.impl;
 
 import java.util.Arrays;
+import java.util.List;
 import java.util.Map;
+import java.util.Set;
 import java.util.UUID;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.TimeoutException;
+import java.util.stream.Collectors;
 
 import javax.annotation.PostConstruct;
 
@@ -15,6 +18,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import com.cannontech.clientutils.YukonLogManager;
+import com.cannontech.common.device.model.SimpleDevice;
 import com.cannontech.common.pao.YukonPao;
 import com.cannontech.common.util.jms.ThriftRequestReplyTemplate;
 import com.cannontech.common.util.jms.YukonJmsTemplateFactory;
@@ -85,6 +89,44 @@ public class DerEdgeCommunicationServiceImpl implements DerEdgeCommunicationServ
 
         } catch (InterruptedException | ExecutionException | TimeoutException e) {
             throw new EdgeDrCommunicationException("An unexpected error occurred while sending a broadcast message.", e);
+        }
+    }
+
+    @Override
+    public Map<Integer, Short> sendMultiUnicastRequest(Set<SimpleDevice> simpleDeviceList, byte[] payload, EdgeUnicastPriority queuePriority, 
+            EdgeUnicastPriority networkPriority, YukonUserContext userContext) {
+        
+        //Convert Set of SimpleDevices into List of PaoIDs
+        List<Integer> paoIds = simpleDeviceList.stream()
+                                               .map(device -> device.getPaoIdentifier().getPaoId())
+                                               .collect(Collectors.toList());
+        
+        //TODO later - clean up this logging
+        log.info("Processing DER Edge Unicast Request - Paos: {}, queue priority: {}, net priority: {}, payload: {}", 
+                paoIds, queuePriority, networkPriority, Arrays.toString(payload));
+
+        final String messageGuid = UUID.randomUUID().toString();
+
+        var requestMsg = new EdgeDrUnicastRequest(paoIds, messageGuid, payload, queuePriority, networkPriority);
+        var completableFuture = new CompletableFuture<EdgeDrUnicastResponse>();
+        thriftUnicastMessenger.send(requestMsg, completableFuture);
+
+        try {
+            var responseMsg = completableFuture.get(DEFAULT_TIMEOUT_MINUTES, TimeUnit.MINUTES);
+
+            log.debug("Received info from Porter: {}", responseMsg);
+
+            if (responseMsg == null) {
+                throw new EdgeDrCommunicationException("Response time out");
+            }
+            else if (responseMsg.getError() != null) {
+                throw new EdgeDrCommunicationException(responseMsg.getError().getErrorMessage());
+            }
+
+            return responseMsg.getPaoToE2eId();
+
+        } catch (InterruptedException | ExecutionException | TimeoutException e) {
+            throw new EdgeDrCommunicationException("An unexpected error occurred while sending a Multi Unicast message.", e);
         }
     }
 

@@ -18,10 +18,13 @@ import org.springframework.web.bind.annotation.RestController;
 import com.cannontech.common.config.MasterConfigBoolean;
 import com.cannontech.common.device.groups.dao.impl.DeviceGroupProviderDaoMain;
 import com.cannontech.common.device.groups.model.DeviceGroup;
+import com.cannontech.common.device.groups.service.DeviceGroupService;
 import com.cannontech.common.device.model.SimpleDevice;
 import com.cannontech.common.pao.YukonPao;
+import com.cannontech.core.dao.NotFoundException;
 import com.cannontech.core.dao.PaoDao;
 import com.cannontech.core.roleproperties.YukonRoleProperty;
+import com.cannontech.dr.edgeDr.EdgeDrCommunicationException;
 import com.cannontech.dr.edgeDr.EdgeUnicastPriority;
 import com.cannontech.user.YukonUserContext;
 import com.cannontech.web.api.der.edge.service.DerEdgeCommunicationService;
@@ -38,6 +41,7 @@ public class DerEdgeApiController {
     @Autowired private DerEdgeBroadcastValidator broadcastValidator;
     @Autowired private DerEdgeCommunicationService derEdgeCommunicationService;
     @Autowired private DeviceGroupProviderDaoMain deviceGroupProviderDaoMain;
+    @Autowired private DeviceGroupService deviceGroupService;
     @Autowired private PaoDao paoDao;
     
     @PostMapping("/unicastMessage")
@@ -61,43 +65,28 @@ public class DerEdgeApiController {
 
     @PostMapping("/multipointMessage")
     public ResponseEntity<Object> create(@Valid @RequestBody EdgeMultipointRequest edgeMultipointRequest, YukonUserContext userContext) {
-        //// Look up group things
-        try {
-            //Convert payload string into byte[] for porter
-            byte[] payload = convertPayloadToBytes(edgeMultipointRequest.getPayload());
-            //Get the queue and network priority of the message
-            EdgeUnicastPriority queuePriority = edgeMultipointRequest.getQueuePriority();
-            EdgeUnicastPriority networkPriority = edgeMultipointRequest.getNetworkPriority();
+        // Convert payload string into byte[] for porter
+        byte[] payload = convertPayloadToBytes(edgeMultipointRequest.getPayload());
+        // Get the queue and network priority of the message
+        EdgeUnicastPriority queuePriority = edgeMultipointRequest.getQueuePriority();
+        EdgeUnicastPriority networkPriority = edgeMultipointRequest.getNetworkPriority();
+        String edgeGroupName = "/Edge Addressing";
 
-            DeviceGroup edgeAddressingGroup = deviceGroupProviderDaoMain.getGroup(null, "Edge Addressing");
-            if (edgeAddressingGroup.equals(null)) {
-                // thow error that "Edge Addressing" device group doesn't exist
-            }
-            // Get the group's under "Edge Addressing"
-            DeviceGroup targetedAddressingGroup = deviceGroupProviderDaoMain.getGroup(null, edgeMultipointRequest.getGroupId());
-            // Check if provided device group is a child
-            if (targetedAddressingGroup.equals(null) && targetedAddressingGroup.isChildOf(edgeAddressingGroup)) {
-                // thow error that target group is not child of "Edge Addressing" device group
-            }
+        try {
+            // Lookup Edge Addressing Group
+            DeviceGroup edgeAddressingGroup = deviceGroupService.resolveGroupName(edgeGroupName);
+            // Lookup targeted group
+            DeviceGroup targetedAddressingGroup = deviceGroupProviderDaoMain.getGroup(edgeAddressingGroup, edgeMultipointRequest.getGroupId());
             // Get list of all the device in this group
             Set<SimpleDevice> simpleDeviceList = deviceGroupProviderDaoMain.getDevices(targetedAddressingGroup);
-
-            // Does this need to be threaded or something?
-            // Create loop and send individual Unicast requests for the PAO's
-            for (SimpleDevice device : simpleDeviceList) {
-                Map<Integer, Short> e2eId = derEdgeCommunicationService.sendUnicastRequest(device.getPaoIdentifier(), payload,
-                        queuePriority, networkPriority, userContext);
-                
-                //TODO later - correlate E2E IDs with response GUID
-                //for now, always return this temp GUID
-                String tempGUID = "692c8e7d-bd82-49f2-ace2-a6a9600f6347";
-                return new ResponseEntity<>(new EdgeUnicastResponse(tempGUID), HttpStatus.OK);
-            }
-        } catch (Exception e) {
-
+            // Send the devices to the service layer for processing
+            Map<Integer, Short> e2eId = derEdgeCommunicationService.sendMultiUnicastRequest(simpleDeviceList, payload, queuePriority, networkPriority, userContext);
+        } catch (NotFoundException e){
+            throw new EdgeDrCommunicationException("An unexpected error occurred while sending a broadcast message.", e);
         }
-        //TODO later - correlate E2E IDs with response GUID
-        //for now, always return this temp GUID
+
+        // TODO later - correlate E2E IDs with response GUID
+        // for now, always return this temp GUID
         String tempGUID = "692c8e7d-bd82-49f2-ace2-a6a9600f6347";
         return new ResponseEntity<>(new EdgeUnicastResponse(tempGUID), HttpStatus.OK);
     }

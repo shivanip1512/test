@@ -68,11 +68,9 @@ public class ThriftRequestReplyTemplate<Q, R> {
         final Q requestPayload, final CompletableFuture<R> callback) throws JMSException {
         var resolver = new DynamicDestinationResolver();
         Destination destination = resolver.resolveDestinationName(session, jmsTemplate.getDefaultDestinationName(), jmsTemplate.isPubSubDomain());
-        Destination responseDestination;
-        if (!responseQueueName.isBlank()) {
+        Destination responseDestination = session.createTemporaryQueue();
+        if (responseQueueName != null && !responseQueueName.isBlank()) {
             responseDestination = resolver.resolveDestinationName(session, responseQueueName, false);
-        } else {
-            responseDestination = session.createTemporaryQueue();
         }
         try ( 
             MessageProducer producer = session.createProducer(destination);
