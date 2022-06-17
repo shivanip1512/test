@@ -6,7 +6,11 @@ import java.util.List;
 import org.apache.commons.collections4.CollectionUtils;
 import com.cannontech.common.device.port.DBPersistentConverter;
 import com.cannontech.database.db.season.DateOfSeason;
+import com.fasterxml.jackson.annotation.JsonInclude;
+import com.fasterxml.jackson.annotation.JsonInclude.Include;
 
+
+@JsonInclude(Include.NON_NULL)
 public class SeasonSchedule implements DBPersistentConverter<com.cannontech.database.data.season.SeasonSchedule> {
     private Integer id;
     private String name;
