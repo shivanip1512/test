@@ -47,9 +47,9 @@ public class SeasonSchedule implements DBPersistentConverter<com.cannontech.data
         setName(seasonSchedule.getScheduleName());
         if (CollectionUtils.isNotEmpty(seasonSchedule.getSeasonDatesVector())) {
             List<Season> seasons = new ArrayList<Season>();
-            seasonSchedule.getSeasonDatesVector().stream().forEach(seasonDate -> {
+            seasonSchedule.getSeasonDatesVector().stream().forEach(dateOfSeason -> {
                 Season season = new Season();
-                season.buildModel((DateOfSeason) seasonDate);
+                season.buildModel((DateOfSeason) dateOfSeason);
                 seasons.add(season);
             });
             setSeasons(seasons);
@@ -59,7 +59,6 @@ public class SeasonSchedule implements DBPersistentConverter<com.cannontech.data
     @SuppressWarnings("unchecked")
     @Override
     public void buildDBPersistent(com.cannontech.database.data.season.SeasonSchedule seasonSchedule) {
-        // seasonSchedule.setScheduleID(getId());
         seasonSchedule.setScheduleName(getName());
         if (CollectionUtils.isNotEmpty(getSeasons())) {
             getSeasons().stream().forEach(season -> {

@@ -1,7 +1,5 @@
 package com.cannontech.web.api.schedules;
 
-import javax.validation.Valid;
-
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -20,7 +18,7 @@ public class SeasonScheduleApiController {
     @Autowired private SeasonScheduleService seasonScheduleService;
 
     @PostMapping
-    public ResponseEntity<Object> create(@Valid @RequestBody SeasonSchedule seasonSchedule) {
+    public ResponseEntity<Object> create(@RequestBody SeasonSchedule seasonSchedule) {
         return new ResponseEntity<>(seasonScheduleService.create(seasonSchedule), HttpStatus.CREATED);
     }
 

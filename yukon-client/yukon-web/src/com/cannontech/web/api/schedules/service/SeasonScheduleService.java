@@ -5,7 +5,7 @@ import com.cannontech.common.schedules.model.SeasonSchedule;
 public interface SeasonScheduleService {
 
     /**
-     * Create a notification group
+     * Create a Season Schedule
      */
     public SeasonSchedule create(SeasonSchedule seasonSchedule);
 
