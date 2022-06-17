@@ -175,6 +175,7 @@
     <entry key="yukon.common.attribute.builtInAttribute.OUTAGE_STATUS">Outage Status</entry>
     <entry key="yukon.common.attribute.builtInAttribute.PEAK_DEMAND">Peak Demand</entry>
     <entry key="yukon.common.attribute.builtInAttribute.PEAK_DEMAND_DAILY">Peak Demand Daily</entry>
+    <entry key="yukon.common.attribute.builtInAttribute.DELIVERED_PEAK_DEMAND">Delivered Peak Demand</entry>
     <entry key="yukon.common.attribute.builtInAttribute.NET_PEAK_DEMAND">Net Peak Demand</entry>
     <entry key="yukon.common.attribute.builtInAttribute.SUM_PEAK_DEMAND">Sum Peak Demand</entry>
     <entry key="yukon.common.attribute.builtInAttribute.PEAK_DEMAND_RATE_A">Peak Demand Rate A</entry>
@@ -187,6 +188,10 @@
     <entry key="yukon.common.attribute.builtInAttribute.PEAK_DEMAND_FROZEN_RATE_B">Peak Demand Frozen Rate B</entry>
     <entry key="yukon.common.attribute.builtInAttribute.PEAK_DEMAND_FROZEN_RATE_C">Peak Demand Frozen Rate C</entry>
     <entry key="yukon.common.attribute.builtInAttribute.PEAK_DEMAND_FROZEN_RATE_D">Peak Demand Frozen Rate D</entry>
+    <entry key="yukon.common.attribute.builtInAttribute.DELIVERED_PEAK_DEMAND_RATE_A">Delivered Peak Demand Rate A</entry>
+    <entry key="yukon.common.attribute.builtInAttribute.DELIVERED_PEAK_DEMAND_RATE_B">Delivered Peak Demand Rate B</entry>
+    <entry key="yukon.common.attribute.builtInAttribute.DELIVERED_PEAK_DEMAND_RATE_C">Delivered Peak Demand Rate C</entry>
+    <entry key="yukon.common.attribute.builtInAttribute.DELIVERED_PEAK_DEMAND_RATE_D">Delivered Peak Demand Rate D</entry>
     <entry key="yukon.common.attribute.builtInAttribute.NET_PEAK_DEMAND_RATE_A">Net Peak Demand Rate A</entry>
     <entry key="yukon.common.attribute.builtInAttribute.NET_PEAK_DEMAND_RATE_B">Net Peak Demand Rate B</entry>
     <entry key="yukon.common.attribute.builtInAttribute.NET_PEAK_DEMAND_RATE_C">Net Peak Demand Rate C</entry>

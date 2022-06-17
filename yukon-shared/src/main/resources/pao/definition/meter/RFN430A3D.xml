@@ -62,7 +62,7 @@
         <pointInfo name="Outage Status" init="true" attributes="OUTAGE_STATUS"/>
         <pointInfo name="Outages" init="true" attributes="OUTAGE_LOG"/>
         <pointInfo name="Password Table Crc Error" attributes="PASSWORD_TABLE_CRC_ERROR"/>
-        <pointInfo name="Peak kW" init="true" attributes="PEAK_DEMAND"/>
+        <pointInfo name="Peak kW" init="true" attributes="PEAK_DEMAND,DELIVERED_PEAK_DEMAND"/>
         <pointInfo name="Phase A kW"/>
         <pointInfo name="Phase B kW"/>
         <pointInfo name="Phase C kW"/>

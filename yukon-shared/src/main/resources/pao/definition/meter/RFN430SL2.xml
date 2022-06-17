@@ -125,11 +125,11 @@
         <pointInfo name="Peak kVA (Quadrants 1 2 4) (Rate C kVA)" attributes="PEAK_KVA_Q124_RATE_C"/>
         <pointInfo name="Peak kVA (Quadrants 1 2 4) (Rate D kVA)" attributes="PEAK_KVA_Q124_RATE_D"/>
         <pointInfo name="Peak kVAr" attributes="PEAK_KVAR"/>
-        <pointInfo name="Peak kW" init="true" attributes="PEAK_DEMAND"/>
-        <pointInfo name="Peak kW (Rate A kW)" init="true" attributes="PEAK_DEMAND_RATE_A"/>
-        <pointInfo name="Peak kW (Rate B kW)" attributes="PEAK_DEMAND_RATE_B"/>
-        <pointInfo name="Peak kW (Rate C kW)" attributes="PEAK_DEMAND_RATE_C"/>
-        <pointInfo name="Peak kW (Rate D kW)" attributes="PEAK_DEMAND_RATE_D"/>
+        <pointInfo name="Peak kW" init="true" attributes="PEAK_DEMAND,DELIVERED_PEAK_DEMAND"/>
+        <pointInfo name="Peak kW (Rate A kW)" init="true" attributes="PEAK_DEMAND_RATE_A,DELIVERED_PEAK_DEMAND_RATE_A"/>
+        <pointInfo name="Peak kW (Rate B kW)" attributes="PEAK_DEMAND_RATE_B,DELIVERED_PEAK_DEMAND_RATE_B"/>
+        <pointInfo name="Peak kW (Rate C kW)" attributes="PEAK_DEMAND_RATE_C,DELIVERED_PEAK_DEMAND_RATE_C"/>
+        <pointInfo name="Peak kW (Rate D kW)" attributes="PEAK_DEMAND_RATE_D,DELIVERED_PEAK_DEMAND_RATE_D"/>
         <pointInfo name="Peak kW Frozen" attributes="PEAK_DEMAND_FROZEN"/>
         <pointInfo name="Peak kW Frozen (Rate A kW)" attributes="PEAK_DEMAND_FROZEN_RATE_A"/>
         <pointInfo name="Peak kW Frozen (Rate B kW)" attributes="PEAK_DEMAND_FROZEN_RATE_B"/>
