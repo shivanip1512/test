@@ -13,6 +13,7 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.InitBinder;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
@@ -58,12 +59,17 @@ public class PagingTerminalApiController {
         return new ResponseEntity<>(terminalService.copy(id, terminalCopy), HttpStatus.OK);
     }
 
+    @PutMapping("/{id}")
+    public ResponseEntity<Object> update(@PathVariable int id, @Valid @RequestBody TerminalBase terminalBase) {
+        return new ResponseEntity<>(terminalService.update(id, terminalBase), HttpStatus.OK);
+    }
+
     @InitBinder("terminalBase")
     public void setupBinder(WebDataBinder binder) {
         binder.addValidators(apiValidator);
 
-        String portId = ServletUtils.getPathVariable("id");
-        if (portId == null) {
+        String terminalId = ServletUtils.getPathVariable("id");
+        if (terminalId == null) {
             binder.addValidators(createApiValidator);
         }
     }
