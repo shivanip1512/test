@@ -50,12 +50,12 @@ public class DerEdgeCommunicationServiceImpl implements DerEdgeCommunicationServ
 
     @PostConstruct
     public void initialize() {
-        thriftBroadcastMessenger = new ThriftRequestReplyTemplate<EdgeDrBroadcastRequest, EdgeDrBroadcastResponse>(
+        thriftBroadcastMessenger = new ThriftRequestReplyTemplate<>(
                 jmsTemplateFactory.createTemplate(JmsApiDirectory.EDGE_DR_BROADCAST),
                 new EdgeDrBroadcastRequestSerializer(),
                 new EdgeDrBroadcastResponseSerializer());
 
-        thriftUnicastMessenger = new ThriftRequestReplyTemplate<EdgeDrUnicastRequest, EdgeDrUnicastResponse>(
+        thriftUnicastMessenger = new ThriftRequestReplyTemplate<>(
                 jmsTemplateFactory.createTemplate(JmsApiDirectory.EDGE_DR_UNICAST), 
                 new EdgeDrUnicastRequestSerializer(),
                 new EdgeDrUnicastResponseSerializer(),
@@ -64,7 +64,7 @@ public class DerEdgeCommunicationServiceImpl implements DerEdgeCommunicationServ
 
     @Override
     public Map<Integer, Short> sendUnicastRequest(YukonPao pao, byte[] payload, EdgeUnicastPriority queuePriority, 
-            EdgeUnicastPriority networkPriority, YukonUserContext userContext) {
+            EdgeUnicastPriority networkPriority, YukonUserContext userContext) throws EdgeDrCommunicationException {
         
         //TODO later - clean up this logging
         log.info("Processing DER Edge Unicast Request - Pao: {}, queue priority: {}, net priority: {}, payload: {}", 
@@ -81,7 +81,10 @@ public class DerEdgeCommunicationServiceImpl implements DerEdgeCommunicationServ
 
             log.debug("Received info from Porter: {}", responseMsg);
 
-            if (responseMsg.getError() != null) {
+            if (responseMsg == null) {
+                throw new EdgeDrCommunicationException("Response time out");
+            }
+            else if (responseMsg.getError() != null) {
                 throw new EdgeDrCommunicationException(responseMsg.getError().getErrorMessage());
             }
             
@@ -94,7 +97,7 @@ public class DerEdgeCommunicationServiceImpl implements DerEdgeCommunicationServ
 
     @Override
     public Map<Integer, Short> sendMultiUnicastRequest(Set<SimpleDevice> simpleDeviceList, byte[] payload, EdgeUnicastPriority queuePriority, 
-            EdgeUnicastPriority networkPriority, YukonUserContext userContext) {
+            EdgeUnicastPriority networkPriority, YukonUserContext userContext) throws EdgeDrCommunicationException {
         
         //Convert Set of SimpleDevices into List of PaoID's
         List<Integer> paoIds = simpleDeviceList.stream()
@@ -131,7 +134,7 @@ public class DerEdgeCommunicationServiceImpl implements DerEdgeCommunicationServ
     }
 
     @Override
-    public void sendBroadcastRequest(byte[] payload, EdgeBroadcastMessagePriority priority, YukonUserContext userContext) {
+    public void sendBroadcastRequest(byte[] payload, EdgeBroadcastMessagePriority priority, YukonUserContext userContext) throws EdgeDrCommunicationException {
 
         // TODO later - clean up this logging
         log.info("Processing DER Edge Broadcastt Request - Payload: {}, Priority: {}", Arrays.toString(payload), priority);

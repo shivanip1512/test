@@ -15,6 +15,7 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.cannontech.api.error.model.ApiErrorDetails;
 import com.cannontech.common.config.MasterConfigBoolean;
 import com.cannontech.common.device.groups.dao.impl.DeviceGroupProviderDaoMain;
 import com.cannontech.common.device.groups.model.DeviceGroup;
@@ -28,6 +29,7 @@ import com.cannontech.dr.edgeDr.EdgeDrCommunicationException;
 import com.cannontech.dr.edgeDr.EdgeUnicastPriority;
 import com.cannontech.user.YukonUserContext;
 import com.cannontech.web.api.der.edge.service.DerEdgeCommunicationService;
+import com.cannontech.web.api.error.model.YukonApiException;
 import com.cannontech.web.security.annotation.CheckCparm;
 import com.cannontech.web.security.annotation.CheckRoleProperty;
 
@@ -55,7 +57,12 @@ public class DerEdgeApiController {
         EdgeUnicastPriority networkPriority = edgeUnicastRequest.getNetworkPriority();
         
         //Send the request to Porter and get back the E2E ID that will correlate with the response data when it comes back.
-        Map<Integer, Short> e2eId = derEdgeCommunicationService.sendUnicastRequest(pao, payload, queuePriority, networkPriority, userContext);
+        Map<Integer, Short> e2eIds;
+        try {
+            e2eIds = derEdgeCommunicationService.sendUnicastRequest(pao, payload, queuePriority, networkPriority, userContext);
+        } catch (EdgeDrCommunicationException e) {
+            throw new YukonApiException(e.getMessage(), e, ApiErrorDetails.COMMUNICATION_ERROR);
+        }
         
         //TODO later - correlate E2E IDs with response GUID
         //for now, always return this temp GUID
@@ -71,18 +78,25 @@ public class DerEdgeApiController {
         EdgeUnicastPriority queuePriority = edgeMultipointRequest.getQueuePriority();
         EdgeUnicastPriority networkPriority = edgeMultipointRequest.getNetworkPriority();
         String edgeGroupName = "/Edge Addressing";
+        Map<Integer, Short> e2eId;
 
         try {
+
             // Lookup Edge Addressing Group
             DeviceGroup edgeAddressingGroup = deviceGroupService.resolveGroupName(edgeGroupName);
             // Lookup targeted group
             DeviceGroup targetedAddressingGroup = deviceGroupProviderDaoMain.getGroup(edgeAddressingGroup, edgeMultipointRequest.getGroupId());
             // Get list of all the device in this group
             Set<SimpleDevice> simpleDeviceList = deviceGroupProviderDaoMain.getDevices(targetedAddressingGroup);
-            // Send the devices to the service layer for processing
-            Map<Integer, Short> e2eId = derEdgeCommunicationService.sendMultiUnicastRequest(simpleDeviceList, payload, queuePriority, networkPriority, userContext);
+            try {
+                // Send the devices to the service layer for processing
+                e2eId = derEdgeCommunicationService.sendMultiUnicastRequest(simpleDeviceList, payload, queuePriority, networkPriority, userContext);
+            } catch (EdgeDrCommunicationException e) {
+                throw new YukonApiException(e.getMessage(), e, ApiErrorDetails.COMMUNICATION_ERROR);
+            }
+
         } catch (NotFoundException e){
-            throw new EdgeDrCommunicationException("An unexpected error occurred while sending a broadcast message.", e);
+            throw new YukonApiException(e.getMessage(), e, ApiErrorDetails.INVALID_VALUE);
         }
 
         // TODO later - correlate E2E IDs with response GUID
@@ -97,9 +111,13 @@ public class DerEdgeApiController {
         // Convert payload string into byte[] for porter
         byte[] payload = convertPayloadToBytes(edgeBroadcastRequest.getPayload());
         // Send the request to Porter.
-        derEdgeCommunicationService.sendBroadcastRequest(payload, edgeBroadcastRequest.getPriority(), userContext);
-
-        return new ResponseEntity<Object>(HttpStatus.OK);
+        try {
+            derEdgeCommunicationService.sendBroadcastRequest(payload, edgeBroadcastRequest.getPriority(), userContext);
+        } catch (EdgeDrCommunicationException e) {
+            throw new YukonApiException(e.getMessage(), e, ApiErrorDetails.COMMUNICATION_ERROR);
+        }
+        
+        return new ResponseEntity<>(HttpStatus.OK);
     }
 
     /**
