@@ -6,9 +6,9 @@ import com.cannontech.database.db.holiday.DateOfHoliday;
 public class Holiday implements DBPersistentConverter<DateOfHoliday> {
 
     private String name;
-    private Integer day;
-    private Integer month;
-    private Integer year;
+    private Integer day = 1;
+    private Integer month = 1;
+    private Integer year = -1;
 
     public Holiday() {
         super();

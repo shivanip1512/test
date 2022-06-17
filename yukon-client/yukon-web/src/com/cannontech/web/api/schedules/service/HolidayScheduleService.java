@@ -7,6 +7,6 @@ public interface HolidayScheduleService {
     /**
      * Create a Holiday schedule
      */
-    public HolidaySchedule create(HolidaySchedule holidaySchedule);
+    HolidaySchedule create(HolidaySchedule holidaySchedule);
 
 }
