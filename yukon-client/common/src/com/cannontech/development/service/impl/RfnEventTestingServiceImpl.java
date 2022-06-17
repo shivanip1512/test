@@ -103,7 +103,7 @@ public class RfnEventTestingServiceImpl implements RfnEventTestingService {
     private static final Logger log = YukonLogManager.getLogger(RfnEventTestingServiceImpl.class);
 
     private static final Map<String, String> modifierPaths;
-    private static final Map<String, List<RfnManufacturerModel>> groupedMeterTypes1;
+    private static final Map<String, List<RfnManufacturerModel>> groupedMeterTypes;
     private static final Logger rfnLogger = YukonLogManager.getRfnLogger();
     
     static {
