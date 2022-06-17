@@ -5,10 +5,10 @@ import com.cannontech.database.db.season.DateOfSeason;
 
 public class Season implements DBPersistentConverter<DateOfSeason> {
     private String name;
-    private Integer startMonth;
-    private Integer startDay;
-    private Integer endMonth;
-    private Integer endDay;
+    private Integer startMonth = 1;
+    private Integer startDay = 1;
+    private Integer endMonth = 1;
+    private Integer endDay = 1;
 
     public Season() {
         super();

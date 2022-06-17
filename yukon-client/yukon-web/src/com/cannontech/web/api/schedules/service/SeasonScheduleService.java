@@ -7,6 +7,6 @@ public interface SeasonScheduleService {
     /**
      * Create a Season Schedule
      */
-    public SeasonSchedule create(SeasonSchedule seasonSchedule);
+    SeasonSchedule create(SeasonSchedule seasonSchedule);
 
 }
