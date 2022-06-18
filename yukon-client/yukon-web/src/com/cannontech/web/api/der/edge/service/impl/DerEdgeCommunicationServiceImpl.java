@@ -82,7 +82,7 @@ public class DerEdgeCommunicationServiceImpl implements DerEdgeCommunicationServ
             log.debug("Received info from Porter: {}", responseMsg);
 
             if (responseMsg == null) {
-                throw new EdgeDrCommunicationException("Response time out");
+                throw new EdgeDrCommunicationException("Response time out.");
             }
             else if (responseMsg.getError() != null) {
                 throw new EdgeDrCommunicationException(responseMsg.getError().getErrorMessage());
@@ -120,7 +120,7 @@ public class DerEdgeCommunicationServiceImpl implements DerEdgeCommunicationServ
             log.debug("Received info from Porter: {}", responseMsg);
 
             if (responseMsg == null) {
-                throw new EdgeDrCommunicationException("Response time out");
+                throw new EdgeDrCommunicationException("Response time out.");
             }
             else if (responseMsg.getError() != null) {
                 throw new EdgeDrCommunicationException(responseMsg.getError().getErrorMessage());
@@ -150,7 +150,10 @@ public class DerEdgeCommunicationServiceImpl implements DerEdgeCommunicationServ
 
             log.debug("Received info from Porter: {}", responseMsg);
 
-            if (responseMsg.getError() != null) {
+            if (responseMsg == null) {
+                throw new EdgeDrCommunicationException("Response time out.");
+            }
+            else if (responseMsg.getError() != null) {
                 throw new EdgeDrCommunicationException(responseMsg.getError().getErrorMessage());
             }
 
