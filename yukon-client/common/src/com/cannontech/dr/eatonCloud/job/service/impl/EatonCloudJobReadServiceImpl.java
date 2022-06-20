@@ -41,7 +41,7 @@ public class EatonCloudJobReadServiceImpl implements EatonCloudJobReadService{
     private static final Logger log = YukonLogManager.getLogger(EatonCloudJobReadServiceImpl.class);
     
     private AtomicBoolean isReadingDevices = new AtomicBoolean(false);
-    // <external event id, Pair<next read time, polled time>>
+    // <external event id, Pair<next read time, job creation time>>
     private Map<Integer, Pair<Instant, Instant>> nextRead = new ConcurrentHashMap<>();
     @PostConstruct
     public void init() {
