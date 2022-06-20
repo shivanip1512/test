@@ -18,8 +18,8 @@
             <cm:dropdownOption icon="icon-pencil" key="yukon.web.components.button.edit.label"/>
             
             <li class="divider"></li>
-            <cm:dropdownOption key="yukon.web.components.button.copy.label"
-                               icon="icon-disk-multiple"/>
+            <cm:dropdownOption key="yukon.web.components.button.copy.label" icon="icon-disk-multiple"
+                               data-popup="#js-copy-signal-transmitter-popup"/>
                            
             <li class="divider"></li>
             <cm:dropdownOption icon="icon-delete" key="yukon.web.components.button.delete.label" id="js-delete"
@@ -31,6 +31,12 @@
                 <cti:csrfToken />
             </form:form>
         </div>
+        <!-- Copy dialog -->
+        <cti:msg2 var="copyDialogTitle" key=".copy"/>
+        <cti:url var="renderCopyDialogUrl" value="/stars/device/signalTransmitter/${signalTransmitter.id}/renderCopyDialog"/>
+        <cti:msg2 var="copyText" key="components.button.copy.label"/>
+        <div class="dn" id="js-copy-signal-transmitter-popup" data-title="${copyDialogTitle}" data-dialog data-ok-text="${copyText}" 
+             data-event="yukon:signalTransmitter:copy" data-url="${renderCopyDialogUrl}"></div>
     </cti:displayForPageEditModes>
     
     <cti:url var="action" value="/stars/device/signalTransmitter/save" />
