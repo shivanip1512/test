@@ -33,7 +33,10 @@ import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import com.cannontech.clientutils.YukonLogManager;
 import com.cannontech.common.device.model.DeviceBaseModel;
+import com.cannontech.common.device.terminal.model.DataFormat;
+import com.cannontech.common.device.terminal.model.IdentifierFormat;
 import com.cannontech.common.device.terminal.model.PagingTapTerminal;
+import com.cannontech.common.device.terminal.model.Protocol;
 import com.cannontech.common.device.terminal.model.SNPPTerminal;
 import com.cannontech.common.device.terminal.model.SignalTransmitterModelFactory;
 import com.cannontech.common.device.terminal.model.TNPPTerminal;
@@ -78,7 +81,7 @@ public class SignalTransmitterController {
     private static final String redirectListPageLink = "redirect:/stars/device/signalTransmitter/list";
 
     private static final List<PaoType> webSupportedSignalTransmitterTypes = Stream
-            .of(PaoType.WCTP_TERMINAL, PaoType.TAPTERMINAL, PaoType.SNPP_TERMINAL)
+            .of(PaoType.WCTP_TERMINAL, PaoType.TAPTERMINAL, PaoType.SNPP_TERMINAL, PaoType.TNPP_TERMINAL)
             .sorted((p1, p2) -> p1.getDbString().compareTo(p2.getDbString()))
             .collect(Collectors.toList());
 
@@ -300,6 +303,9 @@ public class SignalTransmitterController {
     private void setupModel(ModelMap model, HttpServletRequest request, YukonUserContext userContext) {
         model.addAttribute("types", webSupportedSignalTransmitterTypes);
         model.addAttribute("commChannels", getCommChannels(request, userContext));
+        model.addAttribute("identifierFormats", IdentifierFormat.values());
+        model.addAttribute("dataFormats", DataFormat.values());
+        model.addAttribute("protocols", Protocol.values());
     }
 
     private List<LMDto> getCommChannels(HttpServletRequest request, YukonUserContext userContext) {

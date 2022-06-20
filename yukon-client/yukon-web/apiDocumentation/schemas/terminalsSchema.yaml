@@ -26,15 +26,13 @@ PAGING_TAP_TERMINAL:
       maxLength: 20
       description: 'Password of terminal. This field can be empty but cannot be null. It should have some valid string.'
     commChannel:
-      type: array
-      items:
-        required:
-          - id
-        type: object
-        properties:
-          id:
-            type: integer
-            description: 'Id of Communication Channel.'
+      required:
+        - id
+      type: object
+      properties:
+        id:
+          type: integer
+          description: 'Id of Communication Channel.'
     pagerNumber:
       type: string
       maxLength: 20
@@ -70,15 +68,13 @@ SNPP_TERMINAL:
       maxLength: 20
       description: 'Pager number of terminal.'
     commChannel:
-      type: array
-      items:
-        required:
-          - id
-        type: object
-        properties:
-          id:
-            type: integer
-            description: 'Id of Communication Channel.'
+      required:
+        - id
+      type: object
+      properties:
+        id:
+          type: integer
+          description: 'Id of Communication Channel.'
     login:
       type: string
       maxLength: 64
@@ -125,15 +121,13 @@ TNPP_TERMINAL:
       maxLength: 20
       description: 'Password of terminal. This field can be empty but cannot be null. It should have some valid string.'
     commChannel:
-      type: array
-      items:
-        required:
-          - id
-        type: object
-        properties:
-          id:
-            type: integer
-            description: 'Id of Communication Channel.'
+      required:
+        - id
+      type: object
+      properties:
+        id:
+          type: integer
+          description: 'Id of Communication Channel.'
     originAddress:
       type: integer
       minimum: 0
@@ -222,15 +216,13 @@ WCTP_TERMINAL:
       maxLength: 20
       description: 'Password of terminal. This field can be empty but cannot be null. It should have some valid string.'
     commChannel:
-      type: array
-      items:
-        required:
-          - id
-        type: object
-        properties:
-          id:
-            type: integer
-            description: 'Id of Communication Channel.'
+      required:
+        - id
+      type: object
+      properties:
+        id:
+          type: integer
+          description: 'Id of Communication Channel.'
     pagerNumber:
       type: string
       maxLength: 20
@@ -274,17 +266,15 @@ PAGING_TAP_TERMINAL Response Schema:
       maxLength: 20
       description: 'Password of terminal. This field can be empty but cannot be null. It should have some valid string.'
     commChannel:
-      type: array
-      items:
-        type: object
-        properties:
-          id:
-            type: integer
-            description: 'Id of Communication Channel.'
-          name:
-            type: string
-            maxLength: 60
-            description: 'Name of Communication Channel.'
+      type: object
+      properties:
+        id:
+          type: integer
+          description: 'Id of Communication Channel.'
+        name:
+          type: string
+          maxLength: 60
+          description: 'Name of Communication Channel.'
 
 SNPP_TERMINAL Response Schema:
   title: SNPP Terminal
@@ -311,17 +301,15 @@ SNPP_TERMINAL Response Schema:
       maxLength: 20
       description: 'Pager number of terminal.'
     commChannel:
-      type: array
-      items:
-        type: object
-        properties:
-          id:
-            type: integer
-            description: 'Id of Communication Channel.'
-          name:
-            type: string
-            maxLength: 60
-            description: 'Name of Communication Channel.'
+      type: object
+      properties:
+        id:
+          type: integer
+          description: 'Id of Communication Channel.'
+        name:
+          type: string
+          maxLength: 60
+          description: 'Name of Communication Channel.'
     login:
       type: string
       maxLength: 64
@@ -356,17 +344,15 @@ TNPP_TERMINAL Response Schema:
       maxLength: 20
       description: 'Password of terminal. This field can be empty but cannot be null. It should have some valid string.'
     commChannel:
-      type: array
-      items:
-        type: object
-        properties:
-          id:
-            type: integer
-            description: 'Id of Communication Channel.'
-          name:
-            type: string
-            maxLength: 60
-            description: 'Name of Communication Channel.'
+      type: object
+      properties:
+        id:
+          type: integer
+          description: 'Id of Communication Channel.'
+        name:
+          type: string
+          maxLength: 60
+          description: 'Name of Communication Channel.'
     originAddress:
       type: integer
       minimum: 0
@@ -451,17 +437,15 @@ WCTP_TERMINAL Response Schema:
       maxLength: 20
       description: 'Password of terminal. This field can be empty but cannot be null. It should have some valid string.'
     commChannel:
-      type: array
-      items:
-        type: object
-        properties:
-          id:
-            type: integer
-            description: 'Id of Communication Channel.'
-          name:
-            type: string
-            maxLength: 60
-            description: 'Name of Communication Channel.'
+      type: object
+      properties:
+        id:
+          type: integer
+          description: 'Id of Communication Channel.'
+        name:
+          type: string
+          maxLength: 60
+          description: 'Name of Communication Channel.'
     pagerNumber:
       type: string
       maxLength: 20

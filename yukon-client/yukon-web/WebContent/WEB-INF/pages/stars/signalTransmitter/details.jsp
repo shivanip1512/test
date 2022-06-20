@@ -43,51 +43,27 @@
     <form:form modelAttribute="signalTransmitter" action="${action}" method="post">
         <cti:csrfToken />
         <input type="hidden" name="signalTransmitter" value="${selectedSignalTransmitterType}"/>
-        <tags:sectionContainer2 nameKey="general">
-            <tags:nameValueContainer2>
-                <tags:nameValue2 nameKey=".name">
-                    <tags:input path="name" maxlength="60" autofocus="autofocus" inputClass="w300 js-name"/>
-                </tags:nameValue2>
-                <tags:nameValue2 nameKey=".type">
-                    <cti:displayForPageEditModes modes="CREATE">
-                        <cti:msg2 key="yukon.web.components.button.select.label" var="selectLbl"/>
-                        <tags:selectWithItems items="${types}"
-                                              path="type"
-                                              defaultItemLabel="${selectLbl}"
-                                              defaultItemValue=""
-                                              inputClass="js-type"/>
-                    </cti:displayForPageEditModes>
-                    <cti:displayForPageEditModes modes="EDIT,VIEW">
-                        <i:inline key="${signalTransmitter.type}"/>
-                        <!-- TODO: Check if we need this hidden field -->
-                        <form:hidden path="type" value="${signalTransmitter.type}"/>
-                    </cti:displayForPageEditModes>
-                </tags:nameValue2>
-                <c:if test="${signalTransmitter.type == 'WCTP_TERMINAL' || signalTransmitter.type == 'SNPP_TERMINAL' ||  signalTransmitter.type == 'TAPTERMINAL'}">
-                    <tags:nameValue2 nameKey=".pagerNumber" rowClass="noswitchtype">
-                        <tags:input path="pagerNumber" maxlength="20"/>
-                    </tags:nameValue2>
-                    <tags:nameValue2 nameKey=".status" rowClass="noswitchtype">
-                        <tags:switchButton path="enabled" offNameKey="yukon.common.disabled" onNameKey="yukon.common.enabled" />
-                    </tags:nameValue2>
+        <c:if test="${signalTransmitter.type != 'TNPP_TERMINAL'}">
+            <%@ include file="general.jsp" %>
+            <div id="js-signal-transmitter-container" class='noswitchtype'>
+                <c:if test="${signalTransmitter.type != null}">
+                    <tags:sectionContainer2 nameKey="communication">
+                        <c:if test="${signalTransmitter.type == 'TAPTERMINAL'}">
+                            <%@ include file="pagingTapTerminal.jsp" %>
+                        </c:if>
+                        <c:if test="${signalTransmitter.type == 'SNPP_TERMINAL'}">
+                            <%@ include file="snppTerminal.jsp" %>
+                        </c:if>
+                        <c:if test="${signalTransmitter.type == 'WCTP_TERMINAL'}">
+                            <%@ include file="wctpTerminal.jsp" %>
+                        </c:if>
+                    </tags:sectionContainer2>
                 </c:if>
-            </tags:nameValueContainer2>
-        </tags:sectionContainer2>
-        <div id="js-signal-transmitter-container" class='noswitchtype'>
-            <c:if test="${signalTransmitter.type != null}">
-                <tags:sectionContainer2 nameKey="communication">
-                    <c:if test="${signalTransmitter.type == 'TAPTERMINAL'}">
-                        <%@ include file="pagingTapTerminal.jsp" %>
-                    </c:if>
-                    <c:if test="${signalTransmitter.type == 'SNPP_TERMINAL'}">
-                        <%@ include file="snppTerminal.jsp" %>
-                    </c:if>
-                    <c:if test="${signalTransmitter.type == 'WCTP_TERMINAL'}">
-                        <%@ include file="wctpTerminal.jsp" %>
-                    </c:if>
-                </tags:sectionContainer2>
-            </c:if>
-        </div>
+            </div>
+        </c:if>
+        <c:if test="${signalTransmitter.type == 'TNPP_TERMINAL'}">
+            <%@ include file="tnppTerminal.jsp" %>
+        </c:if>
         
         <div class="page-action-area">
             <cti:displayForPageEditModes modes="EDIT,CREATE">

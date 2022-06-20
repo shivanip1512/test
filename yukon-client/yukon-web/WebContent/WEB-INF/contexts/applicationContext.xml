@@ -983,6 +983,7 @@
     <!-- MULTISPEAK -->
     <bean id="mspMeterSearchService" class="com.cannontech.web.amr.meter.service.impl.MspMeterSearchServiceImpl"/>
     <bean id="mspSearchFieldsProviderV3" class="com.cannontech.web.amr.meter.service.impl.MspSearchFieldsProviderV3"/>
+     <bean id="mspSearchFieldsProviderV4" class="com.cannontech.web.amr.meter.service.impl.MspSearchFieldsProviderV4"/>
     <bean id="mspSearchFieldsProviderV5" class="com.cannontech.web.amr.meter.service.impl.MspSearchFieldsProviderV5"/>
     <bean id="mspHandler" class="com.cannontech.web.multispeak.MspHandler"/>
 
@@ -992,6 +993,13 @@
     <bean id="accountNumberMspMeterSearchMethodResultProvider" class="com.cannontech.web.amr.meter.service.impl.AccountNumberMspMeterSearchMethodResultProvider"/>
     <bean id="custIdMspMeterSearchMethodResultProvider" class="com.cannontech.web.amr.meter.service.impl.CustIdMspMeterSearchMethodResultProvider"/>
     <bean id="cisSearchMspMeterSearchMethodResultProvider" class="com.cannontech.web.amr.meter.service.impl.CisSearchMspMeterSearchMethodResultProvider"/>
+    
+    <bean id="serviceLocationMspMeterSearchMethodResultProviderV4" class="com.cannontech.web.amr.meter.service.impl.ServiceLocationMspMeterSearchMethodResultProviderV4"/>
+    <bean id="eaLocationMspMeterSearchMethodResultProviderV4" class="com.cannontech.web.amr.meter.service.impl.EaLocationMspMeterSearchMethodResultProviderV4"/>
+    <bean id="facilityIdMspMeterSearchMethodResultProviderV4" class="com.cannontech.web.amr.meter.service.impl.FacilityIdMspMeterSearchMethodResultProviderv4"/>
+    <bean id="accountNumberMspMeterSearchMethodResultProviderv4" class="com.cannontech.web.amr.meter.service.impl.AccountNumberMspMeterSearchMethodResultProviderV4"/>
+    <bean id="custIdMspMeterSearchMethodResultProviderV4" class="com.cannontech.web.amr.meter.service.impl.CustIdMspMeterSearchMethodResultProviderV4"/>
+    <bean id="cisSearchMspMeterSearchMethodResultProviderV4" class="com.cannontech.web.amr.meter.service.impl.CisSearchMspMeterSearchMethodResultProviderV4"/>
     
     <bean id="serviceLocationMspMeterSearchMethodResultProviderV5" class="com.cannontech.web.amr.meter.service.impl.ServiceLocationMspMeterSearchMethodResultProviderV5"/>
     <bean id="eaLocationMspMeterSearchMethodResultProviderV5" class="com.cannontech.web.amr.meter.service.impl.EaLocationMspMeterSearchMethodResultProviderV5"/>
@@ -1569,4 +1577,5 @@
     
     <bean class="com.cannontech.web.api.notificationGroup.service.impl.NotificationGroupServiceImpl"/>
     
+    <bean class="com.cannontech.web.api.schedules.service.impl.HolidayScheduleServiceImpl"/>
 </beans>
