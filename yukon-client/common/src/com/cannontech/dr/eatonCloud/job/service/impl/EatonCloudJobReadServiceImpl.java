@@ -64,9 +64,8 @@ public class EatonCloudJobReadServiceImpl implements EatonCloudJobReadService{
     }
     
     @Override
-    public void setupDeviceRead(EventSummary summary) {
-        DateTime now = DateTime.now();
-        
+    public void setupDeviceRead(EventSummary summary, Instant jobCreationTime) {
+       // TODO:
        /* int readTimeFromNowInMinutes = summary.getCommand().getDutyCyclePeriod() == null ? 5 : IntMath.divide(
                 summary.getCommand().getDutyCyclePeriod() / 60,
                 2, RoundingMode.CEILING);*/
@@ -81,7 +80,7 @@ public class EatonCloudJobReadServiceImpl implements EatonCloudJobReadService{
                 readTimeFromNowInMinutes,
                 nextReadTime.toDateTime().toString("MM-dd-yyyy HH:mm:ss"));
         
-        nextRead.put(summary.getEventId(), Pair.of(nextReadTime, now.toInstant()));
+        nextRead.put(summary.getEventId(), Pair.of(nextReadTime, jobCreationTime));
     }
     
     private void readDevices() {
@@ -92,30 +91,30 @@ public class EatonCloudJobReadServiceImpl implements EatonCloudJobReadService{
                 Entry<Integer, Pair<Instant, Instant>> entry = iter.next();
                 Integer eventId = entry.getKey();
                 Instant nextRead = entry.getValue().getKey();
-                Instant pollTime = entry.getValue().getValue();
+                Instant jobCreationTime = entry.getValue().getValue();
                 if (nextRead.isEqualNow() || nextRead.isBeforeNow()) {
-                    Range<Instant> range = new Range<>(pollTime, true, Instant.now(), true);
+                    Range<Instant> range = new Range<>(jobCreationTime, true, Instant.now(), true);
                     Set<Integer> devicesToRead = recentEventParticipationDao.getDeviceIdsByExternalEventIdAndStatuses(eventId,
                             List.of(ControlEventDeviceStatus.SUCCESS_RECEIVED));
                     if (!devicesToRead.isEmpty()) {
                         Multimap<PaoIdentifier, PointData> result = eatonCloudDataReadService.collectDataForRead(devicesToRead,
                                 range, "READ AFTER SHED event id:" + eventId);
                         log.info(
-                                "[id:{}] Read devices:{} Read succeeded for {} devices for dates from:{} to:{} [polled devices at {}]",
+                                "[id:{}] Read devices:{} Read succeeded for {} devices for dates from:{} to:{} [job created at {}]",
                                 eventId,
                                 devicesToRead.size(),
                                 result.asMap().keySet().size(),
                                 range.getMin().toDateTime().toString("MM-dd-yyyy HH:mm:ss"),
                                 range.getMax().toDateTime().toString("MM-dd-yyyy HH:mm:ss"),
-                                pollTime.toDateTime().toString("MM-dd-yyyy HH:mm:ss"));
+                                jobCreationTime.toDateTime().toString("MM-dd-yyyy HH:mm:ss"));
                     } else {
                         log.info(
-                                "[id:{}] Read devices:{}. Devices with status SUCCESS_RECEIVED not found for dates from:{} to:{} [polled devices at {}] ",
+                                "[id:{}] Read devices:{}. Devices with status SUCCESS_RECEIVED not found for dates from:{} to:{} [job created at {}] ",
                                 eventId,
                                 0,
-                                range.getMin().toDateTime().toString("MM-dd-yyyy HH:mm:ss.SSS"),
-                                range.getMax().toDateTime().toString("MM-dd-yyyy HH:mm:ss.SSS"),
-                                pollTime.toDateTime().toString("MM-dd-yyyy HH:mm:ss.SSS"));
+                                range.getMin().toDateTime().toString("MM-dd-yyyy HH:mm:ss"),
+                                range.getMax().toDateTime().toString("MM-dd-yyyy HH:mm:ss"),
+                                jobCreationTime.toDateTime().toString("MM-dd-yyyy HH:mm:ss"));
                     }
                     iter.remove();
                 }

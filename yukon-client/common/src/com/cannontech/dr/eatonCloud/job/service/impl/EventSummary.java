@@ -24,7 +24,6 @@ public final class EventSummary {
     private Instant currentTryTime = new Instant();
     private int period;
     private int numberOfTimesToRetry;
-    private List<String> jobGuids;
 
     private LMEatonCloudScheduledCycleCommand command;
     private Integer eventId;
@@ -113,14 +112,6 @@ public final class EventSummary {
 
     public LMEatonCloudScheduledCycleCommand getCommand() {
         return command;
-    }
-
-    public List<String> getJobGuids() {
-        return jobGuids;
-    }
-
-    public void setJobGuids(List<String> jobGuids) {
-        this.jobGuids = jobGuids;
     }
 
     public AtomicInteger getCurrentTry() {

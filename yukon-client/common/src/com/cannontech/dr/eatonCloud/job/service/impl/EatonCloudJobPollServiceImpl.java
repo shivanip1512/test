@@ -12,6 +12,7 @@ import java.util.concurrent.TimeUnit;
 import javax.annotation.PostConstruct;
 
 import org.apache.logging.log4j.Logger;
+import org.joda.time.Instant;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.util.CollectionUtils;
@@ -57,17 +58,19 @@ public class EatonCloudJobPollServiceImpl implements EatonCloudJobPollService {
     }
 
     @Override
-    public void immediatePoll(EventSummary summary) {
-        poll(summary);
+    public void immediatePoll(EventSummary summary, List<String> jobGuids,
+            Instant jobCreationTime) {
+        poll(summary, jobGuids, jobCreationTime);
     }
 
     @Override
-    public void schedulePoll(EventSummary summary, int minutes, int totalDevices) {
-        if (CollectionUtils.isEmpty(summary.getJobGuids())) {
+    public void schedulePoll(EventSummary summary, int minutes, int totalDevices, List<String> jobGuids,
+            Instant jobCreationTime) {
+        if (CollectionUtils.isEmpty(jobGuids)) {
             return;
         }
         executor.schedule(() -> {
-            int successes = poll(summary);
+            int successes = poll(summary, jobGuids, jobCreationTime);
             // consider all devices that didn't succeed as failure
             sendSmartNotifications(summary, totalDevices, totalDevices - successes);
         }, minutes, TimeUnit.MINUTES);
@@ -79,11 +82,13 @@ public class EatonCloudJobPollServiceImpl implements EatonCloudJobPollService {
      * 1. Send message to Eaton Cloud to ask for device statuses
      * 2. Remove already processed (recent participation was updated) device guids
      * 3. Process success and failure by updating recent participation
+     * @param jobCreationTime 
+     * @param jobGuids 
      */
-    private int poll(EventSummary summary) {
+    private int poll(EventSummary summary, List<String> jobGuids, Instant jobCreationTime) {
         List<String> successes = new ArrayList<>();
         int pollNumber = summary.pollIncrementAndGet(); 
-        summary.getJobGuids().forEach(jobGuid -> {
+        jobGuids.forEach(jobGuid -> {
             try {
                 log.info(summary.getLogSummary(jobGuid, false) + "Poll:{}", pollNumber);
                 EatonCloudJobStatusResponseV1 response = eatonCloudCommunicationService.getJobStatus(jobGuid);
@@ -104,7 +109,7 @@ public class EatonCloudJobPollServiceImpl implements EatonCloudJobPollService {
             }
         }); 
         if(!successes.isEmpty()) {
-            eatonCloudJobReadService.setupDeviceRead(summary);
+            eatonCloudJobReadService.setupDeviceRead(summary, jobCreationTime);
         }       
         return successes.size();
     }

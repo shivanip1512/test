@@ -313,7 +313,6 @@ public class EatonCloudDataV1 extends EatonCloudDataGenerator {
         
         Map<String, EatonCloudJobDeviceErrorV1> failures = new HashMap<>();
         List<String> success = new ArrayList<>();
-        Map<String, EatonCloudJobDeviceErrorV1> map = new HashMap<>(); 
         
         Map<Integer, Integer> errors = new HashMap<>();
         errors.put(404, 15703);
@@ -323,13 +322,12 @@ public class EatonCloudDataV1 extends EatonCloudDataGenerator {
         
         EatonCloudJobRequestV1 request = jobRequestCache.getIfPresent(jobGuid);
         if (request == null) {
-            EatonCloudErrorV1 error = new EatonCloudErrorV1(List.of("Id"), "Exired job, create new Job",
+            EatonCloudErrorV1 error = new EatonCloudErrorV1(List.of("Id"), "Job doesn't exist, create new Job",
                     "b970fd57-8097-4159-b1b0-34630bce891", HttpStatus.BAD_REQUEST.value(), "2021-02-26T10:52:16.0799958+00:00", 11417);
             return new EatonCloudSimulatorResponse(error, HttpStatus.BAD_REQUEST.value());
         }
-        log.info("unknown {}%", unknownPercentage);
-        log.info("success {}%", successPercentage);
-        log.info("device guids {}", request.getDeviceGuids().size());
+        log.info("unknown {}% success {}% device guids {}", unknownPercentage, successPercentage,
+                request.getDeviceGuids().size());
         List<String> allGuids = new ArrayList<>();
         allGuids.addAll(request.getDeviceGuids());
         allGuids.removeIf(guid -> isUnknown());

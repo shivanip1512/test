@@ -16,6 +16,7 @@ import java.util.stream.Collectors;
 
 import javax.annotation.PostConstruct;
 
+import org.apache.commons.lang3.tuple.Pair;
 import org.apache.logging.log4j.Logger;
 import org.joda.time.Instant;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -55,13 +56,13 @@ public class EatonCloudJobServiceImpl implements EatonCloudJobService {
 
     private AtomicBoolean isSendingCommands = new AtomicBoolean(false);
     private int maxDevicesPerJob;
-    //change to 5
+    //TODO: change to 5
     private static int pollInMinutes = 1;
-    //change to 2
+    //TODO: change to 2
     private static int firstRetryAfterPollMinutes = 1;
 
     // eventId
-    private Map<Integer, EventSummary> resendTries = new ConcurrentHashMap<>();
+    private Map<Integer, RetrySummary> resendTries = new ConcurrentHashMap<>();
 
     @PostConstruct
     public void init() {
@@ -90,14 +91,17 @@ public class EatonCloudJobServiceImpl implements EatonCloudJobService {
 
     private void resendControl() {
         try {
-            Iterator<Entry<Integer, EventSummary>> iter = resendTries.entrySet().iterator();
+            Iterator<Entry<Integer, RetrySummary>> iter = resendTries.entrySet().iterator();
             // For each external event id in cache
             while (iter.hasNext()) {
-                Entry<Integer, EventSummary> entry = iter.next();
+                Entry<Integer, RetrySummary> entry = iter.next();
                 Integer eventId = entry.getKey();
-                EventSummary summary = entry.getValue();
+                EventSummary summary = entry.getValue().summary;
+                Instant jobCreationTime = entry.getValue().result.getKey();
+                List<String> jobGuids = entry.getValue().result.getValue();
                 Instant resendTime = summary.getCurrentTryTime();
                 if (resendTime.isEqualNow() || resendTime.isBeforeNow()) {
+                    eatonCloudJobPollService.immediatePoll(summary, jobGuids, jobCreationTime);
                     Set<Integer> devices = recentEventParticipationDao.getDeviceIdsByExternalEventIdAndStatuses(eventId,
                             List.of(FAILED_WILL_RETRY, UNKNOWN));
                     if (devices.isEmpty()) {
@@ -106,13 +110,9 @@ public class EatonCloudJobServiceImpl implements EatonCloudJobService {
                                 + "Done (No devices found with statuses of FAILED_WILL_RETRY, UNKNOWN).");
                         continue;
                     }
-                    eatonCloudJobPollService.immediatePoll(summary);
-                    createJobs(devices, summary);
-                    EventSummary nextTry = summary.setupNextTry(summary.getPeriod());
-                    if (nextTry == null) {
+                    Pair<Instant, List<String>> result = createJobs(devices, summary);
+                    if((setupRetry(summary, result) == null)){
                         iter.remove();
-                    } else {
-                        resendTries.put(nextTry.getEventId(), nextTry);
                     }
                 }
             }
@@ -125,10 +125,29 @@ public class EatonCloudJobServiceImpl implements EatonCloudJobService {
     public void createJobs(int programId, Set<Integer> devices, LMEatonCloudScheduledCycleCommand command,
             Integer eventId) {
         EventSummary summary = new EventSummary(eventId, programId, command, log, recentEventParticipationDao);
-        createJobs(devices, summary);
-        if (!summary.getJobGuids().isEmpty()) {
+        Pair<Instant, List<String>> result = createJobs(devices, summary);
+        setupRetry(summary, result);
+    }
+
+    //caches next try info
+    private EventSummary setupRetry(EventSummary summary, Pair<Instant, List<String>> result) {
+        if (result != null) {
             EventSummary nextTry = summary.setupNextTry(pollInMinutes + firstRetryAfterPollMinutes);
-            resendTries.put(nextTry.getEventId(), nextTry);
+            if (nextTry != null) {
+                resendTries.put(nextTry.getEventId(), new RetrySummary(nextTry, result));
+                return nextTry;
+            }
+        }
+        return null;
+    }
+
+    private static class RetrySummary {
+        private EventSummary summary;
+        //job creation time, job guids
+        private Pair<Instant, List<String>> result;
+        public RetrySummary(EventSummary summary, Pair<Instant, List<String>> result) {
+            this.summary = summary;
+            this.result = result;
         }
     }
 
@@ -149,9 +168,10 @@ public class EatonCloudJobServiceImpl implements EatonCloudJobService {
     /**
      * Starts jobs, schedules poll for results in 5 minutes
      */
-    private void createJobs(Set<Integer> devices, EventSummary summary) {
+    private Pair<Instant, List<String>> createJobs(Set<Integer> devices, EventSummary summary) {
         Map<Integer, String> guids = deviceDao.getGuids(devices);
         List<EatonCloudJobRequestV1> requests = getRequests(guids, devices, summary);
+        Instant jobCreationTime =  Instant.now();
 
         List<String> jobGuids = new ArrayList<>();
         requests.forEach(request -> {
@@ -160,11 +180,13 @@ public class EatonCloudJobServiceImpl implements EatonCloudJobService {
                 jobGuids.add(jobGuid);
             }
         });
-        summary.setJobGuids(jobGuids);
         if (!jobGuids.isEmpty()) {
             // schedule poll for device status in 5 minutes
-            eatonCloudJobPollService.schedulePoll(summary, pollInMinutes, devices.size());
+            eatonCloudJobPollService.schedulePoll(summary, pollInMinutes, devices.size(), jobGuids, jobCreationTime);
+            return Pair.of(jobCreationTime, jobGuids);
         }
+        return null;
+       
     }
 
     private String startJob(Map<Integer, String> guids, EventSummary summary, Set<Integer> devices,
