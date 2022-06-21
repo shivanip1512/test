@@ -482,7 +482,7 @@ public class MspAccountInformationV4 implements MspAccountInformation {
                 add("Revenue Class", gasServicePoint.getRevenueClass(), true, info, userContext);
                 add("Rate Code", gasServicePoint.getRateCode(), true, info, userContext);
                 add("Service Sub Type", gasServicePoint.getServiceSubType(), true, info, userContext);
-                add("Service Point Status - Connectivity Status", gasServicePoint.getServiceStatus(), true, info, userContext);
+                add("Service Point Status - Service Status", gasServicePoint.getServiceStatus(), true, info, userContext);
                 
                 // Billing Information
                 add(null, "Billing Information", true, info, userContext);
@@ -555,6 +555,7 @@ public class MspAccountInformationV4 implements MspAccountInformation {
                 add("Revenue Class", waterServicePoint.getRevenueClass(), true, info, userContext);
                 add("Rate Code", waterServicePoint.getRateCode(), true, info, userContext);
                 add("Service Sub Type", waterServicePoint.getServiceSubType(), true, info, userContext);
+                add("Service Point Status - Service Status", waterServicePoint.getServiceStatus(), true, info, userContext);
 
                 // Billing Information
                 add(null, "Billing Information", true, info, userContext);
