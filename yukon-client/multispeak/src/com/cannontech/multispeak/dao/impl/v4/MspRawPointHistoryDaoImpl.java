@@ -63,7 +63,28 @@ public class MspRawPointHistoryDaoImpl implements MspRawPointHistoryDao {
 
         int estimatedSize = 0;
 
-        EnumSet<BuiltInAttribute> attributesToLoad = EnumSet.of(BuiltInAttribute.USAGE, BuiltInAttribute.PEAK_DEMAND);
+        EnumSet<BuiltInAttribute> attributesToLoad = EnumSet.of(BuiltInAttribute.USAGE, 
+                                                                BuiltInAttribute.PEAK_DEMAND,
+                                                                BuiltInAttribute.KVAR, 
+                                                                BuiltInAttribute.SUM_KWH,
+                                                                BuiltInAttribute.NET_KWH,
+                                                                BuiltInAttribute.KVA,
+                                                                BuiltInAttribute.KVARH,
+                                                                BuiltInAttribute.POWER_FACTOR,
+                                                                BuiltInAttribute.RECEIVED_KWH,
+                                                                BuiltInAttribute.PEAK_DEMAND_RATE_A,
+                                                                BuiltInAttribute.PEAK_DEMAND_RATE_B,
+                                                                BuiltInAttribute.PEAK_DEMAND_RATE_C,
+                                                                BuiltInAttribute.PEAK_DEMAND_RATE_D,
+                                                                BuiltInAttribute.RECEIVED_KWH_RATE_A,
+                                                                BuiltInAttribute.RECEIVED_KWH_RATE_B,
+                                                                BuiltInAttribute.RECEIVED_KWH_RATE_C,
+                                                                BuiltInAttribute.RECEIVED_KWH_RATE_D,
+                                                                BuiltInAttribute.DELIVERED_KWH_RATE_A,
+                                                                BuiltInAttribute.DELIVERED_KWH_RATE_B,
+                                                                BuiltInAttribute.DELIVERED_KWH_RATE_C,
+                                                                BuiltInAttribute.DELIVERED_KWH_RATE_D);
+        
         Range<Date> dateRange = new Range<Date>(startDate, true, endDate, true);
         // load up results for each attribute
         for (BuiltInAttribute attribute : attributesToLoad) {
