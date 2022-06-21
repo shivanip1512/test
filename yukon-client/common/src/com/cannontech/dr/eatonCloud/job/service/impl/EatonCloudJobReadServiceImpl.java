@@ -23,6 +23,7 @@ import com.cannontech.common.pao.PaoIdentifier;
 import com.cannontech.common.util.Range;
 import com.cannontech.common.util.ScheduledExecutor;
 import com.cannontech.dr.eatonCloud.job.service.EatonCloudJobReadService;
+import com.cannontech.dr.eatonCloud.model.EatonCloudChannel;
 import com.cannontech.dr.eatonCloud.service.v1.EatonCloudDataReadService;
 import com.cannontech.dr.recenteventparticipation.ControlEventDeviceStatus;
 import com.cannontech.dr.recenteventparticipation.dao.RecentEventParticipationDao;
@@ -43,6 +44,12 @@ public class EatonCloudJobReadServiceImpl implements EatonCloudJobReadService{
     private AtomicBoolean isReadingDevices = new AtomicBoolean(false);
     // <external event id, Pair<next read time, job creation time>>
     private Map<Integer, Pair<Instant, Instant>> nextRead = new ConcurrentHashMap<>();
+    
+    private List<EatonCloudChannel> channelsToRead = List.of(EatonCloudChannel.EVENT_STATE, EatonCloudChannel.EVENT_STATE_R1,
+            EatonCloudChannel.EVENT_STATE_R2, EatonCloudChannel.EVENT_STATE_R3, EatonCloudChannel.EVENT_STATE_R4,
+            EatonCloudChannel.ACTIVATION_STATUS_R1, EatonCloudChannel.ACTIVATION_STATUS_R2,
+            EatonCloudChannel.ACTIVATION_STATUS_R3, EatonCloudChannel.ACTIVATION_STATUS_R4);
+
     @PostConstruct
     public void init() {
         String siteGuid = settingDao.getString(GlobalSettingType.EATON_CLOUD_SERVICE_ACCOUNT_ID);
@@ -98,7 +105,7 @@ public class EatonCloudJobReadServiceImpl implements EatonCloudJobReadService{
                             List.of(ControlEventDeviceStatus.SUCCESS_RECEIVED));
                     if (!devicesToRead.isEmpty()) {
                         Multimap<PaoIdentifier, PointData> result = eatonCloudDataReadService.collectDataForRead(devicesToRead,
-                                range, "READ AFTER SHED event id:" + eventId);
+                                range, channelsToRead, "READ AFTER SHED event id:" + eventId);
                         log.info(
                                 "[id:{}] Read devices:{} Read succeeded for {} devices for dates from:{} to:{} [job created at {}]",
                                 eventId,
