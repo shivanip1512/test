@@ -36,6 +36,7 @@ public class TerminalBaseConverter implements Converter<String, TerminalBase> {
             break;
         case TNPP_TERMINAL:
             terminalBase = new TNPPTerminal();
+            break;
         case TAPTERMINAL:
             terminalBase = new PagingTapTerminal();
             break;
