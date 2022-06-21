@@ -101,13 +101,13 @@ public class EatonCloudJobServiceImpl implements EatonCloudJobService {
                 List<String> jobGuids = entry.getValue().result.getValue();
                 Instant resendTime = summary.getCurrentTryTime();
                 if (resendTime.isEqualNow() || resendTime.isBeforeNow()) {
-                    eatonCloudJobPollService.immediatePoll(summary, jobGuids, jobCreationTime);
+                    eatonCloudJobPollService.immediatePoll(summary, jobGuids, jobCreationTime, summary.getCurrentTry().intValue());
                     Set<Integer> devices = recentEventParticipationDao.getDeviceIdsByExternalEventIdAndStatuses(eventId,
                             List.of(FAILED_WILL_RETRY, UNKNOWN));
                     if (devices.isEmpty()) {
                         iter.remove();
                         log.info(summary.getLogSummary(true)
-                                + "Done (No devices found with statuses of FAILED_WILL_RETRY, UNKNOWN).");
+                                + "jobs:{} Done (No devices found with statuses of FAILED_WILL_RETRY, UNKNOWN).", jobGuids);
                         continue;
                     }
                     Pair<Instant, List<String>> result = createJobs(devices, summary);
@@ -182,7 +182,7 @@ public class EatonCloudJobServiceImpl implements EatonCloudJobService {
         });
         if (!jobGuids.isEmpty()) {
             // schedule poll for device status in 5 minutes
-            eatonCloudJobPollService.schedulePoll(summary, pollInMinutes, devices.size(), jobGuids, jobCreationTime);
+            eatonCloudJobPollService.schedulePoll(summary, pollInMinutes, devices.size(), jobGuids, jobCreationTime, summary.getCurrentTry().get());
             return Pair.of(jobCreationTime, jobGuids);
         }
         return null;
@@ -207,7 +207,7 @@ public class EatonCloudJobServiceImpl implements EatonCloudJobService {
             // job failed, mark all devices as failed, failed job will not retry
             devices.forEach(deviceId -> eatonCloudJobResponseProcessor.processError(summary,
                     deviceId, guids.get(deviceId), "Job Creation Failed",
-                    e.getDisplayMessage(), ControlEventDeviceStatus.FAILED));
+                    e.getDisplayMessage(), ControlEventDeviceStatus.FAILED, 1));
             return null;
         }
     }

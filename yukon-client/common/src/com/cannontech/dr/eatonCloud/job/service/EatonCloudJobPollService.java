@@ -13,14 +13,12 @@ public interface EatonCloudJobPollService {
      * 
      * @param minutes      - schedule in X minutes from now
      * @param totalDevices - total devices for the event, needed for send smart notifications
-     * @param jobCreationTime 
-     * @param jobGuids 
      */
-    void schedulePoll(EventSummary summary, int minutes, int totalDevices, List<String> jobGuids, Instant jobCreationTime);
+    void schedulePoll(EventSummary summary, int minutes, int totalDevices, List<String> jobGuids, Instant jobCreationTime, int currentTry);
 
     /**
      * Starts job poll. Job poll returns device status.
      */
-    void immediatePoll(EventSummary summary, List<String> jobGuids, Instant jobCreationTime);
+    void immediatePoll(EventSummary summary, List<String> jobGuids, Instant jobCreationTime, int currentTry);
 
 }

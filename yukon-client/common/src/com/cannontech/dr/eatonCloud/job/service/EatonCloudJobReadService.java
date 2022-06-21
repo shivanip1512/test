@@ -14,8 +14,7 @@ public interface EatonCloudJobReadService {
      * 
      * Example of when read occurs after shed:
      * cycle = 30 minutes; so cycle time / 2 = 15 min
-     * @param jobCreationTime 
      */
-    void setupDeviceRead(EventSummary summary, Instant jobCreationTime);
+    void setupDeviceRead(EventSummary summary, Instant jobCreationTime, int currentTry);
 
 }

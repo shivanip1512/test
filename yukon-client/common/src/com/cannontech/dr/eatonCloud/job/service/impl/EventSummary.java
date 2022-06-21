@@ -16,10 +16,7 @@ import com.cannontech.dr.recenteventparticipation.dao.RecentEventParticipationDa
 import com.cannontech.loadcontrol.messages.LMEatonCloudScheduledCycleCommand;
 import com.google.common.math.IntMath;
 
-public final class EventSummary {
-    private AtomicInteger pollCount = new AtomicInteger(0);
-    private AtomicInteger readCount = new AtomicInteger(0);
-    
+public final class EventSummary {    
     private AtomicInteger currentTry = new AtomicInteger(1);
     private Instant currentTryTime = new Instant();
     private int period;
@@ -31,16 +28,8 @@ public final class EventSummary {
     private Logger log;
     private RecentEventParticipationDao recentEventParticipationDao;
 
-    public int pollIncrementAndGet() {
-        return pollCount.incrementAndGet();
-    }
-    
-    public int readIncrementAndGet() {
-        return readCount.incrementAndGet();
-    }
-    
     public String getLogSummary(boolean displayTryInfo) {
-        return "[id:" + eventId + getTryText(displayTryInfo) + " relay:" + command.getVirtualRelayId() + " ";
+        return "[id:" + eventId + getTryText(displayTryInfo) + "] relay:" + command.getVirtualRelayId() + " ";
     }
 
     private String getTryText(boolean displayTryInfo) {

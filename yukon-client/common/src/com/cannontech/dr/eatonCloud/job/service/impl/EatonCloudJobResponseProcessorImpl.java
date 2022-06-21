@@ -35,13 +35,21 @@ public class EatonCloudJobResponseProcessorImpl implements EatonCloudJobResponse
 
     @Override
     public void processError(EventSummary summary, Integer deviceId, String guid, String jobGuid, String message,
-            ControlEventDeviceStatus status) {
+            ControlEventDeviceStatus status, int currentTry) {
         String deviceName = dbCache.getAllPaosMap().get(deviceId).getPaoName();
         LMEatonCloudScheduledCycleCommand command = summary.getCommand();
+        
+        recentEventParticipationDao.updateDeviceControlEvent(String.valueOf(summary.getEventId()),
+                deviceId,
+                status,
+                Instant.now(),
+                StringUtils.isEmpty(message) ? null : message.length() > 100 ? message.substring(0, 100) : message,
+                currentTry == 1 ? null : Instant.now());
+        
         eatonCloudEventLogService.sendShedJobFailed(deviceName,
                 guid,
                 String.valueOf(summary.getEventId()),
-                String.valueOf(summary.getCurrentTry().get()),
+                String.valueOf(currentTry),
                 command.getDutyCyclePercentage(),
                 command.getDutyCyclePeriod(),
                 command.getCriticality(),
@@ -49,32 +57,25 @@ public class EatonCloudJobResponseProcessorImpl implements EatonCloudJobResponse
                 truncateErrorForEventLog(message),
                 jobGuid);
         
-        log.debug(summary.getLogSummary(false) + "Failed sending shed command to device id:{} guid:{} name:{} error:{}",
-                deviceId, guid, deviceName, truncateErrorForEventLog(message));
-
-        recentEventParticipationDao.updateDeviceControlEvent(String.valueOf(summary.getEventId()),
-                deviceId,
-                status,
-                Instant.now(),
-                StringUtils.isEmpty(message) ? null : message.length() > 100 ? message.substring(0, 100) : message,
-                summary.getCurrentTry().get() == 1 ? null : Instant.now());
+        log.debug(summary.getLogSummary(false) + "Try:{} Failed sending shed command to device id:{} guid:{} name:{} error:{}",
+                currentTry, deviceId, guid, deviceName, truncateErrorForEventLog(message));
     }
     
     @Override
-    public void processSuccess(EventSummary summary, Integer deviceId, String guid, String jobGuid) {
+    public void processSuccess(EventSummary summary, Integer deviceId, String guid, String jobGuid, int currentTry) {
         String deviceName = dbCache.getAllPaosMap().get(deviceId).getPaoName();
         LMEatonCloudScheduledCycleCommand command = summary.getCommand();
         recentEventParticipationDao.updateDeviceControlEvent(String.valueOf(summary.getEventId()), deviceId,
                 ControlEventDeviceStatus.SUCCESS_RECEIVED, new Instant(),
-                null, summary.getCurrentTry().get() == 1 ? null : Instant.now());
+                null, currentTry == 1 ? null : Instant.now());
 
-        log.debug(summary.getLogSummary(jobGuid, false) + "Success sending shed command to device id:{} guid:{} name:{}",
-                deviceId, guid, deviceName);
+        log.debug(summary.getLogSummary(jobGuid, false) + "Try:{} Success sending shed command to device id:{} guid:{} name:{}",
+                currentTry, deviceId, guid, deviceName);
 
         eatonCloudEventLogService.sendShedJob(deviceName,
                 guid,
                 String.valueOf(summary.getEventId()),
-                String.valueOf(summary.getCurrentTry().get()),
+                String.valueOf(currentTry),
                 jobGuid,
                 command.getDutyCyclePercentage(),
                 command.getDutyCyclePeriod(),

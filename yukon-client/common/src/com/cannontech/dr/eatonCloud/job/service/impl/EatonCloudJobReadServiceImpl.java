@@ -45,7 +45,7 @@ public class EatonCloudJobReadServiceImpl implements EatonCloudJobReadService{
     // <external event id, Pair<next read time, job creation time>>
     private Map<Integer, Pair<Instant, Instant>> nextRead = new ConcurrentHashMap<>();
     
-    private final List<EatonCloudChannel> channelsToRead = List.of(EatonCloudChannel.EVENT_STATE,
+    private List<EatonCloudChannel> channelsToRead = List.of(EatonCloudChannel.EVENT_STATE,
             EatonCloudChannel.ACTIVATION_STATUS_R1, EatonCloudChannel.ACTIVATION_STATUS_R2,
             EatonCloudChannel.ACTIVATION_STATUS_R3, EatonCloudChannel.ACTIVATION_STATUS_R4);
 
@@ -70,7 +70,7 @@ public class EatonCloudJobReadServiceImpl implements EatonCloudJobReadService{
     }
     
     @Override
-    public void setupDeviceRead(EventSummary summary, Instant jobCreationTime) {
+    public void setupDeviceRead(EventSummary summary, Instant jobCreationTime, int currentTry) {
        // TODO:
        /* int readTimeFromNowInMinutes = summary.getCommand().getDutyCyclePeriod() == null ? 5 : IntMath.divide(
                 summary.getCommand().getDutyCyclePeriod() / 60,
@@ -81,8 +81,8 @@ public class EatonCloudJobReadServiceImpl implements EatonCloudJobReadService{
         int readTimeFromNowInMinutes = 2;    
         Instant nextReadTime = DateTime.now().plusMinutes(readTimeFromNowInMinutes).toInstant();
         
-        log.info(summary.getLogSummary(false) + "Next device read #{} in {} minutes at {}",
-                summary.readIncrementAndGet(),
+        log.info(summary.getLogSummary(false) + "Next device Try:{} in {} minutes at {}",
+                currentTry,
                 readTimeFromNowInMinutes,
                 nextReadTime.toDateTime().toString("MM-dd-yyyy HH:mm:ss"));
         
