@@ -45,8 +45,7 @@ public class EatonCloudJobReadServiceImpl implements EatonCloudJobReadService{
     // <external event id, Pair<next read time, job creation time>>
     private Map<Integer, Pair<Instant, Instant>> nextRead = new ConcurrentHashMap<>();
     
-    private List<EatonCloudChannel> channelsToRead = List.of(EatonCloudChannel.EVENT_STATE, EatonCloudChannel.EVENT_STATE_R1,
-            EatonCloudChannel.EVENT_STATE_R2, EatonCloudChannel.EVENT_STATE_R3, EatonCloudChannel.EVENT_STATE_R4,
+    private final List<EatonCloudChannel> channelsToRead = List.of(EatonCloudChannel.EVENT_STATE,
             EatonCloudChannel.ACTIVATION_STATUS_R1, EatonCloudChannel.ACTIVATION_STATUS_R2,
             EatonCloudChannel.ACTIVATION_STATUS_R3, EatonCloudChannel.ACTIVATION_STATUS_R4);
 
