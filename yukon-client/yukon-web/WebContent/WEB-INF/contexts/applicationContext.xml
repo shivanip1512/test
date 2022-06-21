@@ -1576,8 +1576,6 @@
     <bean class="com.cannontech.web.api.terminal.PagingTerminalApiCopyValidator"/>
     
     <bean class="com.cannontech.web.api.notificationGroup.service.impl.NotificationGroupServiceImpl"/>
-     <bean class="com.cannontech.web.api.notificationGroup.NotificationGroupApiValidator"/>
-    <bean class="com.cannontech.web.api.notificationGroup.NotificationGroupApiCreateValidator"/>
     <bean class="com.cannontech.web.api.schedules.service.impl.SeasonScheduleServiceImpl"/>
     
     <bean class="com.cannontech.web.api.schedules.service.impl.HolidayScheduleServiceImpl"/>
