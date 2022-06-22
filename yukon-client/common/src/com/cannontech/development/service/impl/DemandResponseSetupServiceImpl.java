@@ -470,13 +470,17 @@ public class DemandResponseSetupServiceImpl implements DemandResponseSetupServic
         IntStream.range(1, drSetup.getPrograms() + 1).forEach(i -> {
             LoadGroupBase loadGroup = copyLoadGroup(drSetup.getTemplateName(), drSetup.getToken(),
                     loadGroups.get(0).getLoadGroupId(), i);
+            log.info("loadGroup {} copied", i);
             LoadProgram program = copyProgram(drSetup.getTemplateName(), drSetup.getToken(), drSetup.getProgramId(), i, constraintId);
+            log.info("program {} copied", i);
             updateProgram(drSetup.getToken(), program, loadGroup);
+            log.info("program {} updated", i);
             
             programNames.add(program.getName());
             loadGroupNames.add(loadGroup.getName());
 
             createdPrograms.add(program);
+            log.info("program {} added", i);
         });
         
         if(log.isDebugEnabled()) {
@@ -492,13 +496,19 @@ public class DemandResponseSetupServiceImpl implements DemandResponseSetupServic
     
     private LoadGroupBase copyLoadGroup(String template, String token, int loadGroupId, int i) {
         String url = webserverUrlResolver.getUrl(addYukon() + "/api/dr/loadGroups/" + loadGroupId + "/copy");
+        log.info("url created");
         LMCopy copy = new LMCopy();
+        log.info("LMCopy created");
         copy.setName(template + " Load Group " + i);
+        log.info("copy name set");
         
         HttpEntity<LMCopy> requestEntity = getRequestWithAuthHeaders(copy, token);
+        log.info("requestEntity created");
         ResponseEntity<LoadGroupBase> response = restTemplate.exchange(getUrl(url), HttpMethod.POST, requestEntity,
                 LoadGroupBase.class);
+        log.info("response sent");
         LoadGroupBase group = response.getBody();
+        log.info("group added");
         group.setId(deviceDao.getDeviceIdByName(copy.getName()));
         log.info("Created:{}", group.getName());
         return group ;
