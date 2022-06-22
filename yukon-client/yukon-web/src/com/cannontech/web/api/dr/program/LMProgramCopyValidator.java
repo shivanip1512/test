@@ -47,9 +47,10 @@ public class LMProgramCopyValidator extends SimpleValidator<LoadProgramCopy> {
                 if (!constraintIds.contains(constraintId)) {
                     errors.rejectValue("constraintId", ApiErrorDetails.DOES_NOT_EXISTS.getCodeString(),
                             new Object[] { constraintId }, "");
+                    log.info("constraint ID not in cached constraint IDs");
                 }
             }
         }
-
+        log.info(errors);
     }
 }
