@@ -41,6 +41,7 @@ public class EatonCloudJobReadServiceImpl implements EatonCloudJobReadService{
     
     private static final Logger log = YukonLogManager.getLogger(EatonCloudJobReadServiceImpl.class);
     
+    private static final String DATE_FORMAT = "MM-dd-yyyy HH:mm:ss";
     private AtomicBoolean isReadingDevices = new AtomicBoolean(false);
     // <external event id, Pair<next read time, job creation time>>
     private Map<Integer, Pair<Instant, Instant>> nextRead = new ConcurrentHashMap<>();
@@ -60,12 +61,14 @@ public class EatonCloudJobReadServiceImpl implements EatonCloudJobReadService{
     
     private void schedule() {
         scheduledExecutor.scheduleAtFixedRate(() -> {
-            if (isReadingDevices.get()) {
-                return;
+            if (isReadingDevices.compareAndSet(false, true)) {
+                try {
+                    readDevices();
+                } catch (Exception e) {
+                    log.error("Error reading devices", e);
+                }
+                isReadingDevices.set(false);
             }
-            isReadingDevices.set(true);
-            readDevices();
-            isReadingDevices.set(false);
         }, 0, 1, TimeUnit.MINUTES);
     }
     
@@ -84,7 +87,7 @@ public class EatonCloudJobReadServiceImpl implements EatonCloudJobReadService{
         log.info(summary.getLogSummary(false) + "Next device Try:{} in {} minutes at {}",
                 currentTry,
                 readTimeFromNowInMinutes,
-                nextReadTime.toDateTime().toString("MM-dd-yyyy HH:mm:ss"));
+                nextReadTime.toDateTime().toString(DATE_FORMAT));
         
         nextRead.put(summary.getEventId(), Pair.of(nextReadTime, jobCreationTime));
     }
@@ -110,17 +113,17 @@ public class EatonCloudJobReadServiceImpl implements EatonCloudJobReadService{
                                 eventId,
                                 devicesToRead.size(),
                                 result.asMap().keySet().size(),
-                                range.getMin().toDateTime().toString("MM-dd-yyyy HH:mm:ss"),
-                                range.getMax().toDateTime().toString("MM-dd-yyyy HH:mm:ss"),
-                                jobCreationTime.toDateTime().toString("MM-dd-yyyy HH:mm:ss"));
+                                range.getMin().toDateTime().toString(DATE_FORMAT),
+                                range.getMax().toDateTime().toString(DATE_FORMAT),
+                                jobCreationTime.toDateTime().toString(DATE_FORMAT));
                     } else {
                         log.info(
                                 "[id:{}] Read devices:{}. Devices with status SUCCESS_RECEIVED not found for dates from:{} to:{} [job created at {}] ",
                                 eventId,
                                 0,
-                                range.getMin().toDateTime().toString("MM-dd-yyyy HH:mm:ss"),
-                                range.getMax().toDateTime().toString("MM-dd-yyyy HH:mm:ss"),
-                                jobCreationTime.toDateTime().toString("MM-dd-yyyy HH:mm:ss"));
+                                range.getMin().toDateTime().toString(DATE_FORMAT),
+                                range.getMax().toDateTime().toString(DATE_FORMAT),
+                                jobCreationTime.toDateTime().toString(DATE_FORMAT));
                     }
                     iter.remove();
                 }

@@ -12,7 +12,6 @@ public interface EatonCloudEventLogService {
             String deviceGuid,
             String externalEventId,
             String tryNumber,
-            String jobGuid,
             int dutyCyclePercent,
             int dutyCyclePeriod,
             int criticality,
@@ -27,8 +26,7 @@ public interface EatonCloudEventLogService {
             int dutyCyclePeriod,
             int criticality,
             int relay,
-            String error,
-            String jobGuid);
+            String error);
 
     @YukonEventLog(transactionality = ExecutorTransactionality.FORCED, category = "dr.eatoncloud")
     public void sendShed(@Arg(ArgEnum.deviceLabel) String deviceLabel,

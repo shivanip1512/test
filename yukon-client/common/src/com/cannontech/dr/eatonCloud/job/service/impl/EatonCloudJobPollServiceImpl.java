@@ -71,9 +71,13 @@ public class EatonCloudJobPollServiceImpl implements EatonCloudJobPollService {
             return;
         }
         executor.schedule(() -> {
-            int successes = poll(summary, jobGuids, jobCreationTime, currentTry);
-            // consider all devices that didn't succeed as failure
-            sendSmartNotifications(summary, totalDevices, totalDevices - successes);
+            try {
+                int successes = poll(summary, jobGuids, jobCreationTime, currentTry);
+                // consider all devices that didn't succeed as failure
+                sendSmartNotifications(summary, totalDevices, totalDevices - successes);
+            } catch (Exception e) {
+                log.error("Error polling", e);
+            }
         }, minutes, TimeUnit.MINUTES);
     }
 
@@ -98,7 +102,7 @@ public class EatonCloudJobPollServiceImpl implements EatonCloudJobPollService {
                 removeProcessedDeviceGuids(summary, response, guidsToDeviceIds);
                 processSuccesses(summary, successes, jobGuid, response, guidsToDeviceIds, currentTry);
                 processFailure(summary, jobGuid, response, guidsToDeviceIds, currentTry);
-                log.info(summary.getLogSummary(jobGuid, false) + "Try:{}  unprocessed successes:{} unprocessed failures:{}",
+                log.info(summary.getLogSummary(jobGuid, false) + "Try:{} unprocessed successes:{} unprocessed failures:{}",
                         currentTry,
                         response.getSuccesses() == null ? 0 : response.getSuccesses().size(),
                         response.getFailures() == null ? 0 : response.getFailures().size());
@@ -167,7 +171,7 @@ public class EatonCloudJobPollServiceImpl implements EatonCloudJobPollService {
         boolean sendNotification = (totalFailed * 100) / totalDevices > failureNotificationPercent;
         if (sendNotification) {
             String program = dbCache.getAllPaosMap().get(summary.getProgramId()).getPaoName();
-            String group = dbCache.getAllPaosMap().get(summary.getCommand().getDutyCyclePeriod()).getPaoName();
+            String group = dbCache.getAllPaosMap().get(summary.getCommand().getGroupId()).getPaoName();
             SmartNotificationEvent event = EatonCloudDrEventAssembler.assemble(group, program, totalDevices, totalFailed);
 
             log.info(summary.getLogSummary(false) + " Sending smart notification event: {}", event);

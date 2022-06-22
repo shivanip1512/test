@@ -7,6 +7,10 @@ import com.cannontech.dr.eatonCloud.service.EatonCloudSendControlService.Command
 import com.cannontech.loadcontrol.messages.LMEatonCloudScheduledCycleCommand;
 
 public class ShedParamHeper {
+    
+    private ShedParamHeper() {
+
+    }
     /**
      * Returns shed parameters
      */

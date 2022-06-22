@@ -80,12 +80,14 @@ public class EatonCloudJobServiceImpl implements EatonCloudJobService {
 
     private void schedule() {
         scheduledExecutor.scheduleAtFixedRate(() -> {
-            if (isSendingCommands.get()) {
-                return;
+            if (isSendingCommands.compareAndSet(false, true)) {
+                try {
+                    resendControl();
+                } catch (Exception e) {
+                    log.error("Error Resending Control", e);
+                }
+                isSendingCommands.set(false);
             }
-            isSendingCommands.set(true);
-            resendControl();
-            isSendingCommands.set(false);
         }, 1, 1, TimeUnit.MINUTES);
     }
 

@@ -48,15 +48,14 @@ public class EatonCloudJobResponseProcessorImpl implements EatonCloudJobResponse
         
         eatonCloudEventLogService.sendShedJobFailed(deviceName,
                 guid,
-                String.valueOf(summary.getEventId()),
-                String.valueOf(currentTry),
+                summary.getEventId()+"/"+jobGuid,
+                String.valueOf(currentTry), 
                 command.getDutyCyclePercentage(),
                 command.getDutyCyclePeriod(),
                 command.getCriticality(),
                 command.getVirtualRelayId(),
-                truncateErrorForEventLog(message),
-                jobGuid);
-        
+                truncateErrorForEventLog(message));
+ 
         log.debug(summary.getLogSummary(false) + "Try:{} Failed sending shed command to device id:{} guid:{} name:{} error:{}",
                 currentTry, deviceId, guid, deviceName, truncateErrorForEventLog(message));
     }
@@ -74,9 +73,8 @@ public class EatonCloudJobResponseProcessorImpl implements EatonCloudJobResponse
 
         eatonCloudEventLogService.sendShedJob(deviceName,
                 guid,
-                String.valueOf(summary.getEventId()),
+                summary.getEventId()+"/"+jobGuid,
                 String.valueOf(currentTry),
-                jobGuid,
                 command.getDutyCyclePercentage(),
                 command.getDutyCyclePeriod(),
                 command.getCriticality(),
