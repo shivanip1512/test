@@ -95,7 +95,25 @@ public enum EatonCloudRetrievalUrl {
             false, 
             true,
             false,
-            false);
+            false),
+    JOB(EatonCloudVersion.V1, "/v1/job/immediate",
+            "https://confluence-prod.tcc.etn.com/display/EASCBCD/Immediate+Job+API+proposal",
+            //200, 400, 401, 404
+            List.of(HttpStatus.OK, HttpStatus.BAD_REQUEST, HttpStatus.UNAUTHORIZED, HttpStatus.NOT_FOUND),
+            ImmutableMap.of(),
+            true, 
+            false,
+            true,
+            false),
+    JOB_STATUS(EatonCloudVersion.V1, "/v1/job/immediate/{id}",
+            "https://confluence-prod.tcc.etn.com/display/EASCBCD/Immediate+Job+API+proposal",
+            //200, 400, 401, 404
+            List.of(HttpStatus.OK, HttpStatus.BAD_REQUEST, HttpStatus.UNAUTHORIZED, HttpStatus.NOT_FOUND),
+            ImmutableMap.of("Job Guid", "Enter job guid to get status"),
+            false, 
+            true,
+            true,
+            true);
     private EatonCloudVersion version;
     private String suffix;
     private String doc;

@@ -43,6 +43,9 @@ import com.cannontech.dr.eatonCloud.model.v1.EatonCloudCommunicationExceptionV1;
 import com.cannontech.dr.eatonCloud.model.v1.EatonCloudCredentialsV1;
 import com.cannontech.dr.eatonCloud.model.v1.EatonCloudDeviceDetailV1;
 import com.cannontech.dr.eatonCloud.model.v1.EatonCloudErrorHandlerV1;
+import com.cannontech.dr.eatonCloud.model.v1.EatonCloudJobRequestV1;
+import com.cannontech.dr.eatonCloud.model.v1.EatonCloudJobResponseV1;
+import com.cannontech.dr.eatonCloud.model.v1.EatonCloudJobStatusResponseV1;
 import com.cannontech.dr.eatonCloud.model.v1.EatonCloudSecretValueV1;
 import com.cannontech.dr.eatonCloud.model.v1.EatonCloudServiceAccountDetailV1;
 import com.cannontech.dr.eatonCloud.model.v1.EatonCloudSiteDevicesV1;
@@ -255,6 +258,13 @@ public class EatonCloudSimulatorController {
                 processSuccess(params, json, getFormattedJson(detail));
             } else if (endpoint == EatonCloudRetrievalUrl.ROTATE_ACCOUNT_SECRET) {
                 EatonCloudSecretValueV1 value = eatonCloudCommunicationServiceV1.rotateAccountSecret(1);
+                processSuccess(params, json, getFormattedJson(value));
+            } else if (endpoint == EatonCloudRetrievalUrl.JOB) {
+                EatonCloudJobRequestV1 request = new ObjectMapper().readValue(jsonParam, EatonCloudJobRequestV1.class);
+                EatonCloudJobResponseV1 value = eatonCloudCommunicationServiceV1.createJob(request);
+                processSuccess(params, json, getFormattedJson(value));
+            } else if (endpoint == EatonCloudRetrievalUrl.JOB_STATUS) {
+                EatonCloudJobStatusResponseV1 value = eatonCloudCommunicationServiceV1.getJobStatus(paramList.get(0));
                 processSuccess(params, json, getFormattedJson(value));
             }
         } catch (EatonCloudCommunicationExceptionV1 e) {

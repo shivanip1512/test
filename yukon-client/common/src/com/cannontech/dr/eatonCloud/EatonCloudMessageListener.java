@@ -11,8 +11,11 @@ import org.joda.time.Instant;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import com.cannontech.clientutils.YukonLogManager;
+import com.cannontech.common.config.ConfigurationSource;
+import com.cannontech.common.config.MasterConfigBoolean;
 import com.cannontech.database.data.lite.LiteYukonPAObject;
 import com.cannontech.database.incrementer.NextValueHelper;
+import com.cannontech.dr.eatonCloud.job.service.EatonCloudJobService;
 import com.cannontech.dr.eatonCloud.service.EatonCloudSendControlService;
 import com.cannontech.dr.recenteventparticipation.dao.RecentEventParticipationDao;
 import com.cannontech.dr.recenteventparticipation.service.RecentEventParticipationService;
@@ -40,7 +43,8 @@ public class EatonCloudMessageListener {
     @Autowired private ApplianceAndProgramDao applianceAndProgramDao;
     @Autowired private RecentEventParticipationDao recentEventParticipationDao;
     @Autowired private EatonCloudSendControlService eatonCloudSendControlService;
-    
+    @Autowired private EatonCloudJobService eatonCloudJobService;
+    @Autowired private ConfigurationSource configurationSource;
     
     public void handleCyclingControlMessage(LMEatonCloudScheduledCycleCommand command) {
         Duration controlDuration = new Duration(command.getControlStartDateTime(), command.getControlEndDateTime());
@@ -63,7 +67,12 @@ public class EatonCloudMessageListener {
                 command.getControlStartDateTime(), 
                 command.getControlEndDateTime());
         
-        eatonCloudSendControlService.sendInitialShedCommand(programId, devices, command, eventId);
+        if (configurationSource.getBoolean(MasterConfigBoolean.EATON_CLOUD_JOBS_TREND, false)) {
+            eatonCloudJobService.createJobs(programId, devices, command, eventId);
+        } else {
+            //legacy
+            eatonCloudSendControlService.sendInitialShedCommand(programId, devices, command, eventId);
+        }
         
         controlHistoryService.sendControlHistoryShedMessage(command.getGroupId(),
                 command.getControlStartDateTime(),
@@ -87,10 +96,17 @@ public class EatonCloudMessageListener {
             return;
         }
         
-        Integer eventId = recentEventParticipationDao.getExternalEventId(command.getGroupId());
-        if (eventId != null) {
-            eatonCloudSendControlService.sendRestoreCommands(devices, command, eventId);
+        
+        if (configurationSource.getBoolean(MasterConfigBoolean.EATON_CLOUD_JOBS_TREND, false)) {
+            // not supported
+        } else {
+            // legacy
+            Integer eventId = recentEventParticipationDao.getExternalEventId(command.getGroupId());
+            if (eventId != null) {
+                eatonCloudSendControlService.sendRestoreCommands(devices, command, eventId);
+            }
         }
+        
         controlHistoryService.sendControlHistoryRestoreMessage(command.getGroupId(), Instant.now());
     }
     

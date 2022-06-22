@@ -45,6 +45,7 @@ public class EatonCloudMessageHandler extends SimulatorMessageHandler {
             .collect(Collectors.toMap(v -> v, v -> HttpStatus.OK.value()));
     
     private Map<EatonCloudRetrievalUrl, Integer> successPercentages= new HashMap<>();
+    private Map<EatonCloudRetrievalUrl, Integer> unknownPercentages= new HashMap<>();
    
     @Override
     public SimulatorResponse handle(SimulatorRequest simulatorRequest) {
@@ -88,6 +89,7 @@ public class EatonCloudMessageHandler extends SimulatorMessageHandler {
                 } else {
                     statuses = request.getStatuses();
                     successPercentages = request.getSuccessPercentages();
+                    unknownPercentages = request.getUnknownPercentages();
                 }
                 return new SimulatorResponseBase(true);
             } else if (simulatorRequest instanceof EatonCloudSimulatorDeviceCreateRequest) {
@@ -126,6 +128,8 @@ public class EatonCloudMessageHandler extends SimulatorMessageHandler {
         generator.setStatus(status);
         generator.setSuccessPercentage(HttpStatus.OK.value() == status && successPercentages
                 .get(url) != null ? successPercentages.get(url) : 100);
+        generator.setUnknownPercentage(HttpStatus.OK.value() == status && unknownPercentages
+                .get(url) != null ? unknownPercentages.get(url) : 0);
     }
 
     private EatonCloudDataGenerator getGenerator(EatonCloudVersion version) {

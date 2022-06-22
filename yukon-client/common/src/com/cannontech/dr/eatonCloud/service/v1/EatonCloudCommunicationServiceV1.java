@@ -9,6 +9,9 @@ import com.cannontech.dr.eatonCloud.model.v1.EatonCloudCommandRequestV1;
 import com.cannontech.dr.eatonCloud.model.v1.EatonCloudCommandResponseV1;
 import com.cannontech.dr.eatonCloud.model.v1.EatonCloudCommunicationExceptionV1;
 import com.cannontech.dr.eatonCloud.model.v1.EatonCloudDeviceDetailV1;
+import com.cannontech.dr.eatonCloud.model.v1.EatonCloudJobRequestV1;
+import com.cannontech.dr.eatonCloud.model.v1.EatonCloudJobResponseV1;
+import com.cannontech.dr.eatonCloud.model.v1.EatonCloudJobStatusResponseV1;
 import com.cannontech.dr.eatonCloud.model.v1.EatonCloudSecretValueV1;
 import com.cannontech.dr.eatonCloud.model.v1.EatonCloudServiceAccountDetailV1;
 import com.cannontech.dr.eatonCloud.model.v1.EatonCloudSiteDevicesV1;
@@ -112,4 +115,14 @@ public interface EatonCloudCommunicationServiceV1 {
      * @throws EatonCloudCommunicationExceptionV1
      */
     EatonCloudSecretValueV1 rotateAccountSecret(int secretNumber) throws EatonCloudCommunicationExceptionV1;
+
+    /**
+     * Returns job status
+     */
+    EatonCloudJobStatusResponseV1 getJobStatus(String jobGuid);
+
+    /**
+     * Creates job status
+     */
+    EatonCloudJobResponseV1 createJob(EatonCloudJobRequestV1 request) throws EatonCloudCommunicationExceptionV1;
 }
