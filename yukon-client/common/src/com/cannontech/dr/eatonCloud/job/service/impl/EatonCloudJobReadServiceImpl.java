@@ -1,5 +1,6 @@
 package com.cannontech.dr.eatonCloud.job.service.impl;
 
+import java.math.RoundingMode;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
@@ -32,6 +33,7 @@ import com.cannontech.system.GlobalSettingType;
 import com.cannontech.system.dao.GlobalSettingDao;
 import com.google.common.base.Strings;
 import com.google.common.collect.Multimap;
+import com.google.common.math.IntMath;
 
 public class EatonCloudJobReadServiceImpl implements EatonCloudJobReadService{
     @Autowired @Qualifier("main") private ScheduledExecutor scheduledExecutor;
@@ -75,13 +77,13 @@ public class EatonCloudJobReadServiceImpl implements EatonCloudJobReadService{
     @Override
     public void setupDeviceRead(EventSummary summary, Instant jobCreationTime, int currentTry) {
        // TODO:
-       /* int readTimeFromNowInMinutes = summary.getCommand().getDutyCyclePeriod() == null ? 5 : IntMath.divide(
+        int readTimeFromNowInMinutes = summary.getCommand().getDutyCyclePeriod() == null ? 5 : IntMath.divide(
                 summary.getCommand().getDutyCyclePeriod() / 60,
-                2, RoundingMode.CEILING);*/
+                2, RoundingMode.CEILING);
         
         // using for testing
         
-        int readTimeFromNowInMinutes = 2;    
+        //int readTimeFromNowInMinutes = 2;    
         Instant nextReadTime = DateTime.now().plusMinutes(readTimeFromNowInMinutes).toInstant();
         
         log.info(summary.getLogSummary(false) + "Next device Try:{} in {} minutes at {}",
