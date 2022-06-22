@@ -41,7 +41,9 @@ import com.cannontech.common.dr.setup.LoadGroupBase;
 import com.cannontech.common.dr.setup.ProgramDetails;
 import com.cannontech.common.util.WebserverUrlResolver;
 import com.cannontech.common.util.YukonHttpProxy;
+import com.cannontech.core.dao.DBPersistentDao;
 import com.cannontech.core.dao.DeviceDao;
+import com.cannontech.database.data.device.lm.LMProgramBase;
 import com.cannontech.database.data.lite.LiteYukonPAObject;
 import com.cannontech.development.model.DemandResponseSetup;
 import com.cannontech.development.service.DemandResponseSetupService;
@@ -89,6 +91,7 @@ public class DemandResponseSetupServiceImpl implements DemandResponseSetupServic
     @Autowired private ApplianceCategoryService applianceCategoryService;
     @Autowired private StarsInventoryBaseService starsInventoryBaseService;
     @Autowired private EnrollmentDao enrollmentDao;
+    @Autowired private DBPersistentDao dbPersistentDao;
     private RestTemplate restTemplate;
 
     @Override
@@ -220,10 +223,11 @@ public class DemandResponseSetupServiceImpl implements DemandResponseSetupServic
         Summary notes = new Summary();
         notes.notes.add("Setup:" + drSetup);
         LiteYukonPAObject program = dbCache.getAllPaosMap().get(drSetup.getProgramId());
+        LMProgramBase lMProgramBase = (LMProgramBase) dbPersistentDao.retrieveDBPersistent(program);
         log.info("Setup started program:{} settings:{}", program, drSetup);
         if (lock.tryLock()) {
             try {
-                List<LoadProgram> createdPrograms = createProgramsAndLoadGroups(drSetup, notes);
+                List<LoadProgram> createdPrograms = createProgramsAndLoadGroups(drSetup, notes, lMProgramBase.getProgram().getConstraintID());
                 createControlAreas(drSetup, createdPrograms, notes);
                 createScenarios(drSetup, createdPrograms, notes);
 
@@ -451,7 +455,7 @@ public class DemandResponseSetupServiceImpl implements DemandResponseSetupServic
     }
     
     
-    private List<LoadProgram> createProgramsAndLoadGroups(DemandResponseSetup drSetup, Summary notes) {
+    private List<LoadProgram> createProgramsAndLoadGroups(DemandResponseSetup drSetup, Summary notes, int constraintId) {
         List<LoadProgram> createdPrograms = new ArrayList<>();
         List<LoadGroup> loadGroups = loadGroupDao.getByProgramId(drSetup.getProgramId());
 
@@ -461,7 +465,7 @@ public class DemandResponseSetupServiceImpl implements DemandResponseSetupServic
         IntStream.range(1, drSetup.getPrograms() + 1).forEach(i -> {
             LoadGroupBase loadGroup = copyLoadGroup(drSetup.getTemplateName(), drSetup.getToken(),
                     loadGroups.get(0).getLoadGroupId(), i);
-            LoadProgram program = copyProgram(drSetup.getTemplateName(), drSetup.getToken(), drSetup.getProgramId(), i);
+            LoadProgram program = copyProgram(drSetup.getTemplateName(), drSetup.getToken(), drSetup.getProgramId(), i, constraintId);
             updateProgram(drSetup.getToken(), program, loadGroup);
             
             programNames.add(program.getName());
@@ -495,10 +499,10 @@ public class DemandResponseSetupServiceImpl implements DemandResponseSetupServic
         return group ;
     }
     
-    private LoadProgram copyProgram(String template, String token, int programId, int i) {
+    private LoadProgram copyProgram(String template, String token, int programId, int i, int contraintId) {
         String url = webserverUrlResolver.getUrl(addYukon() + "/api/dr/loadPrograms/" + programId + "/copy");
         ProgramConstraint pr = new ProgramConstraint();
-        pr.setConstraintId(10);
+        pr.setConstraintId(contraintId);
         LoadProgramCopy copy = new LoadProgramCopy();
         copy.setConstraint(pr);
         copy.setName(template + " Program " + i);

@@ -75,7 +75,7 @@ public class NotificationGroup implements DBPersistentConverter<com.cannontech.d
     public void buildModel(com.cannontech.database.data.notification.NotificationGroup notificationGroup) {
         setId(notificationGroup.getNotificationGroup().getNotificationGroupID());
         setName(notificationGroup.getNotificationGroup().getGroupName());
-        setEnabled(notificationGroup.getNotificationGroup().getDisableFlag() == "N" ? true : false);
+        setEnabled(notificationGroup.getNotificationGroup().getDisableFlag().equals("N") ? true : false);
     }
 
     @Override
