@@ -1071,7 +1071,7 @@
     <entry key="yukon.common.events.dr.eatoncloud.sendShedJob.9">Criticality</entry>
     <entry key="yukon.common.events.dr.eatoncloud.sendShedJob.10">Relay</entry>
     
-    <entry key="yukon.common.events.dr.eatoncloud.sendShedFailed">Failed to send shed command with the following settings: Device: {1}, GUID: {2}, Duty Cycle Percent: {7}, Duty Cycle Period: {8}, Criticality: {9}, Relay: {10}, Event Id/Job Guid: {4}, Try: {5}, Error: {3}</entry>
+    <entry key="yukon.common.events.dr.eatoncloud.sendShedJobFailed">Failed to send shed command with the following settings: Device: {1}, GUID: {2}, Duty Cycle Percent: {7}, Duty Cycle Period: {8}, Criticality: {9}, Relay: {10}, Event Id/Job Guid: {4}, Try: {5}, Error: {3}</entry>
     <entry key="yukon.common.events.dr.eatoncloud.sendShedJobFailed.2">GUID</entry>
     <entry key="yukon.common.events.dr.eatoncloud.sendShedJobFailed.3">Error</entry>
     <entry key="yukon.common.events.dr.eatoncloud.sendShedJobFailed.4">Event Id/Job Guid</entry>
