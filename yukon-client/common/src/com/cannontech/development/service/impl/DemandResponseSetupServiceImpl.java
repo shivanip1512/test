@@ -462,6 +462,11 @@ public class DemandResponseSetupServiceImpl implements DemandResponseSetupServic
         List<String> programNames = new ArrayList<>();
         List<String> loadGroupNames = new ArrayList<>();
         
+        Set<Integer> constraintIds = dbCache.getAllLMProgramConstraints().stream()
+                .map(lmConstraint -> lmConstraint.getConstraintID())
+                .collect(Collectors.toSet());
+        log.info("Program constraint ID : {} Cached constraint IDs:{}", constraintId, constraintIds);
+        
         IntStream.range(1, drSetup.getPrograms() + 1).forEach(i -> {
             LoadGroupBase loadGroup = copyLoadGroup(drSetup.getTemplateName(), drSetup.getToken(),
                     loadGroups.get(0).getLoadGroupId(), i);
