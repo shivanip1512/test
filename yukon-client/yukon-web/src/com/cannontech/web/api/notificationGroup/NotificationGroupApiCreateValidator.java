@@ -18,7 +18,8 @@ public class NotificationGroupApiCreateValidator extends SimpleValidator<Notific
     @Override
     protected void doValidation(NotificationGroup notificationGroup, Errors errors) {
         // Check if name is NULL
-        yukonApiValidationUtils.checkIfFieldRequired("name", errors, notificationGroup.getName(), "Name");
-
+        if (!errors.hasFieldErrors("name")) {
+            yukonApiValidationUtils.checkIfFieldRequired("name", errors, notificationGroup.getName(), "Name");
+        }
     }
 }
