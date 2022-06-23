@@ -148,6 +148,7 @@ try
         CTILOG_ERROR(dout, "The point quality on this Auto Remote Control attribute is invalid, it is neither set to Manual nor Normal Quality");
         return false;
     }
+
     if (autoBlockEnableAttribute.timestamp < thresholdTime)
     {
         CTILOG_ERROR(dout, "The time on this Auto Block Enable attribute is outdated");
