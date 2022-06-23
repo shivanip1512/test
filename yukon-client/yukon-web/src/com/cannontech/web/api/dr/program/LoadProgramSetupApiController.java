@@ -5,7 +5,6 @@ import java.util.List;
 
 import javax.validation.Valid;
 
-import org.apache.logging.log4j.core.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -20,7 +19,6 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
-import com.cannontech.clientutils.YukonLogManager;
 import com.cannontech.common.dr.gear.setup.model.ProgramGear;
 import com.cannontech.common.dr.program.setup.model.LoadProgram;
 import com.cannontech.common.dr.program.setup.model.LoadProgramCopy;
@@ -35,8 +33,6 @@ import com.cannontech.web.security.annotation.CheckPermissionLevel;
 @CheckPermissionLevel(property = YukonRoleProperty.DR_SETUP_PERMISSION, level = HierarchyPermissionLevel.VIEW)
 @RequestMapping("/dr/loadPrograms")
 public class LoadProgramSetupApiController {
-    private static final Logger log = YukonLogManager.getLogger(LoadProgramSetupApiController.class);
-    
     @Autowired private LoadProgramSetupService loadProgramService;
     @Autowired LMProgramCopyValidator lmProgramCopyValidator;
     @Autowired LMProgramValidator lmProgramValidator;
@@ -67,9 +63,7 @@ public class LoadProgramSetupApiController {
     @CheckPermissionLevel(property = YukonRoleProperty.DR_SETUP_PERMISSION, level = HierarchyPermissionLevel.CREATE)
     public ResponseEntity<Object> copy(@PathVariable int id, @Valid @RequestBody LoadProgramCopy loadProgramCopy,
             YukonUserContext userContext) {
-        log.info("copy start path id: {}", id);
         LoadProgram copiedLoadProgram = loadProgramService.copy(id, loadProgramCopy, userContext.getYukonUser());
-        log.info("copy end copied program id: {}", copiedLoadProgram.getProgramId());
         return new ResponseEntity<>(copiedLoadProgram, HttpStatus.OK);
     }
 
