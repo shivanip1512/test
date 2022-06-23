@@ -136,13 +136,14 @@ try
     auto autoRemoteControlAttribute = getCompleteValueByAttribute(Attribute::AutoRemoteControl);
     auto autoBlockEnableAttribute   = getCompleteValueByAttribute(Attribute::AutoBlockEnable);
 
+    std::set<int> goodQualities{ ManualQuality, NormalQuality };
+
     if (autoRemoteControlAttribute.timestamp < thresholdTime)
     {
         CTILOG_ERROR(dout, "The time on this Auto Remote Control attribute is outdated");
         return false;
     }
-    if (autoRemoteControlAttribute.quality != PointQuality_t::ManualQuality || 
-        autoRemoteControlAttribute.quality != PointQuality_t::NormalQuality)
+    if (!goodQualities.count(autoRemoteControlAttribute.quality))
     {
         CTILOG_ERROR(dout, "The point quality on this Auto Remote Control attribute is invalid, it is neither set to Manual nor Normal Quality");
         return false;
@@ -152,8 +153,7 @@ try
         CTILOG_ERROR(dout, "The time on this Auto Block Enable attribute is outdated");
         return false;
     }
-    if (autoBlockEnableAttribute.quality != PointQuality_t::ManualQuality || 
-        autoBlockEnableAttribute.quality != PointQuality_t::NormalQuality)
+    if (!goodQualities.count(autoBlockEnableAttribute.quality))
     {
         CTILOG_ERROR(dout, "The point quality on this Auto Block Enable attribute is invalid, it is neither set to Manual nor Normal Quality");
         return false;
