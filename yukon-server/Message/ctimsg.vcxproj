@@ -517,6 +517,7 @@ if exist $(OutDir)$(TargetName).pdb xcopy /d/y/f $(OutDir)$(TargetName).pdb $(So
     <ClInclude Include="include\PointDataRequest.h" />
     <ClInclude Include="include\PointDataRequestFactory.h" />
     <ClInclude Include="include\PorterResponseMessage.h" />
+    <ClInclude Include="include\RfnBroadcastMessaging.h" />
     <ClInclude Include="include\RfnDataStreamingUpdate.h" />
     <ClInclude Include="include\RfnEdgeDrMessaging.h" />
     <ClInclude Include="include\RfnMeterDisconnectMsg.h" />

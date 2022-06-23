@@ -47,7 +47,7 @@ class IM_EX_CTIPIL PilServer : public CtiServer
    long                 _currentUserMessageId;
 
    RfnRequestManager    _rfnRequestManager;
-   unsigned long        _rfnRequestId;
+   std::atomic_ulong    _rfnRequestId;
 
    using amq_cm = Messaging::ActiveMQConnectionManager;
 

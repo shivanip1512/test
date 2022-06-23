@@ -425,6 +425,9 @@
     <ClInclude Include="include\RfnEdgeDrMessaging.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="include\RfnBroadcastMessaging.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ResourceCompile Include="..\versioninfo.rc">

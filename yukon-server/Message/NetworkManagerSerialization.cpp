@@ -172,9 +172,15 @@ MessagePtr<Thrift::NetworkManagerRequestAck>::type populateThrift( const Network
     hdr.__set_clientGuid( imsg.header.clientGuid );
     hdr.__set_sessionId ( imsg.header.sessionId );
     hdr.__set_messageId ( imsg.header.messageId );
-    hdr.__set_groupId   ( imsg.header.groupId );
-    hdr.__set_priority  ( imsg.header.priority );
-    hdr.__set_expiration( imsg.header.expiration );
+    if ( imsg.header.groupId )
+    {
+        hdr.__set_groupId( *imsg.header.groupId );
+    }
+    hdr.__set_priority(imsg.header.priority);
+    if ( imsg.header.expiration )
+    {
+        hdr.__set_expiration( *imsg.header.expiration );
+    }
 
     //  Default all messages to expire with our session
     hdr.__set_lifetime  ( Thrift::NetworkManagerMessageLifetime::SESSION );

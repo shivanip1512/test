@@ -13,6 +13,7 @@
 #include "std_helper.h"
 #include "mgr_device.h"
 #include "MeterProgramStatusArchiveRequestMsg.h"
+#include "RfnBroadcastMessaging.h"
 
 #include <boost/algorithm/string/predicate.hpp>
 #include <boost/range/adaptor/map.hpp>
@@ -1009,6 +1010,40 @@ void RfnRequestManager::submitRequests(RfnDeviceRequestList requests)
     LockGuard guard(_submittedRequestsMux);
 
     std::move(std::begin(requests), std::end(requests), std::back_inserter(_submittedRequests));
+}
+
+
+void RfnRequestManager::submitBroadcastRequest(
+
+    Messaging::Rfn::RfnBroadcastRequest    & request,
+
+    BroadcastResponseCallback        responded,
+
+    std::chrono::seconds    timeout,
+    BroadcastTimeoutCallback         timedOut 
+
+    )
+{
+    const auto Now = std::chrono::system_clock::now();
+
+
+
+    // jmoc -- todo -- stuff
+
+
+// Now + timeout,
+
+ //   _broadcastTimeouts.emplace( request.messageId, BroadcastRequestTimeout { Now + timeout, timedOut } );
+
+    _broadcastCallbacks.emplace( request.messageId, BroadcastCallbacks { responded, timedOut } );
+
+
+    _broadcastTimeouts.emplace( Now + timeout, request.messageId  );
+
+// need to send the active mq request here
+
+    //submit with no callback thingee..
+
 }
 
 

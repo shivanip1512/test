@@ -41,6 +41,7 @@
 #include "RfnMeterDisconnectMsg.h"
 #include "RfnMeterReadMsg.h"
 #include "RfnEdgeDrMessaging.h"
+#include "RfnBroadcastMessaging.h"
 
 #include "mgr_rfn_request.h"
 #include "cmd_rfn_ConfigNotification.h"
@@ -216,7 +217,11 @@ void PilServer::mainThread()
 
     if( CtiDeviceSPtr systemDevice = DeviceManager.getDeviceByID(0) )
     {
-        systemDevice->getDynamicInfo(CtiTableDynamicPaoInfo::Key_RFN_E2eRequestId, _rfnRequestId);
+        unsigned long cachedRfnRequestId;
+
+        systemDevice->getDynamicInfo(CtiTableDynamicPaoInfo::Key_RFN_E2eRequestId, cachedRfnRequestId);
+
+        _rfnRequestId.store(cachedRfnRequestId);
     }
 
     /*
@@ -1332,39 +1337,73 @@ void PilServer::handleRfnEdgeDrBroadcastRequest( const amq_cm::MessageDescriptor
 
     // Log the incoming request (for now)...
     {
-        CTILOG_DEBUG( dout, "Received EdgeDR unicast request:" << FormattedList::of(
+        CTILOG_DEBUG( dout, "Received EdgeDR broadcast request:" << FormattedList::of(
             "Message GUID", req->messageGuid,
             "Payload",      req->payload,
             "Priority",     req->priority ? to_string( req->priority.value() ) : "<empty>" ) );
     }
 
-
-
-
-    // TODO - stuff to send message(s)
-
-
-
-
-    EdgeDrBroadcastResponse resp
+    static const std::map<EdgeBroadcastMessagePriority, RfnBroadcastDeliveryType> priorityXlator
     {
-        req->messageGuid,
-        std::nullopt    // no error...
+        { EdgeBroadcastMessagePriority::IMMEDIATE,      RfnBroadcastDeliveryType::IMMEDIATE     },
+        { EdgeBroadcastMessagePriority::NON_REAL_TIME,  RfnBroadcastDeliveryType::NON_REAL_TIME }
     };
 
-    auto serializedResponse = Messaging::Serialization::serialize( resp );
+    short nmMessageId = 0;      // where is this from...?  _rfnRequestId++ <-- needs atomiccccc ... and low 16 bits
 
-    if ( serializedResponse.empty() )
+    // is NON_REAL_TIME the right default here...?
+
+    RfnBroadcastDeliveryType delivery = 
+        mapFindOrDefault( priorityXlator,
+                          req->priority.value_or( EdgeBroadcastMessagePriority::NON_REAL_TIME ),
+                          RfnBroadcastDeliveryType::NON_REAL_TIME );
+
+    NetworkManagerRequestHeader nmHeader = SessionInfoManager::getNmHeader( 8 );
+
+    RfnBroadcastRequest     bcast_req
     {
-        CTILOG_WARN( dout, "Could not serialize response message" << FormattedList::of(
-            "Message GUID", req->messageGuid
-            // error info..?
-            ) );
+        2,              // 2 == Central Controller
+        nmMessageId,
+        7,              // 7 == DER
+        delivery,
+        req->payload,
+        nmHeader
+    };
 
-        return;
-    }
+    _rfnRequestManager.submitBroadcastRequest(
+        bcast_req,
+        [=]( )//RfnBroadcastReply or whatever its called goes here)
+        {
+            // uhh...
 
-    callback( std::move( serializedResponse ) );
+            // pretty much the same 
+
+            // deserialiaze  the rfnbroacast response
+
+            // form and send the edge broacast response -- like below for timeout
+
+
+        },
+        std::chrono::hours{ 2 },    // how long...
+        [=]()
+        {
+            EdgeDrBroadcastResponse response
+            {
+                req->messageGuid,
+                EdgeDrError { ClientErrors::E2eRequestTimeout, "EdgeDR broadcast request timed out" }
+            };
+
+            if ( auto serialized = Messaging::Serialization::serialize( response ); ! serialized.empty() )
+            {
+                callback( std::move( serialized ) );
+            }
+            else
+            {
+                CTILOG_WARN( dout, "Could not serialize EdgeDR broadcast response message" << FormattedList::of(
+                                   "Message GUID", req->messageGuid ) );
+            }
+        }
+    );
 }
 
 void PilServer::submitOutMessages(CtiDeviceBase::OutMessageList& outList)
@@ -1524,14 +1563,14 @@ struct RequestExecuter : Devices::DeviceHandler
 {
     CtiRequestMsg *pReq;
     CtiCommandParser &parse;
-    unsigned long & rfnRequestId;
+    std::atomic_ulong & rfnRequestId;
 
     CtiDeviceBase::OutMessageList outList;
     std::vector<RfnDeviceRequest> rfnRequests;
     CtiDeviceBase::CtiMessageList vgList;
     CtiDeviceBase::CtiMessageList retList;
 
-    RequestExecuter(CtiRequestMsg * pReq_, CtiCommandParser & parse_, unsigned long & rfnRequestId_) :
+    RequestExecuter(CtiRequestMsg * pReq_, CtiCommandParser & parse_, std::atomic_ulong & rfnRequestId_) :
         pReq (pReq_),
         parse(parse_),
         rfnRequestId(rfnRequestId_)

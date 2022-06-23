@@ -363,6 +363,7 @@ if exist $(OutDir)$(TargetName).pdb xcopy /d/y/f $(OutDir)$(TargetName).pdb $(So
     </ClCompile>
     <ClCompile Include="pilserver.cpp">
     </ClCompile>
+    <ClCompile Include="RfnBroadcastMessaging_serialization.cpp" />
     <ClCompile Include="RfnEdgeDrMessaging_serialization.cpp" />
     <ClCompile Include="RfnMeterDisconnectMsg_serialization.cpp" />
     <ClCompile Include="RfnMeterReadMsg_serialization.cpp" />
