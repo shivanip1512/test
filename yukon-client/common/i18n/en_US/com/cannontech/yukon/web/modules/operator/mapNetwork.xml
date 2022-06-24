@@ -9,13 +9,13 @@
     <entry key="yukon.web.modules.operator.mapNetwork.primary">Primary Route</entry>
     <entry key="yukon.web.modules.operator.mapNetwork.parent">Parent Node</entry>
     <entry key="yukon.web.modules.operator.mapNetwork.nearby">Nearby</entry>
-    <entry key="yukon.web.modules.operator.mapNetwork.neighborsLineColor">Neighbors Line Color</entry>
+    <entry key="yukon.web.modules.operator.mapNetwork.neighborsLineColor">Line Color</entry>
     <entry key="yukon.web.modules.operator.mapNetwork.etxBand1">ETX Band 1</entry>
     <entry key="yukon.web.modules.operator.mapNetwork.etxBand2">ETX Band 2</entry>
     <entry key="yukon.web.modules.operator.mapNetwork.etxBand3">ETX Band 3</entry>
     <entry key="yukon.web.modules.operator.mapNetwork.etxBand4">ETX Band 4</entry>
     <entry key="yukon.web.modules.operator.mapNetwork.etxBand5">ETX Band 5 or more</entry>
-    <entry key="yukon.web.modules.operator.mapNetwork.neighborsLineThickness">Neighbors Line Thickness</entry>
+    <entry key="yukon.web.modules.operator.mapNetwork.neighborsLineThickness">Line Thickness</entry>
     <entry key="yukon.web.modules.operator.mapNetwork.numSamplesZeroToFifty"># Samples 0 - 50</entry>
     <entry key="yukon.web.modules.operator.mapNetwork.numSamplesFiftyOneToFiveHundred"># Samples 51 - 500</entry>
     <entry key="yukon.web.modules.operator.mapNetwork.numSamplesOverFiveHundred"># Samples Over 500</entry>
