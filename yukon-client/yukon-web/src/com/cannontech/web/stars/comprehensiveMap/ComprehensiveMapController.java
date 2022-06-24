@@ -418,6 +418,35 @@ public class ComprehensiveMapController {
     public @ResponseBody Map<String, Object> primaryRoutes(Integer[] gatewayIds) {
         return getNetworkTree(Arrays.asList(gatewayIds));
     }
+    
+    @GetMapping("primaryNeighborDataForDevices")
+    public @ResponseBody Map<String, Object> primaryNeighborDataForDevices(Integer[] deviceIds) {
+        Map<String, Object> json = new HashMap<>();
+        Set<RfnIdentifier> rfnIds = new HashSet<RfnIdentifier>();
+        Set<RfnDevice> devices = new HashSet<RfnDevice>();
+        Map<Integer, NeighborData> deviceNeighborData = new HashMap<Integer, NeighborData>();
+        for (Integer deviceId : deviceIds) {
+            RfnDevice device = rfnDeviceDao.getDeviceForId(deviceId);
+            devices.add(device);
+            rfnIds.add(device.getRfnIdentifier());
+        }
+        try {
+            Map<RfnIdentifier, RfnMetadataMultiQueryResult> neighborDataResult = metadataMultiService
+                    .getMetadataForDeviceRfnIdentifiers(rfnIds, Set.of(RfnMetadataMulti.PRIMARY_FORWARD_NEIGHBOR_DATA));
+            for (RfnDevice device : devices) {
+                RfnMetadataMultiQueryResult neighborResult = neighborDataResult.get(device.getRfnIdentifier());
+                if (neighborResult.isValidResultForMulti(RfnMetadataMulti.PRIMARY_FORWARD_NEIGHBOR_DATA)) {
+                    NeighborData neighborData = (NeighborData) neighborResult.getMetadatas().get(RfnMetadataMulti.PRIMARY_FORWARD_NEIGHBOR_DATA);
+                    deviceNeighborData.put(device.getPaoIdentifier().getPaoId(), neighborData);
+                }
+            }
+            json.put("neighborData", deviceNeighborData);
+        } catch (NmCommunicationException e) {
+            log.warn("Error connecting to NM getting the primary neighbor data for devices.", e);
+            json.put("errorMsg", e.getMessage());
+        }
+        return json;
+    }
 
     private Map<String, Object> getNetworkTree(List<Integer> gatewayIds) {
         Map<String, Object> json = new HashMap<>();

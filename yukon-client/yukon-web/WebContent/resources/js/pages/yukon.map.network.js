@@ -225,17 +225,24 @@ yukon.map.network = (function () {
         _addNeighborDataToMap(deviceId, neighbors);
     },
 
-    _addPrimaryRouteToMap = function(deviceId, routeInfo) {
+    _addPrimaryRouteToMap = function(deviceId, routeInfo, deviceNeighborData) {
         var source = yukon.mapping.getIconLayerSource(),
             routeColor = _routeColor,
             dashedLine = false,
             routeLineWidth = 3.5;
+
+        var etxBand = deviceNeighborData.etxBand,
+            numSamples = deviceNeighborData.numSamples,
+            properties = { etxBand: etxBand, numSamples: numSamples};
+        if (etxBand != null && numSamples != null) {
+            routeColor = yukon.mapping.getNeighborLineColor(deviceNeighborData.etxBand);
+            routeLineWidth = yukon.mapping.getNeighborLineThickness(deviceNeighborData.numSamples);
+        }
+        
         if (deviceId != null) {
             var isFocusDevice = true,
                 focusDevice = yukon.mapping.findFocusDevice(deviceId, true),
-                focusPoints = focusDevice.getGeometry().getCoordinates(),
-                routeColor = _focusRouteColor,
-                routeLineWidth = 2.5;
+                focusPoints = focusDevice.getGeometry().getCoordinates();
             _removeDeviceFocusLayers();
             _deviceFocusCurrentIcon = focusDevice;
             var deviceFound = yukon.mapping.findFocusDevice(deviceId, false);
@@ -244,14 +251,17 @@ yukon.map.network = (function () {
                 source.addFeature(focusDevice);
                 _deviceFocusIcons.push(focusDevice);
             }
+            focusDevice.set("primaryRoute", properties);
             focusDevice.unset("neighbor");
+        } else {
+            _deviceIcon.set("primaryRoute", properties);
         }
         _primaryRoutePreviousPoints = null;
 
         for (x in routeInfo) {
-            var route = routeInfo[x];
+            var route = routeInfo[x],
                 feature = yukon.mapping.getFeatureFromRouteOrNeighborData(route);
-                
+
             if (feature == null) {
                 dashedLine = true;
                 $('.js-no-location-message').removeClass('dn');
@@ -261,10 +271,23 @@ yukon.map.network = (function () {
                     icon = new ol.Feature({ pao: pao });
                 icon.setId(feature.id);
                 
+                var device = Object.keys(route).map(function (key) {
+                    return route[key];
+                });
+                if (device != null && device.length > 0) {
+                    if (device[0].properties != null) {
+                        etxBand = device[0].properties.etxBand,
+                        numSamples = device[0].properties.numSamples;
+                        properties = { etxBand: etxBand, numSamples: numSamples};
+                        icon.set("primaryRoute", properties);
+                    }
+                }
+                
                 //check if device already exists on map
                 var deviceFound = yukon.mapping.findFocusDevice(pao.paoId, false);
                 if (deviceFound) {
                     icon = deviceFound;
+                    icon.set("primaryRoute", properties);
                     icon.unset("neighbor");
                 } else {
                     icon.setStyle(style);
@@ -302,8 +325,8 @@ yukon.map.network = (function () {
                     }),
                     style: new ol.style.Style({
                         stroke: new ol.style.Stroke({
-                            color: routeColor,
-                            width: routeLineWidth,
+                            color: isFocusDevice ? _focusRouteColor : routeColor,
+                            width: isFocusDevice ? 2.5 : routeLineWidth,
                             lineDash: dashedLine ? [10,10] : null
                         })
                     })
@@ -319,18 +342,20 @@ yukon.map.network = (function () {
                 
                 dashedLine = false;
             }
-
+            
+            routeColor = yukon.mapping.getNeighborLineColor(etxBand);
+            routeLineWidth = yukon.mapping.getNeighborLineThickness(numSamples);
         }
-        
+
         yukon.mapping.updateZoom(_map);
-    }
-    
-    _loadPrimaryRouteData = function(routeInfo) {
-        _addPrimaryRouteToMap(null, routeInfo);
     },
     
-    _loadDeviceRoute = function(deviceId, routeInfo) {
-        _addPrimaryRouteToMap(deviceId, routeInfo);
+    _loadPrimaryRouteData = function(routeInfo, deviceNeighborData) {
+        _addPrimaryRouteToMap(null, routeInfo, deviceNeighborData);
+    },
+    
+    _loadDeviceRoute = function(deviceId, routeInfo, deviceNeighborData) {
+        _addPrimaryRouteToMap(deviceId, routeInfo, deviceNeighborData);
     },
     
     _loadNearbyDevices = function(nearbyDevices) {
@@ -551,7 +576,11 @@ yukon.map.network = (function () {
                             yukon.ui.unbusy('.js-neighbor-data');
                         });
                     } else {
-                        yukon.mapping.hideNeighborsLegend();
+                        var primaryRouteRow = $('.js-primary-route').closest('.switch-btn'),
+                            primaryRouteChecked = primaryRouteRow.find('.switch-btn-checkbox').prop('checked');
+                        if (!primaryRouteChecked) {
+                            yukon.mapping.hideNeighborsLegend();
+                        }
                         var source = yukon.mapping.getIconLayerSource();
                         _neighborIcons.forEach(function (icon) {
                             var id = icon.getId(),
@@ -618,6 +647,7 @@ yukon.map.network = (function () {
                         wasChecked = primaryRouteRow.find('.switch-btn-checkbox').prop('checked');
                     
                     if (!wasChecked) {
+                        yukon.mapping.displayNeighborsLegend();
                         var fc = yukon.fromJson('#geojson'),
                             feature = fc.features[0],
                             paoId = feature.id;
@@ -625,7 +655,7 @@ yukon.map.network = (function () {
                         $.getJSON(yukon.url('/stars/mapNetwork/primaryRoute?') + $.param({ deviceId: paoId }))
                         .done(function (json) {
                             if (json.entireRoute) {
-                                _loadPrimaryRouteData(json.entireRoute);
+                                _loadPrimaryRouteData(json.entireRoute, json.deviceNeighborData);
                             }
                             if (json.errorMsg) {
                                 yukon.ui.alertError(json.errorMsg);
@@ -633,6 +663,11 @@ yukon.map.network = (function () {
                             yukon.ui.unbusy('.js-primary-route');
                         });
                     } else {
+                        var neighborsRow = $('.js-neighbor-data').closest('.switch-btn'),
+                            neighborsChecked = neighborsRow.find('.switch-btn-checkbox').prop('checked');
+                        if (!neighborsChecked) {
+                            yukon.mapping.hideNeighborsLegend();
+                        }
                         var source = yukon.mapping.getIconLayerSource();
                         _primaryRouteIcons.forEach(function (icon) {
                             var id = icon.getId(),
@@ -663,7 +698,7 @@ yukon.map.network = (function () {
                     $.getJSON(yukon.url('/stars/mapNetwork/primaryRoute?') + $.param({ deviceId: deviceId }))
                     .done(function (json) {
                         if (json.entireRoute) {
-                            _loadDeviceRoute(deviceId, json.entireRoute);
+                            _loadDeviceRoute(deviceId, json.entireRoute, json.deviceNeighborData);
                         }
                         if (json.errorMsg) {
                             yukon.ui.alertError(json.errorMsg);

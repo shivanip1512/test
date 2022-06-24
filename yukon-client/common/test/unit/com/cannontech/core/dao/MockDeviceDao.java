@@ -247,4 +247,9 @@ public class MockDeviceDao implements DeviceDao {
     public int getDeviceIdByName(String name) {
         throw new MethodNotImplementedException();
     }
+
+    @Override
+    public Map<String, Integer> getDeviceIds(Iterable<String> guids) {
+        throw new MethodNotImplementedException();
+    }
 }

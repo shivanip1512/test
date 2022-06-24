@@ -16,7 +16,9 @@ yukon.da.ivvcChart = (function() {
         var selectedFeederString = $('.js-feeder-filter').chosen().val(),
             selectedFeeders = [],
             chartContainer = $('.js-highchart-graph-container'),
-            chart = chartContainer.highcharts();
+            chart = chartContainer.highcharts(),
+            options = chart.options;
+        options.tooltip.formatter = _ivvcTooltip;
         if (selectedFeederString.length > 1) {
             selectedFeeders = selectedFeederString.map(function(feeder) {
                 return parseInt(feeder);
@@ -51,6 +53,32 @@ yukon.da.ivvcChart = (function() {
         }
 
     };
+    
+    var _ivvcTooltip = function() {
+        var tooltipHtml = '',
+            firstPoint = true,
+            pointsArray = this.points,
+            tooltipArray = [];
+    
+        $.each(pointsArray, function(index, item) {
+            //check for more points in series with same x
+            var seriesPoints = item.series.data;
+            $.each(seriesPoints, function(i, seriesPoint) {
+                if (seriesPoint.x == item.point.x) {
+                    if (!tooltipArray.includes(seriesPoint.tooltip)) {
+                        if (!firstPoint) {
+                            tooltipHtml += "<br>";
+                        }
+                        tooltipHtml += seriesPoint.tooltip;
+                        tooltipArray.push(seriesPoint.tooltip);
+                        firstPoint = false;
+                    }
+                }
+            });
+        });
+    
+        return tooltipHtml;
+    };
 
     var mod = {
 
@@ -59,6 +87,14 @@ yukon.da.ivvcChart = (function() {
 
             if (_initialized)
                 return;
+            
+            //set custom tooltip formatter
+            $(document).ready(function() {
+                var chartContainer = $('.js-highchart-graph-container'),
+                    chart = chartContainer.highcharts(),
+                    options = chart.options;
+                options.tooltip.formatter = _ivvcTooltip;
+            });
             
             $(".js-feeder-filter").chosen({width: "250px"});
 

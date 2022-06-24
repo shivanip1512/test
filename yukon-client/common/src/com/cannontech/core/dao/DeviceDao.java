@@ -248,4 +248,9 @@ public interface DeviceDao {
      * Returns devicesId by paoName
      */
     int getDeviceIdByName(String name);
+
+    /**
+     * Returns a map of GUIDs to their respective device ids
+     */
+    Map<String, Integer> getDeviceIds(Iterable<String> guids);
 }

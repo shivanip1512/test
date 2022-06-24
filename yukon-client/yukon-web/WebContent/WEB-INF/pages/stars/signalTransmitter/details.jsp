@@ -15,7 +15,8 @@
         <div id="page-actions" class="dn">
             <cti:url var="createUrl" value="/stars/device/signalTransmitter/create" />
             <cm:dropdownOption icon="icon-plus-green" key="yukon.web.components.button.create.label" href="${createUrl}"/>
-            <cm:dropdownOption icon="icon-pencil" key="yukon.web.components.button.edit.label"/>
+            <cti:url var="editUrl" value="/stars/device/signalTransmitter/${signalTransmitter.id}/edit" />
+            <cm:dropdownOption icon="icon-pencil" key="yukon.web.components.button.edit.label" href="${editUrl}"/>
             
             <li class="divider"></li>
             <cm:dropdownOption key="yukon.web.components.button.copy.label" icon="icon-disk-multiple"
@@ -43,6 +44,7 @@
     <form:form modelAttribute="signalTransmitter" action="${action}" method="post">
         <cti:csrfToken />
         <input type="hidden" name="signalTransmitter" value="${selectedSignalTransmitterType}"/>
+        <form:hidden path="id" />
         <c:if test="${signalTransmitter.type != 'TNPP_TERMINAL'}">
             <%@ include file="general.jsp" %>
             <div id="js-signal-transmitter-container" class='noswitchtype'>

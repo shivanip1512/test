@@ -45,6 +45,9 @@ import com.cannontech.dr.eatonCloud.model.v1.EatonCloudCommandResponseV1;
 import com.cannontech.dr.eatonCloud.model.v1.EatonCloudCommunicationExceptionV1;
 import com.cannontech.dr.eatonCloud.model.v1.EatonCloudDeviceDetailV1;
 import com.cannontech.dr.eatonCloud.model.v1.EatonCloudErrorHandlerV1;
+import com.cannontech.dr.eatonCloud.model.v1.EatonCloudJobRequestV1;
+import com.cannontech.dr.eatonCloud.model.v1.EatonCloudJobResponseV1;
+import com.cannontech.dr.eatonCloud.model.v1.EatonCloudJobStatusResponseV1;
 import com.cannontech.dr.eatonCloud.model.v1.EatonCloudSecretValueV1;
 import com.cannontech.dr.eatonCloud.model.v1.EatonCloudServiceAccountDetailV1;
 import com.cannontech.dr.eatonCloud.model.v1.EatonCloudSiteDevicesV1;
@@ -151,11 +154,11 @@ public class EatonCloudCommunicationServiceImplV1 implements EatonCloudCommunica
             }
             return response.getBody();
         } catch (EatonCloudCommunicationExceptionV1 e) {
-            commsLogger.info(">>> EC[{}] Request to:{} Response:", requestIdentifier, uri, e);
+            commsLogger.warn(">>> EC[{}] Request to:{} Response:", requestIdentifier, uri, e);
             e.setRequestIdentifier(requestIdentifier);
             throw e;
         } catch (Exception e) {
-            commsLogger.info(">>> EC[{}] Request to:{} Response:", requestIdentifier, uri, e);
+            commsLogger.warn(">>> EC[{}] Request to:{} Response:", requestIdentifier, uri, e);
             throw new EatonCloudCommunicationExceptionV1(e, requestIdentifier);
         }
     }
@@ -175,11 +178,11 @@ public class EatonCloudCommunicationServiceImplV1 implements EatonCloudCommunica
             commsLogger.info(">>> EC[{}] Request to:{} Response:{}", requestIdentifier, uri, deferredJson(response.getBody()));
             return Arrays.asList(response.getBody());
         } catch (EatonCloudCommunicationExceptionV1 e) {
-            commsLogger.info(">>> EC[{}] Request to:{} Response:", requestIdentifier, uri, e);
+            commsLogger.warn(">>> EC[{}] Request to:{} Response:", requestIdentifier, uri, e);
             e.setRequestIdentifier(requestIdentifier);
             throw e;
         } catch (Exception e) {
-            commsLogger.info(">>> EC[{}] Request to:{} Response:", requestIdentifier, uri, e);
+            commsLogger.warn(">>> EC[{}] Request to:{} Response:", requestIdentifier, uri, e);
             throw new EatonCloudCommunicationExceptionV1(e, requestIdentifier);
         }
     }
@@ -198,8 +201,9 @@ public class EatonCloudCommunicationServiceImplV1 implements EatonCloudCommunica
             int totalTags = requestEntity.getBody().getDevices().stream()
                             .collect(Collectors.summingInt(d -> Lists.newArrayList(Splitter.on(",").split(d.getTagTrait())).size()));
             commsLogger.info("<<< EC[{}] Sent request to:{} {} Total Tags:{}", requestIdentifier, uri, deferredJson(request), totalTags);
-            ResponseEntity<EatonCloudTimeSeriesDeviceResultV1[]> response = restTemplate.exchange(uri, HttpMethod.POST,     requestEntity,
-                            EatonCloudTimeSeriesDeviceResultV1[].class);
+            ResponseEntity<EatonCloudTimeSeriesDeviceResultV1[]> response = restTemplate.exchange(uri, HttpMethod.POST,
+                    requestEntity,
+                    EatonCloudTimeSeriesDeviceResultV1[].class);
             if (commsLogger.isDebugEnabled()) {
                     commsLogger.info(">>> EC[{}] Request to:{} Response:{} Total Tags:{} ", requestIdentifier, uri,
                     deferredJson(response.getBody()), totalTags);
@@ -216,11 +220,11 @@ public class EatonCloudCommunicationServiceImplV1 implements EatonCloudCommunica
             }
             return Arrays.asList(response.getBody());
         } catch (EatonCloudCommunicationExceptionV1 e) {
-            commsLogger.info(">>> EC[{}] Request to:{} Response:", requestIdentifier, uri, e);
+            commsLogger.warn(">>> EC[{}] Request to:{} Response:", requestIdentifier, uri, e);
             e.setRequestIdentifier(requestIdentifier);
             throw e;
         } catch (Exception e) {
-            commsLogger.info(">>> EC[{}] Request to:{} Response:", requestIdentifier, uri, e);
+            commsLogger.warn(">>> EC[{}] Request to:{} Response:", requestIdentifier, uri, e);
             throw new EatonCloudCommunicationExceptionV1(e, requestIdentifier);
         }
     }
@@ -245,11 +249,11 @@ public class EatonCloudCommunicationServiceImplV1 implements EatonCloudCommunica
             commsLogger.info(">>> EC[{}] Request to:{} Response:{}", requestIdentifier, uri, deferredJson(response.getBody()));
             return response.getBody();
         } catch (EatonCloudCommunicationExceptionV1 e) {
-            commsLogger.info(">>> EC[{}] Request to:{} Response:", requestIdentifier, uri, e);
+            commsLogger.warn(">>> EC[{}] Request to:{} Response:", requestIdentifier, uri, e);
             e.setRequestIdentifier(requestIdentifier);
             throw e;
         } catch (Exception e) {
-            commsLogger.info(">>> EC[{}] Request to:{} Response:", requestIdentifier, uri, e);
+            commsLogger.warn(">>> EC[{}] Request to:{} Response:", requestIdentifier, uri, e);
             throw new EatonCloudCommunicationExceptionV1(e, requestIdentifier);
         }
     }
@@ -268,11 +272,11 @@ public class EatonCloudCommunicationServiceImplV1 implements EatonCloudCommunica
             commsLogger.info(">>> EC[{}] Request to:{} Response:{}", requestIdentifier, uri, deferredJson(response.getBody()));
             return response.getBody();
         } catch (EatonCloudCommunicationExceptionV1 e) {
-            commsLogger.info(">>> EC[{}] Request to:{} Response:", requestIdentifier, uri, e);
+            commsLogger.warn(">>> EC[{}] Request to:{} Response:", requestIdentifier, uri, e);
             e.setRequestIdentifier(requestIdentifier);
             throw e;
         } catch (Exception e) {
-            commsLogger.info(">>> EC[{}] Request to:{} Response:", requestIdentifier, uri, e);
+            commsLogger.warn(">>> EC[{}] Request to:{} Response:", requestIdentifier, uri, e);
             throw new EatonCloudCommunicationExceptionV1(e, requestIdentifier);
         }
     }
@@ -294,11 +298,11 @@ public class EatonCloudCommunicationServiceImplV1 implements EatonCloudCommunica
             commsLogger.info(">>> EC[{}] Request to:{} Response:{}", requestIdentifier, uri, deferredJson(response.getBody()));
             return response.getBody();
         } catch (EatonCloudCommunicationExceptionV1 e) {
-            commsLogger.info(">>> EC[{}] Request to:{} Response:", requestIdentifier, uri, e);
+            commsLogger.warn(">>> EC[{}] Request to:{} Response:", requestIdentifier, uri, e);
             e.setRequestIdentifier(requestIdentifier);
             throw e;
         } catch (Exception e) {
-            commsLogger.info(">>> EC[{}] Request to:{} Response:", requestIdentifier, uri, e);
+            commsLogger.warn(">>> EC[{}] Request to:{} Response:", requestIdentifier, uri, e);
             throw new EatonCloudCommunicationExceptionV1(e, requestIdentifier);
         }
     }
@@ -320,14 +324,62 @@ public class EatonCloudCommunicationServiceImplV1 implements EatonCloudCommunica
                     response.getBody().getName(), DATE_FORMAT.format(response.getBody().getExpiryTime()));
             return response.getBody();
         } catch (EatonCloudCommunicationExceptionV1 e) {
-            commsLogger.info(">>> EC[{}] Request to:{} Response:", requestIdentifier, uri, e);
+            commsLogger.warn(">>> EC[{}] Request to:{} Response:", requestIdentifier, uri, e);
             e.setRequestIdentifier(requestIdentifier);
             throw e;
         } catch (Exception e) {
-            commsLogger.info(">>> EC[{}] Request to:{} Response:", requestIdentifier, uri, e);
+            commsLogger.warn(">>> EC[{}] Request to:{} Response:", requestIdentifier, uri, e);
             throw new EatonCloudCommunicationExceptionV1(e, requestIdentifier);
         }
     }
+    
+    @Override
+    public EatonCloudJobStatusResponseV1 getJobStatus(String jobGuid) {
+        URI uri = getUri(Map.of("id", jobGuid), EatonCloudRetrievalUrl.JOB_STATUS);
+        long requestIdentifier = requestIncrementer.getAndIncrement();
+        try {
+            HttpEntity<String> requestEntity = getEmptyRequestWithAuthHeaders();
+
+            commsLogger.info("<<< EC[{}] Sent request to:{} ", requestIdentifier, uri);
+
+            ResponseEntity<EatonCloudJobStatusResponseV1> response = restTemplate.exchange(uri, HttpMethod.GET, requestEntity,
+                    EatonCloudJobStatusResponseV1.class);
+
+            commsLogger.info(">>> EC[{}] Request to:{} Response:{}", requestIdentifier, uri, deferredJson(response.getBody()));
+            return response.getBody();
+        } catch (EatonCloudCommunicationExceptionV1 e) {
+            commsLogger.warn(">>> EC[{}] Request to:{} Response:", requestIdentifier, uri, e);
+            e.setRequestIdentifier(requestIdentifier);
+            throw e;
+        } catch (Exception e) {
+            commsLogger.warn(">>> EC[{}] Request to:{} Response:", requestIdentifier, uri, e);
+            throw new EatonCloudCommunicationExceptionV1(e, requestIdentifier);
+        }
+    }
+      
+    @Override
+    public EatonCloudJobResponseV1 createJob(EatonCloudJobRequestV1 request)
+            throws EatonCloudCommunicationExceptionV1 {
+        URI uri = getUri(EatonCloudRetrievalUrl.JOB);
+        long requestIdentifier = requestIncrementer.getAndIncrement();
+        try {
+            HttpEntity<EatonCloudJobRequestV1> requestEntity = getRequestWithAuthHeaders(request);
+            commsLogger.info("<<< EC[{}] Sent request to:{} {}", requestIdentifier, uri, deferredJson(request));
+            ResponseEntity<EatonCloudJobResponseV1> response = restTemplate.exchange(uri, HttpMethod.POST,
+                    requestEntity,
+                    EatonCloudJobResponseV1.class);
+            commsLogger.info(">>> EC[{}] Request to:{} Response:{}", requestIdentifier, uri, deferredJson(response.getBody()));
+            return response.getBody();
+        } catch (EatonCloudCommunicationExceptionV1 e) {
+            commsLogger.warn(">>> EC[{}] Request to:{} Response:", requestIdentifier, uri, e);
+            e.setRequestIdentifier(requestIdentifier);
+            throw e;
+        } catch (Exception e) {
+            commsLogger.warn(">>> EC[{}] Request to:{} Response:", requestIdentifier, uri, e);
+            throw new EatonCloudCommunicationExceptionV1(e, requestIdentifier);
+        }
+    }
+
 
     /**
      * Creates URI

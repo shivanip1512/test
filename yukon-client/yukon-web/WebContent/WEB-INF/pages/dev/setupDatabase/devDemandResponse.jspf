@@ -12,7 +12,9 @@
         <b># of Devices</b> - Number of Devices to enroll, each account can have maximum of 3 devices enrolled<br/>
         <b>Device Types</b> - Device Type(s) to enroll<br/>
         <span class="error">
-            Make sure your program setup for the program you plan to clone works. Enroll one device for each device type you plan to select manually.<br/>
+            Make sure your program setup for the program you plan to clone works. 
+            Enroll one device for each device type you plan to select manually. 
+            Make sure that <a href="<cti:url value="/admin/config/edit?category=WEB_SERVER"/>">Yukon External URL</a> does not include localhost or 127.0.0.1.<br/>
             <cti:icon icon="icon-error"/><b>Backup your database!!</b>
         </span><br/>
         <div class="MT20"><cti:button label="Don't Press" classes="delete js-run-clean"/></div>

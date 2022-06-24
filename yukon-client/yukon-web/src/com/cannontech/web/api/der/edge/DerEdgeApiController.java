@@ -2,6 +2,7 @@ package com.cannontech.web.api.der.edge;
 
 import java.math.BigInteger;
 import java.util.Map;
+import java.util.Set;
 
 import javax.validation.Valid;
 
@@ -14,13 +15,21 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.cannontech.api.error.model.ApiErrorDetails;
 import com.cannontech.common.config.MasterConfigBoolean;
+import com.cannontech.common.device.groups.dao.impl.DeviceGroupProviderDaoMain;
+import com.cannontech.common.device.groups.model.DeviceGroup;
+import com.cannontech.common.device.groups.service.DeviceGroupService;
+import com.cannontech.common.device.model.SimpleDevice;
 import com.cannontech.common.pao.YukonPao;
+import com.cannontech.core.dao.NotFoundException;
 import com.cannontech.core.dao.PaoDao;
 import com.cannontech.core.roleproperties.YukonRoleProperty;
+import com.cannontech.dr.edgeDr.EdgeDrCommunicationException;
 import com.cannontech.dr.edgeDr.EdgeUnicastPriority;
 import com.cannontech.user.YukonUserContext;
 import com.cannontech.web.api.der.edge.service.DerEdgeCommunicationService;
+import com.cannontech.web.api.error.model.YukonApiException;
 import com.cannontech.web.security.annotation.CheckCparm;
 import com.cannontech.web.security.annotation.CheckRoleProperty;
 
@@ -30,8 +39,11 @@ import com.cannontech.web.security.annotation.CheckRoleProperty;
 public class DerEdgeApiController {
     
     @Autowired private DerEdgeUnicastValidator unicastValidator;
+    @Autowired private DerEdgeMultipointValidator multipointValidator;
     @Autowired private DerEdgeBroadcastValidator broadcastValidator;
     @Autowired private DerEdgeCommunicationService derEdgeCommunicationService;
+    @Autowired private DeviceGroupProviderDaoMain deviceGroupProviderDaoMain;
+    @Autowired private DeviceGroupService deviceGroupService;
     @Autowired private PaoDao paoDao;
     
     @PostMapping("/unicastMessage")
@@ -45,23 +57,67 @@ public class DerEdgeApiController {
         EdgeUnicastPriority networkPriority = edgeUnicastRequest.getNetworkPriority();
         
         //Send the request to Porter and get back the E2E ID that will correlate with the response data when it comes back.
-        Map<Integer, Short> e2eId = derEdgeCommunicationService.sendUnicastRequest(pao, payload, queuePriority, networkPriority, userContext);
+        Map<Integer, Short> e2eIds;
+        try {
+            e2eIds = derEdgeCommunicationService.sendUnicastRequest(pao, payload, queuePriority, networkPriority, userContext);
+        } catch (EdgeDrCommunicationException e) {
+            throw new YukonApiException(e.getMessage(), e, ApiErrorDetails.COMMUNICATION_ERROR);
+        }
         
         //TODO later - correlate E2E IDs with response GUID
         //for now, always return this temp GUID
         String tempGUID = "692c8e7d-bd82-49f2-ace2-a6a9600f6347";
         return new ResponseEntity<>(new EdgeUnicastResponse(tempGUID), HttpStatus.OK);
     }
-    
+
+    @PostMapping("/multipointMessage")
+    public ResponseEntity<Object> create(@Valid @RequestBody EdgeMultipointRequest edgeMultipointRequest, YukonUserContext userContext) {
+        // Convert payload string into byte[] for porter
+        byte[] payload = convertPayloadToBytes(edgeMultipointRequest.getPayload());
+        // Get the queue and network priority of the message
+        EdgeUnicastPriority queuePriority = edgeMultipointRequest.getQueuePriority();
+        EdgeUnicastPriority networkPriority = edgeMultipointRequest.getNetworkPriority();
+        String edgeGroupName = "/Edge Addressing";
+        Map<Integer, Short> e2eId;
+
+        try {
+
+            // Lookup Edge Addressing Group
+            DeviceGroup edgeAddressingGroup = deviceGroupService.resolveGroupName(edgeGroupName);
+            // Lookup targeted group
+            DeviceGroup targetedAddressingGroup = deviceGroupProviderDaoMain.getGroup(edgeAddressingGroup, edgeMultipointRequest.getGroupId());
+            // Get list of all the device in this group
+            Set<SimpleDevice> simpleDeviceList = deviceGroupProviderDaoMain.getDevices(targetedAddressingGroup);
+            try {
+                // Send the devices to the service layer for processing
+                e2eId = derEdgeCommunicationService.sendMultiUnicastRequest(simpleDeviceList, payload, queuePriority, networkPriority, userContext);
+            } catch (EdgeDrCommunicationException e) {
+                throw new YukonApiException(e.getMessage(), e, ApiErrorDetails.COMMUNICATION_ERROR);
+            }
+
+        } catch (NotFoundException e){
+            throw new YukonApiException(e.getMessage(), e, ApiErrorDetails.INVALID_VALUE);
+        }
+
+        // TODO later - correlate E2E IDs with response GUID
+        // for now, always return this temp GUID
+        String tempGUID = "692c8e7d-bd82-49f2-ace2-a6a9600f6347";
+        return new ResponseEntity<>(new EdgeUnicastResponse(tempGUID), HttpStatus.OK);
+    }
+
     @PostMapping("/broadcastMessage")
     public ResponseEntity<Object> create(@Valid @RequestBody EdgeBroadcastRequest edgeBroadcastRequest,
             YukonUserContext userContext) {
         // Convert payload string into byte[] for porter
         byte[] payload = convertPayloadToBytes(edgeBroadcastRequest.getPayload());
         // Send the request to Porter.
-        derEdgeCommunicationService.sendBroadcastRequest(payload, edgeBroadcastRequest.getPriority(), userContext);
-
-        return new ResponseEntity<Object>(HttpStatus.OK);
+        try {
+            derEdgeCommunicationService.sendBroadcastRequest(payload, edgeBroadcastRequest.getPriority(), userContext);
+        } catch (EdgeDrCommunicationException e) {
+            throw new YukonApiException(e.getMessage(), e, ApiErrorDetails.COMMUNICATION_ERROR);
+        }
+        
+        return new ResponseEntity<>(HttpStatus.OK);
     }
 
     /**
@@ -79,16 +135,20 @@ public class DerEdgeApiController {
             throw new IllegalArgumentException("Invalid unicast payload.", e);
         }
     }
-    
+
     @InitBinder("edgeUnicastRequest")
     public void setUnicastBinder(WebDataBinder binder) {
         binder.addValidators(unicastValidator);
     }
-    
+
+    @InitBinder("edgeMultipointRequest")
+    public void setMultipointBinder(WebDataBinder binder) {
+        binder.addValidators(multipointValidator);
+    }
+
     @InitBinder("edgeBroadcastRequest")
     public void setBroadcastBinder(WebDataBinder binder) {
         binder.addValidators(broadcastValidator);
     }
-    
 
 }

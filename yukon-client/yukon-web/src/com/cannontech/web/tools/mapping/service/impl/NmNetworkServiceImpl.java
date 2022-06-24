@@ -142,6 +142,10 @@ public class NmNetworkServiceImpl implements NmNetworkService {
                     // remove devices not created or found
                     .filter(Objects::nonNull)
                     .collect(Collectors.toMap(data -> data.getRfnIdentifier(), data -> data));
+            
+            //get the primary forward neighbor data to determine color of lines
+            Map<RfnIdentifier, RfnMetadataMultiQueryResult> neighborDataResult = metadataMultiService
+                    .getMetadataForDeviceRfnIdentifiers(devices.keySet(), Set.of(RfnMetadataMulti.PRIMARY_FORWARD_NEIGHBOR_DATA));
 
             Set<PaoLocation> allLocations = paoLocationDao.getLocations(devices.values());
             Map<PaoIdentifier, PaoLocation> locations = Maps.uniqueIndex(allLocations, c -> c.getPaoIdentifier());
@@ -162,6 +166,15 @@ public class NmNetworkServiceImpl implements NmNetworkService {
                         } else {
                             FeatureCollection feature = paoLocationService
                                     .getFeatureCollection(Lists.newArrayList(location));
+                            if (!routeDevice.getPaoIdentifier().getPaoType().isRfGateway()) {
+                                RfnMetadataMultiQueryResult neighborResult = neighborDataResult.get(routeDevice.getRfnIdentifier());
+                                if (neighborResult.isValidResultForMulti(RfnMetadataMulti.PRIMARY_FORWARD_NEIGHBOR_DATA)) {
+                                    NeighborData neighborData = (NeighborData) neighborResult.getMetadatas().get(RfnMetadataMulti.PRIMARY_FORWARD_NEIGHBOR_DATA);
+                                    feature.setProperty("etxBand", neighborData.getEtxBand());
+                                    feature.setProperty("numSamples", neighborData.getNumSamples());
+                                }
+                            }
+
                             result.add(Pair.of(routeDevice, feature));
                         }
                     }
