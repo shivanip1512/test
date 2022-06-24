@@ -15,9 +15,19 @@ repositories {
 
 dependencies {
 	implementation 'org.springframework.boot:spring-boot-starter'
+	implementation 'org.springframework.boot:spring-boot-starter-log4j2:2.7.0'
 	testImplementation 'org.springframework.boot:spring-boot-starter-test'
 }
 
 tasks.named('test') {
 	useJUnitPlatform()
+}
+
+bootJar {
+   archiveName = 'cloud-connector.jar'
+}
+
+configurations.implementation {
+    // Ignore default logging provided by spring boot to use log4j
+    exclude group: 'org.springframework.boot', module: 'spring-boot-starter-logging'
 }
