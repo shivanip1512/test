@@ -105,15 +105,10 @@ public:
     using BroadcastTimeoutCallback = std::function<void()>;
     using BroadcastResponseCallback = std::function<void()>;
 
-    void submitBroadcastRequest(
-
-        Messaging::Rfn::RfnBroadcastRequest    & request,
-        BroadcastResponseCallback        responded,
-
-        std::chrono::seconds    timeout,
-        BroadcastTimeoutCallback         timedOut 
-
-        );
+    void submitBroadcastRequest( Messaging::Rfn::RfnBroadcastRequest & request,
+                                 BroadcastResponseCallback  responded,
+                                 std::chrono::seconds       timeout,
+                                 BroadcastTimeoutCallback   timedOut );
 
     ResultQueue getResults(unsigned max);
     UnsolicitedReports getUnsolicitedReports();
@@ -240,22 +235,16 @@ private:
     RfnIdTo<MeterProgrammingRequest> _meterProgrammingRequests;
 
     // Broadcast requests
-
     struct BroadcastCallbacks
     {
         BroadcastResponseCallback success_callback;
         BroadcastTimeoutCallback timeout_callback;
     };
 
-    std::map<std::chrono::system_clock::time_point, short> _broadcastTimeouts;
-
-    std::map< short, BroadcastCallbacks> _broadcastCallbacks;
+    std::map<std::chrono::system_clock::time_point, short> _broadcastTimeouts;  // multimap -- would we have more than 1 request/s (?)
+    std::map<short, BroadcastCallbacks> _broadcastCallbacks;
+    std::set<short> _activeBroadcastRequests;
     
-
-
-
-
-
     using OptionalResult = std::optional<RfnDeviceResult>;
 
     void                  handleNodeOriginated     (const CtiTime Now, const RfnIdentifier rfnIdentifier, const EndpointMessage & message, const ApplicationServiceIdentifiers asid);

@@ -722,6 +722,25 @@ RfnRequestManager::RfnIdentifierSet RfnRequestManager::handleTimeouts()
             _activeRequests.erase(rfnId);
             _activeTokens.erase(rfnId);
         }
+
+        {   // Broadcast request timeouts
+            for ( auto & [timeout, messageId] : _broadcastTimeouts )
+            {
+                if ( timeout < Now && _activeBroadcastRequests.count( messageId ) )
+                {
+                    // grab our timeout callback
+                    auto callback = _broadcastCallbacks[ messageId ].timeout_callback;
+
+                    // clean out the collections
+                    _broadcastCallbacks.erase( messageId );
+                    _broadcastTimeouts.erase( timeout );
+                    _activeBroadcastRequests.erase( messageId );
+
+                    // send the timeout response back to web
+                    callback();
+                }
+            }
+        }
     }
 
     return expirations;
@@ -1013,36 +1032,44 @@ void RfnRequestManager::submitRequests(RfnDeviceRequestList requests)
 }
 
 
-void RfnRequestManager::submitBroadcastRequest(
-
-    Messaging::Rfn::RfnBroadcastRequest    & request,
-
-    BroadcastResponseCallback        responded,
-
-    std::chrono::seconds    timeout,
-    BroadcastTimeoutCallback         timedOut 
-
-    )
+void RfnRequestManager::submitBroadcastRequest( Messaging::Rfn::RfnBroadcastRequest & request,
+                                                BroadcastResponseCallback   responded,
+                                                std::chrono::seconds        timeout,
+                                                BroadcastTimeoutCallback    timedOut )
 {
     const auto Now = std::chrono::system_clock::now();
 
-
-
-    // jmoc -- todo -- stuff
-
-
-// Now + timeout,
-
- //   _broadcastTimeouts.emplace( request.messageId, BroadcastRequestTimeout { Now + timeout, timedOut } );
-
+    // store the callbacks for future action
     _broadcastCallbacks.emplace( request.messageId, BroadcastCallbacks { responded, timedOut } );
-
-
     _broadcastTimeouts.emplace( Now + timeout, request.messageId  );
+    _activeBroadcastRequests.insert( request.messageId );
 
-// need to send the active mq request here
+    // OSCORE encrypt the incoming payload
 
-    //submit with no callback thingee..
+        // we will need
+            // key
+                // normally this is derived, but in our case supplied via cparm(?)
+            // nonce
+                // derived from the key and a common iv
+            // tag length
+                // usually 8 bytes but need to verify with the firmware team
+            // external aad
+                // depends on the sender id and the sender sequence number -- what are these, fixed values for now??
+
+
+    // build the CoAP message as the outgoing payload for NM
+
+        // for OSCORE this is a POST, but what about non-OSCORE?
+        // what is our addressing -- current CoAP code uses an RfnId and token
+            // RfnId -- no got!!
+            // token ?
+
+    // build the NM request
+
+        // overwrite the existing payload with the new CoAP encoded payload
+
+
+    // submit with no callback thingee..
 
 }
 
