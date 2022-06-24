@@ -44,6 +44,7 @@ public:
     static const OutboundQueue MeterProgramStatusArchiveRequest;
     static const OutboundQueue RfnEdgeDrUnicastResponse;
     static const OutboundQueue RfnEdgeDrBroadcastResponse;
+    static const OutboundQueue NetworkManagerRfnBroadcastRequest;
 };
 
 
@@ -68,6 +69,7 @@ public:
 
     static const InboundQueue RfnEdgeDrUnicastRequest;
     static const InboundQueue RfnEdgeDrBroadcastRequest;
+    static const InboundQueue NetworkManagerRfnBroadcastResponse;
 };
 
 }
