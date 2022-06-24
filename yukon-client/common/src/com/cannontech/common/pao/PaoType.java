@@ -370,6 +370,7 @@ public enum PaoType implements DisplayableEnum, DatabaseRepresentationSource {
     private final static ImmutableSet<PaoType> virtualTypes;
     private final static ImmutableSet<PaoType> cloudLcrTypes;
     private final static ImmutableSet<PaoType> cellularTypes;
+    private final static ImmutableSet<PaoType> cellularMeterTypes;
     private final static ImmutableSet<PaoType> noPointSupportMeterTypes;
     private final static ImmutableSet<PaoType> derEdgeCoordinatorTypes;
 
@@ -653,6 +654,14 @@ public enum PaoType implements DisplayableEnum, DatabaseRepresentationSource {
         
         cellularTypes = ImmutableSet.of(
             CRLY856
+        );
+        
+        cellularMeterTypes = ImmutableSet.of(
+            CRL520FAXE,
+            CRL520FAXED,
+            CRL520FRXE,
+            CRL520FRXED,
+            CRL530S4X
         );
         
         mctTypes = ImmutableSet.of(
@@ -1148,6 +1157,10 @@ public enum PaoType implements DisplayableEnum, DatabaseRepresentationSource {
     
     public static ImmutableSet<PaoType> getRfMeterTypes() {
         return rfMeterTypes;
+    }
+    
+    public static ImmutableSet<PaoType> getCellularMeterTypes() {
+        return cellularMeterTypes;
     }
     
     public static ImmutableSet<PaoType> getRfElectricTypes() {

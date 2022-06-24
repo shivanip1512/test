@@ -48,6 +48,9 @@ public class PaoLocationServiceImpl implements PaoLocationService {
         for (PaoType type : PaoType.getWifiTypes()) {
             icons.put(type, Icon.METER_WIFI_ELECTRIC);
         }
+        for (PaoType type : PaoType.getCellularMeterTypes()) {
+            icons.put(type, Icon.METER_CELL_ELECTRIC);
+        }
         for (PaoType type : PaoType.getTransmitterTypes()) {
             icons.put(type, Icon.TRANSMITTER);
         }
