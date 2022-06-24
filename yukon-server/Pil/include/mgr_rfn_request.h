@@ -237,13 +237,12 @@ private:
     // Broadcast requests
     struct BroadcastCallbacks
     {
-        BroadcastResponseCallback success_callback;
-        BroadcastTimeoutCallback timeout_callback;
+        BroadcastResponseCallback response;
+        BroadcastTimeoutCallback  timeout;
     };
 
-    std::map<std::chrono::system_clock::time_point, short> _broadcastTimeouts;  // multimap -- would we have more than 1 request/s (?)
-    std::map<short, BroadcastCallbacks> _broadcastCallbacks;
-    std::set<short> _activeBroadcastRequests;
+    std::multimap<std::chrono::system_clock::time_point, long long> _broadcastTimeouts;
+    std::map<long long, BroadcastCallbacks> _broadcastCallbacks;
     
     using OptionalResult = std::optional<RfnDeviceResult>;
 

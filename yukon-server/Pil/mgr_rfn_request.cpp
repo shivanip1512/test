@@ -724,21 +724,23 @@ RfnRequestManager::RfnIdentifierSet RfnRequestManager::handleTimeouts()
         }
 
         {   // Broadcast request timeouts
-            for ( auto & [timeout, messageId] : _broadcastTimeouts )
+            if ( const auto end = _broadcastTimeouts.upper_bound( Now ); _broadcastTimeouts.begin() != end )
             {
-                if ( timeout < Now && _activeBroadcastRequests.count( messageId ) )
+                for ( auto itr = _broadcastTimeouts.begin(); itr != end; ++itr )
                 {
-                    // grab our timeout callback
-                    auto callback = _broadcastCallbacks[ messageId ].timeout_callback;
+                    auto messageId = itr->second;
 
-                    // clean out the collections
+                    // grab our timeout callback
+                    auto callback = _broadcastCallbacks[ messageId ].timeout;
+
+                    // clean out the stored callbacks
                     _broadcastCallbacks.erase( messageId );
-                    _broadcastTimeouts.erase( timeout );
-                    _activeBroadcastRequests.erase( messageId );
 
                     // send the timeout response back to web
                     callback();
                 }
+
+                _broadcastTimeouts.erase( _broadcastTimeouts.begin(), end );
             }
         }
     }
@@ -1038,11 +1040,11 @@ void RfnRequestManager::submitBroadcastRequest( Messaging::Rfn::RfnBroadcastRequ
                                                 BroadcastTimeoutCallback    timedOut )
 {
     const auto Now = std::chrono::system_clock::now();
+    const auto Key = request.header->messageId;
 
     // store the callbacks for future action
-    _broadcastCallbacks.emplace( request.messageId, BroadcastCallbacks { responded, timedOut } );
-    _broadcastTimeouts.emplace( Now + timeout, request.messageId  );
-    _activeBroadcastRequests.insert( request.messageId );
+    _broadcastCallbacks.emplace( Key, BroadcastCallbacks { responded, timedOut } );
+    _broadcastTimeouts.emplace( Now + timeout, Key );
 
     // OSCORE encrypt the incoming payload
 
@@ -1061,8 +1063,10 @@ void RfnRequestManager::submitBroadcastRequest( Messaging::Rfn::RfnBroadcastRequ
 
         // for OSCORE this is a POST, but what about non-OSCORE?
         // what is our addressing -- current CoAP code uses an RfnId and token
-            // RfnId -- no got!!
-            // token ?
+            // RfnId -- no got!!m use -->  { "broadcast", "broadcast", "broadcast" }
+            // token ?- unk, 
+
+
 
     // build the NM request
 
@@ -1104,7 +1108,7 @@ RfnRequestManager::PacketInfo
             },
             [=](const YukonError_t error)
             {
-                LockGuard guard(_confirmMux);
+                LockGuard guard(_confirmMux);   // is this the right mux?? _expirationMux
 
                 _expirations.emplace(rfnIdentifier, error);
             });

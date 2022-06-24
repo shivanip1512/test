@@ -1349,14 +1349,12 @@ void PilServer::handleRfnEdgeDrBroadcastRequest( const amq_cm::MessageDescriptor
         { EdgeBroadcastMessagePriority::NON_REAL_TIME,  RfnBroadcastDeliveryType::NON_REAL_TIME }
     };
 
-    short nmMessageId = 0;      // where is this from...?  _rfnRequestId++ <-- needs atomiccccc ... and low 16 bits
-
-    // is NON_REAL_TIME the right default here...?
+    short nmMessageId = _rfnRequestId++;
 
     RfnBroadcastDeliveryType delivery = 
         mapFindOrDefault( priorityXlator,
-                          req->priority.value_or( EdgeBroadcastMessagePriority::NON_REAL_TIME ),
-                          RfnBroadcastDeliveryType::NON_REAL_TIME );
+                          req->priority.value_or( EdgeBroadcastMessagePriority::IMMEDIATE ),
+                          RfnBroadcastDeliveryType::IMMEDIATE );
 
     NetworkManagerRequestHeader nmHeader = SessionInfoManager::getNmHeader( 8 );
 
