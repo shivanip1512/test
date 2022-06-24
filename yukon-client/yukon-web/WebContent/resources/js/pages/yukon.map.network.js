@@ -229,14 +229,17 @@ yukon.map.network = (function () {
         var source = yukon.mapping.getIconLayerSource(),
             routeColor = _routeColor,
             dashedLine = false,
-            routeLineWidth = 3.5;
+            routeLineWidth = 3.5,
+            properties = null;
 
-        var etxBand = deviceNeighborData.etxBand,
-            numSamples = deviceNeighborData.numSamples,
+        if (deviceNeighborData != null) {
+            var etxBand = deviceNeighborData.etxBand,
+                numSamples = deviceNeighborData.numSamples;
             properties = { etxBand: etxBand, numSamples: numSamples};
-        if (etxBand != null && numSamples != null) {
-            routeColor = yukon.mapping.getNeighborLineColor(deviceNeighborData.etxBand);
-            routeLineWidth = yukon.mapping.getNeighborLineThickness(deviceNeighborData.numSamples);
+            if (etxBand != null && numSamples != null) {
+                routeColor = yukon.mapping.getNeighborLineColor(deviceNeighborData.etxBand);
+                routeLineWidth = yukon.mapping.getNeighborLineThickness(deviceNeighborData.numSamples);
+            }
         }
         
         if (deviceId != null) {
