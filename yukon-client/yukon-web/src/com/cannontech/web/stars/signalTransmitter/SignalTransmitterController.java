@@ -108,6 +108,32 @@ public class SignalTransmitterController {
         model.addAttribute("signalTransmitters", signalTransmitters);
         return "/signalTransmitter/list.jsp";
     }
+    
+    @GetMapping("/{id}/edit")
+    public String edit(ModelMap model, YukonUserContext userContext, @PathVariable int id, FlashScope flash,
+            HttpServletRequest request) {
+        try {
+            String url = helper.findWebServerUrl(request, userContext, ApiURL.pagingTerminalUrl + "/" + id);
+            model.addAttribute("mode", PageEditMode.EDIT);
+            TerminalBase terminalBase = retrieveSignalTransmitter(userContext, request, id, url);
+            if (terminalBase == null) {
+                flash.setError(new YukonMessageSourceResolvable(baseKey + "signalTransmitter.retrieve.error"));
+                return redirectListPageLink;
+            } else if (model.containsAttribute("signalTransmitter")) {
+                terminalBase = (TerminalBase) model.get("signalTransmitter");
+                terminalBase.setId(id);
+            }
+            
+            model.addAttribute("signalTransmitter", terminalBase);
+            model.addAttribute("selectedSignalTransmitterType", terminalBase.getType());
+            setupModel(model, request, userContext);
+            return "/signalTransmitter/view.jsp";
+        } catch (ApiCommunicationException e) {
+            log.error(e.getMessage());
+            flash.setError(new YukonMessageSourceResolvable(communicationKey));
+            return redirectListPageLink;
+        }
+    }
 
     @GetMapping("/{id}")
     public String view(ModelMap model, YukonUserContext userContext, @PathVariable int id, FlashScope flash,
@@ -185,11 +211,14 @@ public class SignalTransmitterController {
             if (result.hasErrors()) {
                 return bindAndForward(signalTransmitter, result, redirectAttributes);
             }
-            String url;
+            String url = null;
             ResponseEntity<? extends Object> apiResponse = null;
             if (signalTransmitter.getId() == null) {
                 url = helper.findWebServerUrl(request, userContext, ApiURL.pagingTerminalUrl);
                 apiResponse = saveSignalTransmitter(userContext, request, url, signalTransmitter, HttpMethod.POST);
+            } else {
+                url = helper.findWebServerUrl(request, userContext, ApiURL.pagingTerminalUrl) + "/" + signalTransmitter.getId();
+                apiResponse = saveSignalTransmitter(userContext, request, url, signalTransmitter, HttpMethod.PUT);
             }
 
             if (apiResponse.getStatusCode() == HttpStatus.OK || apiResponse.getStatusCode() == HttpStatus.CREATED) {
