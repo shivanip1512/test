@@ -10,6 +10,7 @@ import org.apache.logging.log4j.Logger;
 import org.joda.time.DateTime;
 import org.joda.time.Instant;
 
+import com.cannontech.amr.errors.dao.DeviceError;
 import com.cannontech.amr.errors.dao.DeviceErrorTranslatorDao;
 import com.cannontech.dr.eatonCloud.service.EatonCloudSendControlService.CommandParam;
 import com.cannontech.dr.recenteventparticipation.dao.RecentEventParticipationDao;
@@ -29,8 +30,6 @@ public final class EventSummary {
     private RecentEventParticipationDao recentEventParticipationDao;
     private String failReason;
     
-    private final static int NO_RESPONSE_FROM_DEVICE_ERROR_CODE = 10000;
-
     public String getLogSummary(boolean displayTryInfo) {
         return "[id:" + eventId + getTryText(displayTryInfo) + "] relay:" + command.getVirtualRelayId() + " ";
     }
@@ -55,7 +54,7 @@ public final class EventSummary {
         this.programId = programId;
         this.log = log;
         this.recentEventParticipationDao = recentEventParticipationDao;
-        this.failReason = deviceErrorTranslatorDao.translateErrorCode(NO_RESPONSE_FROM_DEVICE_ERROR_CODE).getDescription();
+        this.failReason = deviceErrorTranslatorDao.translateErrorCode(DeviceError.NO_RESPONSE_FROM_DEVICE).getDescription();
 
         // If it is a 4 hour control with a 30 minute period, it would have a cycle count of 8.
         // The resend service should only attempt to send to failed devices for the first 4 cycles, or 2 hours.

@@ -22,6 +22,7 @@ import org.joda.time.Instant;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 
+import com.cannontech.amr.errors.dao.DeviceError;
 import com.cannontech.amr.errors.dao.DeviceErrorTranslatorDao;
 import com.cannontech.clientutils.YukonLogManager;
 import com.cannontech.common.config.ConfigurationSource;
@@ -65,7 +66,6 @@ public class EatonCloudJobServiceImpl implements EatonCloudJobService {
     //TODO: change to 2
     private static int firstRetryAfterPollMinutes = 1;
 
-    private final static int JOB_FAILURE_ERROR_CODE = 10002;
     // eventId
     private Map<Integer, RetrySummary> resendTries = new ConcurrentHashMap<>();
 
@@ -216,7 +216,7 @@ public class EatonCloudJobServiceImpl implements EatonCloudJobService {
             // job failed, mark all devices as failed, failed job will not retry
             devices.forEach(deviceId -> eatonCloudJobResponseProcessor.processError(summary,
                     deviceId, guids.get(deviceId), "Job Creation Failed",
-                    JOB_FAILURE_ERROR_CODE, ControlEventDeviceStatus.FAILED, 1));
+                    DeviceError.JOB_CREATION_FAILED.getCode(), ControlEventDeviceStatus.FAILED, 1));
             return null;
         }
     }

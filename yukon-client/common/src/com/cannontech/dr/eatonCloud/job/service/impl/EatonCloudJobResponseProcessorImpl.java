@@ -5,6 +5,7 @@ import org.apache.logging.log4j.Logger;
 import org.joda.time.Instant;
 import org.springframework.beans.factory.annotation.Autowired;
 
+import com.cannontech.amr.errors.dao.DeviceError;
 import com.cannontech.amr.errors.dao.DeviceErrorTranslatorDao;
 import com.cannontech.amr.errors.model.DeviceErrorDescription;
 import com.cannontech.clientutils.YukonLogManager;
@@ -24,12 +25,10 @@ public class EatonCloudJobResponseProcessorImpl implements EatonCloudJobResponse
    
     private static final Logger log = YukonLogManager.getLogger(EatonCloudJobResponseProcessorImpl.class);
     
-    private final static int FAILURE_ON_START_UP_ERROR_CODE = 10001;
-
     @Override
     public void failDevicesOnStartup() {
         try {
-            DeviceErrorDescription errorDescription = deviceErrorTranslatorDao.translateErrorCode(FAILURE_ON_START_UP_ERROR_CODE);
+            DeviceErrorDescription errorDescription = deviceErrorTranslatorDao.translateErrorCode(DeviceError.NO_RESPONSE_DUE_TO_RESTART);
             int affectedRows = recentEventParticipationDao.failWillRetryDevices(null, errorDescription.getDescription());
             log.info(
                     "On the start-up changed {} devices waiting for retry (FAILED_WILL_RETRY, UNKNOWN) to failed (FAILED).",
