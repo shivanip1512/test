@@ -10,6 +10,7 @@
     <entry key="yukon.web.error.category.YUKON_SYSTEM">Yukon System</entry>
     <entry key="yukon.web.error.category.TRANSMITTER">Transmitter</entry>
     <entry key="yukon.web.error.category.NETWORK_MANAGER">Network Manager</entry>
+    <entry key="yukon.web.error.category.EATON_CLOUD">Eaton Cloud</entry>
     <entry key="yukon.web.error.category.NA">N/A</entry>
     
     <entry key="yukon.web.error.code.1.porter">Not Normal (Unsuccessful) Return</entry>

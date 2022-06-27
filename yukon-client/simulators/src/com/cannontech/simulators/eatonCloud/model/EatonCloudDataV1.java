@@ -315,10 +315,9 @@ public class EatonCloudDataV1 extends EatonCloudDataGenerator {
         List<String> success = new ArrayList<>();
         
         Map<Integer, Integer> errors = new HashMap<>();
+        errors.put(401, 10004);
         errors.put(404, 15703);
-        errors.put(404, 10068);
         errors.put(501, 11617);
-        errors.put(400, 15518);
         
         EatonCloudJobRequestV1 request = jobRequestCache.getIfPresent(jobGuid);
         if (request == null) {

@@ -141,24 +141,24 @@ public class EatonCloudCommunicationServiceImplV1 implements EatonCloudCommunica
         long requestIdentifier = requestIncrementer.getAndIncrement();
         try {
             HttpEntity<String> requestEntity = getEmptyRequestWithAuthHeaders();
-            commsLogger.info("<<< EC[{}] Sent request to:{} ", requestIdentifier, uri);
+            commsLogger.info("<<< [{}] Sent request to:{} ", requestIdentifier, uri);
             ResponseEntity<EatonCloudSiteDevicesV1> response = restTemplate.exchange(uri, HttpMethod.GET, requestEntity,
                     EatonCloudSiteDevicesV1.class);
             if (commsLogger.isDebugEnabled()) {
-                commsLogger.debug(">>> EC[{}] Request to:{} Response:{}", requestIdentifier, uri,
+                commsLogger.debug(">>> [{}] Request to:{} Response:{}", requestIdentifier, uri,
                         deferredJson(response.getBody()));
             } else {
-                commsLogger.info(">>> EC[{}] Request to:{} Response Site Guid:{} Devices:{}", requestIdentifier, uri,
+                commsLogger.info(">>> [{}] Request to:{} Response Site Guid:{} Devices:{}", requestIdentifier, uri,
                         response.getBody().getSiteGuid(),
                         response.getBody().getDevices() == null ? 0 : response.getBody().getDevices().size());
             }
             return response.getBody();
         } catch (EatonCloudCommunicationExceptionV1 e) {
-            commsLogger.warn(">>> EC[{}] Request to:{} Response:", requestIdentifier, uri, e);
+            commsLogger.warn(">>> [{}] Request to:{} Response:", requestIdentifier, uri, e);
             e.setRequestIdentifier(requestIdentifier);
             throw e;
         } catch (Exception e) {
-            commsLogger.warn(">>> EC[{}] Request to:{} Response:", requestIdentifier, uri, e);
+            commsLogger.warn(">>> [{}] Request to:{} Response:", requestIdentifier, uri, e);
             throw new EatonCloudCommunicationExceptionV1(e, requestIdentifier);
         }
     }
@@ -171,18 +171,18 @@ public class EatonCloudCommunicationServiceImplV1 implements EatonCloudCommunica
         uri = addQueryParams(queryParams, uri);
         long requestIdentifier = requestIncrementer.getAndIncrement();
         try {
-            commsLogger.info("<<< EC[{}] Sent request to:{} ", requestIdentifier, uri);
+            commsLogger.info("<<< [{}] Sent request to:{} ", requestIdentifier, uri);
             HttpEntity<String> requestEntity = getEmptyRequestWithAuthHeaders();
             ResponseEntity<EatonCloudSiteV1[]> response = restTemplate.exchange(uri, HttpMethod.GET, requestEntity,
                     EatonCloudSiteV1[].class);
-            commsLogger.info(">>> EC[{}] Request to:{} Response:{}", requestIdentifier, uri, deferredJson(response.getBody()));
+            commsLogger.info(">>> [{}] Request to:{} Response:{}", requestIdentifier, uri, deferredJson(response.getBody()));
             return Arrays.asList(response.getBody());
         } catch (EatonCloudCommunicationExceptionV1 e) {
-            commsLogger.warn(">>> EC[{}] Request to:{} Response:", requestIdentifier, uri, e);
+            commsLogger.warn(">>> [{}] Request to:{} Response:", requestIdentifier, uri, e);
             e.setRequestIdentifier(requestIdentifier);
             throw e;
         } catch (Exception e) {
-            commsLogger.warn(">>> EC[{}] Request to:{} Response:", requestIdentifier, uri, e);
+            commsLogger.warn(">>> [{}] Request to:{} Response:", requestIdentifier, uri, e);
             throw new EatonCloudCommunicationExceptionV1(e, requestIdentifier);
         }
     }
@@ -200,12 +200,12 @@ public class EatonCloudCommunicationServiceImplV1 implements EatonCloudCommunica
             HttpEntity<EatonCloudTimeSeriesDataRequestV1> requestEntity = getRequestWithAuthHeaders(request);
             int totalTags = requestEntity.getBody().getDevices().stream()
                             .collect(Collectors.summingInt(d -> Lists.newArrayList(Splitter.on(",").split(d.getTagTrait())).size()));
-            commsLogger.info("<<< EC[{}] Sent request to:{} {} Total Tags:{}", requestIdentifier, uri, deferredJson(request), totalTags);
+            commsLogger.info("<<< [{}] Sent request to:{} {} Total Tags:{}", requestIdentifier, uri, deferredJson(request), totalTags);
             ResponseEntity<EatonCloudTimeSeriesDeviceResultV1[]> response = restTemplate.exchange(uri, HttpMethod.POST,
                     requestEntity,
                     EatonCloudTimeSeriesDeviceResultV1[].class);
             if (commsLogger.isDebugEnabled()) {
-                    commsLogger.info(">>> EC[{}] Request to:{} Response:{} Total Tags:{} ", requestIdentifier, uri,
+                    commsLogger.info(">>> [{}] Request to:{} Response:{} Total Tags:{} ", requestIdentifier, uri,
                     deferredJson(response.getBody()), totalTags);
             } else {
                 try {
@@ -213,18 +213,18 @@ public class EatonCloudCommunicationServiceImplV1 implements EatonCloudCommunica
                             .collect(Collectors.toMap(k -> k.getDeviceId(),
                                     k -> k.getResults().stream().filter(v -> !CollectionUtils.isEmpty(v.getValues()))
                                             .collect(Collectors.summingInt(v -> v.getValues().size()))));
-                    commsLogger.info(">>> EC[{}] Request to:{} Response:{}", requestIdentifier, uri, info);
+                    commsLogger.info(">>> [{}] Request to:{} Response:{}", requestIdentifier, uri, info);
                 } catch (Exception e) {
-                    commsLogger.info(">>> EC[{}] Request to:{} Response:{}", requestIdentifier, uri, deferredJson(response.getBody()));
+                    commsLogger.info(">>> [{}] Request to:{} Response:{}", requestIdentifier, uri, deferredJson(response.getBody()));
                 }
             }
             return Arrays.asList(response.getBody());
         } catch (EatonCloudCommunicationExceptionV1 e) {
-            commsLogger.warn(">>> EC[{}] Request to:{} Response:", requestIdentifier, uri, e);
+            commsLogger.warn(">>> [{}] Request to:{} Response:", requestIdentifier, uri, e);
             e.setRequestIdentifier(requestIdentifier);
             throw e;
         } catch (Exception e) {
-            commsLogger.warn(">>> EC[{}] Request to:{} Response:", requestIdentifier, uri, e);
+            commsLogger.warn(">>> [{}] Request to:{} Response:", requestIdentifier, uri, e);
             throw new EatonCloudCommunicationExceptionV1(e, requestIdentifier);
         }
     }
@@ -243,17 +243,17 @@ public class EatonCloudCommunicationServiceImplV1 implements EatonCloudCommunica
         long requestIdentifier = requestIncrementer.getAndIncrement();
         try {
             HttpEntity<String> requestEntity = getEmptyRequestWithAuthHeaders();
-            commsLogger.info("<<< EC[{}] Sent request to:{} ", requestIdentifier, uri);
+            commsLogger.info("<<< [{}] Sent request to:{} ", requestIdentifier, uri);
             ResponseEntity<EatonCloudDeviceDetailV1> response = restTemplate.exchange(uri, HttpMethod.GET, requestEntity,
                     EatonCloudDeviceDetailV1.class);
-            commsLogger.info(">>> EC[{}] Request to:{} Response:{}", requestIdentifier, uri, deferredJson(response.getBody()));
+            commsLogger.info(">>> [{}] Request to:{} Response:{}", requestIdentifier, uri, deferredJson(response.getBody()));
             return response.getBody();
         } catch (EatonCloudCommunicationExceptionV1 e) {
-            commsLogger.warn(">>> EC[{}] Request to:{} Response:", requestIdentifier, uri, e);
+            commsLogger.warn(">>> [{}] Request to:{} Response:", requestIdentifier, uri, e);
             e.setRequestIdentifier(requestIdentifier);
             throw e;
         } catch (Exception e) {
-            commsLogger.warn(">>> EC[{}] Request to:{} Response:", requestIdentifier, uri, e);
+            commsLogger.warn(">>> [{}] Request to:{} Response:", requestIdentifier, uri, e);
             throw new EatonCloudCommunicationExceptionV1(e, requestIdentifier);
         }
     }
@@ -266,17 +266,17 @@ public class EatonCloudCommunicationServiceImplV1 implements EatonCloudCommunica
         long requestIdentifier = requestIncrementer.getAndIncrement();
         try {
             HttpEntity<EatonCloudCommandRequestV1> requestEntity = getRequestWithAuthHeaders(request);
-            commsLogger.info("<<< EC[{}] Sent request to:{} {}", requestIdentifier, uri, deferredJson(request));
+            commsLogger.info("<<< [{}] Sent request to:{} {}", requestIdentifier, uri, deferredJson(request));
             ResponseEntity<EatonCloudCommandResponseV1> response = restTemplate.exchange(uri, HttpMethod.PUT, requestEntity,
                     EatonCloudCommandResponseV1.class);
-            commsLogger.info(">>> EC[{}] Request to:{} Response:{}", requestIdentifier, uri, deferredJson(response.getBody()));
+            commsLogger.info(">>> [{}] Request to:{} Response:{}", requestIdentifier, uri, deferredJson(response.getBody()));
             return response.getBody();
         } catch (EatonCloudCommunicationExceptionV1 e) {
-            commsLogger.warn(">>> EC[{}] Request to:{} Response:", requestIdentifier, uri, e);
+            commsLogger.warn(">>> [{}] Request to:{} Response:", requestIdentifier, uri, e);
             e.setRequestIdentifier(requestIdentifier);
             throw e;
         } catch (Exception e) {
-            commsLogger.warn(">>> EC[{}] Request to:{} Response:", requestIdentifier, uri, e);
+            commsLogger.warn(">>> [{}] Request to:{} Response:", requestIdentifier, uri, e);
             throw new EatonCloudCommunicationExceptionV1(e, requestIdentifier);
         }
     }
@@ -290,19 +290,19 @@ public class EatonCloudCommunicationServiceImplV1 implements EatonCloudCommunica
         try {
             HttpEntity<String> requestEntity = getEmptyRequestWithAuthHeaders();
 
-            commsLogger.info("<<< EC[{}] Sent request to:{} ", requestIdentifier, uri);
+            commsLogger.info("<<< [{}] Sent request to:{} ", requestIdentifier, uri);
 
             ResponseEntity<EatonCloudServiceAccountDetailV1> response = restTemplate.exchange(uri, HttpMethod.GET, requestEntity,
                     EatonCloudServiceAccountDetailV1.class);
 
-            commsLogger.info(">>> EC[{}] Request to:{} Response:{}", requestIdentifier, uri, deferredJson(response.getBody()));
+            commsLogger.info(">>> [{}] Request to:{} Response:{}", requestIdentifier, uri, deferredJson(response.getBody()));
             return response.getBody();
         } catch (EatonCloudCommunicationExceptionV1 e) {
-            commsLogger.warn(">>> EC[{}] Request to:{} Response:", requestIdentifier, uri, e);
+            commsLogger.warn(">>> [{}] Request to:{} Response:", requestIdentifier, uri, e);
             e.setRequestIdentifier(requestIdentifier);
             throw e;
         } catch (Exception e) {
-            commsLogger.warn(">>> EC[{}] Request to:{} Response:", requestIdentifier, uri, e);
+            commsLogger.warn(">>> [{}] Request to:{} Response:", requestIdentifier, uri, e);
             throw new EatonCloudCommunicationExceptionV1(e, requestIdentifier);
         }
     }
@@ -317,18 +317,18 @@ public class EatonCloudCommunicationServiceImplV1 implements EatonCloudCommunica
         long requestIdentifier = requestIncrementer.getAndIncrement();
         try {
             HttpEntity<String> requestEntity = getEmptyRequestWithAuthHeaders();
-            commsLogger.info("<<< EC[{}] Sent request to:{} ", requestIdentifier, uri);
+            commsLogger.info("<<< [{}] Sent request to:{} ", requestIdentifier, uri);
             ResponseEntity<EatonCloudSecretValueV1> response = restTemplate.exchange(uri, HttpMethod.GET, requestEntity,
                     EatonCloudSecretValueV1.class);
-            commsLogger.info(">>> EC[{}] Request to:{} Response: secret:{} expiry time:{}", requestIdentifier, uri,
+            commsLogger.info(">>> [{}] Request to:{} Response: secret:{} expiry time:{}", requestIdentifier, uri,
                     response.getBody().getName(), DATE_FORMAT.format(response.getBody().getExpiryTime()));
             return response.getBody();
         } catch (EatonCloudCommunicationExceptionV1 e) {
-            commsLogger.warn(">>> EC[{}] Request to:{} Response:", requestIdentifier, uri, e);
+            commsLogger.warn(">>> [{}] Request to:{} Response:", requestIdentifier, uri, e);
             e.setRequestIdentifier(requestIdentifier);
             throw e;
         } catch (Exception e) {
-            commsLogger.warn(">>> EC[{}] Request to:{} Response:", requestIdentifier, uri, e);
+            commsLogger.warn(">>> [{}] Request to:{} Response:", requestIdentifier, uri, e);
             throw new EatonCloudCommunicationExceptionV1(e, requestIdentifier);
         }
     }
@@ -340,19 +340,19 @@ public class EatonCloudCommunicationServiceImplV1 implements EatonCloudCommunica
         try {
             HttpEntity<String> requestEntity = getEmptyRequestWithAuthHeaders();
 
-            commsLogger.info("<<< EC[{}] Sent request to:{} ", requestIdentifier, uri);
+            commsLogger.info("<<< [{}] Sent request to:{} ", requestIdentifier, uri);
 
             ResponseEntity<EatonCloudJobStatusResponseV1> response = restTemplate.exchange(uri, HttpMethod.GET, requestEntity,
                     EatonCloudJobStatusResponseV1.class);
 
-            commsLogger.info(">>> EC[{}] Request to:{} Response:{}", requestIdentifier, uri, deferredJson(response.getBody()));
+            commsLogger.info(">>> [{}] Request to:{} Response:{}", requestIdentifier, uri, deferredJson(response.getBody()));
             return response.getBody();
         } catch (EatonCloudCommunicationExceptionV1 e) {
-            commsLogger.warn(">>> EC[{}] Request to:{} Response:", requestIdentifier, uri, e);
+            commsLogger.warn(">>> [{}] Request to:{} Response:", requestIdentifier, uri, e);
             e.setRequestIdentifier(requestIdentifier);
             throw e;
         } catch (Exception e) {
-            commsLogger.warn(">>> EC[{}] Request to:{} Response:", requestIdentifier, uri, e);
+            commsLogger.warn(">>> [{}] Request to:{} Response:", requestIdentifier, uri, e);
             throw new EatonCloudCommunicationExceptionV1(e, requestIdentifier);
         }
     }
@@ -364,18 +364,18 @@ public class EatonCloudCommunicationServiceImplV1 implements EatonCloudCommunica
         long requestIdentifier = requestIncrementer.getAndIncrement();
         try {
             HttpEntity<EatonCloudJobRequestV1> requestEntity = getRequestWithAuthHeaders(request);
-            commsLogger.info("<<< EC[{}] Sent request to:{} {}", requestIdentifier, uri, deferredJson(request));
+            commsLogger.info("<<< [{}] Sent request to:{} {}", requestIdentifier, uri, deferredJson(request));
             ResponseEntity<EatonCloudJobResponseV1> response = restTemplate.exchange(uri, HttpMethod.POST,
                     requestEntity,
                     EatonCloudJobResponseV1.class);
-            commsLogger.info(">>> EC[{}] Request to:{} Response:{}", requestIdentifier, uri, deferredJson(response.getBody()));
+            commsLogger.info(">>> [{}] Request to:{} Response:{}", requestIdentifier, uri, deferredJson(response.getBody()));
             return response.getBody();
         } catch (EatonCloudCommunicationExceptionV1 e) {
-            commsLogger.warn(">>> EC[{}] Request to:{} Response:", requestIdentifier, uri, e);
+            commsLogger.warn(">>> [{}] Request to:{} Response:", requestIdentifier, uri, e);
             e.setRequestIdentifier(requestIdentifier);
             throw e;
         } catch (Exception e) {
-            commsLogger.warn(">>> EC[{}] Request to:{} Response:", requestIdentifier, uri, e);
+            commsLogger.warn(">>> [{}] Request to:{} Response:", requestIdentifier, uri, e);
             throw new EatonCloudCommunicationExceptionV1(e, requestIdentifier);
         }
     }

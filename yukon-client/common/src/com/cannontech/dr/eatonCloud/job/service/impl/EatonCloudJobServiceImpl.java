@@ -22,6 +22,7 @@ import org.joda.time.Instant;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 
+import com.cannontech.amr.errors.dao.DeviceErrorTranslatorDao;
 import com.cannontech.clientutils.YukonLogManager;
 import com.cannontech.common.config.ConfigurationSource;
 import com.cannontech.common.config.MasterConfigInteger;
@@ -30,6 +31,7 @@ import com.cannontech.core.dao.DeviceDao;
 import com.cannontech.dr.eatonCloud.job.service.EatonCloudJobPollService;
 import com.cannontech.dr.eatonCloud.job.service.EatonCloudJobResponseProcessor;
 import com.cannontech.dr.eatonCloud.job.service.EatonCloudJobService;
+import com.cannontech.dr.eatonCloud.job.service.EatonCloudJobSmartNotifService;
 import com.cannontech.dr.eatonCloud.model.v1.EatonCloudCommunicationExceptionV1;
 import com.cannontech.dr.eatonCloud.model.v1.EatonCloudJobRequestV1;
 import com.cannontech.dr.eatonCloud.model.v1.EatonCloudJobResponseV1;
@@ -51,16 +53,19 @@ public class EatonCloudJobServiceImpl implements EatonCloudJobService {
     @Autowired @Qualifier("main") private ScheduledExecutor scheduledExecutor;
     @Autowired private GlobalSettingDao settingDao;
     @Autowired private EatonCloudJobPollService eatonCloudJobPollService;
+    @Autowired private EatonCloudJobSmartNotifService eatonCloudJobSmartNotifService;
+    @Autowired private DeviceErrorTranslatorDao deviceErrorTranslatorDao;
 
     private static final Logger log = YukonLogManager.getLogger(EatonCloudJobServiceImpl.class);
 
     private AtomicBoolean isSendingCommands = new AtomicBoolean(false);
     private int maxDevicesPerJob;
     //TODO: change to 5
-    private static int pollInMinutes = 5;
+    private static int pollInMinutes = 1;
     //TODO: change to 2
-    private static int firstRetryAfterPollMinutes = 2;
+    private static int firstRetryAfterPollMinutes = 1;
 
+    private final static int JOB_FAILURE_ERROR_CODE = 10002;
     // eventId
     private Map<Integer, RetrySummary> resendTries = new ConcurrentHashMap<>();
 
@@ -126,7 +131,8 @@ public class EatonCloudJobServiceImpl implements EatonCloudJobService {
     @Override
     public void createJobs(int programId, Set<Integer> devices, LMEatonCloudScheduledCycleCommand command,
             Integer eventId) {
-        EventSummary summary = new EventSummary(eventId, programId, command, log, recentEventParticipationDao);
+        EventSummary summary = new EventSummary(eventId, programId, command, log, recentEventParticipationDao,
+                deviceErrorTranslatorDao);
         Pair<Instant, List<String>> result = createJobs(devices, summary);
         setupRetry(summary, result);
     }
@@ -187,6 +193,7 @@ public class EatonCloudJobServiceImpl implements EatonCloudJobService {
             eatonCloudJobPollService.schedulePoll(summary, pollInMinutes, devices.size(), jobGuids, jobCreationTime, summary.getCurrentTry().get());
             return Pair.of(jobCreationTime, jobGuids);
         }
+        eatonCloudJobSmartNotifService.sendSmartNotifications(summary, devices.size(), devices.size());
         return null;
        
     }
@@ -209,7 +216,7 @@ public class EatonCloudJobServiceImpl implements EatonCloudJobService {
             // job failed, mark all devices as failed, failed job will not retry
             devices.forEach(deviceId -> eatonCloudJobResponseProcessor.processError(summary,
                     deviceId, guids.get(deviceId), "Job Creation Failed",
-                    e.getDisplayMessage(), ControlEventDeviceStatus.FAILED, 1));
+                    JOB_FAILURE_ERROR_CODE, ControlEventDeviceStatus.FAILED, 1));
             return null;
         }
     }

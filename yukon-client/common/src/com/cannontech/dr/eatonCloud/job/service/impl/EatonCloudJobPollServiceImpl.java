@@ -9,8 +9,6 @@ import java.util.Map;
 import java.util.Set;
 import java.util.concurrent.TimeUnit;
 
-import javax.annotation.PostConstruct;
-
 import org.apache.logging.log4j.Logger;
 import org.joda.time.Instant;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -18,45 +16,29 @@ import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.util.CollectionUtils;
 
 import com.cannontech.clientutils.YukonLogManager;
-import com.cannontech.common.config.ConfigurationSource;
-import com.cannontech.common.config.MasterConfigInteger;
-import com.cannontech.common.smartNotification.model.EatonCloudDrEventAssembler;
-import com.cannontech.common.smartNotification.model.SmartNotificationEvent;
-import com.cannontech.common.smartNotification.model.SmartNotificationEventType;
-import com.cannontech.common.smartNotification.service.SmartNotificationEventCreationService;
 import com.cannontech.common.util.ScheduledExecutor;
 import com.cannontech.core.dao.DeviceDao;
 import com.cannontech.dr.eatonCloud.job.service.EatonCloudJobPollService;
 import com.cannontech.dr.eatonCloud.job.service.EatonCloudJobReadService;
 import com.cannontech.dr.eatonCloud.job.service.EatonCloudJobResponseProcessor;
+import com.cannontech.dr.eatonCloud.job.service.EatonCloudJobSmartNotifService;
 import com.cannontech.dr.eatonCloud.model.v1.EatonCloudCommunicationExceptionV1;
 import com.cannontech.dr.eatonCloud.model.v1.EatonCloudJobStatusResponseV1;
 import com.cannontech.dr.eatonCloud.service.v1.EatonCloudCommunicationServiceV1;
 import com.cannontech.dr.recenteventparticipation.ControlEventDeviceStatus;
 import com.cannontech.dr.recenteventparticipation.dao.RecentEventParticipationDao;
-import com.cannontech.yukon.IDatabaseCache;
 
 public class EatonCloudJobPollServiceImpl implements EatonCloudJobPollService {
     
     private static final Logger log = YukonLogManager.getLogger(EatonCloudJobPollServiceImpl.class);
     
-    @Autowired private SmartNotificationEventCreationService smartNotificationEventCreationService;
-    @Autowired private IDatabaseCache dbCache;
     @Autowired @Qualifier("main") private ScheduledExecutor executor;
-    @Autowired private ConfigurationSource configurationSource;
     @Autowired EatonCloudJobReadService eatonCloudJobReadService;
     @Autowired private EatonCloudCommunicationServiceV1 eatonCloudCommunicationService;
     @Autowired private EatonCloudJobResponseProcessor eatonCloudJobResponseProcessor;
     @Autowired private RecentEventParticipationDao recentEventParticipationDao;
     @Autowired private DeviceDao deviceDao;
-
-    private int failureNotificationPercent;
-
-    @PostConstruct
-    public void init() {
-        failureNotificationPercent = configurationSource.getInteger(
-                MasterConfigInteger.EATON_CLOUD_NOTIFICATION_COMMAND_FAILURE_PERCENT, 25);
-    }
+    @Autowired private EatonCloudJobSmartNotifService eatonCloudJobSmartNotifService;
 
     @Override
     public void immediatePoll(EventSummary summary, List<String> jobGuids,
@@ -74,7 +56,7 @@ public class EatonCloudJobPollServiceImpl implements EatonCloudJobPollService {
             try {
                 int successes = poll(summary, jobGuids, jobCreationTime, currentTry);
                 // consider all devices that didn't succeed as failure
-                sendSmartNotifications(summary, totalDevices, totalDevices - successes);
+                eatonCloudJobSmartNotifService.sendSmartNotifications(summary, totalDevices, totalDevices - successes);
             } catch (Exception e) {
                 log.error("Error polling", e);
             }
@@ -120,10 +102,8 @@ public class EatonCloudJobPollServiceImpl implements EatonCloudJobPollService {
             Map<String, Integer> guidsToDeviceIds, int currentTry) {
         if (!CollectionUtils.isEmpty(response.getFailures())) {
             response.getFailures().forEach((deviceGuid, error) -> {
-                // there is a yuk to translate error codes
-                String errorString = "[status:" + error.getStatus() + " code:" + error.getErrorNumber() + "]";
                 eatonCloudJobResponseProcessor.processError(summary,
-                        guidsToDeviceIds.get(deviceGuid), deviceGuid, jobGuid, errorString,
+                        guidsToDeviceIds.get(deviceGuid), deviceGuid, jobGuid, Integer.valueOf(error.getErrorNumber()),
                         ControlEventDeviceStatus.FAILED_WILL_RETRY, currentTry);
             });
         }
@@ -162,20 +142,5 @@ public class EatonCloudJobPollServiceImpl implements EatonCloudJobPollService {
             guids.addAll(response.getFailures().keySet());
         }
         return deviceDao.getDeviceIds(guids);
-    }
-
-    private void sendSmartNotifications(EventSummary summary, int totalDevices, int totalFailed) {
-        if (totalFailed == 0) {
-            return;
-        }
-        boolean sendNotification = (totalFailed * 100) / totalDevices > failureNotificationPercent;
-        if (sendNotification) {
-            String program = dbCache.getAllPaosMap().get(summary.getProgramId()).getPaoName();
-            String group = dbCache.getAllPaosMap().get(summary.getCommand().getGroupId()).getPaoName();
-            SmartNotificationEvent event = EatonCloudDrEventAssembler.assemble(group, program, totalDevices, totalFailed);
-
-            log.info(summary.getLogSummary(false) + " Sending smart notification event: {}", event);
-            smartNotificationEventCreationService.send(SmartNotificationEventType.EATON_CLOUD_DR, List.of(event));
-        }
     }
 }

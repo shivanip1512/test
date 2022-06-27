@@ -5,6 +5,8 @@ import org.apache.logging.log4j.Logger;
 import org.joda.time.Instant;
 import org.springframework.beans.factory.annotation.Autowired;
 
+import com.cannontech.amr.errors.dao.DeviceErrorTranslatorDao;
+import com.cannontech.amr.errors.model.DeviceErrorDescription;
 import com.cannontech.clientutils.YukonLogManager;
 import com.cannontech.common.events.loggers.EatonCloudEventLogService;
 import com.cannontech.dr.eatonCloud.job.service.EatonCloudJobResponseProcessor;
@@ -18,13 +20,17 @@ public class EatonCloudJobResponseProcessorImpl implements EatonCloudJobResponse
     @Autowired private EatonCloudEventLogService eatonCloudEventLogService;
     @Autowired private RecentEventParticipationDao recentEventParticipationDao;
     @Autowired private IDatabaseCache dbCache;
-
+    @Autowired private DeviceErrorTranslatorDao deviceErrorTranslatorDao;
+   
     private static final Logger log = YukonLogManager.getLogger(EatonCloudJobResponseProcessorImpl.class);
+    
+    private final static int FAILURE_ON_START_UP_ERROR_CODE = 10001;
 
     @Override
     public void failDevicesOnStartup() {
         try {
-            int affectedRows = recentEventParticipationDao.failWillRetryDevices(null);
+            DeviceErrorDescription errorDescription = deviceErrorTranslatorDao.translateErrorCode(FAILURE_ON_START_UP_ERROR_CODE);
+            int affectedRows = recentEventParticipationDao.failWillRetryDevices(null, errorDescription.getDescription());
             log.info(
                     "On the start-up changed {} devices waiting for retry (FAILED_WILL_RETRY, UNKNOWN) to failed (FAILED).",
                     affectedRows);
@@ -34,11 +40,12 @@ public class EatonCloudJobResponseProcessorImpl implements EatonCloudJobResponse
     }
 
     @Override
-    public void processError(EventSummary summary, Integer deviceId, String guid, String jobGuid, String message,
+    public void processError(EventSummary summary, Integer deviceId, String guid, String jobGuid, int code,
             ControlEventDeviceStatus status, int currentTry) {
         String deviceName = dbCache.getAllPaosMap().get(deviceId).getPaoName();
         LMEatonCloudScheduledCycleCommand command = summary.getCommand();
-        
+        DeviceErrorDescription errorDescription = deviceErrorTranslatorDao.translateErrorCode(code);
+        String message = errorDescription.getDescription();        
         recentEventParticipationDao.updateDeviceControlEvent(String.valueOf(summary.getEventId()),
                 deviceId,
                 status,
@@ -54,10 +61,10 @@ public class EatonCloudJobResponseProcessorImpl implements EatonCloudJobResponse
                 command.getDutyCyclePeriod(),
                 command.getCriticality(),
                 command.getVirtualRelayId(),
-                truncateErrorForEventLog(message));
+                truncateErrorForEventLog("("+code+")" + message));
  
         log.debug(summary.getLogSummary(false) + "Try:{} Failed sending shed command to device id:{} guid:{} name:{} error:{}",
-                currentTry, deviceId, guid, deviceName, truncateErrorForEventLog(message));
+                currentTry, deviceId, guid, deviceName, message);
     }
     
     @Override

@@ -87,4 +87,6 @@ public interface RecentEventParticipationDao {
      * @return rows affected 
      */
     int failWillRetryDevices(Integer externalEventId);
+
+    int failWillRetryDevices(Integer externalEventId, String failReason);
 }

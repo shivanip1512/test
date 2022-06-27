@@ -1,7 +1,6 @@
 package com.cannontech.dr.eatonCloud.job.service.impl;
 
 import java.math.RoundingMode;
-import java.util.List;
 import java.util.Map;
 import java.util.concurrent.atomic.AtomicInteger;
 
@@ -11,6 +10,7 @@ import org.apache.logging.log4j.Logger;
 import org.joda.time.DateTime;
 import org.joda.time.Instant;
 
+import com.cannontech.amr.errors.dao.DeviceErrorTranslatorDao;
 import com.cannontech.dr.eatonCloud.service.EatonCloudSendControlService.CommandParam;
 import com.cannontech.dr.recenteventparticipation.dao.RecentEventParticipationDao;
 import com.cannontech.loadcontrol.messages.LMEatonCloudScheduledCycleCommand;
@@ -27,6 +27,9 @@ public final class EventSummary {
     private Integer programId;
     private Logger log;
     private RecentEventParticipationDao recentEventParticipationDao;
+    private String failReason;
+    
+    private final static int NO_RESPONSE_FROM_DEVICE_ERROR_CODE = 10000;
 
     public String getLogSummary(boolean displayTryInfo) {
         return "[id:" + eventId + getTryText(displayTryInfo) + "] relay:" + command.getVirtualRelayId() + " ";
@@ -46,12 +49,13 @@ public final class EventSummary {
     }
 
     EventSummary(Integer eventId, int programId, LMEatonCloudScheduledCycleCommand command, Logger log,
-            RecentEventParticipationDao recentEventParticipationDao) {
+            RecentEventParticipationDao recentEventParticipationDao, DeviceErrorTranslatorDao deviceErrorTranslatorDao) {
         this.eventId = eventId;
         this.command = command;
         this.programId = programId;
         this.log = log;
         this.recentEventParticipationDao = recentEventParticipationDao;
+        this.failReason = deviceErrorTranslatorDao.translateErrorCode(NO_RESPONSE_FROM_DEVICE_ERROR_CODE).getDescription();
 
         // If it is a 4 hour control with a 30 minute period, it would have a cycle count of 8.
         // The resend service should only attempt to send to failed devices for the first 4 cycles, or 2 hours.
@@ -79,7 +83,7 @@ public final class EventSummary {
             return this;
         }
         // we ran out of retries and will mark all FAILED_WILL_RETRY or UNKNOWN devices as FAILED
-        int affectedRows = recentEventParticipationDao.failWillRetryDevices(getEventId());
+        int affectedRows = recentEventParticipationDao.failWillRetryDevices(getEventId(), failReason);
         log.info(
                 "[id:{}] No more retries available, changed {} devices waiting for retry (FAILED_WILL_RETRY, UNKNOWN) to failed (FAILED).",
                 getEventId(), affectedRows);

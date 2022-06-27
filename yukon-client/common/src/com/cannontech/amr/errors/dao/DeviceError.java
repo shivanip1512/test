@@ -2,6 +2,7 @@ package com.cannontech.amr.errors.dao;
 
 import static com.cannontech.amr.errors.dao.DeviceErrorCategory.BULK_COMMUNICATIONS;
 import static com.cannontech.amr.errors.dao.DeviceErrorCategory.DATA_VALIDATION;
+import static com.cannontech.amr.errors.dao.DeviceErrorCategory.EATON_CLOUD;
 import static com.cannontech.amr.errors.dao.DeviceErrorCategory.NA;
 import static com.cannontech.amr.errors.dao.DeviceErrorCategory.NETWORK_MANAGER;
 import static com.cannontech.amr.errors.dao.DeviceErrorCategory.POWERLINE_CARRIER;
@@ -239,7 +240,24 @@ public enum DeviceError {
     SUCCESS(NA, 0),
     
     // replaces * 
-    UNKNOWN(NA, -1);
+    UNKNOWN(NA, -1),
+    
+    // Eaton Cloud
+    NO_RESPONSE_FROM_DEVICE(EATON_CLOUD, 10000),
+    NO_RESPONSE_DUE_TO_RESTART(EATON_CLOUD, 10001),
+    JOB_CREATION_FAILED(EATON_CLOUD, 10002),
+    USER_NOT_AUTHORIZED(EATON_CLOUD, 10004),
+    DEVICE_NOT_CONFIGURED(EATON_CLOUD, 10066),
+    PROFILE_NOT_FOUND(EATON_CLOUD, 10068),
+    CHANNELS_ARE_INVALID(EATON_CLOUD, 11311),
+    CHANNEL_METHOD_NOT_AVAILABLE(EATON_CLOUD, 11617),
+    NO_CHANNELS_DEFINED(EATON_CLOUD, 15516),
+    CHANNEL_METHOD_PARAMS_NOT_VALID(EATON_CLOUD, 15517),
+    CHANNEL_METHOD_PARAMS_NOT_WRITABLE(EATON_CLOUD, 11618),
+    DEVICE_NOT_FOUND(EATON_CLOUD, 15703),
+    COMMAND_TIMED_OUT(EATON_CLOUD, 16201),
+    COMMAND_FAILURE(EATON_CLOUD, 16202),
+    ;
     
     DeviceError(DeviceErrorCategory category, int code) {
         this.category = category;
