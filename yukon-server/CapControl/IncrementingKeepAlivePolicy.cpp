@@ -25,7 +25,7 @@ Policy::AttributeList IncrementingKeepAlivePolicy::getSupportedAttributes() cons
     };
 }
 
-Policy::Actions IncrementingKeepAlivePolicy::SendKeepAlive( const long keepAliveValue , long regulatorTimeout)
+Policy::Actions IncrementingKeepAlivePolicy::SendKeepAlive( const long keepAliveValue , std::chrono::seconds regulatorTimeout)
 {
 // Ignore incoming parameter...
 
@@ -127,23 +127,23 @@ catch ( UninitializedPointValue & )
     return 0;      // can't read value -- send default of 0
 }
 
-bool IncrementingKeepAlivePolicy::needsAutoBlockEnable(long regulatorTimeout)
+bool IncrementingKeepAlivePolicy::needsAutoBlockEnable(std::chrono::seconds regulatorTimeout)
 try
 {
-    CtiTime now;
-    CtiTime thresholdTime = now - regulatorTimeout;
+    const CtiTime now;
+    const CtiTime thresholdTime = now - regulatorTimeout;
 
-    auto autoRemoteControlAttribute = getCompleteValueByAttribute(Attribute::AutoRemoteControl);
-    auto autoBlockEnableAttribute   = getCompleteValueByAttribute(Attribute::AutoBlockEnable);
+    const auto autoRemoteControlAttribute = getCompleteValueByAttribute(Attribute::AutoRemoteControl);
+    const auto autoBlockEnableAttribute   = getCompleteValueByAttribute(Attribute::AutoBlockEnable);
 
-    std::set<int> goodQualities{ ManualQuality, NormalQuality };
+    const auto isGoodQuality = [](int q) { return (q == ManualQuality || q == NormalQuality); };
 
     if (autoRemoteControlAttribute.timestamp < thresholdTime)
     {
         CTILOG_ERROR(dout, "The time on this Auto Remote Control attribute is outdated");
         return false;
     }
-    if (!goodQualities.count(autoRemoteControlAttribute.quality))
+    if (!isGoodQuality(autoRemoteControlAttribute.quality))
     {
         CTILOG_ERROR(dout, "The point quality on this Auto Remote Control attribute is invalid, it is neither set to Manual nor Normal Quality");
         return false;
@@ -154,7 +154,7 @@ try
         CTILOG_ERROR(dout, "The time on this Auto Block Enable attribute is outdated");
         return false;
     }
-    if (!goodQualities.count(autoBlockEnableAttribute.quality))
+    if (!isGoodQuality(autoBlockEnableAttribute.quality))
     {
         CTILOG_ERROR(dout, "The point quality on this Auto Block Enable attribute is invalid, it is neither set to Manual nor Normal Quality");
         return false;

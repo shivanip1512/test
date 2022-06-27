@@ -1343,7 +1343,7 @@ VoltageRegulator::PowerFlowSituations VoltageRegulator::determinePowerFlowSituat
     return status.code;
 }
 
-void VoltageRegulator::setRegulatorTimeout(long regulatorTimeout)
+void VoltageRegulator::setRegulatorTimeout(std::chrono::seconds regulatorTimeout)
 {
     _regulatorTimeout = regulatorTimeout;
 }
