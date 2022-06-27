@@ -4,9 +4,9 @@ import java.util.List;
 
 import javax.annotation.PostConstruct;
 
-import org.apache.commons.lang3.StringUtils;
+import org.apache.commons.collections4.CollectionUtils;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.dao.DataAccessException;
+import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.validation.Errors;
 
 import com.cannontech.api.error.model.ApiErrorDetails;
@@ -14,8 +14,6 @@ import com.cannontech.common.i18n.MessageSourceAccessor;
 import com.cannontech.common.validator.SimpleValidator;
 import com.cannontech.common.validator.YukonApiValidationUtils;
 import com.cannontech.core.dao.ContactDao;
-import com.cannontech.core.dao.ContactNotificationDao;
-import com.cannontech.database.data.customer.CustomerTypes;
 import com.cannontech.database.data.lite.LiteContact;
 import com.cannontech.database.data.lite.LiteContactNotification;
 import com.cannontech.database.data.lite.LiteCustomer;
@@ -32,10 +30,10 @@ public class NotificationGroupApiValidator extends SimpleValidator<NotificationG
 
     @Autowired private YukonApiValidationUtils yukonApiValidationUtils;
     @Autowired private YukonUserContextMessageSourceResolver messageResolver;
-    private MessageSourceAccessor accessor;
     @Autowired private IDatabaseCache databaseCache;
-    @Autowired private ContactNotificationDao contactNotificationDao;
     @Autowired private ContactDao contactDao;
+
+    private MessageSourceAccessor accessor;
     private final static String commonKey = "yukon.common.";
     private final static String notificationGroupKey = "yukon.web.api.error.notificationGroup.";
 
@@ -52,17 +50,14 @@ public class NotificationGroupApiValidator extends SimpleValidator<NotificationG
     protected void doValidation(NotificationGroup notificationGroup, Errors errors) {
 
         String notifGrpId = ServletUtils.getPathVariable("id");
-        Integer id = null;
-        if (notifGrpId != null) {
-            id = Integer.valueOf(notifGrpId);
-        }
+        Integer id = notifGrpId != null ? Integer.valueOf(notifGrpId) : null;
         validateNotificationGroupName(errors, notificationGroup.getName(), id);
 
         yukonApiValidationUtils.checkIfFieldRequired("enabled", errors, notificationGroup.getEnabled(), "Enabled");
 
         // validating CI Customers
         boolean isParentCICustomer = true;
-        if (notificationGroup.getcICustomers() != null && !notificationGroup.getcICustomers().isEmpty()) {
+        if (CollectionUtils.isNotEmpty(notificationGroup.getcICustomers())) {
             for (int i = 0; i < notificationGroup.getcICustomers().size(); i++) {
                 errors.pushNestedPath("cICustomers[" + i + "]");
                 validateCICustomer(errors, notificationGroup.getcICustomers().get(i), i, isParentCICustomer);
@@ -71,11 +66,11 @@ public class NotificationGroupApiValidator extends SimpleValidator<NotificationG
         }
 
         // validating Unassigned Contacts
-        if (notificationGroup.getUnassignedContacts() != null && !notificationGroup.getUnassignedContacts().isEmpty()) {
+        if (CollectionUtils.isNotEmpty(notificationGroup.getUnassignedContacts())) {
             isParentCICustomer = false;
             for (int contactIndex = 0; contactIndex < notificationGroup.getUnassignedContacts().size(); contactIndex++) {
                 errors.pushNestedPath("unassignedContacts[" + contactIndex + "]");
-                validateContacts(errors, notificationGroup.getUnassignedContacts().get(contactIndex), contactIndex, null, 0,
+                validateContacts(errors, notificationGroup.getUnassignedContacts().get(contactIndex), contactIndex, null,
                         isParentCICustomer);
                 errors.popNestedPath();
             }
@@ -84,33 +79,31 @@ public class NotificationGroupApiValidator extends SimpleValidator<NotificationG
 
     private void validateCICustomer(Errors errors, CICustomer cICust, int cICustomersIndex, boolean isParentCICustomer) {
         // validate empty CI Customer id
-
         yukonApiValidationUtils.checkIfFieldRequired("id", errors, cICust.getId(), "CI Customer Id");
-
         // validate whether CI Customer valid
         if (!errors.hasFieldErrors("id")) {
             boolean cICustomerExists = databaseCache.getAllCICustomers().stream()
                     .anyMatch(cust -> cust.getCustomerID() == cICust.getId());
             if (!cICustomerExists) {
-                errors.rejectValue("id", ApiErrorDetails.DOES_NOT_EXISTS.getCodeString(), new Object[] { cICust.getId() }, "");
+                errors.rejectValue("id", ApiErrorDetails.INVALID_VALUE.getCodeString(),
+                        new Object[] { "valid CI Customer ID" }, "");
             }
         }
-
-        if (cICust.getContacts() != null && !cICust.getContacts().isEmpty()) {
+        if (CollectionUtils.isNotEmpty(cICust.getContacts())) {
             // email and phone call enable is false at customer level if selected true at contact level
-            validateEmailPhoneCallEnabledForCustomerFromContact(errors, cICust, cICustomersIndex);
+            if (!cICust.isSelected()) {
+                validateEmailPhoneCallEnabledForCustomerFromContact(errors, cICust);
+            }
             for (int contactIndex = 0; contactIndex < cICust.getContacts().size(); contactIndex++) {
                 // email and phone call enable is false at customer level if selected true at notification level
-                errors.pushNestedPath("contacts[" + contactIndex + "]");
-
-                if (!cICust.isSelected() && cICust.getContacts().get(contactIndex).getNotifications() != null
-                        && !cICust.getContacts().get(contactIndex).getNotifications().isEmpty()) {
+                if (!cICust.isSelected()
+                        && CollectionUtils.isNotEmpty(cICust.getContacts().get(contactIndex).getNotifications())) {
                     validateEmailPhoneCallEnabledForCustomerFromNotifications(errors, cICust.getContacts().get(contactIndex),
-                            cICust, cICustomersIndex);
+                            cICust);
                 }
                 // validate contacts
-                validateContacts(errors, cICust.getContacts().get(contactIndex), contactIndex, cICust, cICustomersIndex,
-                        isParentCICustomer);
+                errors.pushNestedPath("contacts[" + contactIndex + "]");
+                validateContacts(errors, cICust.getContacts().get(contactIndex), contactIndex, cICust, isParentCICustomer);
                 errors.popNestedPath();
             }
 
@@ -118,25 +111,20 @@ public class NotificationGroupApiValidator extends SimpleValidator<NotificationG
 
     }
 
-    private void validateEmailPhoneCallEnabledForCustomerFromContact(Errors errors, CICustomer cICust, int cICustomersIndex) {
-        boolean selectionTrueForContact = cICust.getContacts().stream().anyMatch(obj -> obj.isSelected());
-
-        if (!cICust.isSelected()) {
-            if (selectionTrueForContact) {
-                if (cICust.isEmailEnabled()) {
-                    errors.rejectValue("emailEnabled", ApiErrorDetails.INVALID_VALUE.getCodeString(), new Object[] { false }, "");
-                }
-                if (cICust.isPhoneCallEnabled()) {
-                    errors.rejectValue("phoneCallEnabled", ApiErrorDetails.INVALID_VALUE.getCodeString(), new Object[] { false },
-                            "");
-                }
-
+    private void validateEmailPhoneCallEnabledForCustomerFromContact(Errors errors, CICustomer cICust) {
+        boolean selectionTrueForContacts = cICust.getContacts().stream().anyMatch(obj -> obj.isSelected());
+        if (selectionTrueForContacts) {
+            if (cICust.isEmailEnabled()) {
+                errors.rejectValue("emailEnabled", ApiErrorDetails.INVALID_VALUE.getCodeString(), new Object[] { false }, "");
+            }
+            if (cICust.isPhoneCallEnabled()) {
+                errors.rejectValue("phoneCallEnabled", ApiErrorDetails.INVALID_VALUE.getCodeString(), new Object[] { false },
+                        "");
             }
         }
     }
 
-    private void validateEmailPhoneCallEnabledForCustomerFromNotifications(Errors errors, Contact contact, CICustomer cICust,
-            int cICustomersIndex) {
+    private void validateEmailPhoneCallEnabledForCustomerFromNotifications(Errors errors, Contact contact, CICustomer cICust) {
         // email and phone call enable is false at parent level if selected true at child level
         boolean selectionTrueForNotification = contact.getNotifications().stream().anyMatch(obj -> obj.isSelected());
         if (selectionTrueForNotification) {
@@ -149,42 +137,31 @@ public class NotificationGroupApiValidator extends SimpleValidator<NotificationG
         }
     }
 
-    private void validateContacts(Errors errors, Contact cont, int contactIndex, CICustomer cICust, int cICustomersIndex,
+    private void validateContacts(Errors errors, Contact cont, int contactIndex, CICustomer cICust,
             boolean isParentCICustomer) {
-
         // validate empty Contact Id
-
-        if (isParentCICustomer) {
-            yukonApiValidationUtils.checkIfFieldRequired("id", errors, cont.getId(), "Contact Id");
-
-        } else {
-            yukonApiValidationUtils.checkIfFieldRequired("id", errors, cont.getId(), "Unassigned Contact Id");
-
-        }
+        String errorMessage = isParentCICustomer ? "Contact Id" : "Unassigned Contact Id";
+        yukonApiValidationUtils.checkIfFieldRequired("id", errors, cont.getId(), errorMessage);
 
         // validate whether contact id exists
         if (!errors.hasFieldErrors("id")) {
             validateContactId(cont, cICust, errors, isParentCICustomer, contactIndex);
         }
-        if (isParentCICustomer) {
+        if (isParentCICustomer && cICust.isSelected()) {
             // email enabled and phone call enabled for contact is same as customer if CI Cust is selected true
             // not required for unassigned Contact since it does not have a parent
-            if (cICust.isSelected()) {
-                validateEmailPhoneCallEnabledForContactFromCustomer(cICust, cont, cICustomersIndex, contactIndex, errors);
-            }
+            validateEmailPhoneCallEnabledForContactFromCustomer(cICust, cont, errors);
             // Validate if customer is selected, contact cannot be selected
             // not required for unassigned Contact since it does not have a parent
             if (cont.isSelected()) {
-                if (cICust.isSelected()) {
-                    errors.rejectValue("selected", ApiErrorDetails.INVALID_VALUE.getCodeString(), new Object[] { false }, "");
-                }
+                errors.rejectValue("selected", ApiErrorDetails.INVALID_VALUE.getCodeString(), new Object[] { false }, "");
             }
-
         }
-        if ((cont.getNotifications() != null && !cont.getNotifications().isEmpty())) {
+        if (CollectionUtils.isNotEmpty(cont.getNotifications())) {
             // email and phone call enable is false at parent level if selected true at child level
-            validateEmailPhoneCallEnabledForContactFromNotification(errors, cont.getNotifications(), cont, cICust);
-
+            if (!cont.isSelected()) {
+                validateEmailPhoneCallEnabledForContactFromNotification(errors, cont.getNotifications(), cont, cICust);
+            }
             for (int notifIndex = 0; notifIndex < cont.getNotifications().size(); notifIndex++) {
                 errors.pushNestedPath("notifications[" + notifIndex + "]");
                 // validation notifications
@@ -192,13 +169,10 @@ public class NotificationGroupApiValidator extends SimpleValidator<NotificationG
                         notifIndex);
                 errors.popNestedPath();
             }
-
         }
     }
 
-    private void validateEmailPhoneCallEnabledForContactFromCustomer(CICustomer cICust, Contact cont, int cICustomersIndex,
-            int contactIndex,
-            Errors errors) {
+    private void validateEmailPhoneCallEnabledForContactFromCustomer(CICustomer cICust, Contact cont, Errors errors) {
 
         if (cont.isEmailEnabled() != cICust.isEmailEnabled()) {
             errors.rejectValue("emailEnabled", ApiErrorDetails.INVALID_VALUE.getCodeString(),
@@ -212,15 +186,14 @@ public class NotificationGroupApiValidator extends SimpleValidator<NotificationG
 
     }
 
-    private void validateContactId(Contact cont, CICustomer cICust,
-            Errors errors, boolean isParentCICustomer, int contactIndex) {
-        LiteContact contactExists = null;
-
+    private void validateContactId(Contact cont, CICustomer cICust, Errors errors, boolean isParentCICustomer, int contactIndex) {
         try {
-            contactExists = contactDao.getContact(cont.getId());
-        } catch (DataAccessException e) {
+            LiteContact contact = databaseCache.getAContactByContactID(cont.getId());
+            if (contact == null) {
+                errors.rejectValue("id", ApiErrorDetails.DOES_NOT_EXISTS.getCodeString(), new Object[] { cont.getId() }, "");
+            }
+        } catch (EmptyResultDataAccessException e) {
             errors.rejectValue("id", ApiErrorDetails.DOES_NOT_EXISTS.getCodeString(), new Object[] { cont.getId() }, "");
-
         }
         // validating for unassigned contact id
         if (!isParentCICustomer && !errors.hasFieldErrors("id")) {
@@ -231,55 +204,36 @@ public class NotificationGroupApiValidator extends SimpleValidator<NotificationG
                 errors.rejectValue("id", ApiErrorDetails.INVALID_VALUE.getCodeString(),
                         new Object[] { invalidUnassignedContactI18nText }, "");
             }
-
         }
-        // need to pop to check field error for CI Customer
-        errors.popNestedPath();
-        // validate contact with Ci Cust only when it has a parent and CI Cust ID is valid
-        if (isParentCICustomer && !errors.hasFieldErrors("id")) {
-            // pushing it back again
+        if (isParentCICustomer) {
+            // need to pop to check field error for CI Customer
+            errors.popNestedPath();
+            // validate contact with Ci Cust only when it has a parent and CI Cust ID is valid
+            boolean isCICustomerIdValid = !errors.hasFieldErrors("id");
             errors.pushNestedPath("contacts[" + contactIndex + "]");
-            if (contactExists != null) {
-
+            if (isCICustomerIdValid && !errors.hasFieldErrors("id")) {
                 LiteCustomer validCICust = databaseCache.getACustomerByPrimaryContactID(cont.getId());
-                if (validCICust == null) {
+                if (validCICust == null || cICust.getId() != validCICust.getCustomerID()) {
                     String invalidContactI18nText = accessor.getMessage(notificationGroupKey + "invalidContact");
                     errors.rejectValue("id", ApiErrorDetails.INVALID_VALUE.getCodeString(),
                             new Object[] { invalidContactI18nText }, "");
-                } else if (validCICust != null && cICust.getId() != null) {
-                    String invalidContactI18nText = accessor.getMessage(notificationGroupKey + "invalidContact");
-                    if (validCICust.getCustomerID() != cICust.getId()
-                            || validCICust.getCustomerTypeID() != CustomerTypes.CUSTOMER_CI) {
-                        errors.rejectValue("id", ApiErrorDetails.INVALID_VALUE.getCodeString(),
-                                new Object[] { invalidContactI18nText }, "");
-
-                    }
                 }
             }
-        } else {
-            errors.pushNestedPath("contacts[" + contactIndex + "]");
         }
-
     }
 
     private void validateEmailPhoneCallEnabledForContactFromNotification(Errors errors,
             List<NotificationSettings> notif, Contact cont, CICustomer cICust) {
-        // email and phone call enable is false at parent level if selected true at child level
-
         boolean selectionTrueForNotif = notif.stream().anyMatch(obj -> obj.isSelected());
-        if (!cont.isSelected()) {
-            // if ci cust if selected then validation for email and phone call will be according to ci cust and not notification
-            if (selectionTrueForNotif && !cICust.isSelected()) {
-                {
-                    if (cont.isEmailEnabled()) {
-                        errors.rejectValue("emailEnabled", ApiErrorDetails.INVALID_VALUE.getCodeString(), new Object[] { false },
-                                "");
-                    }
-                    if (cont.isPhoneCallEnabled()) {
-                        errors.rejectValue("phoneCallEnabled", ApiErrorDetails.INVALID_VALUE.getCodeString(),
-                                new Object[] { false }, "");
-                    }
-                }
+        // if ci cust if selected then validation for email and phone call will be according to ci cust and not notification
+        if (selectionTrueForNotif) {
+            if (cont.isEmailEnabled()) {
+                errors.rejectValue("emailEnabled", ApiErrorDetails.INVALID_VALUE.getCodeString(), new Object[] { false },
+                        "");
+            }
+            if (cont.isPhoneCallEnabled()) {
+                errors.rejectValue("phoneCallEnabled", ApiErrorDetails.INVALID_VALUE.getCodeString(),
+                        new Object[] { false }, "");
             }
         }
     }
@@ -289,14 +243,10 @@ public class NotificationGroupApiValidator extends SimpleValidator<NotificationG
 
         // validate empty id
         yukonApiValidationUtils.checkIfFieldRequired("id", errors, notif.getId(), "Notification Id");
-
         // validate for notification id
         LiteContactNotification liteNotifObject = null;
         if (!errors.hasFieldErrors("id")) {
-
-            liteNotifObject = validateContactNotificationId(notif, errors,
-                    cont, notifIndex);
-
+            liteNotifObject = validateContactNotificationId(notif, errors, cont, notifIndex);
         }
 
         // validate email enabled and phone call enabled when selected true for Ci Cust
@@ -312,18 +262,16 @@ public class NotificationGroupApiValidator extends SimpleValidator<NotificationG
         validateWhenSelectedTrueForCustomerContactAndNotification(errors, notif, cont, cICust, isParentCICustomer);
 
         // validate email enabled phone call enabled on category if selected true
-        if (notif.isSelected()) {
-            if (liteNotifObject != null) {
-                if (liteNotifObject.getContactNotificationType().isEmailType()
-                        || liteNotifObject.getContactNotificationType().isShortEmailType()
-                        || liteNotifObject.getContactNotificationType().isPhoneType()) {
-                    validateEmailPhoneCallEnabledOnType(liteNotifObject, errors, notif);
+        if (!errors.hasFieldErrors("id") && notif.isSelected()) {
+            if (liteNotifObject.getContactNotificationType().isEmailType()
+                    || liteNotifObject.getContactNotificationType().isShortEmailType()
+                    || liteNotifObject.getContactNotificationType().isPhoneType()) {
+                validateEmailPhoneCallEnabledOnType(liteNotifObject, errors, notif);
 
-                } else if (!errors.hasFieldErrors("id")) {
-                    String validNotificationTypeI18nText = accessor.getMessage(notificationGroupKey + "validNotificationType");
-                    errors.rejectValue("id", ApiErrorDetails.INVALID_VALUE.getCodeString(),
-                            new Object[] { validNotificationTypeI18nText }, "");
-                }
+            } else {
+                String validNotificationTypeI18nText = accessor.getMessage(notificationGroupKey + "validNotificationType");
+                errors.rejectValue("id", ApiErrorDetails.INVALID_VALUE.getCodeString(),
+                        new Object[] { validNotificationTypeI18nText }, "");
             }
         }
     }
@@ -336,9 +284,7 @@ public class NotificationGroupApiValidator extends SimpleValidator<NotificationG
             if (cont.isSelected() && notif.isSelected()) {
                 errors.rejectValue("selected", ApiErrorDetails.INVALID_VALUE.getCodeString(), new Object[] { false }, "");
             }
-
         }
-
     }
 
     private void validateEmailPhoneCallEnabledForNotificationFromContact(Errors errors, NotificationSettings notif,
@@ -347,7 +293,6 @@ public class NotificationGroupApiValidator extends SimpleValidator<NotificationG
         if (notif.isEmailEnabled() != cont.isEmailEnabled() && (!errors.hasFieldErrors("emailEnabled"))) {
             errors.rejectValue("emailEnabled", ApiErrorDetails.INVALID_VALUE.getCodeString(),
                     new Object[] { cont.isEmailEnabled() }, "");
-
         }
         if (notif.isPhoneCallEnabled() != cont.isPhoneCallEnabled() && (!errors.hasFieldErrors("phoneCallEnabled"))) {
             errors.rejectValue("phoneCallEnabled", ApiErrorDetails.INVALID_VALUE.getCodeString(),
@@ -374,33 +319,19 @@ public class NotificationGroupApiValidator extends SimpleValidator<NotificationG
     private LiteContactNotification validateContactNotificationId(NotificationSettings notif, Errors errors, Contact cont,
             int notifIndex) {
         int notifId = notif.getId();
-        LiteContactNotification liteNotifObject = null;
-        boolean notifExists = databaseCache.getAllContactNotifsMap().keySet().stream().anyMatch(obj -> obj.intValue() == notifId);
-        if (!notifExists) {
+        LiteContactNotification liteNotifObject = databaseCache.getAllContactNotifsMap().get(notifId);
+        if (liteNotifObject == null) {
             errors.rejectValue("id", ApiErrorDetails.DOES_NOT_EXISTS.getCodeString(), new Object[] { notifId }, "");
         }
         if (!errors.hasFieldErrors("id")) {
-            try {
-                liteNotifObject = contactNotificationDao.getNotificationForContact(notif.getId());
-            } catch (DataAccessException e) {
-                errors.rejectValue("id", ApiErrorDetails.DOES_NOT_EXISTS.getCodeString(),
-                        new Object[] { notif.getId() }, null);
-
-            }
             // validate notification id with contact id if contact id is valid
-            if (liteNotifObject != null && cont.getId() != null) {
-                if (liteNotifObject.getContactID() != cont.getId()) {
-                    String invalidNotificationi18nKey = accessor.getMessage(notificationGroupKey + "invalidNotification");
-                    errors.popNestedPath();
-                    if (!errors.hasFieldErrors("id")) {
-                        errors.pushNestedPath("notifications[" + notifIndex + "]");
-                        errors.rejectValue("id", ApiErrorDetails.INVALID_VALUE.getCodeString(),
-                                new Object[] { invalidNotificationi18nKey }, null);
-
-                    } else {
-                        errors.pushNestedPath("notifications[" + notifIndex + "]");
-                    }
-                }
+            errors.popNestedPath();
+            boolean isContactIdValid = !errors.hasFieldErrors("id");
+            errors.pushNestedPath("notifications[" + notifIndex + "]");
+            if (isContactIdValid && liteNotifObject.getContactID() != cont.getId()) {
+                String invalidNotificationi18nKey = accessor.getMessage(notificationGroupKey + "invalidNotification");
+                errors.rejectValue("id", ApiErrorDetails.INVALID_VALUE.getCodeString(),
+                        new Object[] { invalidNotificationi18nKey }, null);
             }
         }
         return liteNotifObject;
@@ -411,12 +342,9 @@ public class NotificationGroupApiValidator extends SimpleValidator<NotificationG
         if (!errors.hasFieldErrors("name")) {
             // validate name
             yukonApiValidationUtils.checkIfFieldRequired("name", errors, notificationGroupName, nameI18nText);
-
-            if (StringUtils.isNotBlank(notificationGroupName)) {
-                yukonApiValidationUtils.checkExceedsMaxLength(errors, "name", notificationGroupName, 40);
-            }
         }
         if (!errors.hasFieldErrors("name")) {
+            yukonApiValidationUtils.checkExceedsMaxLength(errors, "name", notificationGroupName, 40);
             databaseCache.getAllContactNotificationGroups().stream()
                     .filter(liteGroup -> liteGroup.getNotificationGroupName().equalsIgnoreCase(notificationGroupName.trim()))
                     .findAny()
