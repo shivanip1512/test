@@ -7,7 +7,6 @@
 #include "rfn_asid.h"
 #include "rfn_e2e_messenger.h"
 #include "mgr_device.h"
-//#include "RfnEdgeDrMessaging.h"
 #include "RfnBroadcastMessaging.h"
 
 #include <boost/ptr_container/ptr_deque.hpp>
@@ -16,8 +15,6 @@
 
 namespace Cti::Messaging::Rfn {
     struct MeterProgramStatusArchiveRequestMsg;
-//    struct RfnBroadcastRequest;
-  //  struct RfnBroadcastReply;
     struct EdgeDrBroadcastRequest;
 
 }
@@ -107,13 +104,7 @@ public:
 
     void submitRequests(RfnDeviceRequestList requests);
 
-    using BroadcastTimeoutCallback = std::function<void()>;
-    using BroadcastResponseCallback = std::function<void(Messaging::Rfn::RfnBroadcastReply&)>;
-
-    void submitBroadcastRequest( Messaging::Rfn::RfnBroadcastRequest & request,
-                                 BroadcastResponseCallback  responded,
-                                 std::chrono::seconds       timeout,
-                                 BroadcastTimeoutCallback   timedOut );
+    void submitBroadcastRequest( const Messaging::Rfn::EdgeDrBroadcastRequest & request, const short messageId );
 
     ResultQueue getResults(unsigned max);
     UnsolicitedReports getUnsolicitedReports();
@@ -122,6 +113,7 @@ public:
     size_t countByGroupMessageId(long groupMessageId);
 
     void start();
+    virtual void initializeActiveMQHandlers();
 
 protected:
 
@@ -242,6 +234,9 @@ private:
     RfnIdTo<MeterProgrammingRequest> _meterProgrammingRequests;
 
     // Broadcast requests
+    using BroadcastTimeoutCallback = std::function<void()>;
+    using BroadcastResponseCallback = std::function<void(const Messaging::Rfn::RfnBroadcastReply &)>;
+
     struct BroadcastCallbacks
     {
         BroadcastResponseCallback response;
@@ -259,7 +254,6 @@ private:
     using SerializedMessage = std::vector<unsigned char>;
 
     void handleRfnBroadcastReplyMsg( const SerializedMessage & msg );
-
 
     //
     

@@ -41,7 +41,6 @@
 #include "RfnMeterDisconnectMsg.h"
 #include "RfnMeterReadMsg.h"
 #include "RfnEdgeDrMessaging.h"
-#include "RfnBroadcastMessaging.h"
 
 #include "mgr_rfn_request.h"
 #include "cmd_rfn_ConfigNotification.h"
@@ -182,15 +181,15 @@ int PilServer::execute()
             [this](const amq_cm::MessageDescriptor& md, amq_cm::ReplyCallback callback) {
                 return handleRfnMeterReadRequest(md, callback);
             });
-        amq_cm::registerReplyHandler(
+        amq_cm::registerHandler(
             in_q::RfnEdgeDrUnicastRequest,
-            [this](const amq_cm::MessageDescriptor& md, amq_cm::ReplyCallback callback) {
-                return handleRfnEdgeDrUnicastRequest(md, callback);
+            [this](const amq_cm::MessageDescriptor& md) {
+                return handleRfnEdgeDrUnicastRequest(md);
             });
-        amq_cm::registerReplyHandler(
+        amq_cm::registerHandler(
             in_q::RfnEdgeDrBroadcastRequest,
-            [this](const amq_cm::MessageDescriptor& md, amq_cm::ReplyCallback callback) {
-                return handleRfnEdgeDrBroadcastRequest(md, callback);
+            [this](const amq_cm::MessageDescriptor& md) {
+                return handleRfnEdgeDrBroadcastRequest(md);
             });
 
         _periodicActionThread.start();
@@ -1263,7 +1262,7 @@ void PilServer::handleRfnMeterReadRequest(const amq_cm::MessageDescriptor& md, a
     callback(std::move(serializedRsp1));
 }
 
-void PilServer::handleRfnEdgeDrUnicastRequest( const amq_cm::MessageDescriptor & md, amq_cm::ReplyCallback callback )
+void PilServer::handleRfnEdgeDrUnicastRequest( const amq_cm::MessageDescriptor & md )
 {
     using namespace Messaging::Rfn;
     using Messaging::Serialization::MessageSerializer;
@@ -1287,12 +1286,7 @@ void PilServer::handleRfnEdgeDrUnicastRequest( const amq_cm::MessageDescriptor &
             "Network Priority",   to_string( req->networkPriority ) ) );
     }
 
-
-
     // TODO - stuff to send out the messages  --  'putvalue oscore 0x{hex string}' or something?
-
-
-//EdgeDrUnicastRequest
 
     EdgeDrUnicastResponse resp
     {
@@ -1318,10 +1312,12 @@ void PilServer::handleRfnEdgeDrUnicastRequest( const amq_cm::MessageDescriptor &
         return;
     }
 
-    callback( std::move( serializedResponse ) );
+    Messaging::ActiveMQConnectionManager::enqueueMessage(
+        Messaging::ActiveMQ::Queues::OutboundQueue::RfnEdgeDrUnicastResponse,
+        serializedResponse );
 }
 
-void PilServer::handleRfnEdgeDrBroadcastRequest( const amq_cm::MessageDescriptor & md, amq_cm::ReplyCallback callback )
+void PilServer::handleRfnEdgeDrBroadcastRequest( const amq_cm::MessageDescriptor & md )
 {
     using namespace Messaging::Rfn;
     using Messaging::Serialization::MessageSerializer;
@@ -1343,84 +1339,9 @@ void PilServer::handleRfnEdgeDrBroadcastRequest( const amq_cm::MessageDescriptor
             "Priority",     req->priority ? to_string( req->priority.value() ) : "<empty>" ) );
     }
 
-    static const std::map<EdgeBroadcastMessagePriority, RfnBroadcastDeliveryType> priorityXlator
-    {
-        { EdgeBroadcastMessagePriority::IMMEDIATE,      RfnBroadcastDeliveryType::IMMEDIATE     },
-        { EdgeBroadcastMessagePriority::NON_REAL_TIME,  RfnBroadcastDeliveryType::NON_REAL_TIME }
-    };
-
     short nmMessageId = ++_rfnRequestId;
 
-    RfnBroadcastDeliveryType delivery = 
-        mapFindOrDefault( priorityXlator,
-                          req->priority.value_or( EdgeBroadcastMessagePriority::IMMEDIATE ),
-                          RfnBroadcastDeliveryType::IMMEDIATE );
-
-    RfnBroadcastRequest     bcast_req
-    {
-        2,              // 2 == Central Controller
-        nmMessageId,
-        7,              // 7 == DER
-        delivery,
-        req->payload,
-        SessionInfoManager::getNmHeader( 8 )    // 8 -- default priority
-    };
-
-    _rfnRequestManager.submitBroadcastRequest(
-        bcast_req,
-        [=]( RfnBroadcastReply & reply )
-        {
-            EdgeDrBroadcastResponse response
-            {
-                req->messageGuid,
-                EdgeDrError { reply.replyType, "" }
-            };
-          
-            if ( reply.failureReason )
-            {
-                response.error->errorMessage = *reply.failureReason;
-            }
-
-            if ( reply.gatewayErrors.size() )
-            {
-                response.error->errorMessage += ": ";
-
-                for (auto & [rfnId, error] : reply.gatewayErrors )
-                {
-                    response.error->errorMessage += "[<" + rfnId.toString() + ">: " + error + "]";
-                }
-            }
-
-            if ( auto serialized = Messaging::Serialization::serialize( response ); ! serialized.empty() )
-            {
-                callback( std::move( serialized ) );
-            }
-            else
-            {
-                CTILOG_WARN( dout, "Could not serialize EdgeDR broadcast response message" << FormattedList::of(
-                                   "Message GUID", req->messageGuid ) );
-            }
-        },
-        std::chrono::hours{ 2 },    // how long...
-        [=]()
-        {
-            EdgeDrBroadcastResponse response
-            {
-                req->messageGuid,
-                EdgeDrError { ClientErrors::E2eRequestTimeout, "EdgeDR broadcast request timed out" }
-            };
-
-            if ( auto serialized = Messaging::Serialization::serialize( response ); ! serialized.empty() )
-            {
-                callback( std::move( serialized ) );
-            }
-            else
-            {
-                CTILOG_WARN( dout, "Could not serialize EdgeDR broadcast response message" << FormattedList::of(
-                                   "Message GUID", req->messageGuid ) );
-            }
-        }
-    );
+    _rfnRequestManager.submitBroadcastRequest( *req, nmMessageId );
 }
 
 void PilServer::submitOutMessages(CtiDeviceBase::OutMessageList& outList)

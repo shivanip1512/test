@@ -90,8 +90,8 @@ protected:
    void handleRfnDisconnectRequest(const amq_cm::MessageDescriptor&, amq_cm::ReplyCallback);
    void handleRfnMeterReadRequest (const amq_cm::MessageDescriptor&, amq_cm::ReplyCallback);
 
-   void handleRfnEdgeDrUnicastRequest(const amq_cm::MessageDescriptor&, amq_cm::ReplyCallback);
-   void handleRfnEdgeDrBroadcastRequest(const amq_cm::MessageDescriptor&, amq_cm::ReplyCallback);
+   void handleRfnEdgeDrUnicastRequest(const amq_cm::MessageDescriptor&);
+   void handleRfnEdgeDrBroadcastRequest(const amq_cm::MessageDescriptor&);
 
    void analyzeWhiteRabbits(const CtiRequestMsg& pReq, CtiCommandParser &parse, RequestQueue& execList, RequestQueue& groupRequests, std::list< CtiMessage* > & retList);
    int  analyzeAutoRole(CtiRequestMsg& Req, CtiCommandParser &parse, RequestQueue& execList, std::list< CtiMessage* > & retList);
