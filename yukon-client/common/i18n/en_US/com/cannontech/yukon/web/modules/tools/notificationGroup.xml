@@ -1,0 +1,6 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE properties SYSTEM "http://java.sun.com/dtd/properties.dtd">
+<properties>
+    <!-- TODO: Remove this will merging one to the YUKs for Notification Group. -->
+    <entry key="yukon.web.modules.tools.notificationGroup.sampleKey">Sample Key</entry>
+</properties>
