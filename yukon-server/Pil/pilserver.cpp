@@ -1292,7 +1292,7 @@ void PilServer::handleRfnEdgeDrUnicastRequest( const amq_cm::MessageDescriptor &
     // TODO - stuff to send out the messages  --  'putvalue oscore 0x{hex string}' or something?
 
 
-
+//EdgeDrUnicastRequest
 
     EdgeDrUnicastResponse resp
     {
@@ -1349,14 +1349,12 @@ void PilServer::handleRfnEdgeDrBroadcastRequest( const amq_cm::MessageDescriptor
         { EdgeBroadcastMessagePriority::NON_REAL_TIME,  RfnBroadcastDeliveryType::NON_REAL_TIME }
     };
 
-    short nmMessageId = _rfnRequestId++;
+    short nmMessageId = ++_rfnRequestId;
 
     RfnBroadcastDeliveryType delivery = 
         mapFindOrDefault( priorityXlator,
                           req->priority.value_or( EdgeBroadcastMessagePriority::IMMEDIATE ),
                           RfnBroadcastDeliveryType::IMMEDIATE );
-
-    NetworkManagerRequestHeader nmHeader = SessionInfoManager::getNmHeader( 8 );
 
     RfnBroadcastRequest     bcast_req
     {
@@ -1365,22 +1363,43 @@ void PilServer::handleRfnEdgeDrBroadcastRequest( const amq_cm::MessageDescriptor
         7,              // 7 == DER
         delivery,
         req->payload,
-        nmHeader
+        SessionInfoManager::getNmHeader( 8 )    // 8 -- default priority
     };
 
     _rfnRequestManager.submitBroadcastRequest(
         bcast_req,
-        [=]( )//RfnBroadcastReply or whatever its called goes here)
+        [=]( RfnBroadcastReply & reply )
         {
-            // uhh...
+            EdgeDrBroadcastResponse response
+            {
+                req->messageGuid,
+                EdgeDrError { reply.replyType, "" }
+            };
+          
+            if ( reply.failureReason )
+            {
+                response.error->errorMessage = *reply.failureReason;
+            }
 
-            // pretty much the same 
+            if ( reply.gatewayErrors.size() )
+            {
+                response.error->errorMessage += ": ";
 
-            // deserialiaze  the rfnbroacast response
+                for (auto & [rfnId, error] : reply.gatewayErrors )
+                {
+                    response.error->errorMessage += "[<" + rfnId.toString() + ">: " + error + "]";
+                }
+            }
 
-            // form and send the edge broacast response -- like below for timeout
-
-
+            if ( auto serialized = Messaging::Serialization::serialize( response ); ! serialized.empty() )
+            {
+                callback( std::move( serialized ) );
+            }
+            else
+            {
+                CTILOG_WARN( dout, "Could not serialize EdgeDR broadcast response message" << FormattedList::of(
+                                   "Message GUID", req->messageGuid ) );
+            }
         },
         std::chrono::hours{ 2 },    // how long...
         [=]()

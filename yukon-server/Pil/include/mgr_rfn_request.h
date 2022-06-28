@@ -7,6 +7,8 @@
 #include "rfn_asid.h"
 #include "rfn_e2e_messenger.h"
 #include "mgr_device.h"
+//#include "RfnEdgeDrMessaging.h"
+#include "RfnBroadcastMessaging.h"
 
 #include <boost/ptr_container/ptr_deque.hpp>
 
@@ -14,7 +16,10 @@
 
 namespace Cti::Messaging::Rfn {
     struct MeterProgramStatusArchiveRequestMsg;
-    struct RfnBroadcastRequest;
+//    struct RfnBroadcastRequest;
+  //  struct RfnBroadcastReply;
+    struct EdgeDrBroadcastRequest;
+
 }
 
 namespace Cti::Pil {
@@ -103,7 +108,7 @@ public:
     void submitRequests(RfnDeviceRequestList requests);
 
     using BroadcastTimeoutCallback = std::function<void()>;
-    using BroadcastResponseCallback = std::function<void()>;
+    using BroadcastResponseCallback = std::function<void(Messaging::Rfn::RfnBroadcastReply&)>;
 
     void submitBroadcastRequest( Messaging::Rfn::RfnBroadcastRequest & request,
                                  BroadcastResponseCallback  responded,
@@ -123,6 +128,7 @@ protected:
     virtual EndpointMessage handleE2eDtIndication(const Bytes& payload, const RfnIdentifier endpointId);
     virtual Bytes createE2eDtRequest(const Bytes& payload, const RfnIdentifier endpointId, const Token token);
     virtual Bytes createE2eDtPost(const Bytes& payload, const RfnIdentifier endpointId, const Token token);
+    virtual Bytes createE2eDtPut(const Bytes& payload, const RfnIdentifier endpointId);
     virtual Bytes createE2eDtBlockContinuation(const BlockSize blockSize, const int blockNum, const RfnIdentifier endpointId, const Token token);
     virtual Bytes createE2eDtReply(const unsigned short id, const Bytes& payload, const Token token);
     virtual Bytes createE2eDtBlockReply(const unsigned short id, const Bytes& payload, const Token token, Block block);
@@ -137,6 +143,7 @@ private:
     RfnIdentifierSet handleConfirms();
     RfnIdentifierSet handleIndications();
     RfnIdentifierSet handleTimeouts();
+    void             handleReplies();
     void             handleNewRequests(const RfnIdentifierSet &recentCompletions);
     void             postResults();
     void             reportStatistics();
@@ -243,6 +250,18 @@ private:
 
     std::multimap<std::chrono::system_clock::time_point, long long> _broadcastTimeouts;
     std::map<long long, BroadcastCallbacks> _broadcastCallbacks;
+
+    using BroadcastReplyQueue = std::vector<Messaging::Rfn::RfnBroadcastReply>;
+
+    Mutex                _broadcastReplyMux;
+    BroadcastReplyQueue  _broadcastReplies;
+
+    using SerializedMessage = std::vector<unsigned char>;
+
+    void handleRfnBroadcastReplyMsg( const SerializedMessage & msg );
+
+
+    //
     
     using OptionalResult = std::optional<RfnDeviceResult>;
 

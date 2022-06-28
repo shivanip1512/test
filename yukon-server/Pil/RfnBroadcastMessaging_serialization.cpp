@@ -10,6 +10,15 @@
 namespace Cti::Messaging::Serialization
 {
 
+namespace Thrift
+{
+    bool RfnIdentifier::operator<( const RfnIdentifier & r ) const
+    {
+        return boost::tie(   sensorManufacturer,   sensorModel,   sensorSerialNumber )
+             < boost::tie( r.sensorManufacturer, r.sensorModel, r.sensorSerialNumber );
+    }
+}
+
 template<>
 ActiveMQConnectionManager::SerializedMessage MessageSerializer<Rfn::RfnBroadcastRequest>::serialize( const Rfn::RfnBroadcastRequest & msg )
 {
@@ -21,14 +30,14 @@ ActiveMQConnectionManager::SerializedMessage MessageSerializer<Rfn::RfnBroadcast
 
     try
     {
-//        Thrift::RfnBroadcastRequest   tmsg;
-//
-//        tmsg.__set_sourceId( msg.sourceId );
-//        tmsg.__set_messageId( msg.messageId );
-//        tmsg.__set_broadcastApplicationId( msg.broadcastApplicationId );
-//        tmsg.__set_deliveryType( deliveryTranslator.at( msg.deliveryType ) );
-//
-//        tmsg.__set_payload( { std::cbegin(msg.payload), std::cend(msg.payload) } );
+        Thrift::RfnBroadcastRequest   tmsg;
+
+        tmsg.__set_sourceId( msg.sourceId );
+        tmsg.__set_messageId( msg.messageId );
+        tmsg.__set_broadcastApplicationId( msg.broadcastApplicationId );
+        tmsg.__set_deliveryType( deliveryTranslator.at( msg.deliveryType ) );
+
+        tmsg.__set_payload( { std::cbegin(msg.payload), std::cend(msg.payload) } );
 
         if ( msg.header )
         {
@@ -49,10 +58,10 @@ ActiveMQConnectionManager::SerializedMessage MessageSerializer<Rfn::RfnBroadcast
             }
             nmHeader.__set_priority( header.priority );
 
-//            tmsg.__set_header( nmHeader );
+            tmsg.__set_header( nmHeader );
         }
 
-//        return SerializeThriftBytes( tmsg );        
+        return SerializeThriftBytes( tmsg );        
     }
     catch ( apache::thrift::TException & e )
     {
@@ -71,43 +80,43 @@ boost::optional<Rfn::RfnBroadcastReply> MessageSerializer<Rfn::RfnBroadcastReply
 {
     try
     {
-//        auto tmsg = DeserializeThriftBytes<Thrift::RfnBroadcastReply>( msg );
+        auto tmsg = DeserializeThriftBytes<Thrift::RfnBroadcastReply>( msg );
 
         Rfn::RfnBroadcastReply  reply;
 
-//        reply.replyType = tmsg.replyType;
-//
-//        if ( tmsg.__isset.failureReason )
-//        {
-//            reply.failureReason = tmsg.failureReason;
-//        }
-//
-//        for ( auto & [rfnId, message] : tmsg.gatewayErrors )
-//        {
-//            reply.gatewayErrors.emplace(
-//                RfnIdentifier { rfnId.sensorManufacturer, rfnId.sensorModel, rfnId.sensorSerialNumber },
-//                message );
-//        }
-//
-//        if ( tmsg.__isset.header )
-//        {
-//            Rfn::NetworkManagerRequestHeader nmHeader;
-//
-//            nmHeader.clientGuid = tmsg.header.clientGuid;
-//            nmHeader.messageId  = tmsg.header.messageId;
-//            nmHeader.priority   = tmsg.header.priority;
-//            nmHeader.sessionId  = tmsg.header.sessionId;
-//            if ( tmsg.header.__isset.expiration )
-//            {
-//                nmHeader.expiration = tmsg.header.expiration;
-//            }
-//            if ( tmsg.header.__isset.groupId )
-//            {
-//                nmHeader.expiration = tmsg.header.groupId;
-//            }
-//
-//            reply.header = nmHeader;
-//        }
+        reply.replyType = tmsg.replyType;
+
+        if ( tmsg.__isset.failureReason )
+        {
+            reply.failureReason = tmsg.failureReason;
+        }
+
+        for ( auto & [rfnId, message] : tmsg.gatewayErrors )
+        {
+            reply.gatewayErrors.emplace(
+                RfnIdentifier { rfnId.sensorManufacturer, rfnId.sensorModel, rfnId.sensorSerialNumber },
+                message );
+        }
+
+        if ( tmsg.__isset.header )
+        {
+            Rfn::NetworkManagerRequestHeader nmHeader;
+
+            nmHeader.clientGuid = tmsg.header.clientGuid;
+            nmHeader.messageId  = tmsg.header.messageId;
+            nmHeader.priority   = tmsg.header.priority;
+            nmHeader.sessionId  = tmsg.header.sessionId;
+            if ( tmsg.header.__isset.expiration )
+            {
+                nmHeader.expiration = tmsg.header.expiration;
+            }
+            if ( tmsg.header.__isset.groupId )
+            {
+                nmHeader.expiration = tmsg.header.groupId;
+            }
+
+            reply.header = nmHeader;
+        }
 
         return reply;
     }
