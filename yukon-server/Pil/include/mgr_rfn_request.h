@@ -16,7 +16,6 @@
 namespace Cti::Messaging::Rfn {
     struct MeterProgramStatusArchiveRequestMsg;
     struct EdgeDrBroadcastRequest;
-
 }
 
 namespace Cti::Pil {
@@ -254,8 +253,6 @@ private:
     using SerializedMessage = std::vector<unsigned char>;
 
     void handleRfnBroadcastReplyMsg( const SerializedMessage & msg );
-
-    //
     
     using OptionalResult = std::optional<RfnDeviceResult>;
 

@@ -216,11 +216,8 @@ void PilServer::mainThread()
 
     if( CtiDeviceSPtr systemDevice = DeviceManager.getDeviceByID(0) )
     {
-        unsigned long cachedRfnRequestId;
-
-        systemDevice->getDynamicInfo(CtiTableDynamicPaoInfo::Key_RFN_E2eRequestId, cachedRfnRequestId);
-
-        _rfnRequestId.store(cachedRfnRequestId);
+        _rfnRequestId.store(
+            systemDevice->getDynamicInfo( CtiTableDynamicPaoInfo::Key_RFN_E2eRequestId ) );
     }
 
     /*
