@@ -56,7 +56,9 @@ public class EatonCloudJobPollServiceImpl implements EatonCloudJobPollService {
             try {
                 int successes = poll(summary, jobGuids, jobCreationTime, currentTry);
                 // consider all devices that didn't succeed as failure
-                eatonCloudJobSmartNotifService.sendSmartNotifications(summary, totalDevices, totalDevices - successes);
+                if(currentTry == 1) {
+                    eatonCloudJobSmartNotifService.sendSmartNotifications(summary, totalDevices, totalDevices - successes);
+                }
             } catch (Exception e) {
                 log.error("Error polling", e);
             }
@@ -102,8 +104,14 @@ public class EatonCloudJobPollServiceImpl implements EatonCloudJobPollService {
             Map<String, Integer> guidsToDeviceIds, int currentTry) {
         if (!CollectionUtils.isEmpty(response.getFailures())) {
             response.getFailures().forEach((deviceGuid, error) -> {
+                int deviceError = 0;
+                try {
+                    deviceError = Integer.valueOf(error.getErrorNumber());
+                } catch (Exception e) {
+                    log.error(summary.getLogSummary(jobGuid, false) + "unable to parse error code:{}", error.getErrorNumber(), e);
+                }
                 eatonCloudJobResponseProcessor.processError(summary,
-                        guidsToDeviceIds.get(deviceGuid), deviceGuid, jobGuid, Integer.valueOf(error.getErrorNumber()),
+                        guidsToDeviceIds.get(deviceGuid), deviceGuid, jobGuid, deviceError,
                         ControlEventDeviceStatus.FAILED_WILL_RETRY, currentTry);
             });
         }

@@ -22,7 +22,6 @@ import org.joda.time.Instant;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 
-import com.cannontech.amr.errors.dao.DeviceError;
 import com.cannontech.amr.errors.dao.DeviceErrorTranslatorDao;
 import com.cannontech.clientutils.YukonLogManager;
 import com.cannontech.common.config.ConfigurationSource;
@@ -33,6 +32,7 @@ import com.cannontech.dr.eatonCloud.job.service.EatonCloudJobPollService;
 import com.cannontech.dr.eatonCloud.job.service.EatonCloudJobResponseProcessor;
 import com.cannontech.dr.eatonCloud.job.service.EatonCloudJobService;
 import com.cannontech.dr.eatonCloud.job.service.EatonCloudJobSmartNotifService;
+import com.cannontech.dr.eatonCloud.model.EatonCloudError;
 import com.cannontech.dr.eatonCloud.model.v1.EatonCloudCommunicationExceptionV1;
 import com.cannontech.dr.eatonCloud.model.v1.EatonCloudJobRequestV1;
 import com.cannontech.dr.eatonCloud.model.v1.EatonCloudJobResponseV1;
@@ -216,7 +216,7 @@ public class EatonCloudJobServiceImpl implements EatonCloudJobService {
             // job failed, mark all devices as failed, failed job will not retry
             devices.forEach(deviceId -> eatonCloudJobResponseProcessor.processError(summary,
                     deviceId, guids.get(deviceId), "Job Creation Failed",
-                    DeviceError.JOB_CREATION_FAILED.getCode(), ControlEventDeviceStatus.FAILED, 1));
+                    EatonCloudError.JOB_CREATION_FAILED.getCode(), ControlEventDeviceStatus.FAILED, 1));
             return null;
         }
     }

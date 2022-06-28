@@ -11,6 +11,7 @@ import com.cannontech.amr.errors.model.DeviceErrorDescription;
 import com.cannontech.clientutils.YukonLogManager;
 import com.cannontech.common.events.loggers.EatonCloudEventLogService;
 import com.cannontech.dr.eatonCloud.job.service.EatonCloudJobResponseProcessor;
+import com.cannontech.dr.eatonCloud.model.EatonCloudError;
 import com.cannontech.dr.recenteventparticipation.ControlEventDeviceStatus;
 import com.cannontech.dr.recenteventparticipation.dao.RecentEventParticipationDao;
 import com.cannontech.loadcontrol.messages.LMEatonCloudScheduledCycleCommand;
@@ -28,7 +29,7 @@ public class EatonCloudJobResponseProcessorImpl implements EatonCloudJobResponse
     @Override
     public void failDevicesOnStartup() {
         try {
-            DeviceErrorDescription errorDescription = deviceErrorTranslatorDao.translateErrorCode(DeviceError.NO_RESPONSE_DUE_TO_RESTART);
+            DeviceErrorDescription errorDescription = deviceErrorTranslatorDao.translateErrorCode(EatonCloudError.NO_RESPONSE_DUE_TO_RESTART.getDeviceError());
             int affectedRows = recentEventParticipationDao.failWillRetryDevices(null, errorDescription.getDescription());
             log.info(
                     "On the start-up changed {} devices waiting for retry (FAILED_WILL_RETRY, UNKNOWN) to failed (FAILED).",
@@ -43,7 +44,7 @@ public class EatonCloudJobResponseProcessorImpl implements EatonCloudJobResponse
             ControlEventDeviceStatus status, int currentTry) {
         String deviceName = dbCache.getAllPaosMap().get(deviceId).getPaoName();
         LMEatonCloudScheduledCycleCommand command = summary.getCommand();
-        DeviceErrorDescription errorDescription = deviceErrorTranslatorDao.translateErrorCode(code);
+        DeviceErrorDescription errorDescription = deviceErrorTranslatorDao.translateErrorCode(EatonCloudError.getErrorByCode(code));
         String message = errorDescription.getDescription();        
         recentEventParticipationDao.updateDeviceControlEvent(String.valueOf(summary.getEventId()),
                 deviceId,

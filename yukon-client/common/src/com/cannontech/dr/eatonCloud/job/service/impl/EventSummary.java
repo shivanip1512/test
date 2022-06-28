@@ -10,8 +10,8 @@ import org.apache.logging.log4j.Logger;
 import org.joda.time.DateTime;
 import org.joda.time.Instant;
 
-import com.cannontech.amr.errors.dao.DeviceError;
 import com.cannontech.amr.errors.dao.DeviceErrorTranslatorDao;
+import com.cannontech.dr.eatonCloud.model.EatonCloudError;
 import com.cannontech.dr.eatonCloud.service.EatonCloudSendControlService.CommandParam;
 import com.cannontech.dr.recenteventparticipation.dao.RecentEventParticipationDao;
 import com.cannontech.loadcontrol.messages.LMEatonCloudScheduledCycleCommand;
@@ -54,7 +54,7 @@ public final class EventSummary {
         this.programId = programId;
         this.log = log;
         this.recentEventParticipationDao = recentEventParticipationDao;
-        this.failReason = deviceErrorTranslatorDao.translateErrorCode(DeviceError.NO_RESPONSE_FROM_DEVICE).getDescription();
+        this.failReason = deviceErrorTranslatorDao.translateErrorCode(EatonCloudError.NO_RESPONSE_FROM_DEVICE.getDeviceError()).getDescription();
 
         // If it is a 4 hour control with a 30 minute period, it would have a cycle count of 8.
         // The resend service should only attempt to send to failed devices for the first 4 cycles, or 2 hours.
