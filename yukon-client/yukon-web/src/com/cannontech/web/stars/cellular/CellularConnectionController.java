@@ -82,15 +82,16 @@ public class CellularConnectionController {
     public String connectedDevicesDownload(@PathVariable int gatewayId, Integer[] filteredCommStatus, 
                                            YukonUserContext userContext, HttpServletResponse response) throws IOException {
         MessageSourceAccessor accessor = messageSourceResolver.getMessageSourceAccessor(userContext);
-        String[] headerRow = new String[7];
+        String[] headerRow = new String[8];
 
         headerRow[0] = accessor.getMessage("yukon.common.name");
-        headerRow[1] = accessor.getMessage("yukon.common.attribute.builtInAttribute.COMM_STATUS");
-        headerRow[2] = accessor.getMessage(baseKey + "statusLastUpdated");
-        headerRow[3] = accessor.getMessage("yukon.common.attribute.builtInAttribute.RADIO_SIGNAL_STRENGTH_INDICATOR");
-        headerRow[4] = accessor.getMessage("yukon.common.attribute.builtInAttribute.REFERENCE_SIGNAL_RECEIVED_POWER");
-        headerRow[5] = accessor.getMessage("yukon.common.attribute.builtInAttribute.REFERENCE_SIGNAL_RECEIVED_QUALITY");
-        headerRow[6] = accessor.getMessage("yukon.common.attribute.builtInAttribute.SIGNAL_TO_INTERFERENCE_PLUS_NOISE_RATIO");
+        headerRow[1] = accessor.getMessage("yukon.common.deviceType");
+        headerRow[2] = accessor.getMessage("yukon.common.attribute.builtInAttribute.COMM_STATUS");
+        headerRow[3] = accessor.getMessage(baseKey + "statusLastUpdated");
+        headerRow[4] = accessor.getMessage("yukon.common.attribute.builtInAttribute.RADIO_SIGNAL_STRENGTH_INDICATOR");
+        headerRow[5] = accessor.getMessage("yukon.common.attribute.builtInAttribute.REFERENCE_SIGNAL_RECEIVED_POWER");
+        headerRow[6] = accessor.getMessage("yukon.common.attribute.builtInAttribute.REFERENCE_SIGNAL_RECEIVED_QUALITY");
+        headerRow[7] = accessor.getMessage("yukon.common.attribute.builtInAttribute.SIGNAL_TO_INTERFERENCE_PLUS_NOISE_RATIO");
         
         RfnGateway gateway = rfnGatewayService.getGatewayByPaoId(gatewayId);
         List<CellularDeviceCommData> cellData = cellService.getCellularDeviceCommDataForGateways(Arrays.asList(gatewayId));
@@ -98,20 +99,21 @@ public class CellularConnectionController {
         List<String[]> dataRows = Lists.newArrayList();
         List<Integer> selectedCommStatuses = Arrays.asList(filteredCommStatus);
         for (CellularDeviceCommData data : cellData) {
-            String[] dataRow = new String[7];
+            String[] dataRow = new String[8];
             dataRow[0] = data.getDevice().getName();
+            dataRow[1] = data.getDevice().getPaoIdentifier().getPaoType().getPaoTypeName();
             PointValueQualityHolder commStatus = asyncDynamicDataSource.getPointValue(data.getCommStatusPoint().getPointID());
             if (selectedCommStatuses.isEmpty() || selectedCommStatuses.contains(Integer.valueOf((int)commStatus.getValue()))) {
-                dataRow[1] = pointFormattingService.getValueString(commStatus, Format.VALUE, userContext);
-                dataRow[2] = pointFormattingService.getValueString(commStatus, Format.DATE, userContext);
+                dataRow[2] = pointFormattingService.getValueString(commStatus, Format.VALUE, userContext);
+                dataRow[3] = pointFormattingService.getValueString(commStatus, Format.DATE, userContext);
                 PointValueQualityHolder rssi = asyncDynamicDataSource.getPointValue(data.getRssiPoint().getPointID());
-                dataRow[3] = pointFormattingService.getValueString(rssi, Format.VALUE, userContext);
+                dataRow[4] = pointFormattingService.getValueString(rssi, Format.VALUE, userContext);
                 PointValueQualityHolder rsrp = asyncDynamicDataSource.getPointValue(data.getRsrpPoint().getPointID());
-                dataRow[4] = pointFormattingService.getValueString(rsrp, Format.VALUE, userContext);
+                dataRow[5] = pointFormattingService.getValueString(rsrp, Format.VALUE, userContext);
                 PointValueQualityHolder rsrq = asyncDynamicDataSource.getPointValue(data.getRsrqPoint().getPointID());
-                dataRow[5] = pointFormattingService.getValueString(rsrq, Format.VALUE, userContext);
+                dataRow[6] = pointFormattingService.getValueString(rsrq, Format.VALUE, userContext);
                 PointValueQualityHolder sinr = asyncDynamicDataSource.getPointValue(data.getSinrPoint().getPointID());
-                dataRow[6] = pointFormattingService.getValueString(sinr, Format.VALUE, userContext);
+                dataRow[7] = pointFormattingService.getValueString(sinr, Format.VALUE, userContext);
                 dataRows.add(dataRow);
             }
         }

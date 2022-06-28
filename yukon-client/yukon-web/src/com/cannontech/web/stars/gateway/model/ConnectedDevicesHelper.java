@@ -20,6 +20,7 @@ import com.cannontech.common.device.groups.editor.dao.DeviceGroupMemberEditorDao
 import com.cannontech.common.device.groups.editor.model.StoredDeviceGroup;
 import com.cannontech.common.device.groups.service.TemporaryDeviceGroupService;
 import com.cannontech.common.device.model.SimpleDevice;
+import com.cannontech.common.pao.PaoType;
 import com.cannontech.common.rfn.model.RfnGateway;
 import com.cannontech.common.rfn.service.RfnGatewayService;
 import com.cannontech.core.dao.StateGroupDao;
@@ -99,5 +100,6 @@ public class ConnectedDevicesHelper {
                 .filter(state -> state.getLiteID() > -1).collect(Collectors.toList());
         model.addAttribute("commStatusValues", states);
         model.addAttribute("connectedStatusValue", CommStatusState.CONNECTED.getRawState());
+        model.addAttribute("cellTypes", PaoType.getCellularTypes());
     }
 }

@@ -19,6 +19,11 @@ yukon.assets.gateway.connectedDevices = (function () {
             
             if (_initialized) return;
             
+            $(document).ready(function() {
+                Sortable.init();
+            });
+            
+            $("#cellTypesFilter").chosen({width: '300px'});
             $("#commStatusFilter").chosen({width: '250px'});
             var baseUrl = $('#baseUrl').val();
             

@@ -16,6 +16,13 @@
     <div>
         <hr/>
         <i:inline key="yukon.common.filterBy"/>&nbsp;
+        <cti:msg2 var="allCellTypes" key="yukon.web.modules.operator.connectedDevices.allCellTypes"/>
+        <select id="cellTypesFilter" multiple="multiple" data-placeholder="${allCellTypes}">
+            <c:forEach var="type" items="${cellTypes}">
+                <option value="${type}"><i:inline key="${type.formatKey}"/></option>
+            </c:forEach>
+        </select>&nbsp;&nbsp;
+        
         <cti:msg2 var="allStatuses" key="yukon.web.modules.operator.connectedDevices.allStatuses"/>
         <select id="commStatusFilter" multiple="multiple" data-placeholder="${allStatuses}">
             <c:forEach var="status" items="${commStatusValues}">
@@ -48,6 +55,10 @@
             <tr>
                 <th data-sorted="true" data-sorted-direction="ascending">
                     <i:inline key="yukon.common.name"/>
+                    <i class="icon icon=blank"/>
+                </th>
+                <th data-sorted="false">
+                    <i:inline key="yukon.common.deviceType"/>
                     <i class="icon icon=blank"/>
                 </th>
                 <th data-sorted="false">
@@ -84,6 +95,7 @@
                     <td>
                         <cti:paoDetailUrl yukonPao="${data.device}" newTab="true">${fn:escapeXml(data.device.name)}</cti:paoDetailUrl>
                     </td>
+                    <td>${fn:escapeXml(data.device.paoIdentifier.paoType.paoTypeName)}</td>
                     <td>
                         <cti:pointStatus pointId="${data.commStatusPoint.pointID}"/>
                         <span class="dn js-comm-status-value"><cti:pointValue pointId="${data.commStatusPoint.pointID}" format="RAWVALUE"/></span>
