@@ -1337,19 +1337,7 @@
     <entry key="yukon.web.error.code.1030.porter">No load side voltage detected while connected.</entry>
     <entry key="yukon.web.error.code.1030.description">Load side voltage higher than the configurable threshold prevented the switch from closing.</entry>
     <entry key="yukon.web.error.code.1030.troubleshooting"><![CDATA[]]></entry>
-            
-    <entry key="yukon.web.error.code.2000.porter">Invalid Action for Device Type.</entry>
-    <entry key="yukon.web.error.code.2000.description">This action cannot be performed on this device type.</entry>
-    <entry key="yukon.web.error.code.2000.troubleshooting"><![CDATA[]]></entry>
-
-    <entry key="yukon.web.error.code.0.porter">Normal (Success) Return</entry>
-    <entry key="yukon.web.error.code.0.description">Successful Read</entry>
-    <entry key="yukon.web.error.code.0.troubleshooting"><![CDATA[N/A]]></entry>
-
-    <entry key="yukon.web.error.code.-1.porter">A porter error string is not available for this error code at this time</entry>
-    <entry key="yukon.web.error.code.-1.description">A description for this error code is not available at this time</entry>
-    <entry key="yukon.web.error.code.-1.troubleshooting"><![CDATA[Troubleshooting tips for this error code are not available at this time]]></entry>
-
+    
     <entry key="yukon.web.error.code.1100.porter">Yukon did not receive a Success or Failure participation response for device, even after retries.</entry>
     <entry key="yukon.web.error.code.1100.description">No participation response was received from device.</entry>
     <entry key="yukon.web.error.code.1100.troubleshooting"><![CDATA[N/A]]></entry>
@@ -1405,4 +1393,16 @@
     <entry key="yukon.web.error.code.1113.porter">It's a generic error to represent a failure on command execution.</entry>
     <entry key="yukon.web.error.code.1113.description">Command failed to execute.</entry>
     <entry key="yukon.web.error.code.1113.troubleshooting"><![CDATA[N/A]]></entry>
+            
+    <entry key="yukon.web.error.code.2000.porter">Invalid Action for Device Type.</entry>
+    <entry key="yukon.web.error.code.2000.description">This action cannot be performed on this device type.</entry>
+    <entry key="yukon.web.error.code.2000.troubleshooting"><![CDATA[]]></entry>
+
+    <entry key="yukon.web.error.code.0.porter">Normal (Success) Return</entry>
+    <entry key="yukon.web.error.code.0.description">Successful Read</entry>
+    <entry key="yukon.web.error.code.0.troubleshooting"><![CDATA[N/A]]></entry>
+
+    <entry key="yukon.web.error.code.-1.porter">A porter error string is not available for this error code at this time</entry>
+    <entry key="yukon.web.error.code.-1.description">A description for this error code is not available at this time</entry>
+    <entry key="yukon.web.error.code.-1.troubleshooting"><![CDATA[Troubleshooting tips for this error code are not available at this time]]></entry>
 </properties>

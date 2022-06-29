@@ -2005,6 +2005,70 @@
         <description>Node received an error response from Yukon.</description>
         <troubleshooting>The RF node attempted to download the meter program from Yukon, but received an error response. Retry sending the Meter Program to the node.</troubleshooting>
     </error>
+     
+   <error code="1024" type="NONE">
+        <category>Network Manager</category>
+        <porter>No node in Network Manager.</porter>
+        <description>
+            There isn't a node in Network Manager which is currently associated with this
+            device in Yukon.
+        </description>
+        <troubleshooting>
+            Use Network Manager to see if this meter exists and is known to be paired with any RF
+            nodes.
+        </troubleshooting>
+    </error>
+    
+    <error code="1025" type="NONE">
+        <category>Network Manager</category>
+        <porter>There is no RF gateway associated with the RF node.</porter>
+        <description>
+            There isn't a gateway in Network Manager which is currently associated with this node.
+        </description>
+        <troubleshooting>
+            Use Network Manager to see which RF gateway is associated with the RF node in
+            question, if any.
+        </troubleshooting>
+    </error>
+    
+    <error code="1026" type="NONE">
+        <category>Network Manager</category>
+        <porter>There was an error while processing the request.</porter>
+        <description>
+            An unexpected Network Manager error has occurred.
+        </description>
+        <troubleshooting>
+            Check Network Manager server logs to identify the root cause of the failure.
+        </troubleshooting>
+    </error>
+    
+    <error code="1027" type="NONE">
+        <category>Network Manager</category>
+        <porter>Timeout</porter>
+        <description>Request timed out</description>
+        <troubleshooting>Check Yukon Logs for errors</troubleshooting>
+    </error>
+    
+    <error code="1028" type="NONE">
+        <category>Network Manager</category>
+        <porter>Load side voltage detected while disconnected.</porter>
+        <description>Load side voltage detected while disconnected.</description>
+        <troubleshooting></troubleshooting>
+    </error>
+    
+    <error code="1029" type="NONE">
+        <category>Network Manager</category>
+        <porter>No load side voltage detected while connected.</porter>
+        <description>No load side voltage detected while connected.</description>
+        <troubleshooting></troubleshooting>
+    </error>
+    
+    <error code="1030" type="NONE">
+        <category>Network Manager</category>
+        <porter>No load side voltage detected while connected.</porter>
+        <description>Load side voltage higher than the configurable threshold prevented the switch from closing.</description>
+        <troubleshooting></troubleshooting>
+    </error>
     
     <error code="1100" type="NONE">
         <category>Eaton Cloud</category>
@@ -2091,70 +2155,6 @@
         <troubleshooting>N/A</troubleshooting>
    </error>
    
-  <error code="1024" type="NONE">
-        <category>Network Manager</category>
-        <porter>No node in Network Manager.</porter>
-        <description>
-            There isn't a node in Network Manager which is currently associated with this
-            device in Yukon.
-        </description>
-        <troubleshooting>
-            Use Network Manager to see if this meter exists and is known to be paired with any RF
-            nodes.
-        </troubleshooting>
-    </error>
-    
-    <error code="1025" type="NONE">
-        <category>Network Manager</category>
-        <porter>There is no RF gateway associated with the RF node.</porter>
-        <description>
-            There isn't a gateway in Network Manager which is currently associated with this node.
-        </description>
-        <troubleshooting>
-            Use Network Manager to see which RF gateway is associated with the RF node in
-            question, if any.
-        </troubleshooting>
-    </error>
-    
-    <error code="1026" type="NONE">
-        <category>Network Manager</category>
-        <porter>There was an error while processing the request.</porter>
-        <description>
-            An unexpected Network Manager error has occurred.
-        </description>
-        <troubleshooting>
-            Check Network Manager server logs to identify the root cause of the failure.
-        </troubleshooting>
-    </error>
-    
-    <error code="1027" type="NONE">
-        <category>Network Manager</category>
-        <porter>Timeout</porter>
-        <description>Request timed out</description>
-        <troubleshooting>Check Yukon Logs for errors</troubleshooting>
-    </error>
-    
-    <error code="1028" type="NONE">
-        <category>Network Manager</category>
-        <porter>Load side voltage detected while disconnected.</porter>
-        <description>Load side voltage detected while disconnected.</description>
-        <troubleshooting></troubleshooting>
-    </error>
-    
-    <error code="1029" type="NONE">
-        <category>Network Manager</category>
-        <porter>No load side voltage detected while connected.</porter>
-        <description>No load side voltage detected while connected.</description>
-        <troubleshooting></troubleshooting>
-    </error>
-    
-    <error code="1030" type="NONE">
-        <category>Network Manager</category>
-        <porter>No load side voltage detected while connected.</porter>
-        <description>Load side voltage higher than the configurable threshold prevented the switch from closing.</description>
-        <troubleshooting></troubleshooting>
-    </error>
-    
     <error code="2000" type="NONE">
         <category>Yukon System</category>
         <porter>Invalid Action for Device Type.</porter>
