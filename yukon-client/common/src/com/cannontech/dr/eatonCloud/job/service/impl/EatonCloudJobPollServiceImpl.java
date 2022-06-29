@@ -76,9 +76,9 @@ public class EatonCloudJobPollServiceImpl implements EatonCloudJobPollService {
         List<String> successes = new ArrayList<>();
         jobGuids.forEach(jobGuid -> {
             try {
-                log.info(summary.getLogSummary(jobGuid, false) + "Try:{}", currentTry);
+                log.info(summary.getLogSummary(jobGuid, false) + "POLL Try:{}", currentTry);
                 EatonCloudJobStatusResponseV1 response = eatonCloudCommunicationService.getJobStatus(jobGuid);
-                log.info(summary.getLogSummary(jobGuid, false) + "Try:{} successes:{} failures:{}",
+                log.info(summary.getLogSummary(jobGuid, false) + "POLL Try:{} successes:{} failures:{}",
                         currentTry,
                         response.getSuccesses() == null ? 0 : response.getSuccesses().size(),
                         response.getFailures() == null ? 0 : response.getFailures().size());
@@ -86,12 +86,12 @@ public class EatonCloudJobPollServiceImpl implements EatonCloudJobPollService {
                 removeProcessedDeviceGuids(summary, response, guidsToDeviceIds);
                 processSuccesses(summary, successes, jobGuid, response, guidsToDeviceIds, currentTry);
                 processFailure(summary, jobGuid, response, guidsToDeviceIds, currentTry);
-                log.info(summary.getLogSummary(jobGuid, false) + "Try:{} unprocessed successes:{} unprocessed failures:{}",
+                log.info(summary.getLogSummary(jobGuid, false) + "POLL Try:{} unprocessed successes:{} unprocessed failures:{}",
                         currentTry,
                         response.getSuccesses() == null ? 0 : response.getSuccesses().size(),
                         response.getFailures() == null ? 0 : response.getFailures().size());
             } catch (EatonCloudCommunicationExceptionV1 e) {
-                log.error(summary.getLogSummary(jobGuid, false) + "Try:{} error polling devices job", currentTry, e);
+                log.error(summary.getLogSummary(jobGuid, false) + "POLL Try:{} error polling devices job", currentTry, e);
             }
         }); 
         if(!successes.isEmpty()) {
@@ -108,7 +108,7 @@ public class EatonCloudJobPollServiceImpl implements EatonCloudJobPollService {
                 try {
                     deviceError = Integer.valueOf(error.getErrorNumber());
                 } catch (Exception e) {
-                    log.error(summary.getLogSummary(jobGuid, false) + "unable to parse error code:{}", error.getErrorNumber(), e);
+                    log.error(summary.getLogSummary(jobGuid, false) + "POLL unable to parse error code:{}", error.getErrorNumber(), e);
                 }
                 eatonCloudJobResponseProcessor.processError(summary,
                         guidsToDeviceIds.get(deviceGuid), deviceGuid, jobGuid, deviceError,

@@ -201,21 +201,21 @@ public class EatonCloudJobServiceImpl implements EatonCloudJobService {
     private String startJob(Map<Integer, String> guids, EventSummary summary, Set<Integer> devices,
             EatonCloudJobRequestV1 request) {
         try {
-            log.info(summary.getLogSummary(true) + "Creating job to send Shed Command:{} devices:{}",
+            log.info(summary.getLogSummary(true) + "SEND Creating job to send Shed Command:{} devices:{}",
                     summary.getCommand(),
                     devices.size());
             EatonCloudJobResponseV1 response = eatonCloudCommunicationService.createJob(request);
-            log.info(summary.getLogSummary(response.getJobGuid(), true) + "Created job to send Shed Command:{} devices:{}",
+            log.info(summary.getLogSummary(response.getJobGuid(), true) + "SEND Created job to send Shed Command:{} devices:{}",
                     summary.getCommand(),
                     devices.size());
             return response.getJobGuid();
         } catch (EatonCloudCommunicationExceptionV1 e) {
-            log.error(summary.getLogSummary(true) + "Failed to create job to send Shed Command:{} devices:{}",
+            log.error(summary.getLogSummary(true) + "SEND Failed to create job to send Shed Command:{} devices:{}",
                     summary.getCommand(),
                     devices.size(), e);
             // job failed, mark all devices as failed, failed job will not retry
             devices.forEach(deviceId -> eatonCloudJobResponseProcessor.processError(summary,
-                    deviceId, guids.get(deviceId), "Job Creation Failed",
+                    deviceId, guids.get(deviceId), null,
                     EatonCloudError.JOB_CREATION_FAILED.getCode(), ControlEventDeviceStatus.FAILED, 1));
             return null;
         }

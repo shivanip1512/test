@@ -77,7 +77,7 @@ public final class EventSummary {
         if (numberOfTimesToRetry > currentTry.get()) {
             currentTry.incrementAndGet();
             currentTryTime = DateTime.now().plusMinutes(minutes).toInstant();
-            log.info("[id:{}] Next retry time after {}", getEventId(),
+            log.info("[id:{}] SEND Next retry time after {}", getEventId(),
                     currentTryTime.toDateTime().toString("MM-dd-yyyy HH:mm:ss"));
             return this;
         }

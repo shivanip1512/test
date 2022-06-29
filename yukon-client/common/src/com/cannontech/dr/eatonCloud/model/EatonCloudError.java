@@ -35,11 +35,7 @@ public enum EatonCloudError {
     }
     
     public static DeviceError getErrorByCode(int code){
-        DeviceError error = errors.get(code);
-        if(error == null){
-            error = DeviceError.UNKNOWN;
-        }
-        return error;
+        return errors.getOrDefault(code, DeviceError.UNKNOWN);
     }
     
     public DeviceError getDeviceError() {

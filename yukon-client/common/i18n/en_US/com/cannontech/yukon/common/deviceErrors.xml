@@ -1350,59 +1350,59 @@
     <entry key="yukon.web.error.code.-1.description">A description for this error code is not available at this time</entry>
     <entry key="yukon.web.error.code.-1.troubleshooting"><![CDATA[Troubleshooting tips for this error code are not available at this time]]></entry>
 
-    <entry key="yukon.web.error.code.10000.porter">Yukon did not receive a Success or Failure participation response for device, even after retries.</entry>
-    <entry key="yukon.web.error.code.10000.description">No participation response was received from device.</entry>
-    <entry key="yukon.web.error.code.10000.troubleshooting"><![CDATA[N/A]]></entry>
+    <entry key="yukon.web.error.code.1100.porter">Yukon did not receive a Success or Failure participation response for device, even after retries.</entry>
+    <entry key="yukon.web.error.code.1100.description">No participation response was received from device.</entry>
+    <entry key="yukon.web.error.code.1100.troubleshooting"><![CDATA[N/A]]></entry>
     
-    <entry key="yukon.web.error.code.10001.porter">Yukon had a service restart which prevented a participation response from being recorded for the device. Device polling stopped once there was a service restart.</entry>
-    <entry key="yukon.web.error.code.10001.description">No participation response recorded due to Yukon service restart.</entry>
-    <entry key="yukon.web.error.code.10001.troubleshooting"><![CDATA[N/A]]></entry>
+    <entry key="yukon.web.error.code.1101.porter">Yukon had a service restart which prevented a participation response from being recorded for the device. Device polling stopped once there was a service restart.</entry>
+    <entry key="yukon.web.error.code.1101.description">No participation response recorded due to Yukon service restart.</entry>
+    <entry key="yukon.web.error.code.1101.troubleshooting"><![CDATA[N/A]]></entry>
     
-    <entry key="yukon.web.error.code.10002.porter">Upon event initiation, job creation failed.</entry>
-    <entry key="yukon.web.error.code.10002.description">Event failed to initiate.</entry>
-    <entry key="yukon.web.error.code.10002.troubleshooting"><![CDATA[N/A]]></entry>
+    <entry key="yukon.web.error.code.1102.porter">Upon event initiation, job creation failed.</entry>
+    <entry key="yukon.web.error.code.1102.description">Event failed to initiate.</entry>
+    <entry key="yukon.web.error.code.1102.troubleshooting"><![CDATA[N/A]]></entry>
     
-    <entry key="yukon.web.error.code.10003.porter">The user is not authorized to execute the given method for the current device.</entry>
-    <entry key="yukon.web.error.code.10003.description">User not authorized to execute method for this device.</entry>
-    <entry key="yukon.web.error.code.10003.troubleshooting"><![CDATA[N/A]]></entry>
+    <entry key="yukon.web.error.code.1103.porter">The user is not authorized to execute the given method for the current device.</entry>
+    <entry key="yukon.web.error.code.1103.description">User not authorized to execute method for this device.</entry>
+    <entry key="yukon.web.error.code.1103.troubleshooting"><![CDATA[N/A]]></entry>
     
-    <entry key="yukon.web.error.code.10004.porter">Device not configured on IoT hub. (ingress is disabled or it's not an IoT Hub)</entry>
-    <entry key="yukon.web.error.code.10004.description">Device not configured on IoT hub.</entry>
-    <entry key="yukon.web.error.code.10004.troubleshooting"><![CDATA[N/A]]></entry>
+    <entry key="yukon.web.error.code.1104.porter">Device not configured on IoT hub. (ingress is disabled or it's not an IoT Hub)</entry>
+    <entry key="yukon.web.error.code.1104.description">Device not configured on IoT hub.</entry>
+    <entry key="yukon.web.error.code.1104.troubleshooting"><![CDATA[N/A]]></entry>
     
-    <entry key="yukon.web.error.code.10005.porter">Profile not found for a device.</entry>
-    <entry key="yukon.web.error.code.10005.description">Device profile not found in Brightlayer Cloud.</entry>
-    <entry key="yukon.web.error.code.10005.troubleshooting"><![CDATA[N/A]]></entry>
+    <entry key="yukon.web.error.code.1105.porter">Profile not found for a device.</entry>
+    <entry key="yukon.web.error.code.1105.description">Device profile not found in Brightlayer Cloud.</entry>
+    <entry key="yukon.web.error.code.1105.troubleshooting"><![CDATA[N/A]]></entry>
     
-    <entry key="yukon.web.error.code.10006.porter">In the case of get or set channel method, channels are invalid</entry>
-    <entry key="yukon.web.error.code.10006.description">Channel method error.</entry>
-    <entry key="yukon.web.error.code.10006.troubleshooting"><![CDATA[N/A]]></entry>
+    <entry key="yukon.web.error.code.1106.porter">In the case of get or set channel method, channels are invalid</entry>
+    <entry key="yukon.web.error.code.1106.description">Channel method error.</entry>
+    <entry key="yukon.web.error.code.1106.troubleshooting"><![CDATA[N/A]]></entry>
     
-    <entry key="yukon.web.error.code.10007.porter">The device is not capable of direct method invocation.</entry>
-    <entry key="yukon.web.error.code.10007.description">Device not capable of direct method.</entry>
-    <entry key="yukon.web.error.code.10007.troubleshooting"><![CDATA[N/A]]></entry>
+    <entry key="yukon.web.error.code.1107.porter">The device is not capable of direct method invocation.</entry>
+    <entry key="yukon.web.error.code.1107.description">Device not capable of direct method.</entry>
+    <entry key="yukon.web.error.code.1107.troubleshooting"><![CDATA[N/A]]></entry>
     
-    <entry key="yukon.web.error.code.10008.porter">If no channels are defined for the device in case of get or set Channel method.</entry>
-    <entry key="yukon.web.error.code.10008.description">Channel method error.</entry>
-    <entry key="yukon.web.error.code.10008.troubleshooting"><![CDATA[N/A]]></entry>
+    <entry key="yukon.web.error.code.1108.porter">If no channels are defined for the device in case of get or set Channel method.</entry>
+    <entry key="yukon.web.error.code.1108.description">Channel method error.</entry>
+    <entry key="yukon.web.error.code.1108.troubleshooting"><![CDATA[N/A]]></entry>
     
-    <entry key="yukon.web.error.code.10009.porter">In the case of get or set channel method, params are invalid.</entry>
-    <entry key="yukon.web.error.code.10009.description">Channel method error.</entry>
-    <entry key="yukon.web.error.code.10009.troubleshooting"><![CDATA[N/A]]></entry>
+    <entry key="yukon.web.error.code.1109.porter">In the case of get or set channel method, params are invalid.</entry>
+    <entry key="yukon.web.error.code.1109.description">Channel method error.</entry>
+    <entry key="yukon.web.error.code.1109.troubleshooting"><![CDATA[N/A]]></entry>
     
-    <entry key="yukon.web.error.code.10010.porter">In the case of set channel method, channels are not writable.</entry>
-    <entry key="yukon.web.error.code.10010.description">Channel method error.</entry>
-    <entry key="yukon.web.error.code.10010.troubleshooting"><![CDATA[N/A]]></entry>
+    <entry key="yukon.web.error.code.1110.porter">In the case of set channel method, channels are not writable.</entry>
+    <entry key="yukon.web.error.code.1110.description">Channel method error.</entry>
+    <entry key="yukon.web.error.code.1110.troubleshooting"><![CDATA[N/A]]></entry>
     
-    <entry key="yukon.web.error.code.10011.porter">Device not found.</entry>
-    <entry key="yukon.web.error.code.10011.description">Device not found in Brightlayer Cloud.</entry>
-    <entry key="yukon.web.error.code.10011.troubleshooting"><![CDATA[N/A]]></entry>
+    <entry key="yukon.web.error.code.1111.porter">Device not found.</entry>
+    <entry key="yukon.web.error.code.1111.description">Device not found in Brightlayer Cloud.</entry>
+    <entry key="yukon.web.error.code.1111.troubleshooting"><![CDATA[N/A]]></entry>
     
-    <entry key="yukon.web.error.code.10012.porter">Message timed out or failed to receive at command processor azure function (In case of a dead-letter message).</entry>
-    <entry key="yukon.web.error.code.10012.description">Command timed out in Brightlayer Cloud.</entry>
-    <entry key="yukon.web.error.code.10012.troubleshooting"><![CDATA[N/A]]></entry>
+    <entry key="yukon.web.error.code.1112.porter">Message timed out or failed to receive at command processor azure function (In case of a dead-letter message).</entry>
+    <entry key="yukon.web.error.code.1112.description">Command timed out in Brightlayer Cloud.</entry>
+    <entry key="yukon.web.error.code.1112.troubleshooting"><![CDATA[N/A]]></entry>
     
-    <entry key="yukon.web.error.code.10013.porter">It's a generic error to represent a failure on command execution.</entry>
-    <entry key="yukon.web.error.code.10013.description">Command failed to execute.</entry>
-    <entry key="yukon.web.error.code.10013.troubleshooting"><![CDATA[N/A]]></entry>
+    <entry key="yukon.web.error.code.1113.porter">It's a generic error to represent a failure on command execution.</entry>
+    <entry key="yukon.web.error.code.1113.description">Command failed to execute.</entry>
+    <entry key="yukon.web.error.code.1113.troubleshooting"><![CDATA[N/A]]></entry>
 </properties>

@@ -84,7 +84,7 @@ public class EatonCloudJobReadServiceImpl implements EatonCloudJobReadService{
         int readTimeFromNowInMinutes = 2;    
         Instant nextReadTime = DateTime.now().plusMinutes(readTimeFromNowInMinutes).toInstant();
         
-        log.info(summary.getLogSummary(false) + "Next device Try:{} in {} minutes at {}",
+        log.info(summary.getLogSummary(false) + "READ Try:{} in {} minutes at {}",
                 currentTry,
                 readTimeFromNowInMinutes,
                 nextReadTime.toDateTime().toString(DATE_FORMAT));

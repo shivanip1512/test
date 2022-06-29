@@ -5,7 +5,6 @@ import org.apache.logging.log4j.Logger;
 import org.joda.time.Instant;
 import org.springframework.beans.factory.annotation.Autowired;
 
-import com.cannontech.amr.errors.dao.DeviceError;
 import com.cannontech.amr.errors.dao.DeviceErrorTranslatorDao;
 import com.cannontech.amr.errors.model.DeviceErrorDescription;
 import com.cannontech.clientutils.YukonLogManager;
@@ -53,9 +52,13 @@ public class EatonCloudJobResponseProcessorImpl implements EatonCloudJobResponse
                 StringUtils.isEmpty(message) ? null : message.length() > 100 ? message.substring(0, 100) : message,
                 currentTry == 1 ? null : Instant.now());
         
+        String jobInfo = String.valueOf(summary.getEventId());
+        if(jobGuid != null) {
+            jobInfo = jobInfo + "/"+jobGuid;
+        }
         eatonCloudEventLogService.sendShedJobFailed(deviceName,
                 guid,
-                summary.getEventId()+"/"+jobGuid,
+                jobInfo,
                 String.valueOf(currentTry), 
                 command.getDutyCyclePercentage(),
                 command.getDutyCyclePeriod(),
