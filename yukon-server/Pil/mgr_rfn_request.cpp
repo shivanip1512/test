@@ -1127,6 +1127,27 @@ void RfnRequestManager::submitBroadcastRequest( const Messaging::Rfn::EdgeDrBroa
 
     broadcast.payload = createE2eDtPut( request.payload, RfnIdentifier { "broadcast", "broadcast", "broadcast" } );
 
+    // web client response message helper
+    
+    auto sendClientResponse =
+        []( const EdgeDrBroadcastResponse & response )
+        {
+            if ( auto serialized = Messaging::Serialization::serialize( response ); ! serialized.empty() )
+            {
+                CTILOG_DEBUG( dout, "Sending EdgeDR broadcast response message to client" << FormattedList::of(
+                                     "Message GUID", response.messageGuid ) );
+
+                Messaging::ActiveMQConnectionManager::enqueueMessage(
+                    Messaging::ActiveMQ::Queues::OutboundQueue::RfnEdgeDrBroadcastResponse,
+                    serialized );
+            }
+            else
+            {
+                CTILOG_WARN( dout, "Could not serialize EdgeDR broadcast response message" << FormattedList::of(
+                                    "Message GUID", response.messageGuid ) );
+            }
+        };
+
     // initialize our callbacks and timeout framework
 
     const auto Key     = broadcast.header->messageId;
@@ -1157,17 +1178,7 @@ void RfnRequestManager::submitBroadcastRequest( const Messaging::Rfn::EdgeDrBroa
                 }
             }
 
-            if ( auto serialized = Messaging::Serialization::serialize( response ); ! serialized.empty() )
-            {
-                Messaging::ActiveMQConnectionManager::enqueueMessage(
-                    Messaging::ActiveMQ::Queues::OutboundQueue::RfnEdgeDrBroadcastResponse,
-                    serialized );
-            }
-            else
-            {
-                CTILOG_WARN( dout, "Could not serialize EdgeDR broadcast response message" << FormattedList::of(
-                                    "Message GUID", request.messageGuid ) );
-            }
+            sendClientResponse( response );
         },
         [=]()
         {
@@ -1177,17 +1188,7 @@ void RfnRequestManager::submitBroadcastRequest( const Messaging::Rfn::EdgeDrBroa
                 EdgeDrError { ClientErrors::E2eRequestTimeout, "EdgeDR broadcast request timed out" }
             };
 
-            if ( auto serialized = Messaging::Serialization::serialize( response ); ! serialized.empty() )
-            {
-                Messaging::ActiveMQConnectionManager::enqueueMessage(
-                    Messaging::ActiveMQ::Queues::OutboundQueue::RfnEdgeDrBroadcastResponse,
-                    serialized );
-            }
-            else
-            {
-                CTILOG_WARN( dout, "Could not serialize EdgeDR broadcast response message" << FormattedList::of(
-                                    "Message GUID", request.messageGuid ) );
-            }
+            sendClientResponse( response );
         }
     } );
 
@@ -1195,6 +1196,9 @@ void RfnRequestManager::submitBroadcastRequest( const Messaging::Rfn::EdgeDrBroa
 
     if ( auto serialized_broadcast = Messaging::Serialization::serialize( broadcast ); ! serialized_broadcast.empty() )
     {
+        CTILOG_DEBUG( dout, "Sending RFN broadcast request message to NM" << FormattedList::of(
+                             "Broadcast messageId", Key ) );
+
         Messaging::ActiveMQConnectionManager::enqueueMessage(
             Messaging::ActiveMQ::Queues::OutboundQueue::NetworkManagerRfnBroadcastRequest,
             serialized_broadcast );
@@ -1203,6 +1207,18 @@ void RfnRequestManager::submitBroadcastRequest( const Messaging::Rfn::EdgeDrBroa
     {
         CTILOG_WARN( dout, "Could not serialize RFN broadcast request message" << FormattedList::of(
                             "Broadcast messageId", Key ) );
+
+        // we had a serialization error - notify the web client and remove the callbacks
+
+        _broadcastCallbacks.erase( Key );
+
+        EdgeDrBroadcastResponse response
+        {
+            request.messageGuid,
+            EdgeDrError { ClientErrors::E2eRequestNotAcceptable, "Error sending RFN broadcast request to NM" }     // need different error code?
+        };
+
+        sendClientResponse( response );
     }
 }
 
@@ -1212,6 +1228,16 @@ void RfnRequestManager::handleRfnBroadcastReplyMsg( const SerializedMessage & ms
     using Messaging::Serialization::MessageSerializer;
 
     auto reply = MessageSerializer<RfnBroadcastReply>::deserialize( msg );
+
+    if ( reply->header )
+    {
+        CTILOG_DEBUG(dout, "Received a RFN broadcast reply from NM:" << FormattedList::of(
+                            "Broadcast messageId", reply->header->messageId ) );
+    }
+    else
+    {
+        CTILOG_WARN(dout, "Deserialized a RFN broadcast reply from NM with no header." );
+    }
 
     {
         LockGuard guard( _broadcastReplyMux );
