@@ -1,6 +1,7 @@
 package com.cannontech.web.stars.cellular;
 
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -19,6 +20,7 @@ import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import com.cannontech.common.i18n.MessageSourceAccessor;
 import com.cannontech.common.pao.PaoIdentifier;
+import com.cannontech.common.pao.PaoType;
 import com.cannontech.common.rfn.model.RfnGateway;
 import com.cannontech.common.rfn.service.RfnGatewayService;
 import com.cannontech.core.dao.PaoDao;
@@ -60,16 +62,38 @@ public class CellularConnectionController {
     
     @GetMapping("connectedDevices/{gatewayId}")
     public String connectedDevices(@PathVariable int gatewayId, ModelMap model) {
-        List<CellularDeviceCommData> cellData = cellService.getCellularDeviceCommDataForGateways(Arrays.asList(gatewayId));
-        model.addAttribute("cellData", cellData);
-        String deviceIdList = cellData.stream()
-                .map(d -> String.valueOf(d.getDevice().getPaoIdentifier().getPaoId()))
-                .collect(Collectors.joining(","));
-        model.addAttribute("deviceIds", deviceIdList);
-        
+        retrieveCellData(gatewayId, null, null, model);
+
         connectedDevicesHelper.setupConnectedDevicesModel(gatewayId, model);
+        model.addAttribute("cellTypes", PaoType.getCellularTypes());
         
         return "gateways/cellConnection.jsp";
+    }
+    
+    private List<CellularDeviceCommData> retrieveCellData(int gatewayId, Integer[] commStatuses, PaoType[] deviceTypes, ModelMap model) {
+        List<PaoType> filterTypes = new ArrayList<>(PaoType.getCellularTypes());
+        List<Integer> filterCommStatus = new ArrayList<>();
+        if (deviceTypes != null && deviceTypes.length > 0) {
+            filterTypes = Arrays.asList(deviceTypes);
+        }
+        if (commStatuses != null && commStatuses.length > 0) {
+            filterCommStatus = Arrays.asList(commStatuses);
+        }
+        List<CellularDeviceCommData> cellData = cellService.getCellularDeviceCommDataForGateways(Arrays.asList(gatewayId), filterCommStatus, filterTypes);
+        model.addAttribute("cellData", cellData);
+        
+        String deviceIdList = cellData.stream()
+                                      .map(d -> String.valueOf(d.getDevice().getPaoIdentifier().getPaoId()))
+                                      .collect(Collectors.joining(","));
+        model.addAttribute("deviceIds", deviceIdList);
+        return cellData;
+    }
+    
+    @GetMapping("filterConnectedDevices/{gatewayId}")
+    public String filterConnectedDevices(@PathVariable int gatewayId, Integer[] commStatuses, PaoType[] deviceTypes, ModelMap model) {
+        retrieveCellData(gatewayId, commStatuses, deviceTypes, model);
+        connectedDevicesHelper.setupConnectedDevicesModel(gatewayId, model);
+        return "gateways/cellConnectionDeviceTable.jsp";
     }
     
     @GetMapping("connectedDevicesMapping")
@@ -79,7 +103,7 @@ public class CellularConnectionController {
     }
     
     @GetMapping("connectedDevicesDownload/{gatewayId}")
-    public String connectedDevicesDownload(@PathVariable int gatewayId, Integer[] filteredCommStatus, 
+    public String connectedDevicesDownload(@PathVariable int gatewayId, Integer[] filteredCommStatus, PaoType[] deviceTypes,
                                            YukonUserContext userContext, HttpServletResponse response) throws IOException {
         MessageSourceAccessor accessor = messageSourceResolver.getMessageSourceAccessor(userContext);
         String[] headerRow = new String[8];
@@ -94,28 +118,25 @@ public class CellularConnectionController {
         headerRow[7] = accessor.getMessage("yukon.common.attribute.builtInAttribute.SIGNAL_TO_INTERFERENCE_PLUS_NOISE_RATIO");
         
         RfnGateway gateway = rfnGatewayService.getGatewayByPaoId(gatewayId);
-        List<CellularDeviceCommData> cellData = cellService.getCellularDeviceCommDataForGateways(Arrays.asList(gatewayId));
+        List<CellularDeviceCommData> cellData = retrieveCellData(gatewayId, filteredCommStatus, deviceTypes, new ModelMap());
         
         List<String[]> dataRows = Lists.newArrayList();
-        List<Integer> selectedCommStatuses = Arrays.asList(filteredCommStatus);
         for (CellularDeviceCommData data : cellData) {
             String[] dataRow = new String[8];
             dataRow[0] = data.getDevice().getName();
             dataRow[1] = data.getDevice().getPaoIdentifier().getPaoType().getPaoTypeName();
             PointValueQualityHolder commStatus = asyncDynamicDataSource.getPointValue(data.getCommStatusPoint().getPointID());
-            if (selectedCommStatuses.isEmpty() || selectedCommStatuses.contains(Integer.valueOf((int)commStatus.getValue()))) {
-                dataRow[2] = pointFormattingService.getValueString(commStatus, Format.VALUE, userContext);
-                dataRow[3] = pointFormattingService.getValueString(commStatus, Format.DATE, userContext);
-                PointValueQualityHolder rssi = asyncDynamicDataSource.getPointValue(data.getRssiPoint().getPointID());
-                dataRow[4] = pointFormattingService.getValueString(rssi, Format.VALUE, userContext);
-                PointValueQualityHolder rsrp = asyncDynamicDataSource.getPointValue(data.getRsrpPoint().getPointID());
-                dataRow[5] = pointFormattingService.getValueString(rsrp, Format.VALUE, userContext);
-                PointValueQualityHolder rsrq = asyncDynamicDataSource.getPointValue(data.getRsrqPoint().getPointID());
-                dataRow[6] = pointFormattingService.getValueString(rsrq, Format.VALUE, userContext);
-                PointValueQualityHolder sinr = asyncDynamicDataSource.getPointValue(data.getSinrPoint().getPointID());
-                dataRow[7] = pointFormattingService.getValueString(sinr, Format.VALUE, userContext);
-                dataRows.add(dataRow);
-            }
+            dataRow[2] = pointFormattingService.getValueString(commStatus, Format.VALUE, userContext);
+            dataRow[3] = pointFormattingService.getValueString(commStatus, Format.DATE, userContext);
+            PointValueQualityHolder rssi = asyncDynamicDataSource.getPointValue(data.getRssiPoint().getPointID());
+            dataRow[4] = pointFormattingService.getValueString(rssi, Format.VALUE, userContext);
+            PointValueQualityHolder rsrp = asyncDynamicDataSource.getPointValue(data.getRsrpPoint().getPointID());
+            dataRow[5] = pointFormattingService.getValueString(rsrp, Format.VALUE, userContext);
+            PointValueQualityHolder rsrq = asyncDynamicDataSource.getPointValue(data.getRsrqPoint().getPointID());
+            dataRow[6] = pointFormattingService.getValueString(rsrq, Format.VALUE, userContext);
+            PointValueQualityHolder sinr = asyncDynamicDataSource.getPointValue(data.getSinrPoint().getPointID());
+            dataRow[7] = pointFormattingService.getValueString(sinr, Format.VALUE, userContext);
+            dataRows.add(dataRow);
         }
         
         String now = dateFormattingService.format(Instant.now(), DateFormatEnum.FILE_TIMESTAMP, YukonUserContext.system);
