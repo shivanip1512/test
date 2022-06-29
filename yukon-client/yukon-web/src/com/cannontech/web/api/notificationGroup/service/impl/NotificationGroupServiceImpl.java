@@ -6,11 +6,12 @@ import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 
-import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.transaction.annotation.Transactional;
 
+import com.cannontech.common.model.Direction;
+import com.cannontech.common.model.PaginatedResponse;
 import com.cannontech.common.util.CtiUtilities;
 import com.cannontech.core.dao.ContactDao;
 import com.cannontech.core.dao.ContactNotificationDao;
@@ -27,6 +28,7 @@ import com.cannontech.database.data.notification.ContactNotifGroupMap;
 import com.cannontech.database.data.notification.CustomerNotifGroupMap;
 import com.cannontech.database.data.notification.NotifDestinationMap;
 import com.cannontech.database.data.notification.NotifType;
+import com.cannontech.web.api.notificationGroup.dao.NotificationGroupDao;
 import com.cannontech.web.api.notificationGroup.service.NotificationGroupService;
 import com.cannontech.web.notificationGroup.CICustomer;
 import com.cannontech.web.notificationGroup.Contact;
@@ -40,6 +42,7 @@ public class NotificationGroupServiceImpl implements NotificationGroupService {
     @Autowired private CustomerDao customerDao;
     @Autowired private ContactDao contactDao;
     @Autowired private ContactNotificationDao contactNotificationDao;
+    @Autowired private NotificationGroupDao notificationGroupDao;
 
     @Override
     public NotificationGroup create(NotificationGroup notificationGroup) {
@@ -235,20 +238,10 @@ public class NotificationGroupServiceImpl implements NotificationGroupService {
     }
 
     @Override
-    public List<NotificationGroup> retrieveAll() {
-        List<LiteNotificationGroup> liteNotificationGroup = cache.getAllContactNotificationGroups();
-        List<NotificationGroup> notificationGroupList = new ArrayList<NotificationGroup>();
-        if (CollectionUtils.isNotEmpty(liteNotificationGroup)) {
-            liteNotificationGroup.forEach(liteObject -> {
-                com.cannontech.database.data.notification.NotificationGroup notificationGroupBase = (com.cannontech.database.data.notification.NotificationGroup) dbPersistentDao
-                        .retrieveDBPersistent(liteObject);
-                NotificationGroup notificationGroup = new NotificationGroup(
-                        notificationGroupBase.getNotificationGroup().getNotificationGroupID(),
-                        notificationGroupBase.getNotificationGroup().getGroupName(),
-                        notificationGroupBase.getNotificationGroup().getDisableFlag());
-                notificationGroupList.add(notificationGroup);
-            });
-        }
-        return notificationGroupList;
+    public PaginatedResponse<NotificationGroup> retrieveAll(String sortBy, Direction direction,
+            Integer page,
+            Integer itemsPerPage) {
+        List<NotificationGroup> notificationGroupList = notificationGroupDao.getAllNotificationGroups(sortBy, direction);
+        return new PaginatedResponse<NotificationGroup>(notificationGroupList, page, itemsPerPage);
     }
 }

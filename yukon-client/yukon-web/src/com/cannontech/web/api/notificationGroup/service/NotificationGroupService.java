@@ -1,7 +1,7 @@
 package com.cannontech.web.api.notificationGroup.service;
 
-import java.util.List;
-
+import com.cannontech.common.model.Direction;
+import com.cannontech.common.model.PaginatedResponse;
 import com.cannontech.web.notificationGroup.NotificationGroup;
 
 public interface NotificationGroupService {
@@ -24,6 +24,7 @@ public interface NotificationGroupService {
     /**
      * Retrieve all notification groups
      */
-    List<NotificationGroup> retrieveAll();
+    PaginatedResponse<NotificationGroup> retrieveAll(String sortBy, Direction direction, Integer page,
+            Integer itemsPerPage);
 
 }
