@@ -40,4 +40,5 @@
      <bean class="com.cannontech.dr.eatonCloud.job.service.impl.EatonCloudJobReadServiceImpl"/>
      <bean class="com.cannontech.dr.eatonCloud.job.service.impl.EatonCloudJobResponseProcessorImpl "/>
      <bean class="com.cannontech.dr.eatonCloud.job.service.impl.EatonCloudJobServiceImpl"/>
+     <bean class="com.cannontech.dr.eatonCloud.job.service.impl.EatonCloudJobSmartNotifServiceImpl"/>
 </beans>

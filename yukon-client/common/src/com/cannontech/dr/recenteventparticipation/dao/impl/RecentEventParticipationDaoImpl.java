@@ -434,5 +434,18 @@ public class RecentEventParticipationDaoImpl implements RecentEventParticipation
         }
         return jdbcTemplate.update(sql);
     }
+    
+    @Override
+    public int failWillRetryDevices(Integer externalEventId, String failReason) {
+        SqlStatementBuilder sql = new SqlStatementBuilder();
+        sql.append("UPDATE ControlEventDevice")
+                .set("Result", ControlEventDeviceStatus.FAILED,
+                        "FailReason", failReason);
+        sql.append("WHERE Result").in_k(List.of(ControlEventDeviceStatus.FAILED_WILL_RETRY, ControlEventDeviceStatus.UNKNOWN));
+        if(externalEventId != null) {
+            sql.append("AND ControlEventId = (select ControlEventId from ControlEvent where ExternalEventId").eq(externalEventId).append(")"); 
+        }
+        return jdbcTemplate.update(sql);
+    }
 }    
     
