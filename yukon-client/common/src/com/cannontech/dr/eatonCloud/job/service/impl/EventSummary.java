@@ -81,12 +81,15 @@ public final class EventSummary {
                     currentTryTime.toDateTime().toString("MM-dd-yyyy HH:mm:ss"));
             return this;
         }
+        return null;
+    }
+
+    public void failWillRetryDevices() {
         // we ran out of retries and will mark all FAILED_WILL_RETRY or UNKNOWN devices as FAILED
         int affectedRows = recentEventParticipationDao.failWillRetryDevices(getEventId(), failReason);
         log.info(
                 "[id:{}] No more retries available, changed {} devices waiting for retry (FAILED_WILL_RETRY, UNKNOWN) to failed (FAILED).",
                 getEventId(), affectedRows);
-        return null;
     }
 
     @Override

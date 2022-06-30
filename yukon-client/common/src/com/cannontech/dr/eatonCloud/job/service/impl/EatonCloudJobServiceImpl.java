@@ -62,7 +62,7 @@ public class EatonCloudJobServiceImpl implements EatonCloudJobService {
     private AtomicBoolean isSendingCommands = new AtomicBoolean(false);
     private int maxDevicesPerJob;
     //TODO: change to 5
-    private static int pollInMinutes = 1;
+    private static int pollInMinutes = 2;
     //TODO: change to 2
     private static int firstRetryAfterPollMinutes = 1;
 
@@ -120,6 +120,7 @@ public class EatonCloudJobServiceImpl implements EatonCloudJobService {
                     Pair<Instant, List<String>> result = createJobs(devices, summary);
                     if((setupRetry(summary, result) == null)){
                         iter.remove();
+                        eatonCloudJobPollService.failWillRetryDevicesAfterLastPoll(summary);
                     }
                 }
             }
@@ -145,7 +146,8 @@ public class EatonCloudJobServiceImpl implements EatonCloudJobService {
                 resendTries.put(nextTry.getEventId(), new RetrySummary(nextTry, result));
                 return nextTry;
             }
-        }
+        } 
+        eatonCloudJobPollService.failWillRetryDevicesAfterLastPoll(summary);
         return null;
     }
 

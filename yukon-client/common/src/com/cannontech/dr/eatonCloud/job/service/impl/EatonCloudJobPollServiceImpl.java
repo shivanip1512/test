@@ -7,6 +7,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.TimeUnit;
 
 import org.apache.logging.log4j.Logger;
@@ -29,9 +30,9 @@ import com.cannontech.dr.recenteventparticipation.ControlEventDeviceStatus;
 import com.cannontech.dr.recenteventparticipation.dao.RecentEventParticipationDao;
 
 public class EatonCloudJobPollServiceImpl implements EatonCloudJobPollService {
-    
+
     private static final Logger log = YukonLogManager.getLogger(EatonCloudJobPollServiceImpl.class);
-    
+
     @Autowired @Qualifier("main") private ScheduledExecutor executor;
     @Autowired EatonCloudJobReadService eatonCloudJobReadService;
     @Autowired private EatonCloudCommunicationServiceV1 eatonCloudCommunicationService;
@@ -40,10 +41,23 @@ public class EatonCloudJobPollServiceImpl implements EatonCloudJobPollService {
     @Autowired private DeviceDao deviceDao;
     @Autowired private EatonCloudJobSmartNotifService eatonCloudJobSmartNotifService;
 
+    private Set<Integer> polling = ConcurrentHashMap.newKeySet();
+    private Set<Integer> terminating = ConcurrentHashMap.newKeySet();
+
     @Override
     public void immediatePoll(EventSummary summary, List<String> jobGuids,
             Instant jobCreationTime, int currentTry) {
         poll(summary, jobGuids, jobCreationTime, currentTry);
+    }
+
+    @Override
+    public void failWillRetryDevicesAfterLastPoll(EventSummary summary) {
+        if (polling.contains(summary.getEventId())) {
+            log.info(summary.getLogSummary(false) + " event termination is postponed untill POLL completes");
+            terminating.add(summary.getEventId());
+        } else {
+            summary.failWillRetryDevices();
+        }
     }
 
     @Override
@@ -52,16 +66,25 @@ public class EatonCloudJobPollServiceImpl implements EatonCloudJobPollService {
         if (CollectionUtils.isEmpty(jobGuids)) {
             return;
         }
+        log.info(summary.getLogSummary(false) + "POLL Try:{} scheduling poll in {} minutes job guids{}:", currentTry, minutes,
+                jobGuids);
+        polling.add(summary.getEventId());
         executor.schedule(() -> {
             try {
                 int successes = poll(summary, jobGuids, jobCreationTime, currentTry);
                 // consider all devices that didn't succeed as failure
-                if(currentTry == 1) {
+                if (currentTry == 1) {
                     eatonCloudJobSmartNotifService.sendSmartNotifications(summary, totalDevices, totalDevices - successes);
                 }
             } catch (Exception e) {
                 log.error("Error polling", e);
             }
+            if (terminating.contains(summary.getEventId())) {
+                log.info(summary.getLogSummary(false) + " event terminated POLL completed");
+                summary.failWillRetryDevices();
+                terminating.remove(summary.getEventId());
+            }
+            polling.remove(summary.getEventId());
         }, minutes, TimeUnit.MINUTES);
     }
 
@@ -93,10 +116,10 @@ public class EatonCloudJobPollServiceImpl implements EatonCloudJobPollService {
             } catch (EatonCloudCommunicationExceptionV1 e) {
                 log.error(summary.getLogSummary(jobGuid, false) + "POLL Try:{} error polling devices job", currentTry, e);
             }
-        }); 
-        if(!successes.isEmpty()) {
+        });
+        if (!successes.isEmpty()) {
             eatonCloudJobReadService.setupDeviceRead(summary, jobCreationTime, currentTry);
-        }       
+        }
         return successes.size();
     }
 
@@ -108,7 +131,8 @@ public class EatonCloudJobPollServiceImpl implements EatonCloudJobPollService {
                 try {
                     deviceError = Integer.valueOf(error.getErrorNumber());
                 } catch (Exception e) {
-                    log.error(summary.getLogSummary(jobGuid, false) + "POLL unable to parse error code:{}", error.getErrorNumber(), e);
+                    log.error(summary.getLogSummary(jobGuid, false) + "POLL unable to parse error code:{}",
+                            error.getErrorNumber(), e);
                 }
                 eatonCloudJobResponseProcessor.processError(summary,
                         guidsToDeviceIds.get(deviceGuid), deviceGuid, jobGuid, deviceError,
@@ -151,4 +175,5 @@ public class EatonCloudJobPollServiceImpl implements EatonCloudJobPollService {
         }
         return deviceDao.getDeviceIds(guids);
     }
+
 }
