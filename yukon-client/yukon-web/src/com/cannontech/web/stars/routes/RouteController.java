@@ -18,6 +18,8 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.client.RestClientException;
 
 import com.cannontech.clientutils.YukonLogManager;
+import com.cannontech.common.device.model.DeviceBaseModel;
+import com.cannontech.common.pao.PaoType;
 import com.cannontech.i18n.YukonMessageSourceResolvable;
 import com.cannontech.user.YukonUserContext;
 import com.cannontech.web.api.ApiRequestHelper;
@@ -26,24 +28,41 @@ import com.cannontech.web.api.route.model.RouteBaseModel;
 import com.cannontech.web.api.validation.ApiCommunicationException;
 import com.cannontech.web.api.validation.ApiControllerHelper;
 import com.cannontech.web.common.flashScope.FlashScope;
+import com.cannontech.yukon.IDatabaseCache;
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
 
 @Controller
 @RequestMapping("/device/routes/")
-public class RouteController {    
+public class RouteController {
     @Autowired private ApiControllerHelper helper;
     @Autowired private ApiRequestHelper apiRequestHelper;
-    
+    @Autowired private IDatabaseCache serverDatabaseCache;
+
     private static final String communicationKey = "yukon.exception.apiCommunicationException.communicationError";
     private static final String redirectListPageLink = "redirect:/stars/device/routes/list";
     private static final Logger log = YukonLogManager.getLogger(RouteController.class);
-    
+
     @GetMapping("list")
     public String list(ModelMap model, YukonUserContext userContext, FlashScope flash, HttpServletRequest request) {
         ResponseEntity<List<? extends Object>> response = null;
+        List<DeviceBaseModel> nonCCUAndMacroRoutes = new ArrayList<DeviceBaseModel>();
         try {
             String url = helper.findWebServerUrl(request, userContext, ApiURL.retrieveAllRoutesUrl);
             response = apiRequestHelper.callAPIForList(userContext, request, url, Object.class, HttpMethod.GET);
-
+            if (response.getStatusCode() == HttpStatus.OK) {
+                List<DeviceBaseModel> allRoutes = (List<DeviceBaseModel>) response.getBody();
+                for (int index = 0; index < allRoutes.size(); index++) {
+                    ObjectMapper mapper = new ObjectMapper();
+                    DeviceBaseModel baseModel = mapper.readValue(mapper.writeValueAsString(allRoutes.get(index)),
+                            DeviceBaseModel.class);
+                    // Devices with type CCU710A,CCU711,CCU721 and Routes with type ROUTE_CCU are removed in separate conditions below
+                    if (baseModel != null && baseModel.getDeviceType() != null && (!baseModel.getDeviceType().isCcu())
+                            && baseModel.getDeviceType() != PaoType.ROUTE_CCU) {
+                        nonCCUAndMacroRoutes.add(baseModel);
+                    }
+                }
+            }
         } catch (ApiCommunicationException e) {
             log.error(e.getMessage());
             flash.setError(new YukonMessageSourceResolvable(communicationKey));
@@ -51,30 +70,12 @@ public class RouteController {
         } catch (RestClientException ex) {
             log.error("Error retrieving details: " + ex.getMessage());
             return redirectListPageLink;
+        } catch (JsonProcessingException ex) {
+            log.error("Error retrieving details: " + ex.getMessage());
+            return redirectListPageLink;
         }
-
-        
-          List<RouteBaseModel> routeList = new ArrayList<>();
-          List<RouteBaseModel> routeListWithoutCcu = new ArrayList<>();
-         
-                
-        if (response.getStatusCode() == HttpStatus.OK) {
-            routeList = (List<RouteBaseModel>) response.getBody();
-            
-            routeListWithoutCcu = routeList.stream()
-                                           .filter(c -> c.getSignalTransmitterId() != 0 && !c.getDeviceType().isCcu())
-                                           .collect(Collectors.toList());
-            /*
-             * routeList.forEach(route -> {
-             * if(route.getSignalTransmitterId() != 0 && (!route.getDeviceType().isCcu())) {
-             * routeList = (List<RouteBaseModel>) response.getBody();
-             * }
-             * });
-             */
-        }
-        model.addAttribute("routeList", routeListWithoutCcu);
+        model.addAttribute("nonCCUAndMacroRoutes", nonCCUAndMacroRoutes);
         return "/routes/list.jsp";
-        
     }
 
 }

@@ -6,7 +6,6 @@
 <%@ taglib prefix="i" tagdir="/WEB-INF/tags/i18n" %>
 
 <cti:standardPage module="operator" page="routes.list">
-hiiiiiiiiiiiiiiiiiiiiiiiiiiiiiii
 
     <!-- Actions dropdown -->
     <div id="page-actions" class="dn">
@@ -22,23 +21,21 @@ hiiiiiiiiiiiiiiiiiiiiiiiiiiiiiii
             <thead>
                 <th><i:inline key="yukon.common.name"/></th>
                 <th><i:inline key="yukon.common.type"/></th>
-                <th><i:inline key="yukon.common.status"/></th>
             </thead>
             <tbody>
-                <c:forEach var="routes" items="${routeList}">
+                <c:forEach var="routes" items="${nonCCUAndMacroRoutes}">
                     <c:set var="cssClass" value="error" />
                     <cti:msg2 var="status" key="yukon.common.disabled"/>
-                    <c:if test="${routes.enabled}">
+                    <c:if test="${routes.enable}">
                         <c:set var="cssClass" value="success" />
                         <cti:msg2 var="status" key="yukon.common.enabled"/>
                     </c:if>
                     <tr>
                         <td>
-                            <cti:url value="/stars/device/routes/${routes.id}" var="viewUrl"/>
-                            <a href="${viewUrl}">${fn:escapeXml(routes.name)}</a>
+                            <cti:url value="/stars/device/routes/${routes.deviceId}" var="viewUrl"/>
+                            <a href="${viewUrl}">${fn:escapeXml(routes.deviceName)}</a>
                         </td>
-                        <td><i:inline key="${routes.type}"/></td>
-                        <td class="${cssClass}">${status}</td>
+                        <td><i:inline key="${routes.deviceType}"/></td>
                     </tr>
                 </c:forEach>
             </tbody>
