@@ -10,6 +10,7 @@
 
 #include <iostream>
 #include <iomanip>
+#include <type_traits>
 
 namespace Cti {
 
@@ -239,41 +240,28 @@ int clamp(int input)
 namespace Logging {
 namespace Set {
 
-inline std::ostream &operator<<(std::ostream &logger, const std::set<long> &long_set)
+template<typename Logger, typename Val, typename = 
+    std::enable_if_t<
+        //  enable for ostreams and StreamBuffer/Sink
+        (std::is_base_of_v<Logger, std::ostream> 
+            || std::is_same_v<Logger, StreamBuffer> 
+            || std::is_same_v<Logger, StreamBufferSink>)
+        //  enable for all integral types and string (not floats/doubles)    
+        && (std::is_integral_v<Val> || std::is_same_v<Val, std::string>)>>
+inline Logger& operator<<(Logger& logger, const std::set<Val> &set)
 {
     logger << "{";
-    if( long_set.empty() )
+    if( set.empty() )
     {
         logger << "<empty>";
     }
     else
     {
-        auto itr = long_set.begin();
+        auto itr = set.begin();
 
         logger << *itr;
 
-        while( ++itr != long_set.end() )
-        {
-            logger << "," << *itr;
-        }
-    }
-    return logger << "}";
-}
-
-inline std::ostream& operator<<(std::ostream& logger, const std::set<std::string>& str_set)
-{
-    logger << "{";
-    if( str_set.empty() )
-    {
-        logger << "<empty>";
-    }
-    else
-    {
-        auto itr = str_set.begin();
-
-        logger << *itr;
-
-        while( ++itr != str_set.end() )
+        while( ++itr != set.end() )
         {
             logger << "," << *itr;
         }
