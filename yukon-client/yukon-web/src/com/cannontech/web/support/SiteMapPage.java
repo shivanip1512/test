@@ -131,6 +131,8 @@ public enum SiteMapPage implements DisplayableEnum {
                       MatchStyle.any, YukonRoleProperty.MANAGE_INFRASTRUCTURE),
     SIGNAL_TRANSMITER(SiteMapCategory.ASSETS, "yukon.web.modules.operator.signalTransmitters.list.pageName", "/stars/device/signalTransmitter/list", 
             MatchStyle.any, YukonRoleProperty.MANAGE_INFRASTRUCTURE),
+    ROUTES(SiteMapCategory.ASSETS, "yukon.web.modules.operator.routes.list.pageName", "/stars/device/routes/list",
+      MatchStyle.any, YukonRoleProperty.MANAGE_INFRASTRUCTURE),
 
     CONFIGURATION(SiteMapCategory.ADMIN, "yukon.web.modules.adminSetup.config.pageName", "/admin/config/view",
             MatchStyle.all, YukonRoleProperty.ADMIN_SUPER_USER),

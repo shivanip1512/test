@@ -42,6 +42,8 @@ public class RouteHelperImpl implements RouteHelper {
                 routePaoType = PaoType.ROUTE_RDS_TERMINAL;
             } else if (paoType.isCcu()) {
                 routePaoType = PaoType.ROUTE_CCU;
+            } else if (paoType == PaoType.ROUTE_MACRO) {
+                routePaoType = PaoType.ROUTE_MACRO;
             } else {
                 throw new NotFoundException("signalTransmitterId " + id + " is not valid");
             }
