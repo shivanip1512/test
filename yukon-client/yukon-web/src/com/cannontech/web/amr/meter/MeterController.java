@@ -338,6 +338,7 @@ public class MeterController {
         model.addAttribute("showRfMetadata", rfDevice);
         model.addAttribute("showTou", touDevice);
         model.addAttribute("showWifiConnection", type.isWifiDevice());
+        model.addAttribute("showCellularConnection", type.isCellularDevice());
         model.addAttribute("isDerEdgeCooordinator", derEdgeCooordinatorDisplayable);
         
         /** Page Actions */
