@@ -424,6 +424,7 @@ public class RecentEventParticipationDaoImpl implements RecentEventParticipation
                 .stream().distinct().collect(Collectors.toSet());
     }
     
+    //delete
     @Override
     public int failWillRetryDevices(Integer externalEventId) {
         SqlStatementBuilder sql = new SqlStatementBuilder();
@@ -437,13 +438,22 @@ public class RecentEventParticipationDaoImpl implements RecentEventParticipation
     
     @Override
     public int failWillRetryDevices(Integer externalEventId, String failReason) {
+        // for FAILED_WILL_RETRY we are not going to override the error we received from cloud with Yukon derived error
+        return failWillRetryDevices(externalEventId, ControlEventDeviceStatus.FAILED_WILL_RETRY, null) +
+                failWillRetryDevices(externalEventId, ControlEventDeviceStatus.UNKNOWN, failReason);
+    }
+
+    private int failWillRetryDevices(Integer externalEventId, ControlEventDeviceStatus status, String failReason) {
         SqlStatementBuilder sql = new SqlStatementBuilder();
-        sql.append("UPDATE ControlEventDevice")
-                .set("Result", ControlEventDeviceStatus.FAILED,
-                        "FailReason", failReason);
-        sql.append("WHERE Result").in_k(List.of(ControlEventDeviceStatus.FAILED_WILL_RETRY, ControlEventDeviceStatus.UNKNOWN));
-        if(externalEventId != null) {
-            sql.append("AND ControlEventId = (select ControlEventId from ControlEvent where ExternalEventId").eq(externalEventId).append(")"); 
+        SqlParameterSink sink = sql.update("ControlEventDevice");
+        sink.addValue("Result", ControlEventDeviceStatus.FAILED);
+        if (failReason != null) {
+            sink.addValue("FailReason", failReason);
+        }
+        sql.append("WHERE Result").eq_k(status);
+        if (externalEventId != null) {
+            sql.append("AND ControlEventId = (select ControlEventId from ControlEvent where ExternalEventId").eq(externalEventId)
+                    .append(")");
         }
         return jdbcTemplate.update(sql);
     }

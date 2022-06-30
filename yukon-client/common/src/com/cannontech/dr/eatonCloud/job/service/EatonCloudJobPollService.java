@@ -21,4 +21,6 @@ public interface EatonCloudJobPollService {
      */
     void immediatePoll(EventSummary summary, List<String> jobGuids, Instant jobCreationTime, int currentTry);
 
+    void failWillRetryDevicesAfterLastPoll(EventSummary summary);
+
 }

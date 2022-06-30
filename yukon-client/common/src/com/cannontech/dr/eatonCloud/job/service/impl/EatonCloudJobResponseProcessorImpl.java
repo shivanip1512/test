@@ -31,8 +31,8 @@ public class EatonCloudJobResponseProcessorImpl implements EatonCloudJobResponse
             DeviceErrorDescription errorDescription = deviceErrorTranslatorDao.translateErrorCode(EatonCloudError.NO_RESPONSE_DUE_TO_RESTART.getDeviceError());
             int affectedRows = recentEventParticipationDao.failWillRetryDevices(null, errorDescription.getDescription());
             log.info(
-                    "On the start-up changed {} devices waiting for retry (FAILED_WILL_RETRY, UNKNOWN) to failed (FAILED).",
-                    affectedRows);
+                    "On the start-up changed {} devices waiting for retry (FAILED_WILL_RETRY, UNKNOWN) to failed (FAILED):{}.",
+                    affectedRows, errorDescription.getDescription());
         } catch (Exception e) {
             log.error(e);
         }
