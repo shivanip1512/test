@@ -51,9 +51,8 @@ public class NotificationGroupApiController {
 
     @GetMapping
     public ResponseEntity<Object> getAll(@RequestParam(defaultValue = "GroupName") String sortBy,
-            @RequestParam(defaultValue = "asc") Direction direction,
-            @RequestParam(defaultValue = "1") Integer page,
-            @RequestParam(name = "itemsPerPage", defaultValue = "250") Integer itemsPerPage) {
+            @RequestParam(defaultValue = "asc") Direction direction, @RequestParam(defaultValue = "1") int page,
+            @RequestParam(name = "itemsPerPage", defaultValue = "250") int itemsPerPage) {
         return new ResponseEntity<>(notificationGroupService.retrieveAll(sortBy, direction, page, itemsPerPage),
                 HttpStatus.OK);
     }

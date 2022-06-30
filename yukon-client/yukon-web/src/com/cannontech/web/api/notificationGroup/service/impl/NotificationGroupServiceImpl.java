@@ -18,6 +18,7 @@ import com.cannontech.core.dao.ContactNotificationDao;
 import com.cannontech.core.dao.CustomerDao;
 import com.cannontech.core.dao.DBPersistentDao;
 import com.cannontech.core.dao.NotFoundException;
+import com.cannontech.core.dao.NotificationGroupDao;
 import com.cannontech.database.TransactionType;
 import com.cannontech.database.data.lite.LiteCICustomer;
 import com.cannontech.database.data.lite.LiteContact;
@@ -28,7 +29,6 @@ import com.cannontech.database.data.notification.ContactNotifGroupMap;
 import com.cannontech.database.data.notification.CustomerNotifGroupMap;
 import com.cannontech.database.data.notification.NotifDestinationMap;
 import com.cannontech.database.data.notification.NotifType;
-import com.cannontech.web.api.notificationGroup.dao.NotificationGroupDao;
 import com.cannontech.web.api.notificationGroup.service.NotificationGroupService;
 import com.cannontech.web.notificationGroup.CICustomer;
 import com.cannontech.web.notificationGroup.Contact;
@@ -238,9 +238,7 @@ public class NotificationGroupServiceImpl implements NotificationGroupService {
     }
 
     @Override
-    public PaginatedResponse<NotificationGroup> retrieveAll(String sortBy, Direction direction,
-            Integer page,
-            Integer itemsPerPage) {
+    public PaginatedResponse<NotificationGroup> retrieveAll(String sortBy, Direction direction, int page, int itemsPerPage) {
         List<NotificationGroup> notificationGroupList = notificationGroupDao.getAllNotificationGroups(sortBy, direction);
         return new PaginatedResponse<NotificationGroup>(notificationGroupList, page, itemsPerPage);
     }
