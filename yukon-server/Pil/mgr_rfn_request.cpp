@@ -1182,13 +1182,9 @@ void RfnRequestManager::submitBroadcastRequest( const Messaging::Rfn::EdgeDrBroa
         },
         [=]()
         {
-            EdgeDrBroadcastResponse response
-            {
-                request.messageGuid,
-                EdgeDrError { ClientErrors::E2eRequestTimeout, "EdgeDR broadcast request timed out" }
-            };
-
-            sendClientResponse( response );
+            sendClientResponse( {
+               request.messageGuid,
+               EdgeDrError { ClientErrors::E2eRequestTimeout, "EdgeDR broadcast request timed out" } } );
         }
     } );
 
@@ -1212,13 +1208,9 @@ void RfnRequestManager::submitBroadcastRequest( const Messaging::Rfn::EdgeDrBroa
 
         _broadcastCallbacks.erase( Key );
 
-        EdgeDrBroadcastResponse response
-        {
-            request.messageGuid,
-            EdgeDrError { ClientErrors::E2eRequestNotAcceptable, "Error sending RFN broadcast request to NM" }     // need different error code?
-        };
-
-        sendClientResponse( response );
+        sendClientResponse( {
+           request.messageGuid,
+           EdgeDrError { ClientErrors::E2eRequestNotAcceptable, "Error sending RFN broadcast request to NM" } } );  // need different error code?
     }
 }
 
