@@ -54,6 +54,6 @@ public class EatonCloudCommunicationExceptionV1 extends RuntimeException {
     }
     
     private String getRequestIdentifier() {
-        return requestIdentifier == 0L ? "" : "EC[" + requestIdentifier + "] ";
+        return requestIdentifier == 0L ? "" : "[" + requestIdentifier + "] ";
     }
 }

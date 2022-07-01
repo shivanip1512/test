@@ -204,6 +204,8 @@ public enum SiteMapPage implements DisplayableEnum {
         MatchStyle.all),
     AGGREGATE_INTERVAL_REPORT(SiteMapCategory.TOOLS, "yukon.web.modules.tools.aggregateIntervalReport.pageName", 
                               "/tools/aggregateIntervalReport/view", MatchStyle.all),
+    NOTIFICATION_GROUPS(SiteMapCategory.TOOLS, "yukon.web.modules.tools.notificationGroup.list.pageName", "/tools/notificationGroup/list", 
+            MatchStyle.any),
 
     SUPPORT(SiteMapCategory.SUPPORT, "yukon.web.modules.support.support.pageName", "/support",
             MatchStyle.all, YukonRole.OPERATOR_ADMINISTRATOR),
