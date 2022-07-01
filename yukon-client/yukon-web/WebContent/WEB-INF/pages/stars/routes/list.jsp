@@ -1,7 +1,6 @@
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
 <%@ taglib prefix="cm" tagdir="/WEB-INF/tags/contextualMenu" %>
 <%@ taglib prefix="cti" uri="http://cannontech.com/tags/cti" %>
-<%@ taglib prefix="form" uri="http://www.springframework.org/tags/form" %>
 <%@ taglib prefix="fn" uri="http://java.sun.com/jsp/jstl/functions" %>
 <%@ taglib prefix="i" tagdir="/WEB-INF/tags/i18n" %>
 
@@ -23,19 +22,19 @@
                 <th><i:inline key="yukon.common.type"/></th>
             </thead>
             <tbody>
-                <c:forEach var="routes" items="${nonCCUAndMacroRoutes}">
+                <c:forEach var="route" items="${nonCCUAndMacroRoutes}">
                     <c:set var="cssClass" value="error" />
                     <cti:msg2 var="status" key="yukon.common.disabled"/>
-                    <c:if test="${routes.enable}">
+                    <c:if test="${route.enable}">
                         <c:set var="cssClass" value="success" />
                         <cti:msg2 var="status" key="yukon.common.enabled"/>
                     </c:if>
                     <tr>
                         <td>
-                            <cti:url value="/stars/device/routes/${routes.deviceId}" var="viewUrl"/>
-                            <a href="${viewUrl}">${fn:escapeXml(routes.deviceName)}</a>
+                            <cti:url value="/stars/device/routes/${route.deviceId}" var="viewUrl"/>
+                            <a href="${viewUrl}">${fn:escapeXml(route.deviceName)}</a>
                         </td>
-                        <td><i:inline key="${routes.deviceType}"/></td>
+                        <td><i:inline key="${route.deviceType}"/></td>
                     </tr>
                 </c:forEach>
             </tbody>

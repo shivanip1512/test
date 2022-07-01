@@ -28,11 +28,15 @@ import com.cannontech.web.api.route.model.RouteBaseModel;
 import com.cannontech.web.api.validation.ApiCommunicationException;
 import com.cannontech.web.api.validation.ApiControllerHelper;
 import com.cannontech.web.common.flashScope.FlashScope;
+import com.cannontech.core.roleproperties.YukonRoleProperty;
+import com.cannontech.core.roleproperties.HierarchyPermissionLevel;
+import com.cannontech.web.security.annotation.CheckPermissionLevel;
 import com.cannontech.yukon.IDatabaseCache;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
 @Controller
+@CheckPermissionLevel(property = YukonRoleProperty.ENDPOINT_PERMISSION, level = HierarchyPermissionLevel.VIEW)
 @RequestMapping("/device/routes/")
 public class RouteController {
     @Autowired private ApiControllerHelper helper;
@@ -52,11 +56,12 @@ public class RouteController {
             response = apiRequestHelper.callAPIForList(userContext, request, url, Object.class, HttpMethod.GET);
             if (response.getStatusCode() == HttpStatus.OK) {
                 List<DeviceBaseModel> allRoutes = (List<DeviceBaseModel>) response.getBody();
-                for (int index = 0; index < allRoutes.size(); index++) {
+                for (DeviceBaseModel deviceModel : allRoutes) {
                     ObjectMapper mapper = new ObjectMapper();
-                    DeviceBaseModel baseModel = mapper.readValue(mapper.writeValueAsString(allRoutes.get(index)),
+                    DeviceBaseModel baseModel = mapper.readValue(mapper.writeValueAsString(deviceModel),
                             DeviceBaseModel.class);
-                    // Devices with type CCU710A,CCU711,CCU721 and Routes with type ROUTE_CCU are removed in separate conditions below
+                    // Devices with type CCU710A,CCU711,CCU721 and Routes with type ROUTE_CCU are removed 
+                    // in separate conditions below
                     if (baseModel != null && baseModel.getDeviceType() != null && (!baseModel.getDeviceType().isCcu())
                             && baseModel.getDeviceType() != PaoType.ROUTE_CCU) {
                         nonCCUAndMacroRoutes.add(baseModel);
