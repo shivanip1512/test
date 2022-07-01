@@ -1,10 +1,9 @@
 package com.cannontech.web.tools.notificationGroup;
 
-import java.util.ArrayList;
-import java.util.List;
-
+import java.net.URISyntaxException;
 import javax.servlet.http.HttpServletRequest;
 
+import org.apache.http.client.utils.URIBuilder;
 import org.apache.logging.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpMethod;
@@ -17,7 +16,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.client.RestClientException;
 
 import com.cannontech.clientutils.YukonLogManager;
-
+import com.cannontech.common.model.PaginatedResponse;
 import com.cannontech.i18n.YukonMessageSourceResolvable;
 import com.cannontech.user.YukonUserContext;
 import com.cannontech.web.PageEditMode;
@@ -37,7 +36,6 @@ public class NotificationGroupController {
 
     private static final Logger log = YukonLogManager.getLogger(NotificationGroupController.class);
     private static final String communicationKey = "yukon.exception.apiCommunicationException.communicationError";
-    private static final String redirectListPageLink = "redirect:/tools/notificationGroup/list";
 
     @GetMapping("create")
     public String create(ModelMap model, YukonUserContext userContext, HttpServletRequest request) {
@@ -53,24 +51,28 @@ public class NotificationGroupController {
         ResponseEntity<? extends Object> response = null;
         try {
             String url = helper.findWebServerUrl(request, userContext, ApiURL.notificationGroupUrl);
-            response = apiRequestHelper.callAPIForList(userContext, request, url, NotificationGroup.class, HttpMethod.GET,
-                    NotificationGroup.class);
+
+            // TODO: The URIBuilder will be worked on in YUK-26816.
+            URIBuilder ub = new URIBuilder(url);
+            response = apiRequestHelper.callAPIForParameterizedTypeObject(userContext, request, ub.toString(),
+                    HttpMethod.GET, NotificationGroup.class, Object.class);
+            PaginatedResponse<NotificationGroup> notificationGroups = new PaginatedResponse<>();
+            if (response.getStatusCode() == HttpStatus.OK) {
+                notificationGroups = (PaginatedResponse) response.getBody();
+            }
+            model.addAttribute("notificationGroups", notificationGroups.getItems());
         } catch (ApiCommunicationException e) {
             log.error(e.getMessage());
             flash.setError(new YukonMessageSourceResolvable(communicationKey));
-            return redirectListPageLink;
         } catch (RestClientException ex) {
             log.error("Error retrieving details: " + ex.getMessage());
             flash.setError(
                     new YukonMessageSourceResolvable("yukon.web.modules.tools.notificationGroup.filter.error", ex.getMessage()));
-            return redirectListPageLink;
+        } catch (URISyntaxException e) {
+            log.error("Error in URI: " + e.getMessage());
+            flash.setError(
+                    new YukonMessageSourceResolvable("yukon.web.modules.tools.notificationGroup.filter.error", e.getMessage()));
         }
-
-        List<NotificationGroup> notificationGroups = new ArrayList<>();
-        if (response.getStatusCode() == HttpStatus.OK) {
-            notificationGroups = (List<NotificationGroup>) response.getBody();
-        }
-        model.addAttribute("notificationGroups", notificationGroups);
         return "/notificationGroup/list.jsp";
     }
 }
