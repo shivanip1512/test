@@ -5,7 +5,28 @@
 
 <cti:msgScope paths="widgets.infrastructureWarnings">
     <tags:sectionContainer2 nameKey="recentIssues">
-        <table class="compact-results-table" width="100%">
+    
+        <c:choose>
+            <c:when test="${warnings.size() > 0}">
+                <c:forEach var="warning" items="${warnings}">
+                    <c:set var="warningColor" value=""/>
+                    <c:set var="tagText" value=""/>
+                    <c:if test="${warning.severity == 'HIGH'}">
+                        <c:set var="warningColor" value="badge-error"/>
+                        <c:set var="tagText" value="${warning.severity}"/>
+                    </c:if>
+                    <cti:deviceName var="deviceName" deviceId="${warning.paoIdentifier.paoId}"/>
+                    <cti:msg2 var="warningText" key="${warning.warningType.formatKey}.${warning.severity}" arguments="${warning.arguments}"/>
+                    <tags:infoListItem statusBackgroundColorClass="${warningColor}" dateTime="${warning.timestamp}" 
+                        title="${deviceName}" subTitle="${warningText}" tagText="${tagText}" tagColor="${warningColor}"></tags:infoListItem>
+                </c:forEach>
+            </c:when>
+            <c:otherwise>
+                <span class="empty-list"><i:inline key=".noRecentWarnings" /></span>
+            </c:otherwise>
+        </c:choose>
+    
+<%--         <table class="compact-results-table" width="100%">
             <th width="20%"><i:inline key=".name"/></th>
             <th width="60%"><i:inline key=".status"/></th>
             <th width="20%"><i:inline key="yukon.common.duration"/></th>
@@ -55,7 +76,8 @@
                     </tr>
                 </c:otherwise>
             </c:choose>
-        </table>
+        </table> --%>
+        
     </tags:sectionContainer2>
     <span class="fr">
         <cti:msg2 key="yukon.web.widgets.lastUpdated" var="lastUpdatedMsg"/>
