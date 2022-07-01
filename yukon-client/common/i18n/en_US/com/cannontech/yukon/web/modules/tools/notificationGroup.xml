@@ -3,4 +3,5 @@
 <properties>
     <!-- TODO: Remove this will merging one to the YUKs for Notification Group. -->
     <entry key="yukon.web.modules.tools.notificationGroup.sampleKey">Sample Key</entry>
+    <entry key="yukon.web.modules.tools.notificationGroup.list.pageName">Notification Groups</entry>
 </properties>

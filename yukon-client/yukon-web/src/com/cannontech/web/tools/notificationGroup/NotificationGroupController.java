@@ -20,4 +20,9 @@ public class NotificationGroupController {
         
         return "/notificationGroup/view.jsp";
     }
+    
+    @GetMapping("list")
+    public String list() {
+        return "/notificationGroup/list.jsp";
+    }
 }
