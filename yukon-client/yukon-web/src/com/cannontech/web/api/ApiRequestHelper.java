@@ -34,6 +34,7 @@ import com.cannontech.common.device.model.DeviceBaseModel;
 import com.cannontech.common.device.terminal.model.TerminalBase;
 import com.cannontech.common.device.virtualDevice.VirtualDeviceBaseModel;
 import com.cannontech.common.dr.gear.setup.model.ProgramGear;
+import com.cannontech.web.notificationGroup.NotificationGroup;
 import com.cannontech.common.dr.setup.LMDto;
 import com.cannontech.common.dr.setup.LMPaoDto;
 import com.cannontech.common.dr.setup.ProgramConstraint;
@@ -121,6 +122,8 @@ public class ApiRequestHelper {
         paramTypeRefMap.put(YukonLogger.class, new ParameterizedTypeReference<List<YukonLogger>>() {
         });
         paramTypeRefMap.put(TerminalBase.class, new ParameterizedTypeReference<List<TerminalBase>>() {
+        });
+        paramTypeRefMap.put(NotificationGroup.class, new ParameterizedTypeReference<List<NotificationGroup>>() {
         });
         paramTypeRefMap.put(Object.class, new ParameterizedTypeReference<List<Object>>() {
         });
