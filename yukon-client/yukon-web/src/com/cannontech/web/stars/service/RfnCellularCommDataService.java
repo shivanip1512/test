@@ -4,16 +4,19 @@ import java.util.List;
 
 import com.cannontech.common.rfn.model.RfnDevice;
 import com.cannontech.common.pao.PaoIdentifier;
+import com.cannontech.common.pao.PaoType;
 import com.cannontech.database.data.lite.LiteYukonUser;
 import com.cannontech.web.stars.gateway.model.CellularDeviceCommData;
 
 public interface RfnCellularCommDataService {
 
     /**
-     * @return CellularDeviceCommData Objects for a list of gateway Ids;
+     * @return CellularDeviceCommData Objects for a list of gateway Ids, commStatuses and cellTypes;
      * @param gatewayIds - A list of GatewayIds
+     * @param commStauses - A list of Comm Status values to filter by
+     * @param deviceTypes - A list of Cellular device types to filter by
      */
-    List<CellularDeviceCommData> getCellularDeviceCommDataForGateways(List<Integer> gatewayIds);
+    List<CellularDeviceCommData> getCellularDeviceCommDataForGateways(List<Integer> gatewayIds, List<Integer> commStatuses, List<PaoType> deviceTypes);
     
     /**
      * @return CellularDeviceCommData Object for a Cellular Device
