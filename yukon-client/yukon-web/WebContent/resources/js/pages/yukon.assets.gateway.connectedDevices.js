@@ -19,10 +19,6 @@ yukon.assets.gateway.connectedDevices = (function () {
             
             if (_initialized) return;
             
-            $(document).ready(function() {
-                Sortable.init();
-            });
-            
             $("#cellTypesFilter").chosen({width: '300px'});
             $("#commStatusFilter").chosen({width: '250px'});
             var baseUrl = $('#baseUrl').val();
@@ -105,4 +101,7 @@ yukon.assets.gateway.connectedDevices = (function () {
     return mod;
 })();
  
-$(function () { yukon.assets.gateway.connectedDevices.init(); });
+$(function () { 
+    yukon.assets.gateway.connectedDevices.init();
+    Sortable.init();
+});

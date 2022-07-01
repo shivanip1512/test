@@ -8,6 +8,7 @@ import java.util.stream.Collectors;
 
 import javax.servlet.http.HttpServletResponse;
 
+import org.apache.commons.lang3.ArrayUtils;
 import org.joda.time.Instant;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -73,10 +74,10 @@ public class CellularConnectionController {
     private List<CellularDeviceCommData> retrieveCellData(int gatewayId, Integer[] commStatuses, PaoType[] deviceTypes, ModelMap model) {
         List<PaoType> filterTypes = new ArrayList<>(PaoType.getCellularTypes());
         List<Integer> filterCommStatus = new ArrayList<>();
-        if (deviceTypes != null && deviceTypes.length > 0) {
+        if (ArrayUtils.isNotEmpty(deviceTypes)) {
             filterTypes = Arrays.asList(deviceTypes);
         }
-        if (commStatuses != null && commStatuses.length > 0) {
+        if (ArrayUtils.isNotEmpty(commStatuses)) {
             filterCommStatus = Arrays.asList(commStatuses);
         }
         List<CellularDeviceCommData> cellData = cellService.getCellularDeviceCommDataForGateways(Arrays.asList(gatewayId), filterCommStatus, filterTypes);
@@ -125,17 +126,27 @@ public class CellularConnectionController {
             String[] dataRow = new String[8];
             dataRow[0] = data.getDevice().getName();
             dataRow[1] = data.getDevice().getPaoIdentifier().getPaoType().getPaoTypeName();
-            PointValueQualityHolder commStatus = asyncDynamicDataSource.getPointValue(data.getCommStatusPoint().getPointID());
-            dataRow[2] = pointFormattingService.getValueString(commStatus, Format.VALUE, userContext);
-            dataRow[3] = pointFormattingService.getValueString(commStatus, Format.DATE, userContext);
-            PointValueQualityHolder rssi = asyncDynamicDataSource.getPointValue(data.getRssiPoint().getPointID());
-            dataRow[4] = pointFormattingService.getValueString(rssi, Format.VALUE, userContext);
-            PointValueQualityHolder rsrp = asyncDynamicDataSource.getPointValue(data.getRsrpPoint().getPointID());
-            dataRow[5] = pointFormattingService.getValueString(rsrp, Format.VALUE, userContext);
-            PointValueQualityHolder rsrq = asyncDynamicDataSource.getPointValue(data.getRsrqPoint().getPointID());
-            dataRow[6] = pointFormattingService.getValueString(rsrq, Format.VALUE, userContext);
-            PointValueQualityHolder sinr = asyncDynamicDataSource.getPointValue(data.getSinrPoint().getPointID());
-            dataRow[7] = pointFormattingService.getValueString(sinr, Format.VALUE, userContext);
+            if (data.getCommStatusPoint() != null) {
+                PointValueQualityHolder commStatus = asyncDynamicDataSource.getPointValue(data.getCommStatusPoint().getPointID());
+                dataRow[2] = pointFormattingService.getValueString(commStatus, Format.VALUE, userContext);
+                dataRow[3] = pointFormattingService.getValueString(commStatus, Format.DATE, userContext);
+            }
+            if (data.getRssiPoint() != null) {
+                PointValueQualityHolder rssi = asyncDynamicDataSource.getPointValue(data.getRssiPoint().getPointID());
+                dataRow[4] = pointFormattingService.getValueString(rssi, Format.VALUE, userContext);
+            }
+            if (data.getRsrpPoint() != null) {
+                PointValueQualityHolder rsrp = asyncDynamicDataSource.getPointValue(data.getRsrpPoint().getPointID());
+                dataRow[5] = pointFormattingService.getValueString(rsrp, Format.VALUE, userContext);
+            }
+            if (data.getRsrqPoint() != null) {
+                PointValueQualityHolder rsrq = asyncDynamicDataSource.getPointValue(data.getRsrqPoint().getPointID());
+                dataRow[6] = pointFormattingService.getValueString(rsrq, Format.VALUE, userContext);
+            }
+            if (data.getSinrPoint() != null) {
+                PointValueQualityHolder sinr = asyncDynamicDataSource.getPointValue(data.getSinrPoint().getPointID());
+                dataRow[7] = pointFormattingService.getValueString(sinr, Format.VALUE, userContext);
+            }
             dataRows.add(dataRow);
         }
         

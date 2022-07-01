@@ -8,6 +8,7 @@ import java.util.stream.Collectors;
 
 import javax.servlet.http.HttpServletResponse;
 
+import org.apache.commons.lang3.ArrayUtils;
 import org.joda.time.Instant;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -75,7 +76,7 @@ public class WifiConnectionController {
     
     private List<WiFiMeterCommData> retrieveWifiData(int gatewayId, Integer[] commStatuses, ModelMap model) {
         List<Integer> filterCommStatus = new ArrayList<>();
-        if (commStatuses != null && commStatuses.length > 0) {
+        if (ArrayUtils.isNotEmpty(commStatuses)) {
             filterCommStatus = Arrays.asList(commStatuses);
         }
         List<WiFiMeterCommData> wifiData = wifiService.getWiFiMeterCommDataForGateways(Arrays.asList(gatewayId), filterCommStatus);
