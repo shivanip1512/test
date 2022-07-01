@@ -56,13 +56,14 @@ public class RouteController {
             response = apiRequestHelper.callAPIForList(userContext, request, url, Object.class, HttpMethod.GET);
             if (response.getStatusCode() == HttpStatus.OK) {
                 List<DeviceBaseModel> allRoutes = (List<DeviceBaseModel>) response.getBody();
-                for (DeviceBaseModel deviceModel : allRoutes) {
+                for (int index = 0; index < allRoutes.size(); index++) {
                     ObjectMapper mapper = new ObjectMapper();
-                    DeviceBaseModel baseModel = mapper.readValue(mapper.writeValueAsString(deviceModel),
+                    DeviceBaseModel baseModel = mapper.readValue(mapper.writeValueAsString(allRoutes.get(index)),
                             DeviceBaseModel.class);
-                    // Devices with type CCU710A,CCU711,CCU721 and Routes with type ROUTE_CCU are removed 
-                    // in separate conditions below
-                    if ( (!baseModel.getDeviceType().isCcu()) && baseModel.getDeviceType() != PaoType.ROUTE_CCU) {
+                    // Devices with type CCU710A,CCU711,CCU721 and Routes with type ROUTE_CCU are removed in separate conditions
+                    // below
+                    if (baseModel != null && baseModel.getDeviceType() != null && (!baseModel.getDeviceType().isCcu())
+                            && baseModel.getDeviceType() != PaoType.ROUTE_CCU) {
                         nonCCUAndMacroRoutes.add(baseModel);
                     }
                 }
