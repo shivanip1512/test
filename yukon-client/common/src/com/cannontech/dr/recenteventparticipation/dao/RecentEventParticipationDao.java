@@ -88,5 +88,9 @@ public interface RecentEventParticipationDao {
      */
     int failWillRetryDevices(Integer externalEventId);
 
+    /**
+     * Changes result from: FAILED_WILL_RETRY to: FAILED for an event id. If event id is null changes result for all devices
+     * @return rows affected 
+     */
     int failWillRetryDevices(Integer externalEventId, String failReason);
 }

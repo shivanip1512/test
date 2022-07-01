@@ -380,6 +380,9 @@
       <page name="aggregateIntervalReport" type="BASIC">
         <link>/tools/aggregateIntervalReport/view</link>
       </page>
+      <page name="notificationGroup.list" type="BASIC" hideSearch="true">
+          <link>/tools/notificationGroup/list</link>
+      </page>
     </pages>
   </module><!--  ENDS MODULE "tools" -->
 

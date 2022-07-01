@@ -89,6 +89,21 @@ auto E2eDataTransferProtocol::createPost(const Bytes& payload, const RfnIdentifi
 }
 
 
+auto E2eDataTransferProtocol::createPut(const Bytes& payload, const RfnIdentifier endpointId) -> Bytes
+{
+    if( payload.size() > MaxOutboundPayload )
+    {
+        throw PayloadTooLarge();
+    }
+
+    auto pdu = Coap::scoped_pdu_ptr::make_nonconfirmable_request(Coap::RequestMethod::Put, getOutboundIdForEndpoint(endpointId));
+
+    coap_add_data(pdu, payload.size(), &payload.front());
+
+    return pdu.as_bytes();
+}
+
+
 auto E2eDataTransferProtocol::createReply(const unsigned short id, const Bytes& payload, const unsigned long token) -> Bytes
 {
     if( payload.size() > MaxOutboundPayload )

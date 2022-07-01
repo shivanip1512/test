@@ -3,7 +3,9 @@ package com.cannontech.core.dao;
 import java.util.List;
 import java.util.Set;
 
+import com.cannontech.common.model.Direction;
 import com.cannontech.database.data.lite.LiteNotificationGroup;
+import com.cannontech.web.notificationGroup.NotificationGroup;
 
 public interface NotificationGroupDao {
 
@@ -20,4 +22,9 @@ public interface NotificationGroupDao {
     LiteNotificationGroup getLiteNotificationGroup(int groupId);
 
     Set<LiteNotificationGroup> getAllNotificationGroups();
+
+    /**
+     * Returns a list of notification group for retrieve all api on sorting and asc/desc order
+     */
+    List<NotificationGroup> getAllNotificationGroups(String sortBy, Direction direction);
 }

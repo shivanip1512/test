@@ -654,8 +654,8 @@ public enum PaoType implements DisplayableEnum, DatabaseRepresentationSource {
         cellularTypes = ImmutableSet.of(
             CRLY856,
             CRL520FAXE,
-            CRL520FRXE,
             CRL520FAXED,
+            CRL520FRXE,
             CRL520FRXED,
             CRL530S4X
         );

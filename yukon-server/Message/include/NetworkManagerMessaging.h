@@ -12,12 +12,12 @@ namespace Rfn {
 
 struct NetworkManagerRequestHeader
 {
-    std::string clientGuid;
-    long long sessionId;
-    long long groupId;
-    long long messageId;
-    long long expiration;
-    char priority : 7;
+    std::string              clientGuid;
+    long long                sessionId;
+    std::optional<long long> groupId;
+    long long                messageId;
+    std::optional<long long> expiration;
+    char                     priority : 7;
 };
 
 
@@ -40,6 +40,8 @@ public:
                                               const CtiTime & expiration,
                                               const char      priority );
 
+    NetworkManagerRequestHeader makeNmHeader( const char priority );
+
     bool isActive() const;
 
 private:
@@ -60,6 +62,8 @@ public:
     static NetworkManagerRequestHeader getNmHeader( const long long groupId,
                                                     const CtiTime & expiration,
                                                     const char      priority );
+
+    static NetworkManagerRequestHeader getNmHeader( const char priority );
 
     static bool isSessionActive();
 

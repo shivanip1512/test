@@ -394,6 +394,18 @@
     </ClCompile>
     <ClCompile Include="Serialization\Thrift\DeviceCreation_constants.cpp" />
     <ClCompile Include="Serialization\Thrift\DeviceCreation_types.cpp" />
+    <ClCompile Include="Serialization\Thrift\EdgeDrBroadcastRequest_constants.cpp" />
+    <ClCompile Include="Serialization\Thrift\EdgeDrBroadcastRequest_types.cpp" />
+    <ClCompile Include="Serialization\Thrift\EdgeDrBroadcastResponse_constants.cpp" />
+    <ClCompile Include="Serialization\Thrift\EdgeDrBroadcastResponse_types.cpp" />
+    <ClCompile Include="Serialization\Thrift\EdgeDrDataNotification_constants.cpp" />
+    <ClCompile Include="Serialization\Thrift\EdgeDrDataNotification_types.cpp" />
+    <ClCompile Include="Serialization\Thrift\EdgeDrError_constants.cpp" />
+    <ClCompile Include="Serialization\Thrift\EdgeDrError_types.cpp" />
+    <ClCompile Include="Serialization\Thrift\EdgeDrUnicastRequest_constants.cpp" />
+    <ClCompile Include="Serialization\Thrift\EdgeDrUnicastRequest_types.cpp" />
+    <ClCompile Include="Serialization\Thrift\EdgeDrUnicastResponse_constants.cpp" />
+    <ClCompile Include="Serialization\Thrift\EdgeDrUnicastResponse_types.cpp" />
     <ClCompile Include="Serialization\Thrift\FieldSimulator_constants.cpp" />
     <ClCompile Include="Serialization\Thrift\FieldSimulator_types.cpp" />
     <ClCompile Include="Serialization\Thrift\LMCommand_constants.cpp">
@@ -580,6 +592,8 @@
     </ClCompile>
     <ClCompile Include="Serialization\Thrift\RfnAddressing_constants.cpp" />
     <ClCompile Include="Serialization\Thrift\RfnAddressing_types.cpp" />
+    <ClCompile Include="Serialization\Thrift\RfnBroadcastMessaging_constants.cpp" />
+    <ClCompile Include="Serialization\Thrift\RfnBroadcastMessaging_types.cpp" />
     <ClCompile Include="Serialization\Thrift\RfnDataStreamingUpdate_constants.cpp" />
     <ClCompile Include="Serialization\Thrift\RfnDataStreamingUpdate_types.cpp" />
     <ClCompile Include="Serialization\Thrift\RfnE2eData_constants.cpp">
@@ -668,6 +682,18 @@
     <ClInclude Include="Serialization\Thrift\DBChange_types.h" />
     <ClInclude Include="Serialization\Thrift\DeviceCreation_constants.h" />
     <ClInclude Include="Serialization\Thrift\DeviceCreation_types.h" />
+    <ClInclude Include="Serialization\Thrift\EdgeDrBroadcastRequest_constants.h" />
+    <ClInclude Include="Serialization\Thrift\EdgeDrBroadcastRequest_types.h" />
+    <ClInclude Include="Serialization\Thrift\EdgeDrBroadcastResponse_constants.h" />
+    <ClInclude Include="Serialization\Thrift\EdgeDrBroadcastResponse_types.h" />
+    <ClInclude Include="Serialization\Thrift\EdgeDrDataNotification_constants.h" />
+    <ClInclude Include="Serialization\Thrift\EdgeDrDataNotification_types.h" />
+    <ClInclude Include="Serialization\Thrift\EdgeDrError_constants.h" />
+    <ClInclude Include="Serialization\Thrift\EdgeDrError_types.h" />
+    <ClInclude Include="Serialization\Thrift\EdgeDrUnicastRequest_constants.h" />
+    <ClInclude Include="Serialization\Thrift\EdgeDrUnicastRequest_types.h" />
+    <ClInclude Include="Serialization\Thrift\EdgeDrUnicastResponse_constants.h" />
+    <ClInclude Include="Serialization\Thrift\EdgeDrUnicastResponse_types.h" />
     <ClInclude Include="Serialization\Thrift\FieldSimulator_constants.h" />
     <ClInclude Include="Serialization\Thrift\FieldSimulator_types.h" />
     <ClInclude Include="Serialization\Thrift\LMCommand_constants.h" />
@@ -768,6 +794,8 @@
     <ClInclude Include="Serialization\Thrift\Return_types.h" />
     <ClInclude Include="Serialization\Thrift\RfnAddressing_constants.h" />
     <ClInclude Include="Serialization\Thrift\RfnAddressing_types.h" />
+    <ClInclude Include="Serialization\Thrift\RfnBroadcastMessaging_constants.h" />
+    <ClInclude Include="Serialization\Thrift\RfnBroadcastMessaging_types.h" />
     <ClInclude Include="Serialization\Thrift\RfnDataStreamingUpdate_constants.h" />
     <ClInclude Include="Serialization\Thrift\RfnDataStreamingUpdate_types.h" />
     <ClInclude Include="Serialization\Thrift\RfnE2eData_constants.h" />
