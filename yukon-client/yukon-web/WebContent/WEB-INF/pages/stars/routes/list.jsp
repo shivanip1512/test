@@ -25,10 +25,6 @@
                 <c:forEach var="route" items="${nonCCUAndMacroRoutes}">
                     <c:set var="cssClass" value="error" />
                     <cti:msg2 var="status" key="yukon.common.disabled"/>
-                    <c:if test="${route.enable}">
-                        <c:set var="cssClass" value="success" />
-                        <cti:msg2 var="status" key="yukon.common.enabled"/>
-                    </c:if>
                     <tr>
                         <td>
                             <cti:url value="/stars/device/routes/${route.deviceId}" var="viewUrl"/>

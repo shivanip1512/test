@@ -62,8 +62,7 @@ public class RouteController {
                             DeviceBaseModel.class);
                     // Devices with type CCU710A,CCU711,CCU721 and Routes with type ROUTE_CCU are removed 
                     // in separate conditions below
-                    if (baseModel != null && baseModel.getDeviceType() != null && (!baseModel.getDeviceType().isCcu())
-                            && baseModel.getDeviceType() != PaoType.ROUTE_CCU) {
+                    if ( (!baseModel.getDeviceType().isCcu()) && baseModel.getDeviceType() != PaoType.ROUTE_CCU) {
                         nonCCUAndMacroRoutes.add(baseModel);
                     }
                 }
