@@ -51,6 +51,8 @@ public class NotificationGroupController {
         ResponseEntity<? extends Object> response = null;
         try {
             String url = helper.findWebServerUrl(request, userContext, ApiURL.notificationGroupUrl);
+
+            // TODO: The URIBuilder will be worked on in YUK-26816.
             URIBuilder ub = new URIBuilder(url);
             response = apiRequestHelper.callAPIForParameterizedTypeObject(userContext, request, ub.toString(),
                     HttpMethod.GET, NotificationGroup.class, Object.class);
