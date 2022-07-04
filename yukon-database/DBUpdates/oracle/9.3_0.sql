@@ -110,6 +110,15 @@ ADD (FeederId NUMBER);
 INSERT INTO DBUpdates VALUES ('YUK-26401', '9.3.0', SYSDATE);
 /* @end YUK-26401 */
 
+/* @start YUK-26847 */
+ALTER TABLE MSPVendor ADD Attributes VARCHAR2(500);
+UPDATE MSPVendor SET Attributes = 'KWH , PEAK_DEMAND';
+ALTER TABLE MSPVendor MODIFY Attributes VARCHAR2(500) NOT NULL;
+
+INSERT INTO DBUpdates VALUES ('YUK-26847', '9.3.0', SYSDATE);
+/* @end YUK-26847 */
+
+
 /***********************************************************************************/
 /* VERSION INFO                                                                    */
 /* Inserted when update script is run, stays commented out until the release build */
