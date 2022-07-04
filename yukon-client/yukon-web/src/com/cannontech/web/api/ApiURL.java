@@ -5,7 +5,7 @@ public class ApiURL {
     public static final String drLoadGroupUrl = "/dr/loadGroups";
 
     public static final String drSetupFilterUrl = "/dr/setup/filter";
-	public static final String retrieveAllRoutesUrl = "/routes";
+    public static final String retrieveAllRoutesUrl = "/routes";
     public static final String pickerBuildUrl = "/picker/build/";
     public static final String pickerSearchUrl = "/picker/search";
     public static final String pickerIdSearchUrl = "/picker/idSearch";
