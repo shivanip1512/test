@@ -1,7 +1,7 @@
 /*==============================================================*/
 /* Database name:  YukonDatabase                                */
 /* DBMS name:      Microsoft SQL Server 2005                    */
-/* Created on:     7/5/2022 12:29:54 AM                         */
+/* Created on:     7/5/2022 5:27:41 AM                          */
 /*==============================================================*/
 
 
@@ -7795,7 +7795,7 @@ create table MSPVendor (
 )
 go
 
-INSERT INTO MSPVendor VALUES (1, 'Cannon', ' ', ' ', 'Yukon', ' ', ' ', 10000, 120000, 15, ' ', 1, 'KWH, PEAK_DEMAND');
+INSERT INTO MSPVendor VALUES (1, 'Cannon', ' ', ' ', 'Yukon', ' ', ' ', 10000, 120000, 15, ' ', 1, 'Peak Demand , Usage');
 
 /*==============================================================*/
 /* Index: INDEX_1                                               */

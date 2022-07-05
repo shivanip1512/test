@@ -100,7 +100,7 @@ INSERT INTO DBUpdates VALUES ('YUK-26401', '9.3.0', GETDATE());
 /* @start YUK-26847 */
 ALTER TABLE MSPVendor ADD Attributes VARCHAR(500);
 GO
-UPDATE MSPVendor SET Attributes = 'KWH , PEAK_DEMAND';
+UPDATE MSPVendor SET Attributes = 'Peak Demand , Usage';
 GO
 ALTER TABLE MSPVendor ALTER COLUMN Attributes VARCHAR(500) NOT NULL;
 GO

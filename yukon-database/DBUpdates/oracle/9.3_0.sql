@@ -112,7 +112,7 @@ INSERT INTO DBUpdates VALUES ('YUK-26401', '9.3.0', SYSDATE);
 
 /* @start YUK-26847 */
 ALTER TABLE MSPVendor ADD Attributes VARCHAR2(500);
-UPDATE MSPVendor SET Attributes = 'KWH , PEAK_DEMAND';
+UPDATE MSPVendor SET Attributes = 'Peak Demand , Usage';
 ALTER TABLE MSPVendor MODIFY Attributes VARCHAR2(500) NOT NULL;
 
 INSERT INTO DBUpdates VALUES ('YUK-26847', '9.3.0', SYSDATE);
