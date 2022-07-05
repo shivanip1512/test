@@ -11,7 +11,7 @@ import org.springframework.stereotype.Service;
 @Service
 public class StubCloudConnector implements CloudConnector {
 
-    private static Logger log = (Logger) LogManager.getLogger(AzureCloudConnector.class);
+    private static Logger log = (Logger) LogManager.getLogger(StubCloudConnector.class);
     
     private final ScheduledExecutorService scheduledExecutorService = Executors.newScheduledThreadPool(1);
     
