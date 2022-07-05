@@ -99,8 +99,9 @@
         <include name="yc.jar"/>
         <include name="yukon-shared.jar"/>
         <include name="yukonappserver.jar"/>
-        <include name="jaxb-api.jar"/>
-        <include name="jaxb-impl.jar"/>
+        <include name="jaxb-api-2.3.1.jar"/>
+        <include name="jaxb-core-4.0.0.jar"/>
+        <include name="jaxb-impl-2.3.1.jar"/>
         <include name="jaxws-api.jar"/>
     </fileset>
 

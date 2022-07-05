@@ -239,7 +239,7 @@
 		</taskdef>
 
 		<path id="jaxb-impl">
-			<pathelement path="../third-party/jaxb-impl.jar"/>
+			<pathelement path="../third-party/jaxb-impl-2.3.1.jar"/>
 		</path>
 
 		<xjc destdir="src" removeOldOutput="yes" package="com.cannontech.dr.itron.model.jaxb.deviceManagerTypes_v1_8">

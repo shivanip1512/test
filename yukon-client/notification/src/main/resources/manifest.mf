@@ -31,5 +31,8 @@ Class-Path: ./
  spring-webflux-5.3.18.jar 
  javax.jms-api-2.0.1.jar 
  servlet-api.jar 
+ jaxb-api-2.3.1.jar 
+ jaxb-impl-2.3.1.jar 
+ jaxb-core-4.0.0.jar
  ../log/ 
  ../export/ 

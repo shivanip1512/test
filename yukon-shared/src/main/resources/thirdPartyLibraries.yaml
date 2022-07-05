@@ -1239,34 +1239,48 @@ Java :
     jira : YUK-10525
     notes : 
   
-  - filename : jaxb-api.jar
+  - filename : jaxb-api-2.3.1.jar
     yukon group : JAXB
     project : JAXB
     version : 2.2.6
     project URL : "http://jaxb.java.net/"
     license : CDDL, GPLv2 with classpath exception
     license URLs : "https://glassfish.java.net/public/CDDL+GPL_1_1.html"
-    maven URL : "https://mvnrepository.com/artifact/javax.xml.bind/jaxb-api/2.2.6"
-    md5 : 0f4d116242bbf85cd2c3f0a6dbd394e3
-    sha1 : 71f434378f822b09a57174af6c75d37408687c57
-    updated : 2012-04-19
-    jira : YUK-10525
+    maven URL : "https://mvnrepository.com/artifact/javax.xml.bind/jaxb-api/2.3.1"
+    md5 : bcf270d320f645ad19f5edb60091e87f
+    sha1 : 8531ad5ac454cc2deb9d4d32c40c4d7451939b5d
+    updated : 2022-06-30
+    jira : YUK-22857
     notes : JAXB API
-  
-  - filename : jaxb-impl.jar
+    
+  - filename : jaxb-core-4.0.0.jar
     yukon group : JAXB
     project : JAXB
-    version : 2.2.5
+    version : 4.0.0
     project URL : "http://jaxb.java.net/"
     license : CDDL, GPLv2 with classpath exception
     license URLs : "https://glassfish.java.net/public/CDDL+GPL_1_1.html"
-    maven URL : "https://mvnrepository.com/artifact/com.sun.xml.bind/jaxb-impl/2.2.5"
-    md5 : 813b88d50a7ce54c03b187f6a98abf7d
-    sha1 : bca0d128b88feee87328dbfc871d8de2924a1714
-    updated : 2012-04-19
-    jira : YUK-10525
+    maven URL : "https://mvnrepository.com/artifact/com.sun.xml.bind/jaxb-core/4.0.0"
+    md5 : c637c249b95cfcb405522c66cc59e7e4
+    sha1 : f560f2e580d67950e1462cf3a3a21be51a281b42
+    updated : 2022-07-04
+    jira : YUK-22857
+    notes : JAXB API
+    
+  - filename : jaxb-impl-2.3.1.jar
+    yukon group : JAXB
+    project : JAXB
+    version : 2.3.1
+    project URL : "http://jaxb.java.net/"
+    license : CDDL, GPLv2 with classpath exception
+    license URLs : "https://glassfish.java.net/public/CDDL+GPL_1_1.html"
+    maven URL : "https://mvnrepository.com/artifact/com.sun.xml.bind/jaxb-impl/2.3.1"
+    md5 : adee85f9825b054eaf876b6d659fe147
+    sha1 : a1a12b85ba1435b4189e065f7dafcc3fb9410d38
+    updated : 2022-06-30
+    jira : YUK-22857
     notes : JAXB Runtime
-  
+    
   - filename : jaxb-xjc.jar
     yukon group : JAXB
     project : JAXB
@@ -1981,130 +1995,130 @@ Java :
     jira : YUK-22557
     notes : 
   
-  - filename : netty-buffer-4.1.70.Final.jar
+  - filename : netty-buffer-4.1.73.Final.jar
     yukon group : Azure
     project : Microsoft Azure SDK
-    version : 4.1.70
+    version : 4.1.73
     project URL : "https://netty.io/index.html"
     license : Apache 2.0
     license URLs : "https://www.apache.org/licenses/LICENSE-2.0.txt"
-    maven URL : "https://mvnrepository.com/artifact/io.netty/netty-buffer/4.1.70.Final"
-    md5 : 831200f595550d7d5bc42cfe4d362a46
-    sha1 : 54620560d725f497b73d54509baac64dfc4e0093
-    updated : 2022-01-07
-    jira : YUK-25692
+    maven URL : "https://mvnrepository.com/artifact/io.netty/netty-buffer/4.1.73.Final"
+    md5 : 7cd16c99e55b6a0212c8fca39a7f6067
+    sha1 : 244a569c9aae973f6f485ac9801d79c1eca36daa
+    updated : 2022-07-01
+    jira : YUK-22857
     notes :
 
-  - filename : netty-codec-4.1.70.Final.jar
+  - filename : netty-codec-4.1.73.Final.jar
     yukon group : Azure
     project : Microsoft Azure SDK
-    version : 4.1.70
+    version : 4.1.73
     project URL : "https://netty.io/index.html"
     license : Apache 2.0
     license URLs : "https://www.apache.org/licenses/LICENSE-2.0.txt"
-    maven URL : "https://mvnrepository.com/artifact/io.netty/netty-codec/4.1.70.Final"
-    md5 : 674c37868ed03227b70ec322ba72ee35
-    sha1 : 176fdba2f467ef6d35a7dd764d000705e16a01f6
-    updated : 2022-01-07
-    jira : YUK-25692
+    maven URL : "https://mvnrepository.com/artifact/io.netty/netty-codec/4.1.73.Final"
+    md5 : 9dc40888b6597cd1b2c9958184a7ccc7
+    sha1 : 9496a30a349863a4c6fa10d5c36b4f3b495d3a31
+    updated : 2022-07-01
+    jira : YUK-22857
     notes :
 
-  - filename : netty-codec-dns-4.1.70.Final.jar
+  - filename : netty-codec-dns-4.1.73.Final.jar
     yukon group : Azure
     project : Microsoft Azure SDK
-    version : 4.1.70
+    version : 4.1.73
     project URL : "https://netty.io/index.html"
     license : Apache 2.0
     license URLs : "https://www.apache.org/licenses/LICENSE-2.0.txt"
-    maven URL : "https://mvnrepository.com/artifact/io.netty/netty-codec-dns/4.1.70.Final"
-    md5 : 3318af28a5649718d1e91764b9929682
-    sha1 : dc35157c87508fad20bb64c203710435059cd2a6
-    updated : 2022-01-07
-    jira : YUK-25692
+    maven URL : "https://mvnrepository.com/artifact/io.netty/netty-codec-dns/4.1.73.Final"
+    md5 : 2271d8a06bb08de08fed2b0f8fe340dd
+    sha1 : 46137a5b01a5202059324cf4300443e53f11a38d
+    updated : 2022-07-01
+    jira : YUK-22857
     notes :
 
-  - filename : netty-codec-http-4.1.70.Final.jar
+  - filename : netty-codec-http-4.1.73.Final.jar
     yukon group : Azure
     project : Microsoft Azure SDK
-    version : 4.1.70
+    version : 4.1.73
     project URL : "https://netty.io/index.html"
     license : Apache 2.0
     license URLs : "https://www.apache.org/licenses/LICENSE-2.0.txt"
-    maven URL : "https://mvnrepository.com/artifact/io.netty/netty-codec-http/4.1.70.Final"
-    md5 : 594f6112ed29df648e1ae6ff09999a69
-    sha1 : aa8d13d24427e80403d9fc69c1365ec2aa25263b
-    updated : 2022-01-07
-    jira : YUK-25692
+    maven URL : "https://mvnrepository.com/artifact/io.netty/netty-codec-http/4.1.73.Final"
+    md5 : 9bad2f44c7e770f46262118cad7f85ed
+    sha1 : 1ceeac4429b9bd517dc05e376a144bbe6b6bd038
+    updated : 2022-07-01
+    jira : YUK-22857
     notes :
   
-  - filename : netty-codec-http2-4.1.70.Final.jar
+  - filename : netty-codec-http2-4.1.73.Final.jar
     yukon group : Azure
     project : Microsoft Azure SDK
-    version : 4.1.70
+    version : 4.1.73
     project URL : "https://netty.io/index.html"
     license : Apache 2.0
     license URLs : "https://www.apache.org/licenses/LICENSE-2.0.txt"
-    maven URL : "https://mvnrepository.com/artifact/io.netty/netty-codec-http2/4.1.70.Final"
-    md5 : 9880874c3b8802324deda275c72de420
-    sha1 : 84b9a564c0fe8e10bc5b660129db01fa052eabca
-    updated : 2022-01-07
-    jira : YUK-25692
+    maven URL : "https://mvnrepository.com/artifact/io.netty/netty-codec-http2/4.1.73.Final"
+    md5 : 8fe5d39488181175536ee09c945fb3b6
+    sha1 : 0eb145bc31fd32a20fd2a3e8b30736d2e0248b0c
+    updated : 2022-07-01
+    jira : YUK-22857
     notes :
   
-  - filename : netty-codec-socks-4.1.70.Final.jar
+  - filename : netty-codec-socks-4.1.73.Final.jar
     yukon group : Azure
     project : Microsoft Azure SDK
-    version : 4.1.70
+    version : 4.1.73
     project URL : "https://netty.io/index.html"
     license : Apache 2.0
     license URLs : "https://www.apache.org/licenses/LICENSE-2.0.txt"
-    maven URL : "https://mvnrepository.com/artifact/io.netty/netty-codec-socks/4.1.70.Final"
-    md5 : 62faad567191981cd7957eaaa88621b2
-    sha1 : 9cde02a4dddb4baa568718f80d026c48a3f258c7
-    updated : 2022-01-07
-    jira : YUK-25692
+    maven URL : "https://mvnrepository.com/artifact/io.netty/netty-codec-socks/4.1.73.Final"
+    md5 : e19f91c5bbb9ee68e2ae08663d10bfe2
+    sha1 : cefa44d8f5dcaab21179d945f12b6c6d7325cce9
+    updated : 2022-07-01
+    jira : YUK-22857
     notes :
   
-  - filename : netty-common-4.1.70.Final.jar
+  - filename : netty-common-4.1.73.Final.jar
     yukon group : Azure
     project : Microsoft Azure SDK
-    version : 4.1.70
+    version : 4.1.73
     project URL : "https://netty.io/index.html"
     license : Apache 2.0
     license URLs : "https://www.apache.org/licenses/LICENSE-2.0.txt"
-    maven URL : "https://mvnrepository.com/artifact/io.netty/netty-common/4.1.70.Final"
-    md5 : 75ded3bde221b50248f9f004dd841ee5
-    sha1 : c2db94c855f472573b64ca68d00effcde00329bd
-    updated : 2022-01-07
-    jira : YUK-25692
+    maven URL : "https://mvnrepository.com/artifact/io.netty/netty-common/4.1.73.Final"
+    md5 : 55336fe69d48c60885c49750985f8dfb
+    sha1 : 27731b58d741b6faa6a00fa3285e7a55cc47be01
+    updated : 2022-07-01
+    jira : YUK-22857
     notes :
 
-  - filename : netty-handler-4.1.70.Final.jar
+  - filename : netty-handler-4.1.73.Final.jar
     yukon group : Azure
     project : Microsoft Azure SDK
-    version : 4.1.70
+    version : 4.1.73
     project URL : "https://netty.io/index.html"
     license : Apache 2.0
     license URLs : "https://www.apache.org/licenses/LICENSE-2.0.txt"
-    maven URL : "https://mvnrepository.com/artifact/io.netty/netty-handler/4.1.70.Final"
-    md5 : 2e615dd3195439a35f56cc5633e93d91
-    sha1 : bddcbdf42338e760382d8d732420c4a0b969f5e5
-    updated : 2022-01-07
-    jira : YUK-25692
+    maven URL : "https://mvnrepository.com/artifact/io.netty/netty-handler/4.1.73.Final"
+    md5 : e619dcddc4a29623b4292b75abbf87d5
+    sha1 : 1a2231c0074f88254865c3769a4b5842939ea04d
+    updated : 2022-07-01
+    jira : YUK-22857
     notes :
 
-  - filename : netty-handler-proxy-4.1.70.Final.jar
+  - filename : netty-handler-proxy-4.1.73.Final.jar
     yukon group : Azure
     project : Microsoft Azure SDK
-    version : 4.1.70
+    version : 4.1.73
     project URL : "https://netty.io/index.html"
     license : Apache 2.0
     license URLs : "https://www.apache.org/licenses/LICENSE-2.0.txt"
-    maven URL : "https://mvnrepository.com/artifact/io.netty/netty-handler-proxy/4.1.70.Final"
-    md5 : ca0c6d9a622ac3f15bc64d4b8d88ac21
-    sha1 : fb5459e297cfa16e5dc131cab653271dbb96b429
-    updated : 2022-01-07
-    jira : YUK-25692
+    maven URL : "https://mvnrepository.com/artifact/io.netty/netty-handler-proxy/4.1.73.Final"
+    md5 : bb6db8d16c332e5e235f04c240d6ef44
+    sha1 : d1afa6876c3d3bdbdbe5127ddd495e6514d6e600
+    updated : 2022-07-01
+    jira : YUK-22857
     notes :
 
   - filename : netty-reactive-streams-2.0.4.jar
@@ -2121,60 +2135,60 @@ Java :
     jira : YUK-24554
     notes :       
 
-  - filename : netty-resolver-4.1.70.Final.jar
+  - filename : netty-resolver-4.1.73.Final.jar
     yukon group : Azure
     project : Microsoft Azure SDK
-    version : 4.1.70
+    version : 4.1.73
     project URL : "https://netty.io/index.html"
     license : Apache 2.0
     license URLs : "https://www.apache.org/licenses/LICENSE-2.0.txt"
-    maven URL : "https://mvnrepository.com/artifact/io.netty/netty-resolver/4.1.70.Final"
-    md5 : 60fc1fc3d50ea498e6828d76c80aa029
-    sha1 : 9fd1fb006141dae4a4f3dd8e83662edf56ae5d1b
-    updated : 2022-01-07
+    maven URL : "https://mvnrepository.com/artifact/io.netty/netty-resolver/4.1.73.Final"
+    md5 : a1a90cfbfaf9f4a482347909570def5c
+    sha1 : bfe83710f0c1739019613e81a06101020ca65def
+    updated : 2022-07-01
     jira : YUK-25692
     notes :
 
-  - filename : netty-resolver-dns-4.1.70.Final.jar
+  - filename : netty-resolver-dns-4.1.73.Final.jar
     yukon group : Azure
     project : Microsoft Azure SDK
-    version : 4.1.70
+    version : 4.1.73
     project URL : "https://netty.io/index.html"
     license : Apache 2.0
     license URLs : "https://www.apache.org/licenses/LICENSE-2.0.txt"
-    maven URL : "https://mvnrepository.com/artifact/io.netty/netty-resolver-dns/4.1.70.Final"
-    md5 : 234a0a4c6b7b563e4ac1969560fcaa9e
-    sha1 : 409f417440156a794f8b9f3acf8a00258d46b499
-    updated : 2022-01-07
-    jira : YUK-25692
+    maven URL : "https://mvnrepository.com/artifact/io.netty/netty-resolver-dns/4.1.73.Final"
+    md5 : 8115725c01a99207324859ef793a5155
+    sha1 : 97cdf5fb97f8d961cfa3ffb05175009b90e5cfee
+    updated : 2022-07-01
+    jira : YUK-22857
     notes :
 
-  - filename : netty-resolver-dns-classes-macos-4.1.70.Final.jar
+  - filename : netty-resolver-dns-classes-macos-4.1.73.Final.jar
     yukon group : Azure
     project : Microsoft Azure SDK
-    version : 4.1.70
+    version : 4.1.73
     project URL : "https://netty.io/index.html"
     license : Apache 2.0
     license URLs : "https://www.apache.org/licenses/LICENSE-2.0.txt"
-    maven URL : "https://mvnrepository.com/artifact/io.netty/netty-resolver-dns-classes-macos/4.1.70.Final"
-    md5 : 02e9a80e232c15a74de22b1ef6b325a1
-    sha1 : 8a12da3c8cc0bc6f3c7596a3ac29b65fb4d50139
-    updated : 2022-01-07
-    jira : YUK-25692
+    maven URL : "https://mvnrepository.com/artifact/io.netty/netty-resolver-dns-classes-macos/4.1.73.Final"
+    md5 : e0c8661faeed5f05da673ff196cde4a7
+    sha1 : c799de22c24e7465a70942d0094270c2456c3405
+    updated : 2022-07-01
+    jira : YUK-22857
     notes :
 
-  - filename : netty-resolver-dns-native-macos-4.1.70.Final-osx-x86_64.jar
+  - filename : netty-resolver-dns-native-macos-4.1.73.Final.jar
     yukon group : Azure
     project : Microsoft Azure SDK
-    version : 4.1.70
+    version : 4.1.73
     project URL : "https://netty.io/index.html"
     license : Apache 2.0
     license URLs : "https://www.apache.org/licenses/LICENSE-2.0.txt"
-    maven URL : "https://mvnrepository.com/artifact/io.netty/netty-resolver-dns-native-macos/4.1.70.Final"
-    md5 : 3284d5e0a6e7cee74931eaa406af3e61
-    sha1 : 73d632adc7497d5cd074ac16efa8c9b4ec7632d5
-    updated : 2022-01-07
-    jira : YUK-25692
+    maven URL : "https://mvnrepository.com/artifact/io.netty/netty-resolver-dns-native-macos/4.1.73.Final"
+    md5 : 667d1c3395c3f0e63bf567acd58057bb
+    sha1 : 1c331289708ecadea6960950a4bbbd3b80792fdc
+    updated : 2022-07-01
+    jira : YUK-22857
     notes : 
 
   - filename : netty-tcnative-boringssl-static-2.0.46.Final.jar
@@ -2205,88 +2219,88 @@ Java :
     jira : YUK-25692
     notes :
 
-  - filename : netty-transport-4.1.70.Final.jar
+  - filename : netty-transport-4.1.73.Final.jar
     yukon group : Azure
     project : Microsoft Azure SDK
-    version : 4.1.70
+    version : 4.1.73
     project URL : "https://netty.io/index.html"
     license : Apache 2.0
     license URLs : "https://www.apache.org/licenses/LICENSE-2.0.txt"
-    maven URL : "https://mvnrepository.com/artifact/io.netty/netty-transport/4.1.70.Final"
-    md5 : 4849571f19a5dd64cd2ca18d7d8b596a
-    sha1 : 38f683ad3a6c63fec73e5702d237ecbc9839deb6
-    updated : 2022-01-07
-    jira : YUK-25692
+    maven URL : "https://mvnrepository.com/artifact/io.netty/netty-transport/4.1.73.Final"
+    md5 : af5451a8a9549a3ae148ca58fc71e4d3
+    sha1 : abb155ddff196ccedfe85b810d4b9375ef85fcfa
+    updated : 2022-07-01
+    jira : YUK-22857
     notes :
 
-  - filename : netty-transport-classes-epoll-4.1.70.Final.jar
+  - filename : netty-transport-classes-epoll-4.1.73.Final.jar
     yukon group : Azure
     project : Microsoft Azure SDK
-    version : 4.1.70
+    version : 4.1.73
     project URL : "https://netty.io/index.html"
     license : Apache 2.0
     license URLs : "https://www.apache.org/licenses/LICENSE-2.0.txt"
-    maven URL : "https://mvnrepository.com/artifact/io.netty/netty-transport-classes-epoll/4.1.70.Final"
-    md5 : 2496cba3094defe8afd044a59d2a7ddc
-    sha1 : e71ea6f70691af09c6000bf65a8c35a7e1a58f84
-    updated : 2022-01-07
-    jira : YUK-25692
+    maven URL : "https://mvnrepository.com/artifact/io.netty/netty-transport-classes-epoll/4.1.73.Final"
+    md5 : 51cd367c6d25f845b640d659578fff05
+    sha1 : 2a5682520fc756efc921da78b0f00c35196b6708
+    updated : 2022-07-01
+    jira : YUK-22857
     notes :
 
-  - filename : netty-transport-classes-kqueue-4.1.70.Final.jar
+  - filename : netty-transport-classes-kqueue-4.1.73.Final.jar
     yukon group : Azure
     project : Microsoft Azure SDK
-    version : 4.1.70
+    version : 4.1.73
     project URL : "https://netty.io/index.html"
     license : Apache 2.0
     license URLs : "https://www.apache.org/licenses/LICENSE-2.0.txt"
-    maven URL : "https://mvnrepository.com/artifact/io.netty/netty-transport-classes-kqueue/4.1.70.Final"
-    md5 : c59539ed0314539917370b80ba8dfee2
-    sha1 : 52b8dee51e297a88b792c752f0a57dec0a77e668
-    updated : 2022-01-07
-    jira : YUK-25692
+    maven URL : "https://mvnrepository.com/artifact/io.netty/netty-transport-classes-kqueue/4.1.73.Final"
+    md5 : b245e37d3e21a02371f3a56b73222d2c
+    sha1 : 984b50d449f64c584cca9e4567ba158e76ed7ae6
+    updated : 2022-07-01
+    jira : YUK-22857
     notes :
 
-  - filename : netty-transport-native-epoll-4.1.70.Final-linux-x86_64.jar
+  - filename : netty-transport-native-epoll-4.1.73.Final.jar
     yukon group : Azure
     project : Microsoft Azure SDK
-    version : 4.1.70
+    version : 4.1.73
     project URL : "https://netty.io/index.html"
     license : Apache 2.0
     license URLs : "https://www.apache.org/licenses/LICENSE-2.0.txt"
-    maven URL : "https://mvnrepository.com/artifact/io.netty/netty-transport-native-epoll/4.1.70.Final"
-    md5 : 6fbc246fdf667729c2bd49f386c45c54
-    sha1 : 89f5a0f9903404900b3dfe2ecfc969eaf40ce26c
-    updated : 2022-01-07
-    jira : YUK-25692
+    maven URL : "https://mvnrepository.com/artifact/io.netty/netty-transport-native-epoll/4.1.73.Final"
+    md5 : b9f87f8b6113d48df720b6fd3047ab30
+    sha1 : 763cf37f7475764113ba2764f08dbadd5356d23b
+    updated : 2022-07-01
+    jira : YUK-22897
     notes :
 
-  - filename : netty-transport-native-kqueue-4.1.70.Final-osx-x86_64.jar
+  - filename : netty-transport-native-kqueue-4.1.73.Final.jar
     yukon group : Azure
     project : Microsoft Azure SDK
-    version : 4.1.70
+    version : 4.1.73
     project URL : "https://netty.io/index.html"
     license : Apache 2.0
     license URLs : "https://www.apache.org/licenses/LICENSE-2.0.txt"
-    maven URL : "https://mvnrepository.com/artifact/io.netty/netty-transport-native-kqueue/4.1.70.Final"
-    md5 : 4e9133385dae95713b6a5818a35c8b5c
-    sha1 : effade0fceb3642b5a2435a6dac2211fd08759b3
-    updated : 2022-01-07
-    jira : YUK-25692
+    maven URL : "https://mvnrepository.com/artifact/io.netty/netty-transport-native-kqueue/4.1.73.Final"
+    md5 : 7745344b8f49a325f7821c98b2e7c576
+    sha1 : 19cecf755af6a61b8a42261339685a46f5f427fb
+    updated : 2022-07-01
+    jira : YUK-22897
     notes :
 
-  - filename : netty-transport-native-unix-common-4.1.70.Final.jar
+  - filename : netty-transport-native-unix-common-4.1.73.Final.jar
     yukon group : Azure
     project : Microsoft Azure SDK
-    version : 4.1.70
+    version : 4.1.73
     project URL : "https://netty.io/index.html"
     license : Apache 2.0
     license URLs : "https://www.apache.org/licenses/LICENSE-2.0.txt"
-    maven URL : "https://mvnrepository.com/artifact/io.netty/netty-transport-native-unix-common/4.1.70.Final"
-    md5 : 9dd524d424a56447dba5084e5d211a3d
-    sha1 : ba6ad1e8c0570242a9bb2b4526ad4a1c56f71e2f
-    updated : 2022-01-07
-    jira : YUK-25692
+    maven URL : "https://mvnrepository.com/artifact/io.netty/netty-transport-native-unix-common/4.1.73.Final"
+    md5 : 5958fc16255d9b62aef03715dffce564
+    sha1 : 4701063d36f390e02da6da85c13e32a0e78349d2
+    updated : 2022-07-01
+    jira : YUK-22897
     notes :
 
   - filename : objenesis-3.2.jar
@@ -3347,10 +3361,10 @@ Java :
     license : Apache 2.0, LGPL 2.1
     license URLs : "https://opensource.org/licenses/Apache-2.0, https://opensource.org/licenses/LGPL-2.1"
     maven URL : "https://mvnrepository.com/artifact/org.rzo.yajsw/wrapper/11.11"
-    md5 : fc0ca6942c61e91b419823a04d7f78c0
-    sha1 : e36153fe1a5bb956ef2e3054ff198a808f3b7112
-    updated : 2022-03-01
-    jira : YUK-25904
+    md5 : 4fab89a15323096e7006fd095ebd7c8b
+    sha1 : 3973bc138abd2a85f79f927d88f1674697123d5e
+    updated : 2022-07-01
+    jira : YUK-22857
     notes : YAJSW Wrapper.  Maven version is 11.11, not 13.02.  Jar rebuilt to adjust classpath entries in MANIFEST.MF
   
   - filename : wrapperApp.jar
@@ -3361,10 +3375,10 @@ Java :
     license : Apache 2.0, LGPL 2.1
     license URLs : "https://opensource.org/licenses/Apache-2.0, https://opensource.org/licenses/LGPL-2.1"
     maven URL : "https://mvnrepository.com/artifact/org.rzo.yajsw/wrapperApp/11.11"
-    md5 : 884d259e35716e63e8b2fefa9fb3eda9
-    sha1 : d0a36318643c45769b758379bdb556dba7088022
-    updated : 2022-03-01
-    jira : YUK-25904
+    md5 : 94aeff3778fab548f39f78b3bb375019
+    sha1 : 2d3a8b5ce63fde863b663405bc43ca62725d13c7
+    updated : 2022-07-01
+    jira : YUK-22857
     notes : YAJSW Wrapper App.  Maven version is 11.11, not 13.02.  Jar rebuilt to adjust classpath entries in MANIFEST.MF
   
   - filename : wrapperApp9.jar
@@ -3375,10 +3389,10 @@ Java :
     license : Apache 2.0, LGPL 2.1
     license URLs : "https://opensource.org/licenses/Apache-2.0, https://opensource.org/licenses/LGPL-2.1"
     maven URL : "https://mvnrepository.com/artifact/org.rzo.yajsw/wrapperApp/11.11"
-    md5 : 042f0a0bd46d57ee151fbf52174b2aad
-    sha1 : 04f031e4d1f6b3b7df1e7d7806b46a6084751df6
-    updated : 2022-03-01
-    jira : YUK-25904
+    md5 : c78c56e9ce82f8af43a946734fcb56c2
+    sha1 : 9ea480848a3212cd80af7e3aaf845ab41d490645
+    updated : 2022-07-01
+    jira : YUK-22857
     notes : YAJSW Wrapper App.  Maven version is 11.11, not 13.02.  Jar rebuilt to adjust classpath entries in MANIFEST.MF
   
   - filename : woodstox-core-6.2.6.jar
