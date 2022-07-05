@@ -2,6 +2,7 @@
 
 #include "dlldefs.h"
 #include "streamBuffer.h"
+#include "std_helper.h"
 
 #include <boost/lexical_cast.hpp>
 #include <boost/optional.hpp>
@@ -281,6 +282,9 @@ class IM_EX_CTIBASE FormattedList : public Loggable, private boost::noncopyable
     template<typename First>
     FormattedList& addItems(std::string firstname, First&& firstval)
     {
+        using Logging::Vector::Hex::operator<<;
+        using Logging::Set::operator<<;
+
         add(firstname) << firstval;
 
         return *this;

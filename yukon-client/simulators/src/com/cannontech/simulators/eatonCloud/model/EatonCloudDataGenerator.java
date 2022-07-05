@@ -16,6 +16,7 @@ public abstract class EatonCloudDataGenerator {
 
     protected int status = HttpStatus.OK.value();
     protected int successPercentage = 100;
+    protected int unknownPercentage = 0;
     protected EatonCloudSimulatorDeviceCreateRequest createRequest;
     protected String token1;
     protected String token2;
@@ -55,6 +56,10 @@ public abstract class EatonCloudDataGenerator {
 
     public void setSuccessPercentage(int successPercentage) {
         this.successPercentage = successPercentage;
+    }
+    
+    public void setUnknownPercentage(int unknownPercentage) {
+        this.unknownPercentage = unknownPercentage;
     }
     
     public abstract EatonCloudDataGenerator getDataGenerator(EatonCloudVersion version);

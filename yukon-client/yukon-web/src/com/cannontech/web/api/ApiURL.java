@@ -35,6 +35,8 @@ public class ApiURL {
     public static final String attributeAssignmentsUrl = "/attributeAssignments";
     public static final String pagingTerminalUrl = "/terminals";
     
+    public static final String notificationGroupUrl = "/notificationGroups";
+
     public static final String aggregateDataReportUrl = "/aggregateIntervalDataReport/report";
     
     public static final String loggerUrl = "/config/loggers";

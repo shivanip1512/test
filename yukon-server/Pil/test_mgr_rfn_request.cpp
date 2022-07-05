@@ -41,6 +41,11 @@ struct test_RfnRequestManager : Cti::Pil::RfnRequestManager
     {
     }
 
+    void initializeActiveMQHandlers() override
+    {
+        // prevent the RFN broadcast request ActiveMQ handlers from initializing
+    }
+
     struct test_E2eDataTransferProtocol : Cti::Protocols::E2eDataTransferProtocol
     {
         unsigned short id;
@@ -69,7 +74,11 @@ struct test_RfnRequestManager : Cti::Pil::RfnRequestManager
     {
         return e2e.createPost(payload, endpointId, token);
     }
-
+    Bytes createE2eDtPut(const Bytes& payload, const Cti::RfnIdentifier endpointId) override
+    {
+        return e2e.createPut(payload, endpointId);
+    }
+    
     //  this intercepts/captures the MeterProgramStatus archive request messages
     void sendMeterProgramStatusUpdate(MeterProgramStatusArchiveRequestMsg msg) override
     {

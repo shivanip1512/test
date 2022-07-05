@@ -17,7 +17,7 @@ import com.fasterxml.jackson.annotation.JsonInclude.Include;
 public class NotificationGroup implements DBPersistentConverter<com.cannontech.database.data.notification.NotificationGroup> {
     private int id;
     private String name;
-    private boolean enabled;
+    private Boolean enabled;
     private List<CICustomer> cICustomers;
     private List<Contact> unassignedContacts;
 
@@ -47,11 +47,11 @@ public class NotificationGroup implements DBPersistentConverter<com.cannontech.d
         this.name = name;
     }
 
-    public boolean isEnabled() {
+    public Boolean getEnabled() {
         return enabled;
     }
 
-    public void setEnabled(boolean enabled) {
+    public void setEnabled(Boolean enabled) {
         this.enabled = enabled;
     }
 
@@ -75,13 +75,13 @@ public class NotificationGroup implements DBPersistentConverter<com.cannontech.d
     public void buildModel(com.cannontech.database.data.notification.NotificationGroup notificationGroup) {
         setId(notificationGroup.getNotificationGroup().getNotificationGroupID());
         setName(notificationGroup.getNotificationGroup().getGroupName());
-        setEnabled(notificationGroup.getNotificationGroup().getDisableFlag() == "N" ? true : false);
+        setEnabled(notificationGroup.getNotificationGroup().getDisableFlag().equals("N") ? true : false);
     }
 
     @Override
     public void buildDBPersistent(com.cannontech.database.data.notification.NotificationGroup notificationGroup) {
         notificationGroup.getNotificationGroup().setGroupName(getName());
-        notificationGroup.getNotificationGroup().setDisableFlag(isEnabled() == true ? "N" : "Y");
+        notificationGroup.getNotificationGroup().setDisableFlag(getEnabled() == true ? "N" : "Y");
 
         List<NotifDestinationMap> notifList = new ArrayList<NotifDestinationMap>();
         List<CustomerNotifGroupMap> custList = new ArrayList<CustomerNotifGroupMap>();

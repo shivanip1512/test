@@ -20,6 +20,8 @@ public enum MasterConfigInteger {
     
     EATON_CLOUD_NOTIFICATION_COMMAND_FAILURE_PERCENT,
     
+    EATON_CLOUD_DEVICES_PER_JOB,
+    
     RUNTIME_CALC_RANGE_LIMIT_DAYS, // Number of days back to perform runtime calculation from relay data
     ;
 }

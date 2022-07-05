@@ -1,12 +1,14 @@
 package com.cannontech.web.stars.wifi;
 
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.stream.Collectors;
 
 import javax.servlet.http.HttpServletResponse;
 
+import org.apache.commons.lang3.ArrayUtils;
 import org.joda.time.Instant;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -60,16 +62,31 @@ public class WifiConnectionController {
     
     @GetMapping("connectedDevices/{gatewayId}")
     public String connectedDevices(@PathVariable int gatewayId, ModelMap model) {
-        List<WiFiMeterCommData> wifiData = wifiService.getWiFiMeterCommDataForGateways(Arrays.asList(gatewayId));
-        model.addAttribute("wifiData", wifiData);
-        String deviceIdList = wifiData.stream()
-                .map(d -> String.valueOf(d.getDevice().getPaoIdentifier().getPaoId()))
-                .collect(Collectors.joining(","));
-        model.addAttribute("deviceIds", deviceIdList);
-        
+        retrieveWifiData(gatewayId, null, model);
         connectedDevicesHelper.setupConnectedDevicesModel(gatewayId, model);
-        
         return "gateways/wifiConnection.jsp";
+    }
+    
+    @GetMapping("filterConnectedDevices/{gatewayId}")
+    public String filterConnectedDevices(@PathVariable int gatewayId, Integer[] commStatuses, ModelMap model) {
+        retrieveWifiData(gatewayId, commStatuses, model);
+        connectedDevicesHelper.setupConnectedDevicesModel(gatewayId, model);
+        return "gateways/wifiConnectionDeviceTable.jsp";
+    }
+    
+    private List<WiFiMeterCommData> retrieveWifiData(int gatewayId, Integer[] commStatuses, ModelMap model) {
+        List<Integer> filterCommStatus = new ArrayList<>();
+        if (ArrayUtils.isNotEmpty(commStatuses)) {
+            filterCommStatus = Arrays.asList(commStatuses);
+        }
+        List<WiFiMeterCommData> wifiData = wifiService.getWiFiMeterCommDataForGateways(Arrays.asList(gatewayId), filterCommStatus);
+        model.addAttribute("wifiData", wifiData);
+        
+        String deviceIdList = wifiData.stream()
+                                      .map(d -> String.valueOf(d.getDevice().getPaoIdentifier().getPaoId()))
+                                      .collect(Collectors.joining(","));
+        model.addAttribute("deviceIds", deviceIdList);
+        return wifiData;
     }
     
     @GetMapping("connectedDevicesMapping")
@@ -91,22 +108,19 @@ public class WifiConnectionController {
         headerRow[4] = accessor.getMessage(baseKey + "rssiLastUpdated");
         
         RfnGateway gateway = rfnGatewayService.getGatewayByPaoId(gatewayId);
-        List<WiFiMeterCommData> wifiData = wifiService.getWiFiMeterCommDataForGateways(Arrays.asList(gatewayId));
+        List<WiFiMeterCommData> wifiData = retrieveWifiData(gatewayId, filteredCommStatus, new ModelMap());
         
         List<String[]> dataRows = Lists.newArrayList();
-        List<Integer> selectedCommStatuses = Arrays.asList(filteredCommStatus);
         for (WiFiMeterCommData data : wifiData) {
             String[] dataRow = new String[5];
             dataRow[0] = data.getDevice().getName();
             PointValueQualityHolder commStatus = asyncDynamicDataSource.getPointValue(data.getCommStatusPoint().getPointID());
-            if (selectedCommStatuses.isEmpty() || selectedCommStatuses.contains(Integer.valueOf((int)commStatus.getValue()))) {
-                dataRow[1] = pointFormattingService.getValueString(commStatus, Format.VALUE, userContext);
-                dataRow[2] = pointFormattingService.getValueString(commStatus, Format.DATE, userContext);
-                PointValueQualityHolder rssi = asyncDynamicDataSource.getPointValue(data.getRssiPoint().getPointID());
-                dataRow[3] = pointFormattingService.getValueString(rssi, Format.VALUE, userContext);
-                dataRow[4] = pointFormattingService.getValueString(rssi, Format.DATE, userContext);
-                dataRows.add(dataRow);
-            }
+            dataRow[1] = pointFormattingService.getValueString(commStatus, Format.VALUE, userContext);
+            dataRow[2] = pointFormattingService.getValueString(commStatus, Format.DATE, userContext);
+            PointValueQualityHolder rssi = asyncDynamicDataSource.getPointValue(data.getRssiPoint().getPointID());
+            dataRow[3] = pointFormattingService.getValueString(rssi, Format.VALUE, userContext);
+            dataRow[4] = pointFormattingService.getValueString(rssi, Format.DATE, userContext);
+            dataRows.add(dataRow);
         }
         
         String now = dateFormattingService.format(Instant.now(), DateFormatEnum.FILE_TIMESTAMP, YukonUserContext.system);

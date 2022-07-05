@@ -8,7 +8,7 @@
 <%-- CUSTOMER INFORMATION --%>
 <cti:msg2 var="custInfo" key=".custInfo" />
 <tags:sectionContainer title="${custInfo}">
-    <tags:nameValueContainer2 tableClass="row-highlighting striped two-column-table">
+    <tags:nameValueContainer2 tableClass="row-highlighting striped two-column-table" naturalWidth="false">
         <tags:nameValue2 nameKey=".name">
             <c:if test="${not empty mspCustomer.firstName}">${fn:escapeXml(mspCustomer.firstName)}&ensp;</c:if>
 
@@ -40,7 +40,7 @@
 <%-- SERVICE LOCATION INFORMATION --%>
 <cti:msg2 var="serviceLocation" key=".serviceLocation" />
 <tags:sectionContainer title="${serviceLocation}">
-    <tags:nameValueContainer2 tableClass="row-highlighting striped two-column-table">
+    <tags:nameValueContainer2 tableClass="row-highlighting striped two-column-table" naturalWidth="false">
 
         <c:if test="${not empty mspServLoc.objectID}">
             <tags:nameValue2 nameKey=".serviceLocation">${fn:escapeXml(mspServLoc.objectID)}</tags:nameValue2>

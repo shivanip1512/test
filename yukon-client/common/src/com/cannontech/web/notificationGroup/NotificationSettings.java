@@ -1,7 +1,7 @@
 package com.cannontech.web.notificationGroup;
 
 public class NotificationSettings {
-    private int id;
+    private Integer id;
     private String notification;
     private boolean emailEnabled;
     private boolean phoneCallEnabled;
@@ -31,11 +31,11 @@ public class NotificationSettings {
         this.phoneCallEnabled = phoneCallEnabled;
     }
 
-    public int getId() {
+    public Integer getId() {
         return id;
     }
 
-    public void setId(int id) {
+    public void setId(Integer id) {
         this.id = id;
     }
 

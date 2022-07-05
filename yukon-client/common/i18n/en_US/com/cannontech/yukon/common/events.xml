@@ -1061,6 +1061,25 @@
     <entry key="yukon.common.events.dr.eatoncloud.sendShedFailed.8">Duty Cycle Period</entry>
     <entry key="yukon.common.events.dr.eatoncloud.sendShedFailed.9">Criticality</entry>
     <entry key="yukon.common.events.dr.eatoncloud.sendShedFailed.10">Relay</entry>
+        
+    <entry key="yukon.common.events.dr.eatoncloud.sendShedJob">Eaton Cloud shed command was sent with the following settings: Device: {1}, GUID: {2}, Duty Cycle Percent: {7}, Duty Cycle Period: {8}, Criticality: {9}, Relay: {10}, Event Id/Job GUID: {3}, Try: {4}</entry>
+    <entry key="yukon.common.events.dr.eatoncloud.sendShedJob.2">GUID</entry>
+    <entry key="yukon.common.events.dr.eatoncloud.sendShedJob.3">Event Id/Job GUID</entry>
+    <entry key="yukon.common.events.dr.eatoncloud.sendShedJob.4">Try</entry>
+    <entry key="yukon.common.events.dr.eatoncloud.sendShedJob.7">Duty Cycle Percent</entry>
+    <entry key="yukon.common.events.dr.eatoncloud.sendShedJob.8">Duty Cycle Period</entry>
+    <entry key="yukon.common.events.dr.eatoncloud.sendShedJob.9">Criticality</entry>
+    <entry key="yukon.common.events.dr.eatoncloud.sendShedJob.10">Relay</entry>
+    
+    <entry key="yukon.common.events.dr.eatoncloud.sendShedJobFailed">Failed to send shed command with the following settings: Device: {1}, GUID: {2}, Duty Cycle Percent: {7}, Duty Cycle Period: {8}, Criticality: {9}, Relay: {10}, Event Id/Job GUID: {3}, Try: {4}, Error: {5}</entry>
+    <entry key="yukon.common.events.dr.eatoncloud.sendShedJobFailed.2">GUID</entry>
+    <entry key="yukon.common.events.dr.eatoncloud.sendShedJobFailed.3">Event Id/Job GUID</entry>
+    <entry key="yukon.common.events.dr.eatoncloud.sendShedJobFailed.4">Try</entry>
+    <entry key="yukon.common.events.dr.eatoncloud.sendShedJobFailed.5">Error</entry>
+    <entry key="yukon.common.events.dr.eatoncloud.sendShedJobFailed.7">Duty Cycle Percent</entry>
+    <entry key="yukon.common.events.dr.eatoncloud.sendShedJobFailed.8">Duty Cycle Period</entry>
+    <entry key="yukon.common.events.dr.eatoncloud.sendShedJobFailed.9">Criticality</entry>
+    <entry key="yukon.common.events.dr.eatoncloud.sendShedJobFailed.10">Relay</entry>
     
     <entry key="yukon.common.events.dr.eatoncloud.tokenRetrievalFailed">Brightlayer Credential Validation Failure. Failed to obtain token using {1} Error: {2} Try: {7}</entry>
     <entry key="yukon.common.events.dr.eatoncloud.tokenRetrievalFailed.1">Secret</entry>

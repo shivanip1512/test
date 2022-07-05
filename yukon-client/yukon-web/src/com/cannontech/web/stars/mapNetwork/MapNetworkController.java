@@ -42,8 +42,13 @@ import com.cannontech.common.pao.model.DistanceUnit;
 import com.cannontech.common.pao.model.PaoDistance;
 import com.cannontech.common.pao.model.PaoLocation;
 import com.cannontech.common.pao.service.LocationService;
+import com.cannontech.common.rfn.message.RfnIdentifier;
+import com.cannontech.common.rfn.message.metadatamulti.RfnMetadataMulti;
+import com.cannontech.common.rfn.message.metadatamulti.RfnMetadataMultiQueryResult;
+import com.cannontech.common.rfn.message.neighbor.NeighborData;
 import com.cannontech.common.rfn.model.NmCommunicationException;
 import com.cannontech.common.rfn.model.RfnDevice;
+import com.cannontech.common.rfn.service.RfnDeviceMetadataMultiService;
 import com.cannontech.common.util.JsonUtils;
 import com.cannontech.core.dao.DeviceDao;
 import com.cannontech.core.roleproperties.HierarchyPermissionLevel;
@@ -74,6 +79,7 @@ public class MapNetworkController {
     @Autowired private LocationService locationService;
     @Autowired @Qualifier("idList") private DeviceIdListCollectionProducer dcProducer;
     @Autowired private RfnDeviceDao rfnDeviceDao;
+    @Autowired private RfnDeviceMetadataMultiService metadataMultiService;
     
     @RequestMapping(value = "home", method = RequestMethod.GET)
     public String home(ModelMap model, @RequestParam("deviceId") int deviceId,
@@ -233,6 +239,16 @@ public class MapNetworkController {
         try {
             List<Pair<RfnDevice, FeatureCollection>> entireRoute = nmNetworkService.getRoute(deviceId, accessor);
             json.put("entireRoute", entireRoute);
+            //route does not contain initial device so get that neighbor data as well
+            RfnDevice device = rfnDeviceDao.getDeviceForId(deviceId);
+            Map<RfnIdentifier, RfnMetadataMultiQueryResult> neighborDataResult = metadataMultiService
+                    .getMetadataForDeviceRfnIdentifier(device.getRfnIdentifier(), Set.of(RfnMetadataMulti.PRIMARY_FORWARD_NEIGHBOR_DATA));
+            RfnMetadataMultiQueryResult metadataMulti = neighborDataResult.get(device.getRfnIdentifier());
+
+            if (metadataMulti.isValidResultForMulti(RfnMetadataMulti.PRIMARY_FORWARD_NEIGHBOR_DATA)) {
+                NeighborData deviceNeighborData = (NeighborData) metadataMulti.getMetadatas().get(RfnMetadataMulti.PRIMARY_FORWARD_NEIGHBOR_DATA);
+                json.put("deviceNeighborData", deviceNeighborData);
+            }
             if (entireRoute.isEmpty()) {
                 json.put("errorMsg",  accessor.getMessage(nameKey + "exception.primaryRoute.noDevicesReturned"));
             }

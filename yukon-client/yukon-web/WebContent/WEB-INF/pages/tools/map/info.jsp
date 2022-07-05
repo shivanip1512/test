@@ -92,6 +92,13 @@
     <c:if test="${showRoute}">
         <tags:nameValue2 nameKey=".route">${fn:escapeXml(pao.meter.route)}</tags:nameValue2>
     </c:if>
+    
+    <!-- Neighbor Data -->
+    <tags:nameValue2 nameKey=".etxBand" nameClass="dn js-etx-band-display" valueClass="dn js-etx-band js-etx-band-display"></tags:nameValue2>
+    <tags:nameValue2 nameKey=".linkCost" nameClass="dn js-link-cost-display" valueClass="dn js-link-cost js-link-cost-display"></tags:nameValue2>
+    <tags:nameValue2 nameKey=".numSamples" nameClass="dn js-num-samples-display" valueClass="dn js-num-samples js-num-samples-display"></tags:nameValue2>
+    <tags:nameValue2 nameKey=".flags" nameClass="dn js-flags-display" valueClass="dn js-flags js-flags-display"></tags:nameValue2>
+    
     <c:if test="${!empty routeData}">
         <tags:nameValue2 nameKey=".totalCost">${fn:escapeXml(routeData.totalCost)}</tags:nameValue2>
         <tags:nameValue2 nameKey=".hopCount">${fn:escapeXml(routeData.hopCount)}</tags:nameValue2>
@@ -105,11 +112,6 @@
             </tags:nameValue2>
         </c:if>
     </c:if>
-    <!-- Neighbor Data -->
-    <tags:nameValue2 nameKey=".etxBand" nameClass="dn js-etx-band-display" valueClass="dn js-etx-band js-etx-band-display"></tags:nameValue2>
-    <tags:nameValue2 nameKey=".linkCost" nameClass="dn js-link-cost-display" valueClass="dn js-link-cost js-link-cost-display"></tags:nameValue2>
-    <tags:nameValue2 nameKey=".numSamples" nameClass="dn js-num-samples-display" valueClass="dn js-num-samples js-num-samples-display"></tags:nameValue2>
-    <tags:nameValue2 nameKey=".flags" nameClass="dn js-flags-display" valueClass="dn js-flags js-flags-display"></tags:nameValue2>
     
     <tags:nameValue2 nameKey=".distance" nameClass="dn js-distance-display" valueClass="dn js-distance-display"><span class="js-distance"></span>&nbsp;<i:inline key=".distance.miles"/></tags:nameValue2>
 </tags:nameValueContainer2>

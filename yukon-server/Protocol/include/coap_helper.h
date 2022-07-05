@@ -38,6 +38,7 @@ public:
     static scoped_pdu_ptr make_confirmable_request(RequestMethod method, unsigned long token, unsigned short id);
     static scoped_pdu_ptr make_get_continuation(unsigned long token, unsigned short id, const BlockSize size, const unsigned num);
     static scoped_pdu_ptr make_nonconfirmable_request(RequestMethod method, unsigned long token, unsigned short id);
+    static scoped_pdu_ptr make_nonconfirmable_request(RequestMethod method, unsigned short id);
     static scoped_pdu_ptr make_ack(unsigned long token, unsigned short id, ResponseCode status);
     static scoped_pdu_ptr make_ack(unsigned short id, ResponseCode status);
     static scoped_pdu_ptr make_data_ack(unsigned long token, unsigned short id, std::vector<unsigned char> data);

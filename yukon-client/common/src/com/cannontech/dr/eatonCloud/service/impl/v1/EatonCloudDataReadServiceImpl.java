@@ -8,6 +8,7 @@ import java.util.Comparator;
 import java.util.Date;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 import java.util.Set;
 import java.util.stream.Collectors;
 import java.util.stream.StreamSupport;
@@ -74,26 +75,31 @@ public class EatonCloudDataReadServiceImpl implements EatonCloudDataReadService 
 
     @Override
     public Multimap<PaoIdentifier, PointData> collectDataForRead(Integer deviceId, Range<Instant> range) {
-        return collectDataForRead(Set.of(deviceId), range, true, "SINGLE DEVICE");
+        return collectDataForRead(Set.of(deviceId), range, true, null, "SINGLE DEVICE");
+    }
+    @Override
+    public Multimap<PaoIdentifier, PointData> collectDataForRead(Set<Integer> deviceIds, Range<Instant> range, String debugReadType) {
+        return collectDataForRead(deviceIds, range, false, null, debugReadType);
     }
 
     @Override
-    public Multimap<PaoIdentifier, PointData> collectDataForRead(Set<Integer> deviceIds, Range<Instant> range, String debugReadType) {
-        return collectDataForRead(deviceIds, range, false, debugReadType);
+    public Multimap<PaoIdentifier, PointData> collectDataForRead(Set<Integer> deviceIds, Range<Instant> range,
+            List<EatonCloudChannel> channels, String debugReadType) {
+        return collectDataForRead(deviceIds, range, false, channels, debugReadType);
     }
 
     private Multimap<PaoIdentifier, PointData> collectDataForRead(Set<Integer> deviceIds, Range<Instant> range,
-            boolean throwErrorIfFailed, String debugReadType) {
+            boolean throwErrorIfFailed, List<EatonCloudChannel> channels, String debugReadType) {
         Map<PaoType, Set<LiteYukonPAObject>> paos = paoDao.getLiteYukonPaos(deviceIds).stream()
                 .filter(pao -> pao.getPaoType().isCloudLcr())
                 .collect(Collectors.groupingBy(pao -> pao.getPaoType(), Collectors.toSet()));
 
         Multimap<PaoIdentifier, PointData> receivedPoints = HashMultimap.create();
         for (PaoType type : paos.keySet()) {
-            Set<BuiltInAttribute> attr = getAttributesForPaoType(type);
+            Set<BuiltInAttribute> attr = channels != null ? getAttributesForChannels(channels, type) : getAttributesForPaoType(type);
             log.info("Initiating read ({}) for type:{} devices: {} on attributes:{}", debugReadType, type, paos.get(type).size(),
                     attr.size());
-            receivedPoints.putAll(retrievePointData(paos.get(type), attr, range, throwErrorIfFailed));
+            receivedPoints.putAll(retrievePointData(paos.get(type), attr, range, channels, throwErrorIfFailed));
         }
 
         log.debug("({}) Retrieved point data:{} for devices:{}", debugReadType, receivedPoints.values().size(),
@@ -105,7 +111,8 @@ public class EatonCloudDataReadServiceImpl implements EatonCloudDataReadService 
     }
 
     private Multimap<PaoIdentifier, PointData> retrievePointData(Iterable<LiteYukonPAObject> paos,
-            Set<BuiltInAttribute> attributes, Range<Instant> queryRange, boolean throwErrorIfFailed) {
+            Set<BuiltInAttribute> attributes, Range<Instant> queryRange, List<EatonCloudChannel> channels,
+            boolean throwErrorIfFailed) {
 
         Map<Integer, LiteYukonPAObject> deviceIdToPao = StreamSupport.stream(paos.spliterator(), false)
                 .collect(Collectors.toMap(LiteYukonPAObject::getYukonID, liteYukonPao -> liteYukonPao));
@@ -113,7 +120,9 @@ public class EatonCloudDataReadServiceImpl implements EatonCloudDataReadService 
 
 
         List<EatonCloudTimeSeriesDeviceResultV1> timeSeriesResults = new ArrayList<EatonCloudTimeSeriesDeviceResultV1>();
-        Set<String> tags = EatonCloudChannel.getTagsForAttributes(attributes);
+        Set<String> tags = channels != null ? getTagsForChannels(channels,
+                paos.iterator().next().getPaoType()) : EatonCloudChannel
+                        .getTagsForAttributes(attributes);
 
         if (configurationSource.getBoolean(MasterConfigBoolean.EATON_CLOUD_JOBS_TREND, false)) {
             List<EatonCloudTimeSeriesDeviceV1> requests = deviceIdGuid.values().stream()
@@ -204,10 +213,10 @@ public class EatonCloudDataReadServiceImpl implements EatonCloudDataReadService 
         if (!chunk.isEmpty()) {
             chunkedRequests.add(chunk);
         }
-        //Debug or info?
+
         int totalTags = getTagsCount(requests);
         int totalTagsPerGuid = getTagsCount(List.of(chunkedRequests.get(0).get(0)));
-        log.info("Total Tags:{} Tags Per Guid:{} Tags Per Request:{}", totalTags, totalTagsPerGuid,
+        log.debug("Total Tags:{} Tags Per Guid:{} Tags Per Request:{}", totalTags, totalTagsPerGuid,
                 chunkedRequests.stream().map(r -> getTagsCount(r))
                         .collect(Collectors.toList()));
         return chunkedRequests;
@@ -381,6 +390,22 @@ public class EatonCloudDataReadServiceImpl implements EatonCloudDataReadService 
     private Set<BuiltInAttribute> getAttributesForPaoType(PaoType paoType) {
          return paoDefinitionDao.getDefinedAttributes(paoType).stream()
                 .map(attributeDefinition -> attributeDefinition.getAttribute())
+                .collect(Collectors.toSet());
+    }
+
+    private Set<BuiltInAttribute> getAttributesForChannels(List<EatonCloudChannel> channels, PaoType type) {
+        return channels.stream()
+                .map(channel -> channel.getBuiltInAttribute())
+                .filter(Objects::nonNull)
+                .filter(attribute -> paoDefinitionDao.findAttributeLookup(type, attribute).isPresent())
+                .collect(Collectors.toSet());
+    }
+    
+    public Set<String> getTagsForChannels(List<EatonCloudChannel> channels, PaoType type) {
+        return channels.stream()
+                .filter(channel -> channel.getBuiltInAttribute() == null
+                        || paoDefinitionDao.findAttributeLookup(type, channel.getBuiltInAttribute()).isPresent())
+                .map(c -> c.getChannelId().toString())
                 .collect(Collectors.toSet());
     }
 

@@ -38,6 +38,9 @@ public:
     Bytes createPost   (const Bytes &payload, const RfnIdentifier endpointId, const unsigned long token);
 
     //  throws PayloadTooLarge
+    Bytes createPut    (const Bytes &payload, const RfnIdentifier endpointId);
+
+    //  throws PayloadTooLarge
     Bytes createReply  (const unsigned short id, const Bytes &payload, const unsigned long token);
 
     //  throws PayloadTooLarge
