@@ -166,6 +166,7 @@ public final class Urls {
         public static final String GATEWAYS = "/stars/gateways";
         public static final String RELAYS = "/stars/relay";
         public static final String RTUS = "/stars/rtu-list";
+        public static final String COMM_ROUTES = "/stars/create";
         public static final String OPT_OUT_STATUS = "/stars/operator/optOut/admin";
         public static final String WORK_ORDERS = "/operator/WorkOrder/WorkOrder.jsp";
         public static final String IMPORT = "/stars/operator/account/accountImport";
