@@ -24,8 +24,8 @@ public final class EventSummary {
     private int numberOfTimesToRetry;
 
     private LMEatonCloudScheduledCycleCommand command;
-    private Integer eventId;
-    private Integer programId;
+    private int eventId;
+    private int programId;
     private Logger log;
     private RecentEventParticipationDao recentEventParticipationDao;
     private String failReason;
@@ -47,7 +47,7 @@ public final class EventSummary {
                 + " ";
     }
 
-    EventSummary(Integer eventId, int programId, LMEatonCloudScheduledCycleCommand command, Logger log,
+    EventSummary(int eventId, int programId, LMEatonCloudScheduledCycleCommand command, Logger log,
             RecentEventParticipationDao recentEventParticipationDao, DeviceErrorTranslatorDao deviceErrorTranslatorDao) {
         this.eventId = eventId;
         this.command = command;
@@ -64,7 +64,7 @@ public final class EventSummary {
         numberOfTimesToRetry = IntMath.divide((Integer) params.get(CommandParam.CYCLE_COUNT.getParamName()), 2,
                 RoundingMode.CEILING);
         log.info(
-                "[id:{}] Creating retry options for the first send of the shed command, possible retries:{} command params:{} command:{}",
+                "[id:{}] Sending shed, possible retries:{} command params:{} command:{}",
                 eventId, numberOfTimesToRetry, params, command);
     }
 
@@ -97,11 +97,11 @@ public final class EventSummary {
         return ToStringBuilder.reflectionToString(this, ToStringStyle.SHORT_PREFIX_STYLE);
     }
 
-    public Integer getProgramId() {
+    public int getProgramId() {
         return programId;
     }
 
-    public Integer getEventId() {
+    public int getEventId() {
         return eventId;
     }
 

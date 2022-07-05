@@ -12,7 +12,6 @@ import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicBoolean;
-import java.util.stream.Collectors;
 
 import javax.annotation.PostConstruct;
 
@@ -43,9 +42,8 @@ import com.cannontech.loadcontrol.messages.LMEatonCloudScheduledCycleCommand;
 import com.cannontech.system.GlobalSettingType;
 import com.cannontech.system.dao.GlobalSettingDao;
 import com.google.common.base.Strings;
-import com.google.common.collect.Lists;
 
-public class EatonCloudJobServiceImpl implements EatonCloudJobService {
+public class EatonCloudJobServiceImpl extends EatonCloudJobHelperService implements EatonCloudJobService {
     @Autowired private EatonCloudJobResponseProcessor eatonCloudJobResponseProcessor;
     @Autowired private DeviceDao deviceDao;
     @Autowired private EatonCloudCommunicationServiceV1 eatonCloudCommunicationService;
@@ -60,10 +58,7 @@ public class EatonCloudJobServiceImpl implements EatonCloudJobService {
     private static final Logger log = YukonLogManager.getLogger(EatonCloudJobServiceImpl.class);
 
     private AtomicBoolean isSendingCommands = new AtomicBoolean(false);
-    private int maxDevicesPerJob;
-    //TODO: change to 5
-    private static int pollInMinutes = 5;
-    //TODO: change to 2
+
     private static int firstRetryAfterPollMinutes = 2;
 
     // eventId
@@ -162,25 +157,12 @@ public class EatonCloudJobServiceImpl implements EatonCloudJobService {
     }
 
     /**
-     * Creates new job requests to send to Eaton Cloud
-     */
-    private List<EatonCloudJobRequestV1> getRequests(Map<Integer, String> guids, Set<Integer> devices, EventSummary summary) {
-        Map<String, Object> params = ShedParamHeper.getShedParams(summary.getCommand(), summary.getEventId());
-        List<List<Integer>> devicesPerJob = Lists.partition(Lists.newArrayList(devices), maxDevicesPerJob);
-        return devicesPerJob.stream().map(paoIds -> {
-            List<String> deviceGuids = paoIds.stream()
-                    .map(paoId -> guids.get(paoId))
-                    .collect(Collectors.toList());
-            return new EatonCloudJobRequestV1(deviceGuids, "LCR_Control", params);
-        }).collect(Collectors.toList());
-    }
-
-    /**
      * Starts jobs, schedules poll for results in 5 minutes
      */
     private Pair<Instant, List<String>> createJobs(Set<Integer> devices, EventSummary summary) {
         Map<Integer, String> guids = deviceDao.getGuids(devices);
-        List<EatonCloudJobRequestV1> requests = getRequests(guids, devices, summary);
+        Map<String, Object> params = ShedParamHeper.getShedParams(summary.getCommand(), summary.getEventId());
+        List<EatonCloudJobRequestV1> requests = getRequests(guids, devices, params);
         Instant jobCreationTime =  Instant.now();
 
         List<String> jobGuids = new ArrayList<>();
@@ -192,10 +174,12 @@ public class EatonCloudJobServiceImpl implements EatonCloudJobService {
         });
         if (!jobGuids.isEmpty()) {
             // schedule poll for device status in 5 minutes
-            eatonCloudJobPollService.schedulePoll(summary, pollInMinutes, devices.size(), jobGuids, jobCreationTime, summary.getCurrentTry().get());
+            eatonCloudJobPollService.schedulePoll(summary, pollInMinutes, devices.size(), jobGuids, jobCreationTime,
+                    summary.getCurrentTry().get());
             return Pair.of(jobCreationTime, jobGuids);
         }
-        eatonCloudJobSmartNotifService.sendSmartNotifications(summary, devices.size(), devices.size());
+        eatonCloudJobSmartNotifService.sendSmartNotifications(summary.getProgramId(), summary.getCommand().getGroupId(),
+                devices.size(), devices.size(), summary.getLogSummary(false));
         return null;
        
     }

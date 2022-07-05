@@ -39,17 +39,17 @@ public class EatonCloudJobSmartNotifServiceImpl implements EatonCloudJobSmartNot
     }
 
     @Override
-    public void sendSmartNotifications(EventSummary summary, int totalDevices, int totalFailed) {
+    public void sendSmartNotifications(int programId, int groupId, int totalDevices, int totalFailed, String debugText) {
         if (totalFailed == 0) {
             return;
         }
         boolean sendNotification = (totalFailed * 100) / totalDevices > failureNotificationPercent;
         if (sendNotification) {
-            String program = dbCache.getAllPaosMap().get(summary.getProgramId()).getPaoName();
-            String group = dbCache.getAllPaosMap().get(summary.getCommand().getGroupId()).getPaoName();
+            String program = dbCache.getAllPaosMap().get(programId).getPaoName();
+            String group = dbCache.getAllPaosMap().get(groupId).getPaoName();
             SmartNotificationEvent event = EatonCloudDrEventAssembler.assemble(group, program, totalDevices, totalFailed);
 
-            log.info(summary.getLogSummary(false) + " Sending smart notification event: {}", event);
+            log.info(debugText+ " Sending smart notification event: {}", event);
             smartNotificationEventCreationService.send(SmartNotificationEventType.EATON_CLOUD_DR, List.of(event));
         }
     }

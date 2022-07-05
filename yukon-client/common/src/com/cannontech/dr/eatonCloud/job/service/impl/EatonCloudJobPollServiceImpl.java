@@ -18,7 +18,6 @@ import org.springframework.util.CollectionUtils;
 
 import com.cannontech.clientutils.YukonLogManager;
 import com.cannontech.common.util.ScheduledExecutor;
-import com.cannontech.core.dao.DeviceDao;
 import com.cannontech.dr.eatonCloud.job.service.EatonCloudJobPollService;
 import com.cannontech.dr.eatonCloud.job.service.EatonCloudJobReadService;
 import com.cannontech.dr.eatonCloud.job.service.EatonCloudJobResponseProcessor;
@@ -29,7 +28,7 @@ import com.cannontech.dr.eatonCloud.service.v1.EatonCloudCommunicationServiceV1;
 import com.cannontech.dr.recenteventparticipation.ControlEventDeviceStatus;
 import com.cannontech.dr.recenteventparticipation.dao.RecentEventParticipationDao;
 
-public class EatonCloudJobPollServiceImpl implements EatonCloudJobPollService {
+public class EatonCloudJobPollServiceImpl extends EatonCloudJobPollServiceHelper implements EatonCloudJobPollService {
 
     private static final Logger log = YukonLogManager.getLogger(EatonCloudJobPollServiceImpl.class);
 
@@ -38,7 +37,6 @@ public class EatonCloudJobPollServiceImpl implements EatonCloudJobPollService {
     @Autowired private EatonCloudCommunicationServiceV1 eatonCloudCommunicationService;
     @Autowired private EatonCloudJobResponseProcessor eatonCloudJobResponseProcessor;
     @Autowired private RecentEventParticipationDao recentEventParticipationDao;
-    @Autowired private DeviceDao deviceDao;
     @Autowired private EatonCloudJobSmartNotifService eatonCloudJobSmartNotifService;
 
     private Set<Integer> polling = ConcurrentHashMap.newKeySet();
@@ -74,7 +72,9 @@ public class EatonCloudJobPollServiceImpl implements EatonCloudJobPollService {
                 int successes = poll(summary, jobGuids, jobCreationTime, currentTry);
                 // consider all devices that didn't succeed as failure
                 if (currentTry == 1) {
-                    eatonCloudJobSmartNotifService.sendSmartNotifications(summary, totalDevices, totalDevices - successes);
+                    eatonCloudJobSmartNotifService.sendSmartNotifications(summary.getProgramId(),
+                            summary.getCommand().getGroupId(), totalDevices, totalDevices - successes,
+                            summary.getLogSummary(false));
                 }
             } catch (Exception e) {
                 log.error("Error polling", e);
@@ -127,13 +127,7 @@ public class EatonCloudJobPollServiceImpl implements EatonCloudJobPollService {
             Map<String, Integer> guidsToDeviceIds, int currentTry) {
         if (!CollectionUtils.isEmpty(response.getFailures())) {
             response.getFailures().forEach((deviceGuid, error) -> {
-                int deviceError = 0;
-                try {
-                    deviceError = Integer.valueOf(error.getErrorNumber());
-                } catch (Exception e) {
-                    log.error(summary.getLogSummary(jobGuid, false) + "POLL unable to parse error code:{}",
-                            error.getErrorNumber(), e);
-                }
+                int deviceError = parseErrorCode(error, summary.getLogSummary(jobGuid, false));
                 eatonCloudJobResponseProcessor.processError(summary,
                         guidsToDeviceIds.get(deviceGuid), deviceGuid, jobGuid, deviceError,
                         ControlEventDeviceStatus.FAILED_WILL_RETRY, currentTry);
@@ -164,16 +158,4 @@ public class EatonCloudJobPollServiceImpl implements EatonCloudJobPollService {
                     .removeIf(deviceGuid -> !devices.contains(guidsToDeviceIds.get(deviceGuid)));
         }
     }
-
-    private Map<String, Integer> getDeviceIdsForGuids(EatonCloudJobStatusResponseV1 response) {
-        List<String> guids = new ArrayList<>();
-        if (!CollectionUtils.isEmpty(response.getSuccesses())) {
-            guids.addAll(response.getSuccesses());
-        }
-        if (!CollectionUtils.isEmpty(response.getFailures())) {
-            guids.addAll(response.getFailures().keySet());
-        }
-        return deviceDao.getDeviceIds(guids);
-    }
-
 }
