@@ -36,7 +36,7 @@ public class LM_ServerTest {
     private static LMClient port;
     private static ObjectFactory objectFactory;
     private MultispeakVendor mspVendor = new MultispeakVendor(23213, "Cannon", "Yukon", "pwd", "sadsad", "", "", 100, 120, 12,
-        null, false);
+        null, false, "Peak Demand , Usage");
 
     public static void main(String[] args) {
         LM_ServerTest test = new LM_ServerTest();

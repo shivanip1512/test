@@ -40,7 +40,7 @@ public class CD_CB_Test {
     private static CDClient instance;
     private static ObjectFactory objectFactory;
     private MultispeakVendor mspVendor = new MultispeakVendor(23213, "Cannon", "Yukon", "pwd", "sadsad", "", "", 100, 120, 12,
-        null, true);
+        null, true, "Peak Demand , Usage");
 
     public static void main(String[] args) {
         try {

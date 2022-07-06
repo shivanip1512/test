@@ -152,7 +152,7 @@ public class MultispeakController {
         }
 
         MultispeakVendor mspVendor = buildMspVendor(request, multispeak);
-
+        mspVendor.setAttributes("Peak demand and usage");
         try {
             addOrUpdateMspVendor(mspVendor, flashScope, isCreateNew, multispeak, userContext.getYukonUser());
         } catch (DataIntegrityViolationException e) {
@@ -372,6 +372,8 @@ public class MultispeakController {
 
         String outPassword = multispeakVendor.getOutPassword();
         String outUsername = multispeakVendor.getOutUserName();
+        
+        String attributes = multispeakVendor.getAttributes();
         if (multispeak.getMspVendor().getVendorID() != null
             && multispeak.getMspVendor().getVendorID() == MultispeakVendor.CANNON_MSP_VENDORID) {
             mspInterfaces = multispeak.getMspInterfaceList();
@@ -390,7 +392,7 @@ public class MultispeakController {
 
         MultispeakVendor mspVendor =
             new MultispeakVendor(vendorId, companyName, appName, username, password, outUsername, outPassword,
-                maxReturnRecords, requestMessageTimeout, maxInitiateRequestObjects, templateNameDefault, validateCertificate);
+                maxReturnRecords, requestMessageTimeout, maxInitiateRequestObjects, templateNameDefault, validateCertificate, attributes);
 
         mspVendor.setMspInterfaces(mspInterfaces);
 

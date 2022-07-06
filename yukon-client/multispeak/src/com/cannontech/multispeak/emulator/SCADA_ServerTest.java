@@ -25,7 +25,7 @@ public class SCADA_ServerTest {
 	private static ObjectFactory objectFactory;
 
 	private static MultispeakVendor mspVendor = new MultispeakVendor(23213, "Cannon", "Yukon", "yukon", "yukon", "", "", 100,
-        120, 12, null, false);
+        120, 12, null, false, "Peak Demand , Usage");
 
     public static void main(String[] args) {
         SCADA_ServerTest test = new SCADA_ServerTest();

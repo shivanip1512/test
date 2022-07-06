@@ -71,7 +71,7 @@ public class MR_CB_Test {
     private static MRClient instance;
     private static ObjectFactory objectFactory;
     private MultispeakVendor mspVendor = new MultispeakVendor(23213, "Cannon", "Yukon", "pwd", "sadsad", "", "", 100, 120, 12,
-        null, false);
+        null, false, "Peak Demand , Usage");
 
     public static void main(String[] args) {
         MR_CB_Test test = new MR_CB_Test();

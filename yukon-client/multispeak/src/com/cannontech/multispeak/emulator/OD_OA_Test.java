@@ -36,7 +36,7 @@ public class OD_OA_Test {
     private static ODClient port;
     private static ObjectFactory objectFactory;
     private static MultispeakVendor mspVendor = new MultispeakVendor(23213, "Cannon", "Yukon", "pwd", "sadsad", "", "", 100,
-        120, 12, null, false);
+        120, 12, null, false, "Peak Demand , Usage");
 
     public static void main(String[] args) {
         OD_OA_Test test = new OD_OA_Test();

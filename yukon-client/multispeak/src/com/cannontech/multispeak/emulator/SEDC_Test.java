@@ -34,11 +34,12 @@ import com.cannontech.multispeak.client.core.MRClient;
  */
 public class SEDC_Test {
 
-	// private static String endpointURL = "http://127.0.0.1:8088/MR_CBSoap";
-	private static String endpointURL = "http://127.0.0.1:8088/mockMR_ServerSoap";
-	private static MultispeakVendor mspVendor = new MultispeakVendor(23213, "Cannon", "Yukon", "pwd", "sadsad", "", "", 100, 120, 12, null, false);
-	private static MRClient instance;
-	private static ObjectFactory objectFactory;
+    // private static String endpointURL = "http://127.0.0.1:8088/MR_CBSoap";
+    private static String endpointURL = "http://127.0.0.1:8088/mockMR_ServerSoap";
+    private static MultispeakVendor mspVendor = new MultispeakVendor(23213, "Cannon", "Yukon", "pwd", "sadsad", "", "", 100, 120,
+            12, null, false, "Peak Demand , Usage");
+    private static MRClient instance;
+    private static ObjectFactory objectFactory;
 
     public static void main(String[] args) {
         try {

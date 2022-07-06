@@ -37,7 +37,7 @@ public class CB_CD_Test {
 		CBClient instance = context.getBean(CBClient.class);
 		ObjectFactory objectFactory = context.getBean(ObjectFactory.class);
         MultispeakVendor mspVendor =
-            new MultispeakVendor(23213, "Cannon", "Yukon", "pwd", "sadsad", "", "", 100, 120, 12, null, false);
+            new MultispeakVendor(23213, "Cannon", "Yukon", "pwd", "sadsad", "", "", 100, 120, 12, null, false, "Peak Demand , Usage");
         int todo = 2; // 0=meterByServLoc, 1=getMethods, 2=pingURL
 
         try {
