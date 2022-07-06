@@ -1521,6 +1521,25 @@ BOOST_AUTO_TEST_CASE(test_LowerSetPoint_Cogeneration_ReverseFlow_Success)
     }
 }
 
+BOOST_AUTO_TEST_CASE(test_needsAutoBlockEnable_fail_outdated_point_timestamp)
+{
+    regulator->loadAttributes(&attributes);
+
+    CtiPointDataMsg autoBlockEnable(8100, 0.0, AbnormalQuality, StatusPointType);
+    regulator->handlePointData(autoBlockEnable);
+
+    BOOST_CHECK_EQUAL(0, capController.signalMessages.size());
+    BOOST_CHECK_EQUAL(0, capController.requestMessages.size());
+
+    // Validate generated RegulatorEvent messages
+    {
+        std::vector<Cti::CapControl::RegulatorEvent>  events;
+        Cti::CapControl::Test::exportRegulatorEvents(events, test_limiter);
+
+        BOOST_CHECK_EQUAL(0, events.size());
+    }
+}
+
 BOOST_AUTO_TEST_CASE(test_EnableKeepAliveFromAutoMode_SetPointControl_SuppressAutoBlockEnable)
 {
     regulator->loadAttributes(&attributes);

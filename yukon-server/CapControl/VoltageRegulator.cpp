@@ -146,7 +146,8 @@ VoltageRegulator::VoltageRegulator(Cti::RowReader & rdr)
     _installOrientation( InstallOrientation::Forward ),
     _controlPolicy( std::make_unique<StandardControlPolicy>() ),
     _keepAlivePolicy( std::make_unique<CountdownKeepAlivePolicy>() ),
-    _scanPolicy( std::make_unique<LoadOnlyScanPolicy>() )
+    _scanPolicy( std::make_unique<LoadOnlyScanPolicy>() ),
+    _regulatorTimeout(0)
 {
     // empty...
 }
@@ -164,7 +165,8 @@ VoltageRegulator::VoltageRegulator(const VoltageRegulator & toCopy)
     _recentTapOperation(toCopy._recentTapOperation),
     _keepAlivePeriod( toCopy._keepAlivePeriod ),
     _keepAliveValue( toCopy._keepAliveValue ),
-    _installOrientation( toCopy._installOrientation )
+    _installOrientation( toCopy._installOrientation ),
+    _regulatorTimeout(0)
 
 {
     // empty...
