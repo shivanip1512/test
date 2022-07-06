@@ -9,5 +9,7 @@
     <entry key="yukon.web.modules.operator.routes.title">General</entry>
     <entry key="yukon.web.modules.operator.routes.name">Name</entry>
     <entry key="yukon.web.modules.operator.routes.defaultRoute">Default Route</entry>
+    <entry key="yukon.web.modules.operator.routes.selectSignalTransmitter">Select Signal Transmitter</entry>
+    
     
 </properties>
