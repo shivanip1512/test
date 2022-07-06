@@ -2,7 +2,6 @@ package com.cannontech.web.stars.routes;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.stream.Collectors;
 
 import javax.servlet.http.HttpServletRequest;
 
@@ -14,22 +13,26 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.ModelMap;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.ModelAttribute;
+import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.client.RestClientException;
 
 import com.cannontech.clientutils.YukonLogManager;
 import com.cannontech.common.device.model.DeviceBaseModel;
 import com.cannontech.common.pao.PaoType;
+import com.cannontech.core.roleproperties.HierarchyPermissionLevel;
+import com.cannontech.core.roleproperties.YukonRoleProperty;
+import com.cannontech.database.data.route.RouteBase;
 import com.cannontech.i18n.YukonMessageSourceResolvable;
 import com.cannontech.user.YukonUserContext;
+import com.cannontech.web.PageEditMode;
 import com.cannontech.web.api.ApiRequestHelper;
 import com.cannontech.web.api.ApiURL;
 import com.cannontech.web.api.route.model.RouteBaseModel;
 import com.cannontech.web.api.validation.ApiCommunicationException;
 import com.cannontech.web.api.validation.ApiControllerHelper;
 import com.cannontech.web.common.flashScope.FlashScope;
-import com.cannontech.core.roleproperties.YukonRoleProperty;
-import com.cannontech.core.roleproperties.HierarchyPermissionLevel;
 import com.cannontech.web.security.annotation.CheckPermissionLevel;
 import com.cannontech.yukon.IDatabaseCache;
 import com.fasterxml.jackson.core.JsonProcessingException;
@@ -81,6 +84,38 @@ public class RouteController {
         }
         model.addAttribute("nonCCUAndMacroRoutes", nonCCUAndMacroRoutes);
         return "/routes/list.jsp";
+    }
+    
+    @GetMapping("create")
+    public String create(ModelMap model, YukonUserContext userContext, HttpServletRequest request) {
+        model.addAttribute("mode", PageEditMode.CREATE);
+        model.addAttribute("communicationRoute", new RouteBaseModel<RouteBase>());
+        return "/routes/view.jsp";
+    }
+    
+    @PostMapping("create")
+    public String create(@ModelAttribute("communicationRoute") RouteBaseModel<?> communicationRoute, ModelMap model,
+            YukonUserContext userContext, FlashScope flash, HttpServletRequest request) {
+        ResponseEntity<? extends Object> response = null;
+        try {
+            String url = helper.findWebServerUrl(request, userContext, ApiURL.retrieveAllRoutesUrl);
+            response = apiRequestHelper.callAPIForObject(userContext, request, url,
+                    HttpMethod.POST, Object.class, communicationRoute);
+
+        } /*catch (ApiCommunicationException e) {
+            log.error(e.getMessage());
+            flash.setError(new YukonMessageSourceResolvable(communicationKey));
+            return redirectListPageLink;
+        } catch (RestClientException ex) {
+            log.error("Error retrieving details: " + ex.getMessage());
+            return redirectListPageLink;
+        } catch (JsonProcessingException ex) {
+            log.error("Error retrieving details: " + ex.getMessage());
+            return redirectListPageLink;
+        }*/finally {
+
+        }
+        return "/routes/view.jsp";
     }
 
 }

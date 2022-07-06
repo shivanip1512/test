@@ -2,5 +2,12 @@
 <!DOCTYPE properties SYSTEM "http://java.sun.com/dtd/properties.dtd">
 <properties>
     <entry key="yukon.web.modules.operator.routes.list.pageName">Routes</entry>
+    <entry key="yukon.web.modules.operator.routes.createCommRoute.create">Communication Route</entry>
+    <entry key="yukon.web.modules.operator.routes.createMacroRoute.create">Macro Route</entry>
+    <entry key="yukon.web.modules.operator.routes.createObject.title">Create Route</entry>
+    <entry key="yukon.web.modules.operator.routes.CREATE.pageName">Create Communication Route</entry>
+    <entry key="yukon.web.modules.operator.routes.title">General</entry>
+    <entry key="yukon.web.modules.operator.routes.name">Name</entry>
+    <entry key="yukon.web.modules.operator.routes.defaultRoute">Default Route</entry>
     
 </properties>
