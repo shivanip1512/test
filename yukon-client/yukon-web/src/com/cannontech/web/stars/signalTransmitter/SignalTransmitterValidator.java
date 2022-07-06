@@ -31,13 +31,15 @@ public class SignalTransmitterValidator<T extends TerminalBase<?>> extends Simpl
     protected void doValidation(T terminalBase, Errors errors) {
         String paoId = terminalBase.getId() != null ? terminalBase.getId().toString() : null;
 
-        // Validate Name
-        yukonValidationHelper.validatePaoName(terminalBase.getName(), terminalBase.getType(), errors,
-                yukonValidationHelper.getMessage("yukon.common.name"), paoId, "name");
-
         // Validate Type
         yukonValidationHelper.checkIfFieldRequired("type", errors, terminalBase.getType(),
                 yukonValidationHelper.getMessage(key + ".type"));
+
+        // Validate Name
+        if (!errors.hasFieldErrors("type")) {
+        yukonValidationHelper.validatePaoName(terminalBase.getName(), terminalBase.getType(), errors,
+                yukonValidationHelper.getMessage("yukon.common.name"), paoId, "name");
+        }
 
         // validate commChannel
         yukonValidationHelper.checkIfFieldRequired("commChannel.id", errors,
