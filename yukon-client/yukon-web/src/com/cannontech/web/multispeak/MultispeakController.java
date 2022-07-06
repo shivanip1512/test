@@ -152,7 +152,6 @@ public class MultispeakController {
         }
 
         MultispeakVendor mspVendor = buildMspVendor(request, multispeak);
-        mspVendor.setAttributes("Peak demand and usage");
         try {
             addOrUpdateMspVendor(mspVendor, flashScope, isCreateNew, multispeak, userContext.getYukonUser());
         } catch (DataIntegrityViolationException e) {
