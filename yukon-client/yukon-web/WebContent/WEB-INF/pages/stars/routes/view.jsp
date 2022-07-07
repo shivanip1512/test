@@ -11,6 +11,7 @@
     <cti:standardPage module="operator" page="routes.${mode}">
     <cti:url var="action" value="/stars/device/routes/create" />
     <form:form modelAttribute="communicationRoute" action="${action}" method="post" id="js-comm-route-form">
+         <cti:csrfToken />
         <tags:sectionContainer2 nameKey="general">
             <tags:nameValueContainer2>
             
@@ -34,7 +35,7 @@
                     
             </tags:nameValueContainer2>
                 <div class="page-action-area">
-                    <cti:button nameKey="save" classes="primary action js-save" busy="true"/>
+                    <cti:button type="submit" nameKey="save" classes="primary action js-save" busy="true"/>
                     <cti:url var="viewUrl" value="/stars/device/routes/list" />
                     <cti:button nameKey="cancel" href="${viewUrl}"/>
                 </div>
