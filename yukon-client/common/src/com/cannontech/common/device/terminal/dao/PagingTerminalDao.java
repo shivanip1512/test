@@ -7,9 +7,6 @@ import com.cannontech.common.model.Direction;
 
 public interface PagingTerminalDao {
 
-    /**
-     * Returns a list of signal transmitters for retrieve all api 
-     */
     List<TerminalBase> getAllTerminals(SortBy sortBy, Direction direction, String terminalName);
     
     

@@ -303,6 +303,7 @@
                 <value>classpath:com/cannontech/yukon/web/modules/smartNotifications/root</value>
                 <value>classpath:com/cannontech/yukon/web/modules/dr/rfBroadcastEventDetail</value>
                 <value>classpath:com/cannontech/yukon/web/modules/operator/pagingTerminal</value>
+                <value>classpath:com/cannontech/yukon/web/modules/operator/routes</value>
             </list>
         </constructor-arg>
     </bean>
@@ -490,6 +491,4 @@
     <bean class="com.cannontech.yukon.system.metrics.publisher.YukonMetricPublisher"/>
     <bean class="com.cannontech.common.util.jmx.JmxConnectorHelper"/>
     <bean class="com.cannontech.yukon.system.metrics.helper.YukonMetricHelper"/>
-    
-    <bean class="com.cannontech.common.device.terminal.dao.impl.PagingTerminalDaoImpl"/>
 </beans>

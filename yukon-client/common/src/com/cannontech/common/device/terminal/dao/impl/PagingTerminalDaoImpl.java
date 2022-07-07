@@ -1,6 +1,7 @@
 package com.cannontech.common.device.terminal.dao.impl;
 
 import java.sql.SQLException;
+import java.util.ArrayList;
 import java.util.List;
 
 import org.apache.commons.lang3.StringUtils;
@@ -18,17 +19,21 @@ import com.cannontech.database.YukonRowMapper;
 public class PagingTerminalDaoImpl implements PagingTerminalDao {
     @Autowired private YukonJdbcTemplate jdbcTemplate;
     private final YukonRowMapper<TerminalBase> rowMapper = createRowMapper();
+    private static final List<String> paoTypes = new ArrayList<String>() {
+        {
+            add(PaoType.SNPP_TERMINAL.getDbString());
+            add(PaoType.TNPP_TERMINAL.getDbString());
+            add(PaoType.WCTP_TERMINAL.getDbString());
+            add(PaoType.TAPTERMINAL.getDbString());
+        }
+    };
 
     @Override
     public List<TerminalBase> getAllTerminals(SortBy sortBy, Direction direction, String terminalName) {
 
         SqlStatementBuilder sql = new SqlStatementBuilder();
-        sql.append("SELECT PAObjectID, PAOName, Type, DisableFlag FROM YukonPAObject WHERE");
-        sql.append("Type IN ('" + PaoType.SNPP_TERMINAL.getDbString() + "','" 
-                                + PaoType.TNPP_TERMINAL.getDbString() + "','"
-                                + PaoType.WCTP_TERMINAL.getDbString() + "','"
-                                + PaoType.TAPTERMINAL.getDbString() + "')");
-
+        sql.append("SELECT PAObjectID, PAOName, Type, DisableFlag FROM YukonPAObject WHERE TYPE ");
+        sql.in(paoTypes);
         if (StringUtils.isNotEmpty(terminalName)) {
             sql.append("AND UPPER(PAOName) LIKE");
             sql.append("'%" + terminalName.toUpperCase() + "%'");
