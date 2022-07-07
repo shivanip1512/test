@@ -14,6 +14,7 @@ import org.springframework.stereotype.Controller;
 import org.springframework.ui.ModelMap;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.ModelAttribute;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.client.RestClientException;
@@ -34,7 +35,6 @@ import com.cannontech.web.api.validation.ApiCommunicationException;
 import com.cannontech.web.api.validation.ApiControllerHelper;
 import com.cannontech.web.common.flashScope.FlashScope;
 import com.cannontech.web.security.annotation.CheckPermissionLevel;
-import com.cannontech.yukon.IDatabaseCache;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
@@ -44,7 +44,6 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 public class RouteController {
     @Autowired private ApiControllerHelper helper;
     @Autowired private ApiRequestHelper apiRequestHelper;
-    @Autowired private IDatabaseCache serverDatabaseCache;
 
     private static final String communicationKey = "yukon.exception.apiCommunicationException.communicationError";
     private static final String redirectListPageLink = "redirect:/stars/device/routes/list";
@@ -96,26 +95,70 @@ public class RouteController {
     @PostMapping("create")
     public String create(@ModelAttribute("communicationRoute") RouteBaseModel<?> communicationRoute, ModelMap model,
             YukonUserContext userContext, FlashScope flash, HttpServletRequest request) {
-        ResponseEntity<? extends Object> response = null;
         try {
+            ResponseEntity<? extends Object> response = null;
             String url = helper.findWebServerUrl(request, userContext, ApiURL.retrieveAllRoutesUrl);
             response = apiRequestHelper.callAPIForObject(userContext, request, url,
-                    HttpMethod.POST, Object.class, communicationRoute);
+                    HttpMethod.POST, RouteBaseModel.class, communicationRoute);
+            
+            if (response.getStatusCode() == HttpStatus.OK || response.getStatusCode() == HttpStatus.CREATED) {
+                RouteBaseModel<?> routeCreated = (RouteBaseModel<?>) response.getBody();
+                flash.setConfirm(new YukonMessageSourceResolvable("yukon.common.save.success", communicationRoute.getDeviceName()));
+                return "redirect:/stars/device/routes/" + routeCreated.getDeviceId();
+            }
 
-        } /*catch (ApiCommunicationException e) {
+        } catch (ApiCommunicationException e) {
             log.error(e.getMessage());
             flash.setError(new YukonMessageSourceResolvable(communicationKey));
             return redirectListPageLink;
         } catch (RestClientException ex) {
-            log.error("Error retrieving details: " + ex.getMessage());
+            log.error("Error creating route: {}. Error: {}", communicationRoute.getDeviceName(), ex.getMessage());
+            flash.setError(new YukonMessageSourceResolvable("yukon.web.api.save.error",
+                                                            communicationRoute.getDeviceName(),
+                                                            ex.getMessage()));
             return redirectListPageLink;
-        } catch (JsonProcessingException ex) {
-            log.error("Error retrieving details: " + ex.getMessage());
-            return redirectListPageLink;
-        }*/finally {
-
         }
-        return "/routes/view.jsp";
+        return null;
+    }
+    
+    @GetMapping("/{id}")
+    public String view(ModelMap model, YukonUserContext userContext, @PathVariable int id, FlashScope flash,
+            HttpServletRequest request) {
+        try {
+            model.addAttribute("mode", PageEditMode.VIEW);
+            String url = helper.findWebServerUrl(request, userContext, ApiURL.retrieveAllRoutesUrl+ "/" + id);
+
+            RouteBaseModel<?> routeBase = retrieveCommunicationRoute(userContext, request, id, url);
+            if (routeBase == null) {
+//                flash.setError(new YukonMessageSourceResolvable(baseKey + "retrieve.error"));
+                return redirectListPageLink;
+            }
+//            model.addAttribute("selectedSignalTransmitterType", routeBase.getType());
+            model.addAttribute("communicationRoute", routeBase);
+            return "/routes/view.jsp";
+        } catch (ApiCommunicationException e) {
+            log.error(e.getMessage());
+            flash.setError(new YukonMessageSourceResolvable(communicationKey));
+            return redirectListPageLink;
+        }
+
+    }
+    
+    private RouteBaseModel<?> retrieveCommunicationRoute(YukonUserContext userContext, HttpServletRequest request, int id, String url) {
+        RouteBaseModel<?> routeBase = null;
+        try {
+            ResponseEntity<? extends Object> response = apiRequestHelper.callAPIForObject(userContext, request, url,
+                    HttpMethod.GET, RouteBaseModel.class);
+
+            if (response.getStatusCode() == HttpStatus.OK) {
+                routeBase = (RouteBaseModel<?>) response.getBody();
+                routeBase.setDeviceId(id);
+            }
+
+        } catch (RestClientException ex) {
+            log.error("Error retrieving route : " + ex.getMessage());
+        }
+        return routeBase;
     }
 
 }
