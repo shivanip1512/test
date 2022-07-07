@@ -53,7 +53,8 @@ public class DerEdgeCommunicationServiceImpl implements DerEdgeCommunicationServ
         thriftBroadcastMessenger = new ThriftRequestReplyTemplate<>(
                 jmsTemplateFactory.createTemplate(JmsApiDirectory.EDGE_DR_BROADCAST),
                 new EdgeDrBroadcastRequestSerializer(),
-                new EdgeDrBroadcastResponseSerializer());
+                new EdgeDrBroadcastResponseSerializer(),
+                JmsApiDirectory.EDGE_DR_BROADCAST.getResponseQueueName());
 
         thriftUnicastMessenger = new ThriftRequestReplyTemplate<>(
                 jmsTemplateFactory.createTemplate(JmsApiDirectory.EDGE_DR_UNICAST), 

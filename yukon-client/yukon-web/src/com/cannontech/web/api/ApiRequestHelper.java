@@ -123,8 +123,6 @@ public class ApiRequestHelper {
         });
         paramTypeRefMap.put(TerminalBase.class, new ParameterizedTypeReference<List<TerminalBase>>() {
         });
-        paramTypeRefMap.put(NotificationGroup.class, new ParameterizedTypeReference<List<NotificationGroup>>() {
-        });
         paramTypeRefMap.put(Object.class, new ParameterizedTypeReference<List<Object>>() {
         });
     }
@@ -151,6 +149,8 @@ public class ApiRequestHelper {
         paramTypeObjectRefMap.put(ProgramGear.class, new ParameterizedTypeReference<ProgramGear>() {
         });
         paramTypeObjectRefMap.put(VirtualDeviceBaseModel.class, new ParameterizedTypeReference<PaginatedResponse<VirtualDeviceBaseModel<?>>>() {
+        });
+        paramTypeObjectRefMap.put(NotificationGroup.class, new ParameterizedTypeReference<PaginatedResponse<NotificationGroup>>() {
         });
         paramTypeObjectRefMap.put(DeviceBaseModel.class, new ParameterizedTypeReference<SearchResults<DeviceBaseModel>>() {});
     }

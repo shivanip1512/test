@@ -1,5 +1,6 @@
 package com.cannontech.web.stars.service.impl;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 import java.util.stream.Collectors;
@@ -19,6 +20,8 @@ import com.cannontech.common.pao.PaoType;
 import com.cannontech.common.pao.attribute.model.BuiltInAttribute;
 import com.cannontech.common.pao.attribute.service.AttributeService;
 import com.cannontech.common.rfn.model.RfnDevice;
+import com.cannontech.core.dynamic.AsyncDynamicDataSource;
+import com.cannontech.core.dynamic.PointValueQualityHolder;
 import com.cannontech.database.data.lite.LitePoint;
 import com.cannontech.database.data.lite.LiteYukonUser;
 import com.cannontech.web.stars.gateway.model.CellularDeviceCommData;
@@ -31,15 +34,32 @@ public class RfnCellularCommDataServiceImpl implements RfnCellularCommDataServic
     @Autowired private AttributeService attributeService;
     @Autowired private CommandExecutionService commandExecutionService;
     @Autowired private RfnDeviceDao rfnDeviceDao;
+    @Autowired private AsyncDynamicDataSource asyncDynamicDataSource;
 
-    public List<CellularDeviceCommData> getCellularDeviceCommDataForGateways(List<Integer> gatewayIds) {
+    public List<CellularDeviceCommData> getCellularDeviceCommDataForGateways(List<Integer> gatewayIds, List<Integer> commStatuses, List<PaoType> deviceTypes) {
+        List<CellularDeviceCommData> cellDeviceCommData = new ArrayList<CellularDeviceCommData>();
         // Select all the Cellular devices in DynamicRfnDeviceData
-        List<RfnDevice> cellDevices = rfnDeviceDao.getDevicesForGateways(gatewayIds, PaoType.getCellularTypes());
+        List<RfnDevice> cellDevices = rfnDeviceDao.getDevicesForGateways(gatewayIds, deviceTypes);
         // Turn the list of RfnDevices into CellularDeviceCommData objects
-        List<CellularDeviceCommData> cellDeviceCommData = cellDevices.stream()
-                                                              .map(this::buildCellularDeviceCommDataObject)
-                                                              .filter(Objects::nonNull)
-                                                              .collect(Collectors.toList());
+        cellDeviceCommData = cellDevices.stream().map(this::buildCellularDeviceCommDataObject)
+                                                 .filter(Objects::nonNull)
+                                                 .collect(Collectors.toList());
+       
+        //filter by comm status
+        if (commStatuses != null && !commStatuses.isEmpty()) {
+            final List<CellularDeviceCommData> filteredCommStatus = new ArrayList<CellularDeviceCommData>();
+            cellDeviceCommData.forEach(cellData -> {
+                if (cellData.getCommStatusPoint() != null) {
+                    PointValueQualityHolder commStatus = asyncDynamicDataSource.getPointValue(cellData.getCommStatusPoint().getPointID());
+                    if (commStatus != null) {
+                        if (commStatuses.contains(Integer.valueOf((int)commStatus.getValue()))) {
+                            filteredCommStatus.add(cellData);
+                        }
+                    }
+                }
+            });
+            cellDeviceCommData = filteredCommStatus;
+        }
 
         return cellDeviceCommData;
     }

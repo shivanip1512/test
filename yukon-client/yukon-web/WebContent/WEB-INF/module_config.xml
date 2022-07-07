@@ -1367,6 +1367,16 @@
                 </page>
                 </pages>
             </page>
+            <page name="routes.list" type="BASIC" hideSearch="true">
+                <link>/stars/device/routes/list</link>
+                <pages>
+                    <page name="routes.CREATE" type="BASIC"/>
+                    <page name="routes.VIEW" type="DETAIL">
+                    <link>/stars/device/routes/{id}</link>
+                    <labelArgument>${routes.name}</labelArgument>
+                </page>
+                </pages>
+            </page>
             <page name="virtualDevices.list" type="BASIC">
                 <link>/stars/virtualDevices</link>
                 <pages>
