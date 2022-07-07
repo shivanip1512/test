@@ -2,11 +2,8 @@ package com.cannontech.amr.rfn.dao.impl;
 
 import java.io.IOException;
 import java.util.Collection;
-import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
-import java.util.Map;
-import java.util.Optional;
 import java.util.Set;
 
 import javax.annotation.PostConstruct;
@@ -39,7 +36,6 @@ public class RfnDeviceAttributeDaoImpl implements RfnDeviceAttributeDao {
     @Value("classpath:metricIdToAttributeMapping.json") private Resource inputFile;
 
     private BiMap<Integer, BuiltInAttribute> attributeLookup = null;
-    private Map<PaoType, BiMap<Integer, BuiltInAttribute>> paoAttributes = null;
     private Set<BuiltInAttribute> metricAttributes = null;
 
     public static class MetricIdAttributeMapping {
@@ -89,7 +85,6 @@ public class RfnDeviceAttributeDaoImpl implements RfnDeviceAttributeDao {
     public void initialize() throws IOException {
 
         attributeLookup = HashBiMap.create();
-        paoAttributes = new HashMap<>();
         metricAttributes = new HashSet<>();
 
         String jsonString = IOUtils.toString(inputFile.getInputStream(), Charsets.UTF_8);
@@ -103,12 +98,6 @@ public class RfnDeviceAttributeDaoImpl implements RfnDeviceAttributeDao {
                 log.warn("Invalid metric number " + m.metricId, ex);
             } catch (IllegalArgumentException ex) {
                 log.warn("Invalid attribute name " + m.attribute, ex);
-            }
-        }
-        for (MetricIdAttributeMapping.AttributeOverride a : metricList.attributeOverrides) {
-            for (String paoType : a.paoTypes) {
-                paoAttributes.computeIfAbsent(PaoType.getForDbString(paoType), key -> HashBiMap.create())
-                             .put(a.metricId, a.attribute);
             }
         }
     }
@@ -136,10 +125,7 @@ public class RfnDeviceAttributeDaoImpl implements RfnDeviceAttributeDao {
     
     @Override
     public Integer getMetricIdForAttribute(BuiltInAttribute attribute, PaoType type) {
-        Integer metricId = 
-                Optional.ofNullable(paoAttributes.get(type))
-                        .map(m -> m.inverse().get(attribute))
-                        .orElse(attributeLookup.inverse().get(attribute));
+        Integer metricId = attributeLookup.inverse().get(attribute);
         
         if (metricId == null) {
             throw new IllegalStateException("No metricId found for attribute " + attribute);

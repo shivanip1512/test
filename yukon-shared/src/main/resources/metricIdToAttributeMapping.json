@@ -7,11 +7,10 @@
                 { "metricId" :  5, "attributeMagnitude" : 3, "attribute" : "DELIVERED_DEMAND" },
                 { "metricId" :  6, "attributeMagnitude" : 3, "attribute" : "RECEIVED_DEMAND" },
 
-                { "metricId" :  7, "attributeMagnitude" : 3, "attribute" : "PEAK_DEMAND" },
+                { "metricId" :  7, "attributeMagnitude" : 3, "attribute" : "DELIVERED_PEAK_DEMAND" },
                 { "metricId" :  8, "attributeMagnitude" : 3, "attribute" : "RECEIVED_PEAK_DEMAND" },
                 { "metricId" :  9, "attributeMagnitude" : 3, "attribute" : "PEAK_DEMAND_FROZEN" },
 
-                { "metricId" : 11, "attributeMagnitude" : 3, "attribute" : "USAGE_FROZEN" },
                 { "metricId" : 12, "attributeMagnitude" : 3, "attribute" : "RECEIVED_KWH_FROZEN" },
 
                 { "metricId" : 13, "attributeMagnitude" : 3, "attribute" : "SUM_PEAK_DEMAND" },
@@ -127,11 +126,11 @@
 
                 { "metricId" : 257, "attribute" : "TEMPERATURE_DEVICE" },
                 
-                { "metricId" : 1001, "attributeMagnitude" : 3, "attribute" : "USAGE_RATE_A" },
+                { "metricId" : 1001, "attributeMagnitude" : 3, "attribute" : "DELIVERED_KWH_RATE_A" },
                 { "metricId" : 1002, "attributeMagnitude" : 3, "attribute" : "RECEIVED_KWH_RATE_A" },
                 { "metricId" : 1003, "attributeMagnitude" : 3, "attribute" : "SUM_KWH_RATE_A" },
                 { "metricId" : 1004, "attributeMagnitude" : 3, "attribute" : "NET_KWH_RATE_A" },
-                { "metricId" : 1007, "attributeMagnitude" : 3, "attribute" : "PEAK_DEMAND_RATE_A" },
+                { "metricId" : 1007, "attributeMagnitude" : 3, "attribute" : "DELIVERED_PEAK_DEMAND_RATE_A" },
                 { "metricId" : 1008, "attributeMagnitude" : 3, "attribute" : "RECEIVED_PEAK_DEMAND_RATE_A" },
                 { "metricId" : 1009, "attributeMagnitude" : 3, "attribute" : "PEAK_DEMAND_FROZEN_RATE_A" },
                 { "metricId" : 1013, "attributeMagnitude" : 3, "attribute" : "SUM_PEAK_DEMAND_RATE_A" },
@@ -159,11 +158,11 @@
                 { "metricId" : 1210, "attributeMagnitude" : 3, "attribute" : "SUM_PEAK_KVA_RATE_A" },
                 { "metricId" : 1222, "attributeMagnitude" : 3, "attribute" : "KVAH_Q234_RATE_A" },
 
-                { "metricId" : 2001, "attributeMagnitude" : 3, "attribute" : "USAGE_RATE_B" },
+                { "metricId" : 2001, "attributeMagnitude" : 3, "attribute" : "DELIVERED_KWH_RATE_B" },
                 { "metricId" : 2002, "attributeMagnitude" : 3, "attribute" : "RECEIVED_KWH_RATE_B" },
                 { "metricId" : 2003, "attributeMagnitude" : 3, "attribute" : "SUM_KWH_RATE_B" },
                 { "metricId" : 2004, "attributeMagnitude" : 3, "attribute" : "NET_KWH_RATE_B" },
-                { "metricId" : 2007, "attributeMagnitude" : 3, "attribute" : "PEAK_DEMAND_RATE_B" },
+                { "metricId" : 2007, "attributeMagnitude" : 3, "attribute" : "DELIVERED_PEAK_DEMAND_RATE_B" },
                 { "metricId" : 2008, "attributeMagnitude" : 3, "attribute" : "RECEIVED_PEAK_DEMAND_RATE_B" },
                 { "metricId" : 2009, "attributeMagnitude" : 3, "attribute" : "PEAK_DEMAND_FROZEN_RATE_B" },
                 { "metricId" : 2013, "attributeMagnitude" : 3, "attribute" : "SUM_PEAK_DEMAND_RATE_B" },
@@ -191,11 +190,11 @@
                 { "metricId" : 2210, "attributeMagnitude" : 3, "attribute" : "SUM_PEAK_KVA_RATE_B" },
                 { "metricId" : 2222, "attributeMagnitude" : 3, "attribute" : "KVAH_Q234_RATE_B" },
 
-                { "metricId" : 3001, "attributeMagnitude" : 3, "attribute" : "USAGE_RATE_C" },
+                { "metricId" : 3001, "attributeMagnitude" : 3, "attribute" : "DELIVERED_KWH_RATE_C" },
                 { "metricId" : 3002, "attributeMagnitude" : 3, "attribute" : "RECEIVED_KWH_RATE_C" },
                 { "metricId" : 3003, "attributeMagnitude" : 3, "attribute" : "SUM_KWH_RATE_C" },
                 { "metricId" : 3004, "attributeMagnitude" : 3, "attribute" : "NET_KWH_RATE_C" },
-                { "metricId" : 3007, "attributeMagnitude" : 3, "attribute" : "PEAK_DEMAND_RATE_C" },
+                { "metricId" : 3007, "attributeMagnitude" : 3, "attribute" : "DELIVERED_PEAK_DEMAND_RATE_C" },
                 { "metricId" : 3008, "attributeMagnitude" : 3, "attribute" : "RECEIVED_PEAK_DEMAND_RATE_C" },
                 { "metricId" : 3009, "attributeMagnitude" : 3, "attribute" : "PEAK_DEMAND_FROZEN_RATE_C" },
                 { "metricId" : 3013, "attributeMagnitude" : 3, "attribute" : "SUM_PEAK_DEMAND_RATE_C" },
@@ -223,11 +222,11 @@
                 { "metricId" : 3210, "attributeMagnitude" : 3, "attribute" : "SUM_PEAK_KVA_RATE_C" },
                 { "metricId" : 3222, "attributeMagnitude" : 3, "attribute" : "KVAH_Q234_RATE_C" },
 
-                { "metricId" : 4001, "attributeMagnitude" : 3, "attribute" : "USAGE_RATE_D" },
+                { "metricId" : 4001, "attributeMagnitude" : 3, "attribute" : "DELIVERED_KWH_RATE_D" },
                 { "metricId" : 4002, "attributeMagnitude" : 3, "attribute" : "RECEIVED_KWH_RATE_D" },
                 { "metricId" : 4003, "attributeMagnitude" : 3, "attribute" : "SUM_KWH_RATE_D" },
                 { "metricId" : 4004, "attributeMagnitude" : 3, "attribute" : "NET_KWH_RATE_D" },
-                { "metricId" : 4007, "attributeMagnitude" : 3, "attribute" : "PEAK_DEMAND_RATE_D" },
+                { "metricId" : 4007, "attributeMagnitude" : 3, "attribute" : "DELIVERED_PEAK_DEMAND_RATE_D" },
                 { "metricId" : 4008, "attributeMagnitude" : 3, "attribute" : "RECEIVED_PEAK_DEMAND_RATE_D" },
                 { "metricId" : 4009, "attributeMagnitude" : 3, "attribute" : "PEAK_DEMAND_FROZEN_RATE_D" },
                 { "metricId" : 4013, "attributeMagnitude" : 3, "attribute" : "SUM_PEAK_DEMAND_RATE_D" },
@@ -254,17 +253,6 @@
                 { "metricId" : 4206, "attributeMagnitude" : 3, "attribute" : "PEAK_KVA_Q12_RATE_D" },
                 { "metricId" : 4210, "attributeMagnitude" : 3, "attribute" : "SUM_PEAK_KVA_RATE_D" },
                 { "metricId" : 4222, "attributeMagnitude" : 3, "attribute" : "KVAH_Q234_RATE_D" }
-        ],
-        "attributeOverrides" : [
-                { "attribute" : "PEAK_DEMAND",          "metricId" :  13,   "paoTypes" : [ "rfn-530s4eax", "rfn-530s4eaxr", "rfn-530s4erx", "rfn-530s4erxr" ] },
-                { "attribute" : "USAGE_RATE_A",         "metricId" :  1003, "paoTypes" : [ "rfn-530s4eaxr", "rfn-530s4erxr" ] },
-                { "attribute" : "USAGE_RATE_B",         "metricId" :  2003, "paoTypes" : [ "rfn-530s4eaxr", "rfn-530s4erxr" ] },
-                { "attribute" : "USAGE_RATE_C",         "metricId" :  3003, "paoTypes" : [ "rfn-530s4eaxr", "rfn-530s4erxr" ] },
-                { "attribute" : "USAGE_RATE_D",         "metricId" :  4003, "paoTypes" : [ "rfn-530s4eaxr", "rfn-530s4erxr" ] },
-                { "attribute" : "PEAK_DEMAND_RATE_A",   "metricId" :  1013, "paoTypes" : [ "rfn-530s4eaxr", "rfn-530s4erxr" ] },
-                { "attribute" : "PEAK_DEMAND_RATE_B",   "metricId" :  2013, "paoTypes" : [ "rfn-530s4eaxr", "rfn-530s4erxr" ] },
-                { "attribute" : "PEAK_DEMAND_RATE_C",   "metricId" :  3013, "paoTypes" : [ "rfn-530s4eaxr", "rfn-530s4erxr" ] },
-                { "attribute" : "PEAK_DEMAND_RATE_D",   "metricId" :  4013, "paoTypes" : [ "rfn-530s4eaxr", "rfn-530s4erxr" ] }
         ]
 }
 

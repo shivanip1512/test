@@ -96,7 +96,7 @@ public class BuiltInAttributeTest {
                 { "Delivered", "Received" },
                 { "Coincident " },
                 { "Cumulative" },
-                { "Peak" },
+                { "Peak", "Minimum" },
                 { "Demand", "kW", "kVA", "Volt" },  // TODO - add complete UOM list?
                 { "Quadrant" },
                 { "Frozen", "Daily" },
