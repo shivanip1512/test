@@ -5,6 +5,7 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.stream.Collectors;
 
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -24,6 +25,7 @@ import com.cannontech.database.incrementer.NextValueHelper;
 import com.cannontech.message.DbChangeManager;
 import com.cannontech.message.dispatch.message.DbChangeCategory;
 import com.cannontech.message.dispatch.message.DbChangeType;
+import com.cannontech.multispeak.client.Attributes;
 import com.cannontech.multispeak.client.MultiSpeakVersion;
 import com.cannontech.multispeak.client.MultispeakDefines;
 import com.cannontech.multispeak.client.MultispeakVendor;
@@ -241,7 +243,9 @@ public final class MultispeakDaoImpl implements MultispeakDao {
                     sink.addValue("MaxInitiateRequestObjects", mspVendor.getMaxInitiateRequestObjects());
                     sink.addValue("TemplateNameDefault", mspVendor.getTemplateNameDefault().trim());
                     sink.addValue("ValidateCertificate", mspVendor.getValidateCertificate());
-                    sink.addValue("Attributes", mspVendor.getAttributes());
+                    sink.addValue("Attributes", mspVendor.getAttributes().stream().map(attr -> attr.getDbString().concat(":"))
+                                                                         .collect(Collectors.joining()));
+
                     sql.append("WHERE VendorId").eq(mspVendor.getVendorID());
 
                     jdbcTemplate.update(sql);
@@ -290,8 +294,9 @@ public final class MultispeakDaoImpl implements MultispeakDao {
                     sink.addValue("MaxInitiateRequestObjects", mspVendor.getMaxInitiateRequestObjects());
                     sink.addValue("TemplateNameDefault", mspVendor.getTemplateNameDefault().trim());
                     sink.addValue("ValidateCertificate", mspVendor.getValidateCertificate());
-                    sink.addValue("Attributes", mspVendor.getAttributes());
-                    
+                    sink.addValue("Attributes", mspVendor.getAttributes().stream().map(attr -> attr.getDbString().concat(":"))
+                                                                         .collect(Collectors.joining()));
+
                     jdbcTemplate.update(sql);
 
                 } catch (IncorrectResultSizeDataAccessException e) {
@@ -353,9 +358,9 @@ public final class MultispeakDaoImpl implements MultispeakDao {
         long maxInitiateRequestObjects = rset.getLong("MaxInitiateRequestObjects");
         String templateNameDefault = rset.getString("TemplateNameDefault").trim();
         Boolean validateCertificate = rset.getBoolean("ValidateCertificate");
-        String attributes = rset.getString("Attributes");
-
-        MultispeakVendor mspVendor = new MultispeakVendor(vendorID, companyName, appName, userName, password,
+        List<Attributes> attributes = Attributes.getAttributesFromDBString(rset.getString("Attributes"));
+      
+       MultispeakVendor mspVendor = new MultispeakVendor(vendorID, companyName, appName, userName, password,
             outUserName, outPassword, maxReturnRecords, requestMessageTimeout, maxInitiateRequestObjects,
             templateNameDefault, validateCertificate, attributes);
 
