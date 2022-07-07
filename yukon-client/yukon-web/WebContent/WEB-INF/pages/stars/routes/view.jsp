@@ -13,10 +13,11 @@
     <form:form modelAttribute="communicationRoute" action="${action}" method="post" id="js-comm-route-form">
         <tags:sectionContainer2 nameKey="general">
             <tags:nameValueContainer2>
-            
+                
                 <tags:nameValue2 nameKey=".name">
                         <tags:input path="deviceName" maxlength="60" autofocus="autofocus" inputClass="w300 js-name"/>
                 </tags:nameValue2>
+                
                 <tags:nameValue2 nameKey=".selectSignalTransmitter">
                     <tags:pickerDialog id="signalTransmitterPicker${id}" 
                                            type="signalTransmitterPicker" 
@@ -34,9 +35,11 @@
                     
             </tags:nameValueContainer2>
                 <div class="page-action-area">
-                    <cti:button nameKey="save" classes="primary action js-save" busy="true"/>
-                    <cti:url var="viewUrl" value="/stars/device/routes/list" />
-                    <cti:button nameKey="cancel" href="${viewUrl}"/>
+                    <cti:displayForPageEditModes modes="EDIT,CREATE">
+                        <cti:button nameKey="save" classes="primary action js-save" busy="true"/>
+                    </cti:displayForPageEditModes>
+                        <cti:url var="viewUrl" value="/stars/device/routes/list" />
+                        <cti:button nameKey="cancel" href="${viewUrl}"/>
                 </div>
         </tags:sectionContainer2>
     </form:form>
