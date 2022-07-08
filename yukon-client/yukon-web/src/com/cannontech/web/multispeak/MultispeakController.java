@@ -35,6 +35,7 @@ import com.cannontech.database.data.lite.LiteYukonUser;
 import com.cannontech.i18n.YukonMessageSourceResolvable;
 import com.cannontech.msp.beans.v3.ErrorObject;
 import com.cannontech.multispeak.client.MultiSpeakVersion;
+import com.cannontech.multispeak.client.Attributes;
 import com.cannontech.multispeak.client.MultispeakDefines;
 import com.cannontech.multispeak.client.MultispeakFuncs;
 import com.cannontech.multispeak.client.MultispeakVendor;
@@ -371,8 +372,8 @@ public class MultispeakController {
 
         String outPassword = multispeakVendor.getOutPassword();
         String outUsername = multispeakVendor.getOutUserName();
-        
-        String attributes = multispeakVendor.getAttributes();
+
+        List<Attributes> attributes = multispeakVendor.getAttributes();
         if (multispeak.getMspVendor().getVendorID() != null
             && multispeak.getMspVendor().getVendorID() == MultispeakVendor.CANNON_MSP_VENDORID) {
             mspInterfaces = multispeak.getMspInterfaceList();
