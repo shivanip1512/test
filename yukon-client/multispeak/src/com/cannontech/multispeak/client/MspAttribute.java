@@ -7,7 +7,7 @@ import org.apache.commons.lang3.StringUtils;
 import com.cannontech.common.i18n.DisplayableEnum;
 import com.google.common.collect.ImmutableMap;
 
-public enum Attributes implements DisplayableEnum {
+public enum MspAttribute implements DisplayableEnum {
 
     TOU("TOU"),
     PEAKDEMAND_USAGE("Peak Demand , Usage"),
@@ -17,19 +17,19 @@ public enum Attributes implements DisplayableEnum {
 
     private String dbString;
 
-    private final static ImmutableMap<String, Attributes> lookupByDBStringMap;
+    private final static ImmutableMap<String, MspAttribute> lookupByDBStringMap;
 
     static {
-        ImmutableMap.Builder<String, Attributes> attributeBuilder = ImmutableMap.builder();
-        for (Attributes attr : values()) {
+        ImmutableMap.Builder<String, MspAttribute> attributeBuilder = ImmutableMap.builder();
+        for (MspAttribute attr : values()) {
             attributeBuilder.put(attr.getDbString(), attr);
         }
         lookupByDBStringMap = attributeBuilder.build();
     }
 
-    public static List<Attributes> getAttributesFromDBString(String dbString) {
+    public static List<MspAttribute> getAttributesFromDBString(String dbString) {
         checkArgument(dbString != null);
-        List<Attributes> attributes = new ArrayList<>();
+        List<MspAttribute> attributes = new ArrayList<>();
 
         if (StringUtils.isNotBlank(dbString)) {
             String attributeArray[] = dbString.split(":");
@@ -46,7 +46,7 @@ public enum Attributes implements DisplayableEnum {
         return dbString;
     }
 
-    Attributes(String dbString) {
+    MspAttribute(String dbString) {
         this.dbString = dbString;
     }
 
