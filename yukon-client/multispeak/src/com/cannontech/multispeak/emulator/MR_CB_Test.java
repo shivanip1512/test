@@ -56,7 +56,7 @@ import com.cannontech.msp.beans.v3.RemoveMetersFromMeterGroupResponse;
 import com.cannontech.msp.beans.v3.ServiceLocation;
 import com.cannontech.msp.beans.v3.ServiceLocationChangedNotification;
 import com.cannontech.msp.beans.v3.UtilityInfo;
-import com.cannontech.multispeak.client.Attributes;
+import com.cannontech.multispeak.client.MspAttribute;
 import com.cannontech.multispeak.client.MultispeakFuncs;
 import com.cannontech.multispeak.client.MultispeakVendor;
 import com.cannontech.multispeak.client.core.MRClient;
@@ -72,7 +72,7 @@ public class MR_CB_Test {
     private String endpointURL = "http://localhost:8088/mockMR_ServerSoap";
     private static MRClient instance;
     private static ObjectFactory objectFactory;
-    List<Attributes> attributes = Arrays.asList(Attributes.KVAR_KVARH, Attributes.PEAKDEMAND_USAGE);
+    List<MspAttribute> attributes = Arrays.asList(MspAttribute.KVAR_KVARH, MspAttribute.PEAKDEMAND_USAGE);
     private MultispeakVendor mspVendor = new MultispeakVendor(23213, "Cannon", "Yukon", "pwd", "sadsad", "", "", 100, 120, 12,
         null, false, attributes);
 

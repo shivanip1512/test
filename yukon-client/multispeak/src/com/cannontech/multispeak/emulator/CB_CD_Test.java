@@ -19,7 +19,7 @@ import com.cannontech.msp.beans.v3.Meter;
 import com.cannontech.msp.beans.v3.ObjectFactory;
 import com.cannontech.msp.beans.v3.PingURL;
 import com.cannontech.msp.beans.v3.PingURLResponse;
-import com.cannontech.multispeak.client.Attributes;
+import com.cannontech.multispeak.client.MspAttribute;
 import com.cannontech.multispeak.client.MultispeakVendor;
 import com.cannontech.multispeak.client.core.CBClient;
 import com.cannontech.multispeak.exceptions.MultispeakWebServiceClientException;
@@ -41,7 +41,7 @@ public class CB_CD_Test {
                 "com/cannontech/multispeak/emulator/testEmulatorContext.xml");
         CBClient instance = context.getBean(CBClient.class);
         ObjectFactory objectFactory = context.getBean(ObjectFactory.class);
-        List<Attributes> attributes = Arrays.asList(Attributes.KVAR_KVARH, Attributes.PEAKDEMAND_USAGE);
+        List<MspAttribute> attributes = Arrays.asList(MspAttribute.KVAR_KVARH, MspAttribute.PEAKDEMAND_USAGE);
         MultispeakVendor mspVendor =
             new MultispeakVendor(23213, "Cannon", "Yukon", "pwd", "sadsad", "", "", 100, 120, 12, null, false, attributes);
         int todo = 2; // 0=meterByServLoc, 1=getMethods, 2=pingURL

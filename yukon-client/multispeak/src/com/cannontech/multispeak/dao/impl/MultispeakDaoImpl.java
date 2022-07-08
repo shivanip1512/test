@@ -25,7 +25,7 @@ import com.cannontech.database.incrementer.NextValueHelper;
 import com.cannontech.message.DbChangeManager;
 import com.cannontech.message.dispatch.message.DbChangeCategory;
 import com.cannontech.message.dispatch.message.DbChangeType;
-import com.cannontech.multispeak.client.Attributes;
+import com.cannontech.multispeak.client.MspAttribute;
 import com.cannontech.multispeak.client.MultiSpeakVersion;
 import com.cannontech.multispeak.client.MultispeakDefines;
 import com.cannontech.multispeak.client.MultispeakVendor;
@@ -358,7 +358,7 @@ public final class MultispeakDaoImpl implements MultispeakDao {
         long maxInitiateRequestObjects = rset.getLong("MaxInitiateRequestObjects");
         String templateNameDefault = rset.getString("TemplateNameDefault").trim();
         Boolean validateCertificate = rset.getBoolean("ValidateCertificate");
-        List<Attributes> attributes = Attributes.getAttributesFromDBString(rset.getString("Attributes"));
+        List<MspAttribute> attributes = MspAttribute.getAttributesFromDBString(rset.getString("Attributes"));
       
        MultispeakVendor mspVendor = new MultispeakVendor(vendorID, companyName, appName, userName, password,
             outUserName, outPassword, maxReturnRecords, requestMessageTimeout, maxInitiateRequestObjects,
