@@ -2280,6 +2280,39 @@ table th, .title-header, .column-header {
     z-index: 9999 !important;
 }
 
+.info-list-item {
+    width:100%;
+    border-bottom:1px solid #424e541f;
+    display:inline-flex;
+    align-items:center;
+}
+
+.info-list-tag-item {
+    border-radius:2px;
+    padding:0px 4px;
+    line-height: 1rem;
+    span {
+        font-size:10px;
+        font-weight:700;
+        letter-spacing:1px;
+        text-transform:uppercase;
+    }
+}
+
+.status-stripe {
+    width:6px;
+    margin-right:5px;
+    margin-top:-1px;
+    margin-bottom:-1px;
+    align-self:stretch
+}
+
+.widget-separator {
+    border-top:1px solid #424e541f;
+    border-bottom:1px solid #424e541f;
+    padding: 8px;
+}
+
 /* JUNK TO FIX */
 .CONTROLAREA_STATE_ACTIVE, .CONTROLAREA_STATE_PARTIALLY_ACTIVE, .CONTROLAREA_STATE_MANUAL_ACTIVE, .PROGRAM_STATE_ACTIVE, .PROGRAM_STATE_PARTIALLY_ACTIVE, .PROGRAM_STATE_MANUAL_ACTIVE, .PROGRAM_STATE_TIMED_ACTIVE, .LOADGROUP_STATE_ACTIVE {color: @green;}
 .CONTROLAREA_STATE_INACTIVE,.PROGRAM_STATE_INACTIVE, .PROGRAM_STATE_NON_CONTROL, .LOADGROUP_STATE_INACTIVE {color: #555;}

@@ -4,23 +4,7 @@
 
 <cti:msgScope paths="widgets.infrastructureWarnings">
 
-    <table width="70%">
-        <c:if test="${fromDetailPage}">
-            <tr>
-                <td colspan="5" style="padding-left:70px;">
-                    <span class="fl">
-                        <cti:msg2 var="allTypesLabel" key=".allTypes"/>
-                        ${allTypesLabel}:&nbsp;&nbsp;
-                        <cti:msg2 var="hoverText" key=".noWarning.hoverText" argument="${allTypesLabel}"/>
-                        <span class="label bg-color-green" title="${hoverText}">${summary.devicesWithoutWarningsCount}</span>
-                        <cti:msg2 var="hoverText" key=".warning.hoverText" argument="${allTypesLabel}"/>
-                        <span class="label bg-color-orange" title="${hoverText}">${summary.devicesWithWarningsCount}</span>
-                    </span>
-                    <cti:url var="downloadAll" value="/stars/infrastructureWarnings/downloadAll"/>
-                    <cti:icon icon="icon-csv" nameKey="downloadAll" href="${downloadAll}" style="margin-top:2px;"/>
-                 </td>
-            </tr>
-        </c:if>
+    <table width="90%">
         <c:if test="${summary.totalGateways != 0 || summary.totalRelays != 0}">
             <tr>
                 <c:if test="${summary.totalGateways != 0}">

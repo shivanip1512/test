@@ -88,7 +88,7 @@ public class InfrastructureWarningsController {
             try {
                 InfrastructureWarningDeviceCategory deviceCategory = InfrastructureWarningDeviceCategory
                         .valueOf(infrastructureWarningDeviceCategory);
-                warnings = infrastructureWarningsDao.getWarnings(deviceCategory);
+                warnings = infrastructureWarningsDao.getWarnings(false, deviceCategory);
                 showAllDeviceInfrastructureWarnings = false;
             } catch (IllegalArgumentException e) {
                 log.error(e.getMessage());
@@ -152,6 +152,12 @@ public class InfrastructureWarningsController {
             model.addAttribute("deviceLabel", deviceLabel);
             model.addAttribute("deviceType", InfrastructureWarningDeviceCategory.REPEATER);
             break;
+        case METER:
+            model.addAttribute("deviceTotalCount", summary.getTotalMeters());
+            model.addAttribute("deviceWarningsCount", summary.getWarningMeters());
+            deviceLabel = accessor.getMessage(baseKey + "meters");
+            model.addAttribute("deviceLabel", deviceLabel);
+            model.addAttribute("deviceType", InfrastructureWarningDeviceCategory.METER);
         default:
             model.addAttribute("deviceTotalCount", summary.getTotalGateways());
             model.addAttribute("deviceWarningsCount", summary.getWarningGateways());
@@ -171,34 +177,34 @@ public class InfrastructureWarningsController {
     
     @GetMapping("detail")
     public String detail(@DefaultSort(dir=Direction.desc, sort="timestamp") SortingParameters sorting, PagingParameters paging, 
-                         InfrastructureWarningDeviceCategory[] types, ModelMap model, YukonUserContext userContext) {
+                         InfrastructureWarningDeviceCategory[] types, Boolean highSeverityOnly, ModelMap model, YukonUserContext userContext) {
         InfrastructureWarningSummary summary = widgetService.getWarningsSummary();
         model.addAttribute("summary", summary);
 
-        getFilteredResults(types, model, paging, sorting, userContext);
+        getFilteredResults(types, highSeverityOnly, model, paging, sorting, userContext);
         return "infrastructureWarnings/detail.jsp";
     }
     
     @GetMapping("filteredResults")
     public String filteredResults(@DefaultSort(dir=Direction.desc, sort="timestamp") SortingParameters sorting, PagingParameters paging, 
-                         InfrastructureWarningDeviceCategory[] types, ModelMap model, YukonUserContext userContext) {
-        getFilteredResults(types, model, paging, sorting, userContext);
+                         InfrastructureWarningDeviceCategory[] types, Boolean highSeverityOnly, ModelMap model, YukonUserContext userContext) {
+        getFilteredResults(types, highSeverityOnly, model, paging, sorting, userContext);
         return "infrastructureWarnings/filteredResults.jsp";
     }
     
     @GetMapping("filteredResultsTable")
     public String filteredResultsTable(@DefaultSort(dir=Direction.desc, sort="timestamp") SortingParameters sorting, PagingParameters paging, 
-                         InfrastructureWarningDeviceCategory[] types, ModelMap model, YukonUserContext userContext) {
-        getFilteredResults(types, model, paging, sorting, userContext);
+                         InfrastructureWarningDeviceCategory[] types, Boolean highSeverityOnly, ModelMap model, YukonUserContext userContext) {
+        getFilteredResults(types, highSeverityOnly, model, paging, sorting, userContext);
         return "infrastructureWarnings/filteredTable.jsp";
     }
     
-    private void getFilteredResults(InfrastructureWarningDeviceCategory[] types, ModelMap model, PagingParameters paging, 
+    private void getFilteredResults(InfrastructureWarningDeviceCategory[] types, Boolean highSeverityOnly, ModelMap model, PagingParameters paging, 
                                     SortingParameters sorting, YukonUserContext userContext) {
         MessageSourceAccessor accessor = messageSourceResolver.getMessageSourceAccessor(userContext);
 
         types = types != null ? types : getTypesInSystem();
-        List<InfrastructureWarning> warnings = infrastructureWarningsDao.getWarnings(types);
+        List<InfrastructureWarning> warnings = infrastructureWarningsDao.getWarnings(highSeverityOnly, types);
         
         SearchResults<InfrastructureWarning> searchResult = new SearchResults<>();
         int startIndex = paging.getStartIndex();
@@ -255,9 +261,9 @@ public class InfrastructureWarningsController {
     }
     
     @GetMapping("collectionAction")
-    public String collectionAction(InfrastructureWarningDeviceCategory[] types, CollectionActionUrl actionType) {
+    public String collectionAction(InfrastructureWarningDeviceCategory[] types, Boolean highSeverityOnly, CollectionActionUrl actionType) {
         types = types != null ? types : getTypesInSystem();
-        List<InfrastructureWarning> warnings = infrastructureWarningsDao.getWarnings(types);
+        List<InfrastructureWarning> warnings = infrastructureWarningsDao.getWarnings(highSeverityOnly, types);
         StoredDeviceGroup tempGroup = tempDeviceGroupService.createTempGroup();
         List<YukonPao> devices = warnings.stream().map(d -> new SimpleDevice(d.getPaoIdentifier())).collect(Collectors.toList());
         deviceGroupMemberEditorDao.addDevices(tempGroup, devices);
@@ -265,9 +271,10 @@ public class InfrastructureWarningsController {
     }
     
     @GetMapping("download")
-    public String download(InfrastructureWarningDeviceCategory[] types, YukonUserContext userContext, HttpServletResponse response) throws IOException {
+    public String download(InfrastructureWarningDeviceCategory[] types, Boolean highSeverityOnly, 
+                           YukonUserContext userContext, HttpServletResponse response) throws IOException {
         types = types != null ? types : getTypesInSystem();
-        List<InfrastructureWarning> warnings = infrastructureWarningsDao.getWarnings(types);
+        List<InfrastructureWarning> warnings = infrastructureWarningsDao.getWarnings(highSeverityOnly, types);
         
         String[] headerRow = getHeaderRows(userContext);
         List<String[]> dataRows = getDataRows(warnings, userContext);
@@ -275,19 +282,7 @@ public class InfrastructureWarningsController {
         String now = dateFormattingService.format(Instant.now(), DateFormatEnum.FILE_TIMESTAMP, userContext);
         WebFileUtils.writeToCSV(response, headerRow, dataRows, "InfrastructureWarnings_" + now + ".csv");
         return null;
-      }
-    
-    @GetMapping("downloadAll")
-    public String downloadAll(YukonUserContext userContext, HttpServletResponse response) throws IOException {
-        List<InfrastructureWarning> warnings = infrastructureWarningsDao.getWarnings(getTypesInSystem());
-
-        String[] headerRow = getHeaderRows(userContext);
-        List<String[]> dataRows = getDataRows(warnings, userContext);
-
-        String now = dateFormattingService.format(Instant.now(), DateFormatEnum.FILE_TIMESTAMP, userContext);
-        WebFileUtils.writeToCSV(response, headerRow, dataRows, "InfrastructureWarnings_" + now + ".csv");
-        return null;
-      }
+    }
     
     private String[] getHeaderRows(YukonUserContext userContext) {
         MessageSourceAccessor accessor = messageSourceResolver.getMessageSourceAccessor(userContext);

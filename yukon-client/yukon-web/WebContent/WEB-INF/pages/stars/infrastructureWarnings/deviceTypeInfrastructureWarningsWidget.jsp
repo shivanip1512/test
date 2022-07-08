@@ -15,7 +15,5 @@
             </c:if>
         </tr>
     </table>
-    <cti:url var="allWarningsUrl" value="/stars/infrastructureWarnings/detail"/>
-    <span class="fr"><a href="${allWarningsUrl}?types=${infrastructureWarningDeviceCategory}" target="_blank"><i:inline key="yukon.common.viewDetails"/></a></span>
     <%@ include file="infrastructureWarningsDetails.jsp" %>
 </cti:msgScope>

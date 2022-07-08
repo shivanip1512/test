@@ -3,10 +3,10 @@
 
 <cti:msgScope paths="widgets.infrastructureWarnings">
 
-    <cti:url var="allWarningsUrl" value="/stars/infrastructureWarnings/detail"/>
+<%--     <cti:url var="allWarningsUrl" value="/stars/infrastructureWarnings/detail"/> --%>
     <%@ include file="summaryTable.jsp" %>
 
-    <span class="fr"><a href="${allWarningsUrl}" target="_blank"><i:inline key="yukon.common.viewDetails"/></a></span>
+<%--     <span class="fr"><a href="${allWarningsUrl}" target="_blank"><i:inline key="yukon.common.viewDetails"/></a></span> --%>
     <%@ include file="infrastructureWarningsDetails.jsp" %>
 
 </cti:msgScope>

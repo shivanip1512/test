@@ -10,19 +10,25 @@
 <cti:msgScope paths="widgets.infrastructureWarnings">
     <cti:url var="allWarningsUrl" value="/stars/infrastructureWarnings/detail"/>
     <td>
-        <c:choose>
-            <c:when test="${fromDetailPage}">
-                ${deviceLabel}:
-            </c:when>
-            <c:otherwise>
-                <a href="${allWarningsUrl}?types=${deviceType}" target="_blank">${deviceLabel}</a>:
-            </c:otherwise>
-        </c:choose>
+        <b>${deviceLabel}</b>
     </td>
     <td>
-        <cti:msg2 var="hoverText" key=".noWarning.hoverText" argument="${deviceLabel}"/>
-        <span class="label bg-color-green" title="${hoverText}">${deviceTotalCount - deviceWarningsCount}</span>
-        <cti:msg2 var="hoverText" key=".warning.hoverText" argument="${deviceLabel}"/>
-        <span class="label bg-color-orange" title="${hoverText}">${deviceWarningsCount}</span>
+        <c:choose>
+            <c:when test="${deviceWarningsCount > 0}">
+                <cti:msg2 var="hoverText" key=".warning.hoverText" argument="${deviceLabel}"/>
+                <span style="font-size:16px" title="${hoverText}">
+                    <cti:icon icon="icon-error" href="${allWarningsUrl}?types=${deviceType}"/>
+                    <b>${deviceWarningsCount}</b>
+                </span>
+                <span class="notes"> of ${deviceTotalCount}</span>
+            </c:when>
+            <c:otherwise>
+                <cti:msg2 var="hoverText" key=".noWarning.hoverText" argument="${deviceLabel}"/>
+                <span style="font-size:16px" title="${hoverText}">
+                    <cti:icon icon="icon-accept"/>
+                    <b>${deviceTotalCount}</b>
+                </span>
+            </c:otherwise>
+        </c:choose>
     </td>
 </cti:msgScope>

@@ -10,8 +10,9 @@ import com.cannontech.common.pao.PaoType;
 public enum InfrastructureWarningDeviceCategory {
     GATEWAY(PaoType.getRfGatewayTypes()),
     RELAY(PaoType.getRfRelayTypes()),
+    METER(PaoType.getMeterTypes()),
     CCU(PaoType.getCcuTypes()),
-    REPEATER(PaoType.getRepeaterTypes()),
+    REPEATER(PaoType.getRepeaterTypes())
     ;
     
     private Set<PaoType> paoTypes;

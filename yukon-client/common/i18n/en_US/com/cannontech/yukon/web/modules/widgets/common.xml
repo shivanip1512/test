@@ -226,23 +226,21 @@ There is also an option to Change the configuration for the device.
 
 <entry key="yukon.web.widgets.infrastructureWarningsWidget">Infrastructure Warnings</entry>
 <entry key="yukon.web.widgets.infrastructureWarningsWidget.helpText"><![CDATA[
-        The Infrastructure Warnings widget periodically evaluates devices associated with the communications network such as RF gateways, RF relays, CCUs or repeaters. Results of the evaluations will produce informational or warning messages about specific conditions that may require investigation.
-        A summary of the devices with and without warnings will be displayed near the top of the widget with the device type being a link to more detail.
+        The Infrastructure Warnings widget periodically evaluates devices associated with the communications network such as RF gateways, RF relays, RF meters, CCUs or repeaters. Results of the evaluations will produce informational or warning messages about specific conditions that may require investigation.
+        A summary will display for each of the corresponding device types:
         <ul>
             <li>
-                <span class="fwb bg-color-green txt-color-white">Devices without warnings (Green)</span> - 
-                Number of devices without any of the below mentioned warning types.
+                <i class="icon icon-accept fn"><svg xmlns="http://www.w3.org/2000/svg" fill="#5d9c53" height="18" viewBox="0 0 25 25" width="18"><path d="M0 0h24v24H0z" fill="none"/><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-2 15l-5-5 1.41-1.41L10 14.17l7.59-7.59L19 8l-9 9z"/></svg></i> - 
+                No current warnings exist for the device type.
             </li>
             <li>
-                <span class="fwb bg-color-orange txt-color-white">Devices with warnings (Orange)</span> - 
-                Number of devices with warnings.
+                <i class="icon icon-error fn"><svg xmlns="http://www.w3.org/2000/svg" fill="#eb8f2b" height="18" viewBox="0 0 25 25" width="18"><path d="M0 0h24v24H0z" fill="none"/><path d="M1 21h22L12 2 1 21zm12-3h-2v-2h2v2zm0-4h-2v-4h2v4z"/></svg></i> - 
+                Number of devices with warnings. Clicking on the warning icon will display all warnings for the corresponding device type.
             </li>
         </ul>
-        Click on the "See All" link to view all current infrastructure warnings.
-        A list of the 10 most recent warnings will be displayed below.
-        The Duration indicates approximately how much time has passed since the warning first occurred. 
-        Hover over the Duration value to see the exact time that the warning first occurred.
+        A list of the 10 most recent warnings will be displayed below along with the date/time the warning first occurred. High severity warnings will display with a red status stripe to the left and a HIGH indicator tag in red.
         <br/>
+        Click on the "View All Infrastructure Warnings" link to view all current infrastructure warnings.
         The infrastructure warnings are updated every 15 minutes, by default. The Refresh button will force an update if data has not been updated in the last 5 minutes.
         The date/time next to the Refresh button displays the date/time that the warnings were last updated.
         <br><br>
