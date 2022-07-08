@@ -15,8 +15,10 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.cannontech.common.model.Direction;
 import com.cannontech.stars.util.ServletUtils;
 import com.cannontech.web.api.notificationGroup.service.NotificationGroupService;
 import com.cannontech.web.notificationGroup.NotificationGroup;
@@ -48,8 +50,11 @@ public class NotificationGroupApiController {
     }
 
     @GetMapping
-    public ResponseEntity<Object> getAll() {
-        return new ResponseEntity<>(notificationGroupService.retrieveAll(), HttpStatus.OK);
+    public ResponseEntity<Object> getAll(@RequestParam(defaultValue = "GroupName") String sortBy,
+            @RequestParam(defaultValue = "asc") Direction direction, @RequestParam(defaultValue = "1") int page,
+            @RequestParam(name = "itemsPerPage", defaultValue = "250") int itemsPerPage) {
+        return new ResponseEntity<>(notificationGroupService.retrieveAll(sortBy, direction, page, itemsPerPage),
+                HttpStatus.OK);
     }
 
     @InitBinder("notificationGroup")

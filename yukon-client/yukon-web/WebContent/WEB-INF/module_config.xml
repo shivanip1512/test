@@ -380,6 +380,9 @@
       <page name="aggregateIntervalReport" type="BASIC">
         <link>/tools/aggregateIntervalReport/view</link>
       </page>
+      <page name="notificationGroup.list" type="BASIC" hideSearch="true">
+          <link>/tools/notificationGroup/list</link>
+      </page>
     </pages>
   </module><!--  ENDS MODULE "tools" -->
 
@@ -1361,6 +1364,16 @@
                     <page name="signalTransmitter.VIEW" type="DETAIL">
                     <link>/stars/device/signalTransmitter/{id}</link>
                     <labelArgument>${signalTransmitter.name}</labelArgument>
+                </page>
+                </pages>
+            </page>
+            <page name="routes.list" type="BASIC" hideSearch="true">
+                <link>/stars/device/routes/list</link>
+                <pages>
+                    <page name="routes.CREATE" type="BASIC"/>
+                    <page name="routes.VIEW" type="DETAIL">
+                    <link>/stars/device/routes/{id}</link>
+                    <labelArgument>${routes.name}</labelArgument>
                 </page>
                 </pages>
             </page>

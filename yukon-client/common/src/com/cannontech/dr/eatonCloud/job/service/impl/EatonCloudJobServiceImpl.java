@@ -62,9 +62,9 @@ public class EatonCloudJobServiceImpl implements EatonCloudJobService {
     private AtomicBoolean isSendingCommands = new AtomicBoolean(false);
     private int maxDevicesPerJob;
     //TODO: change to 5
-    private static int pollInMinutes = 2;
+    private static int pollInMinutes = 5;
     //TODO: change to 2
-    private static int firstRetryAfterPollMinutes = 1;
+    private static int firstRetryAfterPollMinutes = 2;
 
     // eventId
     private Map<Integer, RetrySummary> resendTries = new ConcurrentHashMap<>();
