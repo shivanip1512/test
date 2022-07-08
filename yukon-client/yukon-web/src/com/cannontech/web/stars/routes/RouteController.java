@@ -99,7 +99,7 @@ public class RouteController {
         return "/routes/view.jsp";
     }
     
-    @PostMapping("create")
+    @PostMapping("save")
     public String save(@ModelAttribute("communicationRoute") RouteBaseModel<?> communicationRoute, BindingResult result, ModelMap model,
             YukonUserContext userContext, FlashScope flash, RedirectAttributes redirectAttributes, HttpServletRequest request) {
         try {

@@ -9,7 +9,8 @@
 
 <cti:msgScope paths="yukon.web.modules.operator.routes">
     <cti:standardPage module="operator" page="routes.${mode}">
-    <cti:url var="action" value="/stars/device/routes/create" />
+    <tags:setFormEditMode mode="${mode}" />
+    <cti:url var="action" value="/stars/device/routes/save" />
     <form:form modelAttribute="communicationRoute" action="${action}" method="post" id="js-comm-route-form">
          <cti:csrfToken />
         <tags:sectionContainer2 nameKey="general">
