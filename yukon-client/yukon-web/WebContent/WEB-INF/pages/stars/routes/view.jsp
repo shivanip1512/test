@@ -10,6 +10,7 @@
 <cti:msgScope paths="yukon.web.modules.operator.routes">
     <cti:standardPage module="operator" page="routes.${mode}">
     <tags:setFormEditMode mode="${mode}" />
+    
     <!-- Actions drop-down -->
     <cti:displayForPageEditModes modes="VIEW">
         <div id="page-actions" class="dn">
@@ -37,8 +38,8 @@
             </table>
         </div>
     </cti:displayForPageEditModes>
-        
-    
+
+    <cti:url var="action" value="/stars/device/routes/save" />
     <form:form modelAttribute="communicationRoute" action="${action}" method="post" id="js-comm-route-form">
          <cti:csrfToken />
         <tags:sectionContainer2 nameKey="general">

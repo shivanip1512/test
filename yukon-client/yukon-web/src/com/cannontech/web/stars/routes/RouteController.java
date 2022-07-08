@@ -7,21 +7,25 @@ import javax.servlet.http.HttpServletRequest;
 
 import org.apache.logging.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.MessageSourceResolvable;
 import org.springframework.http.HttpMethod;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.ModelMap;
+import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.client.RestClientException;
+import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import com.cannontech.clientutils.YukonLogManager;
 import com.cannontech.common.device.model.DeviceBaseModel;
 import com.cannontech.common.pao.PaoType;
+import com.cannontech.common.validator.YukonValidationUtils;
 import com.cannontech.core.roleproperties.HierarchyPermissionLevel;
 import com.cannontech.core.roleproperties.YukonRoleProperty;
 import com.cannontech.database.data.route.RouteBase;
@@ -34,6 +38,7 @@ import com.cannontech.web.api.route.model.RouteBaseModel;
 import com.cannontech.web.api.validation.ApiCommunicationException;
 import com.cannontech.web.api.validation.ApiControllerHelper;
 import com.cannontech.web.common.flashScope.FlashScope;
+import com.cannontech.web.common.flashScope.FlashScopeMessageType;
 import com.cannontech.web.security.annotation.CheckPermissionLevel;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -44,7 +49,8 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 public class RouteController {
     @Autowired private ApiControllerHelper helper;
     @Autowired private ApiRequestHelper apiRequestHelper;
-
+    @Autowired private RouteValidator<? extends RouteBaseModel<?>> routeValidator;
+    
     private static final String communicationKey = "yukon.exception.apiCommunicationException.communicationError";
     private static final String redirectListPageLink = "redirect:/stars/device/routes/list";
     private static final String baseKey = "yukon.web.modules.operator.routes.";
@@ -93,10 +99,14 @@ public class RouteController {
         return "/routes/view.jsp";
     }
     
-    @PostMapping("create")
-    public String create(@ModelAttribute("communicationRoute") RouteBaseModel<?> communicationRoute, ModelMap model,
-            YukonUserContext userContext, FlashScope flash, HttpServletRequest request) {
+    @PostMapping("save")
+    public String save(@ModelAttribute("communicationRoute") RouteBaseModel<?> communicationRoute, BindingResult result, ModelMap model,
+            YukonUserContext userContext, FlashScope flash, RedirectAttributes redirectAttributes, HttpServletRequest request) {
         try {
+            routeValidator.validate(communicationRoute, result);
+            if (result.hasErrors()) {
+                return createFailed(result, flash);
+            }
             ResponseEntity<? extends Object> response = null;
             String url = helper.findWebServerUrl(request, userContext, ApiURL.retrieveAllRoutesUrl);
             response = apiRequestHelper.callAPIForObject(userContext, request, url,
@@ -122,6 +132,13 @@ public class RouteController {
         return null;
     }
     
+    private String createFailed(BindingResult bindingResult, FlashScope flashScope) {
+        List<MessageSourceResolvable> messages = YukonValidationUtils.errorsForBindingResult(bindingResult);
+        flashScope.setMessage(messages, FlashScopeMessageType.ERROR);
+        return "/routes/view.jsp";
+    }
+    
+
     @GetMapping("/{id}")
     public String view(ModelMap model, YukonUserContext userContext, @PathVariable int id, FlashScope flash,
             HttpServletRequest request) {

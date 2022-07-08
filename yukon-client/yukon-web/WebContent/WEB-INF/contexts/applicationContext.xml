@@ -1509,6 +1509,7 @@
     <bean class="com.cannontech.web.stars.rtu.validator.RtuDnpValidationUtil"/>
     <bean class="com.cannontech.web.stars.rfn1200.Rfn1200Validator"/>
     <bean class="com.cannontech.web.stars.signalTransmitter.SignalTransmitterValidator"/>
+    <bean class="com.cannontech.web.stars.routes.RouteValidator"/>
     
     <bean class="com.cannontech.web.admin.AttributeValidator"/>
     <bean class="com.cannontech.web.api.customAttribute.CustomAttributeApiValidator"/>
