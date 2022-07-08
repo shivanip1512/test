@@ -5,8 +5,10 @@ import org.springframework.boot.CommandLineRunner;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.context.ApplicationContext;
+import org.springframework.jms.annotation.EnableJms;
 
-@SpringBootApplication
+@SpringBootApplication(scanBasePackages = "com.cannontech")
+@EnableJms
 public class CloudConnectorBootstrap implements CommandLineRunner {
 
     @Autowired ApplicationContext ctx;
