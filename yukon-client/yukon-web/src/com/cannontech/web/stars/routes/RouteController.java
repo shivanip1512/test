@@ -47,6 +47,7 @@ public class RouteController {
 
     private static final String communicationKey = "yukon.exception.apiCommunicationException.communicationError";
     private static final String redirectListPageLink = "redirect:/stars/device/routes/list";
+    private static final String baseKey = "yukon.web.modules.operator.routes.";
     private static final Logger log = YukonLogManager.getLogger(RouteController.class);
 
     @GetMapping("list")
@@ -127,14 +128,13 @@ public class RouteController {
         try {
             model.addAttribute("mode", PageEditMode.VIEW);
             String url = helper.findWebServerUrl(request, userContext, ApiURL.retrieveAllRoutesUrl+ "/" + id);
-
-            RouteBaseModel<?> routeBase = retrieveCommunicationRoute(userContext, request, id, url);
-            if (routeBase == null) {
-//                flash.setError(new YukonMessageSourceResolvable(baseKey + "retrieve.error"));
+            RouteBaseModel<?> communicationRoute = retrieveCommunicationRoute(userContext, request, id, url);
+            
+            if (communicationRoute == null) {
+                flash.setError(new YukonMessageSourceResolvable(baseKey + "retrieve.error"));
                 return redirectListPageLink;
             }
-//            model.addAttribute("selectedSignalTransmitterType", routeBase.getType());
-            model.addAttribute("communicationRoute", routeBase);
+            model.addAttribute("communicationRoute", communicationRoute);
             return "/routes/view.jsp";
         } catch (ApiCommunicationException e) {
             log.error(e.getMessage());
@@ -145,20 +145,19 @@ public class RouteController {
     }
     
     private RouteBaseModel<?> retrieveCommunicationRoute(YukonUserContext userContext, HttpServletRequest request, int id, String url) {
-        RouteBaseModel<?> routeBase = null;
+        RouteBaseModel<?> communicationRoute = null;
         try {
             ResponseEntity<? extends Object> response = apiRequestHelper.callAPIForObject(userContext, request, url,
                     HttpMethod.GET, RouteBaseModel.class);
 
             if (response.getStatusCode() == HttpStatus.OK) {
-                routeBase = (RouteBaseModel<?>) response.getBody();
-                routeBase.setDeviceId(id);
+                communicationRoute = (RouteBaseModel<?>) response.getBody();
+                communicationRoute.setDeviceId(id);
             }
-
         } catch (RestClientException ex) {
             log.error("Error retrieving route : " + ex.getMessage());
         }
-        return routeBase;
+        return communicationRoute;
     }
 
 }
