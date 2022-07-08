@@ -11,7 +11,7 @@
     <cti:standardPage module="operator" page="routes.${mode}">
     <tags:setFormEditMode mode="${mode}" />
     <!-- Actions drop-down -->
-    <cti:displayForPageEditModes modes="VIEW,">
+    <cti:displayForPageEditModes modes="VIEW">
         <div id="page-actions" class="dn">
             <cti:url var="action" value="/stars/device/routes/create" />
             <cm:dropdownOption icon="icon-plus-green" key="yukon.web.components.button.create.label" id="js-create-option" data-popup="#js-create-route-popup"/>
