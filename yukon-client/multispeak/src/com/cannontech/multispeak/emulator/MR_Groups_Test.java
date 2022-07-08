@@ -6,6 +6,7 @@
 package com.cannontech.multispeak.emulator;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
 import org.springframework.context.ApplicationContext;
@@ -25,6 +26,7 @@ import com.cannontech.msp.beans.v3.MeterList;
 import com.cannontech.msp.beans.v3.ObjectFactory;
 import com.cannontech.msp.beans.v3.RemoveMetersFromMeterGroup;
 import com.cannontech.msp.beans.v3.RemoveMetersFromMeterGroupResponse;
+import com.cannontech.multispeak.client.MspAttribute;
 import com.cannontech.multispeak.client.MultispeakVendor;
 import com.cannontech.multispeak.client.core.MRClient;
 
@@ -40,9 +42,10 @@ public class MR_Groups_Test {
 
     private static MRClient instance;
     private static ObjectFactory objectFactory;
+    static List<MspAttribute> attributes = Arrays.asList(MspAttribute.KVAR_KVARH, MspAttribute.PEAKDEMAND_USAGE);
 
     private static MultispeakVendor mspVendor = new MultispeakVendor(23213, "Cannon", "Yukon", "pwd", "sadsad", "", "", 100,
-        120, 12, null, false);
+        120, 12, null, false, attributes);
 
     public static void main(String[] args) {
         List<ErrorObject> objects = new ArrayList<ErrorObject>();
