@@ -103,9 +103,9 @@ public class RouteController {
                     HttpMethod.POST, RouteBaseModel.class, communicationRoute);
             
             if (response.getStatusCode() == HttpStatus.OK || response.getStatusCode() == HttpStatus.CREATED) {
-                RouteBaseModel<?> communicationRouteCreated = (RouteBaseModel<?>) response.getBody();
+                RouteBaseModel<?> routeCreated = (RouteBaseModel<?>) response.getBody();
                 flash.setConfirm(new YukonMessageSourceResolvable("yukon.common.save.success", communicationRoute.getDeviceName()));
-                return "redirect:/stars/device/routes/" + communicationRouteCreated.getDeviceId();
+                return "redirect:/stars/device/routes/" + routeCreated.getDeviceId();
             }
 
         } catch (ApiCommunicationException e) {
@@ -128,8 +128,8 @@ public class RouteController {
         try {
             model.addAttribute("mode", PageEditMode.VIEW);
             String url = helper.findWebServerUrl(request, userContext, ApiURL.retrieveAllRoutesUrl+ "/" + id);
-
             RouteBaseModel<?> communicationRoute = retrieveCommunicationRoute(userContext, request, id, url);
+            
             if (communicationRoute == null) {
                 flash.setError(new YukonMessageSourceResolvable(baseKey + "retrieve.error"));
                 return redirectListPageLink;
@@ -154,7 +154,6 @@ public class RouteController {
                 communicationRoute = (RouteBaseModel<?>) response.getBody();
                 communicationRoute.setDeviceId(id);
             }
-
         } catch (RestClientException ex) {
             log.error("Error retrieving route : " + ex.getMessage());
         }
