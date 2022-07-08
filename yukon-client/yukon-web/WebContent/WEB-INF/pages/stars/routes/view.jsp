@@ -26,7 +26,7 @@
                                            selectionProperty="paoName"
                                            multiSelectMode="false"
                                            allowEmptySelection="false" 
-                                           initialIds="${communicationRoute.signalTransmitterId}"/>
+                                           initialId="${communicationRoute.signalTransmitterId}"/>
                     <tags:hidden path="signalTransmitterId"/>
                  </tags:nameValue2>
                  <tags:nameValue2 nameKey=".defaultRoute">
