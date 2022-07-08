@@ -9,7 +9,36 @@
 
 <cti:msgScope paths="yukon.web.modules.operator.routes">
     <cti:standardPage module="operator" page="routes.${mode}">
-    <cti:url var="action" value="/stars/device/routes/create" />
+    <tags:setFormEditMode mode="${mode}" />
+    <!-- Actions drop-down -->
+    <cti:displayForPageEditModes modes="VIEW,">
+        <div id="page-actions" class="dn">
+            <cti:url var="action" value="/stars/device/routes/create" />
+            <cm:dropdownOption icon="icon-plus-green" key="yukon.web.components.button.create.label" id="js-create-option" data-popup="#js-create-route-popup"/>
+            
+           <%--  <cti:url var="editUrl" value="/dr/setup/constraint/${communicationRoute.id}/edit"/>
+            <cm:dropdownOption icon="icon-pencil" key="yukon.web.components.button.edit.label" href="${editUrl}" />
+         --%>
+        </div>
+        
+        <div id="js-create-route-popup" class="dn" data-title="<i:inline key=".createObject.title"/>" data-width="400">
+            <table style="width:100%">
+                <tr>
+                    <td>
+                        <cti:url var="createCommRoute" value="create"/>
+                        <a href="${createCommRoute}"><i:inline key=".routes.createCommRoute.create"/></a>
+                    </td>
+                    <td>
+                        <cti:url var="createMacroRoute" value="create"/>
+                        <a href="${createMacroRoute}"><i:inline key=".routes.createMacroRoute.create"/></a>
+                    </td>
+
+                </tr>
+            </table>
+        </div>
+    </cti:displayForPageEditModes>
+        
+    
     <form:form modelAttribute="communicationRoute" action="${action}" method="post" id="js-comm-route-form">
          <cti:csrfToken />
         <tags:sectionContainer2 nameKey="general">
@@ -25,9 +54,11 @@
                                            destinationFieldName="signalTransmitterId"
                                            linkType="selection" 
                                            selectionProperty="paoName"
+                                           icon="icon-magnifier"
                                            multiSelectMode="false"
                                            allowEmptySelection="false" 
-                                           initialIds="${communicationRoute.signalTransmitterId}"/>
+                                           viewOnlyMode="${mode == 'VIEW'}"
+                                           initialId="${communicationRoute.signalTransmitterId}"/>
                     <tags:hidden path="signalTransmitterId"/>
                  </tags:nameValue2>
                  <tags:nameValue2 nameKey=".defaultRoute">
@@ -38,9 +69,9 @@
                 <div class="page-action-area">
                     <cti:displayForPageEditModes modes="EDIT,CREATE">
                         <cti:button type="submit" nameKey="save" classes="primary action js-save" busy="true"/>
-                    </cti:displayForPageEditModes>
                         <cti:url var="viewUrl" value="/stars/device/routes/list" />
                         <cti:button nameKey="cancel" href="${viewUrl}"/>
+                        </cti:displayForPageEditModes>
                 </div>
         </tags:sectionContainer2>
     </form:form>
