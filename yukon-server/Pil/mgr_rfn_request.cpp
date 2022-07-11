@@ -745,8 +745,6 @@ RfnRequestManager::RfnIdentifierSet RfnRequestManager::handleTimeouts()
                 {
                     auto messageId = itr->second;
 
-                    CTILOG_INFO( dout, "Broadcast message timeout occurred for messageId: "<< messageId );
-
                     if ( auto callback_itr = _broadcastCallbacks.find( messageId ); callback_itr != _broadcastCallbacks.end() )
                     {
                         callback_itr->second.timeout();
@@ -1151,7 +1149,7 @@ void RfnRequestManager::submitBroadcastRequest( const Messaging::Rfn::EdgeDrBroa
     // initialize our callbacks and timeout framework
 
     const auto Key     = broadcast.header->messageId;
-    const auto Timeout = std::chrono::system_clock::now() + std::chrono::hours{ 2 };    // 2hrs... is OK?
+    const auto Timeout = std::chrono::system_clock::now() + std::chrono::minutes{ 35 };
 
     _broadcastTimeouts.emplace( Timeout, Key );
     _broadcastCallbacks.emplace( 
@@ -1159,32 +1157,39 @@ void RfnRequestManager::submitBroadcastRequest( const Messaging::Rfn::EdgeDrBroa
         BroadcastCallbacks {
         [=]( const RfnBroadcastReply & reply )
         {
-            EdgeDrBroadcastResponse response
-            {
-                request.messageGuid,
-                EdgeDrError { reply.replyType, "" }
-            };
+            Cti::FormattedList itemList;
 
+            itemList.add("Reply Type")          << reply.replyType;
             if ( reply.failureReason )
             {
-                response.error->errorMessage = *reply.failureReason;
+                itemList.add("Failure Reason")  << *reply.failureReason;
             }
             if ( reply.gatewayErrors.size() )
             {
-                response.error->errorMessage += ": ";
-                for (auto & [rfnId, error] : reply.gatewayErrors )
+                Cti::FormattedTable table;
+
+                table.setCell(0, 0) << "Gateway RFN ID";
+                table.setCell(0, 1) << "Error Reason";
+
+                int row = 1;
+
+                for ( auto & [rfnId, error] : reply.gatewayErrors )
                 {
-                    response.error->errorMessage += "[<" + rfnId.toString() + ">: " + error + "]";
+                    table.setCell(row, 0) << rfnId.toString();
+                    table.setCell(row, 1) << error;
+
+                    ++row;
                 }
+
+                itemList << table;
             }
 
-            sendClientResponse( response );
+            CTILOG_INFO( dout, "Received an RFN broadcast reply from NM." << itemList );
         },
         [=]()
         {
-            sendClientResponse( {
-               request.messageGuid,
-               EdgeDrError { ClientErrors::E2eRequestTimeout, "EdgeDR broadcast request timed out" } } );
+            CTILOG_INFO( dout, "EdgeDR broadcast request timed out waiting for a reply from NM." << FormattedList::of(
+                                "Message GUID", request.messageGuid ) );
         }
     } );
 
@@ -1198,6 +1203,12 @@ void RfnRequestManager::submitBroadcastRequest( const Messaging::Rfn::EdgeDrBroa
         Messaging::ActiveMQConnectionManager::enqueueMessage(
             Messaging::ActiveMQ::Queues::OutboundQueue::NetworkManagerRfnBroadcastRequest,
             serialized_broadcast );
+
+        // report back to web client that we have forwarded the request to NM.  Any responses from NM will be logged in the callbacks.
+
+        sendClientResponse( {
+           request.messageGuid,
+           EdgeDrError { ClientErrors::None, "Sending RFN broadcast request to NM" } } );  // need different error code?
     }
     else
     {
