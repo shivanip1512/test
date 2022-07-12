@@ -19,13 +19,13 @@ import com.cannontech.core.dao.DeviceDao;
 import com.cannontech.dr.eatonCloud.job.service.EatonCloudJobResponseProcessor;
 import com.cannontech.dr.eatonCloud.job.service.EatonCloudJobRestorePollService;
 import com.cannontech.dr.eatonCloud.job.service.EatonCloudJobRestoreService;
+import com.cannontech.dr.eatonCloud.job.service.EatonCloudJobService;
 import com.cannontech.dr.eatonCloud.job.service.EatonCloudJobSmartNotifService;
 import com.cannontech.dr.eatonCloud.model.EatonCloudError;
 import com.cannontech.dr.eatonCloud.model.v1.EatonCloudCommunicationExceptionV1;
 import com.cannontech.dr.eatonCloud.model.v1.EatonCloudJobRequestV1;
 import com.cannontech.dr.eatonCloud.model.v1.EatonCloudJobResponseV1;
 import com.cannontech.dr.eatonCloud.service.v1.EatonCloudCommunicationServiceV1;
-import com.cannontech.dr.recenteventparticipation.ControlEventDeviceStatus;
 import com.cannontech.loadcontrol.messages.LMEatonCloudStopCommand;
 import com.cannontech.system.GlobalSettingType;
 import com.cannontech.system.dao.GlobalSettingDao;
@@ -40,6 +40,7 @@ public class EatonCloudJobRestoreServiceImpl extends EatonCloudJobHelperService 
     @Autowired private GlobalSettingDao settingDao;
     @Autowired private EatonCloudJobRestorePollService eatonCloudJobRestorePollService;
     @Autowired private EatonCloudJobSmartNotifService eatonCloudJobSmartNotifService;
+    @Autowired private EatonCloudJobService eatonCloudJobService;
 
     private static final Logger log = YukonLogManager.getLogger(EatonCloudJobRestoreServiceImpl.class);
 
@@ -56,7 +57,8 @@ public class EatonCloudJobRestoreServiceImpl extends EatonCloudJobHelperService 
     
     @Override
     public void createJobs(int programId, Set<Integer> devices, LMEatonCloudStopCommand command,
-            Integer eventId) {
+            int eventId) {
+        eatonCloudJobService.terminateEvent(eventId);
         EventRestoreSummary summary = new EventRestoreSummary(eventId, programId, command, log);
         createJobs(devices, summary);
     }
@@ -78,10 +80,11 @@ public class EatonCloudJobRestoreServiceImpl extends EatonCloudJobHelperService 
             }
         });
         if (!jobGuids.isEmpty()) {
-            eatonCloudJobRestorePollService.schedulePoll(summary, pollInMinutes, jobGuids, devicesGuids);
+            eatonCloudJobRestorePollService.schedulePoll(summary, EatonCloudJobSettingsHelper.pollInMinutes, jobGuids,
+                    devicesGuids);
         } else {
             eatonCloudJobSmartNotifService.sendSmartNotifications(summary.getProgramId(), summary.getCommand().getGroupId(),
-                    devices.size(), devices.size(), summary.getLogSummary());
+                    devices.size(), devices.size(), false, summary.getLogSummary());
         }
     }
     
@@ -100,7 +103,7 @@ public class EatonCloudJobRestoreServiceImpl extends EatonCloudJobHelperService 
             log.error(summary.getLogSummary() + "SEND Failed to create job to send Shed Command:{} devices:{}",
                     summary.getCommand(),
                     devices.size(), e);
-            // job failed, mark all devices as failed, failed job will not retry
+            // job failed, mark all devices as failed as restore doesn't retry
             devices.forEach(deviceId -> eatonCloudJobResponseProcessor.processError(summary,
                     deviceId, guids.get(deviceId), null,
                     EatonCloudError.JOB_CREATION_FAILED.getCode()));

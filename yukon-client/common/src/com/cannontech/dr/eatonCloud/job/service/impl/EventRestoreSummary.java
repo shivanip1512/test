@@ -47,9 +47,7 @@ public final class EventRestoreSummary {
         return eventId;
     }
 
-
     public LMEatonCloudStopCommand getCommand() {
         return command;
-    }
-    
+    }    
 }

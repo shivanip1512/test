@@ -1,6 +1,5 @@
 package com.cannontech.dr.eatonCloud.job.service.impl;
 
-import java.math.RoundingMode;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
@@ -33,21 +32,20 @@ import com.cannontech.system.GlobalSettingType;
 import com.cannontech.system.dao.GlobalSettingDao;
 import com.google.common.base.Strings;
 import com.google.common.collect.Multimap;
-import com.google.common.math.IntMath;
 
-public class EatonCloudJobReadServiceImpl implements EatonCloudJobReadService{
+public class EatonCloudJobReadServiceImpl implements EatonCloudJobReadService {
     @Autowired @Qualifier("main") private ScheduledExecutor scheduledExecutor;
     @Autowired private GlobalSettingDao settingDao;
     @Autowired private RecentEventParticipationDao recentEventParticipationDao;
     @Autowired private EatonCloudDataReadService eatonCloudDataReadService;
-    
+
     private static final Logger log = YukonLogManager.getLogger(EatonCloudJobReadServiceImpl.class);
-    
+
     private static final String DATE_FORMAT = "MM-dd-yyyy HH:mm:ss";
     private AtomicBoolean isReadingDevices = new AtomicBoolean(false);
     // <external event id, Pair<next read time, job creation time>>
     private Map<Integer, Pair<Instant, Instant>> nextRead = new ConcurrentHashMap<>();
-    
+
     private List<EatonCloudChannel> channelsToRead = List.of(EatonCloudChannel.EVENT_STATE,
             EatonCloudChannel.ACTIVATION_STATUS_R1, EatonCloudChannel.ACTIVATION_STATUS_R2,
             EatonCloudChannel.ACTIVATION_STATUS_R3, EatonCloudChannel.ACTIVATION_STATUS_R4);
@@ -60,7 +58,7 @@ public class EatonCloudJobReadServiceImpl implements EatonCloudJobReadService{
         }
         schedule();
     }
-    
+
     private void schedule() {
         scheduledExecutor.scheduleAtFixedRate(() -> {
             if (isReadingDevices.compareAndSet(false, true)) {
@@ -73,27 +71,20 @@ public class EatonCloudJobReadServiceImpl implements EatonCloudJobReadService{
             }
         }, 0, 1, TimeUnit.MINUTES);
     }
-    
+
     @Override
     public void setupDeviceRead(EventSummary summary, Instant jobCreationTime, int currentTry) {
-       // TODO:
-        int readTimeFromNowInMinutes = summary.getCommand().getDutyCyclePeriod() == null ? 5 : IntMath.divide(
-                summary.getCommand().getDutyCyclePeriod() / 60,
-                2, RoundingMode.CEILING);
-        
-        // using for testing
-        
-       // int readTimeFromNowInMinutes = 2;    
+        int readTimeFromNowInMinutes = EatonCloudJobSettingsHelper.getReadTime(summary);
         Instant nextReadTime = DateTime.now().plusMinutes(readTimeFromNowInMinutes).toInstant();
-        
+
         log.info(summary.getLogSummary(false) + "READ Try:{} in {} minutes at {}",
                 currentTry,
                 readTimeFromNowInMinutes,
                 nextReadTime.toDateTime().toString(DATE_FORMAT));
-        
+
         nextRead.put(summary.getEventId(), Pair.of(nextReadTime, jobCreationTime));
     }
-    
+
     private void readDevices() {
         try {
             Iterator<Entry<Integer, Pair<Instant, Instant>>> iter = nextRead.entrySet().iterator();

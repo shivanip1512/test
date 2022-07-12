@@ -6,6 +6,9 @@ import com.cannontech.loadcontrol.messages.LMEatonCloudStopCommand;
 
 public interface EatonCloudJobRestoreService {
 
-    void createJobs(int programId, Set<Integer> devices, LMEatonCloudStopCommand command, Integer eventId);
+    /**
+     * Starts jobs to send restore command to 2500 devices at a time
+     */
+    void createJobs(int programId, Set<Integer> devices, LMEatonCloudStopCommand command, int eventId);
 
 }

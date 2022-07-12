@@ -19,6 +19,13 @@ public interface EatonCloudJobResponseProcessor {
      */
     void processSuccess(EventSummary summary, Integer deviceId, String guid, String jobGuid, int currentTry);
    
+    /**
+     * Creates event log entry for successful restore
+     */
     void processSuccess(EventRestoreSummary summary, Integer deviceId, String guid, String jobGuid);
+    
+    /**
+     * Creates event log entry for failed restore
+     */
     void processError(EventRestoreSummary summary, Integer deviceId, String guid, String jobGuid, int code);
 }

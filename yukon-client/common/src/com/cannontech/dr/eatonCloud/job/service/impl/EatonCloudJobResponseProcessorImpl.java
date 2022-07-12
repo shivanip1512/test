@@ -64,7 +64,7 @@ public class EatonCloudJobResponseProcessorImpl implements EatonCloudJobResponse
                 command.getVirtualRelayId(),
                 truncateErrorForEventLog("("+code+")" + message));
  
-        log.debug(summary.getLogSummary(false) + "Try:{} Failed sending shed to device id:{} guid:{} name:{} error:{}",
+        log.debug(summary.getLogSummary(false) + "Try:{} Failed shed device id:{} guid:{} name:{} error:{}",
                 currentTry, deviceId, guid, deviceName, message);
     }
     
@@ -76,7 +76,7 @@ public class EatonCloudJobResponseProcessorImpl implements EatonCloudJobResponse
                 ControlEventDeviceStatus.SUCCESS_RECEIVED, new Instant(),
                 null, currentTry == 1 ? null : Instant.now());
 
-        log.debug(summary.getLogSummary(jobGuid, false) + "Try:{} Success sending shed to device id:{} guid:{} name:{}",
+        log.debug(summary.getLogSummary(jobGuid, false) + "Try:{} Successful shed device id:{} guid:{} name:{}",
                 currentTry, deviceId, guid, deviceName);
 
         eatonCloudEventLogService.sendShedJob(deviceName,
@@ -99,11 +99,11 @@ public class EatonCloudJobResponseProcessorImpl implements EatonCloudJobResponse
         String jobInfo = getJobInfo(summary.getEventId(), jobGuid);
         eatonCloudEventLogService.sendRestoreJobFailed(deviceName,
                 guid,
-                jobInfo,
                 truncateErrorForEventLog("("+code+")" + message),
+                jobInfo,
                 command.getVirtualRelayId());
  
-        log.debug(summary.getLogSummary(jobGuid) + "Failed sending restore to device id:{} guid:{} name:{} error:{}",
+        log.debug(summary.getLogSummary(jobGuid) + "Failed restore device id:{} guid:{} name:{} error:{}",
                  deviceId, guid, deviceName, message);
     }
 
@@ -120,7 +120,7 @@ public class EatonCloudJobResponseProcessorImpl implements EatonCloudJobResponse
         String deviceName = dbCache.getAllPaosMap().get(deviceId).getPaoName();
         LMEatonCloudStopCommand command = summary.getCommand();
 
-        log.debug(summary.getLogSummary(jobGuid) + "Try:{} Success sending restore to device id:{} guid:{} name:{}",
+        log.debug(summary.getLogSummary(jobGuid) + "Successful restore device id:{} guid:{} name:{}",
                   deviceId, guid, deviceName);
 
         eatonCloudEventLogService.sendRestoreJob(deviceName,

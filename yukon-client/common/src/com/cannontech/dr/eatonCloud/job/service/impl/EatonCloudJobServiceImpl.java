@@ -59,8 +59,6 @@ public class EatonCloudJobServiceImpl extends EatonCloudJobHelperService impleme
 
     private AtomicBoolean isSendingCommands = new AtomicBoolean(false);
 
-    private static int firstRetryAfterPollMinutes = 2;
-
     // eventId
     private Map<Integer, RetrySummary> resendTries = new ConcurrentHashMap<>();
 
@@ -126,22 +124,23 @@ public class EatonCloudJobServiceImpl extends EatonCloudJobHelperService impleme
 
     @Override
     public void createJobs(int programId, Set<Integer> devices, LMEatonCloudScheduledCycleCommand command,
-            Integer eventId) {
+            int eventId) {
         EventSummary summary = new EventSummary(eventId, programId, command, log, recentEventParticipationDao,
                 deviceErrorTranslatorDao);
         Pair<Instant, List<String>> result = createJobs(devices, summary);
         setupRetry(summary, result);
     }
 
-    //caches next try info
+    // caches next try info
     private EventSummary setupRetry(EventSummary summary, Pair<Instant, List<String>> result) {
         if (result != null) {
-            EventSummary nextTry = summary.setupNextTry(pollInMinutes + firstRetryAfterPollMinutes);
+            EventSummary nextTry = summary.setupNextTry(
+                    EatonCloudJobSettingsHelper.pollInMinutes + EatonCloudJobSettingsHelper.firstRetryAfterPollMinutes);
             if (nextTry != null) {
                 resendTries.put(nextTry.getEventId(), new RetrySummary(nextTry, result));
                 return nextTry;
             }
-        } 
+        }
         eatonCloudJobPollService.failWillRetryDevicesAfterLastPoll(summary);
         return null;
     }
@@ -174,12 +173,13 @@ public class EatonCloudJobServiceImpl extends EatonCloudJobHelperService impleme
         });
         if (!jobGuids.isEmpty()) {
             // schedule poll for device status in 5 minutes
-            eatonCloudJobPollService.schedulePoll(summary, pollInMinutes, devices.size(), jobGuids, jobCreationTime,
+            eatonCloudJobPollService.schedulePoll(summary, EatonCloudJobSettingsHelper.pollInMinutes, devices.size(), jobGuids,
+                    jobCreationTime,
                     summary.getCurrentTry().get());
             return Pair.of(jobCreationTime, jobGuids);
         }
         eatonCloudJobSmartNotifService.sendSmartNotifications(summary.getProgramId(), summary.getCommand().getGroupId(),
-                devices.size(), devices.size(), summary.getLogSummary(false));
+                devices.size(), devices.size(), true, summary.getLogSummary(false));
         return null;
        
     }
@@ -204,6 +204,20 @@ public class EatonCloudJobServiceImpl extends EatonCloudJobHelperService impleme
                     deviceId, guids.get(deviceId), null,
                     EatonCloudError.JOB_CREATION_FAILED.getCode(), ControlEventDeviceStatus.FAILED, 1));
             return null;
+        }
+    }
+
+    @Override
+    public void terminateEvent(int eventId) {
+        Iterator<Entry<Integer, RetrySummary>> iter = resendTries.entrySet().iterator();
+        while (iter.hasNext()) {
+            Entry<Integer, RetrySummary> entry = iter.next();
+            if(entry.getKey() == eventId) {
+                iter.remove();
+                EventSummary summary = entry.getValue().summary;
+                log.info(summary.getLogSummary(false) + "terminating event due to RESTORE");
+                eatonCloudJobPollService.failWillRetryDevicesAfterLastPoll(summary);
+            }
         }
     }
 }

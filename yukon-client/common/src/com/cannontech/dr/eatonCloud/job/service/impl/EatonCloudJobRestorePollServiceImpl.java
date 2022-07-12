@@ -45,7 +45,7 @@ public class EatonCloudJobRestorePollServiceImpl extends EatonCloudJobPollServic
             poll(summary, jobGuids, deviceGuids);
         }, pollInMinutes, TimeUnit.MINUTES);
     }
-
+    
     private void poll(EventRestoreSummary summary, List<String> jobGuids, List<String> deviceGuids) {
         Map<String, Integer> guidsToDeviceIds = deviceDao.getDeviceIds(deviceGuids);
         List<String> successes = new ArrayList<>();
@@ -67,16 +67,17 @@ public class EatonCloudJobRestorePollServiceImpl extends EatonCloudJobPollServic
             
             eatonCloudJobSmartNotifService.sendSmartNotifications(summary.getProgramId(),
                     summary.getCommand().getGroupId(), deviceGuids.size(), deviceGuids.size() - successes.size(),
-                    summary.getLogSummary());
+                    false, summary.getLogSummary());
             
             deviceGuids.removeIf(guid -> successes.contains(guid) || failures.contains(guid));
-            log.info(summary.getLogSummary() + "POLL no response recieved for {} devices. {}",  deviceGuids.size(), deviceGuids);
-            deviceGuids
-                    .forEach(guid -> eatonCloudJobResponseProcessor.processError(summary,
-                            guidsToDeviceIds.get(guid), guid, null,
-                            EatonCloudError.NO_RESPONSE_FROM_DEVICE.getCode()));
-            
-
+            if(!deviceGuids.isEmpty()) {
+                log.info(summary.getLogSummary() + "POLL no response recieved for {} devices. {}", deviceGuids.size(),
+                        deviceGuids);
+                deviceGuids
+                        .forEach(guid -> eatonCloudJobResponseProcessor.processError(summary,
+                                guidsToDeviceIds.get(guid), guid, null,
+                                EatonCloudError.NO_RESPONSE_FROM_DEVICE.getCode())); 
+            }
         } catch (Exception e) {
             log.error("Error polling", e);
         }

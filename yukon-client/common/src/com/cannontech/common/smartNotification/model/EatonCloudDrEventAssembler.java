@@ -10,15 +10,17 @@ public class EatonCloudDrEventAssembler extends SmartNotificationAssembler {
     public static final String LM_PROGRAM = "lmProgram";
     public static final String TOTAL_DEVICES = "totalDevices";
     public static final String TOTAL_FAILED = "totalFailed";
+    public static final String CONTROL = "control";
 
     public static SmartNotificationEvent assemble(String group, String program, int totalDevices,
-            int totalFailed) {
+            int totalFailed, boolean isControl) {
         SmartNotificationEvent event = new SmartNotificationEvent(new Instant());
         event.setParameters(ImmutableMap.of(
                 LM_GROUP, group,
                 LM_PROGRAM, program,
                 TOTAL_DEVICES, totalDevices,
-                TOTAL_FAILED, totalFailed));
+                TOTAL_FAILED, totalFailed,
+                CONTROL, isControl ? 1 : 0));
         return event;
     }
 }

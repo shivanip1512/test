@@ -178,7 +178,7 @@ public class SmartNotificationSimulatorServiceImpl implements SmartNotificationS
                 // when i is 0 - total 100 failed 99
                 // when i is 1 - total 200 failed 198
                 SmartNotificationEvent event = EatonCloudDrEventAssembler.assemble(group.get().getPaoName(), program,
-                        (i + 1) * 100, ((i + 1) * 100) - (i + 1));
+                        (i + 1) * 100, ((i + 1) * 100) - (i + 1), true);
                 events.add(event);
             }
 

@@ -303,7 +303,7 @@ public class EatonCloudSendControlServiceImpl implements EatonCloudSendControlSe
                     .getPaoName();
             String group = dbCache.getAllLMGroups().stream().filter(p -> p.getLiteID() == groupId).findFirst().get()
                     .getPaoName();
-            SmartNotificationEvent event = EatonCloudDrEventAssembler.assemble(group, program, totalDevices, totalFailed);
+            SmartNotificationEvent event = EatonCloudDrEventAssembler.assemble(group, program, totalDevices, totalFailed, true);
 
             log.info("[external event id:{}] Sending smart notification event: {}", eventId, event);
             smartNotificationEventCreationService.send(SmartNotificationEventType.EATON_CLOUD_DR, List.of(event));

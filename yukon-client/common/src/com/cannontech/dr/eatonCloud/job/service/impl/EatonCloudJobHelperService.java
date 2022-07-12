@@ -11,9 +11,6 @@ import com.google.common.collect.Lists;
 public abstract class EatonCloudJobHelperService {
     
     protected int maxDevicesPerJob;
-    //TODO: change to 5
-    protected static int pollInMinutes = 5;
-    //TODO: change to 2
     /**
      * Creates new job requests to send to Eaton Cloud
      */
@@ -26,5 +23,4 @@ public abstract class EatonCloudJobHelperService {
             return new EatonCloudJobRequestV1(deviceGuids, "LCR_Control", params);
         }).collect(Collectors.toList());
     }
-
 }
