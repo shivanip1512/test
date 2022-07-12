@@ -240,8 +240,6 @@ public class MR_ServerImpl implements MR_Server{
                 EnumSet<BuiltInAttribute> attributesToLoad = EnumSet.of(BuiltInAttribute.USAGE, 
                                                                         BuiltInAttribute.PEAK_DEMAND, 
                                                                         BuiltInAttribute.KVAR, 
-                                                                        BuiltInAttribute.SUM_KWH,
-                                                                        BuiltInAttribute.NET_KWH,
                                                                         BuiltInAttribute.KVA,
                                                                         BuiltInAttribute.KVARH,
                                                                         BuiltInAttribute.POWER_FACTOR,
