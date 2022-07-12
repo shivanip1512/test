@@ -16,7 +16,7 @@
         <tbody>
             <c:forEach var="warning" items="${warnings.resultList}">
                 <tr>
-                    <td style="padding-top:0px;padding-bottom:0px;padding-left:0px;display:inline-flex;align-items:center">
+                    <td class="table-row-status-stripe">
                         <c:set var="statusColor" value=""/>
                         <c:set var="statusTooltip" value=""/>
                         <c:if test="${warning.severity == 'HIGH'}">
