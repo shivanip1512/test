@@ -30,7 +30,7 @@ public class InfrastructureWarningSummary {
             InfrastructureWarningDeviceCategory.RELAY, this::getTotalRelays,
             InfrastructureWarningDeviceCategory.CCU, this::getTotalCcus,
             InfrastructureWarningDeviceCategory.REPEATER, this::getTotalRepeaters,
-            InfrastructureWarningDeviceCategory.METER, this::getTotalMeters
+            InfrastructureWarningDeviceCategory.IPLINK_METER, this::getTotalMeters
         );
     
     private final Map<InfrastructureWarningDeviceCategory, IntSupplier> deviceCategoryWarningSuppliers = 
@@ -39,7 +39,7 @@ public class InfrastructureWarningSummary {
             InfrastructureWarningDeviceCategory.RELAY, this::getWarningRelays,
             InfrastructureWarningDeviceCategory.CCU, this::getWarningCcus,
             InfrastructureWarningDeviceCategory.REPEATER, this::getWarningRepeaters,
-            InfrastructureWarningDeviceCategory.METER, this::getWarningMeters
+            InfrastructureWarningDeviceCategory.IPLINK_METER, this::getWarningMeters
         );
     
     public int getTotalDevices(InfrastructureWarningDeviceCategory category) {

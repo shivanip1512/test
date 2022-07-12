@@ -12,7 +12,7 @@ yukon.widget.infrastructureWarnings = (function () {
     
     var
     _initialized = false,
-    _updateInterval = 60066660,
+    _updateInterval = 6000,
     
     _update = function () {
         var infrastructureWarningDeviceCategory = $('.js-infrastructure-warning-device-type').val();

@@ -4,16 +4,14 @@
 <%@ taglib prefix="tags" tagdir="/WEB-INF/tags"%>
 
 <cti:msgScope paths="widgets.infrastructureWarnings">
-    <table width="70%">
-        <tr>
-            <c:if test="${deviceTotalCount != 0}">
-                <tags:infrastructureWarningsCount deviceTotalCount="${deviceTotalCount}" 
-                                                  deviceWarningsCount="${deviceWarningsCount}" 
-                                                  deviceLabel="${deviceLabel}" 
-                                                  fromDetailPage="${fromDetailPage}"
-                                                  deviceType="${deviceType}"/>
-            </c:if>
-        </tr>
-    </table>
+    <div style="width:40%" class="PT10 PB10 clearfix">
+        <c:if test="${deviceTotalCount != 0}">
+            <tags:infrastructureWarningsCount deviceTotalCount="${deviceTotalCount}" 
+                                              deviceWarningsCount="${deviceWarningsCount}" 
+                                              deviceLabel="${deviceLabel}" 
+                                              fromDetailPage="${fromDetailPage}"
+                                              deviceType="${deviceType}"/>
+        </c:if>
+    </div>
     <%@ include file="infrastructureWarningsDetails.jsp" %>
 </cti:msgScope>

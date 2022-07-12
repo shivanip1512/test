@@ -30,7 +30,7 @@
                         </c:if>
                     </td>
                     <td class="wsnw">
-                        <cti:paoDetailUrl yukonPao="${warning.paoIdentifier}" newTab="true">
+                        <cti:paoDetailUrl yukonPao="${warning.paoIdentifier}">
                             <cti:deviceName deviceId="${warning.paoIdentifier.paoId}"/>
                         </cti:paoDetailUrl>
                     </td>

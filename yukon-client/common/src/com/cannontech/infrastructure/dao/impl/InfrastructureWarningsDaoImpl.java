@@ -113,7 +113,7 @@ public class InfrastructureWarningsDaoImpl implements InfrastructureWarningsDao{
         sql.append("(");
         sql.append("SELECT COUNT(DISTINCT PaObjectId)");
         sql.append("FROM YukonPaObject");
-        sql.append("WHERE Type").in(InfrastructureWarningDeviceCategory.METER.getPaoTypes());
+        sql.append("WHERE Type").in(InfrastructureWarningDeviceCategory.IPLINK_METER.getPaoTypes());
         sql.append(") AS Meters,");
 
         sql.append("(");
@@ -148,7 +148,7 @@ public class InfrastructureWarningsDaoImpl implements InfrastructureWarningsDao{
         sql.append("SELECT COUNT(DISTINCT PaoId)");
         sql.append("FROM InfrastructureWarnings iw");
         sql.append("JOIN YukonPaObject ypo ON iw.PaoId = ypo.PAObjectID");
-        sql.append("WHERE Type").in(InfrastructureWarningDeviceCategory.METER.getPaoTypes());
+        sql.append("WHERE Type").in(InfrastructureWarningDeviceCategory.IPLINK_METER.getPaoTypes());
         sql.append(") AS WarningMeters");
         
         if (dbVendorResolver.getDatabaseVendor().isOracle()) {

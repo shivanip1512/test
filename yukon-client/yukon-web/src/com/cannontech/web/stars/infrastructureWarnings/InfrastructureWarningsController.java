@@ -152,12 +152,12 @@ public class InfrastructureWarningsController {
             model.addAttribute("deviceLabel", deviceLabel);
             model.addAttribute("deviceType", InfrastructureWarningDeviceCategory.REPEATER);
             break;
-        case METER:
+        case IPLINK_METER:
             model.addAttribute("deviceTotalCount", summary.getTotalMeters());
             model.addAttribute("deviceWarningsCount", summary.getWarningMeters());
             deviceLabel = accessor.getMessage(baseKey + "meters");
             model.addAttribute("deviceLabel", deviceLabel);
-            model.addAttribute("deviceType", InfrastructureWarningDeviceCategory.METER);
+            model.addAttribute("deviceType", InfrastructureWarningDeviceCategory.IPLINK_METER);
         default:
             model.addAttribute("deviceTotalCount", summary.getTotalGateways());
             model.addAttribute("deviceWarningsCount", summary.getWarningGateways());

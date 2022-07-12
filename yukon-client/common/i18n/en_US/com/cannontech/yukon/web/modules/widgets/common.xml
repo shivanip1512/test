@@ -226,7 +226,7 @@ There is also an option to Change the configuration for the device.
 
 <entry key="yukon.web.widgets.infrastructureWarningsWidget">Infrastructure Warnings</entry>
 <entry key="yukon.web.widgets.infrastructureWarningsWidget.helpText"><![CDATA[
-        The Infrastructure Warnings widget periodically evaluates devices associated with the communications network such as RF gateways, RF relays, RF meters, CCUs or repeaters. Results of the evaluations will produce informational or warning messages about specific conditions that may require investigation.
+        The Infrastructure Warnings widget periodically evaluates devices associated with the communications network such as RF gateways, RF relays, IPLink meters, CCUs or repeaters. Results of the evaluations will produce informational or warning messages about specific conditions that may require investigation.
         A summary will display for each of the corresponding device types:
         <ul>
             <li>
