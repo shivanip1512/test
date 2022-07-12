@@ -238,5 +238,5 @@
 <entry key="yukon.web.picker.gatewayNmIpAddressPortPicker.dialogTitle">Select Gateway(s)</entry>
 
 <!-- Signal Transmitter Picker -->
-<entry key="yukon.web.picker.signalTransmitterPicker.dialogTitle">Select Signal Transmitters</entry>
+<entry key="yukon.web.picker.signalTransmitterPicker.dialogTitle">Select Signal Transmitter</entry>
 </properties>

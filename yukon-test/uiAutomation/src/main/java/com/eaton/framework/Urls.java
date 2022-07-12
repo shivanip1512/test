@@ -9,9 +9,9 @@ public final class Urls {
     public static final String SITE_MAP = "/sitemap";
     public static final String EDIT = "/edit";
     public static final String SEARCH = "/search";
-    public static final String SEARCH_PARAM = "?q=";    
+    public static final String SEARCH_PARAM = "?q=";
     public static final String OTHER_ACTIONS = "bulk/collectionActions?collectionType=idList&idList.ids=";
-    
+
     public static final class Ami {
         public static final String AMI_DASHBOARD = "/dashboards/-2/view?dashboardPageType=AMI";
         public static final String ARCHIVE_DATA_ANALYSIS = "/bulk/archiveDataAnalysis/list/view";
@@ -55,11 +55,11 @@ public final class Urls {
         public static final String LOAD_GROUP_DETAIL = "/dr/setup/loadGroup/";
         public static final String LOAD_GROUP_EDIT = "/dr/setup/loadGroup/";
         public static final String LOAD_GROUP_SETUP_LIST = "/dr/setup/filter?filterByType=LOAD_GROUP";
-       
+
         public static final String LOAD_GROUP_SETUP_NAME_ASC = "/dr/setup/filter?name=&filterByType=LOAD_GROUP&sort=NAME&dir=asc&itemsPerPage=250&page=1";
         public static final String LOAD_GROUP_SETUP_NAME_DESC = "/dr/setup/filter?name=&filterByType=LOAD_GROUP&sort=NAME&dir=desc&itemsPerPage=250&page=1";
-        public static final String LOAD_GROUP_SETUP_TYPE_ASC ="/dr/setup/filter?name=&filterByType=LOAD_GROUP&sort=TYPE&dir=asc&itemsPerPage=250&page=1";
-        public static final String LOAD_GROUP_SETUP_TYPE_DESC ="/dr/setup/filter?name=&filterByType=LOAD_GROUP&sort=TYPE&dir=desc&itemsPerPage=250&page=1";       
+        public static final String LOAD_GROUP_SETUP_TYPE_ASC = "/dr/setup/filter?name=&filterByType=LOAD_GROUP&sort=TYPE&dir=asc&itemsPerPage=250&page=1";
+        public static final String LOAD_GROUP_SETUP_TYPE_DESC = "/dr/setup/filter?name=&filterByType=LOAD_GROUP&sort=TYPE&dir=desc&itemsPerPage=250&page=1";
 
         public static final String LOAD_PROGRAM_CREATE = "/dr/setup/loadProgram/create";
         public static final String LOAD_PROGRAM_DETAILS = "/dr/setup/loadProgram/";
@@ -166,7 +166,6 @@ public final class Urls {
         public static final String GATEWAYS = "/stars/gateways";
         public static final String RELAYS = "/stars/relay";
         public static final String RTUS = "/stars/rtu-list";
-        public static final String COMM_ROUTES = "/stars/create";
         public static final String OPT_OUT_STATUS = "/stars/operator/optOut/admin";
         public static final String WORK_ORDERS = "/operator/WorkOrder/WorkOrder.jsp";
         public static final String IMPORT = "/stars/operator/account/accountImport";
@@ -196,7 +195,7 @@ public final class Urls {
         public static final String VIRTUAL_DEVICES_STATUS_DESC = "/stars/virtualDevices?sort=status&dir=desc";
         public static final String VIRTUAL_DEVICES_EDIT = "/stars/virtualDevice";
         public static final String VIRTUAl_DEVICE_DETAIL = "/stars/virtualDevice/";
-        
+
     }
 
     public static final class Tools {
@@ -209,7 +208,7 @@ public final class Urls {
         public static final String DEVICE_GROUP = "/group/editor/home";
         public static final String SCHEDULES = "/group/scheduledGroupRequestExecutionResults/jobs";
         public static final String SCRIPTS = "/macsscheduler/schedules/view";
-        
+
         public static final String TRENDS_LIST = "/tools/trends";
         public static final String TREND_EDIT = "/tools/trend/";
         public static final String TREND_CREATE = "/tools/trend/create";
@@ -224,16 +223,16 @@ public final class Urls {
         public static final String PROBABILITY_PEAK_LOAD = "/multispeak/visualDisplays/probabilityForPeak/home";
         public static final String RECENT_RESULTS = "/collectionActions/recentResults";
         public static final String DATA_STREAMING = "/tools/dataStreaming/configurations";
-        
+
         public static final String POINT = "/tools/points/";
-        
+
         public static final String ANALOG_POINT = "/tools/points/Analog/create?parentId=";
         public static final String CALC_ANALOG_POINT = "/tools/points/CalcAnalog/create?parentId=";
         public static final String CALC_STATUS_POINT = "/tools/points/CalcStatus/create?parentId=";
         public static final String DEMAND_ACCUMULATOR_POINT = "/tools/points/DemandAccumulator/create?parentId=";
         public static final String PULSE_ACCUMULATOR_POINT = "/tools/points/PulseAccumulator/create?parentId=";
         public static final String STATUS_POINT = "/tools/points/Status/create?parentId=";
-        
+
     }
 
     public static final class Admin {
@@ -279,7 +278,7 @@ public final class Urls {
         public static final String STATISTICAL_REPORTS = "/analysis/Reports.jsp?groupType=STATISTICAL";
         public static final String SURVEYS = "/stars/survey/list";
         public static final String THEMES = "/admin/config/themes";
-        
+
         public static final String ATTRIBUTES_LIST = "/admin/config/attributes";
     }
 
@@ -300,7 +299,7 @@ public final class Urls {
         public static final String THIRD_PARTY_LIBRARIES = "/support/thirdParty/view";
         public static final String THREAD_DUMP = "/support/threadDump";
         public static final String DATA_STREAMING_DEVICE_ATTRIBUTES = "/support/dataStreamingSupport";
-        
+
         public static final String LOGGING_VIEW = "/support/logging/view?file=";
         public static final String LOGGING_MENU = "/support/logging/menu?file=";
         public static final String CALC_LOG = "%2Fcalc_";
@@ -317,10 +316,10 @@ public final class Urls {
         public static final String WATCHDOG_LOG = "%2FWatchdog_";
         public static final String WEBSERVER_LOG = "%2FWebserver_";
         public static final String VIEW_ALL_LOGS = "/&sortType=date";
-        
+
         public static final String SUPPORT_BUNDLE = "/support/viewBundleProgress";
     }
-    
+
     public static final class Manuals {
         public static final String YUKON_MANUALS = "https://my.eaton.com/extranet/faces/myeaton/Tools/productDocumentation/productDocumentationDe/YUKON";
     }

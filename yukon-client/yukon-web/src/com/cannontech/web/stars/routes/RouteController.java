@@ -50,7 +50,7 @@ public class RouteController {
     @Autowired private ApiControllerHelper helper;
     @Autowired private ApiRequestHelper apiRequestHelper;
     @Autowired private RouteValidator<? extends RouteBaseModel<?>> routeValidator;
-    
+
     private static final String communicationKey = "yukon.exception.apiCommunicationException.communicationError";
     private static final String redirectListPageLink = "redirect:/stars/device/routes/list";
     private static final String baseKey = "yukon.web.modules.operator.routes.";

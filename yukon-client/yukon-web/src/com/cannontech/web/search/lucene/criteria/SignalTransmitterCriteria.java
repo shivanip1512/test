@@ -20,6 +20,5 @@ public class SignalTransmitterCriteria extends YukonObjectCriteriaHelper {
         addCriteria("type", PaoType.CCU711.getDbString(), BooleanClause.Occur.MUST_NOT);
         addCriteria("type", PaoType.CCU721.getDbString(), BooleanClause.Occur.MUST_NOT);
         addCriteria("type", PaoType.DIGIGATEWAY.getDbString(), BooleanClause.Occur.MUST_NOT);
-
     }
 }
