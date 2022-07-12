@@ -1,3 +1,4 @@
+/*
 package com.cannontech.web.api.schedules.service.impl;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -22,3 +23,4 @@ public class SeasonScheduleServiceImpl implements SeasonScheduleService {
         return seasonSchedule;
     }
 }
+*/
