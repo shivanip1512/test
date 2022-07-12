@@ -91,14 +91,14 @@ public class RouteController {
         model.addAttribute("nonCCUAndMacroRoutes", nonCCUAndMacroRoutes);
         return "/routes/list.jsp";
     }
-    
+
     @GetMapping("create")
     public String create(ModelMap model, YukonUserContext userContext, HttpServletRequest request) {
         model.addAttribute("mode", PageEditMode.CREATE);
         model.addAttribute("communicationRoute", new RouteBaseModel<RouteBase>());
         return "/routes/view.jsp";
     }
-    
+
     @PostMapping("save")
     public String save(@ModelAttribute("communicationRoute") RouteBaseModel<?> communicationRoute, BindingResult result, ModelMap model,
             YukonUserContext userContext, FlashScope flash, RedirectAttributes redirectAttributes, HttpServletRequest request) {
@@ -111,10 +111,11 @@ public class RouteController {
             String url = helper.findWebServerUrl(request, userContext, ApiURL.retrieveAllRoutesUrl);
             response = apiRequestHelper.callAPIForObject(userContext, request, url,
                     HttpMethod.POST, RouteBaseModel.class, communicationRoute);
-            
+
             if (response.getStatusCode() == HttpStatus.OK || response.getStatusCode() == HttpStatus.CREATED) {
                 RouteBaseModel<?> routeCreated = (RouteBaseModel<?>) response.getBody();
-                flash.setConfirm(new YukonMessageSourceResolvable("yukon.common.save.success", communicationRoute.getDeviceName()));
+                flash.setConfirm(
+                        new YukonMessageSourceResolvable("yukon.common.save.success", communicationRoute.getDeviceName()));
                 return "redirect:/stars/device/routes/" + routeCreated.getDeviceId();
             }
 
@@ -160,8 +161,9 @@ public class RouteController {
         }
 
     }
-    
-    private RouteBaseModel<?> retrieveCommunicationRoute(YukonUserContext userContext, HttpServletRequest request, int id, String url) {
+
+    private RouteBaseModel<?> retrieveCommunicationRoute(YukonUserContext userContext, HttpServletRequest request, int id,
+            String url) {
         RouteBaseModel<?> communicationRoute = null;
         try {
             ResponseEntity<? extends Object> response = apiRequestHelper.callAPIForObject(userContext, request, url,
