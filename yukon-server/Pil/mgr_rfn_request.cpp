@@ -1166,22 +1166,10 @@ void RfnRequestManager::submitBroadcastRequest( const Messaging::Rfn::EdgeDrBroa
             }
             if ( reply.gatewayErrors.size() )
             {
-                Cti::FormattedTable table;
-
-                table.setCell(0, 0) << "Gateway RFN ID";
-                table.setCell(0, 1) << "Error Reason";
-
-                int row = 1;
-
                 for ( auto & [rfnId, error] : reply.gatewayErrors )
                 {
-                    table.setCell(row, 0) << rfnId.toString();
-                    table.setCell(row, 1) << error;
-
-                    ++row;
+                    itemList.add(rfnId.toString())  << error;
                 }
-
-                itemList << table;
             }
 
             CTILOG_INFO( dout, "Received an RFN broadcast reply from NM." << itemList );
