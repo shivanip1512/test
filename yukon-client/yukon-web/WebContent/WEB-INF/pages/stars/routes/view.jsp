@@ -16,12 +16,9 @@
         <div id="page-actions" class="dn">
             <cti:url var="action" value="/stars/device/routes/create" />
             <cm:dropdownOption icon="icon-plus-green" key="yukon.web.components.button.create.label" id="js-create-option" data-popup="#js-create-route-popup"/>
-            
-           <%--  <cti:url var="editUrl" value="/dr/setup/constraint/${communicationRoute.id}/edit"/>
-            <cm:dropdownOption icon="icon-pencil" key="yukon.web.components.button.edit.label" href="${editUrl}" />
-         --%>
         </div>
         
+        <!-- popup for create route -->
         <div id="js-create-route-popup" class="dn" data-title="<i:inline key=".createObject.title"/>" data-width="400">
             <table style="width:100%">
                 <tr>
@@ -33,22 +30,20 @@
                         <cti:url var="createMacroRoute" value="create"/>
                         <a href="${createMacroRoute}"><i:inline key=".routes.createMacroRoute.create"/></a>
                     </td>
-
                 </tr>
             </table>
         </div>
     </cti:displayForPageEditModes>
 
+    <!-- page contents -->
     <cti:url var="action" value="/stars/device/routes/save" />
     <form:form modelAttribute="communicationRoute" action="${action}" method="post" id="js-comm-route-form">
-         <cti:csrfToken />
+        <cti:csrfToken />
         <tags:sectionContainer2 nameKey="general">
             <tags:nameValueContainer2>
-                
                 <tags:nameValue2 nameKey=".name">
                         <tags:input path="deviceName" maxlength="60" autofocus="autofocus" inputClass="w300 js-name"/>
                 </tags:nameValue2>
-                
                 <tags:nameValue2 nameKey=".selectSignalTransmitter">
                     <tags:pickerDialog id="signalTransmitterPicker${id}" 
                                            type="signalTransmitterPicker" 
@@ -65,14 +60,13 @@
                  <tags:nameValue2 nameKey=".defaultRoute">
                         <tags:switchButton path="defaultRoute" onNameKey=".yes.label" offNameKey=".no.label"/>
                  </tags:nameValue2>
-                    
             </tags:nameValueContainer2>
                 <div class="page-action-area">
                     <cti:displayForPageEditModes modes="EDIT,CREATE">
                         <cti:button type="submit" nameKey="save" classes="primary action js-save" busy="true"/>
                         <cti:url var="viewUrl" value="/stars/device/routes/list" />
                         <cti:button nameKey="cancel" href="${viewUrl}"/>
-                        </cti:displayForPageEditModes>
+                    </cti:displayForPageEditModes>
                 </div>
         </tags:sectionContainer2>
     </form:form>
