@@ -15,7 +15,7 @@ Policy::AttributeList CountdownKeepAlivePolicy::getSupportedAttributes() const
     };
 }
 
-Policy::Actions CountdownKeepAlivePolicy::SendKeepAlive( const long keepAliveValue )
+Policy::Actions CountdownKeepAlivePolicy::SendKeepAlive( const long keepAliveValue, std::chrono::seconds regulatorTimeout)
 {
     Actions    actions;
 
