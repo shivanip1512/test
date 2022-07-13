@@ -20,7 +20,6 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.client.RestClientException;
-import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import com.cannontech.clientutils.YukonLogManager;
 import com.cannontech.common.device.model.DeviceBaseModel;
@@ -100,8 +99,8 @@ public class RouteController {
     }
 
     @PostMapping("save")
-    public String save(@ModelAttribute("communicationRoute") RouteBaseModel<?> communicationRoute, BindingResult result, ModelMap model,
-            YukonUserContext userContext, FlashScope flash, RedirectAttributes redirectAttributes, HttpServletRequest request) {
+    public String save(@ModelAttribute("communicationRoute") RouteBaseModel<?> communicationRoute, BindingResult result,
+            YukonUserContext userContext, FlashScope flash, HttpServletRequest request) {
         try {
             routeValidator.validate(communicationRoute, result);
             if (result.hasErrors()) {
