@@ -1,20 +1,17 @@
-<%@ taglib prefix="assets" tagdir="/WEB-INF/tags/assets"%>
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
 <%@ taglib prefix="cm" tagdir="/WEB-INF/tags/contextualMenu" %>
 <%@ taglib prefix="cti" uri="http://cannontech.com/tags/cti" %>
-<%@ taglib prefix="d" tagdir="/WEB-INF/tags/dialog"%>
 <%@ taglib prefix="form" uri="http://www.springframework.org/tags/form"%>
-<%@ taglib prefix="i" tagdir="/WEB-INF/tags/i18n"%>
 <%@ taglib prefix="tags" tagdir="/WEB-INF/tags"%>
 
 <cti:msgScope paths="yukon.web.modules.operator.routes">
     <cti:standardPage module="operator" page="routes.${mode}">
-    <tags:setFormEditMode mode="${mode}" />
+    <tags:setFormEditMode mode="${mode}"/>
     
     <!-- Actions drop-down -->
     <cti:displayForPageEditModes modes="VIEW">
         <div id="page-actions" class="dn">
-            <cti:url var="action" value="/stars/device/routes/create" />
+            <cti:url var="action" value="/stars/device/routes/create"/>
             <cm:dropdownOption icon="icon-plus-green" key="yukon.web.components.button.create.label" id="js-create-option" data-popup="#js-create-route-popup"/>
         </div>
         
@@ -41,7 +38,7 @@
         <cti:csrfToken />
         <tags:sectionContainer2 nameKey="general">
             <tags:nameValueContainer2>
-                <tags:nameValue2 nameKey=".name">
+                <tags:nameValue2 nameKey="yukon.common.name">
                         <tags:input path="deviceName" maxlength="60" autofocus="autofocus" inputClass="w300 js-name"/>
                 </tags:nameValue2>
                 <tags:nameValue2 nameKey=".selectSignalTransmitter">
@@ -55,10 +52,10 @@
                                            allowEmptySelection="false" 
                                            viewOnlyMode="${mode == 'VIEW'}"
                                            initialId="${communicationRoute.signalTransmitterId}"/>
-                    <tags:hidden path="signalTransmitterId"/>
+                     <tags:hidden path="signalTransmitterId"/>
                  </tags:nameValue2>
                  <tags:nameValue2 nameKey=".defaultRoute">
-                        <tags:switchButton path="defaultRoute" onNameKey=".yes.label" offNameKey=".no.label"/>
+                     <tags:switchButton name="defaultRoute" onNameKey=".yes.label" offNameKey=".no.label" checked="true"/>
                  </tags:nameValue2>
             </tags:nameValueContainer2>
                 <div class="page-action-area">

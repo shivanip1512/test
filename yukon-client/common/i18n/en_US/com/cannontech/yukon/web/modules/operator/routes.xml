@@ -7,7 +7,6 @@
     <entry key="yukon.web.modules.operator.routes.createObject.title">Create Route</entry>
     <entry key="yukon.web.modules.operator.routes.CREATE.pageName">Create Communication Route</entry>
     <entry key="yukon.web.modules.operator.routes.title">General</entry>
-    <entry key="yukon.web.modules.operator.routes.name">Name</entry>
     <entry key="yukon.web.modules.operator.routes.defaultRoute">Default Route</entry>
     <entry key="yukon.web.modules.operator.routes.selectSignalTransmitter">Signal Transmitter</entry>
     <entry key="yukon.web.modules.operator.routes.retrieve.error">An error occurred in retrieving route.</entry>
