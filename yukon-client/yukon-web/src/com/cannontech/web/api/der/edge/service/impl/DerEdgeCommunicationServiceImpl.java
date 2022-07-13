@@ -36,6 +36,7 @@ import com.cannontech.messaging.serialization.thrift.serializer.porter.edgeDr.Ed
 import com.cannontech.messaging.serialization.thrift.serializer.porter.edgeDr.EdgeDrUnicastResponseSerializer;
 import com.cannontech.user.YukonUserContext;
 import com.cannontech.web.api.der.edge.service.DerEdgeCommunicationService;
+import com.cannontech.web.api.der.edge.service.DerEdgeResponseService;
 
 @Service
 public class DerEdgeCommunicationServiceImpl implements DerEdgeCommunicationService {
@@ -44,6 +45,7 @@ public class DerEdgeCommunicationServiceImpl implements DerEdgeCommunicationServ
     private static final int DEFAULT_TIMEOUT_MINUTES = 1;
 
     @Autowired private YukonJmsTemplateFactory jmsTemplateFactory;
+    @Autowired private DerEdgeResponseService derEdgeResponseService;
 
     private ThriftRequestReplyTemplate<EdgeDrBroadcastRequest, EdgeDrBroadcastResponse> thriftBroadcastMessenger;
     private ThriftRequestReplyTemplate<EdgeDrUnicastRequest, EdgeDrUnicastResponse> thriftUnicastMessenger;
@@ -64,7 +66,7 @@ public class DerEdgeCommunicationServiceImpl implements DerEdgeCommunicationServ
     }
 
     @Override
-    public Map<Integer, Short> sendUnicastRequest(YukonPao pao, byte[] payload, EdgeUnicastPriority queuePriority, 
+    public String sendUnicastRequest(YukonPao pao, byte[] payload, EdgeUnicastPriority queuePriority, 
             EdgeUnicastPriority networkPriority, YukonUserContext userContext) throws EdgeDrCommunicationException {
         
         //TODO later - clean up this logging
@@ -89,7 +91,10 @@ public class DerEdgeCommunicationServiceImpl implements DerEdgeCommunicationServ
                 throw new EdgeDrCommunicationException(responseMsg.getError().getErrorMessage());
             }
             
-            return responseMsg.getPaoToE2eId();
+            // Add values to the cache for future responses E2EID --> GUID
+            cacheE2EIDToGUIDResponses(responseMsg.getPaoToE2eId(), messageGuid);
+            
+            return messageGuid;
 
         } catch (InterruptedException | ExecutionException | TimeoutException e) {
             throw new EdgeDrCommunicationException("An unexpected error occurred while sending a broadcast message.", e);
@@ -97,7 +102,7 @@ public class DerEdgeCommunicationServiceImpl implements DerEdgeCommunicationServ
     }
 
     @Override
-    public Map<Integer, Short> sendMultiUnicastRequest(Set<SimpleDevice> simpleDeviceList, byte[] payload, EdgeUnicastPriority queuePriority, 
+    public String sendMultiUnicastRequest(Set<SimpleDevice> simpleDeviceList, byte[] payload, EdgeUnicastPriority queuePriority, 
             EdgeUnicastPriority networkPriority, YukonUserContext userContext) throws EdgeDrCommunicationException {
         
         //Convert Set of SimpleDevices into List of PaoID's
@@ -127,7 +132,7 @@ public class DerEdgeCommunicationServiceImpl implements DerEdgeCommunicationServ
                 throw new EdgeDrCommunicationException(responseMsg.getError().getErrorMessage());
             }
 
-            return responseMsg.getPaoToE2eId();
+            return messageGuid;
 
         } catch (InterruptedException | ExecutionException | TimeoutException e) {
             throw new EdgeDrCommunicationException("An unexpected error occurred while sending a Multi Unicast message.", e);
@@ -138,7 +143,7 @@ public class DerEdgeCommunicationServiceImpl implements DerEdgeCommunicationServ
     public void sendBroadcastRequest(byte[] payload, EdgeBroadcastMessagePriority priority, YukonUserContext userContext) throws EdgeDrCommunicationException {
 
         // TODO later - clean up this logging
-        log.info("Processing DER Edge Broadcastt Request - Payload: {}, Priority: {}", Arrays.toString(payload), priority);
+        log.info("Processing DER Edge Broadcast Request - Payload: {}, Priority: {}", Arrays.toString(payload), priority);
 
         final String messageGuid = UUID.randomUUID().toString();
 
@@ -160,6 +165,17 @@ public class DerEdgeCommunicationServiceImpl implements DerEdgeCommunicationServ
 
         } catch (InterruptedException | ExecutionException | TimeoutException e) {
             throw new EdgeDrCommunicationException("An unexpected error occurred while sending a broadcast message.", e);
+        }
+    }
+
+    public void cacheE2EIDToGUIDResponses(Map<Integer, Short> paoToE2eId, String messageGuid)
+            throws EdgeDrCommunicationException {
+        try {
+            log.debug("Caching paoToE2eId: {} with GUID: {}", paoToE2eId, messageGuid);
+            paoToE2eId.values().stream().forEach(e -> derEdgeResponseService.addCacheEntry(e, messageGuid));
+            log.debug("Caching response completed");
+        } catch (Exception e) {
+            throw new EdgeDrCommunicationException("An unexpected error occurred while caching the response", e);
         }
     }
 
