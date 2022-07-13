@@ -31,7 +31,7 @@ public final class EventSummary {
     private String failReason;
     
     public String getLogSummary(boolean displayTryInfo) {
-        return "[id:" + eventId + getTryText(displayTryInfo) + "] relay:" + command.getVirtualRelayId() + " ";
+        return "[SHED id:" + eventId + getTryText(displayTryInfo) + "] relay:" + command.getVirtualRelayId() + " ";
     }
 
     private String getTryText(boolean displayTryInfo) {
@@ -43,7 +43,7 @@ public final class EventSummary {
     }
 
     public String getLogSummary(String jobGuid, boolean displayTryInfo) {
-        return "[id:" + eventId + ":" + jobGuid + "]" + getTryText(displayTryInfo) + " relay:" + command.getVirtualRelayId()
+        return "[SHED id:" + eventId + ":" + jobGuid + "]" + getTryText(displayTryInfo) + " relay:" + command.getVirtualRelayId()
                 + " ";
     }
 
@@ -63,9 +63,6 @@ public final class EventSummary {
         period = (Integer) params.get(CommandParam.CYCLE_PERIOD.getParamName());
         numberOfTimesToRetry = IntMath.divide((Integer) params.get(CommandParam.CYCLE_COUNT.getParamName()), 2,
                 RoundingMode.CEILING);
-        log.info(
-                "[id:{}] Sending shed, possible retries:{} command params:{} command:{}",
-                eventId, numberOfTimesToRetry, params, command);
     }
 
     /*
@@ -77,7 +74,7 @@ public final class EventSummary {
         if (numberOfTimesToRetry > currentTry.get()) {
             currentTry.incrementAndGet();
             currentTryTime = DateTime.now().plusMinutes(minutes).toInstant();
-            log.info("[id:{}] SEND Next retry time after {}", getEventId(),
+            log.info("[SHED id:{}] NEXT TRY:{} after {}", eventId, currentTry.get(),
                     currentTryTime.toDateTime().toString("MM-dd-yyyy HH:mm:ss"));
             return this;
         }
@@ -88,7 +85,7 @@ public final class EventSummary {
         // we ran out of retries and will mark all FAILED_WILL_RETRY or UNKNOWN devices as FAILED
         int affectedRows = recentEventParticipationDao.failWillRetryDevices(getEventId(), failReason);
         log.info(
-                "[id:{}] No more retries available, changed {} devices waiting for retry (FAILED_WILL_RETRY, UNKNOWN) to failed (FAILED).",
+                "[SHED id:{}] No more retries available, changed {} FAILED_WILL_RETRY and UNKNOWN devices to FAILED.",
                 getEventId(), affectedRows);
     }
 

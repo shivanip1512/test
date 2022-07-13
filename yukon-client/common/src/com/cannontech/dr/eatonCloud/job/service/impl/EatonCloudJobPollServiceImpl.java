@@ -77,7 +77,7 @@ public class EatonCloudJobPollServiceImpl extends EatonCloudJobPollServiceHelper
                             summary.getLogSummary(false));
                 }
             } catch (Exception e) {
-                log.error("Error polling", e);
+                log.error("Error POLL job guids:{}", jobGuids, e);
             }
             if (terminating.contains(summary.getEventId())) {
                 log.info(summary.getLogSummary(false) + " event terminated POLL completed");
@@ -96,35 +96,39 @@ public class EatonCloudJobPollServiceImpl extends EatonCloudJobPollServiceHelper
      * 3. Process success and failure by updating recent participation
      */
     private int poll(EventSummary summary, List<String> jobGuids, Instant jobCreationTime, int currentTry, boolean isImmediate) {
-        List<String> successes = new ArrayList<>();
+        List<String> allSuccesses = new ArrayList<>();
         String pollText = isImmediate ? "Immediate POLL Before " : "Scheduled POLL ";
         jobGuids.forEach(jobGuid -> {
             try {
-                log.info(summary.getLogSummary(jobGuid, false) + pollText + "Try:{}", currentTry);
                 EatonCloudJobStatusResponseV1 response = eatonCloudCommunicationService.getJobStatus(jobGuid);
-                log.info(summary.getLogSummary(jobGuid, false) + pollText + "Try:{} successes:{} failures:{}",
-                        currentTry,
-                        response.getSuccesses() == null ? 0 : response.getSuccesses().size(),
-                        response.getFailures() == null ? 0 : response.getFailures().size());
+                int totalSuccesses = response.getSuccesses() == null ? 0 : response.getSuccesses().size();
+                int totalFailures = response.getFailures() == null ? 0 : response.getFailures().size();
                 Map<String, Integer> guidsToDeviceIds = getDeviceIdsForGuids(response);
                 removeProcessedDeviceGuids(summary, response, guidsToDeviceIds);
-                processSuccesses(summary, successes, jobGuid, response, guidsToDeviceIds, currentTry);
+                processSuccesses(summary, allSuccesses, jobGuid, response, guidsToDeviceIds, currentTry);
                 processFailure(summary, jobGuid, response, guidsToDeviceIds, currentTry);
+                int unprocessedSuccesses = response.getSuccesses() == null ? 0 : response.getSuccesses().size();
+                int unprocessedFailures = response.getFailures() == null ? 0 : response.getFailures().size();
                 log.info(
                         summary.getLogSummary(jobGuid, false)
-                                + pollText + "Try:{} unprocessed successes:{} unprocessed failures:{}",
+                                + pollText
+                                + "Try:{} successes all/processed/unprocessed:{}/{}/{} failures all/processed/unprocessed:{}/{}/{}",
                         currentTry,
-                        response.getSuccesses() == null ? 0 : response.getSuccesses().size(),
-                        response.getFailures() == null ? 0 : response.getFailures().size());
+                        totalSuccesses,
+                        totalSuccesses - unprocessedSuccesses,
+                        unprocessedSuccesses,
+                        totalFailures,
+                        totalFailures - unprocessedFailures,
+                        unprocessedFailures);
             } catch (EatonCloudCommunicationExceptionV1 e) {
                 log.error(summary.getLogSummary(jobGuid, false) + pollText + "Try:{} error polling devices job", currentTry,
                         e);
             }
         });
-        if (!successes.isEmpty()) {
+        if (!allSuccesses.isEmpty()) {
             eatonCloudJobReadService.setupDeviceRead(summary, jobCreationTime, currentTry);
         }
-        return successes.size();
+        return allSuccesses.size();
     }
 
     private void processFailure(EventSummary summary, String jobGuid, EatonCloudJobStatusResponseV1 response,

@@ -113,7 +113,6 @@ public class EatonCloudJobServiceImpl extends EatonCloudJobHelperService impleme
                     Pair<Instant, List<String>> result = createJobs(devices, summary);
                     if((setupRetry(summary, result) == null)){
                         iter.remove();
-                        eatonCloudJobPollService.failWillRetryDevicesAfterLastPoll(summary);
                     }
                 }
             }
@@ -187,16 +186,19 @@ public class EatonCloudJobServiceImpl extends EatonCloudJobHelperService impleme
     private String startJob(Map<Integer, String> guids, EventSummary summary, Set<Integer> devices,
             EatonCloudJobRequestV1 request) {
         try {
-            log.info(summary.getLogSummary(true) + "SEND Creating job to send Shed Command:{} devices:{}",
-                    summary.getCommand(),
-                    devices.size());
             EatonCloudJobResponseV1 response = eatonCloudCommunicationService.createJob(request);
-            log.info(summary.getLogSummary(response.getJobGuid(), true) + "SEND Created job to send Shed Command:{} devices:{}",
-                    summary.getCommand(),
-                    devices.size());
+            if (log.isDebugEnabled()) {
+                log.info(summary.getLogSummary(response.getJobGuid(), true) + "CREATED JOB Shed Command:{} devices:{}",
+                        summary.getCommand(),
+                        devices);
+            } else {
+                log.info(summary.getLogSummary(response.getJobGuid(), true) + "CREATED JOB Shed Command:{} devices:{}",
+                        summary.getCommand(),
+                        devices.size());
+            }
             return response.getJobGuid();
         } catch (EatonCloudCommunicationExceptionV1 e) {
-            log.error(summary.getLogSummary(true) + "SEND Failed to create job to send Shed Command:{} devices:{}",
+            log.error(summary.getLogSummary(true) + "JOB CREATION FAILED Command:{} devices:{}",
                     summary.getCommand(),
                     devices.size(), e);
             // job failed, mark all devices as failed, failed job will not retry

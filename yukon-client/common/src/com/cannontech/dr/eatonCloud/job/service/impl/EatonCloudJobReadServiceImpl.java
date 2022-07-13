@@ -100,9 +100,9 @@ public class EatonCloudJobReadServiceImpl implements EatonCloudJobReadService {
                             List.of(ControlEventDeviceStatus.SUCCESS_RECEIVED));
                     if (!devicesToRead.isEmpty()) {
                         Multimap<PaoIdentifier, PointData> result = eatonCloudDataReadService.collectDataForRead(devicesToRead,
-                                range, channelsToRead, "READ AFTER SHED event id:" + eventId);
+                                range, channelsToRead, "SHED id:" + eventId);
                         log.info(
-                                "[id:{}] Read devices:{} Read succeeded for {} devices for dates from:{} to:{} [job created at {}]",
+                                "[SHED id:{}] READ devices:{} Read succeeded for {} devices for dates from:{} to:{} [job created at {}]",
                                 eventId,
                                 devicesToRead.size(),
                                 result.asMap().keySet().size(),
@@ -111,7 +111,7 @@ public class EatonCloudJobReadServiceImpl implements EatonCloudJobReadService {
                                 jobCreationTime.toDateTime().toString(DATE_FORMAT));
                     } else {
                         log.info(
-                                "[id:{}] Read devices:{}. Devices with status SUCCESS_RECEIVED not found for dates from:{} to:{} [job created at {}] ",
+                                "[SHED id:{}] READ devices:{}. Devices with status SUCCESS_RECEIVED not found for dates from:{} to:{} [job created at {}] ",
                                 eventId,
                                 0,
                                 range.getMin().toDateTime().toString(DATE_FORMAT),

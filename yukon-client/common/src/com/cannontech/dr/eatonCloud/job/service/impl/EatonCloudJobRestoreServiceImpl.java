@@ -91,16 +91,19 @@ public class EatonCloudJobRestoreServiceImpl extends EatonCloudJobHelperService 
     private String startJob(Map<Integer, String> guids, EventRestoreSummary summary, Set<Integer> devices,
             EatonCloudJobRequestV1 request) {
         try {
-            log.info(summary.getLogSummary() + "SEND Creating job to send Shed Command:{} devices:{}",
-                    summary.getCommand(),
-                    devices.size());
             EatonCloudJobResponseV1 response = eatonCloudCommunicationService.createJob(request);
-            log.info(summary.getLogSummary() + "SEND Created job to send Shed Command:{} devices:{}",
-                    summary.getCommand(),
-                    devices.size());
+            if (log.isDebugEnabled()) {
+                log.info(summary.getLogSummary(response.getJobGuid()) + "CREATED JOB Command:{} devices:{}",
+                        summary.getCommand(),
+                        devices);
+            } else {
+                log.info(summary.getLogSummary(response.getJobGuid()) + "CREATED JOB Command:{} devices:{}",
+                        summary.getCommand(),
+                        devices.size());
+            }
             return response.getJobGuid();
         } catch (EatonCloudCommunicationExceptionV1 e) {
-            log.error(summary.getLogSummary() + "SEND Failed to create job to send Shed Command:{} devices:{}",
+            log.error(summary.getLogSummary() + "JOB CREATION FAILED Command:{} devices:{}",
                     summary.getCommand(),
                     devices.size(), e);
             // job failed, mark all devices as failed as restore doesn't retry
