@@ -16,10 +16,15 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.cannontech.common.device.terminal.dao.PagingTerminalDao.SortBy;
 import com.cannontech.common.device.terminal.model.TerminalBase;
 import com.cannontech.common.device.terminal.model.TerminalCopy;
+import com.cannontech.common.model.DefaultSort;
+import com.cannontech.common.model.Direction;
+import com.cannontech.common.model.SortingParameters;
 import com.cannontech.stars.util.ServletUtils;
 import com.cannontech.web.api.terminal.service.PagingTerminalService;
 
@@ -49,9 +54,15 @@ public class PagingTerminalApiController {
         return new ResponseEntity<>(paoIdMap, HttpStatus.OK);
     }
 
-    @GetMapping()
-    public ResponseEntity<Object> retrieveAll() {
-        return new ResponseEntity<>(terminalService.retrieveAll(), HttpStatus.OK);
+    @GetMapping
+    public ResponseEntity<Object> getAll(String name,
+            @DefaultSort(dir = Direction.asc, sort = "NAME") SortingParameters sorting,
+            @RequestParam(defaultValue = "1") int page,
+            @RequestParam(name = "itemsPerPage", defaultValue = "250") int itemsPerPage) {
+        SortBy sortBy = SortBy.valueOf(sorting.getSort());
+        Direction direction = sorting.getDirection();
+        return new ResponseEntity<>(terminalService.retrieveAll(sortBy, direction, page, itemsPerPage, name),
+                HttpStatus.OK);
     }
 
     @PostMapping("/{id}/copy")
