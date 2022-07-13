@@ -40,6 +40,7 @@
 #include "RfnDataStreamingUpdate.h"
 #include "RfnMeterDisconnectMsg.h"
 #include "RfnMeterReadMsg.h"
+#include "RfnEdgeDrMessaging.h"
 
 #include "mgr_rfn_request.h"
 #include "cmd_rfn_ConfigNotification.h"
@@ -180,6 +181,16 @@ int PilServer::execute()
             [this](const amq_cm::MessageDescriptor& md, amq_cm::ReplyCallback callback) {
                 return handleRfnMeterReadRequest(md, callback);
             });
+        amq_cm::registerHandler(
+            in_q::RfnEdgeDrUnicastRequest,
+            [this](const amq_cm::MessageDescriptor& md) {
+                return handleRfnEdgeDrUnicastRequest(md);
+            });
+        amq_cm::registerHandler(
+            in_q::RfnEdgeDrBroadcastRequest,
+            [this](const amq_cm::MessageDescriptor& md) {
+                return handleRfnEdgeDrBroadcastRequest(md);
+            });
 
         _periodicActionThread.start();
     }
@@ -205,7 +216,8 @@ void PilServer::mainThread()
 
     if( CtiDeviceSPtr systemDevice = DeviceManager.getDeviceByID(0) )
     {
-        systemDevice->getDynamicInfo(CtiTableDynamicPaoInfo::Key_RFN_E2eRequestId, _rfnRequestId);
+        _rfnRequestId.store(
+            systemDevice->getDynamicInfo( CtiTableDynamicPaoInfo::Key_RFN_E2eRequestId ) );
     }
 
     /*
@@ -1247,6 +1259,88 @@ void PilServer::handleRfnMeterReadRequest(const amq_cm::MessageDescriptor& md, a
     callback(std::move(serializedRsp1));
 }
 
+void PilServer::handleRfnEdgeDrUnicastRequest( const amq_cm::MessageDescriptor & md )
+{
+    using namespace Messaging::Rfn;
+    using Messaging::Serialization::MessageSerializer;
+
+    auto req = MessageSerializer<EdgeDrUnicastRequest>::deserialize( md.msg );
+
+    if ( ! req )
+    {
+        CTILOG_WARN( dout, "Could not deserialize request message" );
+
+        return;
+    }
+
+    // Log the incoming request (for now)...
+    {
+        CTILOG_DEBUG( dout, "Received EdgeDR unicast request:" << FormattedList::of(
+            "Message GUID",       req->messageGuid,
+            "PaoID(s)",           req->paoIds,
+            "Payload",            req->payload,
+            "Queue Priority",     to_string( req->queuePriority ),
+            "Network Priority",   to_string( req->networkPriority ) ) );
+    }
+
+    // TODO - stuff to send out the messages  --  'putvalue oscore 0x{hex string}' or something?
+
+    EdgeDrUnicastResponse resp
+    {
+        req->messageGuid,
+        { },
+        std::nullopt    // no error...
+    };
+
+    for ( auto ID : req->paoIds )
+    {
+        resp.paoToE2eId.emplace( ID, 0 );   // bogus '0' e2e message ID here...
+    }
+
+    auto serializedResponse = Messaging::Serialization::serialize( resp );
+
+    if ( serializedResponse.empty() )
+    {
+        CTILOG_WARN( dout, "Could not serialize response message" << FormattedList::of(
+            "Message GUID", req->messageGuid
+            // error info..?
+            ) );
+
+        return;
+    }
+
+    Messaging::ActiveMQConnectionManager::enqueueMessage(
+        Messaging::ActiveMQ::Queues::OutboundQueue::RfnEdgeDrUnicastResponse,
+        serializedResponse );
+}
+
+void PilServer::handleRfnEdgeDrBroadcastRequest( const amq_cm::MessageDescriptor & md )
+{
+    using namespace Messaging::Rfn;
+    using Messaging::Serialization::MessageSerializer;
+
+    auto req = MessageSerializer<EdgeDrBroadcastRequest>::deserialize( md.msg );
+
+    if ( ! req )
+    {
+        CTILOG_WARN( dout, "Could not deserialize request message" );
+
+        return;
+    }
+
+    // Log the incoming request (for now)...
+    {
+        CTILOG_DEBUG( dout, "Received EdgeDR broadcast request:" << FormattedList::of(
+            "Message GUID", req->messageGuid,
+            "Payload",      req->payload,
+            "Priority",     req->priority ? to_string( req->priority.value() ) : "<empty>" ) );
+    }
+
+    short nmMessageId = ++_rfnRequestId;
+
+    _rfnRequestManager.submitBroadcastRequest( *req, nmMessageId );
+}
+
 void PilServer::submitOutMessages(CtiDeviceBase::OutMessageList& outList)
 {
     for( OUTMESS* OutMessage : outList )
@@ -1404,14 +1498,14 @@ struct RequestExecuter : Devices::DeviceHandler
 {
     CtiRequestMsg *pReq;
     CtiCommandParser &parse;
-    unsigned long & rfnRequestId;
+    std::atomic_ulong & rfnRequestId;
 
     CtiDeviceBase::OutMessageList outList;
     std::vector<RfnDeviceRequest> rfnRequests;
     CtiDeviceBase::CtiMessageList vgList;
     CtiDeviceBase::CtiMessageList retList;
 
-    RequestExecuter(CtiRequestMsg * pReq_, CtiCommandParser & parse_, unsigned long & rfnRequestId_) :
+    RequestExecuter(CtiRequestMsg * pReq_, CtiCommandParser & parse_, std::atomic_ulong & rfnRequestId_) :
         pReq (pReq_),
         parse(parse_),
         rfnRequestId(rfnRequestId_)

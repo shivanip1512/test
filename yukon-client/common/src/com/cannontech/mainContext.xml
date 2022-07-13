@@ -283,6 +283,7 @@
                 <value>classpath:com/cannontech/yukon/web/modules/tools/fdrTranslationManagement</value>
                 <value>classpath:com/cannontech/yukon/web/modules/tools/scripts</value>
                 <value>classpath:com/cannontech/yukon/web/modules/tools/paoNotesSearch</value>
+                <value>classpath:com/cannontech/yukon/web/modules/tools/notificationGroup</value>
                 <value>classpath:com/cannontech/yukon/web/modules/trending</value>
                 <value>classpath:com/cannontech/yukon/web/modules/support/databaseMigration</value>
                 <value>classpath:com/cannontech/yukon/web/modules/support/databaseMigrationTemplate</value>
@@ -302,6 +303,7 @@
                 <value>classpath:com/cannontech/yukon/web/modules/smartNotifications/root</value>
                 <value>classpath:com/cannontech/yukon/web/modules/dr/rfBroadcastEventDetail</value>
                 <value>classpath:com/cannontech/yukon/web/modules/operator/pagingTerminal</value>
+                <value>classpath:com/cannontech/yukon/web/modules/operator/routes</value>
             </list>
         </constructor-arg>
     </bean>

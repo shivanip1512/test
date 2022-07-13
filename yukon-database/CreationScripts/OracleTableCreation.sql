@@ -1,7 +1,7 @@
 /*==============================================================*/
 /* Database name:  YukonDatabase                                */
 /* DBMS name:      ORACLE Version 9i                            */
-/* Created on:     5/4/2022 11:07:13 AM                         */
+/* Created on:     7/5/2022 5:25:49 AM                          */
 /*==============================================================*/
 
 
@@ -7342,10 +7342,11 @@ create table MSPVendor  (
    MaxInitiateRequestObjects INTEGER                         not null,
    TemplateNameDefault  VARCHAR2(50)                    not null,
    ValidateCertificate  CHAR(1)                         not null,
+   Attributes           VARCHAR2(500)                   not null,
    constraint PK_MSPVENDOR primary key (VendorID)
 );
 
-INSERT INTO MSPVendor VALUES (1, 'Cannon', ' ', ' ', 'Yukon', ' ', ' ', 10000, 120000, 15, ' ', 1);
+INSERT INTO MSPVendor VALUES (1, 'Cannon', ' ', ' ', 'Yukon', ' ', ' ', 10000, 120000, 15, ' ', 1, 'Peak Demand , Usage');
 
 /*==============================================================*/
 /* Index: INDEX_1                                               */

@@ -140,6 +140,7 @@
                 </c:choose>
                 
                 <c:if test="${showWifiConnection}"><tags:widget bean="wifiConnectionWidget"/></c:if>
+                <c:if test="${showCellularConnection}"><tags:widget bean="cellularConnectionWidget"/></c:if>
                 
                 <c:if test="${showRfMetadata}">
                     <cti:msg var="widgetHelpText" key="yukon.web.widgets.rfnDeviceMetadataWidget.helpText"/>

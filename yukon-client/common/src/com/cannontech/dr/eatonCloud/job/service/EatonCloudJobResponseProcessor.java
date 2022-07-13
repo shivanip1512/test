@@ -11,11 +11,10 @@ public interface EatonCloudJobResponseProcessor {
     /**
      * Marks devices as FAILED_WILL_RETRY, creates event log
      */
-    void processError(EventSummary summary, Integer deviceId, String guid, String jobGuid, String message,
+    void processError(EventSummary summary, Integer deviceId, String guid, String jobGuid, int code,
             ControlEventDeviceStatus status, int currentTry);
     /**
      * Marks devices as SUCCESS_RECEIVED, creates event log
-     * @param currentTry 
      */
     void processSuccess(EventSummary summary, Integer deviceId, String guid, String jobGuid, int currentTry);
 }

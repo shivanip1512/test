@@ -22,6 +22,7 @@ public enum RfnConditionDataType {
     METER_CONFIGURATION_STATUS(MeterConfigurationStatus.class),
     ERROR_CODE(Short.class),
     EVENT_END_TIME(Long.class),  // milliseconds
+    SIM_CARD_STATUS(Short.class),
     ;
     
     private final Class<?> objectType;

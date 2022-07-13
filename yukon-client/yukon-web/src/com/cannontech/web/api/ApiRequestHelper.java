@@ -34,6 +34,7 @@ import com.cannontech.common.device.model.DeviceBaseModel;
 import com.cannontech.common.device.terminal.model.TerminalBase;
 import com.cannontech.common.device.virtualDevice.VirtualDeviceBaseModel;
 import com.cannontech.common.dr.gear.setup.model.ProgramGear;
+import com.cannontech.web.notificationGroup.NotificationGroup;
 import com.cannontech.common.dr.setup.LMDto;
 import com.cannontech.common.dr.setup.LMPaoDto;
 import com.cannontech.common.dr.setup.ProgramConstraint;
@@ -120,8 +121,6 @@ public class ApiRequestHelper {
         });
         paramTypeRefMap.put(YukonLogger.class, new ParameterizedTypeReference<List<YukonLogger>>() {
         });
-        paramTypeRefMap.put(TerminalBase.class, new ParameterizedTypeReference<List<TerminalBase>>() {
-        });
         paramTypeRefMap.put(Object.class, new ParameterizedTypeReference<List<Object>>() {
         });
     }
@@ -149,7 +148,11 @@ public class ApiRequestHelper {
         });
         paramTypeObjectRefMap.put(VirtualDeviceBaseModel.class, new ParameterizedTypeReference<PaginatedResponse<VirtualDeviceBaseModel<?>>>() {
         });
+        paramTypeObjectRefMap.put(NotificationGroup.class, new ParameterizedTypeReference<PaginatedResponse<NotificationGroup>>() {
+        });
         paramTypeObjectRefMap.put(DeviceBaseModel.class, new ParameterizedTypeReference<SearchResults<DeviceBaseModel>>() {});
+        
+        paramTypeObjectRefMap.put(TerminalBase.class, new ParameterizedTypeReference<PaginatedResponse<TerminalBase>>() {});
     }
 
     /**

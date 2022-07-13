@@ -47,6 +47,14 @@
 <entry key="yukon.web.api.error.fdr.invalidTranslationPropertyValue">{0} is not a valid value for Interface {2} Translation property {1}.</entry>
 <entry key="yukon.web.api.error.fdr.missingTranslationProperty">Missing Translation property {0} for {1} Interface.</entry>
 
+<!-- Notification Group Errors -->
+<entry key="yukon.web.api.error.notificationGroup.invalidPhoneCallNotification">Notification type is email. Valid value for phoneCallEnabled is false</entry>
+<entry key="yukon.web.api.error.notificationGroup.invalidEmailNotification">Notification type is phone call. Valid value for emailEnabled is false</entry>
+<entry key="yukon.web.api.error.notificationGroup.invalidContact">Contact Id must be present for selected Customer</entry>
+<entry key="yukon.web.api.error..notificationGroup.validNotificationType">Notification must by of Type Email or Phone Call</entry>
+<entry key="yukon.web.api.error.notificationGroup.invalidNotification">Notification Id must be present for selected Contact</entry>
+<entry key="yukon.web.api.error.notificationGroup.invalidUnassignedContact">Contact must be unassigned. Valid value is Unassigned Contact Id</entry>
+
 <!-- DataDependencyException -->
 <entry key="yukon.web.api.error.dataDependencyException">{0} cannot be deleted, it is currently being used by: {1}.</entry>
 <entry key="yukon.web.api.error.dataDependencyException.type.DEVICE_DATA_MONITOR">Device Data Monitor(s): {0}</entry>

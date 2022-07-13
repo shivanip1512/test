@@ -97,10 +97,10 @@ public class EatonCloudSendControlServiceImpl implements EatonCloudSendControlSe
         failureNotificationPercent = configurationSource.getInteger(
                 MasterConfigInteger.EATON_CLOUD_NOTIFICATION_COMMAND_FAILURE_PERCENT, 25);
         try {
-            int affectedRows = recentEventParticipationDao.failWillRetryDevices(null);
+           /* int affectedRows = recentEventParticipationDao.failWillRetryDevices(null);
             log.info(
                     "On the start-up changed {} devices waiting for retry (FAILED_WILL_RETRY, UNKNOWN) to failed (FAILED).",
-                    affectedRows);
+                    affectedRows);*/
         } catch (Exception e) {
             log.error(e);
         }

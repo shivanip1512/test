@@ -97,6 +97,15 @@ const IM_EX_MSG OutboundQueue
 const IM_EX_MSG OutboundQueue
     OutboundQueue::MeterProgramStatusArchiveRequest
     {"com.eaton.eas.yukon.MeterProgramStatusArchiveRequest"};
+const IM_EX_MSG OutboundQueue
+    OutboundQueue::RfnEdgeDrUnicastResponse
+    {"com.eaton.eas.yukon.porter.edgeDr.unicast.response"};
+const IM_EX_MSG OutboundQueue
+    OutboundQueue::RfnEdgeDrBroadcastResponse
+    {"com.eaton.eas.yukon.porter.edgeDr.broadcast.response"};
+const IM_EX_MSG OutboundQueue
+    OutboundQueue::NetworkManagerRfnBroadcastRequest
+    {"com.eaton.eas.yukon.networkmanager.rfn.broadcast.request"};
 
 const IM_EX_MSG InboundQueue
     InboundQueue::MeterProgramValidationRequest
@@ -134,4 +143,13 @@ const IM_EX_MSG InboundQueue
     InboundQueue::RfnMeterReadRequest
     { "com.eaton.eas.yukon.RfnMeterReadRequest" };
 
+const IM_EX_MSG InboundQueue
+    InboundQueue::RfnEdgeDrUnicastRequest
+    { "com.eaton.eas.yukon.porter.edgeDr.unicast.request" };
+const IM_EX_MSG InboundQueue
+    InboundQueue::RfnEdgeDrBroadcastRequest
+    { "com.eaton.eas.yukon.porter.edgeDr.broadcast.request" };
+const IM_EX_MSG InboundQueue
+    InboundQueue::NetworkManagerRfnBroadcastResponse
+    { "com.eaton.eas.yukon.networkmanager.rfn.broadcast.response" };
 }
