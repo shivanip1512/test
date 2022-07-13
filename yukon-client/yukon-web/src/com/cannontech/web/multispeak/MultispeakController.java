@@ -53,6 +53,7 @@ import com.cannontech.web.common.flashScope.FlashScope;
 import com.cannontech.web.editor.MultispeakModel;
 import com.cannontech.web.multispeak.validators.MultispeakValidator;
 import com.cannontech.web.security.annotation.CheckRoleProperty;
+import com.google.common.collect.Lists;
 
 @RequestMapping("/setup/*")
 @Controller
@@ -573,8 +574,6 @@ public class MultispeakController {
     private void addSystemModelAndViewObjects(ModelMap map, MultispeakVendor mspVendor, boolean ignoreCannon,
             MultispeakModel multispeak, boolean isCreateNew) {
         boolean showRoleProperties = false;
-        List<MspAttribute> attributes = Arrays.asList(MspAttribute.PEAKDEMAND_USAGE);;
-        mspVendor.setAttributes(attributes);
         boolean noVendorsExist = false;
         Object modelMultispeak = map.get("multispeak");
         if (modelMultispeak instanceof MultispeakModel) {
@@ -584,6 +583,12 @@ public class MultispeakController {
         if (multispeak == null) {
             multispeak = new MultispeakModel();
         }
+        
+        List<MspAttribute> vendorAttributes = Lists.newArrayList(MspAttribute.PEAKDEMAND_USAGE);
+        if(mspVendor != null) {
+            vendorAttributes = mspVendor.getAttributes();
+        }
+        
         List<MultiSpeakVersion> mspVersionList =
             new ArrayList<>(Arrays.asList(MultiSpeakVersion.V3, MultiSpeakVersion.V4, MultiSpeakVersion.V5));
         List<MultiSpeakVersion> notMspVersionList =
@@ -591,16 +596,11 @@ public class MultispeakController {
         List<MultiSpeakVersion> mspVersion5 = new ArrayList<>(Arrays.asList(MultiSpeakVersion.V5));
         List<MultiSpeakVersion> mspVersion3 = new ArrayList<>(Arrays.asList(MultiSpeakVersion.V3));
         map.addAttribute("mspVendor", mspVendor);
-      //  List<MspAttribute> attributes = mspVendor.getAttributes();
-       // MspAttribute[] array = (MspAttribute[]) attributes.toArray();
-        MspAttribute[] attributesFromDB = mspVendor.getAttributes().stream().toArray(MspAttribute[] ::new);
-        
         map.addAttribute("mspVendorList", multispeakDao.getMultispeakVendors(ignoreCannon));
         map.addAttribute("mspCISVendorList", multispeakDao.getMultispeakCISVendors());
         map.addAttribute("possibleInterfaces", MultispeakDefines.getPossibleInterfaces(mspVendor));
         map.addAttribute("allAttributeList", MspAttribute.values());
-        map.addAttribute("attributeToLoad", attributesFromDB);
-        MspAttribute[] values = MspAttribute.values();
+        map.addAttribute("vendorAttributes", vendorAttributes);
 
         if (mspVendor != null) {
             map.addAttribute("mspVendorId", mspVendor.getVendorID());

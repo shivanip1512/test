@@ -107,7 +107,7 @@
                                      <p >${mspattribute.dbString}</p>
                                  </c:forEach>
                                 </cti:displayForPageEditModes>
-                                <input type="hidden" id="selectedAttributes" name="filterValues" value="${attributesToLoad}">
+                                 <span id="vendorAttributes" style="display: none;">${vendorAttributes}</span>
                                                 
                                 </tags:nameValue2>
 

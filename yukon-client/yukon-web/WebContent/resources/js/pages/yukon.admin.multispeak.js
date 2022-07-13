@@ -147,7 +147,8 @@ yukon.admin.multispeak = (function() {
             });
 				if ($("#attributes").is(":visible")) {
                 $("#attributes").chosen({width: "250px"});}
-             /* $('#selectedAttributes').val(attributesToLoad).trigger('chosen:updated');*/
+                var attributesToLoad = $('#vendorAttributes').text().replace(/[\[\]']+/g, '').split(',').map(e=> e.trim());
+              $('#attributes').val(attributesToLoad).trigger('chosen:updated');
              
             if (_initialized)
                 return;
