@@ -27,7 +27,7 @@
     </c:if>
     <span>
         <div><b>${title}</b></div>
-        <div class="notes">${subTitle}</div>
+        <div style="font-size:13px">${subTitle}</div>
     </span>
     <span class="ma fr dif MR0">
         <span class="ML10">

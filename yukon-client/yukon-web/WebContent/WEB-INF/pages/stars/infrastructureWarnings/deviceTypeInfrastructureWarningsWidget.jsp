@@ -4,7 +4,7 @@
 <%@ taglib prefix="tags" tagdir="/WEB-INF/tags"%>
 
 <cti:msgScope paths="widgets.infrastructureWarnings">
-    <div style="width:40%" class="PT10 PB10 clearfix">
+    <div style="width:30%" class="PT10 PB10 clearfix">
         <c:if test="${deviceTotalCount != 0}">
             <tags:infrastructureWarningsCount deviceTotalCount="${deviceTotalCount}" 
                                               deviceWarningsCount="${deviceWarningsCount}" 

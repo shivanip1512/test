@@ -163,6 +163,10 @@
                         <tags:widget bean="csrTrendWidget" tabularDataViewer="archivedDataReport" showHelpIcon="true"/>
                     </div>
                 </c:if>
+                <c:if test="${showInfrastructureWarnings}">
+                    <cti:msg2 var="warningsTitle" key="yukon.web.widgets.infrastructureWarningsWidget"/>
+                    <tags:widget bean="deviceInfrastructureWarningsWidget" title="${warningsTitle}"/>
+                </c:if>
                 <c:if test="${showDisconnect}">
                     <cti:url var="url" value="/widget/disconnectMeterWidget/helpInfo">
                         <cti:param name="deviceId" value="${deviceId}"/>
