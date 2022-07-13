@@ -145,7 +145,10 @@ yukon.admin.multispeak = (function() {
                 dialog.dialog('close');
                 dialog.empty();
             });
-
+				if ($("#attributes").is(":visible")) {
+                $("#attributes").chosen({width: "250px"});}
+             /* $('#selectedAttributes').val(attributesToLoad).trigger('chosen:updated');*/
+             
             if (_initialized)
                 return;
             _initialized = true;

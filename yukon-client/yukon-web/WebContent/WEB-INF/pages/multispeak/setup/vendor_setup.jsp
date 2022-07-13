@@ -8,6 +8,7 @@
 <%@ taglib prefix="spring" uri="http://www.springframework.org/tags" %>
 <%@ taglib prefix="tags" tagdir="/WEB-INF/tags"%>
 
+
 <cti:standardPage module="adminSetup" page="vendor.${mode}" >
     <tags:setFormEditMode mode="${mode}" />
     <cti:msg2 var="pingTitle" key=".ping" />
@@ -49,6 +50,7 @@
         <form:hidden id="actionService" path="service" />
         <form:hidden id="vendorID" path="mspVendor.vendorID" />
         <form:hidden id="endpointURL" path="endpointURL" />
+        
         <input type="hidden" class="js-vendor-id" value="${mspVendor.vendorID}"/>
         <tags:sectionContainer2 nameKey="vendorSetup" styleClass="stacked-lg">
             <c:if test="${!noVendorsExist || createMode}">
@@ -96,6 +98,18 @@
                             <tags:nameValue2 nameKey=".template">
                                 <tags:input path="mspVendor.templateNameDefault" maxlength="32" />
                             </tags:nameValue2>
+                            
+                            <tags:nameValue2 nameKey=".attributes"  requiredField="true"> 
+                                <tags:selectWithItems items="${allAttributeList}" path="mspAttributes" dataPlaceholder="Select attributes"
+                                              id="attributes"/>
+                                 <cti:displayForPageEditModes modes="VIEW">
+                                 <c:forEach var="mspattribute" items="${mspVendor.attributes}">
+                                     <p >${mspattribute.dbString}</p>
+                                 </c:forEach>
+                                </cti:displayForPageEditModes>
+                                <input type="hidden" id="selectedAttributes" name="filterValues" value="${attributesToLoad}">
+                                                
+                                </tags:nameValue2>
 
                         </tags:nameValueContainer2>
                     </div>

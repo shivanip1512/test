@@ -573,12 +573,14 @@ public class MultispeakController {
     private void addSystemModelAndViewObjects(ModelMap map, MultispeakVendor mspVendor, boolean ignoreCannon,
             MultispeakModel multispeak, boolean isCreateNew) {
         boolean showRoleProperties = false;
+        List<MspAttribute> attributes = Arrays.asList(MspAttribute.PEAKDEMAND_USAGE);;
+        mspVendor.setAttributes(attributes);
         boolean noVendorsExist = false;
         Object modelMultispeak = map.get("multispeak");
         if (modelMultispeak instanceof MultispeakModel) {
             multispeak = (MultispeakModel) modelMultispeak;
         }
-
+        
         if (multispeak == null) {
             multispeak = new MultispeakModel();
         }
@@ -589,9 +591,16 @@ public class MultispeakController {
         List<MultiSpeakVersion> mspVersion5 = new ArrayList<>(Arrays.asList(MultiSpeakVersion.V5));
         List<MultiSpeakVersion> mspVersion3 = new ArrayList<>(Arrays.asList(MultiSpeakVersion.V3));
         map.addAttribute("mspVendor", mspVendor);
+      //  List<MspAttribute> attributes = mspVendor.getAttributes();
+       // MspAttribute[] array = (MspAttribute[]) attributes.toArray();
+        MspAttribute[] attributesFromDB = mspVendor.getAttributes().stream().toArray(MspAttribute[] ::new);
+        
         map.addAttribute("mspVendorList", multispeakDao.getMultispeakVendors(ignoreCannon));
         map.addAttribute("mspCISVendorList", multispeakDao.getMultispeakCISVendors());
         map.addAttribute("possibleInterfaces", MultispeakDefines.getPossibleInterfaces(mspVendor));
+        map.addAttribute("allAttributeList", MspAttribute.values());
+        map.addAttribute("attributeToLoad", attributesFromDB);
+        MspAttribute[] values = MspAttribute.values();
 
         if (mspVendor != null) {
             map.addAttribute("mspVendorId", mspVendor.getVendorID());
