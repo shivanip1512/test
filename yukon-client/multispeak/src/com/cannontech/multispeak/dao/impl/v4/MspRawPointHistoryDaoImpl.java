@@ -29,6 +29,7 @@ import com.cannontech.database.data.lite.LiteYukonUser;
 import com.cannontech.msp.beans.v4.MeterReading;
 import com.cannontech.msp.beans.v4.ScadaAnalog;
 import com.cannontech.multispeak.block.v4.Block;
+import com.cannontech.multispeak.client.MspAttribute;
 import com.cannontech.multispeak.client.MspRawPointHistoryHelper;
 import com.cannontech.multispeak.dao.v4.FormattedBlockProcessingService;
 import com.cannontech.multispeak.dao.v4.MeterReadingProcessingService;
@@ -163,7 +164,8 @@ public class MspRawPointHistoryDaoImpl implements MspRawPointHistoryDao {
     }
     
     @Override
-    public MspMeterReadingReturnList retrieveLatestMeterReading(ReadBy readBy, String readByValue, String lastReceived, int maxRecords) {
+    public MspMeterReadingReturnList retrieveLatestMeterReading(ReadBy readBy, String readByValue, String lastReceived,
+            int maxRecords, List<MspAttribute> vendorAttributes) {
 
         List<YukonMeter> meters = getPaoList(readBy, readByValue, lastReceived, maxRecords);
         
@@ -172,27 +174,12 @@ public class MspRawPointHistoryDaoImpl implements MspRawPointHistoryDao {
         EnumMap<BuiltInAttribute, Map<PaoIdentifier, PointValueQualityHolder>> resultsPerAttribute = Maps.newEnumMap(BuiltInAttribute.class);
 
         int estimatedSize = 0;
-
-        EnumSet<BuiltInAttribute> attributesToLoad = EnumSet.of(BuiltInAttribute.USAGE, 
-                                                                BuiltInAttribute.PEAK_DEMAND,
-                                                                BuiltInAttribute.KVA, 
-                                                                BuiltInAttribute.KVAR,
-                                                                BuiltInAttribute.POWER_FACTOR,
-                                                                BuiltInAttribute.KVARH,
-                                                                BuiltInAttribute.DELIVERED_KWH_RATE_A,
-                                                                BuiltInAttribute.DELIVERED_KWH_RATE_B,
-                                                                BuiltInAttribute.DELIVERED_KWH_RATE_C,
-                                                                BuiltInAttribute.DELIVERED_KWH_RATE_D,
-                                                                BuiltInAttribute.RECEIVED_KWH,
-                                                                BuiltInAttribute.RECEIVED_KWH_RATE_A,
-                                                                BuiltInAttribute.RECEIVED_KWH_RATE_B,
-                                                                BuiltInAttribute.RECEIVED_KWH_RATE_C,
-                                                                BuiltInAttribute.RECEIVED_KWH_RATE_D,
-                                                                BuiltInAttribute.PEAK_DEMAND_RATE_A,
-                                                                BuiltInAttribute.PEAK_DEMAND_RATE_B,
-                                                                BuiltInAttribute.PEAK_DEMAND_RATE_C,
-                                                                BuiltInAttribute.PEAK_DEMAND_RATE_D
-                                                                );
+        
+        EnumSet<BuiltInAttribute> attributesToLoad = EnumSet.noneOf(BuiltInAttribute.class);
+        
+        for (MspAttribute attribute : vendorAttributes) {
+            attributesToLoad.addAll(attribute.getBuiltInAttributes());
+        }
         
         // load up results for each attribute
         for (BuiltInAttribute attribute : attributesToLoad) {

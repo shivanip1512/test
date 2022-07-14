@@ -201,7 +201,8 @@ public class MR_ServerImpl implements MR_Server {
         MspMeterReadingReturnList mspMeterReadingReturnList = mspRawPointHistoryDao.retrieveLatestMeterReading(ReadBy.NONE, 
                                                                                                                null,
                                                                                                                lastReceived, 
-                                                                                                               vendor.getMaxReturnRecords());
+                                                                                                               vendor.getMaxReturnRecords(),
+                                                                                                               vendor.getAttributes());
 
         multispeakFuncs.updateResponseHeader(mspMeterReadingReturnList);
 
