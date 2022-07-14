@@ -45,6 +45,7 @@ import com.cannontech.msp.beans.v4.MspMeter;
 import com.cannontech.msp.beans.v4.ObjectFactory;
 import com.cannontech.msp.beans.v4.ServiceLocation;
 import com.cannontech.multispeak.block.v4.Block;
+import com.cannontech.multispeak.client.MspAttribute;
 import com.cannontech.multispeak.client.MultispeakDefines;
 import com.cannontech.multispeak.client.MultispeakVendor;
 import com.cannontech.multispeak.client.v4.MultispeakFuncs;
@@ -145,7 +146,8 @@ public class MR_ServerImpl implements MR_Server {
                                                                                                          startDate.getTime(),
                                                                                                          endDate.getTime(),
                                                                                                          lastReceived,
-                                                                                                         vendor.getMaxReturnRecords());
+                                                                                                         vendor.getMaxReturnRecords(),
+                                                                                                         vendor.getAttributes());
 
         multispeakFuncs.updateResponseHeader(mspMeterReadingReturnList);
         List<MeterReading> meterReading = mspMeterReadingReturnList.getMeterReading();
@@ -176,7 +178,8 @@ public class MR_ServerImpl implements MR_Server {
                                                                                                 startDate.getTime(),
                                                                                                 endDate.getTime(),
                                                                                                 null,
-                                                                                                vendor.getMaxReturnRecords());
+                                                                                                vendor.getMaxReturnRecords(),
+                                                                                                vendor.getAttributes());
 
         // There is only one MeterNo in the response, so does it make sense to update the header with lastSent?
         List<MeterReading> meterReading = mspMeterReadingReturnList.getMeterReading();
@@ -201,7 +204,8 @@ public class MR_ServerImpl implements MR_Server {
         MspMeterReadingReturnList mspMeterReadingReturnList = mspRawPointHistoryDao.retrieveLatestMeterReading(ReadBy.NONE, 
                                                                                                                null,
                                                                                                                lastReceived, 
-                                                                                                               vendor.getMaxReturnRecords());
+                                                                                                               vendor.getMaxReturnRecords(),
+                                                                                                               vendor.getAttributes());
 
         multispeakFuncs.updateResponseHeader(mspMeterReadingReturnList);
 
@@ -244,27 +248,8 @@ public class MR_ServerImpl implements MR_Server {
             try {
                 MeterReading meterReading = meterReadingProcessingService.createMeterReading(meter);
                 
-                EnumSet<BuiltInAttribute> attributesToLoad = EnumSet.of(BuiltInAttribute.USAGE, 
-                                                                        BuiltInAttribute.PEAK_DEMAND,
-                                                                        BuiltInAttribute.KVA, 
-                                                                        BuiltInAttribute.KVAR,
-                                                                        BuiltInAttribute.POWER_FACTOR,
-                                                                        BuiltInAttribute.KVARH,
-                                                                        BuiltInAttribute.DELIVERED_KWH_RATE_A,
-                                                                        BuiltInAttribute.DELIVERED_KWH_RATE_B,
-                                                                        BuiltInAttribute.DELIVERED_KWH_RATE_C,
-                                                                        BuiltInAttribute.DELIVERED_KWH_RATE_D,
-                                                                        BuiltInAttribute.RECEIVED_KWH,
-                                                                        BuiltInAttribute.RECEIVED_KWH_RATE_A,
-                                                                        BuiltInAttribute.RECEIVED_KWH_RATE_B,
-                                                                        BuiltInAttribute.RECEIVED_KWH_RATE_C,
-                                                                        BuiltInAttribute.RECEIVED_KWH_RATE_D,
-                                                                        BuiltInAttribute.PEAK_DEMAND_RATE_A,
-                                                                        BuiltInAttribute.PEAK_DEMAND_RATE_B,
-                                                                        BuiltInAttribute.PEAK_DEMAND_RATE_C,
-                                                                        BuiltInAttribute.PEAK_DEMAND_RATE_D
-                                                                        );
-    
+                EnumSet<BuiltInAttribute> attributesToLoad = multispeakFuncs.getBuiltInAttributesForVendor(vendor.getAttributes());
+                
                 for (BuiltInAttribute attribute : attributesToLoad) {
                     try {
                         LitePoint litePoint = attributeService.getPointForAttribute(meter, attribute);

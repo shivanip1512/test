@@ -1,5 +1,6 @@
 package com.cannontech.multispeak.dao.impl.v4;
 
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.EnumMap;
 import java.util.EnumSet;
@@ -29,7 +30,9 @@ import com.cannontech.database.data.lite.LiteYukonUser;
 import com.cannontech.msp.beans.v4.MeterReading;
 import com.cannontech.msp.beans.v4.ScadaAnalog;
 import com.cannontech.multispeak.block.v4.Block;
+import com.cannontech.multispeak.client.MspAttribute;
 import com.cannontech.multispeak.client.MspRawPointHistoryHelper;
+import com.cannontech.multispeak.client.v4.MultispeakFuncs;
 import com.cannontech.multispeak.dao.v4.FormattedBlockProcessingService;
 import com.cannontech.multispeak.dao.v4.MeterReadingProcessingService;
 import com.cannontech.multispeak.dao.v4.MspRawPointHistoryDao;
@@ -51,10 +54,11 @@ public class MspRawPointHistoryDaoImpl implements MspRawPointHistoryDao {
     @Autowired private MeterRowMapper meterRowMapper;
     @Autowired private RawPointHistoryDao rawPointHistoryDao;
     @Autowired private YukonJdbcTemplate yukonJdbcTemplate;
+    @Autowired private MultispeakFuncs multispeakFuncs;
 
     @Override
     public MspMeterReadingReturnList retrieveMeterReading(ReadBy readBy, String readByValue, Date startDate,
-            Date endDate, String lastReceived, int maxRecords) {
+            Date endDate, String lastReceived, int maxRecords, List<MspAttribute> vendorAttributes) {
 
         List<YukonMeter> meters = getPaoList(readBy, readByValue, lastReceived, maxRecords);
 
@@ -63,25 +67,7 @@ public class MspRawPointHistoryDaoImpl implements MspRawPointHistoryDao {
 
         int estimatedSize = 0;
 
-        EnumSet<BuiltInAttribute> attributesToLoad = EnumSet.of(BuiltInAttribute.USAGE, 
-                                                                BuiltInAttribute.PEAK_DEMAND,
-                                                                BuiltInAttribute.KVAR, 
-                                                                BuiltInAttribute.KVA,
-                                                                BuiltInAttribute.KVARH,
-                                                                BuiltInAttribute.POWER_FACTOR,
-                                                                BuiltInAttribute.RECEIVED_KWH,
-                                                                BuiltInAttribute.PEAK_DEMAND_RATE_A,
-                                                                BuiltInAttribute.PEAK_DEMAND_RATE_B,
-                                                                BuiltInAttribute.PEAK_DEMAND_RATE_C,
-                                                                BuiltInAttribute.PEAK_DEMAND_RATE_D,
-                                                                BuiltInAttribute.RECEIVED_KWH_RATE_A,
-                                                                BuiltInAttribute.RECEIVED_KWH_RATE_B,
-                                                                BuiltInAttribute.RECEIVED_KWH_RATE_C,
-                                                                BuiltInAttribute.RECEIVED_KWH_RATE_D,
-                                                                BuiltInAttribute.DELIVERED_KWH_RATE_A,
-                                                                BuiltInAttribute.DELIVERED_KWH_RATE_B,
-                                                                BuiltInAttribute.DELIVERED_KWH_RATE_C,
-                                                                BuiltInAttribute.DELIVERED_KWH_RATE_D);
+        EnumSet<BuiltInAttribute> attributesToLoad = multispeakFuncs.getBuiltInAttributesForVendor(vendorAttributes);
         
         Range<Date> dateRange = new Range<Date>(startDate, true, endDate, true);
         // load up results for each attribute
@@ -163,7 +149,8 @@ public class MspRawPointHistoryDaoImpl implements MspRawPointHistoryDao {
     }
     
     @Override
-    public MspMeterReadingReturnList retrieveLatestMeterReading(ReadBy readBy, String readByValue, String lastReceived, int maxRecords) {
+    public MspMeterReadingReturnList retrieveLatestMeterReading(ReadBy readBy, String readByValue, String lastReceived,
+            int maxRecords, List<MspAttribute> vendorAttributes) {
 
         List<YukonMeter> meters = getPaoList(readBy, readByValue, lastReceived, maxRecords);
         
@@ -172,27 +159,8 @@ public class MspRawPointHistoryDaoImpl implements MspRawPointHistoryDao {
         EnumMap<BuiltInAttribute, Map<PaoIdentifier, PointValueQualityHolder>> resultsPerAttribute = Maps.newEnumMap(BuiltInAttribute.class);
 
         int estimatedSize = 0;
-
-        EnumSet<BuiltInAttribute> attributesToLoad = EnumSet.of(BuiltInAttribute.USAGE, 
-                                                                BuiltInAttribute.PEAK_DEMAND,
-                                                                BuiltInAttribute.KVA, 
-                                                                BuiltInAttribute.KVAR,
-                                                                BuiltInAttribute.POWER_FACTOR,
-                                                                BuiltInAttribute.KVARH,
-                                                                BuiltInAttribute.DELIVERED_KWH_RATE_A,
-                                                                BuiltInAttribute.DELIVERED_KWH_RATE_B,
-                                                                BuiltInAttribute.DELIVERED_KWH_RATE_C,
-                                                                BuiltInAttribute.DELIVERED_KWH_RATE_D,
-                                                                BuiltInAttribute.RECEIVED_KWH,
-                                                                BuiltInAttribute.RECEIVED_KWH_RATE_A,
-                                                                BuiltInAttribute.RECEIVED_KWH_RATE_B,
-                                                                BuiltInAttribute.RECEIVED_KWH_RATE_C,
-                                                                BuiltInAttribute.RECEIVED_KWH_RATE_D,
-                                                                BuiltInAttribute.PEAK_DEMAND_RATE_A,
-                                                                BuiltInAttribute.PEAK_DEMAND_RATE_B,
-                                                                BuiltInAttribute.PEAK_DEMAND_RATE_C,
-                                                                BuiltInAttribute.PEAK_DEMAND_RATE_D
-                                                                );
+        
+        EnumSet<BuiltInAttribute> attributesToLoad = multispeakFuncs.getBuiltInAttributesForVendor(vendorAttributes);
         
         // load up results for each attribute
         for (BuiltInAttribute attribute : attributesToLoad) {
