@@ -39,7 +39,7 @@
                      <tags:hidden path="signalTransmitterId"/>
                  </tags:nameValue2>
                  <tags:nameValue2 nameKey=".defaultRoute">
-                     <tags:switchButton name="defaultRoute" onNameKey=".yes.label" offNameKey=".no.label"/>
+                     <tags:switchButton path="defaultRoute" onNameKey=".yes.label" offNameKey=".no.label"/>
                  </tags:nameValue2>
             </tags:nameValueContainer2>
                 <div class="page-action-area">
