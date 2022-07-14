@@ -41,7 +41,7 @@ public class EatonCloudJobResponseProcessorImpl implements EatonCloudJobResponse
 
     @Override
     public void processError(EventSummary summary, Integer deviceId, String guid, String jobGuid, int code,
-            ControlEventDeviceStatus status, int currentTry) {
+            ControlEventDeviceStatus status, int currentTry, Instant jobCreationTime) {
         String deviceName = dbCache.getAllPaosMap().get(deviceId).getPaoName();
         LMEatonCloudScheduledCycleCommand command = summary.getCommand();
         DeviceErrorDescription errorDescription = deviceErrorTranslatorDao.translateErrorCode(EatonCloudError.getErrorByCode(code));
@@ -49,9 +49,9 @@ public class EatonCloudJobResponseProcessorImpl implements EatonCloudJobResponse
         recentEventParticipationDao.updateDeviceControlEvent(String.valueOf(summary.getEventId()),
                 deviceId,
                 status,
-                Instant.now(),
+                null,
                 StringUtils.isEmpty(message) ? null : message.length() > 100 ? message.substring(0, 100) : message,
-                currentTry == 1 ? null : Instant.now());
+                currentTry == 1 ? null : jobCreationTime);
         
         String jobInfo = getJobInfo(summary.getEventId(), jobGuid);
         eatonCloudEventLogService.sendShedJobFailed(deviceName,
@@ -69,12 +69,13 @@ public class EatonCloudJobResponseProcessorImpl implements EatonCloudJobResponse
     }
     
     @Override
-    public void processSuccess(EventSummary summary, Integer deviceId, String guid, String jobGuid, int currentTry) {
+    public void processSuccess(EventSummary summary, Integer deviceId, String guid, String jobGuid, int currentTry,
+            Instant jobCreationTime) {
         String deviceName = dbCache.getAllPaosMap().get(deviceId).getPaoName();
         LMEatonCloudScheduledCycleCommand command = summary.getCommand();
         recentEventParticipationDao.updateDeviceControlEvent(String.valueOf(summary.getEventId()), deviceId,
                 ControlEventDeviceStatus.SUCCESS_RECEIVED, new Instant(),
-                null, currentTry == 1 ? null : Instant.now());
+                null, currentTry == 1 ? null : jobCreationTime);
 
         log.debug(summary.getLogSummary(jobGuid, false) + "Try:{} Successful shed device id:{} guid:{} name:{}",
                 currentTry, deviceId, guid, deviceName);

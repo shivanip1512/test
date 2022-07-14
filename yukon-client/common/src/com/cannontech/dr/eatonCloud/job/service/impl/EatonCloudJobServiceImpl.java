@@ -165,7 +165,7 @@ public class EatonCloudJobServiceImpl extends EatonCloudJobHelperService impleme
 
         List<String> jobGuids = new ArrayList<>();
         requests.forEach(request -> {
-            String jobGuid = startJob(guids, summary, devices, request);
+            String jobGuid = startJob(guids, summary, devices, request, jobCreationTime);
             if (jobGuid != null) {
                 jobGuids.add(jobGuid);
             }
@@ -184,11 +184,11 @@ public class EatonCloudJobServiceImpl extends EatonCloudJobHelperService impleme
     }
 
     private String startJob(Map<Integer, String> guids, EventSummary summary, Set<Integer> devices,
-            EatonCloudJobRequestV1 request) {
+            EatonCloudJobRequestV1 request, Instant jobCreationTime) {
         try {
             EatonCloudJobResponseV1 response = eatonCloudCommunicationService.createJob(request);
             if (log.isDebugEnabled()) {
-                log.info(summary.getLogSummary(response.getJobGuid(), true) + "CREATED JOB Shed Command:{} devices:{}",
+                log.debug(summary.getLogSummary(response.getJobGuid(), true) + "CREATED JOB Shed Command:{} devices:{}",
                         summary.getCommand(),
                         devices);
             } else {
@@ -204,7 +204,7 @@ public class EatonCloudJobServiceImpl extends EatonCloudJobHelperService impleme
             // job failed, mark all devices as failed, failed job will not retry
             devices.forEach(deviceId -> eatonCloudJobResponseProcessor.processError(summary,
                     deviceId, guids.get(deviceId), null,
-                    EatonCloudError.JOB_CREATION_FAILED.getCode(), ControlEventDeviceStatus.FAILED, 1));
+                    EatonCloudError.JOB_CREATION_FAILED.getCode(), ControlEventDeviceStatus.FAILED, 1, jobCreationTime));
             return null;
         }
     }

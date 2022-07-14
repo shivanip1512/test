@@ -105,8 +105,8 @@ public class EatonCloudJobPollServiceImpl extends EatonCloudJobPollServiceHelper
                 int totalFailures = response.getFailures() == null ? 0 : response.getFailures().size();
                 Map<String, Integer> guidsToDeviceIds = getDeviceIdsForGuids(response);
                 removeProcessedDeviceGuids(summary, response, guidsToDeviceIds);
-                processSuccesses(summary, allSuccesses, jobGuid, response, guidsToDeviceIds, currentTry);
-                processFailure(summary, jobGuid, response, guidsToDeviceIds, currentTry);
+                processSuccesses(summary, allSuccesses, jobGuid, response, guidsToDeviceIds, currentTry, jobCreationTime);
+                processFailure(summary, jobGuid, response, guidsToDeviceIds, currentTry, jobCreationTime);
                 int unprocessedSuccesses = response.getSuccesses() == null ? 0 : response.getSuccesses().size();
                 int unprocessedFailures = response.getFailures() == null ? 0 : response.getFailures().size();
                 log.info(
@@ -132,24 +132,25 @@ public class EatonCloudJobPollServiceImpl extends EatonCloudJobPollServiceHelper
     }
 
     private void processFailure(EventSummary summary, String jobGuid, EatonCloudJobStatusResponseV1 response,
-            Map<String, Integer> guidsToDeviceIds, int currentTry) {
+            Map<String, Integer> guidsToDeviceIds, int currentTry, Instant jobCreationTime) {
         if (!CollectionUtils.isEmpty(response.getFailures())) {
             response.getFailures().forEach((deviceGuid, error) -> {
                 int deviceError = parseErrorCode(error, summary.getLogSummary(jobGuid, false));
                 eatonCloudJobResponseProcessor.processError(summary,
                         guidsToDeviceIds.get(deviceGuid), deviceGuid, jobGuid, deviceError,
-                        ControlEventDeviceStatus.FAILED_WILL_RETRY, currentTry);
+                        ControlEventDeviceStatus.FAILED_WILL_RETRY, currentTry, jobCreationTime);
             });
         }
     }
 
     private void processSuccesses(EventSummary summary, List<String> successes, String jobGuid,
-            EatonCloudJobStatusResponseV1 response, Map<String, Integer> guidsToDeviceIds, int currentTry) {
+            EatonCloudJobStatusResponseV1 response, Map<String, Integer> guidsToDeviceIds, int currentTry,
+            Instant jobCreationTime) {
         if (!CollectionUtils.isEmpty(response.getSuccesses())) {
             successes.addAll(response.getSuccesses());
             response.getSuccesses()
                     .forEach(success -> eatonCloudJobResponseProcessor.processSuccess(summary,
-                            guidsToDeviceIds.get(success), success, jobGuid, currentTry));
+                            guidsToDeviceIds.get(success), success, jobGuid, currentTry, jobCreationTime));
         }
     }
 
