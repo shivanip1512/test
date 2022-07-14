@@ -99,17 +99,18 @@
                                 <tags:input path="mspVendor.templateNameDefault" maxlength="32" />
                             </tags:nameValue2>
                             
-                            <tags:nameValue2 nameKey=".attributes"  requiredField="true"> 
-                                <tags:selectWithItems items="${allAttributeList}" path="mspAttributes" dataPlaceholder="Select attributes"
-                                              id="attributes"/>
-                                 <cti:displayForPageEditModes modes="VIEW">
-                                 <c:forEach var="mspattribute" items="${mspVendor.attributes}">
-                                     <p >${mspattribute.dbString}</p>
-                                 </c:forEach>
+                            <tags:nameValue2 nameKey=".attributes"  requiredField="true">
+                                <cti:displayForPageEditModes modes="CREATE,EDIT">
+                                    <tags:selectWithItems items="${allAttributeList}" path="mspVendor.attributes" dataPlaceholder="Select attributes"
+                                                          id="attributes"/>
+                                </cti:displayForPageEditModes>
+                                <cti:displayForPageEditModes modes="VIEW">
+                                    <c:forEach var="mspattribute" items="${mspVendor.attributes}">
+                                        <i:inline key="${mspattribute}"/>&nbsp;,
+                                    </c:forEach>
                                 </cti:displayForPageEditModes>
                                  <span id="vendorAttributes" style="display: none;">${vendorAttributes}</span>
-                                                
-                                </tags:nameValue2>
+                            </tags:nameValue2>
 
                         </tags:nameValueContainer2>
                     </div>
