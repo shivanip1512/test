@@ -1164,12 +1164,9 @@ void RfnRequestManager::submitBroadcastRequest( const Messaging::Rfn::EdgeDrBroa
             {
                 itemList.add("Failure Reason")  << *reply.failureReason;
             }
-            if ( reply.gatewayErrors.size() )
+            for ( auto & [rfnId, error] : reply.gatewayErrors )
             {
-                for ( auto & [rfnId, error] : reply.gatewayErrors )
-                {
-                    itemList.add(rfnId.toString())  << error;
-                }
+                itemList.add(rfnId.toString())  << error;
             }
 
             CTILOG_INFO( dout, "Received an RFN broadcast reply from NM." << itemList );
