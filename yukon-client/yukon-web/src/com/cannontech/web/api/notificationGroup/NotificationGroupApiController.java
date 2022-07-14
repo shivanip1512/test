@@ -58,15 +58,6 @@ public class NotificationGroupApiController {
             @RequestParam(name = "itemsPerPage", defaultValue = "250") int itemsPerPage) {
         SortBy sortBy = SortBy.valueOf(sorting.getSort());
         Direction direction = sorting.getDirection();
-        // Sorting happens wrt UI. Reversing the order for db query
-        // Asc sort -> Disabled(UI) or Y(DB)
-        if (sortBy.toString().equals("STATUS")) {
-            if (direction.toString().equals("asc")) {
-                direction = Direction.desc;
-            } else {
-                direction = Direction.asc;
-            }
-        }
         return new ResponseEntity<>(notificationGroupService.retrieveAll(name, sortBy, direction, page, itemsPerPage),
                 HttpStatus.OK);
     }

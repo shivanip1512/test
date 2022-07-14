@@ -100,7 +100,16 @@ public final class NotificationGroupDaoImpl implements NotificationGroupDao {
             sql.append("ORDER BY");
             sql.append(sortBy.getDbString());
             if (direction != null) {
-                sql.append(direction);
+                // Sorting happens wrt UI. Reversing the order for db
+                // Asc sort -> Disabled(UI) or Y(DB)
+                if (sortBy == SortBy.STATUS) {
+                    if (direction == Direction.asc) {
+                        sql.append(Direction.desc);
+                    } else {
+                        sql.append(Direction.asc);
+                    }
+                }
+
             }
         }
 
