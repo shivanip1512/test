@@ -11,24 +11,8 @@
     <!-- Actions drop-down -->
     <cti:displayForPageEditModes modes="VIEW">
         <div id="page-actions" class="dn">
-            <cti:url var="action" value="/stars/device/routes/create"/>
-            <cm:dropdownOption icon="icon-plus-green" key="yukon.web.components.button.create.label" id="js-create-option" data-popup="#js-create-route-popup"/>
-        </div>
-        
-        <!-- popup for create route -->
-        <div id="js-create-route-popup" class="dn" data-title="<i:inline key=".createObject.title"/>" data-width="400">
-            <table style="width:100%">
-                <tr>
-                    <td>
-                        <cti:url var="createCommRoute" value="create"/>
-                        <a href="${createCommRoute}"><i:inline key=".routes.createCommRoute.create"/></a>
-                    </td>
-                    <td>
-                        <cti:url var="createMacroRoute" value="create"/>
-                        <a href="${createMacroRoute}"><i:inline key=".routes.createMacroRoute.create"/></a>
-                    </td>
-                </tr>
-            </table>
+            <cti:url var="createUrl" value="/stars/device/routes/create"/>
+            <cm:dropdownOption icon="icon-plus-green" key="yukon.web.components.button.create.label" id="js-create-option" href="${createUrl}"/>
         </div>
     </cti:displayForPageEditModes>
 

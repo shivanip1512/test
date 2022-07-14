@@ -94,7 +94,9 @@ public class RouteController {
     @GetMapping("create")
     public String create(ModelMap model, YukonUserContext userContext, HttpServletRequest request) {
         model.addAttribute("mode", PageEditMode.CREATE);
-        model.addAttribute("communicationRoute", new RouteBaseModel<RouteBase>());
+        RouteBaseModel<RouteBase> routeBaseModel = new RouteBaseModel<RouteBase>();
+        routeBaseModel.setDefaultRoute(true);
+        model.addAttribute("communicationRoute", routeBaseModel);
         return "/routes/view.jsp";
     }
 
