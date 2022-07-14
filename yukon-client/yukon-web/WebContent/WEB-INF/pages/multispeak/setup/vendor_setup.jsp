@@ -101,12 +101,14 @@
                             
                             <tags:nameValue2 nameKey=".attributes"  requiredField="true">
                                 <cti:displayForPageEditModes modes="CREATE,EDIT">
-                                    <tags:selectWithItems items="${allAttributeList}" path="mspVendor.attributes" dataPlaceholder="Select attributes"
+                                <cti:msg2 key="yukon.web.modules.adminSetup.vendor.selectAttr" var="selectLbl" />
+                                    <tags:selectWithItems items="${allAttributeList}" path="mspVendor.attributes" dataPlaceholder="${selectLbl}"
                                                           id="attributes"/>
                                 </cti:displayForPageEditModes>
                                 <cti:displayForPageEditModes modes="VIEW">
-                                    <c:forEach var="mspattribute" items="${mspVendor.attributes}">
-                                        <i:inline key="${mspattribute}"/>&nbsp;,
+                                    <c:forEach var="mspattribute" items="${mspVendor.attributes}" varStatus="loop">
+                                        <i:inline key="${mspattribute}"/>
+                                        <c:if test="${!loop.last}">,</c:if>
                                     </c:forEach>
                                 </cti:displayForPageEditModes>
                                  <span id="vendorAttributes" style="display: none;">${vendorAttributes}</span>
