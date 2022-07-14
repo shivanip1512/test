@@ -1,3 +1,4 @@
+/*
 package com.cannontech.common.schedules.model;
 
 import java.util.ArrayList;
@@ -71,3 +72,4 @@ public class HolidaySchedule implements DBPersistentConverter<com.cannontech.dat
         }
     }
 }
+*/
