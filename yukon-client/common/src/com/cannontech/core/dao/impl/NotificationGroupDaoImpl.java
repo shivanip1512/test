@@ -5,6 +5,7 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import com.cannontech.common.model.ContactNotificationType;
@@ -87,12 +88,17 @@ public final class NotificationGroupDaoImpl implements NotificationGroupDao {
         return hashSet;
     }
 
-    public List<NotificationGroup> getAllNotificationGroups(String sortBy, Direction direction) {
+    public List<NotificationGroup> getAllNotificationGroups(String filterByName, SortBy sortBy, Direction direction) {
         SqlStatementBuilder sql = new SqlStatementBuilder();
         sql.append("SELECT * FROM NotificationGroup");
+        
+        if (StringUtils.isNotEmpty(filterByName)) {
+            sql.append("WHERE UPPER(GroupName) LIKE");
+            sql.append("'%" + filterByName.toUpperCase() + "%'");
+        }
         if (sortBy != null) {
             sql.append("ORDER BY");
-            sql.append(sortBy);
+            sql.append(sortBy.getDbString());
             if (direction != null) {
                 sql.append(direction);
             }
