@@ -128,7 +128,7 @@
     <entry key="yukon.web.modules.adminSetup.vendor.reqMsgTimeout">Request Message Timeout</entry>
     <entry key="yukon.web.modules.adminSetup.vendor.initRequestTimeout">Maximum Initiate Request Objects</entry>
     <entry key="yukon.web.modules.adminSetup.vendor.template">Default Meter Template</entry>
-    <entry key="yukon.web.modules.adminSetup.vendor.selectAttr">Select attributes</entry>
+    <entry key="yukon.web.modules.adminSetup.vendor.selectAttribute">Select attributes</entry>
     <entry key="yukon.web.modules.adminSetup.vendor.attributes">Attributes</entry>
     <entry key="yukon.web.modules.adminSetup.vendor.maxReturnRecords">MSP Max Return Records*</entry>
     <entry key="yukon.web.modules.adminSetup.vendor.mspMessageTimeout">MSP Request Message Timeout*</entry>

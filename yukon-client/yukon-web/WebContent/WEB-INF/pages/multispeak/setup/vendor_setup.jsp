@@ -99,7 +99,7 @@
                             
                             <tags:nameValue2 nameKey=".attributes"  requiredField="true">
                                 <cti:displayForPageEditModes modes="CREATE,EDIT">
-                                    <cti:msg2 key="yukon.web.modules.adminSetup.vendor.selectAttr" var="selectLbl" />
+                                    <cti:msg2 key="yukon.web.modules.adminSetup.vendor.selectAttribute" var="selectLbl" />
                                        <tags:selectWithItems items="${allAttributeList}" path="mspVendor.attributes" dataPlaceholder="${selectLbl}" id="attributes"/>
                                 </cti:displayForPageEditModes>
                                 <cti:displayForPageEditModes modes="VIEW">
