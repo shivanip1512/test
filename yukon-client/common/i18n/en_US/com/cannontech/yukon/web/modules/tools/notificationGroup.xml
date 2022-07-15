@@ -9,4 +9,5 @@
     <entry key="yukon.web.modules.tools.notificationGroup.VIEW.pageTitle">Notification Group: {0}</entry>
     <entry key="yukon.web.modules.tools.notificationGroup.list.pageName">Notification Groups</entry>
     <entry key="yukon.web.modules.tools.notificationGroup.filter.error">Error filtering notification group records: {0}.</entry>
+    <entry key="yukon.web.modules.tools.notificationGroup.retrieve.error">An error occurred in retrieving notification group.</entry>
 </properties>

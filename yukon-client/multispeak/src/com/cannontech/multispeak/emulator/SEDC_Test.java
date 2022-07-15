@@ -5,6 +5,7 @@
  */
 package com.cannontech.multispeak.emulator;
 
+import java.util.Arrays;
 import java.util.List;
 
 import org.springframework.context.ApplicationContext;
@@ -23,6 +24,7 @@ import com.cannontech.msp.beans.v3.ServiceLocation;
 import com.cannontech.msp.beans.v3.ServiceLocationChangedNotification;
 import com.cannontech.msp.beans.v3.ServiceLocationChangedNotificationResponse;
 import com.cannontech.msp.beans.v3.UtilityInfo;
+import com.cannontech.multispeak.client.MspAttribute;
 import com.cannontech.multispeak.client.MultispeakVendor;
 import com.cannontech.multispeak.client.core.MRClient;
 
@@ -34,11 +36,13 @@ import com.cannontech.multispeak.client.core.MRClient;
  */
 public class SEDC_Test {
 
-	// private static String endpointURL = "http://127.0.0.1:8088/MR_CBSoap";
-	private static String endpointURL = "http://127.0.0.1:8088/mockMR_ServerSoap";
-	private static MultispeakVendor mspVendor = new MultispeakVendor(23213, "Cannon", "Yukon", "pwd", "sadsad", "", "", 100, 120, 12, null, false);
-	private static MRClient instance;
-	private static ObjectFactory objectFactory;
+    // private static String endpointURL = "http://127.0.0.1:8088/MR_CBSoap";
+    private static String endpointURL = "http://127.0.0.1:8088/mockMR_ServerSoap";
+    static List<MspAttribute> attributes = Arrays.asList(MspAttribute.KVAR_KVARH, MspAttribute.PEAKDEMAND_USAGE);
+    private static MultispeakVendor mspVendor = new MultispeakVendor(23213, "Cannon", "Yukon", "pwd", "sadsad", "", "", 100, 120,
+            12, null, false, attributes);
+    private static MRClient instance;
+    private static ObjectFactory objectFactory;
 
     public static void main(String[] args) {
         try {

@@ -32,7 +32,7 @@ public class SortingParametersResolver implements HandlerMethodArgumentResolver 
         HttpServletRequest nativeRequest = (HttpServletRequest) webRequest.getNativeRequest();
 
         String sort = ServletRequestUtils.getStringParameter(nativeRequest, "sort");
-        String directionString =  ServletRequestUtils.getStringParameter(nativeRequest, "dir", "desc");
+        String directionString =  ServletRequestUtils.getStringParameter(nativeRequest, "dir", "asc");
         Direction direction = null;
         if (StringUtils.isNotBlank(sort)) {
             try {

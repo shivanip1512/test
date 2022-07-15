@@ -92,7 +92,7 @@ public class RouteController {
     }
 
     @GetMapping("create")
-    public String create(ModelMap model, YukonUserContext userContext, HttpServletRequest request) {
+    public String create(ModelMap model) {
         model.addAttribute("mode", PageEditMode.CREATE);
         RouteBaseModel<RouteBase> routeBaseModel = new RouteBaseModel<RouteBase>();
         routeBaseModel.setDefaultRoute(true);
@@ -131,9 +131,7 @@ public class RouteController {
             return redirectListPageLink;
         } catch (RestClientException ex) {
             log.error("Error creating route: {}. Error: {}", communicationRoute.getDeviceName(), ex.getMessage());
-            flash.setError(new YukonMessageSourceResolvable("yukon.web.api.save.error",
-                    communicationRoute.getDeviceName(),
-                    ex.getMessage()));
+            flash.setError(new YukonMessageSourceResolvable("yukon.web.api.save.error", communicationRoute.getDeviceName(), ex.getMessage()));
             return redirectListPageLink;
         }
         return null;

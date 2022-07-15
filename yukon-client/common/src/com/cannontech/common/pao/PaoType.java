@@ -1155,6 +1155,10 @@ public enum PaoType implements DisplayableEnum, DatabaseRepresentationSource {
         return rfMeterTypes;
     }
     
+    public static ImmutableSet<PaoType> getCellularMeterTypes() {
+        return Sets.union(cellularTypes, rfMeterTypes).immutableCopy();
+    }
+    
     public static ImmutableSet<PaoType> getRfElectricTypes() {
         return rfElectricTypes;
     }

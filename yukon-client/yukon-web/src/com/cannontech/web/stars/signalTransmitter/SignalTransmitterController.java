@@ -46,6 +46,7 @@ import com.cannontech.common.device.terminal.model.WCTPTerminal;
 import com.cannontech.common.dr.setup.LMDelete;
 import com.cannontech.common.dr.setup.LMDto;
 import com.cannontech.common.i18n.MessageSourceAccessor;
+import com.cannontech.common.model.PaginatedResponse;
 import com.cannontech.common.pao.PaoType;
 import com.cannontech.common.util.JsonUtils;
 import com.cannontech.core.roleproperties.HierarchyPermissionLevel;
@@ -90,22 +91,23 @@ public class SignalTransmitterController {
         ResponseEntity<? extends Object> response = null;
         try {
             String url = helper.findWebServerUrl(request, userContext, ApiURL.pagingTerminalUrl);
-            response = apiRequestHelper.callAPIForList(userContext, request, url, TerminalBase.class, HttpMethod.GET, TerminalBase.class);
+            response = apiRequestHelper.callAPIForParameterizedTypeObject(userContext, request, url, HttpMethod.GET,
+                    TerminalBase.class);
         } catch (ApiCommunicationException e) {
             log.error(e.getMessage());
             flash.setError(new YukonMessageSourceResolvable(communicationKey));
             return redirectListPageLink;
         } catch (RestClientException ex) {
             log.error("Error retrieving details: " + ex.getMessage());
-            flash.setError(new YukonMessageSourceResolvable("yukon.web.modules.operator.signalTransmitter.filter.error", ex.getMessage()));
+            flash.setError(new YukonMessageSourceResolvable("yukon.web.modules.operator.signalTransmitter.filter.error",
+                    ex.getMessage()));
             return redirectListPageLink;
         }
-        
-        List<TerminalBase> signalTransmitters = new ArrayList<>();
+        PaginatedResponse<TerminalBase> signalTransmitters = new PaginatedResponse<>();
         if (response.getStatusCode() == HttpStatus.OK) {
-            signalTransmitters = (List<TerminalBase>) response.getBody();
+            signalTransmitters = (PaginatedResponse) response.getBody();
         }
-        model.addAttribute("signalTransmitters", signalTransmitters);
+        model.addAttribute("signalTransmitters", signalTransmitters.getItems());
         return "/signalTransmitter/list.jsp";
     }
     
