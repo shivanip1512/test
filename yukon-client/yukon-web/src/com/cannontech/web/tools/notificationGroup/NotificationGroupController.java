@@ -58,12 +58,13 @@ public class NotificationGroupController {
             String url = helper.findWebServerUrl(request, userContext, ApiURL.notificationGroupUrl + "/" + id);
 
             NotificationGroup notificationGroup = retrieveNotificationGroup(userContext, request, id, url);
-
+            
             if (notificationGroup == null) {
                 flash.setError(new YukonMessageSourceResolvable(baseKey + "retrieve.error"));
                 return redirectListPageLink;
             }
             // TODO : will be completed under YUK-26551 : Notification group view page
+          //  notificationGroup.getcICustomers().get(0).getNotification();
             model.addAttribute("notificationGroup", notificationGroup);
             return "/notificationGroup/view.jsp";
         } catch (ApiCommunicationException e) {
