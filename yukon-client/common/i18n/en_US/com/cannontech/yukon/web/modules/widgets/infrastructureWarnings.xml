@@ -97,7 +97,7 @@
             </li>
             <li>
                 <i class="icon icon-error fn"><svg xmlns="http://www.w3.org/2000/svg" fill="#eb8f2b" height="18" viewBox="0 0 25 25" width="18"><path d="M0 0h24v24H0z" fill="none"/><path d="M1 21h22L12 2 1 21zm12-3h-2v-2h2v2zm0-4h-2v-4h2v4z"/></svg></i> - 
-                Number of devices with warnings.
+                Number of devices with warnings. Clicking on the warning icon will display all warnings for the corresponding device type.
             </li>
         </ul>
         In the filter section, select any device types to filter by and whether to only include the high severity warnings. Click on the Filter button to filter the list. A table will display with the device, type, warning message and warning date/time. A red status stripe will display to the left of any warnings that are high severity. 
