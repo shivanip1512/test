@@ -4,7 +4,6 @@ import java.util.List;
 
 import com.cannontech.core.roleproperties.MspPaoNameAliasEnum;
 import com.cannontech.core.roleproperties.MultispeakMeterLookupFieldEnum;
-import com.cannontech.multispeak.client.MspAttribute;
 import com.cannontech.multispeak.client.MultispeakVendor;
 import com.cannontech.multispeak.db.MultispeakInterface;
 
@@ -25,10 +24,7 @@ public class MultispeakModel {
     private List<MultispeakInterface> mspInterfaceList;
     private String service;
     private String endpointURL;
-    private List<MspAttribute> mspAttributes;
-      
 
-     
     public Integer getMspPrimaryCIS() {
         return mspPrimaryCIS;
     }
@@ -116,14 +112,4 @@ public class MultispeakModel {
     public void setEndpointURL(String endpointURL) {
         this.endpointURL = endpointURL;
     }
-
-    public List<MspAttribute> getMspAttributes() {
-        return mspAttributes;
-    }
-
-    public void setMspAttributes(List<MspAttribute> mspAttributes) {
-        this.mspAttributes = mspAttributes;
-    }
-
-    
 }

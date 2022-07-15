@@ -101,8 +101,8 @@
                             
                             <tags:nameValue2 nameKey=".attributes"  requiredField="true">
                                 <cti:displayForPageEditModes modes="CREATE,EDIT">
-                                <cti:msg2 key="yukon.web.modules.adminSetup.vendor.selectAttr" var="selectLbl" />
-                                    <tags:selectWithItems items="${allAttributeList}" path="mspVendor.attributes" dataPlaceholder="${selectLbl}"
+                                    <cti:msg2 key="yukon.web.modules.adminSetup.vendor.selectAttr" var="selectLbl" />
+                                       <tags:selectWithItems items="${allAttributeList}" path="mspVendor.attributes" dataPlaceholder="${selectLbl}"
                                                           id="attributes"/>
                                 </cti:displayForPageEditModes>
                                 <cti:displayForPageEditModes modes="VIEW">
@@ -111,7 +111,7 @@
                                         <c:if test="${!loop.last}">,</c:if>
                                     </c:forEach>
                                 </cti:displayForPageEditModes>
-                                 <span id="vendorAttributes" style="display: none;">${vendorAttributes}</span>
+                                <span id="vendorAttributes" style="display: none;">${vendorAttributes}</span>
                             </tags:nameValue2>
 
                         </tags:nameValueContainer2>
