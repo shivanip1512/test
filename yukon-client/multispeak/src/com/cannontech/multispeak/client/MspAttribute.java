@@ -32,13 +32,17 @@ public enum MspAttribute implements DisplayableEnum {
     private EnumSet<BuiltInAttribute> builtInAttributes;
 
     private final static ImmutableMap<String, MspAttribute> lookupByDBStringMap;
+    private final static ImmutableMap<MspAttribute, EnumSet<BuiltInAttribute>> lookupByMspAttribute;
 
     static {
         ImmutableMap.Builder<String, MspAttribute> attributeBuilder = ImmutableMap.builder();
+        ImmutableMap.Builder<MspAttribute, EnumSet<BuiltInAttribute>> builtInAttributeBuilder = ImmutableMap.builder();
         for (MspAttribute attr : values()) {
             attributeBuilder.put(attr.getDbString(), attr);
+            builtInAttributeBuilder.put(attr, attr.getBuiltInAttributes());
         }
         lookupByDBStringMap = attributeBuilder.build();
+        lookupByMspAttribute = builtInAttributeBuilder.build();
     }
 
     public static List<MspAttribute> getAttributesFromDBString(String dbString) {
