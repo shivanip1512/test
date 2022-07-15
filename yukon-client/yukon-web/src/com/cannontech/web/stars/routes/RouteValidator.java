@@ -26,15 +26,15 @@ public class RouteValidator<T extends RouteBaseModel<?>> extends SimpleValidator
         String deviceId = routeBaseModel.getDeviceId() != null ? routeBaseModel.getDeviceId().toString() : null;
 
         yukonValidationHelper.validatePaoName(routeBaseModel.getDeviceName(),
-                                              routeBaseModel.getDeviceType(), 
-                                              errors,
-                                              yukonValidationHelper.getMessage("yukon.common.name"), 
-                                              deviceId, 
-                                              "deviceName");
+                routeBaseModel.getDeviceType(),
+                errors,
+                yukonValidationHelper.getMessage("yukon.common.name"),
+                deviceId,
+                "deviceName");
 
-        yukonValidationHelper.checkIfFieldRequired("signalTransmitterId", 
-                                                   errors, 
-                                                   routeBaseModel.getSignalTransmitterId(),
-                                                   yukonValidationHelper.getMessage(key + "selectSignalTransmitter"));
+        yukonValidationHelper.checkIfFieldRequired("signalTransmitterId",
+                errors,
+                routeBaseModel.getSignalTransmitterId(),
+                yukonValidationHelper.getMessage(key + "selectSignalTransmitter"));
     }
 }
