@@ -201,7 +201,6 @@ public class MultispeakController {
 
     @RequestMapping("create")
     public String create(ModelMap model) {
-
         model.addAttribute("mode", PageEditMode.CREATE);
         addSystemModelAndViewObjects(model, null, true, null, true);
         return "setup/vendor_setup.jsp";
