@@ -8,7 +8,6 @@
 <%@ taglib prefix="spring" uri="http://www.springframework.org/tags" %>
 <%@ taglib prefix="tags" tagdir="/WEB-INF/tags"%>
 
-
 <cti:standardPage module="adminSetup" page="vendor.${mode}" >
     <tags:setFormEditMode mode="${mode}" />
     <cti:msg2 var="pingTitle" key=".ping" />
@@ -50,7 +49,6 @@
         <form:hidden id="actionService" path="service" />
         <form:hidden id="vendorID" path="mspVendor.vendorID" />
         <form:hidden id="endpointURL" path="endpointURL" />
-        
         <input type="hidden" class="js-vendor-id" value="${mspVendor.vendorID}"/>
         <tags:sectionContainer2 nameKey="vendorSetup" styleClass="stacked-lg">
             <c:if test="${!noVendorsExist || createMode}">
