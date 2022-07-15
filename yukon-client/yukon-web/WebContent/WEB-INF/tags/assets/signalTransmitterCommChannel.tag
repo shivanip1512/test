@@ -16,7 +16,7 @@
                                   inputClass="w300"/>
          </cti:displayForPageEditModes>
          <cti:displayForPageEditModes modes="VIEW">
-          <div class = "w300 wrbw dib">  ${fn:escapeXml(signalTransmitter.commChannel.name)}</div>
+          <div class="w300 wrbw dib">${fn:escapeXml(signalTransmitter.commChannel.name)}</div>
          </cti:displayForPageEditModes>
     </tags:nameValue2>
 </cti:msgScope>
