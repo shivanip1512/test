@@ -1,5 +1,6 @@
 package com.cannontech.multispeak.client;
 
+import java.util.EnumSet;
 import java.util.Iterator;
 import java.util.List;
 
@@ -29,6 +30,7 @@ import com.cannontech.common.device.groups.service.DeviceGroupService;
 import com.cannontech.common.exception.BadAuthenticationException;
 import com.cannontech.common.exception.PasswordExpiredException;
 import com.cannontech.common.pao.YukonDevice;
+import com.cannontech.common.pao.attribute.model.BuiltInAttribute;
 import com.cannontech.common.pao.definition.dao.PaoDefinitionDao;
 import com.cannontech.common.pao.definition.model.PaoTag;
 import com.cannontech.core.authentication.service.AuthenticationService;
@@ -461,4 +463,14 @@ public class MultispeakFuncs extends MultispeakFuncsBase {
     public MultiSpeakVersion version() {
         return MultiSpeakVersion.V3;
     }
+    
+    public EnumSet<BuiltInAttribute> getBuiltInAttributesForVendor(List<MspAttribute> vendorAttributes) {
+        EnumSet<BuiltInAttribute> attributesToLoad = EnumSet.noneOf(BuiltInAttribute.class);
+
+        for (MspAttribute attribute : vendorAttributes) {
+            attributesToLoad.addAll(attribute.getBuiltInAttributes());
+        }
+        return attributesToLoad;
+    }
+
 }
