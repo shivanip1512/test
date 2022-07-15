@@ -583,12 +583,6 @@ public class MultispeakController {
         if (multispeak == null) {
             multispeak = new MultispeakModel();
         }
-        
-        List<MspAttribute> vendorAttributes = Lists.newArrayList(MspAttribute.PEAKDEMAND_USAGE);
-        if(mspVendor != null) {
-            vendorAttributes = mspVendor.getAttributes();
-        }
-        
         List<MultiSpeakVersion> mspVersionList =
             new ArrayList<>(Arrays.asList(MultiSpeakVersion.V3, MultiSpeakVersion.V4, MultiSpeakVersion.V5));
         List<MultiSpeakVersion> notMspVersionList =
