@@ -1379,7 +1379,7 @@
                     <page name="routes.CREATE" type="BASIC"/>
                     <page name="routes.VIEW" type="DETAIL">
                     <link>/stars/device/routes/{id}</link>
-                    <labelArgument>${routes.name}</labelArgument>
+                    <labelArgument>${communicationRoute.deviceName}</labelArgument>
                 </page>
                 </pages>
             </page>
