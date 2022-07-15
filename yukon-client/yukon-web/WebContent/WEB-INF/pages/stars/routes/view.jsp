@@ -18,7 +18,7 @@
         </div>
         
         <!-- popup for create route -->
-        <div id="js-create-route-popup" class="dn" data-title="<i:inline key='.createObject.title'/>" data-width="400">
+        <div id="js-create-route-popup" class="dn" data-title="<i:inline key=".createObject.title"/>" data-width="400">
             <table style="width:100%">
                 <tr>
                     <td>
