@@ -145,11 +145,14 @@ yukon.admin.multispeak = (function() {
                 dialog.dialog('close');
                 dialog.empty();
             });
-				if ($("#attributes").is(":visible")) {
-                $("#attributes").chosen({width: "250px"});}
-                if(document.querySelector('[id^="mspVendor.attributes.errors"]')!==null){
-                $('#attributes').val([]).trigger('chosen:updated');
-              }
+            if ($("#attributes").is(":visible")) {
+               $("#attributes").chosen({
+                  width: "250px"
+               });
+            }
+            if (document.querySelector('[id^="mspVendor.attributes.errors"]') !== null) {
+               $('#attributes').val([]).trigger('chosen:updated');
+            }
              
             if (_initialized)
                 return;

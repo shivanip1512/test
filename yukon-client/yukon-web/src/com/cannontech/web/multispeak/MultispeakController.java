@@ -600,7 +600,6 @@ public class MultispeakController {
         map.addAttribute("mspCISVendorList", multispeakDao.getMultispeakCISVendors());
         map.addAttribute("possibleInterfaces", MultispeakDefines.getPossibleInterfaces(mspVendor));
         map.addAttribute("allAttributeList", MspAttribute.values());
-        map.addAttribute("vendorAttributes", vendorAttributes);
 
         if (mspVendor != null) {
             map.addAttribute("mspVendorId", mspVendor.getVendorID());

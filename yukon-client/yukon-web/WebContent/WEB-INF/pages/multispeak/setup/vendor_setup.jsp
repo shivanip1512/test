@@ -108,7 +108,6 @@
                                         <c:if test="${!loop.last}">,</c:if>
                                     </c:forEach>
                                 </cti:displayForPageEditModes>
-                                <span id="vendorAttributes" style="display: none;">${vendorAttributes}</span>
                             </tags:nameValue2>
 
                         </tags:nameValueContainer2>
