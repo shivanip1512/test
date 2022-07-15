@@ -1372,9 +1372,12 @@
                 <pages>
                     <page name="routes.CREATE" type="BASIC"/>
                     <page name="routes.VIEW" type="DETAIL">
-                    <link>/stars/device/routes/{id}</link>
-                    <labelArgument>${communicationRoute.deviceName}</labelArgument>
-                </page>
+                        <link>/stars/device/routes/{id}</link>
+                        <labelArgument>${communicationRoute.deviceName}</labelArgument>
+                    </page>
+                    <page name="routes.EDIT" type="BASIC" hideFavorite="true">
+                        <labelArgument>${communicationRoute.deviceName}</labelArgument>
+                    </page>
                 </pages>
             </page>
             <page name="virtualDevices.list" type="BASIC">
