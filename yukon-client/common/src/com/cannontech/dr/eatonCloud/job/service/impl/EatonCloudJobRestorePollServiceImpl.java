@@ -6,6 +6,7 @@ import java.util.Map;
 import java.util.concurrent.TimeUnit;
 
 import org.apache.logging.log4j.Logger;
+import org.joda.time.Minutes;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.util.CollectionUtils;
@@ -13,6 +14,7 @@ import org.springframework.util.CollectionUtils;
 import com.cannontech.clientutils.YukonLogManager;
 import com.cannontech.common.util.ScheduledExecutor;
 import com.cannontech.core.dao.DeviceDao;
+import com.cannontech.dr.eatonCloud.job.service.EatonCloudJobControlType;
 import com.cannontech.dr.eatonCloud.job.service.EatonCloudJobReadService;
 import com.cannontech.dr.eatonCloud.job.service.EatonCloudJobResponseProcessor;
 import com.cannontech.dr.eatonCloud.job.service.EatonCloudJobRestorePollService;
@@ -34,7 +36,7 @@ public class EatonCloudJobRestorePollServiceImpl extends EatonCloudJobPollServic
     @Autowired private DeviceDao deviceDao;
     
     @Override
-    public void schedulePoll(EventRestoreSummary summary, int pollInMinutes, List<String> jobGuids, List<String> deviceGuids) {
+    public void schedulePoll(EventRestoreSummary summary, Minutes pollInMinutes, List<String> jobGuids, List<String> deviceGuids) {
         if (CollectionUtils.isEmpty(jobGuids)) {
             return;
         }
@@ -43,7 +45,7 @@ public class EatonCloudJobRestorePollServiceImpl extends EatonCloudJobPollServic
 
         executor.schedule(() -> {
             poll(summary, jobGuids, deviceGuids);
-        }, pollInMinutes, TimeUnit.MINUTES);
+        }, pollInMinutes.getMinutes(), TimeUnit.MINUTES);
     }
     
     private void poll(EventRestoreSummary summary, List<String> jobGuids, List<String> deviceGuids) {
@@ -67,7 +69,7 @@ public class EatonCloudJobRestorePollServiceImpl extends EatonCloudJobPollServic
             
             eatonCloudJobSmartNotifService.sendSmartNotifications(summary.getProgramId(),
                     summary.getCommand().getGroupId(), deviceGuids.size(), deviceGuids.size() - successes.size(),
-                    false, summary.getLogSummary());
+                    EatonCloudJobControlType.RESTORE, summary.getLogSummary());
             
             deviceGuids.removeIf(guid -> successes.contains(guid) || failures.contains(guid));
             if(!deviceGuids.isEmpty()) {

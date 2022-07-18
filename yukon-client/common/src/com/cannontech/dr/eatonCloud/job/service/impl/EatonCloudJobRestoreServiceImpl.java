@@ -16,6 +16,7 @@ import com.cannontech.common.config.ConfigurationSource;
 import com.cannontech.common.config.MasterConfigInteger;
 import com.cannontech.common.util.ScheduledExecutor;
 import com.cannontech.core.dao.DeviceDao;
+import com.cannontech.dr.eatonCloud.job.service.EatonCloudJobControlType;
 import com.cannontech.dr.eatonCloud.job.service.EatonCloudJobResponseProcessor;
 import com.cannontech.dr.eatonCloud.job.service.EatonCloudJobRestorePollService;
 import com.cannontech.dr.eatonCloud.job.service.EatonCloudJobRestoreService;
@@ -69,7 +70,7 @@ public class EatonCloudJobRestoreServiceImpl extends EatonCloudJobHelperService 
     private void createJobs(Set<Integer> devices, EventRestoreSummary summary) {
         Map<Integer, String> guids = deviceDao.getGuids(devices);
         Map<String, Object> params = ShedParamHeper.getRestoreParams(summary.getCommand(), summary.getEventId());
-        List<EatonCloudJobRequestV1> requests = getRequests(guids, devices, params);
+        Iterable<EatonCloudJobRequestV1> requests = getRequests(guids.values(), params);
         List<String> jobGuids = new ArrayList<>();
         List<String> devicesGuids = new ArrayList<>();
         requests.forEach(request -> {
@@ -84,7 +85,7 @@ public class EatonCloudJobRestoreServiceImpl extends EatonCloudJobHelperService 
                     devicesGuids);
         } else {
             eatonCloudJobSmartNotifService.sendSmartNotifications(summary.getProgramId(), summary.getCommand().getGroupId(),
-                    devices.size(), devices.size(), false, summary.getLogSummary());
+                    devices.size(), devices.size(), EatonCloudJobControlType.RESTORE, summary.getLogSummary());
         }
     }
     

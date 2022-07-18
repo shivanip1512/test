@@ -12,12 +12,14 @@ import java.util.concurrent.TimeUnit;
 
 import org.apache.logging.log4j.Logger;
 import org.joda.time.Instant;
+import org.joda.time.Minutes;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.util.CollectionUtils;
 
 import com.cannontech.clientutils.YukonLogManager;
 import com.cannontech.common.util.ScheduledExecutor;
+import com.cannontech.dr.eatonCloud.job.service.EatonCloudJobControlType;
 import com.cannontech.dr.eatonCloud.job.service.EatonCloudJobPollService;
 import com.cannontech.dr.eatonCloud.job.service.EatonCloudJobReadService;
 import com.cannontech.dr.eatonCloud.job.service.EatonCloudJobResponseProcessor;
@@ -59,7 +61,7 @@ public class EatonCloudJobPollServiceImpl extends EatonCloudJobPollServiceHelper
     }
 
     @Override
-    public void schedulePoll(EventSummary summary, int minutes, int totalDevices, List<String> jobGuids,
+    public void schedulePoll(EventSummary summary, Minutes minutes, int totalDevices, List<String> jobGuids,
             Instant jobCreationTime, int currentTry) {
         if (CollectionUtils.isEmpty(jobGuids)) {
             return;
@@ -73,7 +75,7 @@ public class EatonCloudJobPollServiceImpl extends EatonCloudJobPollServiceHelper
                 // consider all devices that didn't succeed as failure
                 if (currentTry == 1) {
                     eatonCloudJobSmartNotifService.sendSmartNotifications(summary.getProgramId(),
-                            summary.getCommand().getGroupId(), totalDevices, totalDevices - successes, true,
+                            summary.getCommand().getGroupId(), totalDevices, totalDevices - successes, EatonCloudJobControlType.SHED,
                             summary.getLogSummary(false));
                 }
             } catch (Exception e) {
@@ -85,7 +87,7 @@ public class EatonCloudJobPollServiceImpl extends EatonCloudJobPollServiceHelper
                 terminating.remove(summary.getEventId());
             }
             polling.remove(summary.getEventId());
-        }, minutes, TimeUnit.MINUTES);
+        }, minutes.getMinutes(), TimeUnit.MINUTES);
     }
 
     /**
