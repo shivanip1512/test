@@ -43,6 +43,7 @@ import com.cannontech.common.util.Range;
 import com.cannontech.common.util.ScheduledExecutor;
 import com.cannontech.core.dao.DeviceDao;
 import com.cannontech.database.data.lite.LiteYukonPAObject;
+import com.cannontech.dr.eatonCloud.job.service.EatonCloudJobControlType;
 import com.cannontech.dr.eatonCloud.model.v1.EatonCloudCommandRequestV1;
 import com.cannontech.dr.eatonCloud.model.v1.EatonCloudCommandResponseV1;
 import com.cannontech.dr.eatonCloud.model.v1.EatonCloudCommunicationExceptionV1;
@@ -303,7 +304,7 @@ public class EatonCloudSendControlServiceImpl implements EatonCloudSendControlSe
                     .getPaoName();
             String group = dbCache.getAllLMGroups().stream().filter(p -> p.getLiteID() == groupId).findFirst().get()
                     .getPaoName();
-            SmartNotificationEvent event = EatonCloudDrEventAssembler.assemble(group, program, totalDevices, totalFailed, true);
+            SmartNotificationEvent event = EatonCloudDrEventAssembler.assemble(group, program, totalDevices, totalFailed, EatonCloudJobControlType.SHED);
 
             log.info("[external event id:{}] Sending smart notification event: {}", eventId, event);
             smartNotificationEventCreationService.send(SmartNotificationEventType.EATON_CLOUD_DR, List.of(event));

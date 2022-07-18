@@ -2,13 +2,15 @@ package com.cannontech.dr.eatonCloud.job.service.impl;
 
 import java.math.RoundingMode;
 
+import org.joda.time.Minutes;
+
 import com.google.common.math.IntMath;
 
 public class EatonCloudJobSettingsHelper {
     //TODO: change to 5
-    public static final int pollInMinutes = 1;
+    public static final Minutes pollInMinutes = Minutes.ONE;
     
-    public static final int firstRetryAfterPollMinutes = 2;
+    public static final Minutes firstRetryAfterPollMinutes = Minutes.TWO;
     
     public static int getReadTime(EventSummary summary) {
         /*int readTimeFromNowInMinutes = summary.getCommand().getDutyCyclePeriod() == null ? 5 : IntMath.divide(

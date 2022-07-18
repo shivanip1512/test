@@ -27,6 +27,7 @@ import com.cannontech.common.config.ConfigurationSource;
 import com.cannontech.common.config.MasterConfigInteger;
 import com.cannontech.common.util.ScheduledExecutor;
 import com.cannontech.core.dao.DeviceDao;
+import com.cannontech.dr.eatonCloud.job.service.EatonCloudJobControlType;
 import com.cannontech.dr.eatonCloud.job.service.EatonCloudJobPollService;
 import com.cannontech.dr.eatonCloud.job.service.EatonCloudJobResponseProcessor;
 import com.cannontech.dr.eatonCloud.job.service.EatonCloudJobService;
@@ -134,7 +135,7 @@ public class EatonCloudJobServiceImpl extends EatonCloudJobHelperService impleme
     private EventSummary setupRetry(EventSummary summary, Pair<Instant, List<String>> result) {
         if (result != null) {
             EventSummary nextTry = summary.setupNextTry(
-                    EatonCloudJobSettingsHelper.pollInMinutes + EatonCloudJobSettingsHelper.firstRetryAfterPollMinutes);
+                    EatonCloudJobSettingsHelper.pollInMinutes.plus(EatonCloudJobSettingsHelper.firstRetryAfterPollMinutes));
             if (nextTry != null) {
                 resendTries.put(nextTry.getEventId(), new RetrySummary(nextTry, result));
                 return nextTry;
@@ -160,7 +161,7 @@ public class EatonCloudJobServiceImpl extends EatonCloudJobHelperService impleme
     private Pair<Instant, List<String>> createJobs(Set<Integer> devices, EventSummary summary) {
         Map<Integer, String> guids = deviceDao.getGuids(devices);
         Map<String, Object> params = ShedParamHeper.getShedParams(summary.getCommand(), summary.getEventId());
-        List<EatonCloudJobRequestV1> requests = getRequests(guids, devices, params);
+        Iterable<EatonCloudJobRequestV1> requests = getRequests(guids.values(), params);
         Instant jobCreationTime =  Instant.now();
 
         List<String> jobGuids = new ArrayList<>();
@@ -178,7 +179,7 @@ public class EatonCloudJobServiceImpl extends EatonCloudJobHelperService impleme
             return Pair.of(jobCreationTime, jobGuids);
         }
         eatonCloudJobSmartNotifService.sendSmartNotifications(summary.getProgramId(), summary.getCommand().getGroupId(),
-                devices.size(), devices.size(), true, summary.getLogSummary(false));
+                devices.size(), devices.size(), EatonCloudJobControlType.SHED, summary.getLogSummary(false));
         return null;
        
     }
@@ -188,7 +189,8 @@ public class EatonCloudJobServiceImpl extends EatonCloudJobHelperService impleme
         try {
             EatonCloudJobResponseV1 response = eatonCloudCommunicationService.createJob(request);
             if (log.isDebugEnabled()) {
-                log.debug(summary.getLogSummary(response.getJobGuid(), true) + "CREATED JOB Shed Command:{} devices:{}",
+                log.debug("{} CREATED JOB Shed Command:{} devices:{}",
+                        summary.getLogSummary(response.getJobGuid(), true),
                         summary.getCommand(),
                         devices);
             } else {

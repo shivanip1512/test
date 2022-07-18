@@ -19,7 +19,6 @@ import com.cannontech.common.util.WebserverUrlResolver;
 public class EatonCloudDrEmailBuilder extends SmartNotificationEmailBuilder {
     
     @Autowired private ConfigurationSource configurationSource;
-    @Autowired private WebserverUrlResolver webserverUrlResolver;
     private Integer failureNotificationPercent;
        
     @Override
@@ -46,7 +45,7 @@ public class EatonCloudDrEmailBuilder extends SmartNotificationEmailBuilder {
         argumentList.add(total);
         argumentList.add(Math.round((success * 100) / total));
         argumentList.add(Math.round((failed * 100) / total));
-        argumentList.add(EatonCloudDrEventAssembler.getIntValue(events.get(0).getParameters(), EatonCloudDrEventAssembler.CONTROL));      
+        argumentList.add(EatonCloudDrEventAssembler.getIntValue(events.get(0).getParameters(), EatonCloudDrEventAssembler.CONTROL_TYPE));      
         return argumentList.toArray();
     }
 
@@ -54,7 +53,7 @@ public class EatonCloudDrEmailBuilder extends SmartNotificationEmailBuilder {
     protected Object[] getSubjectArguments(List<SmartNotificationEvent> events, SmartNotificationVerbosity verbosity) {
         List<Object> argumentList = new ArrayList<>();
         argumentList.add(EatonCloudDrEventAssembler.getStringValue(events.get(0).getParameters(), EatonCloudDrEventAssembler.LM_PROGRAM));
-        argumentList.add(EatonCloudDrEventAssembler.getIntValue(events.get(0).getParameters(), EatonCloudDrEventAssembler.CONTROL));
+        argumentList.add(EatonCloudDrEventAssembler.getIntValue(events.get(0).getParameters(), EatonCloudDrEventAssembler.CONTROL_TYPE));
         return argumentList.toArray();
     }
 }

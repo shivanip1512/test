@@ -9,6 +9,7 @@ import org.apache.commons.lang3.builder.ToStringStyle;
 import org.apache.logging.log4j.Logger;
 import org.joda.time.DateTime;
 import org.joda.time.Instant;
+import org.joda.time.Minutes;
 
 import com.cannontech.amr.errors.dao.DeviceErrorTranslatorDao;
 import com.cannontech.dr.eatonCloud.model.EatonCloudError;
@@ -70,10 +71,10 @@ public final class EventSummary {
      * try#2 7 minutes after the first command has been send (5 minutes waiting for the poll + 2 minutes)
      * try#3... "period" minutes after the previous command has been send
      */
-    EventSummary setupNextTry(int minutes) {
+    EventSummary setupNextTry(Minutes minutes) {
         if (numberOfTimesToRetry > currentTry.get()) {
             currentTry.incrementAndGet();
-            currentTryTime = DateTime.now().plusMinutes(minutes).toInstant();
+            currentTryTime = DateTime.now().plus(minutes).toInstant();
             log.info("[SHED id:{}] NEXT TRY:{} after {}", eventId, currentTry.get(),
                     currentTryTime.toDateTime().toString("MM-dd-yyyy HH:mm:ss"));
             return this;

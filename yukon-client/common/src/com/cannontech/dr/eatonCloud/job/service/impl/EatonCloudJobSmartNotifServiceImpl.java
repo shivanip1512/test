@@ -16,6 +16,7 @@ import com.cannontech.common.smartNotification.model.SmartNotificationEvent;
 import com.cannontech.common.smartNotification.model.SmartNotificationEventType;
 import com.cannontech.common.smartNotification.service.SmartNotificationEventCreationService;
 import com.cannontech.common.util.ScheduledExecutor;
+import com.cannontech.dr.eatonCloud.job.service.EatonCloudJobControlType;
 import com.cannontech.dr.eatonCloud.job.service.EatonCloudJobReadService;
 import com.cannontech.dr.eatonCloud.job.service.EatonCloudJobSmartNotifService;
 import com.cannontech.yukon.IDatabaseCache;
@@ -39,7 +40,7 @@ public class EatonCloudJobSmartNotifServiceImpl implements EatonCloudJobSmartNot
     }
 
     @Override
-    public void sendSmartNotifications(int programId, int groupId, int totalDevices, int totalFailed, boolean isControl, String debugText) {
+    public void sendSmartNotifications(int programId, int groupId, int totalDevices, int totalFailed, EatonCloudJobControlType controlType, String debugText) {
         if (totalFailed == 0) {
             return;
         }
@@ -47,7 +48,7 @@ public class EatonCloudJobSmartNotifServiceImpl implements EatonCloudJobSmartNot
         if (sendNotification) {
             String program = dbCache.getAllPaosMap().get(programId).getPaoName();
             String group = dbCache.getAllPaosMap().get(groupId).getPaoName();
-            SmartNotificationEvent event = EatonCloudDrEventAssembler.assemble(group, program, totalDevices, totalFailed, isControl);
+            SmartNotificationEvent event = EatonCloudDrEventAssembler.assemble(group, program, totalDevices, totalFailed, controlType);
 
             log.info(debugText+ " Sending smart notification event: {}", event);
             smartNotificationEventCreationService.send(SmartNotificationEventType.EATON_CLOUD_DR, List.of(event));
