@@ -30,6 +30,7 @@ import com.cannontech.database.data.lite.LiteYukonUser;
 import com.cannontech.msp.beans.v5.multispeak.MeterReading;
 import com.cannontech.msp.beans.v5.multispeak.SCADAAnalog;
 import com.cannontech.multispeak.block.v5.Block;
+import com.cannontech.multispeak.client.MspAttribute;
 import com.cannontech.multispeak.client.MspRawPointHistoryHelper;
 import com.cannontech.multispeak.dao.v5.FormattedBlockProcessingService;
 import com.cannontech.multispeak.dao.v5.MeterReadProcessingService;
@@ -37,6 +38,7 @@ import com.cannontech.multispeak.dao.v5.MspRawPointHistoryDao;
 import com.cannontech.multispeak.data.v5.MspBlockReturnList;
 import com.cannontech.multispeak.data.v5.MspMeterReadReturnList;
 import com.cannontech.multispeak.data.v5.MspScadaAnalogReturnList;
+import com.cannontech.multispeak.util.MultispeakFuncsUtil;
 import com.google.common.collect.BiMap;
 import com.google.common.collect.ListMultimap;
 import com.google.common.collect.Lists;
@@ -97,7 +99,7 @@ public class MspRawPointHistoryDaoImpl implements MspRawPointHistoryDao
     
     @Override
     public MspMeterReadReturnList retrieveMeterReads(ReadBy readBy, List<String> readByValues, Date startDate,
-            Date endDate, String lastReceived, int maxRecords) {
+            Date endDate, String lastReceived, int maxRecords, List<MspAttribute> vendorAttributes) {
 
         List<YukonMeter> meters = getPaoList(readBy, readByValues, lastReceived, maxRecords);
 
@@ -107,7 +109,8 @@ public class MspRawPointHistoryDaoImpl implements MspRawPointHistoryDao
 
         int estimatedSize = 0;
 
-        EnumSet<BuiltInAttribute> attributesToLoad = EnumSet.of(BuiltInAttribute.USAGE, BuiltInAttribute.PEAK_DEMAND);
+        EnumSet<BuiltInAttribute> attributesToLoad = MultispeakFuncsUtil.getBuiltInAttributesForVendor(vendorAttributes);
+
         Range<Date> dateRange = new Range<Date>(startDate, true, endDate, true);
         // load up results for each attribute
         for (BuiltInAttribute attribute : attributesToLoad) {
@@ -152,7 +155,7 @@ public class MspRawPointHistoryDaoImpl implements MspRawPointHistoryDao
 
     @Override
     public MspMeterReadReturnList retrieveLatestMeterReads(ReadBy readBy, List<String> readByValues, String lastReceived,
-            int maxRecords) {
+            int maxRecords, List<MspAttribute> vendorAttributes) {
 
         List<YukonMeter> meters = getPaoList(readBy, readByValues, lastReceived, maxRecords);
 
@@ -163,7 +166,7 @@ public class MspRawPointHistoryDaoImpl implements MspRawPointHistoryDao
 
         int estimatedSize = 0;
 
-        EnumSet<BuiltInAttribute> attributesToLoad = EnumSet.of(BuiltInAttribute.USAGE, BuiltInAttribute.PEAK_DEMAND);
+        EnumSet<BuiltInAttribute> attributesToLoad = MultispeakFuncsUtil.getBuiltInAttributesForVendor(vendorAttributes);
         // load up results for each attribute
         for (BuiltInAttribute attribute : attributesToLoad) {
             Map<PaoIdentifier, PointValueQualityHolder> resultsForAttribute =

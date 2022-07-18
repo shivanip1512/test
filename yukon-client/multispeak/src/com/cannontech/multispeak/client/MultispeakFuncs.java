@@ -1,6 +1,5 @@
 package com.cannontech.multispeak.client;
 
-import java.util.EnumSet;
 import java.util.Iterator;
 import java.util.List;
 
@@ -12,7 +11,6 @@ import javax.xml.soap.SOAPMessage;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.logging.log4j.Logger;
-import com.cannontech.common.model.Address;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.ws.WebServiceMessage;
 import org.springframework.ws.context.MessageContext;
@@ -29,8 +27,8 @@ import com.cannontech.common.device.groups.editor.model.StoredDeviceGroup;
 import com.cannontech.common.device.groups.service.DeviceGroupService;
 import com.cannontech.common.exception.BadAuthenticationException;
 import com.cannontech.common.exception.PasswordExpiredException;
+import com.cannontech.common.model.Address;
 import com.cannontech.common.pao.YukonDevice;
-import com.cannontech.common.pao.attribute.model.BuiltInAttribute;
 import com.cannontech.common.pao.definition.dao.PaoDefinitionDao;
 import com.cannontech.common.pao.definition.model.PaoTag;
 import com.cannontech.core.authentication.service.AuthenticationService;
@@ -464,13 +462,4 @@ public class MultispeakFuncs extends MultispeakFuncsBase {
         return MultiSpeakVersion.V3;
     }
     
-    public EnumSet<BuiltInAttribute> getBuiltInAttributesForVendor(List<MspAttribute> vendorAttributes) {
-        EnumSet<BuiltInAttribute> attributesToLoad = EnumSet.noneOf(BuiltInAttribute.class);
-
-        for (MspAttribute attribute : vendorAttributes) {
-            attributesToLoad.addAll(attribute.getBuiltInAttributes());
-        }
-        return attributesToLoad;
-    }
-
 }

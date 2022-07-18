@@ -1,3 +1,4 @@
+/*
 package com.cannontech.common.schedules.model;
 
 import com.cannontech.common.device.port.DBPersistentConverter;
@@ -62,3 +63,4 @@ public class Holiday implements DBPersistentConverter<DateOfHoliday> {
         dateOfHoliday.setHolidayYear(getYear());
     }
 }
+*/

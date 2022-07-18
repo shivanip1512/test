@@ -1,9 +1,10 @@
 package com.cannontech.web.api.terminal.service;
 
-import java.util.List;
-
+import com.cannontech.common.device.terminal.dao.PagingTerminalDao.SortBy;
 import com.cannontech.common.device.terminal.model.TerminalBase;
 import com.cannontech.common.device.terminal.model.TerminalCopy;
+import com.cannontech.common.model.Direction;
+import com.cannontech.common.model.PaginatedResponse;
 
 public interface PagingTerminalService {
 
@@ -25,7 +26,8 @@ public interface PagingTerminalService {
     /**
      * Retrieve all paging terminals
      */
-    List<TerminalBase> retrieveAll();
+    PaginatedResponse<TerminalBase> retrieveAll(SortBy sortBy, Direction direction, int page, int itemsPerPage,
+            String terminalName);
 
     /**
      * Copy a paging terminal

@@ -1,7 +1,6 @@
 package com.cannontech.multispeak.client.v4;
 
 import java.util.ArrayList;
-import java.util.EnumSet;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
@@ -33,7 +32,6 @@ import com.cannontech.common.exception.BadAuthenticationException;
 import com.cannontech.common.exception.PasswordExpiredException;
 import com.cannontech.common.model.Address;
 import com.cannontech.common.pao.YukonDevice;
-import com.cannontech.common.pao.attribute.model.BuiltInAttribute;
 import com.cannontech.common.pao.definition.model.PaoTag;
 import com.cannontech.core.dao.NotFoundException;
 import com.cannontech.core.dynamic.PointValueHolder;
@@ -48,20 +46,18 @@ import com.cannontech.msp.beans.v4.ArrayOfElectricMeter;
 import com.cannontech.msp.beans.v4.ArrayOfErrorObject;
 import com.cannontech.msp.beans.v4.ArrayOfGasMeter;
 import com.cannontech.msp.beans.v4.ArrayOfWaterMeter;
+import com.cannontech.msp.beans.v4.Customer;
 import com.cannontech.msp.beans.v4.ElectricMeter;
 import com.cannontech.msp.beans.v4.ErrorObject;
 import com.cannontech.msp.beans.v4.GasMeter;
 import com.cannontech.msp.beans.v4.Meters;
 import com.cannontech.msp.beans.v4.MspMeter;
 import com.cannontech.msp.beans.v4.ObjectFactory;
+import com.cannontech.msp.beans.v4.PhoneNumber;
 import com.cannontech.msp.beans.v4.PhoneType;
 import com.cannontech.msp.beans.v4.RCDState;
 import com.cannontech.msp.beans.v4.WaterMeter;
-import com.cannontech.msp.beans.v4.PhoneNumber;
-import com.cannontech.msp.beans.v4.PhoneType;
-import com.cannontech.msp.beans.v4.Customer;
 import com.cannontech.multispeak.client.MessageContextHolder;
-import com.cannontech.multispeak.client.MspAttribute;
 import com.cannontech.multispeak.client.MultiSpeakVersion;
 import com.cannontech.multispeak.client.MultispeakDefines;
 import com.cannontech.multispeak.client.MultispeakFuncsBase;
@@ -476,13 +472,4 @@ public class MultispeakFuncs extends MultispeakFuncsBase {
         return addressList;
     }
     
-    public EnumSet<BuiltInAttribute> getBuiltInAttributesForVendor(List<MspAttribute> vendorAttributes) {
-        EnumSet<BuiltInAttribute> attributesToLoad = EnumSet.noneOf(BuiltInAttribute.class);
-
-        for (MspAttribute attribute : vendorAttributes) {
-            attributesToLoad.addAll(attribute.getBuiltInAttributes());
-        }
-        return attributesToLoad;
-    }
-
 }
