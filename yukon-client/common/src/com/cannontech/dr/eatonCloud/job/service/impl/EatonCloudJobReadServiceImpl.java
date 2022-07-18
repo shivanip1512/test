@@ -15,6 +15,7 @@ import org.apache.commons.lang3.tuple.Pair;
 import org.apache.logging.log4j.Logger;
 import org.joda.time.DateTime;
 import org.joda.time.Instant;
+import org.joda.time.Minutes;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 
@@ -74,8 +75,8 @@ public class EatonCloudJobReadServiceImpl implements EatonCloudJobReadService {
 
     @Override
     public void setupDeviceRead(EventSummary summary, Instant jobCreationTime, int currentTry) {
-        int readTimeFromNowInMinutes = EatonCloudJobSettingsHelper.getReadTime(summary);
-        Instant nextReadTime = DateTime.now().plusMinutes(readTimeFromNowInMinutes).toInstant();
+        Minutes readTimeFromNowInMinutes = EatonCloudJobSettingsHelper.getReadTime(summary);
+        Instant nextReadTime = DateTime.now().plus(readTimeFromNowInMinutes).toInstant();
 
         log.info(summary.getLogSummary(false) + "READ Try:{} in {} minutes at {}",
                 currentTry,

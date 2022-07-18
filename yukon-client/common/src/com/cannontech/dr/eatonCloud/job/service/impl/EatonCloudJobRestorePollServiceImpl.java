@@ -35,33 +35,49 @@ public class EatonCloudJobRestorePollServiceImpl extends EatonCloudJobPollServic
     @Autowired private EatonCloudJobSmartNotifService eatonCloudJobSmartNotifService;
     @Autowired private DeviceDao deviceDao;
     
-    @Override
-    public void schedulePoll(EventRestoreSummary summary, Minutes pollInMinutes, List<String> jobGuids, List<String> deviceGuids) {
+    @Override 
+    public void schedulePoll(EventRestoreSummary summary, Minutes minutes, Map<String, List<String>> jobGuids, List<String> allDevicesGuids)
+    {
         if (CollectionUtils.isEmpty(jobGuids)) {
             return;
         }
-        log.info(summary.getLogSummary() + "POLL scheduling in {} minutes job guids{}:", pollInMinutes,
-                jobGuids);
+        log.info(summary.getLogSummary() + "POLL scheduling in {} minutes job guids{}:", EatonCloudJobSettingsHelper.pollInMinutes,
+                jobGuids.keySet());
 
         executor.schedule(() -> {
-            poll(summary, jobGuids, deviceGuids);
-        }, pollInMinutes.getMinutes(), TimeUnit.MINUTES);
+            poll(summary, jobGuids, allDevicesGuids);
+        }, EatonCloudJobSettingsHelper.pollInMinutes.getMinutes(), TimeUnit.MINUTES);
     }
     
-    private void poll(EventRestoreSummary summary, List<String> jobGuids, List<String> deviceGuids) {
+    private void poll(EventRestoreSummary summary, Map<String, List<String>> jobGuids, List<String> deviceGuids) {
         Map<String, Integer> guidsToDeviceIds = deviceDao.getDeviceIds(deviceGuids);
         List<String> successes = new ArrayList<>();
-        List<String> failures = new ArrayList<>();
+
+        
+        //jobs failed to create
+        List<String> unknowns = new ArrayList<>(deviceGuids);
         try {
-            jobGuids.forEach(jobGuid -> {
+            jobGuids.forEach((jobGuid, devicesPerJob) -> {
                 try {
-                    log.info(summary.getLogSummary(jobGuid) + "POLL");
                     EatonCloudJobStatusResponseV1 response = eatonCloudCommunicationService.getJobStatus(jobGuid);
                     log.info(summary.getLogSummary(jobGuid) + "POLL successes:{} failures:{}",
                             response.getSuccesses() == null ? 0 : response.getSuccesses().size(),
                             response.getFailures() == null ? 0 : response.getFailures().size());
-                    successes.addAll(processSuccesses(summary, jobGuid, response, guidsToDeviceIds));
-                    failures.addAll(processFailure(summary, jobGuid, response, guidsToDeviceIds));
+                    List<String> jobSuccesses = processSuccesses(summary, jobGuid, response, guidsToDeviceIds);
+                    List<String> jobFailures = processFailure(summary, jobGuid, response, guidsToDeviceIds);
+
+                    successes.addAll(jobSuccesses);
+  
+                    unknowns.removeAll(devicesPerJob);
+                    
+                    devicesPerJob.removeAll(jobSuccesses);
+                    devicesPerJob.removeAll(jobFailures);
+                    
+                    if(!devicesPerJob.isEmpty()) {
+                        log.info(summary.getLogSummary() + "POLL no response recieved for {} devices. {}", devicesPerJob.size(),
+                                devicesPerJob);
+                        processError(summary, guidsToDeviceIds, jobGuid, devicesPerJob, EatonCloudError.NO_RESPONSE_FROM_DEVICE);
+                    }
                 } catch (EatonCloudCommunicationExceptionV1 e) {
                     log.error(summary.getLogSummary(jobGuid) + "POLL error polling devices job", e);
                 }
@@ -71,18 +87,23 @@ public class EatonCloudJobRestorePollServiceImpl extends EatonCloudJobPollServic
                     summary.getCommand().getGroupId(), deviceGuids.size(), deviceGuids.size() - successes.size(),
                     EatonCloudJobControlType.RESTORE, summary.getLogSummary());
             
-            deviceGuids.removeIf(guid -> successes.contains(guid) || failures.contains(guid));
-            if(!deviceGuids.isEmpty()) {
-                log.info(summary.getLogSummary() + "POLL no response recieved for {} devices. {}", deviceGuids.size(),
-                        deviceGuids);
-                deviceGuids
-                        .forEach(guid -> eatonCloudJobResponseProcessor.processError(summary,
-                                guidsToDeviceIds.get(guid), guid, null,
-                                EatonCloudError.NO_RESPONSE_FROM_DEVICE.getCode())); 
+            if (!unknowns.isEmpty()) {
+                log.info(summary.getLogSummary() + "POLL no response recieved for {} devices. {}", unknowns.size(),
+                        unknowns);
+                processError(summary, guidsToDeviceIds, null, unknowns, EatonCloudError.JOB_CREATION_FAILED);
             }
         } catch (Exception e) {
             log.error("Error polling", e);
         }
+    }
+
+    private void processError(EventRestoreSummary summary, Map<String, Integer> guidsToDeviceIds, String jobGuid,
+            List<String> devicesPerJob, EatonCloudError error) {
+        devicesPerJob.forEach(deviceGuid -> {
+            var deviceId = guidsToDeviceIds.get(deviceGuid);
+            var noResponseCode = EatonCloudError.NO_RESPONSE_FROM_DEVICE.getCode();
+            eatonCloudJobResponseProcessor.processError(summary, deviceId, deviceGuid, jobGuid, noResponseCode);
+        });
     }
 
     private List<String> processFailure(EventRestoreSummary summary, String jobGuid, EatonCloudJobStatusResponseV1 response,

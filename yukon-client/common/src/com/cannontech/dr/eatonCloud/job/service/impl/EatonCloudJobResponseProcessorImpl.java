@@ -69,13 +69,12 @@ public class EatonCloudJobResponseProcessorImpl implements EatonCloudJobResponse
     }
     
     @Override
-    public void processSuccess(EventSummary summary, Integer deviceId, String guid, String jobGuid, int currentTry,
-            Instant jobCreationTime) {
+    public void processSuccess(EventSummary summary, Integer deviceId, String guid, String jobGuid, int currentTry) {
         String deviceName = dbCache.getAllPaosMap().get(deviceId).getPaoName();
         LMEatonCloudScheduledCycleCommand command = summary.getCommand();
         recentEventParticipationDao.updateDeviceControlEvent(String.valueOf(summary.getEventId()), deviceId,
                 ControlEventDeviceStatus.SUCCESS_RECEIVED, new Instant(),
-                null, currentTry == 1 ? null : jobCreationTime);
+                null, currentTry == 1 ? null : new Instant());
 
         log.debug(summary.getLogSummary(jobGuid, false) + "Try:{} Successful shed device id:{} guid:{} name:{}",
                 currentTry, deviceId, guid, deviceName);

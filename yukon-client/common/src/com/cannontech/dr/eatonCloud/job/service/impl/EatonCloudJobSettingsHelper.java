@@ -12,12 +12,12 @@ public class EatonCloudJobSettingsHelper {
     
     public static final Minutes firstRetryAfterPollMinutes = Minutes.TWO;
     
-    public static int getReadTime(EventSummary summary) {
+    public static Minutes getReadTime(EventSummary summary) {
         /*int readTimeFromNowInMinutes = summary.getCommand().getDutyCyclePeriod() == null ? 5 : IntMath.divide(
                 summary.getCommand().getDutyCyclePeriod() / 60,
                 2, RoundingMode.CEILING);
         return readTimeFromNowInMinutes;*/
-        return 2;
+        return Minutes.minutes(2);
     }
     
 }

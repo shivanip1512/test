@@ -7,9 +7,9 @@ import com.cannontech.dr.eatonCloud.service.EatonCloudSendControlService.Command
 import com.cannontech.loadcontrol.messages.LMEatonCloudScheduledCycleCommand;
 import com.cannontech.loadcontrol.messages.LMEatonCloudStopCommand;
 
-public class ShedParamHeper {
+public class ControlParamHeper {
     
-    private ShedParamHeper() {
+    private ControlParamHeper() {
 
     }
     

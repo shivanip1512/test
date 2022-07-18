@@ -60,7 +60,7 @@ public final class EventSummary {
         // If it is a 4 hour control with a 30 minute period, it would have a cycle count of 8.
         // The resend service should only attempt to send to failed devices for the first 4 cycles, or 2 hours.
 
-        Map<String, Object> params = ShedParamHeper.getShedParams(command, eventId);
+        Map<String, Object> params = ControlParamHeper.getShedParams(command, eventId);
         period = (Integer) params.get(CommandParam.CYCLE_PERIOD.getParamName());
         numberOfTimesToRetry = IntMath.divide((Integer) params.get(CommandParam.CYCLE_COUNT.getParamName()), 2,
                 RoundingMode.CEILING);

@@ -1,6 +1,7 @@
 package com.cannontech.dr.eatonCloud.job.service;
 
 import java.util.List;
+import java.util.Map;
 
 import org.joda.time.Minutes;
 
@@ -13,5 +14,5 @@ public interface EatonCloudJobRestorePollService {
      * 
      * @param minutes      - schedule in X minutes from now
      */
-    void schedulePoll(EventRestoreSummary summary, Minutes minutes, List<String> jobGuids, List<String> devicesGuids);
+    void schedulePoll(EventRestoreSummary summary, Minutes minutes, Map<String, List<String>> jobGuids, List<String> allDevicesGuids);
 }

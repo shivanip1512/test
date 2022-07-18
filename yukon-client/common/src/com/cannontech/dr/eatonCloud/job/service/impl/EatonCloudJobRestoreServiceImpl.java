@@ -1,6 +1,7 @@
 package com.cannontech.dr.eatonCloud.job.service.impl;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -69,15 +70,15 @@ public class EatonCloudJobRestoreServiceImpl extends EatonCloudJobHelperService 
      */
     private void createJobs(Set<Integer> devices, EventRestoreSummary summary) {
         Map<Integer, String> guids = deviceDao.getGuids(devices);
-        Map<String, Object> params = ShedParamHeper.getRestoreParams(summary.getCommand(), summary.getEventId());
+        Map<String, Object> params = ControlParamHeper.getRestoreParams(summary.getCommand(), summary.getEventId());
         Iterable<EatonCloudJobRequestV1> requests = getRequests(guids.values(), params);
-        List<String> jobGuids = new ArrayList<>();
+        Map<String, List<String>> jobGuids = new HashMap<>();
         List<String> devicesGuids = new ArrayList<>();
         requests.forEach(request -> {
             devicesGuids.addAll(request.getDeviceGuids());
             String jobGuid = startJob(guids, summary, devices, request);
             if (jobGuid != null) {
-                jobGuids.add(jobGuid);
+                jobGuids.put(jobGuid, request.getDeviceGuids());
             }
         });
         if (!jobGuids.isEmpty()) {

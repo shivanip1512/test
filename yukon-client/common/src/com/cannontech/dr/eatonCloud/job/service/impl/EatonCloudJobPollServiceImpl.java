@@ -152,7 +152,7 @@ public class EatonCloudJobPollServiceImpl extends EatonCloudJobPollServiceHelper
             successes.addAll(response.getSuccesses());
             response.getSuccesses()
                     .forEach(success -> eatonCloudJobResponseProcessor.processSuccess(summary,
-                            guidsToDeviceIds.get(success), success, jobGuid, currentTry, jobCreationTime));
+                            guidsToDeviceIds.get(success), success, jobGuid, currentTry));
         }
     }
 

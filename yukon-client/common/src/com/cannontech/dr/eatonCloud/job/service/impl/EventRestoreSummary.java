@@ -10,8 +10,8 @@ import com.cannontech.loadcontrol.messages.LMEatonCloudStopCommand;
 
 public final class EventRestoreSummary {    
     private LMEatonCloudStopCommand command;
-    private Integer eventId;
-    private Integer programId;
+    private int eventId;
+    private int programId;
 
     public String getLogSummary() {
         return "[RESTORE id:" + eventId + "] relay:" + command.getVirtualRelayId() + " ";
@@ -23,11 +23,11 @@ public final class EventRestoreSummary {
                 + " ";
     }
 
-    EventRestoreSummary(Integer eventId, int programId, LMEatonCloudStopCommand command, Logger log) {
+    EventRestoreSummary(int eventId, int programId, LMEatonCloudStopCommand command, Logger log) {
         this.eventId = eventId;
         this.command = command;
         this.programId = programId;
-        Map<String, Object> params = ShedParamHeper.getRestoreParams(command, eventId);
+        Map<String, Object> params = ControlParamHeper.getRestoreParams(command, eventId);
       
         log.info(
                 "[RESTORE id:{}] Sending restore params:{} command:{}",
@@ -39,11 +39,11 @@ public final class EventRestoreSummary {
         return ToStringBuilder.reflectionToString(this, ToStringStyle.SHORT_PREFIX_STYLE);
     }
 
-    public Integer getProgramId() {
+    public int getProgramId() {
         return programId;
     }
 
-    public Integer getEventId() {
+    public int getEventId() {
         return eventId;
     }
 

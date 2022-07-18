@@ -3,13 +3,9 @@ package com.cannontech.dr.eatonCloud.job.service.impl;
 import java.util.Collection;
 import java.util.List;
 import java.util.Map;
-import java.util.Set;
-import java.util.stream.Collectors;
-import java.util.stream.StreamSupport;
 
 import com.cannontech.dr.eatonCloud.model.v1.EatonCloudJobRequestV1;
 import com.google.common.collect.Iterables;
-import com.google.common.collect.Lists;
 
 public abstract class EatonCloudJobHelperService {
     

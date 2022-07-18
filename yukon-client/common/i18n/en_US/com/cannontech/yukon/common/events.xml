@@ -1054,7 +1054,6 @@
     <entry key="yukon.common.events.dr.eatoncloud.sendRestoreFailed.4">External Event Id</entry>
     <entry key="yukon.common.events.dr.eatoncloud.sendRestoreFailed.7">Relay</entry>
     
-    
     <entry key="yukon.common.events.dr.eatoncloud.sendShed">Eaton Cloud shed command was sent with the following settings: Device: {1}, GUID: {2}, Duty Cycle Percent: {7}, Duty Cycle Period: {8}, Criticality: {9}, Relay: {10}, External Event Id: {3}, Try: {4}</entry>
     <entry key="yukon.common.events.dr.eatoncloud.sendShed.2">GUID</entry>
     <entry key="yukon.common.events.dr.eatoncloud.sendShed.3">External Event Id</entry>

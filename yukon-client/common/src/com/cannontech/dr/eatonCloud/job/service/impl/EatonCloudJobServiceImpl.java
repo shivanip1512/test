@@ -160,7 +160,7 @@ public class EatonCloudJobServiceImpl extends EatonCloudJobHelperService impleme
      */
     private Pair<Instant, List<String>> createJobs(Set<Integer> devices, EventSummary summary) {
         Map<Integer, String> guids = deviceDao.getGuids(devices);
-        Map<String, Object> params = ShedParamHeper.getShedParams(summary.getCommand(), summary.getEventId());
+        Map<String, Object> params = ControlParamHeper.getShedParams(summary.getCommand(), summary.getEventId());
         Iterable<EatonCloudJobRequestV1> requests = getRequests(guids.values(), params);
         Instant jobCreationTime =  Instant.now();
 

@@ -20,8 +20,7 @@ public interface EatonCloudJobResponseProcessor {
     /**
      * Marks devices as SUCCESS_RECEIVED, creates event log
      */
-    void processSuccess(EventSummary summary, Integer deviceId, String guid, String jobGuid, int currentTry,
-            Instant jobCreationTime);
+    void processSuccess(EventSummary summary, Integer deviceId, String guid, String jobGuid, int currentTry);
    
     /**
      * Creates event log entry for successful restore
