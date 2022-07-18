@@ -1,18 +1,19 @@
 package com.cannontech.web.api.terminal.service.impl;
 
-import java.util.ArrayList;
 import java.util.List;
-import java.util.stream.Collectors;
 
-import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.transaction.annotation.Transactional;
 
 import com.cannontech.common.device.model.SimpleDevice;
+import com.cannontech.common.device.terminal.dao.PagingTerminalDao;
+import com.cannontech.common.device.terminal.dao.PagingTerminalDao.SortBy;
 import com.cannontech.common.device.terminal.model.TerminalBase;
 import com.cannontech.common.device.terminal.model.TerminalCopy;
 import com.cannontech.common.exception.DeletionFailureException;
+import com.cannontech.common.model.Direction;
+import com.cannontech.common.model.PaginatedResponse;
 import com.cannontech.common.pao.PaoType;
 import com.cannontech.common.pao.service.impl.PaoCreationHelper;
 import com.cannontech.common.util.CtiUtilities;
@@ -40,6 +41,7 @@ public class PagingTerminalServiceImpl implements PagingTerminalService {
     @Autowired private IDatabaseCache cache;
     @Autowired private PointDao pointDao;
     @Autowired private DbChangeManager dbChangeManager;
+    @Autowired private PagingTerminalDao pagingTerminalDao;
 
     @SuppressWarnings({ "unchecked", "rawtypes" })
     @Override
@@ -123,23 +125,9 @@ public class PagingTerminalServiceImpl implements PagingTerminalService {
 
     @SuppressWarnings("rawtypes")
     @Override
-    public List<TerminalBase> retrieveAll() {
-        List<LiteYukonPAObject> liteObjectList = cache.getAllPaosMap().values().stream()
-                .filter(pao -> pao.getPaoType() == PaoType.SNPP_TERMINAL || pao.getPaoType() == PaoType.TAPTERMINAL
-                        || pao.getPaoType() == PaoType.TNPP_TERMINAL || pao.getPaoType() == PaoType.WCTP_TERMINAL)
-                .collect(Collectors.toList());
-        List<TerminalBase> terminalList = new ArrayList<TerminalBase>();
-        if (CollectionUtils.isNotEmpty(liteObjectList)) {
-            liteObjectList.forEach(liteObject -> {
-                IEDBase iedBase = (IEDBase) dbPersistentDao.retrieveDBPersistent(liteObject);
-                TerminalBase terminalBase = new TerminalBase<IEDBase>(iedBase.getPAObjectID(), iedBase.getPAOName(),
-                        iedBase.getPaoType(),
-                        !iedBase.isDisabled());
-                terminalList.add(terminalBase);
-            });
-
-        }
-        return terminalList;
+    public PaginatedResponse<TerminalBase> retrieveAll(SortBy sortBy, Direction direction, int page, int itemsPerPage, String terminalName) {
+        List<TerminalBase> terminals = pagingTerminalDao.getAllTerminals(sortBy, direction, terminalName);
+        return new PaginatedResponse<TerminalBase>(terminals, page, itemsPerPage);
     }
 
     @SuppressWarnings({ "unchecked", "rawtypes" })

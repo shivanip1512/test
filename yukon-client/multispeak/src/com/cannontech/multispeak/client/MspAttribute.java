@@ -75,7 +75,7 @@ public enum MspAttribute implements DisplayableEnum {
 
     @Override
     public String getFormatKey() {
-        return "yukon.common.multispeakAttributesFieldEnum.." + name();
+        return "yukon.common.multispeakAttributesFieldEnum." + name();
     }
 
 }

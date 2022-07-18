@@ -12,10 +12,11 @@
                                   path="commChannel.id"
                                   defaultItemLabel="${selectLbl}"
                                   itemLabel="name"
-                                  itemValue="id"/>
+                                  itemValue="id"
+                                  inputClass="w300"/>
          </cti:displayForPageEditModes>
          <cti:displayForPageEditModes modes="VIEW">
-            ${fn:escapeXml(signalTransmitter.commChannel.name)}
+            <div class="w300 wrbw dib">${fn:escapeXml(signalTransmitter.commChannel.name)}</div>
          </cti:displayForPageEditModes>
     </tags:nameValue2>
 </cti:msgScope>

@@ -5174,18 +5174,18 @@ Network Manager :
     jira : none
     notes : 
 
-  - filename : libthrift-0.13.0.jar
+  - filename : libthrift-0.16.0.jar
     yukon group : Thrift
     project : Thrift
-    version : 0.13.0
+    version : 0.16.0
     project URL : "http://thrift.apache.org/"
     license : Apache 2.0
     license URLs : "https://opensource.org/licenses/Apache-2.0"
-    maven URL : "https://mvnrepository.com/artifact/org.apache.thrift/libthrift/0.13.0"
-    md5 : 31132a57eacc3e7cd2b7af626b5f1ff9
-    sha1 : 0e5af3b6dc164eb2c699b70bf67a0babef507faf
-    updated : 2020-07-02
-    jira : NM-705
+    maven URL : "https://mvnrepository.com/artifact/org.apache.thrift/libthrift/0.16.0"
+    md5 : 19226bcfae19557ec080e098f87a1340
+    sha1 : 995b1788bf9d954a77a24db5619a065ed1a455e9
+    updated : 2022-07-04
+    jira : NM-2291
     notes : Used for communication between Yukon and NM through E2E channel
 
   - filename : liquidlnf.jar
@@ -6477,16 +6477,16 @@ C++ :
     
   - project : Apache Thrift 
     path : THRIFT
-    version : 0.13.0
+    version : 0.16.0
     project URL : "http://thrift.apache.org/"
     license : Apache 2.0
     license URLs : "https://www.apache.org/licenses/LICENSE-2.0.html"
-    md5 : 1e75ae999713e213cc12db3c46fc3155
-    sha1 : fdae4e35f62e9f1dbccb7a1a35ddf9becaac2b21
-    fileCount : 94
-    totalSize : 91620695
-    updated : 2020-01-06  
-    jira : YUK-21212
+    md5 : c07144d96fa7a312f62fd74ef3cb0945
+    sha1 : 2002aa88e4129e24d31bdabef7696e950eb51d68
+    fileCount : 163
+    totalSize : 71557393
+    updated : 2022-06-23 
+    jira : YUK-25739
     notes : 
     
   - project : Apache Xerces-C++ XML Parser 
