@@ -1,6 +1,7 @@
 package com.cannontech.web.stars.signalTransmitter;
 
 import java.io.IOException;
+import java.net.URISyntaxException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -11,6 +12,7 @@ import java.util.stream.Stream;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import org.apache.http.client.utils.URIBuilder;
 import org.apache.logging.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpMethod;
@@ -46,7 +48,12 @@ import com.cannontech.common.device.terminal.model.WCTPTerminal;
 import com.cannontech.common.dr.setup.LMDelete;
 import com.cannontech.common.dr.setup.LMDto;
 import com.cannontech.common.i18n.MessageSourceAccessor;
+import com.cannontech.common.model.DefaultItemsPerPage;
+import com.cannontech.common.model.DefaultSort;
+import com.cannontech.common.model.Direction;
 import com.cannontech.common.model.PaginatedResponse;
+import com.cannontech.common.model.PagingParameters;
+import com.cannontech.common.model.SortingParameters;
 import com.cannontech.common.pao.PaoType;
 import com.cannontech.common.util.JsonUtils;
 import com.cannontech.core.roleproperties.HierarchyPermissionLevel;
@@ -87,11 +94,15 @@ public class SignalTransmitterController {
             .collect(Collectors.toList());
 
     @GetMapping("list")
-    public String list(ModelMap model, YukonUserContext userContext, FlashScope flash, HttpServletRequest request) {
+    public String list(ModelMap model, @DefaultSort(dir = Direction.asc, sort = "name") SortingParameters sorting, 
+            @DefaultItemsPerPage(value=250) PagingParameters paging,
+            String name, YukonUserContext userContext, FlashScope flash, HttpServletRequest request) throws URISyntaxException {
         ResponseEntity<? extends Object> response = null;
         try {
             String url = helper.findWebServerUrl(request, userContext, ApiURL.pagingTerminalUrl);
-            response = apiRequestHelper.callAPIForParameterizedTypeObject(userContext, request, url, HttpMethod.GET,
+            URIBuilder ub = new URIBuilder(url);
+            ub.addParameter("name", name);
+            response = apiRequestHelper.callAPIForParameterizedTypeObject(userContext, request, ub.toString(), HttpMethod.GET,
                     TerminalBase.class);
         } catch (ApiCommunicationException e) {
             log.error(e.getMessage());

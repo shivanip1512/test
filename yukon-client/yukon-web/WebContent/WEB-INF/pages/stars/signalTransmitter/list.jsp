@@ -15,6 +15,16 @@
     </div>
 
     <hr/>
+    <div class="filter-section">
+            <form action="<cti:url var="url" value="/device/signalTransmitter/list"/>" method="get">
+                <i:inline key="yukon.common.filterBy"/>
+                <input type="hidden" name="itemsPerPage" value="${paging.itemsPerPage}">
+                <cti:msg2 var="namePlaceholder" key=".name"/>
+                <input type="text" name="name" size="20" value="${fn:escapeXml(name)}" placeholder="${namePlaceholder}">
+                <cti:button nameKey="filter" type="submit" classes="action primary fn vab"/>
+            </form>
+            <hr/>
+    </div>
     
     <div class="js-filtered-results-container">
         <table class="compact-results-table">
