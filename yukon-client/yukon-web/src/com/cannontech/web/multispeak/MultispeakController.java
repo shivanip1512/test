@@ -2,10 +2,12 @@ package com.cannontech.web.multispeak;
 
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Comparator;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 import javax.annotation.PostConstruct;
 import javax.servlet.http.HttpServletRequest;
@@ -200,7 +202,7 @@ public class MultispeakController {
 
     @RequestMapping("create")
     public String create(ModelMap model) {
-
+        
         model.addAttribute("mode", PageEditMode.CREATE);
         addSystemModelAndViewObjects(model, null, true, null, true);
         return "setup/vendor_setup.jsp";
@@ -578,7 +580,7 @@ public class MultispeakController {
         if (modelMultispeak instanceof MultispeakModel) {
             multispeak = (MultispeakModel) modelMultispeak;
         }
-
+        
         if (multispeak == null) {
             multispeak = new MultispeakModel();
         }
@@ -592,6 +594,9 @@ public class MultispeakController {
         map.addAttribute("mspVendorList", multispeakDao.getMultispeakVendors(ignoreCannon));
         map.addAttribute("mspCISVendorList", multispeakDao.getMultispeakCISVendors());
         map.addAttribute("possibleInterfaces", MultispeakDefines.getPossibleInterfaces(mspVendor));
+        map.addAttribute("allAttributeList", List.of(MspAttribute.values()).stream()
+                                                                           .sorted(Comparator.comparing(MspAttribute::toString, String.CASE_INSENSITIVE_ORDER))
+                                                                           .collect(Collectors.toList()));
 
         if (mspVendor != null) {
             map.addAttribute("mspVendorId", mspVendor.getVendorID());
