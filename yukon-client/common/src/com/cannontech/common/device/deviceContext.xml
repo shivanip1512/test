@@ -259,4 +259,6 @@
     <bean class="com.cannontech.common.device.programming.service.impl.MeterProgramValidationServiceImpl"/>
     
     <bean class="com.cannontech.common.device.port.dao.impl.PortDaoImpl"/>
+    
+    <bean class="com.cannontech.common.device.terminal.dao.impl.PagingTerminalDaoImpl"/>
 </beans>

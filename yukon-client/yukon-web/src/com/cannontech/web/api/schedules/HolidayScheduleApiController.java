@@ -1,3 +1,4 @@
+/*
 package com.cannontech.web.api.schedules;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -21,3 +22,4 @@ public class HolidayScheduleApiController {
         return new ResponseEntity<>(holidayScheduleService.create(holidaySchedule), HttpStatus.CREATED);
     }
 }
+*/
