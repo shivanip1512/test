@@ -150,6 +150,9 @@ yukon.admin.multispeak = (function() {
                   width: "200px"
                });
             }
+            if (document.querySelector('[id^="mspVendor.attributes.errors"]') !== null) {
+               $('#attributes').val([]).trigger('chosen:updated');
+            }
              
             if (_initialized)
                 return;

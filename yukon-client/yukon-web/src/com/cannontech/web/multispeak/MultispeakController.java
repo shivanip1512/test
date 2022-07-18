@@ -2,10 +2,12 @@ package com.cannontech.web.multispeak;
 
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Comparator;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 import javax.annotation.PostConstruct;
 import javax.servlet.http.HttpServletRequest;
@@ -53,7 +55,6 @@ import com.cannontech.web.common.flashScope.FlashScope;
 import com.cannontech.web.editor.MultispeakModel;
 import com.cannontech.web.multispeak.validators.MultispeakValidator;
 import com.cannontech.web.security.annotation.CheckRoleProperty;
-import com.google.common.collect.Lists;
 
 @RequestMapping("/setup/*")
 @Controller
@@ -593,7 +594,9 @@ public class MultispeakController {
         map.addAttribute("mspVendorList", multispeakDao.getMultispeakVendors(ignoreCannon));
         map.addAttribute("mspCISVendorList", multispeakDao.getMultispeakCISVendors());
         map.addAttribute("possibleInterfaces", MultispeakDefines.getPossibleInterfaces(mspVendor));
-        map.addAttribute("allAttributeList", MspAttribute.values());
+        map.addAttribute("allAttributeList", List.of(MspAttribute.values()).stream()
+                                                                           .sorted(Comparator.comparing(MspAttribute::toString, String.CASE_INSENSITIVE_ORDER))
+                                                                           .collect(Collectors.toList()));
 
         if (mspVendor != null) {
             map.addAttribute("mspVendorId", mspVendor.getVendorID());
