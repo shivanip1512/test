@@ -13,7 +13,7 @@
     <APR>$(CPP_LIBRARIES)\apache\apr\1.7.0-vc142-1</APR>
     <APR_UTIL>$(CPP_LIBRARIES)\apache\apr-util\1.6.1-vc141</APR_UTIL>
     <APR_ICONV>$(CPP_LIBRARIES)\apache\apr-iconv\1.2.2-vc141</APR_ICONV>
-    <THRIFT>$(CPP_LIBRARIES)\apache\thrift\0.13.0</THRIFT>
+    <THRIFT>$(CPP_LIBRARIES)\apache\thrift\0.16.0</THRIFT>
     <JSON>$(CPP_LIBRARIES)\nlohmann\3.1.2</JSON>
     <LOG4CXX>$(CPP_LIBRARIES)\apache\log4cxx\0.10.0-vc142-1</LOG4CXX>
     <OPENSSL>$(CPP_LIBRARIES)\openssl\1.1.1m-vc142-1</OPENSSL>

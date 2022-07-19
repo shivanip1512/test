@@ -121,8 +121,6 @@ public class ApiRequestHelper {
         });
         paramTypeRefMap.put(YukonLogger.class, new ParameterizedTypeReference<List<YukonLogger>>() {
         });
-        paramTypeRefMap.put(TerminalBase.class, new ParameterizedTypeReference<List<TerminalBase>>() {
-        });
         paramTypeRefMap.put(Object.class, new ParameterizedTypeReference<List<Object>>() {
         });
     }
@@ -153,6 +151,8 @@ public class ApiRequestHelper {
         paramTypeObjectRefMap.put(NotificationGroup.class, new ParameterizedTypeReference<PaginatedResponse<NotificationGroup>>() {
         });
         paramTypeObjectRefMap.put(DeviceBaseModel.class, new ParameterizedTypeReference<SearchResults<DeviceBaseModel>>() {});
+        
+        paramTypeObjectRefMap.put(TerminalBase.class, new ParameterizedTypeReference<PaginatedResponse<TerminalBase>>() {});
     }
 
     /**

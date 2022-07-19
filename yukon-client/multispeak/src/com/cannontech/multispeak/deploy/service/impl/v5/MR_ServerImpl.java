@@ -120,8 +120,13 @@ public class MR_ServerImpl implements MR_Server {
         MultispeakVendor vendor = multispeakFuncs.getMultispeakVendorFromHeader();
         multispeakEventLogService.methodInvoked("GetMeterReadingsByDate", vendor.getCompanyName());
 
-        MspMeterReadReturnList mspMeterReadReturnList = mspRawPointHistoryDao.retrieveMeterReads(ReadBy.NONE, null,
-            startDate.getTime(), endDate.getTime(), lastReceived, vendor.getMaxReturnRecords());
+        MspMeterReadReturnList mspMeterReadReturnList = mspRawPointHistoryDao.retrieveMeterReads(ReadBy.NONE, 
+                                                                                                 null,
+                                                                                                 startDate.getTime(),
+                                                                                                 endDate.getTime(),
+                                                                                                 lastReceived,
+                                                                                                 vendor.getMaxReturnRecords(),
+                                                                                                 vendor.getAttributes());
 
         multispeakFuncs.updateResponseHeader(mspMeterReadReturnList);
         List<MeterReading> meterReads = mspMeterReadReturnList.getMeterReads();
@@ -147,9 +152,14 @@ public class MR_ServerImpl implements MR_Server {
                 meterIDs.stream().map(meterID -> meterID.getMeterName()).collect(Collectors.toList());
 
             // Retrieve meter reads for all meters.
-            mspMeterReadReturnList =
-                mspRawPointHistoryDao.retrieveMeterReads(ReadBy.METER_NUMBERS, meterNbrList, startDate.getTime(),
-                    endDate.getTime(), null, vendor.getMaxReturnRecords());
+            mspMeterReadReturnList = mspRawPointHistoryDao.retrieveMeterReads(ReadBy.METER_NUMBERS,
+                                                                              meterNbrList,
+                                                                              startDate.getTime(),
+                                                                              endDate.getTime(),
+                                                                              null,
+                                                                              vendor.getMaxReturnRecords(),
+                                                                              vendor.getAttributes());
+            
             meterReads.addAll(mspMeterReadReturnList.getMeterReads());
             log.info("Returning " + mspMeterReadReturnList.getMeterReads().size() + "Readings By Meter Number/s"
                 + meterNbrList);
@@ -186,9 +196,11 @@ public class MR_ServerImpl implements MR_Server {
         MultispeakVendor vendor = multispeakFuncs.getMultispeakVendorFromHeader();
         multispeakEventLogService.methodInvoked("GetLatestMeterReadings", vendor.getCompanyName());
 
-        MspMeterReadReturnList mspMeterReadReturnList =
-            mspRawPointHistoryDao.retrieveLatestMeterReads(ReadBy.NONE, null, lastReceived,
-                vendor.getMaxReturnRecords());
+        MspMeterReadReturnList mspMeterReadReturnList = mspRawPointHistoryDao.retrieveLatestMeterReads(ReadBy.NONE,
+                                                                                                       null,
+                                                                                                       lastReceived,
+                                                                                                       vendor.getMaxReturnRecords(),
+                                                                                                       vendor.getAttributes());
 
         multispeakFuncs.updateResponseHeader(mspMeterReadReturnList);
 
@@ -214,9 +226,11 @@ public class MR_ServerImpl implements MR_Server {
             List<String> meterNbrList =
                 meterIDs.stream().map(meterID -> meterID.getMeterName()).collect(Collectors.toList());
 
-            mspMeterReadReturnList =
-                    mspRawPointHistoryDao.retrieveLatestMeterReads(ReadBy.METER_NUMBERS, meterNbrList, null,
-                        vendor.getMaxReturnRecords());
+            mspMeterReadReturnList = mspRawPointHistoryDao.retrieveLatestMeterReads(ReadBy.METER_NUMBERS,
+                                                                                    meterNbrList,
+                                                                                    null,
+                                                                                    vendor.getMaxReturnRecords(),
+                                                                                    vendor.getAttributes());
 
             meterReadings = mspMeterReadReturnList.getMeterReads();
             multispeakEventLogService.returnObject("MeterRead", meterNbrList.size(), "GetLatestMeterReadingsByMeterIDs",

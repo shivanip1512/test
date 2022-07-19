@@ -101,7 +101,7 @@
     <entry key="yukon.web.modules.dashboard.widgetType.DATA_COLLECTION.name">Data Collection</entry>
     <entry key="yukon.web.modules.dashboard.widgetType.DATA_COLLECTION.description">Displays data collection information for a selected device group.</entry>  
     <entry key="yukon.web.modules.dashboard.widgetType.INFRASTRUCTURE_WARNINGS.name">Infrastructure Warnings</entry>
-    <entry key="yukon.web.modules.dashboard.widgetType.INFRASTRUCTURE_WARNINGS.description">Displays warnings for Gateways, Relays, CCUs and Repeaters.</entry>
+    <entry key="yukon.web.modules.dashboard.widgetType.INFRASTRUCTURE_WARNINGS.description">Displays warnings for Gateways, Relays, IPLink Meters, CCUs and Repeaters.</entry>
     <entry key="yukon.web.modules.dashboard.widgetType.PAO_NOTES_SEARCH.name">Notes Search</entry>
     <entry key="yukon.web.modules.dashboard.widgetType.PAO_NOTES_SEARCH.description">Displays all Notes matching the filter values selected.</entry>
     <entry key="yukon.web.modules.dashboard.widgetType.PORTER_QUEUE_COUNTS.name">Comm Channel Queue Counts</entry>

@@ -767,4 +767,12 @@
     <entry key="yukon.common.unitOfMeasure.THERMS">Therms</entry>
     <entry key="yukon.common.unitOfMeasure.DB">dB</entry>
     <entry key="yukon.common.unitOfMeasure.CCF">CCF</entry>
+    
+     <!-- Multispeak Attributes -->
+    <entry key="yukon.common.multispeakAttributesFieldEnum.PEAKDEMAND_USAGE">Peak Demand + Usage</entry>
+    <entry key="yukon.common.multispeakAttributesFieldEnum.POWERFACTOR">Power Factor</entry>
+    <entry key="yukon.common.multispeakAttributesFieldEnum.KVAR_KVARH">kVar + kVarH</entry>
+    <entry key="yukon.common.multispeakAttributesFieldEnum.RECEIVEDKWH">Received kWh</entry>
+    <entry key="yukon.common.multispeakAttributesFieldEnum.TOU">TOU</entry>   
+        
 </properties>

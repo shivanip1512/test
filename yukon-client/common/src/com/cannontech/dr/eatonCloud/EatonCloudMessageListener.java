@@ -15,6 +15,7 @@ import com.cannontech.common.config.ConfigurationSource;
 import com.cannontech.common.config.MasterConfigBoolean;
 import com.cannontech.database.data.lite.LiteYukonPAObject;
 import com.cannontech.database.incrementer.NextValueHelper;
+import com.cannontech.dr.eatonCloud.job.service.EatonCloudJobRestoreService;
 import com.cannontech.dr.eatonCloud.job.service.EatonCloudJobService;
 import com.cannontech.dr.eatonCloud.service.EatonCloudSendControlService;
 import com.cannontech.dr.recenteventparticipation.dao.RecentEventParticipationDao;
@@ -44,6 +45,7 @@ public class EatonCloudMessageListener {
     @Autowired private RecentEventParticipationDao recentEventParticipationDao;
     @Autowired private EatonCloudSendControlService eatonCloudSendControlService;
     @Autowired private EatonCloudJobService eatonCloudJobService;
+    @Autowired private EatonCloudJobRestoreService eatonCloudJobRestoreService;
     @Autowired private ConfigurationSource configurationSource;
     
     public void handleCyclingControlMessage(LMEatonCloudScheduledCycleCommand command) {
@@ -56,7 +58,7 @@ public class EatonCloudMessageListener {
             return;  
         }   
 
-        Integer eventId = nextValueHelper.getNextValue("EatonCloudEventIdIncrementor");
+        int eventId = nextValueHelper.getNextValue("EatonCloudEventIdIncrementor");
 
         List<ProgramLoadGroup> programsByLMGroupId = applianceAndProgramDao.getProgramsByLMGroupId(command.getGroupId());
         int programId = programsByLMGroupId.get(0).getPaobjectId();
@@ -96,17 +98,19 @@ public class EatonCloudMessageListener {
             return;
         }
         
+        List<ProgramLoadGroup> programsByLMGroupId = applianceAndProgramDao.getProgramsByLMGroupId(command.getGroupId());
+        int programId = programsByLMGroupId.get(0).getPaobjectId();
         
-        if (configurationSource.getBoolean(MasterConfigBoolean.EATON_CLOUD_JOBS_TREND, false)) {
-            // not supported
-        } else {
-            // legacy
-            Integer eventId = recentEventParticipationDao.getExternalEventId(command.getGroupId());
-            if (eventId != null) {
+        Integer eventId = recentEventParticipationDao.getExternalEventId(command.getGroupId());
+        if (eventId != null) {
+            if (configurationSource.getBoolean(MasterConfigBoolean.EATON_CLOUD_JOBS_TREND, false)) {
+                eatonCloudJobRestoreService.createJobs(programId, devices, command, eventId);
+            } else {
+                // legacy
                 eatonCloudSendControlService.sendRestoreCommands(devices, command, eventId);
             }
         }
-        
+
         controlHistoryService.sendControlHistoryRestoreMessage(command.getGroupId(), Instant.now());
     }
     
