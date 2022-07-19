@@ -140,6 +140,7 @@
                 </c:choose>
                 
                 <c:if test="${showWifiConnection}"><tags:widget bean="wifiConnectionWidget"/></c:if>
+                <c:if test="${showCellularConnection}"><tags:widget bean="cellularConnectionWidget"/></c:if>
                 
                 <c:if test="${showRfMetadata}">
                     <cti:msg var="widgetHelpText" key="yukon.web.widgets.rfnDeviceMetadataWidget.helpText"/>
@@ -161,6 +162,10 @@
                     <div id="trendWidget">
                         <tags:widget bean="csrTrendWidget" tabularDataViewer="archivedDataReport" showHelpIcon="true"/>
                     </div>
+                </c:if>
+                <c:if test="${showInfrastructureWarnings}">
+                    <cti:msg2 var="warningsTitle" key="yukon.web.widgets.infrastructureWarningsWidget"/>
+                    <tags:widget bean="deviceInfrastructureWarningsWidget" title="${warningsTitle}"/>
                 </c:if>
                 <c:if test="${showDisconnect}">
                     <cti:url var="url" value="/widget/disconnectMeterWidget/helpInfo">

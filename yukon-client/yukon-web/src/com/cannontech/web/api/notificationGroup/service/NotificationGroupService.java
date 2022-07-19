@@ -1,7 +1,8 @@
 package com.cannontech.web.api.notificationGroup.service;
 
-import java.util.List;
-
+import com.cannontech.common.model.Direction;
+import com.cannontech.common.model.PaginatedResponse;
+import com.cannontech.core.dao.NotificationGroupDao.SortBy;
 import com.cannontech.web.notificationGroup.NotificationGroup;
 
 public interface NotificationGroupService {
@@ -24,6 +25,11 @@ public interface NotificationGroupService {
     /**
      * Retrieve all notification groups
      */
-    List<NotificationGroup> retrieveAll();
+    PaginatedResponse<NotificationGroup> retrieveAll(String name, SortBy sortBy, Direction direction, int page, int itemsPerPage);
+
+    /**
+     *Update a notification group 
+     */
+    NotificationGroup update(int id, NotificationGroup notificationGroup);
 
 }

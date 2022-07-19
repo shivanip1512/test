@@ -1,6 +1,7 @@
 package com.cannontech.multispeak.emulator;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Calendar;
 import java.util.GregorianCalendar;
 import java.util.List;
@@ -25,6 +26,7 @@ import com.cannontech.msp.beans.v3.PingURLResponse;
 import com.cannontech.msp.beans.v3.Strategy;
 import com.cannontech.msp.beans.v3.SubstationLoadControlStatus;
 import com.cannontech.msp.beans.v3.Uom;
+import com.cannontech.multispeak.client.MspAttribute;
 import com.cannontech.multispeak.client.MultispeakFuncs;
 import com.cannontech.multispeak.client.MultispeakVendor;
 import com.cannontech.multispeak.client.core.LMClient;
@@ -35,8 +37,9 @@ public class LM_ServerTest {
     private String endpointURL = "http://127.0.0.1:8088/mockLM_ServerSoap";
     private static LMClient port;
     private static ObjectFactory objectFactory;
+    List<MspAttribute> attributes = Arrays.asList(MspAttribute.KVAR_KVARH, MspAttribute.PEAKDEMAND_USAGE);
     private MultispeakVendor mspVendor = new MultispeakVendor(23213, "Cannon", "Yukon", "pwd", "sadsad", "", "", 100, 120, 12,
-        null, false);
+        null, false, attributes);
 
     public static void main(String[] args) {
         LM_ServerTest test = new LM_ServerTest();

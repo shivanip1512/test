@@ -52,8 +52,12 @@ public class PaoDetailUrlTag extends YukonTagSupport {
                 out.print("</a>");
             }
         } else {
-            getJspContext().setAttribute(var, getRequest().getContextPath() + urlForPaoDetailPage,
-                TagUtils.getScope(scope));
+            if (urlForPaoDetailPage == null) {
+                getJspContext().setAttribute(var, urlForPaoDetailPage, TagUtils.getScope(scope));
+            } else {
+                getJspContext().setAttribute(var, getRequest().getContextPath() + urlForPaoDetailPage,
+                                             TagUtils.getScope(scope));
+            }
         }
     }
     

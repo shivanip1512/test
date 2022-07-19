@@ -1,3 +1,4 @@
+/*
 package com.cannontech.common.schedules.model;
 
 import java.util.ArrayList;
@@ -73,3 +74,4 @@ public class SeasonSchedule implements DBPersistentConverter<com.cannontech.data
         }
     }
 }
+*/

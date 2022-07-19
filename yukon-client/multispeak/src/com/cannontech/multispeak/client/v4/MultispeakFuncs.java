@@ -46,18 +46,17 @@ import com.cannontech.msp.beans.v4.ArrayOfElectricMeter;
 import com.cannontech.msp.beans.v4.ArrayOfErrorObject;
 import com.cannontech.msp.beans.v4.ArrayOfGasMeter;
 import com.cannontech.msp.beans.v4.ArrayOfWaterMeter;
+import com.cannontech.msp.beans.v4.Customer;
 import com.cannontech.msp.beans.v4.ElectricMeter;
 import com.cannontech.msp.beans.v4.ErrorObject;
 import com.cannontech.msp.beans.v4.GasMeter;
 import com.cannontech.msp.beans.v4.Meters;
 import com.cannontech.msp.beans.v4.MspMeter;
 import com.cannontech.msp.beans.v4.ObjectFactory;
+import com.cannontech.msp.beans.v4.PhoneNumber;
 import com.cannontech.msp.beans.v4.PhoneType;
 import com.cannontech.msp.beans.v4.RCDState;
 import com.cannontech.msp.beans.v4.WaterMeter;
-import com.cannontech.msp.beans.v4.PhoneNumber;
-import com.cannontech.msp.beans.v4.PhoneType;
-import com.cannontech.msp.beans.v4.Customer;
 import com.cannontech.multispeak.client.MessageContextHolder;
 import com.cannontech.multispeak.client.MultiSpeakVersion;
 import com.cannontech.multispeak.client.MultispeakDefines;
@@ -470,7 +469,7 @@ public class MultispeakFuncs extends MultispeakFuncsBase {
             
             });
         }
-
         return addressList;
     }
+    
 }

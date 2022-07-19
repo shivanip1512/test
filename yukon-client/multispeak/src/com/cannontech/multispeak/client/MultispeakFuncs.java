@@ -11,7 +11,6 @@ import javax.xml.soap.SOAPMessage;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.logging.log4j.Logger;
-import com.cannontech.common.model.Address;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.ws.WebServiceMessage;
 import org.springframework.ws.context.MessageContext;
@@ -28,6 +27,7 @@ import com.cannontech.common.device.groups.editor.model.StoredDeviceGroup;
 import com.cannontech.common.device.groups.service.DeviceGroupService;
 import com.cannontech.common.exception.BadAuthenticationException;
 import com.cannontech.common.exception.PasswordExpiredException;
+import com.cannontech.common.model.Address;
 import com.cannontech.common.pao.YukonDevice;
 import com.cannontech.common.pao.definition.dao.PaoDefinitionDao;
 import com.cannontech.common.pao.definition.model.PaoTag;
@@ -461,4 +461,5 @@ public class MultispeakFuncs extends MultispeakFuncsBase {
     public MultiSpeakVersion version() {
         return MultiSpeakVersion.V3;
     }
+    
 }

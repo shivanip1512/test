@@ -420,6 +420,7 @@
 <entry key="yukon.common.rfnMeters">RFN Meters</entry>
 <entry key="yukon.common.plcMeters">PLC Meters</entry>
 <entry key="yukon.common.wifiMeters">Wifi Meters</entry>
+<entry key="yukon.common.cellMeters">Cellular Meters</entry>
 <entry key="yukon.common.waterMeters">Water Meters</entry>
 <entry key="yukon.common.gasMeters">Gas Meters</entry>
 <entry key="yukon.common.gateways">Gateways</entry>

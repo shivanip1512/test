@@ -93,9 +93,16 @@ try
         header.__set_clientGuid ( m.header->clientGuid );
         header.__set_sessionId  ( m.header->sessionId );
         header.__set_messageId  ( m.header->messageId );
-        header.__set_groupId    ( m.header->groupId );
+        if ( m.header->groupId )
+        {
+            header.__set_groupId( *m.header->groupId );
+        } 
         header.__set_priority   ( m.header->priority );
-        header.__set_expiration ( m.header->expiration );
+        if ( m.header->expiration )
+        {
+            header.__set_expiration( *m.header->expiration );
+        }
+
         header.__set_lifetime   ( Thrift::NetworkManagerMessageLifetime::SESSION );
 
         request.__set_header    ( header );

@@ -6,17 +6,20 @@ import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 
-import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.transaction.annotation.Transactional;
 
+import com.cannontech.common.model.Direction;
+import com.cannontech.common.model.PaginatedResponse;
 import com.cannontech.common.util.CtiUtilities;
 import com.cannontech.core.dao.ContactDao;
 import com.cannontech.core.dao.ContactNotificationDao;
 import com.cannontech.core.dao.CustomerDao;
 import com.cannontech.core.dao.DBPersistentDao;
 import com.cannontech.core.dao.NotFoundException;
+import com.cannontech.core.dao.NotificationGroupDao;
+import com.cannontech.core.dao.NotificationGroupDao.SortBy;
 import com.cannontech.database.TransactionType;
 import com.cannontech.database.data.lite.LiteCICustomer;
 import com.cannontech.database.data.lite.LiteContact;
@@ -40,6 +43,7 @@ public class NotificationGroupServiceImpl implements NotificationGroupService {
     @Autowired private CustomerDao customerDao;
     @Autowired private ContactDao contactDao;
     @Autowired private ContactNotificationDao contactNotificationDao;
+    @Autowired private NotificationGroupDao notificationGroupDao;
 
     @Override
     public NotificationGroup create(NotificationGroup notificationGroup) {
@@ -235,20 +239,24 @@ public class NotificationGroupServiceImpl implements NotificationGroupService {
     }
 
     @Override
-    public List<NotificationGroup> retrieveAll() {
-        List<LiteNotificationGroup> liteNotificationGroup = cache.getAllContactNotificationGroups();
-        List<NotificationGroup> notificationGroupList = new ArrayList<NotificationGroup>();
-        if (CollectionUtils.isNotEmpty(liteNotificationGroup)) {
-            liteNotificationGroup.forEach(liteObject -> {
-                com.cannontech.database.data.notification.NotificationGroup notificationGroupBase = (com.cannontech.database.data.notification.NotificationGroup) dbPersistentDao
-                        .retrieveDBPersistent(liteObject);
-                NotificationGroup notificationGroup = new NotificationGroup(
-                        notificationGroupBase.getNotificationGroup().getNotificationGroupID(),
-                        notificationGroupBase.getNotificationGroup().getGroupName(),
-                        notificationGroupBase.getNotificationGroup().getDisableFlag());
-                notificationGroupList.add(notificationGroup);
-            });
-        }
-        return notificationGroupList;
+    public PaginatedResponse<NotificationGroup> retrieveAll(String filterByName, SortBy sortBy, Direction direction, int page,
+            int itemsPerPage) {
+        List<NotificationGroup> notificationGroupList = notificationGroupDao.getAllNotificationGroups(filterByName, sortBy,
+                direction);
+        return new PaginatedResponse<NotificationGroup>(notificationGroupList, page, itemsPerPage);
+    }
+
+    @Override
+    public NotificationGroup update(int id, NotificationGroup notificationGroup) {
+        LiteNotificationGroup liteNotificationGroup = cache.getAllContactNotificationGroups().stream()
+                .filter(obj -> obj.getNotificationGroupID() == id).findFirst()
+                .orElseThrow(() -> new NotFoundException("Notification Group id not found"));
+        com.cannontech.database.data.notification.NotificationGroup notificationGroupBase = (com.cannontech.database.data.notification.NotificationGroup) dbPersistentDao
+                .retrieveDBPersistent(liteNotificationGroup);
+        notificationGroup.buildDBPersistent(notificationGroupBase);
+        dbPersistentDao.performDBChange(notificationGroupBase, TransactionType.UPDATE);
+        notificationGroup.buildModel(notificationGroupBase);
+        buildModelForCICustomersAndUnassignedCont(notificationGroup, notificationGroupBase);
+        return notificationGroup;
     }
 }
