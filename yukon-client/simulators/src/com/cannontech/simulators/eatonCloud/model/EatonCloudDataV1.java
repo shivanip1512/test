@@ -82,6 +82,9 @@ public class EatonCloudDataV1 extends EatonCloudDataGenerator {
     }
 
     private boolean displayError() {
+        if(successPercentage == 0) {
+            return true;
+        }
         if(successPercentage != 100) {
             int randomPercentage = (int) (Math.random() * 100);
             log.debug("Random Percentage:{} Success Percentage:{}", randomPercentage, successPercentage);
