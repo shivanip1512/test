@@ -37,8 +37,6 @@
         </div>
     </cti:displayForPageEditModes>
 
-   <%--  <cti:url var="action" value="/tools/notificationGroup/save" /> --%>
-   
     <form:form modelAttribute="notificationGroup" action="${action}" method="post">
         <cti:csrfToken />
         <form:hidden path="id" />
@@ -66,45 +64,39 @@
                         </thead>
 
                         <tbody>
-                            <c:forEach var="cICustomers" items="${notificationGroup.cICustomers}">
+                            <c:forEach var="cICustomer" items="${notificationGroup.cICustomers}" varStatus="status">
                                 <tr>
-                                    <td> - ${fn:escapeXml(cICustomers.companyName)}</td>
-                                    <td>
-                                        ${cICustomers.emailEnabled}
-                                   <%--  <tags:switchButton path="cICustomers.emailEnabled" offNameKey="yukon.common.no" onNameKey="yukon.common.yes" /> --%>
-                                    </td>
-                                    <td>
-                                        ${cICustomers.phoneCallEnabled}
-                                        <%-- <tags:switchButton path="cICustomers.phoneCallEnabled" offNameKey="yukon.common.no" onNameKey="yukon.common.yes" /> --%>
-                                    </td> 
+                                    <td> - ${fn:escapeXml(cICustomer.companyName)}</td>
+                                    <td><tags:displayBooleanStatusText value="${cICustomer.emailEnabled}"/></td>
+                                    <td><tags:displayBooleanStatusText value="${cICustomer.phoneCallEnabled}"/></td> 
                                 </tr>
-                                <c:forEach var="contacts" items="${cICustomers.contacts}">
+                                <c:forEach var="contact" items="${cICustomer.contacts}">
                                     <tr>
-                                        <td> - - ${fn:escapeXml(contacts.name)}</td>
-                                        <td>${contacts.emailEnabled}</td>
-                                        <td>${contacts.phoneCallEnabled}</td> 
+                                        <td> - - ${fn:escapeXml(contact.name)}</td>
+                                        <td><tags:displayBooleanStatusText value="${contact.emailEnabled}"/></td>
+                                        <td><tags:displayBooleanStatusText value="${contact.phoneCallEnabled}"/></td> 
                                     </tr>
-                                    <c:forEach var="notifications" items="${contacts.notifications}">
+                                    <c:forEach var="notifications" items="${contact.notifications}">
                                         <tr>
                                             <td> - - - ${fn:escapeXml(notifications.notification)}</td>
-                                            <td>${notifications.emailEnabled}</td>
-                                            <td>${notifications.phoneCallEnabled}</td> 
+                                            <td><tags:displayBooleanStatusText value="${notifications.emailEnabled}"/></td>
+                                            <td><tags:displayBooleanStatusText value="${notifications.phoneCallEnabled}"/></td> 
                                         </tr>
                                     </c:forEach>
                                 </c:forEach>
                             </c:forEach>
 
-                            <c:forEach var="unassignedContacts" items="${notificationGroup.unassignedContacts}">
+                            <c:forEach var="unassignedContact" items="${notificationGroup.unassignedContacts}">
                                 <tr>
-                                    <td> - ${fn:escapeXml(unassignedContacts.name)}</td>
-                                    <td>${unassignedContacts.emailEnabled}</td>
-                                    <td>${unassignedContacts.phoneCallEnabled}</td> 
+                                    <td> - ${fn:escapeXml(unassignedContact.name)}</td>
+                                    <td><tags:displayBooleanStatusText value="${unassignedContact.emailEnabled}"/></td>
+                                    <td><tags:displayBooleanStatusText value="${unassignedContact.phoneCallEnabled}"/></td> 
                                 </tr>
-                                <c:forEach var="notifications" items="${unassignedContacts.notifications}">
+                                <c:forEach var="notifications" items="${unassignedContact.notifications}">
                                     <tr>
                                         <td> - - ${fn:escapeXml(notifications.notification)}</td>
-                                        <td>${notifications.emailEnabled}</td>
-                                        <td>${notifications.phoneCallEnabled}</td> 
+                                        <td><tags:displayBooleanStatusText value="${notifications.emailEnabled}"/></td>
+                                        <td><tags:displayBooleanStatusText value="${notifications.phoneCallEnabled}"/></td> 
                                     </tr>
                                 </c:forEach>
                             </c:forEach>
