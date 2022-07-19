@@ -8,6 +8,7 @@ import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
 
+import org.apache.commons.lang3.BooleanUtils;
 import org.joda.time.Instant;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.transaction.annotation.Transactional;
@@ -108,6 +109,12 @@ public class InfrastructureWarningsDaoImpl implements InfrastructureWarningsDao{
         sql.append("FROM YukonPaObject");
         sql.append("WHERE Type").in(InfrastructureWarningDeviceCategory.REPEATER.getPaoTypes());
         sql.append(") AS Repeaters,");
+        
+        sql.append("(");
+        sql.append("SELECT COUNT(DISTINCT PaObjectId)");
+        sql.append("FROM YukonPaObject");
+        sql.append("WHERE Type").in(InfrastructureWarningDeviceCategory.IPLINK_METER.getPaoTypes());
+        sql.append(") AS Meters,");
 
         sql.append("(");
         sql.append("SELECT COUNT(DISTINCT PaoId)");
@@ -135,7 +142,15 @@ public class InfrastructureWarningsDaoImpl implements InfrastructureWarningsDao{
         sql.append("FROM InfrastructureWarnings iw");
         sql.append("JOIN YukonPaObject ypo ON iw.PaoId = ypo.PAObjectID");
         sql.append("WHERE Type").in(InfrastructureWarningDeviceCategory.REPEATER.getPaoTypes());
-        sql.append(") AS WarningRepeaters");
+        sql.append(") AS WarningRepeaters,");
+        
+        sql.append("(");
+        sql.append("SELECT COUNT(DISTINCT PaoId)");
+        sql.append("FROM InfrastructureWarnings iw");
+        sql.append("JOIN YukonPaObject ypo ON iw.PaoId = ypo.PAObjectID");
+        sql.append("WHERE Type").in(InfrastructureWarningDeviceCategory.IPLINK_METER.getPaoTypes());
+        sql.append(") AS WarningMeters");
+        
         if (dbVendorResolver.getDatabaseVendor().isOracle()) {
             sql.append("FROM dual");
         }
@@ -145,7 +160,7 @@ public class InfrastructureWarningsDaoImpl implements InfrastructureWarningsDao{
     }
 
     @Override
-    public List<InfrastructureWarning> getWarnings(InfrastructureWarningDeviceCategory... categories) {
+    public List<InfrastructureWarning> getWarnings(Boolean highSeverityOnly, InfrastructureWarningDeviceCategory... categories) {
         // Get all PaoTypes included in these categories
         Set<PaoType> types = Arrays.stream(categories)
                                    .map(category -> category.getPaoTypes())
@@ -154,6 +169,9 @@ public class InfrastructureWarningsDaoImpl implements InfrastructureWarningsDao{
         
         SqlStatementBuilder sql = selectAllInfrastructureWarnings();
         sql.append("WHERE Type").in_k(types);
+        if (BooleanUtils.isTrue(highSeverityOnly)) {
+            sql.append("AND Severity").eq("HIGH");
+        }
         
         return jdbcTemplate.query(sql, infrastructureWarningRowMapper);
     }
@@ -172,10 +190,12 @@ public class InfrastructureWarningsDaoImpl implements InfrastructureWarningsDao{
         summary.setTotalRelays(rs.getInt("Relays"));
         summary.setTotalCcus(rs.getInt("Ccus"));
         summary.setTotalRepeaters(rs.getInt("Repeaters"));
+        summary.setTotalMeters(rs.getInt("Meters"));
         summary.setWarningGateways(rs.getInt("WarningGateways"));
         summary.setWarningRelays(rs.getInt("WarningRelays"));
         summary.setWarningCcus(rs.getInt("WarningCcus"));
         summary.setWarningRepeaters(rs.getInt("WarningRepeaters"));
+        summary.setWarningMeters(rs.getInt("WarningMeters"));
         return summary;
     };
     

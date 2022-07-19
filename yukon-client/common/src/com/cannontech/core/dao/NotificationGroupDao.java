@@ -24,7 +24,23 @@ public interface NotificationGroupDao {
     Set<LiteNotificationGroup> getAllNotificationGroups();
 
     /**
-     * Returns a list of notification group for retrieve all api on sorting and asc/desc order
+     * Returns a list of notification groups
      */
-    List<NotificationGroup> getAllNotificationGroups(String sortBy, Direction direction);
+    List<NotificationGroup> getAllNotificationGroups(String name, SortBy sortBy, Direction direction);
+
+    public enum SortBy {
+        NAME("GroupName"),
+        STATUS("DisableFlag");
+
+        private final String dbString;
+
+        private SortBy(String dbString) {
+            this.dbString = dbString;
+        }
+
+        public String getDbString() {
+            return dbString;
+        }
+    }
+
 }

@@ -54,7 +54,6 @@ public interface MspRawPointHistoryDao {
                                                                 int maxRecords, List<MspAttribute> vendorAttributes);
 
     /**
-<<<<<<< HEAD
      * Retrieves estimated load data for the SCADA_Server endpoint.  
      * It reads and returns the latest point values for all analog points attached to LM program paos, 
      * which includes the points: Connected Load, Diversified Load, Max Load Reduction, Available Load Reduction.

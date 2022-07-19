@@ -167,6 +167,7 @@ public class MspRawPointHistoryDaoImpl implements MspRawPointHistoryDao
         int estimatedSize = 0;
 
         EnumSet<BuiltInAttribute> attributesToLoad = MultispeakFuncsUtil.getBuiltInAttributesForVendor(vendorAttributes);
+
         // load up results for each attribute
         for (BuiltInAttribute attribute : attributesToLoad) {
             Map<PaoIdentifier, PointValueQualityHolder> resultsForAttribute =
