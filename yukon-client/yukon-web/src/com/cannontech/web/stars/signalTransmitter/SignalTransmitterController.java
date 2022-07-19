@@ -366,8 +366,7 @@ public class SignalTransmitterController {
         if (signalTransmitter.getId() == null) {
             return "redirect:/stars/device/signalTransmitter/create";
         }
-        // TODO: change this URL to edit functionality later.
-        return "redirect:/stars/device/signalTransmitter/create";
+        return "redirect:/stars/device/signalTransmitter/" + signalTransmitter.getId() + "/edit";
     }
 
     private TerminalBase retrieveSignalTransmitter(YukonUserContext userContext, HttpServletRequest request, int id, String url) {
