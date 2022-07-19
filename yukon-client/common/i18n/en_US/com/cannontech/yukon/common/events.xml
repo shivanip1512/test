@@ -1032,6 +1032,17 @@
     <entry key="yukon.common.events.dr.nest.responseRetrieveCustomers">{7} customers were found.</entry>
     
     <!-- Eaton Cloud -->
+    <entry key="yukon.common.events.dr.eatoncloud.sendRestoreJob">Sending restore command to Eaton Cloud for Device: {1}, GUID: {2}, Event Id/Job GUID: {3}, Relay: {7}</entry>
+    <entry key="yukon.common.events.dr.eatoncloud.sendRestoreJob.2">GUID</entry>
+    <entry key="yukon.common.events.dr.eatoncloud.sendRestoreJob.3">Event Id/Job GUID</entry>
+    <entry key="yukon.common.events.dr.eatoncloud.sendRestoreJob.7">Relay</entry>
+    
+    <entry key="yukon.common.events.dr.eatoncloud.sendRestoreJobFailed">Failed to send restore command to Eaton Cloud for Device: {1}, GUID: {2}, Relay: {7} Event Id/Job GUID: {4}, Error: {3}</entry>
+    <entry key="yukon.common.events.dr.eatoncloud.sendRestoreJobFailed.2">GUID</entry>
+    <entry key="yukon.common.events.dr.eatoncloud.sendRestoreJobFailed.3">Error</entry>
+    <entry key="yukon.common.events.dr.eatoncloud.sendRestoreJobFailed.4">Event Id/Job GUID</entry>
+    <entry key="yukon.common.events.dr.eatoncloud.sendRestoreJobFailed.7">Relay</entry>
+    
     <entry key="yukon.common.events.dr.eatoncloud.sendRestore">Sending restore command to Eaton Cloud for Device: {1}, GUID: {2}, External Event Id: {3}, Relay: {7}</entry>
     <entry key="yukon.common.events.dr.eatoncloud.sendRestore.2">GUID</entry>
     <entry key="yukon.common.events.dr.eatoncloud.sendRestore.3">External Event Id</entry>

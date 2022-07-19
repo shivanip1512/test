@@ -36,9 +36,11 @@
         <jms:listener destination="yukon.notif.obj.simulator.EatonCloudRuntimeCalcSimulatonRequest" ref="eatonCloudRuntimeCalcServiceListener" method="startSimulation"/>
     </jms:listener-container>
      <bean class="com.cannontech.dr.eatonCloud.service.impl.EatonCloudSendControlServiceImpl"/>
+     <bean class="com.cannontech.dr.eatonCloud.job.service.impl.EatonCloudJobSmartNotifServiceImpl"/>
      <bean class="com.cannontech.dr.eatonCloud.job.service.impl.EatonCloudJobPollServiceImpl"/>
+     <bean class="com.cannontech.dr.eatonCloud.job.service.impl.EatonCloudJobRestorePollServiceImpl"/>
      <bean class="com.cannontech.dr.eatonCloud.job.service.impl.EatonCloudJobReadServiceImpl"/>
      <bean class="com.cannontech.dr.eatonCloud.job.service.impl.EatonCloudJobResponseProcessorImpl "/>
      <bean class="com.cannontech.dr.eatonCloud.job.service.impl.EatonCloudJobServiceImpl"/>
-     <bean class="com.cannontech.dr.eatonCloud.job.service.impl.EatonCloudJobSmartNotifServiceImpl"/>
+     <bean class="com.cannontech.dr.eatonCloud.job.service.impl.EatonCloudJobRestoreServiceImpl"/>
 </beans>

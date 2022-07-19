@@ -14,6 +14,7 @@ import com.cannontech.dr.eatonCloud.model.EatonCloudError;
 import com.cannontech.dr.recenteventparticipation.ControlEventDeviceStatus;
 import com.cannontech.dr.recenteventparticipation.dao.RecentEventParticipationDao;
 import com.cannontech.loadcontrol.messages.LMEatonCloudScheduledCycleCommand;
+import com.cannontech.loadcontrol.messages.LMEatonCloudStopCommand;
 import com.cannontech.yukon.IDatabaseCache;
 
 public class EatonCloudJobResponseProcessorImpl implements EatonCloudJobResponseProcessor {
@@ -40,7 +41,7 @@ public class EatonCloudJobResponseProcessorImpl implements EatonCloudJobResponse
 
     @Override
     public void processError(EventSummary summary, Integer deviceId, String guid, String jobGuid, int code,
-            ControlEventDeviceStatus status, int currentTry) {
+            ControlEventDeviceStatus status, int currentTry, Instant jobCreationTime) {
         String deviceName = dbCache.getAllPaosMap().get(deviceId).getPaoName();
         LMEatonCloudScheduledCycleCommand command = summary.getCommand();
         DeviceErrorDescription errorDescription = deviceErrorTranslatorDao.translateErrorCode(EatonCloudError.getErrorByCode(code));
@@ -48,14 +49,11 @@ public class EatonCloudJobResponseProcessorImpl implements EatonCloudJobResponse
         recentEventParticipationDao.updateDeviceControlEvent(String.valueOf(summary.getEventId()),
                 deviceId,
                 status,
-                Instant.now(),
+                null,
                 StringUtils.isEmpty(message) ? null : message.length() > 100 ? message.substring(0, 100) : message,
-                currentTry == 1 ? null : Instant.now());
+                currentTry == 1 ? null : jobCreationTime);
         
-        String jobInfo = String.valueOf(summary.getEventId());
-        if(jobGuid != null) {
-            jobInfo = jobInfo + "/"+jobGuid;
-        }
+        String jobInfo = getJobInfo(summary.getEventId(), jobGuid);
         eatonCloudEventLogService.sendShedJobFailed(deviceName,
                 guid,
                 jobInfo,
@@ -64,9 +62,10 @@ public class EatonCloudJobResponseProcessorImpl implements EatonCloudJobResponse
                 command.getDutyCyclePeriod(),
                 command.getCriticality(),
                 command.getVirtualRelayId(),
-                truncateErrorForEventLog("("+code+")" + message));
+                truncateErrorForEventLog("("+code+") " + message));
  
-        log.debug(summary.getLogSummary(false) + "Try:{} Failed sending shed command to device id:{} guid:{} name:{} error:{}",
+        log.debug("{} Try:{} Failed shed device id:{} guid:{} name:{} error:{}",
+                summary.getLogSummary(false),
                 currentTry, deviceId, guid, deviceName, message);
     }
     
@@ -76,9 +75,9 @@ public class EatonCloudJobResponseProcessorImpl implements EatonCloudJobResponse
         LMEatonCloudScheduledCycleCommand command = summary.getCommand();
         recentEventParticipationDao.updateDeviceControlEvent(String.valueOf(summary.getEventId()), deviceId,
                 ControlEventDeviceStatus.SUCCESS_RECEIVED, new Instant(),
-                null, currentTry == 1 ? null : Instant.now());
+                null, currentTry == 1 ? null : new Instant());
 
-        log.debug(summary.getLogSummary(jobGuid, false) + "Try:{} Success sending shed command to device id:{} guid:{} name:{}",
+        log.debug("{} Try:{} Successful shed device id:{} guid:{} name:{}", summary.getLogSummary(jobGuid, false),
                 currentTry, deviceId, guid, deviceName);
 
         eatonCloudEventLogService.sendShedJob(deviceName,
@@ -88,6 +87,48 @@ public class EatonCloudJobResponseProcessorImpl implements EatonCloudJobResponse
                 command.getDutyCyclePercentage(),
                 command.getDutyCyclePeriod(),
                 command.getCriticality(),
+                command.getVirtualRelayId());
+    }
+    
+    @Override
+    public void processError(EventRestoreSummary summary, Integer deviceId, String guid, String jobGuid, int code) {
+        String deviceName = dbCache.getAllPaosMap().get(deviceId).getPaoName();
+        LMEatonCloudStopCommand command = summary.getCommand();
+        DeviceErrorDescription errorDescription = deviceErrorTranslatorDao.translateErrorCode(EatonCloudError.getErrorByCode(code));
+        String message = errorDescription.getDescription();        
+        
+        String jobInfo = getJobInfo(summary.getEventId(), jobGuid);
+        eatonCloudEventLogService.sendRestoreJobFailed(deviceName,
+                guid,
+                truncateErrorForEventLog("("+code+") " + message),
+                jobInfo,
+                command.getVirtualRelayId());
+ 
+        log.debug("{} Failed restore device id:{} guid:{} name:{} error:{}",
+                summary.getLogSummary(jobGuid),
+                deviceId, guid, deviceName, message);
+    }
+
+    private String getJobInfo(int eventId, String jobGuid) {
+        String jobInfo = String.valueOf(eventId);
+        if (jobGuid != null) {
+            jobInfo = jobInfo + "/" + jobGuid;
+        }
+        return jobInfo;
+    }
+    
+    @Override
+    public void processSuccess(EventRestoreSummary  summary, Integer deviceId, String guid, String jobGuid) {
+        String deviceName = dbCache.getAllPaosMap().get(deviceId).getPaoName();
+        LMEatonCloudStopCommand command = summary.getCommand();
+
+        log.debug("{} Successful restore device id:{} guid:{} name:{}",
+                summary.getLogSummary(jobGuid),
+                deviceId, guid, deviceName);
+
+        eatonCloudEventLogService.sendRestoreJob(deviceName,
+                guid,
+                summary.getEventId()+"/"+jobGuid,
                 command.getVirtualRelayId());
     }
 

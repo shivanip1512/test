@@ -5,12 +5,24 @@ import java.util.Map;
 
 import com.cannontech.dr.eatonCloud.service.EatonCloudSendControlService.CommandParam;
 import com.cannontech.loadcontrol.messages.LMEatonCloudScheduledCycleCommand;
+import com.cannontech.loadcontrol.messages.LMEatonCloudStopCommand;
 
-public class ShedParamHeper {
+public class ControlParamHeper {
     
-    private ShedParamHeper() {
+    private ControlParamHeper() {
 
     }
+    
+    /**
+     * Returns restore parameters
+     */
+    public static Map<String, Object> getRestoreParams(LMEatonCloudStopCommand command, int eventId) {
+        Map<String, Object> params = new LinkedHashMap<>();
+        params.put(CommandParam.EVENT_ID.getParamName(), eventId);
+        params.put(CommandParam.FLAGS.getParamName(), 0);
+        return params;
+    }
+    
     /**
      * Returns shed parameters
      */
