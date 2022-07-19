@@ -1402,7 +1402,11 @@ public enum PaoType implements DisplayableEnum, DatabaseRepresentationSource {
         try {
             return PaoType.valueOf(paoTypeJsonString);
         } catch (@SuppressWarnings("unused") IllegalArgumentException e) {
-            throw new TypeNotSupportedException(paoTypeJsonString + " paoType is not valid.");
+            try {
+                return PaoType.getForDbString(paoTypeJsonString);
+            } catch (@SuppressWarnings("unused") IllegalArgumentException h) {
+                throw new TypeNotSupportedException(paoTypeJsonString + " paoType is not valid.");
+            }
         }
     }
 }
