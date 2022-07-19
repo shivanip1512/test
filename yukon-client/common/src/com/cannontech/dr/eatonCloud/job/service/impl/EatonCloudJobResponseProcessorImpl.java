@@ -62,7 +62,7 @@ public class EatonCloudJobResponseProcessorImpl implements EatonCloudJobResponse
                 command.getDutyCyclePeriod(),
                 command.getCriticality(),
                 command.getVirtualRelayId(),
-                truncateErrorForEventLog("("+code+")" + message));
+                truncateErrorForEventLog("("+code+") " + message));
  
         log.debug("{} Try:{} Failed shed device id:{} guid:{} name:{} error:{}",
                 summary.getLogSummary(false),
@@ -100,12 +100,13 @@ public class EatonCloudJobResponseProcessorImpl implements EatonCloudJobResponse
         String jobInfo = getJobInfo(summary.getEventId(), jobGuid);
         eatonCloudEventLogService.sendRestoreJobFailed(deviceName,
                 guid,
-                truncateErrorForEventLog("("+code+")" + message),
+                truncateErrorForEventLog("("+code+") " + message),
                 jobInfo,
                 command.getVirtualRelayId());
  
-        log.debug(summary.getLogSummary(jobGuid) + "Failed restore device id:{} guid:{} name:{} error:{}",
-                 deviceId, guid, deviceName, message);
+        log.debug("{} Failed restore device id:{} guid:{} name:{} error:{}",
+                summary.getLogSummary(jobGuid),
+                deviceId, guid, deviceName, message);
     }
 
     private String getJobInfo(int eventId, String jobGuid) {
@@ -121,8 +122,9 @@ public class EatonCloudJobResponseProcessorImpl implements EatonCloudJobResponse
         String deviceName = dbCache.getAllPaosMap().get(deviceId).getPaoName();
         LMEatonCloudStopCommand command = summary.getCommand();
 
-        log.debug(summary.getLogSummary(jobGuid) + "Successful restore device id:{} guid:{} name:{}",
-                  deviceId, guid, deviceName);
+        log.debug("{} Successful restore device id:{} guid:{} name:{}",
+                summary.getLogSummary(jobGuid),
+                deviceId, guid, deviceName);
 
         eatonCloudEventLogService.sendRestoreJob(deviceName,
                 guid,

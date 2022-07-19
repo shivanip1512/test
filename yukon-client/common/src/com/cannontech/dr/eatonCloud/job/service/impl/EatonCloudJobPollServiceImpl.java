@@ -53,7 +53,7 @@ public class EatonCloudJobPollServiceImpl extends EatonCloudJobPollServiceHelper
     @Override
     public void failWillRetryDevicesAfterLastPoll(EventSummary summary) {
         if (polling.contains(summary.getEventId())) {
-            log.info(summary.getLogSummary(false) + " event termination is postponed untill POLL completes");
+            log.info("{} event termination is postponed untill POLL completes", summary.getLogSummary(false));
             terminating.add(summary.getEventId());
         } else {
             summary.failWillRetryDevices();
@@ -66,7 +66,7 @@ public class EatonCloudJobPollServiceImpl extends EatonCloudJobPollServiceHelper
         if (CollectionUtils.isEmpty(jobGuids)) {
             return;
         }
-        log.info("{} POLL Try:{} scheduling poll in {} minutes job guids{}.", summary.getLogSummary(false), currentTry, minutes,
+        log.info("{} POLL Try:{} scheduling poll in {} minutes job guids{}.", summary.getLogSummary(false), currentTry, minutes.getMinutes(),
                 jobGuids);
         polling.add(summary.getEventId());
         executor.schedule(() -> {
@@ -82,7 +82,7 @@ public class EatonCloudJobPollServiceImpl extends EatonCloudJobPollServiceHelper
                 log.error("Error POLL job guids:{}", jobGuids, e);
             }
             if (terminating.contains(summary.getEventId())) {
-                log.info(summary.getLogSummary(false) + " event terminated POLL completed");
+                log.info("{} event terminated POLL completed", summary.getLogSummary(false));
                 summary.failWillRetryDevices();
                 terminating.remove(summary.getEventId());
             }

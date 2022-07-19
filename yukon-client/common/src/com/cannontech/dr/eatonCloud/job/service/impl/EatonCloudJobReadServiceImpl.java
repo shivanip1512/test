@@ -81,7 +81,7 @@ public class EatonCloudJobReadServiceImpl implements EatonCloudJobReadService {
         log.info("{} READ Try:{} in {} minutes at {}",
                 summary.getLogSummary(false),
                 currentTry,
-                readTimeFromNowInMinutes,
+                readTimeFromNowInMinutes.getMinutes(),
                 nextReadTime.toDateTime().toString(DATE_FORMAT));
 
         nextRead.put(summary.getEventId(), Pair.of(nextReadTime, jobCreationTime));

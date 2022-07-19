@@ -42,7 +42,7 @@ public class EatonCloudJobRestorePollServiceImpl extends EatonCloudJobPollServic
             return;
         }
         log.info("{} POLL scheduling in {} minutes job guids{}:", summary.getLogSummary(),
-                EatonCloudJobSettingsHelper.pollInMinutes,
+                EatonCloudJobSettingsHelper.pollInMinutes.getMinutes(),
                 jobGuids.keySet());
 
         executor.schedule(() -> {
@@ -58,10 +58,11 @@ public class EatonCloudJobRestorePollServiceImpl extends EatonCloudJobPollServic
         //jobs failed to create
         List<String> unknowns = new ArrayList<>(deviceGuids);
         try {
-            jobGuids.forEach((jobGuid, devicesPerJob) -> {
+            jobGuids.forEach((jobGuid, devices) -> {
                 try {
                     EatonCloudJobStatusResponseV1 response = eatonCloudCommunicationService.getJobStatus(jobGuid);
-                    log.info(summary.getLogSummary(jobGuid) + "POLL successes:{} failures:{}",
+                    log.info("{} POLL successes:{} failures:{}",
+                            summary.getLogSummary(jobGuid), 
                             response.getSuccesses() == null ? 0 : response.getSuccesses().size(),
                             response.getFailures() == null ? 0 : response.getFailures().size());
                     List<String> jobSuccesses = processSuccesses(summary, jobGuid, response, guidsToDeviceIds);
@@ -69,13 +70,14 @@ public class EatonCloudJobRestorePollServiceImpl extends EatonCloudJobPollServic
 
                     successes.addAll(jobSuccesses);
   
-                    unknowns.removeAll(devicesPerJob);
+                    unknowns.removeAll(devices);
                     
+                    List<String> devicesPerJob = new ArrayList<>(devices);
                     devicesPerJob.removeAll(jobSuccesses);
                     devicesPerJob.removeAll(jobFailures);
                     
                     if(!devicesPerJob.isEmpty()) {
-                        log.info(summary.getLogSummary() + "POLL no response recieved for {} devices. {}", devicesPerJob.size(),
+                        log.info("{} POLL no response recieved for {} devices. {}", summary.getLogSummary(), devicesPerJob.size(),
                                 devicesPerJob);
                         processError(summary, guidsToDeviceIds, jobGuid, devicesPerJob, EatonCloudError.NO_RESPONSE_FROM_DEVICE);
                     }

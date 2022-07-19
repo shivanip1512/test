@@ -95,11 +95,13 @@ public class EatonCloudJobRestoreServiceImpl extends EatonCloudJobHelperService 
         try {
             EatonCloudJobResponseV1 response = eatonCloudCommunicationService.createJob(request);
             if (log.isDebugEnabled()) {
-                log.info(summary.getLogSummary(response.getJobGuid()) + "CREATED JOB Command:{} devices:{}",
+                log.info("{} CREATED JOB Command:{} devices:{}",
+                        summary.getLogSummary(response.getJobGuid()),
                         summary.getCommand(),
                         devices);
             } else {
-                log.info(summary.getLogSummary(response.getJobGuid()) + "CREATED JOB Command:{} devices:{}",
+                log.info("{} CREATED JOB Command:{} devices:{}",
+                        summary.getLogSummary(response.getJobGuid()),
                         summary.getCommand(),
                         devices.size());
             }
