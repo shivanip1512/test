@@ -105,7 +105,8 @@ public class EatonCloudJobRestoreServiceImpl extends EatonCloudJobHelperService 
             }
             return response.getJobGuid();
         } catch (EatonCloudCommunicationExceptionV1 e) {
-            log.error(summary.getLogSummary() + "JOB CREATION FAILED Command:{} devices:{}",
+            log.error("{} JOB CREATION FAILED Command:{} devices:{}",
+                    summary.getLogSummary(),
                     summary.getCommand(),
                     devices.size(), e);
             // job failed, mark all devices as failed as restore doesn't retry

@@ -66,7 +66,7 @@ public class EatonCloudJobPollServiceImpl extends EatonCloudJobPollServiceHelper
         if (CollectionUtils.isEmpty(jobGuids)) {
             return;
         }
-        log.info(summary.getLogSummary(false) + "POLL Try:{} scheduling poll in {} minutes job guids{}.", currentTry, minutes,
+        log.info("{} POLL Try:{} scheduling poll in {} minutes job guids{}.", summary.getLogSummary(false), currentTry, minutes,
                 jobGuids);
         polling.add(summary.getEventId());
         executor.schedule(() -> {
@@ -99,7 +99,7 @@ public class EatonCloudJobPollServiceImpl extends EatonCloudJobPollServiceHelper
      */
     private int poll(EventSummary summary, List<String> jobGuids, Instant jobCreationTime, int currentTry, boolean isImmediate) {
         List<String> allSuccesses = new ArrayList<>();
-        String pollText = isImmediate ? "Immediate POLL Before " : "Scheduled POLL ";
+        String pollText = isImmediate ? "Immediate POLL Before" : "Scheduled POLL";
         jobGuids.forEach(jobGuid -> {
             try {
                 EatonCloudJobStatusResponseV1 response = eatonCloudCommunicationService.getJobStatus(jobGuid);
@@ -112,9 +112,9 @@ public class EatonCloudJobPollServiceImpl extends EatonCloudJobPollServiceHelper
                 int unprocessedSuccesses = response.getSuccesses() == null ? 0 : response.getSuccesses().size();
                 int unprocessedFailures = response.getFailures() == null ? 0 : response.getFailures().size();
                 log.info(
-                        summary.getLogSummary(jobGuid, false)
-                                + pollText
-                                + "Try:{} successes all/processed/unprocessed:{}/{}/{} failures all/processed/unprocessed:{}/{}/{}",
+                        "{} {} Try:{} successes all/processed/unprocessed:{}/{}/{} failures all/processed/unprocessed:{}/{}/{}",
+                        summary.getLogSummary(jobGuid, false),
+                        pollText,
                         currentTry,
                         totalSuccesses,
                         totalSuccesses - unprocessedSuccesses,
@@ -123,7 +123,7 @@ public class EatonCloudJobPollServiceImpl extends EatonCloudJobPollServiceHelper
                         totalFailures - unprocessedFailures,
                         unprocessedFailures);
             } catch (EatonCloudCommunicationExceptionV1 e) {
-                log.error(summary.getLogSummary(jobGuid, false) + pollText + "Try:{} error polling devices job", currentTry,
+                log.error("{} {} Try:{} error polling devices job", summary.getLogSummary(jobGuid, false), pollText, currentTry,
                         e);
             }
         });

@@ -14,13 +14,12 @@ public final class EventRestoreSummary {
     private int programId;
 
     public String getLogSummary() {
-        return "[RESTORE id:" + eventId + "] relay:" + command.getVirtualRelayId() + " ";
+        return "[RESTORE id:" + eventId + "] relay:" + command.getVirtualRelayId();
     }
 
 
     public String getLogSummary(String jobGuid) {
-        return "[RESTORE id:" + eventId + ":" + jobGuid + "] relay:" + command.getVirtualRelayId()
-                + " ";
+        return "[RESTORE id:" + eventId + ":" + jobGuid + "] relay:" + command.getVirtualRelayId();
     }
 
     EventRestoreSummary(int eventId, int programId, LMEatonCloudStopCommand command, Logger log) {

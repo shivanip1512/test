@@ -41,7 +41,8 @@ public class EatonCloudJobRestorePollServiceImpl extends EatonCloudJobPollServic
         if (CollectionUtils.isEmpty(jobGuids)) {
             return;
         }
-        log.info(summary.getLogSummary() + "POLL scheduling in {} minutes job guids{}:", EatonCloudJobSettingsHelper.pollInMinutes,
+        log.info("{} POLL scheduling in {} minutes job guids{}:", summary.getLogSummary(),
+                EatonCloudJobSettingsHelper.pollInMinutes,
                 jobGuids.keySet());
 
         executor.schedule(() -> {
@@ -88,7 +89,7 @@ public class EatonCloudJobRestorePollServiceImpl extends EatonCloudJobPollServic
                     EatonCloudJobControlType.RESTORE, summary.getLogSummary());
             
             if (!unknowns.isEmpty()) {
-                log.info(summary.getLogSummary() + "POLL no response recieved for {} devices. {}", unknowns.size(),
+                log.info("{} POLL no response recieved for {} devices. {}", unknowns.size(), summary.getLogSummary(),
                         unknowns);
                 processError(summary, guidsToDeviceIds, null, unknowns, EatonCloudError.JOB_CREATION_FAILED);
             }

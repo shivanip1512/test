@@ -32,7 +32,7 @@ public final class EventSummary {
     private String failReason;
     
     public String getLogSummary(boolean displayTryInfo) {
-        return "[SHED id:" + eventId + getTryText(displayTryInfo) + "] relay:" + command.getVirtualRelayId() + " ";
+        return "[SHED id:" + eventId + getTryText(displayTryInfo) + "] relay:" + command.getVirtualRelayId();
     }
 
     private String getTryText(boolean displayTryInfo) {
@@ -44,8 +44,7 @@ public final class EventSummary {
     }
 
     public String getLogSummary(String jobGuid, boolean displayTryInfo) {
-        return "[SHED id:" + eventId + ":" + jobGuid + "]" + getTryText(displayTryInfo) + " relay:" + command.getVirtualRelayId()
-                + " ";
+        return "[SHED id:" + eventId + ":" + jobGuid + "]" + getTryText(displayTryInfo) + " relay:" + command.getVirtualRelayId();
     }
 
     EventSummary(int eventId, int programId, LMEatonCloudScheduledCycleCommand command, Logger log,

@@ -107,8 +107,8 @@ public class EatonCloudJobServiceImpl extends EatonCloudJobHelperService impleme
                             List.of(FAILED_WILL_RETRY, UNKNOWN));
                     if (devices.isEmpty()) {
                         iter.remove();
-                        log.info(summary.getLogSummary(true)
-                                + "jobs:{} Done (No devices found with statuses of FAILED_WILL_RETRY, UNKNOWN).", jobGuids);
+                        log.info("{} jobs:{} Done (No devices found with statuses of FAILED_WILL_RETRY, UNKNOWN).",
+                                summary.getLogSummary(true), jobGuids);
                         continue;
                     }
                     Pair<Instant, List<String>> result = createJobs(devices, summary);
@@ -194,13 +194,15 @@ public class EatonCloudJobServiceImpl extends EatonCloudJobHelperService impleme
                         summary.getCommand(),
                         devices);
             } else {
-                log.info(summary.getLogSummary(response.getJobGuid(), true) + "CREATED JOB Shed Command:{} devices:{}",
+                log.info("{} CREATED JOB Shed Command:{} devices:{}",
+                        summary.getLogSummary(response.getJobGuid(), true),
                         summary.getCommand(),
                         devices.size());
             }
             return response.getJobGuid();
         } catch (EatonCloudCommunicationExceptionV1 e) {
-            log.error(summary.getLogSummary(true) + "JOB CREATION FAILED Command:{} devices:{}",
+            log.error("{} JOB CREATION FAILED Command:{} devices:{}",
+                    summary.getLogSummary(true),
                     summary.getCommand(),
                     devices.size(), e);
             // job failed, mark all devices as failed, failed job will not retry
@@ -213,15 +215,11 @@ public class EatonCloudJobServiceImpl extends EatonCloudJobHelperService impleme
 
     @Override
     public void terminateEvent(int eventId) {
-        Iterator<Entry<Integer, RetrySummary>> iter = resendTries.entrySet().iterator();
-        while (iter.hasNext()) {
-            Entry<Integer, RetrySummary> entry = iter.next();
-            if(entry.getKey() == eventId) {
-                iter.remove();
-                EventSummary summary = entry.getValue().summary;
-                log.info(summary.getLogSummary(false) + "terminating event due to RESTORE");
-                eatonCloudJobPollService.failWillRetryDevicesAfterLastPoll(summary);
-            }
+        var retrySummary = resendTries.remove(eventId);
+        if (retrySummary != null) {
+            EventSummary summary = retrySummary.summary;
+            log.info("{} terminating event due to RESTORE", summary.getLogSummary(false));
+            eatonCloudJobPollService.failWillRetryDevicesAfterLastPoll(summary);
         }
     }
 }

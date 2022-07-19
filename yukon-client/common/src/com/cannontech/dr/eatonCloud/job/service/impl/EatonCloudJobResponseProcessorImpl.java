@@ -64,7 +64,8 @@ public class EatonCloudJobResponseProcessorImpl implements EatonCloudJobResponse
                 command.getVirtualRelayId(),
                 truncateErrorForEventLog("("+code+")" + message));
  
-        log.debug(summary.getLogSummary(false) + "Try:{} Failed shed device id:{} guid:{} name:{} error:{}",
+        log.debug("{} Try:{} Failed shed device id:{} guid:{} name:{} error:{}",
+                summary.getLogSummary(false),
                 currentTry, deviceId, guid, deviceName, message);
     }
     
@@ -76,7 +77,7 @@ public class EatonCloudJobResponseProcessorImpl implements EatonCloudJobResponse
                 ControlEventDeviceStatus.SUCCESS_RECEIVED, new Instant(),
                 null, currentTry == 1 ? null : new Instant());
 
-        log.debug(summary.getLogSummary(jobGuid, false) + "Try:{} Successful shed device id:{} guid:{} name:{}",
+        log.debug("{} Try:{} Successful shed device id:{} guid:{} name:{}", summary.getLogSummary(jobGuid, false),
                 currentTry, deviceId, guid, deviceName);
 
         eatonCloudEventLogService.sendShedJob(deviceName,
