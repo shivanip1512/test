@@ -4,6 +4,7 @@
 <%@ taglib prefix="form" uri="http://www.springframework.org/tags/form" %>
 <%@ taglib prefix="fn" uri="http://java.sun.com/jsp/jstl/functions" %>
 <%@ taglib prefix="i" tagdir="/WEB-INF/tags/i18n" %>
+<%@ taglib prefix="tags" tagdir="/WEB-INF/tags" %>
 
 <cti:standardPage module="operator" page="signalTransmitters.list">
 
@@ -26,15 +27,18 @@
             <hr/>
     </div>
     
-    <div class="js-filtered-results-container">
-        <table class="compact-results-table">
+    <cti:url var="listUrl" value="/stars/device/signalTransmitter/list"/>
+    <div data-url="${listUrl}" data-static>
+        <table class="compact-results-table row-highlighting">
             <thead>
-                <th><i:inline key="yukon.common.name"/></th>
-                <th><i:inline key="yukon.common.type"/></th>
-                <th><i:inline key="yukon.common.status"/></th>
+                <tr>
+                    <tags:sort column="${name}"/>
+                    <tags:sort column="${type}"/>
+                    <tags:sort column="${status}"/>
+                </tr>
             </thead>
             <tbody>
-                <c:forEach var="signalTransmitter" items="${signalTransmitters}">
+                <c:forEach var="signalTransmitter" items="${signalTransmitters.items}">
                     <c:set var="cssClass" value="error" />
                     <cti:msg2 var="status" key="yukon.common.disabled"/>
                     <c:if test="${signalTransmitter.enabled}">
@@ -52,6 +56,7 @@
                 </c:forEach>
             </tbody>
         </table>
+        <tags:paginatedResponseControls response="${signalTransmitters}" adjustPageCount="true" thousands="true"/>
     </div>
 
 </cti:standardPage>
