@@ -108,8 +108,9 @@ public final class NotificationGroupDaoImpl implements NotificationGroupDao {
                     } else {
                         sql.append(Direction.asc);
                     }
+                } else {
+                    sql.append(direction);
                 }
-
             }
         }
 
