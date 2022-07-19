@@ -110,7 +110,7 @@ public class DerEdgeResponseServiceImpl implements DerEdgeResponseService {
             log.info("Recieved response from Central Controller {}", response);
             // acknowledge success - Log it
         } catch (Exception e) {
-            log.info(e);
+            log.error("Exception sending EdgeDrWebhookRequest", e);
         }
 
     }

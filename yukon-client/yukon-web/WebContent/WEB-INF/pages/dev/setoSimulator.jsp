@@ -5,7 +5,7 @@
 <%@ taglib prefix="tags" tagdir="/WEB-INF/tags"%>
 
 <cti:standardPage module="dev" page="setoSimulator">
-    <form:form action="sendPorterMessageToCC" modelAttribute="edgeDrDataNotification" method="POST">
+    <form:form action="sendEdgeDrDataNotification" modelAttribute="edgeDrDataNotification" method="POST">
         <cti:csrfToken />
 
         <div class="user-message warning">

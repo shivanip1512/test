@@ -7,11 +7,11 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 
 @JsonIgnoreProperties(ignoreUnknown = true)
 public class EdgeDrWebhookRequest implements Serializable{
-    String token;
-    String name;
-    String type;
-    String payload;
-    String errorMsg;
+    private String token;
+    private String name;
+    private String type;
+    private String payload;
+    private String errorMsg;
 
     public EdgeDrWebhookRequest(@JsonProperty("token") String token, @JsonProperty("name") String name,
             @JsonProperty("type") String type, @JsonProperty("payload") String payload,

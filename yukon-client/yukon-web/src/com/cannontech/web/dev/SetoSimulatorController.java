@@ -52,7 +52,7 @@ public class SetoSimulatorController {
         return "setoSimulator.jsp";
     }
 
-    @PostMapping("/sendPorterMessageToCC")
+    @PostMapping("/sendEdgeDrDataNotification")
     public String sendPorterMessageToCC(@ModelAttribute("edgeDrDataNotification") EdgeDrDataNotification edgeDrDataNotification,
             FlashScope flash) {
         final String homeKey = "yukon.web.modules.dev.setoSimulator.";
