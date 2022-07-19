@@ -5,6 +5,7 @@ import java.util.List;
 
 import com.cannontech.database.data.lite.LiteYukonUser;
 import com.cannontech.multispeak.block.v5.Block;
+import com.cannontech.multispeak.client.MspAttribute;
 import com.cannontech.multispeak.data.v5.MspBlockReturnList;
 import com.cannontech.multispeak.data.v5.MspMeterReadReturnList;
 import com.cannontech.multispeak.data.v5.MspScadaAnalogReturnList;
@@ -31,19 +32,20 @@ public interface MspRawPointHistoryDao {
      * The readings are not grouped together such that there may be multiple MeterReads per meter per
      * Attribute
      * 
-     * @param readBy - readings collected for ReadBy value (ReadBy = NONE then ReadBy option not used).
+     * @param readBy           - readings collected for ReadBy value (ReadBy = NONE then ReadBy option not used).
      * @param meterNbrs
-     * @param startDate - rph timestamp >= (inclusive)
-     * @param endDate - rph timestamp <= (inclusive)
-     * @param lastReceived - Results are retrieved for meterNumber > lastReceived. LastReceived == null means
-     *        start from beginning.
-     * @param maxRecords - Max results returned (NOTE: If maxRecords is exceeded over the same meterNumber,
-     *        all results for
-     *        that meterNumber will still be included. Meaning meterRead[].length > maxRecords is possible).
+     * @param startDate        - rph timestamp >= (inclusive)
+     * @param endDate          - rph timestamp <= (inclusive)
+     * @param lastReceived     - Results are retrieved for meterNumber > lastReceived. LastReceived == null means
+     *                         start from beginning.
+     * @param maxRecords       - Max results returned (NOTE: If maxRecords is exceeded over the same meterNumber,
+     *                         all results for
+     *                         that meterNumber will still be included. Meaning meterRead[].length > maxRecords is possible).
+     * @param vendorAttributes - list of multispeak attributes set by vendor
      * @return MspMeterRead
      */
     public MspMeterReadReturnList retrieveMeterReads(ReadBy readBy, List<String> meterNbrs, Date startDate, Date endDate,
-            String lastReceived, int maxRecords);
+            String lastReceived, int maxRecords, List<MspAttribute> vendorAttributes);
 
     /**
      * Returns a MspMeterRead object with kW and kWh MeterRead readings for ReadBy value.
@@ -51,17 +53,18 @@ public interface MspRawPointHistoryDao {
      * and kW elements of MeterRead.
      * The readings will be grouped together such that there is only one MeterRead per meter
      * 
-     * @param readBy - readings collected for ReadBy value (ReadBy = NONE then ReadBy option not used).
+     * @param readBy           - readings collected for ReadBy value (ReadBy = NONE then ReadBy option not used).
      * @param readByValue
-     * @param lastReceived - Results are retrieved for meterNumber > lastReceived. LastReceived == null means
-     *        start from beginning.
-     * @param maxRecords - Max results returned (NOTE: If maxRecords is exceeded over the same meterNumber,
-     *        all results for
-     *        that meterNumber will still be included. Meaning meterRead[].length > maxRecordsis possible).
+     * @param lastReceived     - Results are retrieved for meterNumber > lastReceived. LastReceived == null means
+     *                         start from beginning.
+     * @param maxRecords       - Max results returned (NOTE: If maxRecords is exceeded over the same meterNumber,
+     *                         all results for
+     *                         that meterNumber will still be included. Meaning meterRead[].length > maxRecordsis possible).
+     * @param vendorAttributes - list of multispeak attributes set by vendor
      * @return MspMeterRead
      */
     public MspMeterReadReturnList retrieveLatestMeterReads(ReadBy readBy, List<String> readByValues, String lastReceived,
-            int maxRecords);
+            int maxRecords, List<MspAttribute> vendorAttributes);
 
     /**
      * Returns a list of Blocks.
