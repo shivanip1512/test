@@ -31,13 +31,13 @@ import com.cannontech.msp.beans.v4.ScadaAnalog;
 import com.cannontech.multispeak.block.v4.Block;
 import com.cannontech.multispeak.client.MspAttribute;
 import com.cannontech.multispeak.client.MspRawPointHistoryHelper;
+import com.cannontech.multispeak.client.v4.MultispeakFuncs;
 import com.cannontech.multispeak.dao.v4.FormattedBlockProcessingService;
 import com.cannontech.multispeak.dao.v4.MeterReadingProcessingService;
 import com.cannontech.multispeak.dao.v4.MspRawPointHistoryDao;
 import com.cannontech.multispeak.data.v4.MspBlockReturnList;
 import com.cannontech.multispeak.data.v4.MspMeterReadingReturnList;
 import com.cannontech.multispeak.data.v4.MspScadaAnalogReturnList;
-import com.cannontech.multispeak.util.MultispeakFuncsUtil;
 import com.google.common.collect.BiMap;
 import com.google.common.collect.ListMultimap;
 import com.google.common.collect.Lists;
@@ -53,6 +53,7 @@ public class MspRawPointHistoryDaoImpl implements MspRawPointHistoryDao {
     @Autowired private MeterRowMapper meterRowMapper;
     @Autowired private RawPointHistoryDao rawPointHistoryDao;
     @Autowired private YukonJdbcTemplate yukonJdbcTemplate;
+    @Autowired private MultispeakFuncs multispeakFuncs;
 
     @Override
     public MspMeterReadingReturnList retrieveMeterReading(ReadBy readBy, String readByValue, Date startDate,
@@ -65,7 +66,7 @@ public class MspRawPointHistoryDaoImpl implements MspRawPointHistoryDao {
 
         int estimatedSize = 0;
 
-        EnumSet<BuiltInAttribute> attributesToLoad = MultispeakFuncsUtil.getBuiltInAttributesForVendor(vendorAttributes);
+        EnumSet<BuiltInAttribute> attributesToLoad = multispeakFuncs.getBuiltInAttributesForVendor(vendorAttributes);
         
         Range<Date> dateRange = new Range<Date>(startDate, true, endDate, true);
         // load up results for each attribute
@@ -158,7 +159,7 @@ public class MspRawPointHistoryDaoImpl implements MspRawPointHistoryDao {
 
         int estimatedSize = 0;
         
-        EnumSet<BuiltInAttribute> attributesToLoad = MultispeakFuncsUtil.getBuiltInAttributesForVendor(vendorAttributes);
+        EnumSet<BuiltInAttribute> attributesToLoad = multispeakFuncs.getBuiltInAttributesForVendor(vendorAttributes);
         
         // load up results for each attribute
         for (BuiltInAttribute attribute : attributesToLoad) {

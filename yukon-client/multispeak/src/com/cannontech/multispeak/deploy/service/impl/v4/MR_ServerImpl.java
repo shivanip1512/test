@@ -45,7 +45,6 @@ import com.cannontech.msp.beans.v4.MspMeter;
 import com.cannontech.msp.beans.v4.ObjectFactory;
 import com.cannontech.msp.beans.v4.ServiceLocation;
 import com.cannontech.multispeak.block.v4.Block;
-import com.cannontech.multispeak.client.MspAttribute;
 import com.cannontech.multispeak.client.MultispeakDefines;
 import com.cannontech.multispeak.client.MultispeakVendor;
 import com.cannontech.multispeak.client.v4.MultispeakFuncs;
@@ -63,7 +62,6 @@ import com.cannontech.multispeak.exceptions.MultispeakWebServiceException;
 import com.cannontech.multispeak.service.v4.MR_Server;
 import com.cannontech.multispeak.service.v4.MspValidationService;
 import com.cannontech.multispeak.service.v4.MultispeakMeterService;
-import com.cannontech.multispeak.util.MultispeakFuncsUtil;
 import com.cannontech.user.UserUtils;
 import com.cannontech.yukon.BasicServerConnection;
 import com.google.common.collect.HashBiMap;
@@ -249,7 +247,7 @@ public class MR_ServerImpl implements MR_Server {
             try {
                 MeterReading meterReading = meterReadingProcessingService.createMeterReading(meter);
                 
-                EnumSet<BuiltInAttribute> attributesToLoad = MultispeakFuncsUtil.getBuiltInAttributesForVendor(vendor.getAttributes());
+                EnumSet<BuiltInAttribute> attributesToLoad = multispeakFuncs.getBuiltInAttributesForVendor(vendor.getAttributes());
                 
                 for (BuiltInAttribute attribute : attributesToLoad) {
                     try {
