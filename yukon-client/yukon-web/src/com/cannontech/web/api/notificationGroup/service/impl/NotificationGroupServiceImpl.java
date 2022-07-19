@@ -245,4 +245,18 @@ public class NotificationGroupServiceImpl implements NotificationGroupService {
                 direction);
         return new PaginatedResponse<NotificationGroup>(notificationGroupList, page, itemsPerPage);
     }
+
+    @Override
+    public NotificationGroup update(int id, NotificationGroup notificationGroup) {
+        LiteNotificationGroup liteNotificationGroup = cache.getAllContactNotificationGroups().stream()
+                .filter(obj -> obj.getNotificationGroupID() == id).findFirst()
+                .orElseThrow(() -> new NotFoundException("Notification Group id not found"));
+        com.cannontech.database.data.notification.NotificationGroup notificationGroupBase = (com.cannontech.database.data.notification.NotificationGroup) dbPersistentDao
+                .retrieveDBPersistent(liteNotificationGroup);
+        notificationGroup.buildDBPersistent(notificationGroupBase);
+        dbPersistentDao.performDBChange(notificationGroupBase, TransactionType.UPDATE);
+        notificationGroup.buildModel(notificationGroupBase);
+        buildModelForCICustomersAndUnassignedCont(notificationGroup, notificationGroupBase);
+        return notificationGroup;
+    }
 }

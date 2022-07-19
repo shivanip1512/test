@@ -13,6 +13,7 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.InitBinder;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
@@ -60,6 +61,11 @@ public class NotificationGroupApiController {
         Direction direction = sorting.getDirection();
         return new ResponseEntity<>(notificationGroupService.retrieveAll(name, sortBy, direction, page, itemsPerPage),
                 HttpStatus.OK);
+    }
+
+    @PutMapping("/{id}")
+    public ResponseEntity<Object> update(@PathVariable int id, @Valid @RequestBody NotificationGroup notificationGroup) {
+        return new ResponseEntity<>(notificationGroupService.update(id, notificationGroup), HttpStatus.OK);
     }
 
     @InitBinder("notificationGroup")

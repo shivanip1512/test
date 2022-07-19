@@ -27,4 +27,9 @@ public interface NotificationGroupService {
      */
     PaginatedResponse<NotificationGroup> retrieveAll(String name, SortBy sortBy, Direction direction, int page, int itemsPerPage);
 
+    /**
+     *Update a notification group 
+     */
+    NotificationGroup update(int id, NotificationGroup notificationGroup);
+
 }
