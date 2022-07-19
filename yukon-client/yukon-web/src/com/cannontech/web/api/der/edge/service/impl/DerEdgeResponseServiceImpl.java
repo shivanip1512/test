@@ -101,7 +101,6 @@ public class DerEdgeResponseServiceImpl implements DerEdgeResponseService {
         // Build requestEntity
         EdgeDrWebhookRequest edgeDrWebhookRequest = new EdgeDrWebhookRequest(token, name, type, payload, errorMsg);
         HttpHeaders headers = new HttpHeaders();
-//        headers.setContentType(MediaType.APPLICATION_JSON);
         HttpEntity<EdgeDrWebhookRequest> requestEntity = new HttpEntity<>(edgeDrWebhookRequest, headers);
         try {
             log.debug("EdgeDrWebhookRequest as JSON {}", jsonPrinter.toJson(edgeDrWebhookRequest));
