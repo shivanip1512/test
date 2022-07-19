@@ -18,7 +18,10 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.cannontech.common.model.DefaultSort;
 import com.cannontech.common.model.Direction;
+import com.cannontech.common.model.SortingParameters;
+import com.cannontech.core.dao.NotificationGroupDao.SortBy;
 import com.cannontech.stars.util.ServletUtils;
 import com.cannontech.web.api.notificationGroup.service.NotificationGroupService;
 import com.cannontech.web.notificationGroup.NotificationGroup;
@@ -50,10 +53,12 @@ public class NotificationGroupApiController {
     }
 
     @GetMapping
-    public ResponseEntity<Object> getAll(@RequestParam(defaultValue = "GroupName") String sortBy,
-            @RequestParam(defaultValue = "asc") Direction direction, @RequestParam(defaultValue = "1") int page,
+    public ResponseEntity<Object> getAll(String name, @DefaultSort(dir = Direction.asc, sort = "NAME") SortingParameters sorting,
+            @RequestParam(defaultValue = "1") int page,
             @RequestParam(name = "itemsPerPage", defaultValue = "250") int itemsPerPage) {
-        return new ResponseEntity<>(notificationGroupService.retrieveAll(sortBy, direction, page, itemsPerPage),
+        SortBy sortBy = SortBy.valueOf(sorting.getSort());
+        Direction direction = sorting.getDirection();
+        return new ResponseEntity<>(notificationGroupService.retrieveAll(name, sortBy, direction, page, itemsPerPage),
                 HttpStatus.OK);
     }
 
