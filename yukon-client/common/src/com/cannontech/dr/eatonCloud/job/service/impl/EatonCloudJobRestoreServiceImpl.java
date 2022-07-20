@@ -98,7 +98,7 @@ public class EatonCloudJobRestoreServiceImpl extends EatonCloudJobHelperService 
                         request.getDeviceGuids(),
                         summary.getCommand());
             } else {
-                log.info("{} devices:{} CREATED JOB Command:{} devices:{}",
+                log.info("{} devices:{} CREATED JOB Command:{}",
                         summary.getLogSummary(response.getJobGuid()),
                         request.getDeviceGuids().size(),
                         summary.getCommand());
