@@ -96,15 +96,15 @@ public class SignalTransmitterController {
             .collect(Collectors.toList());
 
     @GetMapping("list")
-    public String list(ModelMap model, @DefaultSort(dir = Direction.asc, sort = "name") SortingParameters sorting, 
-            @DefaultItemsPerPage(value=250) PagingParameters paging,
+    public String list(ModelMap model, @DefaultSort(dir = Direction.asc, sort = "name") SortingParameters sorting,
+            @DefaultItemsPerPage(value = 250) PagingParameters paging,
             String name, YukonUserContext userContext, FlashScope flash, HttpServletRequest request) throws URISyntaxException {
         ResponseEntity<? extends Object> response = null;
         try {
             MessageSourceAccessor accessor = messageResolver.getMessageSourceAccessor(userContext);
             SignalTransmitterSortBy sortBy = SignalTransmitterSortBy.valueOf(sorting.getSort());
             Direction dir = sorting.getDirection();
-            
+
             List<SortableColumn> columns = new ArrayList<>();
             for (SignalTransmitterSortBy column : SignalTransmitterSortBy.values()) {
                 String text = accessor.getMessage(column);
@@ -115,11 +115,11 @@ public class SignalTransmitterController {
             String url = helper.findWebServerUrl(request, userContext, ApiURL.pagingTerminalUrl);
             URIBuilder ub = new URIBuilder(url);
             ub.addParameter("sort", sortBy.getValue().name());
-            ub.addParameter("direction", dir.name());
+            ub.addParameter("dir", dir.name());
             ub.addParameter("name", name);
             ub.addParameter("itemsPerPage", Integer.toString(paging.getItemsPerPage()));
             ub.addParameter("page", Integer.toString(paging.getPage()));
-            
+
             response = apiRequestHelper.callAPIForParameterizedTypeObject(userContext, request, ub.toString(), HttpMethod.GET,
                     TerminalBase.class);
         } catch (ApiCommunicationException e) {
@@ -136,11 +136,11 @@ public class SignalTransmitterController {
         if (response.getStatusCode() == HttpStatus.OK) {
             signalTransmitters = (PaginatedResponse) response.getBody();
         }
-        
+
         model.addAttribute("signalTransmitters", signalTransmitters);
         return "/signalTransmitter/list.jsp";
     }
-    
+
     @GetMapping("/{id}/edit")
     public String edit(ModelMap model, YukonUserContext userContext, @PathVariable int id, FlashScope flash,
             HttpServletRequest request) {
@@ -155,7 +155,7 @@ public class SignalTransmitterController {
                 terminalBase = (TerminalBase) model.get("signalTransmitter");
                 terminalBase.setId(id);
             }
-            
+
             model.addAttribute("signalTransmitter", terminalBase);
             model.addAttribute("selectedSignalTransmitterType", terminalBase.getType());
             setupModel(model, request, userContext);
@@ -277,7 +277,7 @@ public class SignalTransmitterController {
         }
         return null;
     }
-    
+
     @DeleteMapping("/{id}/delete")
     public String delete(@PathVariable int id, @ModelAttribute LMDelete lmDelete, YukonUserContext userContext,
             FlashScope flash, HttpServletRequest request) {
@@ -302,7 +302,7 @@ public class SignalTransmitterController {
         }
         return redirectListPageLink;
     }
-    
+
     @GetMapping("/{id}/renderCopyDialog")
     public String renderCopyDialog(@PathVariable int id, ModelMap model, YukonUserContext userContext) {
 
@@ -317,16 +317,16 @@ public class SignalTransmitterController {
         model.addAttribute("selectedSignalTransmitterType", selectedSignalTransmitterType);
         return "/signalTransmitter/copySignalTransmitter.jsp";
     }
-    
+
     @PostMapping("/{id}/copy")
     public String copy(@ModelAttribute("terminalCopy") TerminalCopy terminalCopy, @PathVariable int id, BindingResult result,
             YukonUserContext userContext, FlashScope flash, ModelMap model, HttpServletRequest request,
             HttpServletResponse servletResponse) throws IOException {
         Map<String, String> json = new HashMap<>();
         try {
-            String url = helper.findWebServerUrl(request, userContext, ApiURL.pagingTerminalUrl + "/" + id + "/copy" );
-            ResponseEntity<? extends Object> response = 
-                    apiRequestHelper.callAPIForObject(userContext, request, url, HttpMethod.POST, Object.class, terminalCopy);
+            String url = helper.findWebServerUrl(request, userContext, ApiURL.pagingTerminalUrl + "/" + id + "/copy");
+            ResponseEntity<? extends Object> response = apiRequestHelper.callAPIForObject(userContext, request, url,
+                    HttpMethod.POST, Object.class, terminalCopy);
 
             if (response.getStatusCode() == HttpStatus.UNPROCESSABLE_ENTITY) {
                 BindException error = new BindException(terminalCopy, "terminalCopy");
@@ -416,12 +416,12 @@ public class SignalTransmitterController {
         }
         return terminalBase;
     }
-    
+
     private PaoType getPaoTypeForPaoId(int signalTransmitterId) {
         LiteYukonPAObject litePao = dbCache.getAllPaosMap().get(signalTransmitterId);
         return litePao.getPaoType();
     }
-    
+
     private String bindAndForwardForCopy(TerminalCopy terminalCopy, BindingResult result, ModelMap model,
             HttpServletResponse response, int id) {
         PaoType selectedSignalTransmitterType = getPaoTypeForPaoId(id);
