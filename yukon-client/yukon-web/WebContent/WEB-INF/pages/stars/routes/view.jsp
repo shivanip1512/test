@@ -29,6 +29,7 @@
                         <tags:pickerDialog id="signalTransmitterPicker${id}" 
                                                type="signalTransmitterPicker" 
                                                destinationFieldName="signalTransmitterId"
+                                               extraDestinationFields="type:deviceTypeField;" 
                                                linkType="selection" 
                                                selectionProperty="paoName"
                                                icon="icon-magnifier"
@@ -37,6 +38,7 @@
                                                viewOnlyMode="${mode == 'VIEW'}"
                                                initialId="${communicationRoute.signalTransmitterId}"/>
                          <tags:hidden path="signalTransmitterId"/>
+                         <tags:hidden path="deviceType" id="deviceTypeField"/>
                      </tags:nameValue2>
                      <tags:nameValue2 nameKey=".defaultRoute">
                          <tags:switchButton path="defaultRoute" onNameKey=".yes.label" offNameKey=".no.label"/>
