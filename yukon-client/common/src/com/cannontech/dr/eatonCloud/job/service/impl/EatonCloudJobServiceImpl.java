@@ -26,7 +26,6 @@ import com.cannontech.clientutils.YukonLogManager;
 import com.cannontech.common.config.ConfigurationSource;
 import com.cannontech.common.config.MasterConfigInteger;
 import com.cannontech.common.util.ScheduledExecutor;
-import com.cannontech.core.dao.DeviceDao;
 import com.cannontech.dr.eatonCloud.job.service.EatonCloudJobControlType;
 import com.cannontech.dr.eatonCloud.job.service.EatonCloudJobPollService;
 import com.cannontech.dr.eatonCloud.job.service.EatonCloudJobResponseProcessor;
@@ -46,7 +45,6 @@ import com.google.common.base.Strings;
 
 public class EatonCloudJobServiceImpl extends EatonCloudJobHelperService implements EatonCloudJobService {
     @Autowired private EatonCloudJobResponseProcessor eatonCloudJobResponseProcessor;
-    @Autowired private DeviceDao deviceDao;
     @Autowired private EatonCloudCommunicationServiceV1 eatonCloudCommunicationService;
     @Autowired private RecentEventParticipationDao recentEventParticipationDao;
     @Autowired private ConfigurationSource configurationSource;
@@ -159,14 +157,14 @@ public class EatonCloudJobServiceImpl extends EatonCloudJobHelperService impleme
      * Starts jobs, schedules poll for results in 5 minutes
      */
     private Pair<Instant, List<String>> createJobs(Set<Integer> devices, EventSummary summary) {
-        Map<Integer, String> guids = deviceDao.getGuids(devices);
+        Map<String, Integer> guids = getGuidsToDeviceIds(devices);
         Map<String, Object> params = ControlParamHeper.getShedParams(summary.getCommand(), summary.getEventId());
-        Iterable<EatonCloudJobRequestV1> requests = getRequests(guids.values(), params);
+        Iterable<EatonCloudJobRequestV1> requests = getRequests(guids.keySet(), params);
         Instant jobCreationTime =  Instant.now();
 
         List<String> jobGuids = new ArrayList<>();
         requests.forEach(request -> {
-            String jobGuid = startJob(guids, summary, devices, request, jobCreationTime);
+            String jobGuid = startJob(guids, summary, request, jobCreationTime);
             if (jobGuid != null) {
                 jobGuids.add(jobGuid);
             }
@@ -184,30 +182,31 @@ public class EatonCloudJobServiceImpl extends EatonCloudJobHelperService impleme
        
     }
 
-    private String startJob(Map<Integer, String> guids, EventSummary summary, Set<Integer> devices,
+    private String startJob(Map<String, Integer> guidToDeviceId, EventSummary summary,
             EatonCloudJobRequestV1 request, Instant jobCreationTime) {
         try {
             EatonCloudJobResponseV1 response = eatonCloudCommunicationService.createJob(request);
             if (log.isDebugEnabled()) {
-                log.debug("{} CREATED JOB Shed Command:{} devices:{}",
+                log.debug("{} CREATED JOB devices:{} Shed Command:{}",
                         summary.getLogSummary(response.getJobGuid(), true),
-                        summary.getCommand(),
-                        devices);
+                        request.getDeviceGuids(),
+                        summary.getCommand());
             } else {
-                log.info("{} CREATED JOB Shed Command:{} devices:{}",
+                log.info("{} CREATED JOB devices:{} Shed Command:{}",
                         summary.getLogSummary(response.getJobGuid(), true),
-                        summary.getCommand(),
-                        devices.size());
+                        request.getDeviceGuids().size(),
+                        summary.getCommand());
             }
             return response.getJobGuid();
         } catch (EatonCloudCommunicationExceptionV1 e) {
-            log.error("{} JOB CREATION FAILED Command:{} devices:{}",
+            log.error("{} JOB CREATION FAILED devices:{} Command:{}",
                     summary.getLogSummary(true),
+                    request.getDeviceGuids().size(),
                     summary.getCommand(),
-                    devices.size(), e);
+                    e);
             // job failed, mark all devices as failed, failed job will not retry
-            devices.forEach(deviceId -> eatonCloudJobResponseProcessor.processError(summary,
-                    deviceId, guids.get(deviceId), null,
+            request.getDeviceGuids().forEach(guid -> eatonCloudJobResponseProcessor.processError(summary,
+                    guidToDeviceId.get(guid), guid, null,
                     EatonCloudError.JOB_CREATION_FAILED.getCode(), ControlEventDeviceStatus.FAILED, 1, jobCreationTime));
             return null;
         }

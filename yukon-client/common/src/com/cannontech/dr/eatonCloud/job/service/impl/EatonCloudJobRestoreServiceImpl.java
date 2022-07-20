@@ -16,7 +16,6 @@ import com.cannontech.clientutils.YukonLogManager;
 import com.cannontech.common.config.ConfigurationSource;
 import com.cannontech.common.config.MasterConfigInteger;
 import com.cannontech.common.util.ScheduledExecutor;
-import com.cannontech.core.dao.DeviceDao;
 import com.cannontech.dr.eatonCloud.job.service.EatonCloudJobControlType;
 import com.cannontech.dr.eatonCloud.job.service.EatonCloudJobResponseProcessor;
 import com.cannontech.dr.eatonCloud.job.service.EatonCloudJobRestorePollService;
@@ -35,7 +34,6 @@ import com.google.common.base.Strings;
 
 public class EatonCloudJobRestoreServiceImpl extends EatonCloudJobHelperService implements EatonCloudJobRestoreService {
     @Autowired private EatonCloudJobResponseProcessor eatonCloudJobResponseProcessor;
-    @Autowired private DeviceDao deviceDao;
     @Autowired private EatonCloudCommunicationServiceV1 eatonCloudCommunicationService;
     @Autowired private ConfigurationSource configurationSource;
     @Autowired @Qualifier("main") private ScheduledExecutor scheduledExecutor;
@@ -69,14 +67,14 @@ public class EatonCloudJobRestoreServiceImpl extends EatonCloudJobHelperService 
      * Starts jobs, schedules poll for results in 5 minutes
      */
     private void createJobs(Set<Integer> devices, EventRestoreSummary summary) {
-        Map<Integer, String> guids = deviceDao.getGuids(devices);
+        Map<String, Integer> guids = getGuidsToDeviceIds(devices);
         Map<String, Object> params = ControlParamHeper.getRestoreParams(summary.getCommand(), summary.getEventId());
-        Iterable<EatonCloudJobRequestV1> requests = getRequests(guids.values(), params);
+        Iterable<EatonCloudJobRequestV1> requests = getRequests(guids.keySet(), params);
         Map<String, List<String>> jobGuids = new HashMap<>();
         List<String> devicesGuids = new ArrayList<>();
         requests.forEach(request -> {
             devicesGuids.addAll(request.getDeviceGuids());
-            String jobGuid = startJob(guids, summary, devices, request);
+            String jobGuid = startJob(guids, summary, request);
             if (jobGuid != null) {
                 jobGuids.put(jobGuid, request.getDeviceGuids());
             }
@@ -90,30 +88,30 @@ public class EatonCloudJobRestoreServiceImpl extends EatonCloudJobHelperService 
         }
     }
     
-    private String startJob(Map<Integer, String> guids, EventRestoreSummary summary, Set<Integer> devices,
+    private String startJob(Map<String, Integer> guids, EventRestoreSummary summary,
             EatonCloudJobRequestV1 request) {
         try {
             EatonCloudJobResponseV1 response = eatonCloudCommunicationService.createJob(request);
             if (log.isDebugEnabled()) {
-                log.info("{} CREATED JOB Command:{} devices:{}",
+                log.info("{} devices:{} CREATED JOB Command:{}",
                         summary.getLogSummary(response.getJobGuid()),
-                        summary.getCommand(),
-                        devices);
+                        request.getDeviceGuids(),
+                        summary.getCommand());
             } else {
-                log.info("{} CREATED JOB Command:{} devices:{}",
+                log.info("{} devices:{} CREATED JOB Command:{} devices:{}",
                         summary.getLogSummary(response.getJobGuid()),
-                        summary.getCommand(),
-                        devices.size());
+                        request.getDeviceGuids().size(),
+                        summary.getCommand());
             }
             return response.getJobGuid();
         } catch (EatonCloudCommunicationExceptionV1 e) {
-            log.error("{} JOB CREATION FAILED Command:{} devices:{}",
+            log.error("{} devices:{} JOB CREATION FAILED Command:{}",
                     summary.getLogSummary(),
-                    summary.getCommand(),
-                    devices.size(), e);
+                    request.getDeviceGuids().size(),
+                    summary.getCommand(), e);
             // job failed, mark all devices as failed as restore doesn't retry
-            devices.forEach(deviceId -> eatonCloudJobResponseProcessor.processError(summary,
-                    deviceId, guids.get(deviceId), null,
+            request.getDeviceGuids().forEach(guid -> eatonCloudJobResponseProcessor.processError(summary,
+                    guids.get(guid), guid, null,
                     EatonCloudError.JOB_CREATION_FAILED.getCode()));
             return null;
         }
