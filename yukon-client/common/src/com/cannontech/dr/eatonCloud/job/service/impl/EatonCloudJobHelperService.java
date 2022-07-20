@@ -4,12 +4,12 @@ import java.util.Collection;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
-import java.util.stream.Collectors;
 
 import org.springframework.beans.factory.annotation.Autowired;
 
 import com.cannontech.core.dao.DeviceDao;
 import com.cannontech.dr.eatonCloud.model.v1.EatonCloudJobRequestV1;
+import com.google.common.collect.HashBiMap;
 import com.google.common.collect.Iterables;
 
 public abstract class EatonCloudJobHelperService {
@@ -26,9 +26,6 @@ public abstract class EatonCloudJobHelperService {
     }
     
     protected Map<String, Integer> getGuidsToDeviceIds(Set<Integer> devices) {
-        Map<String, Integer> guids = deviceDao.getGuids(devices).entrySet().stream()
-                .collect(Collectors.toMap(Map.Entry::getValue, Map.Entry::getKey,
-                        (oldValue, newValue) -> newValue));
-        return guids;
+        return HashBiMap.create(deviceDao.getGuids(devices)).inverse();
     }
 }
