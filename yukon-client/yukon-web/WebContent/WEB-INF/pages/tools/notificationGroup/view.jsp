@@ -42,10 +42,10 @@
         <form:hidden path="id" />
         <tags:sectionContainer2 nameKey="general">
             <tags:nameValueContainer2>
-                <tags:nameValue2 nameKey=".name">
+                <tags:nameValue2 nameKey="yukon.common.name">
                     <tags:input path="name" maxlength="60" autofocus="autofocus" inputClass="w300 js-name"/>
                 </tags:nameValue2>
-                <tags:nameValue2 nameKey=".status" rowClass="noswitchtype">
+                <tags:nameValue2 nameKey="yukon.common.status" rowClass="noswitchtype">
                     <tags:switchButton path="enabled" offNameKey="yukon.common.disabled" onNameKey="yukon.common.enabled" />
                 </tags:nameValue2>
             </tags:nameValueContainer2>
@@ -57,7 +57,7 @@
                     <table id="js-notification-settings-table" class="compact-results-table dashed">
                         <thead>
                             <tr>
-                                <th width="60%"><i:inline key=".name"/></th>
+                                <th width="60%"><i:inline key="yukon.common.name"/></th>
                                 <th width="20%"><i:inline key=".sendEmail"/></th>
                                 <th width="20%"><i:inline key=".makePhoneCall"/></th>
                             </tr>
@@ -66,19 +66,19 @@
                         <tbody>
                             <c:forEach var="cICustomer" items="${notificationGroup.cICustomers}" varStatus="status">
                                 <tr>
-                                    <td> - ${fn:escapeXml(cICustomer.companyName)}</td>
+                                    <td>${fn:escapeXml(cICustomer.companyName)}</td>
                                     <td><tags:displayBooleanStatusText value="${cICustomer.emailEnabled}"/></td>
                                     <td><tags:displayBooleanStatusText value="${cICustomer.phoneCallEnabled}"/></td> 
                                 </tr>
                                 <c:forEach var="contact" items="${cICustomer.contacts}">
                                     <tr>
-                                        <td> - - ${fn:escapeXml(contact.name)}</td>
+                                        <td> - ${fn:escapeXml(contact.name)}</td>
                                         <td><tags:displayBooleanStatusText value="${contact.emailEnabled}"/></td>
                                         <td><tags:displayBooleanStatusText value="${contact.phoneCallEnabled}"/></td> 
                                     </tr>
                                     <c:forEach var="notifications" items="${contact.notifications}">
                                         <tr>
-                                            <td> - - - ${fn:escapeXml(notifications.notification)}</td>
+                                            <td> - - ${fn:escapeXml(notifications.notification)}</td>
                                             <td><tags:displayBooleanStatusText value="${notifications.emailEnabled}"/></td>
                                             <td><tags:displayBooleanStatusText value="${notifications.phoneCallEnabled}"/></td> 
                                         </tr>
@@ -88,13 +88,13 @@
 
                             <c:forEach var="unassignedContact" items="${notificationGroup.unassignedContacts}">
                                 <tr>
-                                    <td> - ${fn:escapeXml(unassignedContact.name)}</td>
+                                    <td>${fn:escapeXml(unassignedContact.name)}</td>
                                     <td><tags:displayBooleanStatusText value="${unassignedContact.emailEnabled}"/></td>
                                     <td><tags:displayBooleanStatusText value="${unassignedContact.phoneCallEnabled}"/></td> 
                                 </tr>
                                 <c:forEach var="notifications" items="${unassignedContact.notifications}">
                                     <tr>
-                                        <td> - - ${fn:escapeXml(notifications.notification)}</td>
+                                        <td> - ${fn:escapeXml(notifications.notification)}</td>
                                         <td><tags:displayBooleanStatusText value="${notifications.emailEnabled}"/></td>
                                         <td><tags:displayBooleanStatusText value="${notifications.phoneCallEnabled}"/></td> 
                                     </tr>

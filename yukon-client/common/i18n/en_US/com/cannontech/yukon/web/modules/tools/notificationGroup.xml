@@ -11,8 +11,6 @@
     <entry key="yukon.web.modules.tools.notificationGroup.filter.error">Error filtering notification group records: {0}.</entry>
     <entry key="yukon.web.modules.tools.notificationGroup.retrieve.error">An error occurred in retrieving notification group.</entry>
     
-    <entry key="yukon.web.modules.tools.notificationGroup.name">Name</entry>
-    <entry key="yukon.web.modules.tools.notificationGroup.status">Status</entry>
     <entry key="yukon.web.modules.tools.notificationGroup.sendEmail">Send Email</entry>
     <entry key="yukon.web.modules.tools.notificationGroup.makePhoneCall">Make Phone Calls</entry>
     
