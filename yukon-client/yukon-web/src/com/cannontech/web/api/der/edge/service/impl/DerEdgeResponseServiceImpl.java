@@ -4,6 +4,7 @@ import java.net.URI;
 import java.net.URISyntaxException;
 import java.nio.charset.StandardCharsets;
 import java.util.Arrays;
+import java.util.UUID;
 import java.util.concurrent.TimeUnit;
 
 import javax.annotation.PostConstruct;
@@ -13,7 +14,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpMethod;
-import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.http.converter.json.MappingJackson2HttpMessageConverter;
 import org.springframework.stereotype.Service;
@@ -25,6 +25,7 @@ import com.cannontech.common.config.MasterConfigString;
 import com.cannontech.core.dao.PaoDao;
 import com.cannontech.database.data.lite.LiteYukonPAObject;
 import com.cannontech.dr.edgeDr.EdgeDrDataNotification;
+import com.cannontech.dr.edgeDr.EdgeDrErrorHandler;
 import com.cannontech.dr.edgeDr.EdgeDrWebhookRequest;
 import com.cannontech.messaging.serialization.thrift.ThriftByteDeserializer;
 import com.cannontech.web.api.der.edge.service.DerEdgeResponseService;
@@ -55,7 +56,7 @@ public class DerEdgeResponseServiceImpl implements DerEdgeResponseService {
 
         apiRestTemplate = new RestTemplate();
         // Do we need an error handler?
-//        apiRestTemplate.setErrorHandler(new EatonCloudErrorHandlerV1());
+        apiRestTemplate.setErrorHandler(new EdgeDrErrorHandler());
         apiRestTemplate.setMessageConverters(Arrays.asList(mappingJackson2HttpMessageConverter));
         jsonPrinter = new GsonBuilder().setPrettyPrinting().create();
 
@@ -87,7 +88,7 @@ public class DerEdgeResponseServiceImpl implements DerEdgeResponseService {
         // Read stuff off the edgeDrDataNotification thrift queue
         EdgeDrDataNotification edgeDrDataNotification = edgeDrDataNotificationDeserializer.fromBytes(thriftMessage);
         // Log initial thing
-        log.info("Recieved EdgeDrDataNotification {} from porter", edgeDrDataNotification);
+        log.info("Received EdgeDrDataNotification {} from porter", edgeDrDataNotification);
 
         // Get the LiteYukonPAObject
         LiteYukonPAObject liteYukonPao = paodao.getLiteYukonPAO(edgeDrDataNotification.getPaoId());
@@ -105,8 +106,8 @@ public class DerEdgeResponseServiceImpl implements DerEdgeResponseService {
         try {
             log.debug("EdgeDrWebhookRequest as JSON {}", jsonPrinter.toJson(edgeDrWebhookRequest));
             log.debug("Sending message {} to URL: {}", requestEntity, uri);
-            ResponseEntity<? extends Object> response = apiRestTemplate.exchange(uri, HttpMethod.POST, requestEntity, HttpStatus.class);
-            log.info("Recieved response from Central Controller {}", response);
+            ResponseEntity<? extends Object> response = apiRestTemplate.exchange(uri, HttpMethod.POST, requestEntity, Object.class);
+            log.info("Received response from Central Controller {}", response);
             // acknowledge success - Log it
         } catch (Exception e) {
             log.error("Exception sending EdgeDrWebhookRequest", e);

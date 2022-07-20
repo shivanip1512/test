@@ -1,5 +1,6 @@
 package com.cannontech.dr.edgeDr;
 
+import java.math.BigInteger;
 import java.util.Arrays;
 
 public class EdgeDrDataNotification {
@@ -29,6 +30,10 @@ public class EdgeDrDataNotification {
 
     public void setPayload(byte[] payload) {
         this.payload = payload;
+    }
+    
+    public void setPayload(String stringPayload) {
+        this.payload = new BigInteger(stringPayload, 16 /*parse as hex*/).toByteArray();
     }
 
     public Short getE2eId() {
