@@ -17,14 +17,14 @@
 
     <hr/>
     <div class="filter-section">
-            <form action="<cti:url var="url" value="/device/signalTransmitter/list"/>" method="get">
-                <i:inline key="yukon.common.filterBy"/>
-                <cti:msg2 var="namePlaceholder" key=".name"/>
-                <input type="text" name="name" size="20"  placeholder="${namePlaceholder}">
-                <cti:button nameKey="filter" type="submit" classes="action primary fn vab"/>
-            </form>
-            <hr/>
+        <form action="<cti:url var="url" value="/device/signalTransmitter/list"/>" method="get">
+            <i:inline key="yukon.common.filterBy"/>
+            <cti:msg2 var="namePlaceholder" key=".name"/>
+            <input type="text" name="name" size="20"  placeholder="${namePlaceholder}">
+            <cti:button nameKey="filter" type="submit" classes="action primary fn vab"/>
+        </form>
     </div>
+    <hr/>
     
     <cti:url var="listUrl" value="/stars/device/signalTransmitter/list"/>
     <div data-url="${listUrl}" data-static>
