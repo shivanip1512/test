@@ -396,8 +396,10 @@ public class RecentEventParticipationDaoImpl implements RecentEventParticipation
         SqlStatementBuilder sql = new SqlStatementBuilder();
         sql.append("UPDATE ControlEventDevice");
         sql.append("SET Result").eq(status);
-        sql.append(",");
-        sql.append("DeviceReceivedTime").eq(deviceReceivedTime);
+        if(deviceReceivedTime != null) {
+            sql.append(",");
+            sql.append("DeviceReceivedTime").eq(deviceReceivedTime);   
+        }
         if (failReason != null) {
             sql.append(",");
             sql.append("FailReason").eq(failReason);

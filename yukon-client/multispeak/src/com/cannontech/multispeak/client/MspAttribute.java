@@ -18,7 +18,7 @@ public enum MspAttribute implements DisplayableEnum {
 
     PEAKDEMAND_USAGE("Peak Demand , Usage", BuiltInAttribute.USAGE, BuiltInAttribute.PEAK_DEMAND),
     POWERFACTOR("Power Factor", BuiltInAttribute.POWER_FACTOR),
-    KVAR_KVARH("Kvar , KVarH", BuiltInAttribute.KVAR, BuiltInAttribute.KVARH),
+    KVAR_KVARH("Kvar , KVarH", BuiltInAttribute.KVAR, BuiltInAttribute.KVARH, BuiltInAttribute.KVA),
     RECEIVEDKWH("Received kWh", BuiltInAttribute.RECEIVED_KWH),
     TOU("TOU", BuiltInAttribute.DELIVERED_KWH_RATE_A, BuiltInAttribute.DELIVERED_KWH_RATE_B,
                BuiltInAttribute.DELIVERED_KWH_RATE_C, BuiltInAttribute.DELIVERED_KWH_RATE_D,
