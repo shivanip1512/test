@@ -66,6 +66,11 @@ enum class ResponseCode {
     NotAcceptable = COAP_RESPONSE_CODE(406),
 };
 
+enum class Options : unsigned short
+{
+    OSCORE  = 9,
+};
+
 IM_EX_PROT StreamBufferSink& operator<<(StreamBufferSink& s, const ResponseCode r);
 
 }
