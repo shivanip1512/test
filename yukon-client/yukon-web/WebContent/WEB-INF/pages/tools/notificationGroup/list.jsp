@@ -21,15 +21,15 @@
         <form action="${url}" method="get">
             <i:inline key="yukon.common.filterBy"/>
             <cti:msg2 var="namePlaceholder" key="yukon.common.name"/>
-            <input type="text" name="name" size="20" value="${fn:escapeXml(name)}" placeholder="${namePlaceholder}">
-            
-           <%--  <tags:input path="name" placeholder="${namePlaceholder}" inputClass="vat MR5" id="js-name" autocomplete="nofill"/> --%>
+            <input type="text" name="filterValueName" size="20" value="${fn:escapeXml(filterValueName)}" placeholder="${namePlaceholder}">
             <cti:button nameKey="filter" type="submit" classes="action primary fn vab"/>
         </form>
     </div>
     <hr/>
-    
-    <cti:url var="listUrl" value="/tools/notificationGroup/list"/>
+
+    <cti:url var="listUrl" value="/tools/notificationGroup/list">
+        <cti:param name="filterValueName" value="${filterValueName}"/>
+    </cti:url>
     <div data-url="${listUrl}" data-static>
         <table class="compact-results-table row-highlighting">
             <thead>

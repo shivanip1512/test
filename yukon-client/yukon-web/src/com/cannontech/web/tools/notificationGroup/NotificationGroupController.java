@@ -133,7 +133,7 @@ public class NotificationGroupController {
     @GetMapping("list")
     public String list(ModelMap model, @DefaultSort(dir = Direction.asc, sort = "name") SortingParameters sorting,
             @DefaultItemsPerPage(value = 250) PagingParameters paging,
-            String name, YukonUserContext userContext, FlashScope flash, HttpServletRequest request) {
+            String filterValueName, YukonUserContext userContext, FlashScope flash, HttpServletRequest request) {
 
         ResponseEntity<? extends Object> response = null;
         try {
@@ -154,7 +154,7 @@ public class NotificationGroupController {
             URIBuilder ub = new URIBuilder(url);
             ub.addParameter("sort", sortBy.getValue().name());
             ub.addParameter("dir", dir.name());
-            ub.addParameter("name", name);
+            ub.addParameter("name", filterValueName);
             ub.addParameter("itemsPerPage", Integer.toString(paging.getItemsPerPage()));
             ub.addParameter("page", Integer.toString(paging.getPage()));
             
@@ -165,6 +165,7 @@ public class NotificationGroupController {
                 notificationGroups = (PaginatedResponse) response.getBody();
             }
             model.addAttribute("notificationGroups", notificationGroups);
+            model.addAttribute("filterValueName", filterValueName);
         } catch (ApiCommunicationException e) {
             log.error(e.getMessage());
             flash.setError(new YukonMessageSourceResolvable(communicationKey));
@@ -193,9 +194,6 @@ public class NotificationGroupController {
 
         @Override
         public String getFormatKey() {
-            if (this == name) {
-                return "yukon.web.modules.tools.notificationGroup." + name();
-            }
             return "yukon.common." + name();
         }
 
