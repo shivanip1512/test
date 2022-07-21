@@ -1829,6 +1829,7 @@
               <page name="rfnTest.viewMeterReadArchive" type="BASIC"/>
               <page name="rfnTest.viewEventArchive" type="BASIC"/>
               <page name="rfnTest.viewAlarmArchive" type="BASIC"/>
+              <page name="rfnTest.viewCellularCommArchiveRequest" type="BASIC"/>
               <page name="rfnTest.viewLcrDataSimulator" type="BASIC"/>
               <page name="rfnTest.viewGatewayDataSimulator" type="BASIC"/>
               <page name="rfnTest.viewDataStreamingSimulator" type="BASIC"/>
