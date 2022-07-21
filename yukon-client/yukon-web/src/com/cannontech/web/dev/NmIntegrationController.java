@@ -1392,7 +1392,9 @@ public class NmIntegrationController {
     private RelayCellularComm buildRelayCellularComm(CellularTestCommArchive testCommArchive) {
         RelayCellularComm cellularComm = new RelayCellularComm();
         cellularComm.setCellularCommStatusTimestamp(DateTime.now().getMillis());
-        RfnIdentifier deviceIdentifier = new RfnIdentifier(testCommArchive.getSerialNumber(), testCommArchive.getManufacturerModel().getManufacturer(), testCommArchive.getManufacturerModel().getModel());
+        RfnIdentifier deviceIdentifier = new RfnIdentifier(testCommArchive.getSerialNumber(), 
+                                                           testCommArchive.getManufacturerModel().getManufacturer(), 
+                                                           testCommArchive.getManufacturerModel().getModel());
         cellularComm.setDeviceRfnIdentifier(deviceIdentifier);
         cellularComm.setRelayCellularCommStatus(testCommArchive.getNodeConnectionState());
         cellularComm.setRsrp(testCommArchive.getRsrp());

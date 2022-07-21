@@ -1,19 +1,19 @@
 <%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c"%>
 <%@ taglib uri="http://cannontech.com/tags/cti" prefix="cti"%>
 <%@ taglib prefix="tags" tagdir="/WEB-INF/tags"%>
-<%@ taglib prefix="i" tagdir="/WEB-INF/tags/i18n"%>
 <%@ taglib prefix="form" uri="http://www.springframework.org/tags/form"%>
-<%@ taglib prefix="dt" tagdir="/WEB-INF/tags/dateTime"%>
 
 <cti:standardPage module="dev" page="rfnTest.viewCellularCommArchiveRequest">
 
 	<div class="notes">
         <br/>This simulator sends Cellular Comm Archive Requests, which are sent by Network Manager to inform Yukon of several cellular points.
-        <br/>The four points are the Comm Status point, the RSSI, RSRP, RSRQ, and SINR. Yukon stores these are point data, and they can be manipulated
+        <br/>The four points are the Comm Status point, the RSSI, RSRP, RSRQ, and SINR. Yukon stores these as point data, and they can be manipulated
         <br/>by point injection as well, but this gives us another avenue to test Yukon. 
         <br/>To use this simulator you'll need to have already created the device, as Yukon does not automatically create devices from these messages.
         <br/>Add the serial number for an existing device, and select the correct manufacturer and model from the dropdown, then fill out all fields
         <br/>below with the desired values. After hitting send the message will be transmitted to Yukon.  
+        <br/>This simulator only transmits the message, but cannot check that it was successfully processed. Logs for this message can be found in 
+        <br/>the ServiceManager_RFNComms log. 
      </div><br/>
 
 	<script type="text/javascript">
@@ -29,7 +29,7 @@
 			<cti:csrfToken/>
 			<tags:nameValueContainer>
 				<tags:nameValue name="Serial Number">
-					<form:input path="serialNumber" size="10" />
+					<form:input path="serialNumber" size="10"/>
 				</tags:nameValue>
 				
 				<tags:nameValue name="Manufacturer and Model">
