@@ -12,6 +12,7 @@ import java.util.stream.Stream;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import org.apache.commons.lang3.StringUtils;
 import org.apache.http.client.utils.URIBuilder;
 import org.apache.logging.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -71,7 +72,6 @@ import com.cannontech.web.common.flashScope.FlashScope;
 import com.cannontech.web.common.sort.SortableColumn;
 import com.cannontech.web.security.annotation.CheckPermissionLevel;
 import com.cannontech.yukon.IDatabaseCache;
-import com.cannontech.common.device.terminal.dao.PagingTerminalDao.SortBy;
 
 @Controller
 @CheckPermissionLevel(property = YukonRoleProperty.MANAGE_INFRASTRUCTURE, level = HierarchyPermissionLevel.VIEW)
@@ -98,7 +98,9 @@ public class SignalTransmitterController {
     @GetMapping("list")
     public String list(ModelMap model, @DefaultSort(dir = Direction.asc, sort = "name") SortingParameters sorting,
             @DefaultItemsPerPage(value = 250) PagingParameters paging,
-            String name, YukonUserContext userContext, FlashScope flash, HttpServletRequest request) throws URISyntaxException {
+            String filterValueName,
+            YukonUserContext userContext, FlashScope flash,
+            HttpServletRequest request) throws URISyntaxException {
         ResponseEntity<? extends Object> response = null;
         try {
             MessageSourceAccessor accessor = messageResolver.getMessageSourceAccessor(userContext);
@@ -116,7 +118,7 @@ public class SignalTransmitterController {
             URIBuilder ub = new URIBuilder(url);
             ub.addParameter("sort", sortBy.getValue().name());
             ub.addParameter("dir", dir.name());
-            ub.addParameter("name", name);
+            ub.addParameter("name", filterValueName);
             ub.addParameter("itemsPerPage", Integer.toString(paging.getItemsPerPage()));
             ub.addParameter("page", Integer.toString(paging.getPage()));
 
@@ -138,6 +140,7 @@ public class SignalTransmitterController {
         }
 
         model.addAttribute("signalTransmitters", signalTransmitters);
+        model.addAttribute("filterValueName", filterValueName);
         return "/signalTransmitter/list.jsp";
     }
 
