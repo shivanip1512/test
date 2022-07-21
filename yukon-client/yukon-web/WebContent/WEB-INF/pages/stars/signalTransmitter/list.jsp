@@ -57,6 +57,9 @@
                 </c:forEach>
             </tbody>
         </table>
+        <c:if test="${empty signalTransmitters.items}">
+            <span class="empty-list compact-results-table"><i:inline key="yukon.common.search.noResultsFound"/></span>
+        </c:if>
         <tags:paginatedResponseControls response="${signalTransmitters}" adjustPageCount="true" thousands="true"/>
     </div>
 
