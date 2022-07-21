@@ -15,7 +15,7 @@ public class YukonValidationHelperCommon {
 
     public boolean isPaoNameConflict(String paoName, PaoType type, Errors errors, String paoId) {
         String paoNameWithoutSpace = paoName.trim();
-        if (!errors.hasFieldErrors("deviceName")) {
+        if (!errors.hasFieldErrors("deviceName") && type != null) {
             // Check if pao name already exists for paoClass and paoCategory
             PaoType paoType = (type == null && paoId != null) ? serverDatabaseCache.getAllPaosMap()
                     .get(Integer.valueOf(paoId)).getPaoType() : type;
