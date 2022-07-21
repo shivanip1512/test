@@ -67,20 +67,20 @@
                             <c:forEach var="cICustomer" items="${notificationGroup.cICustomers}" varStatus="status">
                                 <tr>
                                     <td>${fn:escapeXml(cICustomer.companyName)}</td>
-                                    <td><tags:displayBooleanStatusText value="${cICustomer.emailEnabled}"/></td>
-                                    <td><tags:displayBooleanStatusText value="${cICustomer.phoneCallEnabled}"/></td> 
+                                    <td><tags:displayBooleanStatusText value="${cICustomer.emailEnabled}" yesKey="yukon.common.yes" noKey="yukon.common.no"/></td>
+                                    <td><tags:displayBooleanStatusText value="${cICustomer.phoneCallEnabled}" yesKey="yukon.common.yes" noKey="yukon.common.no"/></td> 
                                 </tr>
                                 <c:forEach var="contact" items="${cICustomer.contacts}">
                                     <tr>
                                         <td> - ${fn:escapeXml(contact.name)}</td>
-                                        <td><tags:displayBooleanStatusText value="${contact.emailEnabled}"/></td>
-                                        <td><tags:displayBooleanStatusText value="${contact.phoneCallEnabled}"/></td> 
+                                        <td><tags:displayBooleanStatusText value="${contact.emailEnabled}" yesKey="yukon.common.yes" noKey="yukon.common.no"/></td>
+                                        <td><tags:displayBooleanStatusText value="${contact.phoneCallEnabled}" yesKey="yukon.common.yes" noKey="yukon.common.no"/></td> 
                                     </tr>
                                     <c:forEach var="notifications" items="${contact.notifications}">
                                         <tr>
                                             <td> - - ${fn:escapeXml(notifications.notification)}</td>
-                                            <td><tags:displayBooleanStatusText value="${notifications.emailEnabled}"/></td>
-                                            <td><tags:displayBooleanStatusText value="${notifications.phoneCallEnabled}"/></td> 
+                                            <td><tags:displayBooleanStatusText value="${notifications.emailEnabled}" yesKey="yukon.common.yes" noKey="yukon.common.no"/></td>
+                                            <td><tags:displayBooleanStatusText value="${notifications.phoneCallEnabled}" yesKey="yukon.common.yes" noKey="yukon.common.no"/></td> 
                                         </tr>
                                     </c:forEach>
                                 </c:forEach>
@@ -89,14 +89,14 @@
                             <c:forEach var="unassignedContact" items="${notificationGroup.unassignedContacts}">
                                 <tr>
                                     <td>${fn:escapeXml(unassignedContact.name)}</td>
-                                    <td><tags:displayBooleanStatusText value="${unassignedContact.emailEnabled}"/></td>
-                                    <td><tags:displayBooleanStatusText value="${unassignedContact.phoneCallEnabled}"/></td> 
+                                    <td><tags:displayBooleanStatusText value="${unassignedContact.emailEnabled}" yesKey="yukon.common.yes" noKey="yukon.common.no"/></td>
+                                    <td><tags:displayBooleanStatusText value="${unassignedContact.phoneCallEnabled}" yesKey="yukon.common.yes" noKey="yukon.common.no"/></td> 
                                 </tr>
                                 <c:forEach var="notifications" items="${unassignedContact.notifications}">
                                     <tr>
                                         <td> - ${fn:escapeXml(notifications.notification)}</td>
-                                        <td><tags:displayBooleanStatusText value="${notifications.emailEnabled}"/></td>
-                                        <td><tags:displayBooleanStatusText value="${notifications.phoneCallEnabled}"/></td> 
+                                        <td><tags:displayBooleanStatusText value="${notifications.emailEnabled}" yesKey="yukon.common.yes" noKey="yukon.common.no"/></td>
+                                        <td><tags:displayBooleanStatusText value="${notifications.phoneCallEnabled}" yesKey="yukon.common.yes" noKey="yukon.common.no"/></td> 
                                     </tr>
                                 </c:forEach>
                             </c:forEach>
