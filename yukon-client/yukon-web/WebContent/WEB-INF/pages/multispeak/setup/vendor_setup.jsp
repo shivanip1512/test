@@ -96,6 +96,19 @@
                             <tags:nameValue2 nameKey=".template">
                                 <tags:input path="mspVendor.templateNameDefault" maxlength="32" />
                             </tags:nameValue2>
+                            
+                            <tags:nameValue2 nameKey="yukon.common.attributes"  requiredField="true">
+                                <cti:displayForPageEditModes modes="CREATE,EDIT">
+                                    <cti:msg2 key="yukon.common.attribute.select.multi" var="selectLbl" />
+                                       <tags:selectWithItems items="${allAttributeList}" path="mspVendor.attributes" dataPlaceholder="${selectLbl}" id="attributes"/>
+                                </cti:displayForPageEditModes>
+                                <cti:displayForPageEditModes modes="VIEW">
+                                    <c:forEach var="mspattribute" items="${mspVendor.attributes}" varStatus="loop">
+                                        <i:inline key="${mspattribute}"/>
+                                        <c:if test="${!loop.last}">,</c:if>
+                                    </c:forEach>
+                                </cti:displayForPageEditModes>
+                            </tags:nameValue2>
 
                         </tags:nameValueContainer2>
                     </div>

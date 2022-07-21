@@ -102,8 +102,6 @@ public class MeterReadingProcessingServiceImpl implements MeterReadingProcessing
         ReadingProcessor peakDemandConverter = new DefaultReadingProcessor(SyntaxItem.PEAK_DEMAND, roundingMode);
         ReadingProcessor blinkConverter = new DefaultReadingProcessor(SyntaxItem.BLINK_COUNT, roundingMode);
         ReadingProcessor powerFactorConverter = new DefaultReadingProcessor(SyntaxItem.POWER_FACTOR, roundingMode);
-        ReadingProcessor sumKwhConverter = new DefaultReadingProcessor(SyntaxItem.SUM_KWH, roundingMode);
-        ReadingProcessor netKwhConverter = new DefaultReadingProcessor(SyntaxItem.NET_KWH, roundingMode);
         ReadingProcessor kvaConverter = new DefaultReadingProcessor(SyntaxItem.KVA, roundingMode);
         ReadingProcessor kvarConverter = new DefaultReadingProcessor(SyntaxItem.KVAR, roundingMode);
         ReadingProcessor kvarhConverter = new DefaultReadingProcessor(SyntaxItem.KVARH, roundingMode);
@@ -126,8 +124,6 @@ public class MeterReadingProcessingServiceImpl implements MeterReadingProcessing
                                                                             .put(BuiltInAttribute.PEAK_DEMAND, peakDemandConverter)
                                                                             .put(BuiltInAttribute.BLINK_COUNT, blinkConverter)
                                                                             .put(BuiltInAttribute.POWER_FACTOR, powerFactorConverter)
-                                                                            .put(BuiltInAttribute.SUM_KWH, sumKwhConverter)
-                                                                            .put(BuiltInAttribute.NET_KWH, netKwhConverter)
                                                                             .put(BuiltInAttribute.KVA, kvaConverter)
                                                                             .put(BuiltInAttribute.KVAR, kvarConverter)
                                                                             .put(BuiltInAttribute.KVARH, kvarhConverter)

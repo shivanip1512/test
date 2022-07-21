@@ -9,6 +9,7 @@ import org.apache.commons.lang3.builder.ToStringStyle;
 import org.apache.logging.log4j.Logger;
 import org.joda.time.DateTime;
 import org.joda.time.Instant;
+import org.joda.time.Minutes;
 
 import com.cannontech.amr.errors.dao.DeviceErrorTranslatorDao;
 import com.cannontech.dr.eatonCloud.model.EatonCloudError;
@@ -24,14 +25,14 @@ public final class EventSummary {
     private int numberOfTimesToRetry;
 
     private LMEatonCloudScheduledCycleCommand command;
-    private Integer eventId;
-    private Integer programId;
+    private int eventId;
+    private int programId;
     private Logger log;
     private RecentEventParticipationDao recentEventParticipationDao;
     private String failReason;
     
     public String getLogSummary(boolean displayTryInfo) {
-        return "[id:" + eventId + getTryText(displayTryInfo) + "] relay:" + command.getVirtualRelayId() + " ";
+        return "[SHED id:" + eventId + getTryText(displayTryInfo) + "] relay:" + command.getVirtualRelayId();
     }
 
     private String getTryText(boolean displayTryInfo) {
@@ -43,11 +44,10 @@ public final class EventSummary {
     }
 
     public String getLogSummary(String jobGuid, boolean displayTryInfo) {
-        return "[id:" + eventId + ":" + jobGuid + "]" + getTryText(displayTryInfo) + " relay:" + command.getVirtualRelayId()
-                + " ";
+        return "[SHED id:" + eventId + ":" + jobGuid + "]" + getTryText(displayTryInfo) + " relay:" + command.getVirtualRelayId();
     }
 
-    EventSummary(Integer eventId, int programId, LMEatonCloudScheduledCycleCommand command, Logger log,
+    EventSummary(int eventId, int programId, LMEatonCloudScheduledCycleCommand command, Logger log,
             RecentEventParticipationDao recentEventParticipationDao, DeviceErrorTranslatorDao deviceErrorTranslatorDao) {
         this.eventId = eventId;
         this.command = command;
@@ -59,13 +59,10 @@ public final class EventSummary {
         // If it is a 4 hour control with a 30 minute period, it would have a cycle count of 8.
         // The resend service should only attempt to send to failed devices for the first 4 cycles, or 2 hours.
 
-        Map<String, Object> params = ShedParamHeper.getShedParams(command, eventId);
+        Map<String, Object> params = ControlParamHeper.getShedParams(command, eventId);
         period = (Integer) params.get(CommandParam.CYCLE_PERIOD.getParamName());
         numberOfTimesToRetry = IntMath.divide((Integer) params.get(CommandParam.CYCLE_COUNT.getParamName()), 2,
                 RoundingMode.CEILING);
-        log.info(
-                "[id:{}] Creating retry options for the first send of the shed command, possible retries:{} command params:{} command:{}",
-                eventId, numberOfTimesToRetry, params, command);
     }
 
     /*
@@ -73,11 +70,11 @@ public final class EventSummary {
      * try#2 7 minutes after the first command has been send (5 minutes waiting for the poll + 2 minutes)
      * try#3... "period" minutes after the previous command has been send
      */
-    EventSummary setupNextTry(int minutes) {
+    EventSummary setupNextTry(Minutes minutes) {
         if (numberOfTimesToRetry > currentTry.get()) {
             currentTry.incrementAndGet();
-            currentTryTime = DateTime.now().plusMinutes(minutes).toInstant();
-            log.info("[id:{}] SEND Next retry time after {}", getEventId(),
+            currentTryTime = DateTime.now().plus(minutes).toInstant();
+            log.info("[SHED id:{}] NEXT TRY:{} after {}", eventId, currentTry.get(),
                     currentTryTime.toDateTime().toString("MM-dd-yyyy HH:mm:ss"));
             return this;
         }
@@ -88,7 +85,7 @@ public final class EventSummary {
         // we ran out of retries and will mark all FAILED_WILL_RETRY or UNKNOWN devices as FAILED
         int affectedRows = recentEventParticipationDao.failWillRetryDevices(getEventId(), failReason);
         log.info(
-                "[id:{}] No more retries available, changed {} devices waiting for retry (FAILED_WILL_RETRY, UNKNOWN) to failed (FAILED).",
+                "[SHED id:{}] No more retries available, changed {} FAILED_WILL_RETRY and UNKNOWN devices to FAILED.",
                 getEventId(), affectedRows);
     }
 
@@ -97,11 +94,11 @@ public final class EventSummary {
         return ToStringBuilder.reflectionToString(this, ToStringStyle.SHORT_PREFIX_STYLE);
     }
 
-    public Integer getProgramId() {
+    public int getProgramId() {
         return programId;
     }
 
-    public Integer getEventId() {
+    public int getEventId() {
         return eventId;
     }
 

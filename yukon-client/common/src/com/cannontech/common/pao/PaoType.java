@@ -1290,6 +1290,12 @@ public enum PaoType implements DisplayableEnum, DatabaseRepresentationSource {
     public static ImmutableSet<PaoType> getCellularTypes() {
         return cellularTypes;
     }
+    
+    public static ImmutableSet<PaoType> getIPLinkMeterTypes() {
+        Set<PaoType> cellMeters = Sets.intersection(cellularTypes, rfMeterTypes);
+        Set<PaoType> wifiMeters = Sets.intersection(wifiTypes, rfMeterTypes);
+        return Sets.union(cellMeters, wifiMeters).immutableCopy();
+    }
 
     public static ImmutableSet<PaoType> getRfMeterTypesThatSupportPoints() {
         return rfMeterTypesThatSupportPoints;
@@ -1396,7 +1402,11 @@ public enum PaoType implements DisplayableEnum, DatabaseRepresentationSource {
         try {
             return PaoType.valueOf(paoTypeJsonString);
         } catch (@SuppressWarnings("unused") IllegalArgumentException e) {
-            throw new TypeNotSupportedException(paoTypeJsonString + " paoType is not valid.");
+            try {
+                return PaoType.getForDbString(paoTypeJsonString);
+            } catch (@SuppressWarnings("unused") IllegalArgumentException h) {
+                throw new TypeNotSupportedException(paoTypeJsonString + " paoType is not valid.");
+            }
         }
     }
 }

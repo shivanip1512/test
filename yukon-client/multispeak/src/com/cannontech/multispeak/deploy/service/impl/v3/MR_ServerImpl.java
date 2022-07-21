@@ -172,11 +172,12 @@ public class MR_ServerImpl implements MR_Server{
         multispeakEventLogService.methodInvoked("GetReadingsByDate", vendor.getCompanyName());
         
         MspMeterReadReturnList mspMeterReadReturnList = mspRawPointHistoryDao.retrieveMeterReads(ReadBy.NONE, 
-                                                                          null, 	//get all
-                                                                          startDate.getTime(), 
-                                                                          endDate.getTime(), 
-                                                                          lastReceived,
-                                                                          vendor.getMaxReturnRecords());
+                                                                                                  null, 	//get all
+                                                                                                  startDate.getTime(), 
+                                                                                                  endDate.getTime(), 
+                                                                                                  lastReceived,
+                                                                                                  vendor.getMaxReturnRecords(),
+                                                                                                  vendor.getAttributes());
 
         multispeakFuncs.updateResponseHeader(mspMeterReadReturnList);
         List<MeterRead> meterReads = mspMeterReadReturnList.getMeterReads();
@@ -198,11 +199,12 @@ public class MR_ServerImpl implements MR_Server{
         mspValidationService.isYukonMeterNumber(meterNo);
         
         MspMeterReadReturnList mspMeterReadReturnList = mspRawPointHistoryDao.retrieveMeterReads(ReadBy.METER_NUMBER, 
-                                                                          meterNo, 
-                                                                          startDate.getTime(), 
-                                                                          endDate.getTime(), 
-                                                                          null,
-                                                                          vendor.getMaxReturnRecords());
+                                                                                                  meterNo, 
+                                                                                                  startDate.getTime(), 
+                                                                                                  endDate.getTime(), 
+                                                                                                  null,
+                                                                                                  vendor.getMaxReturnRecords(),
+                                                                                                  vendor.getAttributes());
         
         // There is only one MeterNo in the response, so does it make sense to update the header with lastSent?
         // updateResponseHeader(mspMeterRead);
@@ -237,27 +239,7 @@ public class MR_ServerImpl implements MR_Server{
             try {
                 MeterRead meterRead = meterReadProcessingService.createMeterRead(meter);
 
-                EnumSet<BuiltInAttribute> attributesToLoad = EnumSet.of(BuiltInAttribute.USAGE, 
-                                                                        BuiltInAttribute.PEAK_DEMAND, 
-                                                                        BuiltInAttribute.KVAR, 
-                                                                        BuiltInAttribute.SUM_KWH,
-                                                                        BuiltInAttribute.NET_KWH,
-                                                                        BuiltInAttribute.KVA,
-                                                                        BuiltInAttribute.KVARH,
-                                                                        BuiltInAttribute.POWER_FACTOR,
-                                                                        BuiltInAttribute.RECEIVED_KWH,
-                                                                        BuiltInAttribute.PEAK_DEMAND_RATE_A,
-                                                                        BuiltInAttribute.PEAK_DEMAND_RATE_B,
-                                                                        BuiltInAttribute.PEAK_DEMAND_RATE_C,
-                                                                        BuiltInAttribute.PEAK_DEMAND_RATE_D,
-                                                                        BuiltInAttribute.RECEIVED_KWH_RATE_A,
-                                                                        BuiltInAttribute.RECEIVED_KWH_RATE_B,
-                                                                        BuiltInAttribute.RECEIVED_KWH_RATE_C,
-                                                                        BuiltInAttribute.RECEIVED_KWH_RATE_D,
-                                                                        BuiltInAttribute.DELIVERED_KWH_RATE_A,
-                                                                        BuiltInAttribute.DELIVERED_KWH_RATE_B,
-                                                                        BuiltInAttribute.DELIVERED_KWH_RATE_C,
-                                                                        BuiltInAttribute.DELIVERED_KWH_RATE_D);
+                EnumSet<BuiltInAttribute> attributesToLoad = multispeakFuncs.getBuiltInAttributesForVendor(vendor.getAttributes());
 
                 for (BuiltInAttribute attribute : attributesToLoad) {
                     try {
@@ -451,8 +433,12 @@ public class MR_ServerImpl implements MR_Server{
         init();
         MultispeakVendor vendor = multispeakFuncs.getMultispeakVendorFromHeader();
         multispeakEventLogService.methodInvoked("GetLatestReadings", vendor.getCompanyName());
-        
-        MspMeterReadReturnList mspMeterReadReturnList = mspRawPointHistoryDao.retrieveLatestMeterReads(ReadBy.NONE, null, lastReceived, vendor.getMaxReturnRecords());
+
+        MspMeterReadReturnList mspMeterReadReturnList = mspRawPointHistoryDao.retrieveLatestMeterReads(ReadBy.NONE, 
+                                                                                                       null,
+                                                                                                       lastReceived, 
+                                                                                                       vendor.getMaxReturnRecords(),
+                                                                                                       vendor.getAttributes());
 
         multispeakFuncs.updateResponseHeader(mspMeterReadReturnList);
 

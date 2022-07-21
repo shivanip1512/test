@@ -38,6 +38,7 @@ import com.cannontech.common.util.jms.YukonJmsTemplate;
 import com.cannontech.common.util.jms.YukonJmsTemplateFactory;
 import com.cannontech.common.util.jms.api.JmsApiDirectory;
 import com.cannontech.database.data.lite.LiteYukonPAObject;
+import com.cannontech.dr.eatonCloud.job.service.EatonCloudJobControlType;
 import com.cannontech.dr.meterDisconnect.DrMeterControlStatus;
 import com.cannontech.infrastructure.model.InfrastructureWarning;
 import com.cannontech.infrastructure.model.InfrastructureWarningType;
@@ -178,7 +179,7 @@ public class SmartNotificationSimulatorServiceImpl implements SmartNotificationS
                 // when i is 0 - total 100 failed 99
                 // when i is 1 - total 200 failed 198
                 SmartNotificationEvent event = EatonCloudDrEventAssembler.assemble(group.get().getPaoName(), program,
-                        (i + 1) * 100, ((i + 1) * 100) - (i + 1));
+                        (i + 1) * 100, ((i + 1) * 100) - (i + 1), EatonCloudJobControlType.SHED);
                 events.add(event);
             }
 

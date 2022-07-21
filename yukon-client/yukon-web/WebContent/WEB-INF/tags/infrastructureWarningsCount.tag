@@ -9,20 +9,29 @@
 
 <cti:msgScope paths="widgets.infrastructureWarnings">
     <cti:url var="allWarningsUrl" value="/stars/infrastructureWarnings/detail"/>
-    <td>
-        <c:choose>
-            <c:when test="${fromDetailPage}">
-                ${deviceLabel}:
-            </c:when>
-            <c:otherwise>
-                <a href="${allWarningsUrl}?types=${deviceType}" target="_blank">${deviceLabel}</a>:
-            </c:otherwise>
-        </c:choose>
-    </td>
-    <td>
-        <cti:msg2 var="hoverText" key=".noWarning.hoverText" argument="${deviceLabel}"/>
-        <span class="label bg-color-green" title="${hoverText}">${deviceTotalCount - deviceWarningsCount}</span>
-        <cti:msg2 var="hoverText" key=".warning.hoverText" argument="${deviceLabel}"/>
-        <span class="label bg-color-orange" title="${hoverText}">${deviceWarningsCount}</span>
-    </td>
+        <c:set var="columnClass" value="${fromDetailPage ? '' : 'column-10-14'}"/>
+        <div class="${columnClass}">
+            <div class="column one nogutter">
+                <b>${deviceLabel}</b>
+            </div>
+            <div class="column two nogutter">
+                <c:choose>
+                    <c:when test="${deviceWarningsCount > 0}">
+                        <cti:msg2 var="hoverText" key=".warning.hoverText" argument="${deviceLabel}"/>
+                        <span style="font-size:16px" title="${hoverText}">
+                            <cti:icon icon="icon-error" classes="fn" href="${allWarningsUrl}?types=${deviceType}"/>
+                            <b>${deviceWarningsCount}</b>
+                        </span>
+                        <span class="notes"> of ${deviceTotalCount}</span>
+                    </c:when>
+                    <c:otherwise>
+                        <cti:msg2 var="hoverText" key=".noWarning.hoverText" argument="${deviceLabel}"/>
+                        <span style="font-size:16px" title="${hoverText}">
+                            <cti:icon icon="icon-accept" classes="fn"/>
+                            <b>${deviceTotalCount}</b>
+                        </span>
+                    </c:otherwise>
+                </c:choose>
+            </div>
+        </div>
 </cti:msgScope>

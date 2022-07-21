@@ -97,8 +97,8 @@ public class EatonCloudDataReadServiceImpl implements EatonCloudDataReadService 
         Multimap<PaoIdentifier, PointData> receivedPoints = HashMultimap.create();
         for (PaoType type : paos.keySet()) {
             Set<BuiltInAttribute> attr = channels != null ? getAttributesForChannels(channels, type) : getAttributesForPaoType(type);
-            log.info("Initiating read ({}) for type:{} devices: {} on attributes:{}", debugReadType, type, paos.get(type).size(),
-                    attr.size());
+            log.info("Initiating read ({}) for type:{} devices: {} on attributes/channels:{}/{}", debugReadType, type, paos.get(type).size(),
+                   attr.size(), channels != null ? channels : "All");
             receivedPoints.putAll(retrievePointData(paos.get(type), attr, range, channels, throwErrorIfFailed));
         }
 

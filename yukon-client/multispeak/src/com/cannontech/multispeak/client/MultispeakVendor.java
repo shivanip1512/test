@@ -24,7 +24,7 @@ public class MultispeakVendor {
     private String outUserName;
     private String outPassword;
     private Boolean validateCertificate = true;
-    private List<MspAttribute> attributes;
+    private List<MspAttribute> attributes = MultispeakDefines.MSP_VENDOR_ATTRIBUTES;
 
     private int maxReturnRecords = MultispeakDefines.MSP_MAX_RETURN_RECORDS;
     private long requestMessageTimeout = MultispeakDefines.MSP_REQUEST_MESSAGE_TIMEOUT;

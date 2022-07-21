@@ -44,7 +44,7 @@
                     <tags:nameValue2 nameKey="yukon.common.name">
                         <tags:input path="deviceName" maxlength="60" autofocus="autofocus" inputClass="w300 js-name"/>
                     </tags:nameValue2>
-                    <tags:nameValue2 nameKey=".selectSignalTransmitter">
+                    <tags:nameValue2 nameKey=".selectSignalTransmitter" valueClass="dib">
                         <tags:pickerDialog id="signalTransmitterPicker${id}" 
                                                type="signalTransmitterPicker" 
                                                destinationFieldName="signalTransmitterId"
