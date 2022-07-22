@@ -120,7 +120,7 @@ public class TokenAuthenticationAndLoggingFilter extends OncePerRequestFilter {
      * Check if the request path matches one of the specified endpoints.
      */
     private boolean doesRequestMatchEndpoint(HttpServletRequest request, List<String> endpoints) {
-        return ServletUtil.isPathMatch(request, derEdgeEndpoints);
+        return ServletUtil.isPathMatch(request, endpoints);
     }
     
     /**
