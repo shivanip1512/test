@@ -18,7 +18,7 @@ public class EdgeDrUnicastResponse implements org.apache.thrift.TBase<EdgeDrUnic
   private static final org.apache.thrift.scheme.SchemeFactory TUPLE_SCHEME_FACTORY = new EdgeDrUnicastResponseTupleSchemeFactory();
 
   private @org.apache.thrift.annotation.Nullable java.lang.String messageGuid; // required
-  private @org.apache.thrift.annotation.Nullable java.util.Map<java.lang.Integer,java.lang.Short> paoToE2eId; // required
+  private @org.apache.thrift.annotation.Nullable java.util.Map<java.lang.Integer,java.lang.Integer> paoToE2eId; // required
   private @org.apache.thrift.annotation.Nullable com.cannontech.messaging.serialization.thrift.generated.EdgeDrError error; // optional
 
   /** The set of fields this struct contains, along with convenience methods for finding and manipulating them. */
@@ -97,7 +97,7 @@ public class EdgeDrUnicastResponse implements org.apache.thrift.TBase<EdgeDrUnic
     tmpMap.put(_Fields.PAO_TO_E2E_ID, new org.apache.thrift.meta_data.FieldMetaData("paoToE2eId", org.apache.thrift.TFieldRequirementType.REQUIRED, 
         new org.apache.thrift.meta_data.MapMetaData(org.apache.thrift.protocol.TType.MAP, 
             new org.apache.thrift.meta_data.FieldValueMetaData(org.apache.thrift.protocol.TType.I32), 
-            new org.apache.thrift.meta_data.FieldValueMetaData(org.apache.thrift.protocol.TType.I16))));
+            new org.apache.thrift.meta_data.FieldValueMetaData(org.apache.thrift.protocol.TType.I32))));
     tmpMap.put(_Fields.ERROR, new org.apache.thrift.meta_data.FieldMetaData("error", org.apache.thrift.TFieldRequirementType.OPTIONAL, 
         new org.apache.thrift.meta_data.StructMetaData(org.apache.thrift.protocol.TType.STRUCT, com.cannontech.messaging.serialization.thrift.generated.EdgeDrError.class)));
     metaDataMap = java.util.Collections.unmodifiableMap(tmpMap);
@@ -109,7 +109,7 @@ public class EdgeDrUnicastResponse implements org.apache.thrift.TBase<EdgeDrUnic
 
   public EdgeDrUnicastResponse(
     java.lang.String messageGuid,
-    java.util.Map<java.lang.Integer,java.lang.Short> paoToE2eId)
+    java.util.Map<java.lang.Integer,java.lang.Integer> paoToE2eId)
   {
     this();
     this.messageGuid = messageGuid;
@@ -124,7 +124,7 @@ public class EdgeDrUnicastResponse implements org.apache.thrift.TBase<EdgeDrUnic
       this.messageGuid = other.messageGuid;
     }
     if (other.isSetPaoToE2eId()) {
-      java.util.Map<java.lang.Integer,java.lang.Short> __this__paoToE2eId = new java.util.HashMap<java.lang.Integer,java.lang.Short>(other.paoToE2eId);
+      java.util.Map<java.lang.Integer,java.lang.Integer> __this__paoToE2eId = new java.util.HashMap<java.lang.Integer,java.lang.Integer>(other.paoToE2eId);
       this.paoToE2eId = __this__paoToE2eId;
     }
     if (other.isSetError()) {
@@ -171,19 +171,19 @@ public class EdgeDrUnicastResponse implements org.apache.thrift.TBase<EdgeDrUnic
     return (this.paoToE2eId == null) ? 0 : this.paoToE2eId.size();
   }
 
-  public void putToPaoToE2eId(int key, short val) {
+  public void putToPaoToE2eId(int key, int val) {
     if (this.paoToE2eId == null) {
-      this.paoToE2eId = new java.util.HashMap<java.lang.Integer,java.lang.Short>();
+      this.paoToE2eId = new java.util.HashMap<java.lang.Integer,java.lang.Integer>();
     }
     this.paoToE2eId.put(key, val);
   }
 
   @org.apache.thrift.annotation.Nullable
-  public java.util.Map<java.lang.Integer,java.lang.Short> getPaoToE2eId() {
+  public java.util.Map<java.lang.Integer,java.lang.Integer> getPaoToE2eId() {
     return this.paoToE2eId;
   }
 
-  public void setPaoToE2eId(@org.apache.thrift.annotation.Nullable java.util.Map<java.lang.Integer,java.lang.Short> paoToE2eId) {
+  public void setPaoToE2eId(@org.apache.thrift.annotation.Nullable java.util.Map<java.lang.Integer,java.lang.Integer> paoToE2eId) {
     this.paoToE2eId = paoToE2eId;
   }
 
@@ -240,7 +240,7 @@ public class EdgeDrUnicastResponse implements org.apache.thrift.TBase<EdgeDrUnic
       if (value == null) {
         unsetPaoToE2eId();
       } else {
-        setPaoToE2eId((java.util.Map<java.lang.Integer,java.lang.Short>)value);
+        setPaoToE2eId((java.util.Map<java.lang.Integer,java.lang.Integer>)value);
       }
       break;
 
@@ -502,13 +502,13 @@ public class EdgeDrUnicastResponse implements org.apache.thrift.TBase<EdgeDrUnic
             if (schemeField.type == org.apache.thrift.protocol.TType.MAP) {
               {
                 org.apache.thrift.protocol.TMap _map0 = iprot.readMapBegin();
-                struct.paoToE2eId = new java.util.HashMap<java.lang.Integer,java.lang.Short>(2*_map0.size);
+                struct.paoToE2eId = new java.util.HashMap<java.lang.Integer,java.lang.Integer>(2*_map0.size);
                 int _key1;
-                short _val2;
+                int _val2;
                 for (int _i3 = 0; _i3 < _map0.size; ++_i3)
                 {
                   _key1 = iprot.readI32();
-                  _val2 = iprot.readI16();
+                  _val2 = iprot.readI32();
                   struct.paoToE2eId.put(_key1, _val2);
                 }
                 iprot.readMapEnd();
@@ -548,11 +548,11 @@ public class EdgeDrUnicastResponse implements org.apache.thrift.TBase<EdgeDrUnic
       if (struct.paoToE2eId != null) {
         oprot.writeFieldBegin(PAO_TO_E2E_ID_FIELD_DESC);
         {
-          oprot.writeMapBegin(new org.apache.thrift.protocol.TMap(org.apache.thrift.protocol.TType.I32, org.apache.thrift.protocol.TType.I16, struct.paoToE2eId.size()));
-          for (java.util.Map.Entry<java.lang.Integer, java.lang.Short> _iter4 : struct.paoToE2eId.entrySet())
+          oprot.writeMapBegin(new org.apache.thrift.protocol.TMap(org.apache.thrift.protocol.TType.I32, org.apache.thrift.protocol.TType.I32, struct.paoToE2eId.size()));
+          for (java.util.Map.Entry<java.lang.Integer, java.lang.Integer> _iter4 : struct.paoToE2eId.entrySet())
           {
             oprot.writeI32(_iter4.getKey());
-            oprot.writeI16(_iter4.getValue());
+            oprot.writeI32(_iter4.getValue());
           }
           oprot.writeMapEnd();
         }
@@ -585,10 +585,10 @@ public class EdgeDrUnicastResponse implements org.apache.thrift.TBase<EdgeDrUnic
       oprot.writeString(struct.messageGuid);
       {
         oprot.writeI32(struct.paoToE2eId.size());
-        for (java.util.Map.Entry<java.lang.Integer, java.lang.Short> _iter5 : struct.paoToE2eId.entrySet())
+        for (java.util.Map.Entry<java.lang.Integer, java.lang.Integer> _iter5 : struct.paoToE2eId.entrySet())
         {
           oprot.writeI32(_iter5.getKey());
-          oprot.writeI16(_iter5.getValue());
+          oprot.writeI32(_iter5.getValue());
         }
       }
       java.util.BitSet optionals = new java.util.BitSet();
@@ -607,14 +607,14 @@ public class EdgeDrUnicastResponse implements org.apache.thrift.TBase<EdgeDrUnic
       struct.messageGuid = iprot.readString();
       struct.setMessageGuidIsSet(true);
       {
-        org.apache.thrift.protocol.TMap _map6 = new org.apache.thrift.protocol.TMap(org.apache.thrift.protocol.TType.I32, org.apache.thrift.protocol.TType.I16, iprot.readI32());
-        struct.paoToE2eId = new java.util.HashMap<java.lang.Integer,java.lang.Short>(2*_map6.size);
+        org.apache.thrift.protocol.TMap _map6 = new org.apache.thrift.protocol.TMap(org.apache.thrift.protocol.TType.I32, org.apache.thrift.protocol.TType.I32, iprot.readI32());
+        struct.paoToE2eId = new java.util.HashMap<java.lang.Integer,java.lang.Integer>(2*_map6.size);
         int _key7;
-        short _val8;
+        int _val8;
         for (int _i9 = 0; _i9 < _map6.size; ++_i9)
         {
           _key7 = iprot.readI32();
-          _val8 = iprot.readI16();
+          _val8 = iprot.readI32();
           struct.paoToE2eId.put(_key7, _val8);
         }
       }
