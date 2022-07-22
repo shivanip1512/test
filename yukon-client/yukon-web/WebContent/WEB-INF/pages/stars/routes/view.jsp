@@ -16,22 +16,6 @@
                 <cti:url var="editUrl" value="/stars/device/routes/${communicationRoute.deviceId}/edit" />
                 <cm:dropdownOption icon="icon-pencil" key="yukon.web.components.button.edit.label" href="${editUrl}"/>
             </div>
-            
-            <!-- popup for create route -->
-            <div id="js-create-route-popup" class="dn" data-title="<i:inline key='.createObject.title'/>" data-width="400">
-                <table style="width:100%">
-                    <tr>
-                        <td>
-                            <cti:url var="createCommRoute" value="create"/>
-                            <a href="${createCommRoute}"><i:inline key=".routes.createCommRoute.create"/></a>
-                        </td>
-                        <td>
-                            <cti:url var="createMacroRoute" value="create"/>
-                            <a href="${createMacroRoute}"><i:inline key=".routes.createMacroRoute.create"/></a>
-                        </td>
-                    </tr>
-                </table>
-            </div>
         </cti:displayForPageEditModes>
     
         <!-- page contents -->
