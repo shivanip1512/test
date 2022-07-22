@@ -41,7 +41,7 @@ public class EatonCloudJobRestorePollServiceImpl extends EatonCloudJobPollServic
         if (CollectionUtils.isEmpty(jobGuids)) {
             return;
         }
-        log.info("{} POLL scheduling in {} minutes job guids{}:", summary.getLogSummary(),
+        log.info("{} POLL scheduling in {} minutes job guids:{}", summary.getLogSummary(),
                 EatonCloudJobSettingsHelper.pollInMinutes.getMinutes(),
                 jobGuids.keySet());
 

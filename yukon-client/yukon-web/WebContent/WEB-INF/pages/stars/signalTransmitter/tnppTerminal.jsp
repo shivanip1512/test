@@ -5,7 +5,7 @@
         <tags:sectionContainer2 nameKey="communication">
             <tags:nameValueContainer2>
                 <tags:nameValue2 nameKey=".password">
-                    <tags:password path="password" includeShowHideButton="true" maxlength="20"/>
+                    <tags:password path="password" includeShowHideButton="true" maxlength="20" showPassword="true"/>
                 </tags:nameValue2>
                 <assets:signalTransmitterCommChannel items="${commChannels}"/>
             </tags:nameValueContainer2>
