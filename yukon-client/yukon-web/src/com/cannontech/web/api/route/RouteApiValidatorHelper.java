@@ -46,7 +46,7 @@ public class RouteApiValidatorHelper {
                     .filter(liteRoute -> liteRoute.getPaoName().equalsIgnoreCase(routeName.trim()))
                     .findAny()
                     .ifPresent(liteYukonPAObject -> {
-                        if (id == null || liteYukonPAObject.getRouteID() != id) {
+                        if (id == null || liteYukonPAObject.getLiteID() != id) {
                             errors.rejectValue("deviceName", ApiErrorDetails.ALREADY_EXISTS.getCodeString(), new Object[] { routeName },
                                     "");
                         }
