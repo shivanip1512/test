@@ -132,7 +132,7 @@ public class NotificationGroupController {
     @SuppressWarnings("unchecked")
     @GetMapping("list")
     public String list(ModelMap model, @DefaultSort(dir = Direction.asc, sort = "name") SortingParameters sorting,
-            @DefaultItemsPerPage(value = 250) PagingParameters paging,
+            @DefaultItemsPerPage(value = 25) PagingParameters paging,
             String filterValueName, YukonUserContext userContext, FlashScope flash, HttpServletRequest request) {
 
         ResponseEntity<? extends Object> response = null;
@@ -148,7 +148,6 @@ public class NotificationGroupController {
                 columns.add(col);
                 model.addAttribute(column.name(), col);
             }
-          //  NotificationGroupSortBy
             String url = helper.findWebServerUrl(request, userContext, ApiURL.notificationGroupUrl);
 
             URIBuilder ub = new URIBuilder(url);
@@ -157,7 +156,7 @@ public class NotificationGroupController {
             ub.addParameter("name", filterValueName);
             ub.addParameter("itemsPerPage", Integer.toString(paging.getItemsPerPage()));
             ub.addParameter("page", Integer.toString(paging.getPage()));
-            
+
             response = apiRequestHelper.callAPIForParameterizedTypeObject(userContext, request, ub.toString(),
                     HttpMethod.GET, NotificationGroup.class, Object.class);
             PaginatedResponse<NotificationGroup> notificationGroups = new PaginatedResponse<>();

@@ -2,7 +2,6 @@
 <%@ taglib prefix="cm" tagdir="/WEB-INF/tags/contextualMenu" %>
 <%@ taglib prefix="cti" uri="http://cannontech.com/tags/cti" %>
 <%@ taglib prefix="fn" uri="http://java.sun.com/jsp/jstl/functions" %>
-<%@ taglib prefix="form" uri="http://www.springframework.org/tags/form" %>
 <%@ taglib prefix="i" tagdir="/WEB-INF/tags/i18n" %>
 <%@ taglib prefix="tags" tagdir="/WEB-INF/tags" %>
 
@@ -21,7 +20,7 @@
         <form action="${url}" method="get">
             <i:inline key="yukon.common.filterBy"/>
             <cti:msg2 var="namePlaceholder" key="yukon.common.name"/>
-            <input type="text" name="filterValueName" size="20" value="${fn:escapeXml(filterValueName)}" placeholder="${namePlaceholder}">
+            <input type="text" name="filterValueName" size="20" value="${filterValueName}" placeholder="${namePlaceholder}">
             <cti:button nameKey="filter" type="submit" classes="action primary fn vab"/>
         </form>
     </div>
