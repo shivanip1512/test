@@ -5,8 +5,11 @@
 <%@ taglib prefix="fn" uri="http://java.sun.com/jsp/jstl/functions" %>
 
 <%@ attribute name="value" type="java.lang.Boolean" description="Boolean value for the text to be displayed." %>
-<%@ attribute name="yesKey" description="Positive boolean value text" %>
-<%@ attribute name="noKey" description="Negative Boolean value text" %>
+<%@ attribute name="yesKey" description="i18n key for the text to be displayed if the boolean value is true. Defaults to 'yukon.common.yes'" %>
+<%@ attribute name="noKey" description="i18n key for the text to be displayed if the boolean value is false. Defaults to 'yukon.common.no'." %>
+
+<cti:default var="yesKey" value="yukon.common.yes"/>
+<cti:default var="noKey" value="yukon.common.no"/>
 
 <c:choose>
     <c:when test="${value}">
