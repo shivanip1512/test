@@ -214,11 +214,15 @@ public class EatonCloudJobServiceImpl extends EatonCloudJobHelperService impleme
 
     @Override
     public void terminateEvent(int eventId) {
-        var retrySummary = resendTries.remove(eventId);
-        if (retrySummary != null) {
-            EventSummary summary = retrySummary.summary;
-            log.info("{} terminating event due to RESTORE", summary.getLogSummary(false));
-            eatonCloudJobPollService.failWillRetryDevicesAfterLastPoll(summary);
+        Iterator<Entry<Integer, RetrySummary>> iter = resendTries.entrySet().iterator();
+        while (iter.hasNext()) {
+            Entry<Integer, RetrySummary> entry = iter.next();
+            if(entry.getKey() == eventId) {
+                iter.remove();
+                EventSummary summary = entry.getValue().summary;
+                log.info("{} terminating event due to RESTORE", summary.getLogSummary(false));
+                eatonCloudJobPollService.failWillRetryDevicesAfterLastPoll(summary);
+            }
         }
     }
 }
