@@ -19,7 +19,7 @@
         <form action="<cti:url var="url" value="/device/signalTransmitter/list"/>" method="get">
             <i:inline key="yukon.common.filterBy"/>
             <cti:msg2 var="namePlaceholder" key="yukon.common.name"/>
-            <input type="text" name="filterValueName" size="20" placeholder="${namePlaceholder}" value="${filterValueName}"/>
+            <input type="text" name="filterValueName" size="20" placeholder="${namePlaceholder}" value="${filterValueName}" id="js-filterName"/>
             <cti:button nameKey="filter" type="submit" classes="action primary fn vab"/>
         </form>
     </div>
