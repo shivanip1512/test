@@ -168,7 +168,7 @@ public class DerEdgeCommunicationServiceImpl implements DerEdgeCommunicationServ
         }
     }
 
-    public void cacheE2EIDToGUIDResponses(Map<Integer, Short> paoToE2eId, String messageGuid)
+    public void cacheE2EIDToGUIDResponses(Map<Integer, Integer> paoToE2eId, String messageGuid)
             throws EdgeDrCommunicationException {
         try {
             log.debug("Caching paoToE2eId: {} with GUID: {}", paoToE2eId, messageGuid);

@@ -20,6 +20,6 @@ public interface DerEdgeCommunicationService {
 
     void sendBroadcastRequest(byte[] payload, EdgeBroadcastMessagePriority priority, YukonUserContext userContext) throws EdgeDrCommunicationException;
 
-    void cacheE2EIDToGUIDResponses(Map<Integer, Short> paoToE2eId, String messageGuid) throws EdgeDrCommunicationException;
+    void cacheE2EIDToGUIDResponses(Map<Integer, Integer> paoToE2eId, String messageGuid) throws EdgeDrCommunicationException;
 
 }

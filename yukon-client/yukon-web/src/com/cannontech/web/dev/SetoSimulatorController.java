@@ -55,7 +55,7 @@ public class SetoSimulatorController {
         // Use to populate random starting values
         Optional<LiteYukonPAObject> optionalMeter= iDatabaseCache.getAllYukonPAObjects().stream().filter(pao -> pao.getPaoType() == PaoType.RFN530S4X_DER).findAny();
         LiteYukonPAObject theChosenMeter = optionalMeter.orElseGet(() -> iDatabaseCache.getAllYukonPAObjects().get(0));
-        EdgeDrDataNotification edgeDrDataNotification = new EdgeDrDataNotification(theChosenMeter.getPaoIdentifier().getPaoId(), null, (short) 1, new EdgeDrError(24, "SETO Test Error"));
+        EdgeDrDataNotification edgeDrDataNotification = new EdgeDrDataNotification(theChosenMeter.getPaoIdentifier().getPaoId(), null, 1, new EdgeDrError(24, "SETO Test Error"));
         model.addAttribute("url", url);
         model.addAttribute("edgeDrDataNotification", edgeDrDataNotification);
         return "setoSimulator.jsp";

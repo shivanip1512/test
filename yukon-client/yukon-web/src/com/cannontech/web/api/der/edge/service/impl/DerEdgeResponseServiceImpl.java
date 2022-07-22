@@ -4,7 +4,6 @@ import java.net.URI;
 import java.net.URISyntaxException;
 import java.nio.charset.StandardCharsets;
 import java.util.Arrays;
-import java.util.UUID;
 import java.util.concurrent.TimeUnit;
 
 import javax.annotation.PostConstruct;
@@ -47,7 +46,7 @@ public class DerEdgeResponseServiceImpl implements DerEdgeResponseService {
 
     private Gson jsonPrinter;
     private RestTemplate apiRestTemplate;
-    private LoadingCache<Short, String> e2eIdToGuidCache;
+    private LoadingCache<Integer, String> e2eIdToGuidCache;
     private static final int cacheExperationMinutes = 30;
     URI uri;
 
@@ -55,12 +54,10 @@ public class DerEdgeResponseServiceImpl implements DerEdgeResponseService {
     public void initialize() {
 
         apiRestTemplate = new RestTemplate();
-        // Do we need an error handler?
         apiRestTemplate.setErrorHandler(new EdgeDrErrorHandler());
         apiRestTemplate.setMessageConverters(Arrays.asList(mappingJackson2HttpMessageConverter));
         jsonPrinter = new GsonBuilder().setPrettyPrinting().create();
 
-        // Clean up / possibly better error message?
         try {
             uri = new URI(configurationSource.getString(MasterConfigString.SETO_WEBHOOK_URL));
         } catch (URISyntaxException e) {
@@ -69,16 +66,16 @@ public class DerEdgeResponseServiceImpl implements DerEdgeResponseService {
 
         e2eIdToGuidCache = CacheBuilder.newBuilder().concurrencyLevel(2)
                 .expireAfterWrite(cacheExperationMinutes, TimeUnit.MINUTES)
-                .build(new CacheLoader<Short, String>() {
+                .build(new CacheLoader<Integer, String>() {
 
                     @Override
-                    public String load(Short e2eID) throws Exception {
+                    public String load(Integer e2eID) throws Exception {
                         return e2eIdToGuidCache.getIfPresent(e2eID);
                     }
                 });
     }
 
-    public void addCacheEntry(Short e2eID, String guid) {
+    public void addCacheEntry(Integer e2eID, String guid) {
         e2eIdToGuidCache.put(e2eID, guid);
     }
 

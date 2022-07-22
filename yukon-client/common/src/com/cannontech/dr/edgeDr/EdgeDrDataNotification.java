@@ -6,10 +6,10 @@ import java.util.Arrays;
 public class EdgeDrDataNotification {
     private int paoId;
     private byte[] payload;
-    private Short e2eId;
+    private Integer e2eId;
     private EdgeDrError error;
     
-    public EdgeDrDataNotification(int paoId, byte[] payload, Short e2eId, EdgeDrError error) {
+    public EdgeDrDataNotification(int paoId, byte[] payload, Integer e2eId, EdgeDrError error) {
         this.paoId = paoId;
         this.payload = payload;
         this.e2eId = e2eId;
@@ -36,11 +36,11 @@ public class EdgeDrDataNotification {
         this.payload = new BigInteger(stringPayload, 16 /*parse as hex*/).toByteArray();
     }
 
-    public Short getE2eId() {
+    public Integer getE2eId() {
         return e2eId;
     }
 
-    public void setE2eId(Short e2eId) {
+    public void setE2eId(Integer e2eId) {
         this.e2eId = e2eId;
     }
 
