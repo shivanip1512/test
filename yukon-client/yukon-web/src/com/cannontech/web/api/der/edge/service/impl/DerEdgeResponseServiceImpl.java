@@ -59,7 +59,11 @@ public class DerEdgeResponseServiceImpl implements DerEdgeResponseService {
         jsonPrinter = new GsonBuilder().setPrettyPrinting().create();
 
         try {
-            uri = new URI(configurationSource.getString(MasterConfigString.SETO_WEBHOOK_URL));
+            String uriString = configurationSource.getString(MasterConfigString.SETO_WEBHOOK_URL);
+            if(uriString == null) {
+                uriString = "";
+            }
+            uri = new URI(uriString);
         } catch (URISyntaxException e) {
             log.warn("caught exception in initialize", e);
         }
@@ -87,27 +91,32 @@ public class DerEdgeResponseServiceImpl implements DerEdgeResponseService {
         // Log initial thing
         log.info("Received EdgeDrDataNotification {} from porter", edgeDrDataNotification);
 
-        // Get the LiteYukonPAObject
-        LiteYukonPAObject liteYukonPao = paodao.getLiteYukonPAO(edgeDrDataNotification.getPaoId());
-        // Create the new object pieces to fire off
-        String token = e2eIdToGuidCache.getIfPresent(edgeDrDataNotification.getE2eId());
-        String name = liteYukonPao.getPaoName();
-        String type = liteYukonPao.getPaoType().getDbString();
-        String payload = new String(edgeDrDataNotification.getPayload(), StandardCharsets.UTF_8);
-        String errorMsg = edgeDrDataNotification.getError().toString();
+        if (!uri.getPath().isBlank()) {
+            // Get the LiteYukonPAObject
+            LiteYukonPAObject liteYukonPao = paodao.getLiteYukonPAO(edgeDrDataNotification.getPaoId());
+            // Create the new object pieces to fire off
+            String token = e2eIdToGuidCache.getIfPresent(edgeDrDataNotification.getE2eId());
+            String name = liteYukonPao.getPaoName();
+            String type = liteYukonPao.getPaoType().getDbString();
+            String payload = new String(edgeDrDataNotification.getPayload(), StandardCharsets.UTF_8);
+            String errorMsg = edgeDrDataNotification.getError().toString();
 
-        // Build requestEntity
-        EdgeDrWebhookRequest edgeDrWebhookRequest = new EdgeDrWebhookRequest(token, name, type, payload, errorMsg);
-        HttpHeaders headers = new HttpHeaders();
-        HttpEntity<EdgeDrWebhookRequest> requestEntity = new HttpEntity<>(edgeDrWebhookRequest, headers);
-        try {
-            log.debug("EdgeDrWebhookRequest as JSON {}", jsonPrinter.toJson(edgeDrWebhookRequest));
-            log.debug("Sending message {} to URL: {}", requestEntity, uri);
-            ResponseEntity<? extends Object> response = apiRestTemplate.exchange(uri, HttpMethod.POST, requestEntity, Object.class);
-            log.info("Received response from Central Controller {}", response);
-            // acknowledge success - Log it
-        } catch (Exception e) {
-            log.error("Exception sending EdgeDrWebhookRequest", e);
+            // Build requestEntity
+            EdgeDrWebhookRequest edgeDrWebhookRequest = new EdgeDrWebhookRequest(token, name, type, payload, errorMsg);
+            HttpHeaders headers = new HttpHeaders();
+            HttpEntity<EdgeDrWebhookRequest> requestEntity = new HttpEntity<>(edgeDrWebhookRequest, headers);
+            try {
+                log.debug("EdgeDrWebhookRequest as JSON {}", jsonPrinter.toJson(edgeDrWebhookRequest));
+                log.debug("Sending message {} to URL: {}", requestEntity, uri);
+                ResponseEntity<? extends Object> response = apiRestTemplate.exchange(uri, HttpMethod.POST, requestEntity,
+                        Object.class);
+                log.info("Received response from Central Controller {}", response);
+                // acknowledge success - Log it
+            } catch (Exception e) {
+                log.error("Exception sending EdgeDrWebhookRequest", e);
+            }
+        } else {
+            log.warn("Unable to send data to central controller when URL is not set, please check your SETO_WEBHOOK_URL");
         }
 
     }
