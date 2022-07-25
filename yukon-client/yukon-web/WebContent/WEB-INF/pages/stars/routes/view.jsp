@@ -14,7 +14,8 @@
             <div id="page-actions" class="dn">
                 <cti:url var="createUrl" value="/stars/device/routes/create"/>
                 <cm:dropdownOption icon="icon-plus-green" key="yukon.web.components.button.create.label" id="js-create-option" href="${createUrl}"/>
-                
+                                <cti:url var="editUrl" value="/stars/device/routes/${communicationRoute.deviceId}/edit" />
+                <cm:dropdownOption icon="icon-pencil" key="yukon.web.components.button.edit.label" href="${editUrl}"/>
                 <!-- delete button and confirm popup -->
                 <cm:dropdownOption icon="icon-delete" 
                                    key="yukon.web.components.button.delete.label" 

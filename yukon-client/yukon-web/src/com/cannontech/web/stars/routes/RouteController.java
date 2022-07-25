@@ -7,7 +7,6 @@ import javax.servlet.http.HttpServletRequest;
 
 import org.apache.logging.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.context.MessageSourceResolvable;
 import org.springframework.http.HttpMethod;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -21,12 +20,12 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.client.RestClientException;
+import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import com.cannontech.clientutils.YukonLogManager;
 import com.cannontech.common.device.model.DeviceBaseModel;
 import com.cannontech.common.dr.setup.LMDelete;
 import com.cannontech.common.pao.PaoType;
-import com.cannontech.common.validator.YukonValidationUtils;
 import com.cannontech.core.roleproperties.HierarchyPermissionLevel;
 import com.cannontech.core.roleproperties.YukonRoleProperty;
 import com.cannontech.database.data.route.RouteBase;
@@ -40,7 +39,6 @@ import com.cannontech.web.api.route.model.RouteBaseModel;
 import com.cannontech.web.api.validation.ApiCommunicationException;
 import com.cannontech.web.api.validation.ApiControllerHelper;
 import com.cannontech.web.common.flashScope.FlashScope;
-import com.cannontech.web.common.flashScope.FlashScopeMessageType;
 import com.cannontech.web.security.annotation.CheckPermissionLevel;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -98,25 +96,34 @@ public class RouteController {
     @GetMapping("create")
     public String create(ModelMap model) {
         model.addAttribute("mode", PageEditMode.CREATE);
-        RouteBaseModel<RouteBase> routeBaseModel = new RouteBaseModel<RouteBase>();
-        routeBaseModel.setDefaultRoute(true);
-        model.addAttribute("communicationRoute", routeBaseModel);
+        RouteBaseModel<RouteBase> communicationRoute = new RouteBaseModel<RouteBase>();
+        if (model.containsAttribute("communicationRoute")) {
+            communicationRoute = (RouteBaseModel<RouteBase>) model.getAttribute("communicationRoute");
+        } else {
+            communicationRoute.setDefaultRoute(true);
+        }
+        model.addAttribute("communicationRoute", communicationRoute);
         return "/routes/view.jsp";
     }
 
     @PostMapping("save")
     public String save(@ModelAttribute("communicationRoute") RouteBaseModel<?> communicationRoute, BindingResult result,
-            YukonUserContext userContext, FlashScope flash, HttpServletRequest request) {
+            YukonUserContext userContext, FlashScope flash, RedirectAttributes redirectAttributes, HttpServletRequest request) {
         try {
             routeValidator.validate(communicationRoute, result);
             if (result.hasErrors()) {
-                return createFailed(result, flash);
+                return bindAndForward(communicationRoute, result, redirectAttributes);
             }
             ResponseEntity<? extends Object> response = null;
             String url = helper.findWebServerUrl(request, userContext, ApiURL.retrieveAllRoutesUrl);
-            response = apiRequestHelper.callAPIForObject(userContext, request, url,
-                    HttpMethod.POST, RouteBaseModel.class, communicationRoute);
-
+            if (communicationRoute.getDeviceId() == null) {
+                response = apiRequestHelper.callAPIForObject(userContext, request, url,
+                        HttpMethod.POST, RouteBaseModel.class, communicationRoute);
+            } else {
+                url = helper.findWebServerUrl(request, userContext, ApiURL.retrieveAllRoutesUrl) + "/" + communicationRoute.getDeviceId();
+                response = apiRequestHelper.callAPIForObject(userContext, request, url,
+                        HttpMethod.PATCH, RouteBaseModel.class, communicationRoute);
+            }
             if (response.getStatusCode() == HttpStatus.OK || response.getStatusCode() == HttpStatus.CREATED) {
                 RouteBaseModel<?> routeCreated = (RouteBaseModel<?>) response.getBody();
                 flash.setConfirm(
@@ -130,19 +137,17 @@ public class RouteController {
             return redirectListPageLink;
         } catch (RestClientException ex) {
             log.error("Error creating route: {}. Error: {}", communicationRoute.getDeviceName(), ex.getMessage());
-            flash.setError(
-                    new YukonMessageSourceResolvable("yukon.web.api.save.error",communicationRoute.getDeviceName(), ex.getMessage()));
+            flash.setError(new YukonMessageSourceResolvable("yukon.web.api.save.error", communicationRoute.getDeviceName(), ex.getMessage()));
             return redirectListPageLink;
         }
         return null;
     }
     
-    private String createFailed(BindingResult bindingResult, FlashScope flashScope) {
-        List<MessageSourceResolvable> messages = YukonValidationUtils.errorsForBindingResult(bindingResult);
-        flashScope.setMessage(messages, FlashScopeMessageType.ERROR);
-        return "/routes/view.jsp";
+    private String bindAndForward(RouteBaseModel<?> communicationRoute, BindingResult result, RedirectAttributes attrs) {
+        attrs.addFlashAttribute("communicationRoute", communicationRoute);
+        attrs.addFlashAttribute("org.springframework.validation.BindingResult.communicationRoute", result);
+        return "redirect:/stars/device/routes/create";
     }
-    
 
     @GetMapping("/{id}")
     public String view(ModelMap model, YukonUserContext userContext, @PathVariable int id, FlashScope flash,
@@ -163,7 +168,30 @@ public class RouteController {
             flash.setError(new YukonMessageSourceResolvable(communicationKey));
             return redirectListPageLink;
         }
-
+    }
+    
+    @GetMapping("/{id}/edit")
+    public String edit(ModelMap model, YukonUserContext userContext, @PathVariable int id, FlashScope flash,
+            HttpServletRequest request) {
+        try {
+            String url = helper.findWebServerUrl(request, userContext, ApiURL.retrieveAllRoutesUrl + "/" + id);
+            model.addAttribute("mode", PageEditMode.EDIT);
+            RouteBaseModel<?> communicationRoute = retrieveCommunicationRoute(userContext, request, id, url);
+            if (communicationRoute == null) {
+                flash.setError(new YukonMessageSourceResolvable(baseKey + "communicationRoute.retrieve.error"));
+                return redirectListPageLink;
+            } else if (model.containsAttribute("communicationRoute")) {
+                communicationRoute = (RouteBaseModel<?>) model.get("communicationRoute");
+                communicationRoute.setDeviceId(id);
+            }
+            
+            model.addAttribute("communicationRoute", communicationRoute);
+            return "/routes/view.jsp";
+        } catch (ApiCommunicationException e) {
+            log.error(e.getMessage());
+            flash.setError(new YukonMessageSourceResolvable(communicationKey));
+            return redirectListPageLink;
+        }
     }
     
     @DeleteMapping("/{id}/delete")

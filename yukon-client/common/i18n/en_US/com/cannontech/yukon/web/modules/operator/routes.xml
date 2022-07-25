@@ -13,4 +13,6 @@
     <entry key="yukon.web.modules.operator.routes.VIEW.pageHeading">Routes: {0}</entry>
     <entry key="yukon.web.modules.operator.routes.VIEW.crumbTitle">{0}</entry>
     <entry key="yukon.web.modules.operator.routes.VIEW.pageTitle">Routes: {0}</entry>
+    <entry key="yukon.web.modules.operator.routes.EDIT.pageHeading">Routes: {0}</entry>
+    <entry key="yukon.web.modules.operator.routes.EDIT.crumbTitle">Edit</entry>
 </properties>
