@@ -29,6 +29,8 @@ import com.cannontech.web.stars.service.RfnCellularCommDataService;
 
 public class RfnCellularCommDataServiceImpl implements RfnCellularCommDataService{
 
+    private static final String GETSTATUS_CELL = "getstatus cell";
+
     private static final Logger log = YukonLogManager.getLogger(RfnCellularCommDataServiceImpl.class);
 
     @Autowired private AttributeService attributeService;
@@ -87,8 +89,7 @@ public class RfnCellularCommDataServiceImpl implements RfnCellularCommDataServic
     }
 
     private void initiateCellularDeviceStatusRefresh(PaoIdentifier paoIdentifier, LiteYukonUser user) {
-        //TODO: Verify what the new command will be
-        CommandRequestDevice request = new CommandRequestDevice("getstatus cell", new SimpleDevice(paoIdentifier));
+        CommandRequestDevice request = new CommandRequestDevice(GETSTATUS_CELL, new SimpleDevice(paoIdentifier));
         CommandResultHolder result = commandExecutionService.execute(request,
                 DeviceRequestType.CELLULAR_CONNECTION_STATUS_REFRESH, user);
         log.debug("Cellular device connection refresh result: {}", result);
