@@ -59,11 +59,7 @@ public class DerEdgeResponseServiceImpl implements DerEdgeResponseService {
         jsonPrinter = new GsonBuilder().setPrettyPrinting().create();
 
         try {
-            String uriString = configurationSource.getString(MasterConfigString.SETO_WEBHOOK_URL);
-            if(uriString == null) {
-                uriString = "";
-            }
-            uri = new URI(uriString);
+            uri = new URI(configurationSource.getString(MasterConfigString.SETO_WEBHOOK_URL, ""));
         } catch (URISyntaxException e) {
             log.warn("caught exception in initialize", e);
         }
