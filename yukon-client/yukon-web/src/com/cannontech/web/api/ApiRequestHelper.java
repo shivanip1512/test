@@ -28,6 +28,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.http.client.HttpComponentsClientHttpRequestFactory;
 import org.springframework.web.client.RestClientException;
 import org.springframework.web.client.RestTemplate;
+import org.springframework.web.util.DefaultUriBuilderFactory;
 
 import com.cannontech.clientutils.YukonLogManager;
 import com.cannontech.common.device.model.DeviceBaseModel;
@@ -66,6 +67,10 @@ public class ApiRequestHelper {
     public static volatile boolean isSSLConfigInitialized = false; 
     private static final Logger log = YukonLogManager.getLogger(ApiRequestHelper.class);
 
+    public void setUriBuilderFactory(DefaultUriBuilderFactory factory) {
+        apiRestTemplate.setUriTemplateHandler(factory);
+    }
+    
     public synchronized void setProxyAndSslConfig() {
         HttpComponentsClientHttpRequestFactory factory = new HttpComponentsClientHttpRequestFactory();
         YukonHttpProxy.fromGlobalSetting(settingDao).ifPresent(httpProxy -> {
@@ -79,6 +84,9 @@ public class ApiRequestHelper {
         apiRestTemplate.setRequestFactory(factory);
     }
 
+    public DefaultUriBuilderFactory getUriTemplateHandler() {
+        return (DefaultUriBuilderFactory) apiRestTemplate.getUriTemplateHandler();
+    }
     public synchronized void setSslConfig() {
         HttpComponentsClientHttpRequestFactory factory = new HttpComponentsClientHttpRequestFactory();
         HttpClient httpClient = HttpClientBuilder.create()

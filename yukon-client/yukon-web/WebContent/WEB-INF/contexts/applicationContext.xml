@@ -1397,6 +1397,11 @@
      <!-- Setup -->
     <bean id="customDefaultResponseErrorHandler" class = "com.cannontech.web.api.client.errorHandler.CustomDefaultResponseErrorHandler" />
     <bean id="apacheHttpClientRequestFactory" class="org.springframework.http.client.HttpComponentsClientHttpRequestFactory"/>
+    <bean id="defaultUriBuilderFactory" class="org.springframework.web.util.DefaultUriBuilderFactory">
+        <property name="encodingMode">
+            <value type="org.springframework.web.util.DefaultUriBuilderFactory.EncodingMode">VALUES_ONLY</value>
+        </property>
+    </bean>
     <bean id="apiRestTemplate" class="org.springframework.web.client.RestTemplate">
         <property name="messageConverters">
             <list>
@@ -1408,6 +1413,7 @@
         <property name="errorHandler" ref="customDefaultResponseErrorHandler"/>
         <!-- Need to use Apache request factory for PATCH support -->
         <property name="requestFactory" ref="apacheHttpClientRequestFactory"/>
+        <property name="uriTemplateHandler" ref="defaultUriBuilderFactory"/>
      </bean>
 
     <bean class="com.cannontech.dr.loadgroup.service.impl.LoadGroupSetupServiceImpl"/>
