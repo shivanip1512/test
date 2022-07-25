@@ -20,7 +20,7 @@
         <form action="${url}" method="get">
             <i:inline key="yukon.common.filterBy"/>
             <cti:msg2 var="namePlaceholder" key="yukon.common.name"/>
-            <input type="text" name="filterValueName" size="20" value="${filterValueName}" placeholder="${namePlaceholder}">
+            <input type="text" name="filterValueName" size="20" value="${filterValueName}" placeholder="${namePlaceholder}" id="js-filterName">
             <cti:button nameKey="filter" type="submit" classes="action primary fn vab"/>
         </form>
     </div>
