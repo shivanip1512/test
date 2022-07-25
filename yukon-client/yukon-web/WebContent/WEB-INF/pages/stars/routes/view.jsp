@@ -3,6 +3,7 @@
 <%@ taglib prefix="cti" uri="http://cannontech.com/tags/cti" %>
 <%@ taglib prefix="form" uri="http://www.springframework.org/tags/form"%>
 <%@ taglib prefix="tags" tagdir="/WEB-INF/tags"%>
+<%@ taglib prefix="d" tagdir="/WEB-INF/tags/dialog" %>
 
 <cti:msgScope paths="yukon.web.modules.operator.routes">
     <cti:standardPage module="operator" page="routes.${mode}">
@@ -13,6 +14,20 @@
             <div id="page-actions" class="dn">
                 <cti:url var="createUrl" value="/stars/device/routes/create"/>
                 <cm:dropdownOption icon="icon-plus-green" key="yukon.web.components.button.create.label" id="js-create-option" href="${createUrl}"/>
+                
+                <!-- delete button and confirm popup -->
+                <cm:dropdownOption icon="icon-delete" 
+                                   key="yukon.web.components.button.delete.label" 
+                                   id="js-delete-option"
+                                   data-ok-event="yukon:routes:delete" 
+                                   classes="js-hide-dropdown"/>
+                    <d:confirm on="#js-delete-option" nameKey="confirmDelete" argument="${communicationRoute.deviceName}" />
+            <cti:url var="deleteUrl" value="/stars/device/routes/${communicationRoute.deviceId}/delete" />
+            <form:form id="js-route-delete-form" action="${deleteUrl}" method="delete" modelAttribute="communicationRoute">
+                <tags:hidden path="deviceId"/>
+                <tags:hidden path="deviceName"/>
+                <cti:csrfToken />
+            </form:form>
             </div>
         </cti:displayForPageEditModes>
     
@@ -53,5 +68,6 @@
                 </div>
             </tags:sectionContainer2>
         </form:form>
+        <cti:includeScript link="/resources/js/pages/yukon.assets.routes.js"/>
     </cti:standardPage>
 </cti:msgScope>
