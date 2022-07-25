@@ -77,7 +77,7 @@
                     <div class="column two nogutter">
                         <tags:boxContainer2 nameKey="notification" hideEnabled="false" styleClass="dn" id="js-notification-settings">
                             <tags:nameValueContainer2>
-                                <tags:nameValue2 nameKey=".notificationGroup.sendEmail" rowClass="noswitchtype">
+                                <tags:nameValue2 nameKey=".notificationGroup.sendEmails" rowClass="noswitchtype">
                                     <tags:switchButton offNameKey="yukon.common.no" onNameKey="yukon.common.yes" 
                                                        name="sendEmail"/>
                                 </tags:nameValue2>
@@ -99,7 +99,7 @@
                         <thead>
                             <tr>
                                 <th width="60%"><i:inline key="yukon.common.name"/></th>
-                                <th width="20%"><i:inline key=".notificationGroup.sendEmail"/></th>
+                                <th width="20%"><i:inline key=".notificationGroup.sendEmails"/></th>
                                 <th width="20%"><i:inline key=".notificationGroup.makePhoneCalls"/></th>
                             </tr>
                         </thead>
