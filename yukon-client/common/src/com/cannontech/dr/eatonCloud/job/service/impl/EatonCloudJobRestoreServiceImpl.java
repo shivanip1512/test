@@ -14,6 +14,7 @@ import org.springframework.beans.factory.annotation.Qualifier;
 
 import com.cannontech.clientutils.YukonLogManager;
 import com.cannontech.common.config.ConfigurationSource;
+import com.cannontech.common.config.MasterConfigBoolean;
 import com.cannontech.common.config.MasterConfigInteger;
 import com.cannontech.common.util.ScheduledExecutor;
 import com.cannontech.dr.eatonCloud.job.service.EatonCloudJobControlType;
@@ -46,13 +47,16 @@ public class EatonCloudJobRestoreServiceImpl extends EatonCloudJobHelperService 
 
     @PostConstruct
     public void init() {
-        String siteGuid = settingDao.getString(GlobalSettingType.EATON_CLOUD_SERVICE_ACCOUNT_ID);
-        if (Strings.isNullOrEmpty(siteGuid)) {
-            return;
-        }
+        if (configurationSource.getBoolean(MasterConfigBoolean.EATON_CLOUD_JOBS_TREND, false)) {
+            log.info("Initializing");
+            String siteGuid = settingDao.getString(GlobalSettingType.EATON_CLOUD_SERVICE_ACCOUNT_ID);
+            if (Strings.isNullOrEmpty(siteGuid)) {
+                return;
+            }
 
-        maxDevicesPerJob = configurationSource.getInteger(
-                MasterConfigInteger.EATON_CLOUD_DEVICES_PER_JOB, 2500);
+            maxDevicesPerJob = configurationSource.getInteger(
+                    MasterConfigInteger.EATON_CLOUD_DEVICES_PER_JOB, 2500);
+        }
     }
     
     @Override
