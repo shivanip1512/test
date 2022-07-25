@@ -445,6 +445,11 @@
     <entry key="yukon.web.modules.dev.eatonCloudToken.pageName">Eaton Cloud Token Test</entry>
     <entry key="yukon.web.modules.dev.eatonCloudToken.loadError">Error loading Eaton Cloud Authorization Token</entry>
 
+        <!-- Seto Simulator -->
+    <entry key="yukon.web.modules.dev.setoSimulator.pageName">Seto Simulator</entry>
+    <entry key="yukon.web.modules.dev.setoSimulator.send.success">Message sent to Central Controller successfully</entry>
+    <entry key="yukon.web.modules.dev.setoSimulator.sendToCentralControllerError">Error sending porter response to Central Controller</entry>
+
     <!-- Nest Test -->
     <entry key="yukon.web.modules.dev.nest.pageName">Nest Test</entry>
     <entry key="yukon.web.modules.dev.nest.viewNestVersion.pageName">Nest Version</entry>

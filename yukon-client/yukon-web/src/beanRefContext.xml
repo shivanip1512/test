@@ -19,6 +19,7 @@
             <value>com/cannontech/web/scheduledFileExport/scheduledFileExport.xml</value>
             <value>com/cannontech/web/serverContext.xml</value>
             <value>com/cannontech/web/commonContext.xml</value>
+            <value>com/cannontech/web/derEdgeContext.xml</value>
        </list>
      </constructor-arg>
      <constructor-arg>

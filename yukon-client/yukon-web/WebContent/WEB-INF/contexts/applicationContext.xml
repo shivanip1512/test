@@ -889,7 +889,7 @@
                     <list>
                         <bean class = "org.springframework.http.converter.StringHttpMessageConverter"/>
                         <bean class="org.springframework.http.converter.support.AllEncompassingFormHttpMessageConverter"/>
-                        <ref bean="jacksonHttpMsgConverter"/>
+                        <ref bean="jacksonHttpMessageConverter"/>
                     </list>
                 </property>
             </bean>
