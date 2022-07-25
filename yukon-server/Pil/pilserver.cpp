@@ -46,6 +46,7 @@
 #include "cmd_rfn_ConfigNotification.h"
 #include "cmd_rfn_MeterDisconnect.h"
 #include "cmd_rfn_MeterRead.h"
+#include "cmd_rfn_DerPayloadDelivery.h"
 
 #include "debug_timer.h"
 #include "millisecond_timer.h"
@@ -814,6 +815,16 @@ struct RfnDeviceResultProcessor : Devices::DeviceHandler, Devices::Commands::Rfn
         }
     }
 
+    void handleCommandResult(const Devices::Commands::RfnDerPayloadDeliveryCommand& command) override
+    {
+        if( auto resultMsg = command.getResponseMessage() )
+        {
+            serviceReplies.emplace(
+                command.getUserMessageId(),
+                Messaging::Serialization::serialize(*resultMsg));
+        }
+    }
+
     YukonError_t execute(Devices::RfnDevice &dev)
     {
         bool anySuccess = false;
@@ -1283,35 +1294,68 @@ void PilServer::handleRfnEdgeDrUnicastRequest( const amq_cm::MessageDescriptor &
             "Network Priority",   to_string( req->networkPriority ) ) );
     }
 
-    // TODO - stuff to send out the messages  --  'putvalue oscore 0x{hex string}' or something?
+    const std::string command = "putconfig der " + convertBytesToHexString( req->payload );
 
-    EdgeDrUnicastResponse resp
+    auto callback =
+    []( Messaging::ActiveMQConnectionManager::SerializedMessage & message )
+    {
+        Messaging::ActiveMQConnectionManager::enqueueMessage(
+            Messaging::ActiveMQ::Queues::OutboundQueue::RfnEdgeDrDataNotification,
+            message );
+    };
+
+    EdgeDrUnicastResponse response
     {
         req->messageGuid,
         { },
-        std::nullopt    // no error...
+        std::nullopt
     };
 
-    for ( auto ID : req->paoIds )
+    for ( auto paoID : req->paoIds )
     {
-        resp.paoToE2eId.emplace( ID, 0 );   // bogus '0' e2e message ID here...
+        const auto userMessageId = PilUserMessageIdGenerator();
+        auto dev = DeviceManager.getDeviceByID( paoID );
+
+        if ( ! dev )
+        {
+            CTILOG_WARN( dout, "Could not find device" << FormattedList::of(
+                            "PaoID", paoID ) );
+
+            response.error = { ClientErrors::IdNotFound, "Could not find device w/PaoID: " + std::to_string( paoID ) };
+        }
+        else if ( ! _replyCallbacks->try_emplace(userMessageId, callback).second )
+        {
+            CTILOG_WARN( dout, "Could not insert callback" << FormattedList::of(
+                            "PaoID", paoID ) );
+
+            response.error = { ClientErrors::Abnormal, "Could not insert callback for device w/PaoID: " + std::to_string( paoID ) };
+        }
+        else
+        {
+            auto readRequest = std::make_unique<CtiRequestMsg>( paoID, command );
+
+            readRequest->setUserMessageId( userMessageId );
+            //readRequest->setConnectionHandle(connectionHandle);  //  Leave the connectionHandle null as our indication this is internal
+
+            response.paoToE2eId.emplace( paoID, userMessageId );
+
+            MainQueue_.putQueue( readRequest.release() );
+        }
     }
 
-    auto serializedResponse = Messaging::Serialization::serialize( resp );
-
-    if ( serializedResponse.empty() )
+    if ( auto serializedResponse = Messaging::Serialization::serialize( response ); ! serializedResponse.empty() )
+    {
+        Messaging::ActiveMQConnectionManager::enqueueMessage(
+            Messaging::ActiveMQ::Queues::OutboundQueue::RfnEdgeDrUnicastResponse,
+            serializedResponse );
+    }
+    else
     {
         CTILOG_WARN( dout, "Could not serialize response message" << FormattedList::of(
             "Message GUID", req->messageGuid
             // error info..?
             ) );
-
-        return;
     }
-
-    Messaging::ActiveMQConnectionManager::enqueueMessage(
-        Messaging::ActiveMQ::Queues::OutboundQueue::RfnEdgeDrUnicastResponse,
-        serializedResponse );
 }
 
 void PilServer::handleRfnEdgeDrBroadcastRequest( const amq_cm::MessageDescriptor & md )

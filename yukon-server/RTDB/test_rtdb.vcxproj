@@ -371,6 +371,7 @@
     <ClCompile Include="test_cmd_rfn_ConfigNotification.cpp" />
     <ClCompile Include="test_cmd_rfn_DataStreamingConfiguration.cpp" />
     <ClCompile Include="test_cmd_rfn_DemandInterval.cpp" />
+    <ClCompile Include="test_cmd_rfn_DerPayloadDelivery.cpp" />
     <ClCompile Include="test_cmd_rfn_Individual.cpp" />
     <ClCompile Include="test_cmd_rfn_MeterDisconnect.cpp" />
     <ClCompile Include="test_cmd_rfn_MeterProgramming.cpp" />
