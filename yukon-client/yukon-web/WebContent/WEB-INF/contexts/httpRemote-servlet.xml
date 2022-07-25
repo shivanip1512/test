@@ -18,12 +18,4 @@
             </list>
         </property>
     </bean>
-	
-	<bean id="localMasterConfig" class="com.cannontech.common.config.MasterConfigHelper"
-          factory-method="getLocalConfiguration">
-    </bean>
-	<bean name="/MasterConfig" class="com.cannontech.web.spring.IgnoreCsrfCheckHttpInvokerServiceExporter">
-  		<property name="service" ref="localMasterConfig"/>
-  		<property name="serviceInterface" value="com.cannontech.common.config.ConfigurationSource"/>
-	</bean>
 </beans>
