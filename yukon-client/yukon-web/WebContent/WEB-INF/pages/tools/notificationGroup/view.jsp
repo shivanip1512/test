@@ -2,6 +2,7 @@
 <%@ taglib prefix="cm" tagdir="/WEB-INF/tags/contextualMenu" %>
 <%@ taglib prefix="cti" uri="http://cannontech.com/tags/cti" %>
 <%@ taglib prefix="d" tagdir="/WEB-INF/tags/dialog" %>
+<%@ taglib prefix="fancyTree" tagdir="/WEB-INF/tags/fancyTree" %>
 <%@ taglib prefix="fn" uri="http://java.sun.com/jsp/jstl/functions" %>
 <%@ taglib prefix="form" uri="http://www.springframework.org/tags/form"%>
 <%@ taglib prefix="i" tagdir="/WEB-INF/tags/i18n"%>
@@ -9,6 +10,7 @@
 
 
 <cti:standardPage module="tools" page="notificationGroup.${mode}">
+
     <tags:setFormEditMode mode="${mode}" />
 
     <!-- Actions drop-down -->
@@ -37,9 +39,14 @@
         </div>
     </cti:displayForPageEditModes>
 
-    <form:form modelAttribute="notificationGroup" action="${action}" method="post">
+    <cti:url var="action" value="/tools/notificationGroup/save"/>
+    <form:form modelAttribute="notificationGroup" action="${action}" method="post" id="js-notification-grup-settings-form">
+        
         <cti:csrfToken />
         <form:hidden path="id" />
+        <input type="hidden" id="js-ci-customers" name="ciCustomersJsonString"/>
+        <input type="hidden" id="js-unassigned-contacts" name="unassignedContactsJsonString"/>
+        
         <tags:sectionContainer2 nameKey="general">
             <tags:nameValueContainer2>
                 <tags:nameValue2 nameKey="yukon.common.name">
@@ -50,6 +57,40 @@
                 </tags:nameValue2>
             </tags:nameValueContainer2>
         </tags:sectionContainer2>
+        
+        <cti:displayForPageEditModes modes="CREATE,EDIT">
+            <tags:sectionContainer2 nameKey="notificationSettings">
+                <div class="column-12-12 clearfix">
+                    <div class="column one">
+                        <tags:boxContainer2 nameKey="notification" hideEnabled="false">
+                            <fancyTree:inlineTree id="js-notification-tree-id"
+                                                  maxHeight="250"
+                                                  styleClass="stacked"
+                                                  dataJson="${notificationTreeJson}" 
+                                                  includeControlBar="true"
+                                                  treeParameters='{"minExpandLevel": "1", "icon": false}'
+                                                  includeCheckbox="${true}"
+                                                  multiSelect="${true}"
+                                                  toggleNodeSelectionOnClick="${false}"/>
+                       </tags:boxContainer2>
+                    </div>
+                    <div class="column two nogutter">
+                        <tags:boxContainer2 nameKey="notification" hideEnabled="false" styleClass="dn" id="js-notification-settings">
+                            <tags:nameValueContainer2>
+                                <tags:nameValue2 nameKey=".notificationGroup.sendEmail" rowClass="noswitchtype">
+                                    <tags:switchButton offNameKey="yukon.common.no" onNameKey="yukon.common.yes" 
+                                                       name="sendEmail"/>
+                                </tags:nameValue2>
+                                <tags:nameValue2 nameKey=".notificationGroup.makePhoneCalls" rowClass="noswitchtype">
+                                    <tags:switchButton offNameKey="yukon.common.no" onNameKey="yukon.common.yes"
+                                                       name="makePhoneCalls"/>
+                                </tags:nameValue2>
+                            </tags:nameValueContainer2>
+                        </tags:boxContainer2>
+                    </div>
+                </div>
+            </tags:sectionContainer2>
+        </cti:displayForPageEditModes>
 
         <cti:displayForPageEditModes modes="VIEW">
             <tags:sectionContainer2 nameKey="notificationSettings" styleClass="select-box">
@@ -58,8 +99,8 @@
                         <thead>
                             <tr>
                                 <th width="60%"><i:inline key="yukon.common.name"/></th>
-                                <th width="20%"><i:inline key=".sendEmail"/></th>
-                                <th width="20%"><i:inline key=".makePhoneCall"/></th>
+                                <th width="20%"><i:inline key=".notificationGroup.sendEmail"/></th>
+                                <th width="20%"><i:inline key=".notificationGroup.makePhoneCalls"/></th>
                             </tr>
                         </thead>
 
@@ -105,7 +146,18 @@
                 </div>
             </tags:sectionContainer2>
         </cti:displayForPageEditModes>
+        
+        <div class="page-action-area">
+            <cti:displayForPageEditModes modes="EDIT,CREATE">
+                <cti:button id="js-save-notification-group" nameKey="save" classes="primary action" busy="true"/>
+            </cti:displayForPageEditModes>
+            
+            <cti:displayForPageEditModes modes="CREATE">
+                <cti:url var="listUrl" value="/tools/notificationGroup/list" />
+                <cti:button nameKey="cancel" href="${listUrl}" />
+            </cti:displayForPageEditModes>
+        </div>
+        
     </form:form>
-
     <cti:includeScript link="/resources/js/pages/yukon.tools.notificationgroup.js" />
 </cti:standardPage>

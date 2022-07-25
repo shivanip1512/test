@@ -139,7 +139,8 @@ var yg = {
         noData : '<cti:msg2 key="yukon.common.chart.noData"/>',
         exceedsDataLimit : '<cti:msg2 key="yukon.common.chart.exceedsDataLimit"/>',
         pointNotFound : '<cti:msg2 key="yukon.common.pointNotFound"/>',
-        pointDataNotFound: '<cti:msg2 key="yukon.common.pointDataNotFound"/>'
+        pointDataNotFound: '<cti:msg2 key="yukon.common.pointDataNotFound"/>',
+        settings: '<cti:msg2 key="yukon.common.settings"/>'
     },
     
     iconSvg: {

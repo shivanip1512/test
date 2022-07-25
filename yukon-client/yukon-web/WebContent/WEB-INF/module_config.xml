@@ -387,6 +387,7 @@
                   <link>/tools/notificationGroup/{id}</link>
                   <labelArgument>${notificationGroup.name}</labelArgument>
               </page>
+              <page name="notificationGroup.CREATE" type="BASIC"/>
           </pages>
       </page>
     </pages>
