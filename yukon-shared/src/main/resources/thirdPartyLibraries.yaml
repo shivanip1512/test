@@ -2689,8 +2689,8 @@ Java :
     license : Apache 2.0
     license URLs : "https://www.apache.org/licenses/LICENSE-2.0"
     maven URL : "https://mvnrepository.com/artifact/org.springframework/spring-beans/5.3.22"
-    md5 : 0e67d28d1e0384f3bbe2941981753917
-    sha1 : 7644e53207308177e5e070e99f30ac129f589c8c
+    md5 : 254c6d03b5b6164328329a188267291f
+    sha1 : 866c2022b5fef05b1702f4a07cfa5598660ce08a
     updated : 2022-07-26
     jira : YUK-27023
     notes : Spring Beans
@@ -2815,8 +2815,8 @@ Java :
     license : Apache 2.0
     license URLs : "https://www.apache.org/licenses/LICENSE-2.0"
     maven URL : "https://mvnrepository.com/artifact/org.springframework/spring-jcl/5.3.22"
-    md5 : a3d637b6168d1158c7a6901177515cf7
-    sha1 : ee89664a1238d0af6707467d34c9ae626a112b3b
+    md5 : ee2f0e6c61acc47fa33c908177c921c0
+    sha1 : 811ace5e5eb379654ed96fd7844809db51af74a5
     updated : 2022-07-26
     jira : YUK-27023
     notes : Spring Commons Logging Bridge
