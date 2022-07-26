@@ -1057,7 +1057,7 @@ Java :
     jira : YUK-24554
     notes :    
 
-  - filename : jackson-dataformat-xml-2.13.3.jar
+  - filename : jackson-dataformat-xml-2.13.0.jar
     yukon group : Azure
     project : Microsoft Azure SDK
     version : 2.13.0
