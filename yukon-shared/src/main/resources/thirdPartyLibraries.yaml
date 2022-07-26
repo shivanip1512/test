@@ -847,18 +847,18 @@ Java :
     jira : YUK-22557
     notes : YAJSW specific patches for Groovy
   
-  - filename : gson-1.7.2.jar
+  - filename : gson-2.9.0.jar
     yukon group : Azure
     project : Google GSON
-    version : 1.7.2
+    version : 2.9.0
     project URL : "https://github.com/google/gson"
     license : Apache 2.0
     license URLs : "https://opensource.org/licenses/Apache-2.0"
-    maven URL : "https://mvnrepository.com/artifact/com.google.code.gson/gson/1.7.2"
-    md5 : 52c4406ba84c1c21e37f65152c39d356
-    sha1 : 112366d8158749e25532ebce162232c6e0fb20a5
-    updated : 2016-09-28
-    jira : YUK-15740
+    maven URL : "https://mvnrepository.com/artifact/com.google.code.gson/gson/2.9.0"
+    md5 : 53fa3e6753e90d931d62cb89580fde2f
+    sha1 : 8a1167e089096758b49f9b34066ef98b2f4b37aa
+    updated : 2022-02-11
+    jira : YUK-27028
     notes : 
   
   - filename : guava-18.0.jar

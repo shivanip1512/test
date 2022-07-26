@@ -56,7 +56,7 @@ public class EimJavaLibraryTest {
         "groovy-4.0.0.jar",
         "groovy-all-2.4.11.jar",
         "groovy-patch.jar",
-        "gson-1.7.2.jar",
+        "gson-2.9.0.jar",
         "h2-1.4.178.jar",
         "hamcrest-2.2.jar",
         "hamcrest-core-2.2.jar",
