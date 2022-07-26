@@ -24,7 +24,6 @@ import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import com.cannontech.clientutils.YukonLogManager;
 import com.cannontech.common.device.model.DeviceBaseModel;
-import com.cannontech.common.dr.setup.LMDelete;
 import com.cannontech.common.pao.PaoType;
 import com.cannontech.core.roleproperties.HierarchyPermissionLevel;
 import com.cannontech.core.roleproperties.YukonRoleProperty;
@@ -196,16 +195,11 @@ public class RouteController {
     
     @DeleteMapping("/{id}/delete")
     public String delete(@PathVariable int id, YukonUserContext userContext, FlashScope flash, HttpServletRequest request) {
-
+        String routeName = dbCache.getAllPaosMap().get(id).getPaoName();
         try {
             String deleteUrl = helper.findWebServerUrl(request, userContext, ApiURL.retrieveAllRoutesUrl + "/" + id);
-            String routeName = dbCache.getAllPaosMap().get(id).getPaoName();
             ResponseEntity<? extends Object> deleteResponse = apiRequestHelper.callAPIForObject(userContext,
-                    request,
-                    deleteUrl,
-                    HttpMethod.DELETE,
-                    Object.class,
-                    Integer.class);
+                    request, deleteUrl, HttpMethod.DELETE, Object.class, Integer.class);
 
             if (deleteResponse.getStatusCode() == HttpStatus.OK) {
                 flash.setConfirm(new YukonMessageSourceResolvable("yukon.common.delete.success", routeName));
@@ -216,7 +210,6 @@ public class RouteController {
             flash.setError(new YukonMessageSourceResolvable(communicationKey));
             return "redirect:" + "/stars/device/routes/" + id;
         } catch (RestClientException ex) {
-            String routeName = dbCache.getAllPaosMap().get(id).getPaoName();
             log.error("Error deleting route: {}. Error: {}", routeName, ex.getMessage());
             flash.setError(new YukonMessageSourceResolvable("yukon.web.api.delete.error", routeName, ex.getMessage()));
             return "redirect:" + "/stars/device/routes/" + id;

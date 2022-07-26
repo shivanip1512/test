@@ -1,4 +1,3 @@
-<%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
 <%@ taglib prefix="cm" tagdir="/WEB-INF/tags/contextualMenu" %>
 <%@ taglib prefix="cti" uri="http://cannontech.com/tags/cti" %>
 <%@ taglib prefix="form" uri="http://www.springframework.org/tags/form"%>
@@ -13,22 +12,19 @@
         <cti:displayForPageEditModes modes="VIEW">
             <div id="page-actions" class="dn">
                 <cti:url var="createUrl" value="/stars/device/routes/create"/>
-                <cm:dropdownOption icon="icon-plus-green" key="yukon.web.components.button.create.label" id="js-create-option" href="${createUrl}"/>
-                                <cti:url var="editUrl" value="/stars/device/routes/${communicationRoute.deviceId}/edit" />
+                <cm:dropdownOption icon="icon-plus-green" key="yukon.web.components.button.create.label" href="${createUrl}"/>
+                <cti:url var="editUrl" value="/stars/device/routes/${communicationRoute.deviceId}/edit" />
                 <cm:dropdownOption icon="icon-pencil" key="yukon.web.components.button.edit.label" href="${editUrl}"/>
                 <!-- delete button and confirm popup -->
-                <cm:dropdownOption icon="icon-delete" 
-                                   key="yukon.web.components.button.delete.label" 
-                                   id="js-delete-option"
-                                   data-ok-event="yukon:routes:delete" 
-                                   classes="js-hide-dropdown"/>
+                <cm:dropdownOption icon="icon-delete" key="yukon.web.components.button.delete.label" id="js-delete-option"
+                                   data-ok-event="yukon:routes:delete" classes="js-hide-dropdown"/>
                     <d:confirm on="#js-delete-option" nameKey="confirmDelete" argument="${communicationRoute.deviceName}" />
-            <cti:url var="deleteUrl" value="/stars/device/routes/${communicationRoute.deviceId}/delete" />
-            <form:form id="js-route-delete-form" action="${deleteUrl}" method="delete" modelAttribute="communicationRoute">
-                <tags:hidden path="deviceId"/>
-                <tags:hidden path="deviceName"/>
+                <cti:url var="deleteUrl" value="/stars/device/routes/${communicationRoute.deviceId}/delete" />
+                <form:form id="js-route-delete-form" action="${deleteUrl}" method="delete" modelAttribute="communicationRoute">
+                    <%-- <tags:hidden path="deviceId"/>
+                    <tags:hidden path="deviceName"/> --%>
                 <cti:csrfToken />
-            </form:form>
+                </form:form>
             </div>
         </cti:displayForPageEditModes>
     
@@ -36,12 +32,13 @@
         <cti:url var="action" value="/stars/device/routes/save" />
         <form:form modelAttribute="communicationRoute" action="${action}" method="post" id="js-comm-route-form">
             <cti:csrfToken />
+            <form:hidden path="deviceId" />
             <tags:sectionContainer2 nameKey="general">
                 <tags:nameValueContainer2>
                     <tags:nameValue2 nameKey="yukon.common.name">
                         <tags:input path="deviceName" maxlength="60" autofocus="autofocus" inputClass="w300 js-name"/>
                     </tags:nameValue2>
-                    <tags:nameValue2 nameKey=".selectSignalTransmitter">
+                    <tags:nameValue2 nameKey=".selectSignalTransmitter" valueClass="dib">
                         <tags:pickerDialog id="signalTransmitterPicker${id}" 
                                                type="signalTransmitterPicker" 
                                                destinationFieldName="signalTransmitterId"
@@ -62,7 +59,7 @@
                 <!-- page action buttons -->
                 <div class="page-action-area">
                     <cti:displayForPageEditModes modes="EDIT,CREATE">
-                        <cti:button type="submit" nameKey="save" classes="primary action js-save" busy="true"/>
+                        <cti:button type="submit" nameKey="save" classes="primary action" busy="true"/>
                         <cti:url var="viewUrl" value="/stars/device/routes/list" />
                         <cti:button nameKey="cancel" href="${viewUrl}"/>
                     </cti:displayForPageEditModes>

@@ -1,7 +1,7 @@
 yukon.namespace('yukon.assets.routes');
  
 /** 
- * Module that handles the behavior on the routes channel
+ * Module that handles the behavior on the routes channel.
  * @module yukon.assets.routes.js
  * @requires JQUERY 
  * @requires yukon 
