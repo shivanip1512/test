@@ -69,7 +69,7 @@ public class SetoSimulatorController {
         //Probably need to do some basic validation?
         thriftDataNotification.send(edgeDrDataNotification);
         flash.setConfirm(new YukonMessageSourceResolvable(homeKey + "send.success"));
-        log.info("Sent porter message {} to Central Controller", edgeDrDataNotification);
+        log.info("Sent porter message {} to DER Edge Response Service", edgeDrDataNotification);
         return "redirect:setoSimulator";
     }
 }
