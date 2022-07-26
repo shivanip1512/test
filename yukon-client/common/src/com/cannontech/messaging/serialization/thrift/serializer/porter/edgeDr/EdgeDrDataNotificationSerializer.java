@@ -1,26 +1,26 @@
 package com.cannontech.messaging.serialization.thrift.serializer.porter.edgeDr;
 
 import com.cannontech.dr.edgeDr.EdgeDrDataNotification;
-import com.cannontech.dr.edgeDr.EdgeDrError;
 import com.cannontech.messaging.serialization.thrift.SimpleThriftSerializer;
-import com.cannontech.messaging.serialization.thrift.ThriftByteDeserializer;
 
-public class EdgeDrDataNotificationSerializer extends SimpleThriftSerializer implements ThriftByteDeserializer<EdgeDrDataNotification> {
+import com.cannontech.messaging.serialization.thrift.ThriftByteSerializer;
+
+public class EdgeDrDataNotificationSerializer extends SimpleThriftSerializer implements ThriftByteSerializer<EdgeDrDataNotification> {
 
     @Override
-    public EdgeDrDataNotification fromBytes(byte[] msgBytes) {
+    public byte[] toBytes(EdgeDrDataNotification request) {
+        com.cannontech.messaging.serialization.thrift.generated.EdgeDrDataNotification thriftMessage = 
+                new com.cannontech.messaging.serialization.thrift.generated.EdgeDrDataNotification();
         
-        var thriftMessage = new com.cannontech.messaging.serialization.thrift.generated.EdgeDrDataNotification();
-        deserialize(msgBytes, thriftMessage);
+        com.cannontech.messaging.serialization.thrift.generated.EdgeDrError edgeDrError =
+                new com.cannontech.messaging.serialization.thrift.generated.EdgeDrError(request.getError().getErrorCode(),request.getError().getErrorMessage());
         
-        EdgeDrError error = new EdgeDrError(thriftMessage.getError().getErrorType(), 
-                                            thriftMessage.getError().getErrorMessage());
-        EdgeDrDataNotification notification = new EdgeDrDataNotification(thriftMessage.getPaoId(),
-                                                                         thriftMessage.getPayload(),
-                                                                         thriftMessage.getE2eId(),
-                                                                         error);
+        thriftMessage.setPaoId(request.getPaoId());
+        thriftMessage.setPayload(request.getPayload());
+        thriftMessage.setE2eId(request.getE2eId());
+        thriftMessage.setError(edgeDrError);
         
-        return notification;
+        return serialize(thriftMessage);
     }
     
 }

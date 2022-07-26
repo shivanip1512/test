@@ -20,6 +20,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 
 import com.cannontech.clientutils.YukonLogManager;
+import com.cannontech.common.config.ConfigurationSource;
+import com.cannontech.common.config.MasterConfigBoolean;
 import com.cannontech.common.pao.PaoIdentifier;
 import com.cannontech.common.util.Range;
 import com.cannontech.common.util.ScheduledExecutor;
@@ -46,6 +48,8 @@ public class EatonCloudJobReadServiceImpl implements EatonCloudJobReadService {
     private AtomicBoolean isReadingDevices = new AtomicBoolean(false);
     // <external event id, Pair<next read time, job creation time>>
     private Map<Integer, Pair<Instant, Instant>> nextRead = new ConcurrentHashMap<>();
+    
+    @Autowired private ConfigurationSource configurationSource;
 
     private List<EatonCloudChannel> channelsToRead = List.of(EatonCloudChannel.EVENT_STATE,
             EatonCloudChannel.ACTIVATION_STATUS_R1, EatonCloudChannel.ACTIVATION_STATUS_R2,
@@ -53,11 +57,14 @@ public class EatonCloudJobReadServiceImpl implements EatonCloudJobReadService {
 
     @PostConstruct
     public void init() {
-        String siteGuid = settingDao.getString(GlobalSettingType.EATON_CLOUD_SERVICE_ACCOUNT_ID);
-        if (Strings.isNullOrEmpty(siteGuid)) {
-            return;
+        if (configurationSource.getBoolean(MasterConfigBoolean.EATON_CLOUD_JOBS_TREND, false)) {
+            log.info("Initializing");
+            String siteGuid = settingDao.getString(GlobalSettingType.EATON_CLOUD_SERVICE_ACCOUNT_ID);
+            if (Strings.isNullOrEmpty(siteGuid)) {
+                return;
+            }
+            schedule();
         }
-        schedule();
     }
 
     private void schedule() {

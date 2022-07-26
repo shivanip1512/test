@@ -432,7 +432,7 @@ auto RfnRequestManager::handleResponse(const CtiTime Now, const RfnIdentifier rf
 
         auto results = messageStatus
             ? handleCommandError   (Now, rfnIdentifier, *optRequest, messageStatus)
-            : handleCommandResponse(Now, rfnIdentifier, *optRequest, *message.token, message.data);
+            : handleCommandResponse(Now, rfnIdentifier, *optRequest, *message.token, message.data, message.oscoreEncrypted);
 
         CTILOG_INFO(dout, "Erasing active request for device " << rfnIdentifier);
 
@@ -470,7 +470,7 @@ void RfnRequestManager::handleBlockContinuation(const CtiTime Now, const RfnIden
         std::endl << "rfnId: " << rfnIdentifier << ": " << activeRequest.currentPacket.payloadSent);
 }
 
-RfnDeviceResult RfnRequestManager::handleCommandResponse(const CtiTime Now, const RfnIdentifier rfnIdentifier, ActiveRfnRequest & activeRequest, const Token token, const Bytes& payload)
+RfnDeviceResult RfnRequestManager::handleCommandResponse(const CtiTime Now, const RfnIdentifier rfnIdentifier, ActiveRfnRequest & activeRequest, const Token token, const Bytes& payload, const bool oscoreEncrypted)
 {
     CTILOG_INFO(dout, "Response received for token " << token << " for device " << rfnIdentifier <<
         std::endl << "rfnId: " << rfnIdentifier << ": " << payload);
@@ -483,6 +483,14 @@ RfnDeviceResult RfnRequestManager::handleCommandResponse(const CtiTime Now, cons
 
     try
     {
+        if ( activeRequest.request.command->isOscoreEncrypted() != oscoreEncrypted )
+        {
+            // Reject this command result because the incoming and outgoing encryption setting doesn't match
+            //  -aka- an OSCORE encrypted request got a plaintext response or vice-versa
+            // 
+            // throw CommandException( ClientErrors::InvalidData, "Encryption setting mismatch" );
+        }
+
         commandResults = activeRequest.request.command->handleResponse(Now, activeRequest.response);
     }
     catch( const DeviceCommand::CommandException &ce )
@@ -851,6 +859,10 @@ auto RfnRequestManager::createE2eDtBlockReply(const unsigned short id, const Byt
     return _e2edt.createBlockReply(id, payload, token, block);
 }
 
+auto RfnRequestManager::oscoreEncrypt(const Bytes& payload, const RfnIdentifier endpointId) -> Bytes
+{
+    return _e2edt.oscoreEncryptPacket(payload, endpointId);
+}
 
 std::chrono::minutes calcExpiration(const RfnDeviceRequest &request)
 {
@@ -892,6 +904,11 @@ void RfnRequestManager::checkForNewRequest(const RfnIdentifier &rfnIdentifier)
                     request.command->isPost()
                         ? createE2eDtPost(rfnRequest, request.parameters.rfnIdentifier, request.rfnRequestId)
                         : createE2eDtRequest(rfnRequest, request.parameters.rfnIdentifier, request.rfnRequestId);
+
+                if ( request.command->isOscoreEncrypted() )
+                {
+                    e2ePacket = oscoreEncrypt( e2ePacket, request.parameters.rfnIdentifier );
+                }
             }
             catch( Protocols::E2e::PayloadTooLarge )
             {

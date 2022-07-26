@@ -889,7 +889,7 @@
                     <list>
                         <bean class = "org.springframework.http.converter.StringHttpMessageConverter"/>
                         <bean class="org.springframework.http.converter.support.AllEncompassingFormHttpMessageConverter"/>
-                        <ref bean="jacksonHttpMsgConverter"/>
+                        <ref bean="jacksonHttpMessageConverter"/>
                     </list>
                 </property>
             </bean>
@@ -1468,6 +1468,8 @@
     <bean class="com.cannontech.web.api.dr.setup.dao.impl.LMProgramConstraintSetupDaoImpl"/>
     <bean class="com.cannontech.common.dr.gear.setup.fields.ProgramGearFieldsBuilder"/>
     
+    <bean class="com.cannontech.web.tools.notificationGroup.NotificationGroupControllerHelper"/>
+    
     <bean class="com.cannontech.web.dr.setup.LoadProgramSetupControllerHelper"/>
 
     <bean class="com.cannontech.web.api.dr.gear.setup.fields.validator.GearValidatorHelper"/>
@@ -1515,6 +1517,7 @@
     <bean class="com.cannontech.web.stars.rtu.validator.RtuDnpValidationUtil"/>
     <bean class="com.cannontech.web.stars.rfn1200.Rfn1200Validator"/>
     <bean class="com.cannontech.web.stars.signalTransmitter.SignalTransmitterValidator"/>
+    <bean class="com.cannontech.web.tools.notificationGroup.NotificationGroupValidator"/>
     <bean class="com.cannontech.web.stars.routes.RouteValidator"/>
     
     <bean class="com.cannontech.web.admin.AttributeValidator"/>
