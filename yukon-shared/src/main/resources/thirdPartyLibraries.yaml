@@ -3451,18 +3451,18 @@ Java :
     jira : YUK-12888
     notes : 
   
-  - filename : xercesImpl-2.12.0.jar
+  - filename : xercesImpl-2.12.2.jar
     yukon group : XML parsing
     project : Apache Xerces2 XML parser
-    version : 2.11.0
+    version : 2.12.2
     project URL : " https://xerces.apache.org/xerces2-j/"
     license : Apache 2.0
     license URLs : "https://www.apache.org/licenses/LICENSE-2.0.txt"
-    maven URL : "https://mvnrepository.com/artifact/xerces/xercesImpl/2.12.0"
-    md5 : b89632b53c4939a2982bcb52806f6dec
-    sha1 : f02c844149fd306601f20e0b34853a670bef7fa2
-    updated : 2019-09-27
-    jira : YUK-11706, YUK-20325
+    maven URL : "https://mvnrepository.com/artifact/xerces/xercesImpl/2.12.2"
+    md5 : 40e4f2d5aacfbf51a9a1572d77a0e5e9
+    sha1 : f051f988aa2c9b4d25d05f95742ab0cc3ed789e2
+    updated : 2022-07-26
+    jira : YUK-27026
     notes : 
   
   - filename : xmlschema-core-2.1.0.jar
