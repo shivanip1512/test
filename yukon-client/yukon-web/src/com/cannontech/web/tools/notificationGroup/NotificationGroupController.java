@@ -1,8 +1,13 @@
 package com.cannontech.web.tools.notificationGroup;
 
+import java.io.IOException;
 import java.net.URISyntaxException;
+import java.util.List;
+
 import javax.servlet.http.HttpServletRequest;
 
+import org.apache.commons.compress.utils.Lists;
+import org.apache.commons.lang3.StringUtils;
 import org.apache.http.client.utils.URIBuilder;
 import org.apache.logging.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -11,17 +16,24 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.ModelMap;
+import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.client.RestClientException;
+import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import com.cannontech.clientutils.YukonLogManager;
 import com.cannontech.common.dr.setup.LMDelete;
+import com.cannontech.common.i18n.MessageSourceAccessor;
 import com.cannontech.common.model.PaginatedResponse;
+import com.cannontech.common.util.JsonUtils;
 import com.cannontech.i18n.YukonMessageSourceResolvable;
+import com.cannontech.i18n.YukonUserContextMessageSourceResolver;
 import com.cannontech.user.YukonUserContext;
 import com.cannontech.web.PageEditMode;
 import com.cannontech.web.api.ApiRequestHelper;
@@ -29,7 +41,12 @@ import com.cannontech.web.api.ApiURL;
 import com.cannontech.web.api.validation.ApiCommunicationException;
 import com.cannontech.web.api.validation.ApiControllerHelper;
 import com.cannontech.web.common.flashScope.FlashScope;
+import com.cannontech.web.notificationGroup.CICustomer;
+import com.cannontech.web.notificationGroup.Contact;
 import com.cannontech.web.notificationGroup.NotificationGroup;
+import com.cannontech.web.util.JsTreeNode;
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.core.type.TypeReference;
 
 @Controller
 @RequestMapping("/notificationGroup/*")
@@ -37,16 +54,31 @@ public class NotificationGroupController {
 
     @Autowired private ApiControllerHelper helper;
     @Autowired private ApiRequestHelper apiRequestHelper;
+    @Autowired private NotificationGroupValidator notificationGroupValidator;
+    @Autowired private YukonUserContextMessageSourceResolver messageSourceResolver;
+    @Autowired private NotificationGroupControllerHelper notificationGroupControllerHelper;
+    
+    private static final TypeReference<List<CICustomer>> ciCustomerTargetType = new TypeReference<List<CICustomer>>() {};
+    private static final TypeReference<List<Contact>> unassingedContactTargetType = new TypeReference<List<Contact>>() {};
 
     private static final Logger log = YukonLogManager.getLogger(NotificationGroupController.class);
     private static final String communicationKey = "yukon.exception.apiCommunicationException.communicationError";
     private static final String baseKey = "yukon.web.modules.tools.notificationGroup.";
     private static final String redirectListPageLink = "redirect:/tools/notificationGroup/list";
-
+    
     @GetMapping("create")
-    public String create(ModelMap model, YukonUserContext userContext, HttpServletRequest request) {
+    public String create(ModelMap model, YukonUserContext userContext) throws JsonProcessingException {
         model.addAttribute("mode", PageEditMode.CREATE);
+        NotificationGroup notificationGroup = new NotificationGroup();
+        notificationGroup.setEnabled(true);
+        if (model.containsAttribute("notificationGroup")) {
+            notificationGroup = (NotificationGroup) model.get("notificationGroup");
+        }
+        final MessageSourceAccessor messageSourceAccessor = messageSourceResolver.getMessageSourceAccessor(userContext);
 
+        JsTreeNode notificationTreeJson = notificationGroupControllerHelper.buildNotificationTree(messageSourceAccessor, notificationGroup);
+        model.addAttribute("notificationTreeJson", JsonUtils.toJson(notificationTreeJson.toMap(), true));
+        model.addAttribute("notificationGroup", notificationGroup);
         return "/notificationGroup/view.jsp";
     }
     
@@ -128,7 +160,7 @@ public class NotificationGroupController {
                     HttpMethod.GET, NotificationGroup.class, Object.class);
             PaginatedResponse<NotificationGroup> notificationGroups = new PaginatedResponse<>();
             if (response.getStatusCode() == HttpStatus.OK) {
-                notificationGroups = (PaginatedResponse) response.getBody();
+                notificationGroups = (PaginatedResponse<NotificationGroup>) response.getBody();
             }
             model.addAttribute("notificationGroups", notificationGroups.getItems());
         } catch (ApiCommunicationException e) {
@@ -144,5 +176,78 @@ public class NotificationGroupController {
                     new YukonMessageSourceResolvable("yukon.web.modules.tools.notificationGroup.filter.error", e.getMessage()));
         }
         return "/notificationGroup/list.jsp";
+    }
+    
+    @PostMapping("/save")
+    public String save(@ModelAttribute("notificationGroup") NotificationGroup notificationGroup, BindingResult result,
+            YukonUserContext userContext, FlashScope flash, RedirectAttributes redirectAttributes,
+            @RequestParam(required = false, name = "ciCustomersJsonString") String ciCustomersJsonString,
+            @RequestParam(required = false, name = "unassignedContactsJsonString") String unassignedContactsJsonString,
+            HttpServletRequest request) throws IOException {
+        List<CICustomer> ciCustomers = Lists.newArrayList();
+        if (StringUtils.isNoneBlank(ciCustomersJsonString)) {
+            ciCustomers = JsonUtils.fromJson(ciCustomersJsonString, ciCustomerTargetType);
+        }
+        notificationGroup.setcICustomers(ciCustomers);
+        
+        List<Contact> unassignedContacts = Lists.newArrayList();
+        if (StringUtils.isNoneBlank(unassignedContactsJsonString)) {
+            unassignedContacts = JsonUtils.fromJson(unassignedContactsJsonString, unassingedContactTargetType);
+        }
+        notificationGroup.setUnassignedContacts(unassignedContacts);
+        
+        try {
+            notificationGroupValidator.validate(notificationGroup, result);
+            if (result.hasErrors()) {
+                return bindAndForward(notificationGroup, result, redirectAttributes);
+            }
+            String url = null;
+            ResponseEntity<? extends Object> apiResponse = null;
+            if (notificationGroup.getId() == null) {
+                url = helper.findWebServerUrl(request, userContext, ApiURL.notificationGroupUrl);
+                apiResponse = saveNotificationGroup(userContext, request, url, notificationGroup, HttpMethod.POST);
+            }
+
+            if (apiResponse.getStatusCode() == HttpStatus.OK || apiResponse.getStatusCode() == HttpStatus.CREATED) {
+                NotificationGroup notificationGroupResponse = (NotificationGroup) apiResponse.getBody();
+                flash.setConfirm(
+                        new YukonMessageSourceResolvable("yukon.common.save.success", notificationGroupResponse.getName()));
+                return "redirect:/tools/notificationGroup/" + notificationGroupResponse.getId();
+            }
+
+            if (apiResponse.getStatusCode() == HttpStatus.UNPROCESSABLE_ENTITY) {
+                flash.setError(new YukonMessageSourceResolvable("yukon.web.error.genericMainMessage"));
+                log.error("Error saving notification group", JsonUtils.beautifyJson(apiResponse.getBody().toString()));
+                return bindAndForward(notificationGroup, result, redirectAttributes);
+            }
+
+        } catch (ApiCommunicationException e) {
+            log.error(e.getMessage());
+            flash.setError(new YukonMessageSourceResolvable(communicationKey));
+            return redirectListPageLink;
+        } catch (RestClientException ex) {
+            log.error("Error creating notification Group: {}. Error: {}", notificationGroup.getName(), ex.getMessage());
+            log.error(ex.getStackTrace());
+            flash.setError(
+                    new YukonMessageSourceResolvable("yukon.web.api.save.error", notificationGroup.getName(), ex.getMessage()));
+            return redirectListPageLink;
+        }
+        return null;
+    }
+    
+    private String bindAndForward(NotificationGroup notificationGroup, BindingResult result, RedirectAttributes attrs) {
+        attrs.addFlashAttribute("notificationGroup", notificationGroup);
+        attrs.addFlashAttribute("org.springframework.validation.BindingResult.notificationGroup", result);
+        if (notificationGroup.getId() == null) {
+            return "redirect:/tools/notificationGroup/create";
+        }
+        // TODO YUK-26552: change this URL to edit functionality later.
+        return "redirect:/tools/notificationGroup/create";
+    }
+
+    private ResponseEntity<? extends Object> saveNotificationGroup(YukonUserContext userContext, HttpServletRequest request,
+            String webserverUrl, NotificationGroup notificationGroup, HttpMethod methodtype) throws RestClientException {
+        return  apiRequestHelper.callAPIForObject(userContext, request, webserverUrl,
+                methodtype, NotificationGroup.class, notificationGroup);
     }
 }

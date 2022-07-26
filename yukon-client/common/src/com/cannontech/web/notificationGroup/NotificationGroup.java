@@ -15,7 +15,7 @@ import com.fasterxml.jackson.annotation.JsonInclude.Include;
 
 @JsonInclude(Include.NON_NULL)
 public class NotificationGroup implements DBPersistentConverter<com.cannontech.database.data.notification.NotificationGroup> {
-    private int id;
+    private Integer id;
     private String name;
     private Boolean enabled;
     private List<CICustomer> cICustomers;
@@ -31,11 +31,11 @@ public class NotificationGroup implements DBPersistentConverter<com.cannontech.d
         enabled = disableFlag.equals("N") ? true : false;
     }
 
-    public int getId() {
+    public Integer getId() {
         return id;
     }
 
-    public void setId(int id) {
+    public void setId(Integer id) {
         this.id = id;
     }
 
