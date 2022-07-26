@@ -149,47 +149,42 @@ ActiveMQConnectionManager::SerializedMessage MessageSerializer<Rfn::EdgeDrBroadc
 }
 
 template<>
-boost::optional<Rfn::EdgeDrDataNotification> MessageSerializer<Rfn::EdgeDrDataNotification>::deserialize( const ActiveMQConnectionManager::SerializedMessage & msg )
+ActiveMQConnectionManager::SerializedMessage MessageSerializer<Rfn::EdgeDrDataNotification>::serialize( const Rfn::EdgeDrDataNotification & msg )
 {
     try
     {
-        auto tmsg = DeserializeThriftBytes<Thrift::EdgeDrDataNotification>( msg );
+        Thrift::EdgeDrDataNotification   tmsg;
 
-        Rfn::EdgeDrDataNotification notification
-        {
-            tmsg.paoId,
-            std::nullopt,
-            std::nullopt,
-            std::nullopt
-        };
+        tmsg.__set_paoId( msg.paoId );
 
-        if ( tmsg.__isset.payload )
+        if ( msg.payload )
         {
-            notification.payload = { std::cbegin(tmsg.payload), std::cend(tmsg.payload) };
+            tmsg.__set_payload( { std::cbegin(*msg.payload), std::cend(*msg.payload) } );
         }
 
-        if ( tmsg.__isset.e2eId )
+        if ( msg.e2eId )
         {
-            notification.e2eId = tmsg.e2eId;
+            tmsg.__set_e2eId( *msg.e2eId );
         }
 
-        if ( tmsg.__isset.error )
+        if ( msg.error )
         {
-            notification.error =
-            {
-                tmsg.error.errorType,
-                tmsg.error.errorMessage,
-            };
+            Thrift::EdgeDrError error;
+
+            error.__set_errorType( msg.error->errorType );
+            error.__set_errorMessage( msg.error->errorMessage );
+
+            tmsg.__set_error( error );
         }
 
-        return notification;
+        return SerializeThriftBytes( tmsg );        
     }
     catch ( apache::thrift::TException & e )
     {
-        CTILOG_EXCEPTION_ERROR( dout, e, "Failed to deserialize a \"" << typeid(Rfn::EdgeDrBroadcastRequest).name() << "\"" );
+        CTILOG_EXCEPTION_ERROR( dout, e, "Failed to serialize a \"" << typeid(Rfn::EdgeDrDataNotification).name() << "\"" );
     }
 
-    return boost::none;
+    return { };
 }
 
 }

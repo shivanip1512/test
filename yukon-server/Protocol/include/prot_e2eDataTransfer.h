@@ -51,6 +51,8 @@ public:
 
     Bytes createBlockContinuation(const Coap::BlockSize size, const unsigned num, const RfnIdentifier endpointId, const unsigned long token);
 
+    Bytes oscoreEncryptPacket(const Bytes &payload, const RfnIdentifier endpointId);
+
     //  throws E2eException
     E2e::EndpointMessage handleIndication(const Bytes &payload, const RfnIdentifier endpointId);
     static YukonError_t translateIndicationCode(const unsigned short code, const RfnIdentifier endpointId);

@@ -57,6 +57,7 @@
                     <li><a href="<cti:url value="/dev/nest/home"/>">Nest Test</a></li>
                     <li><a href="<cti:url value="/dev/itron/itronSimulator"/>">Itron Simulator</a></li>
                     <li><a href="<cti:url value="/dev/eatonCloud/home"/>">Eaton Cloud Simulator</a></li>
+                    <li><a href="<cti:url value="/dev/seto/setoSimulator"/>">SETO Simulator</a></li>
                     
                 </ul>
             </tags:sectionContainer>
