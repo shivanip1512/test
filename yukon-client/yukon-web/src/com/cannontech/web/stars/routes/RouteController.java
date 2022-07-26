@@ -208,7 +208,7 @@ public class RouteController {
         } catch (ApiCommunicationException e) {
             log.error(e.getMessage());
             flash.setError(new YukonMessageSourceResolvable(communicationKey));
-            return "redirect:" + "/stars/device/routes/" + id;
+            return "redirect:/stars/device/routes/" + id;
         } catch (RestClientException ex) {
             log.error("Error deleting route: {}. Error: {}", routeName, ex.getMessage());
             flash.setError(new YukonMessageSourceResolvable("yukon.web.api.delete.error", routeName, ex.getMessage()));
