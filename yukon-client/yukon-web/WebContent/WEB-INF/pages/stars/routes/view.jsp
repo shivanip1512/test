@@ -56,9 +56,15 @@
                 
                 <!-- page action buttons -->
                 <div class="page-action-area">
-                    <cti:displayForPageEditModes modes="EDIT,CREATE">
+                    <cti:displayForPageEditModes modes="CREATE,EDIT">
                         <cti:button type="submit" nameKey="save" classes="primary action" busy="true"/>
+                    </cti:displayForPageEditModes>
+                    <cti:displayForPageEditModes modes="CREATE">
                         <cti:url var="viewUrl" value="/stars/device/routes/list" />
+                        <cti:button nameKey="cancel" href="${viewUrl}"/>
+                    </cti:displayForPageEditModes>
+                    <cti:displayForPageEditModes modes="EDIT">
+                        <cti:url var="viewUrl" value="/stars/device/routes/${communicationRoute.deviceId}" />
                         <cti:button nameKey="cancel" href="${viewUrl}"/>
                     </cti:displayForPageEditModes>
                 </div>
