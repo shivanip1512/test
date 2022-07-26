@@ -1381,6 +1381,7 @@
                 <link>/stars/device/routes/list</link>
                 <pages>
                     <page name="routes.CREATE" type="BASIC"/>
+                    <page name="macroRoutes.CREATE" type="BASIC"/>
                     <page name="routes.VIEW" type="DETAIL">
                         <link>/stars/device/routes/{id}</link>
                         <labelArgument>${communicationRoute.deviceName}</labelArgument>
@@ -1390,6 +1391,7 @@
                     </page>
                 </pages>
             </page>
+           
             <page name="virtualDevices.list" type="BASIC">
                 <link>/stars/virtualDevices</link>
                 <pages>
