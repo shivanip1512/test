@@ -50,7 +50,7 @@
         <tags:sectionContainer2 nameKey="general">
             <tags:nameValueContainer2>
                 <tags:nameValue2 nameKey="yukon.common.name">
-                    <tags:input path="name" maxlength="60" autofocus="autofocus" inputClass="w300 js-name"/>
+                    <tags:input path="name" maxlength="40" autofocus="autofocus" inputClass="w300 js-name"/>
                 </tags:nameValue2>
                 <tags:nameValue2 nameKey="yukon.common.status" rowClass="noswitchtype">
                     <tags:switchButton path="enabled" offNameKey="yukon.common.disabled" onNameKey="yukon.common.enabled" />
@@ -155,6 +155,11 @@
             <cti:displayForPageEditModes modes="CREATE">
                 <cti:url var="listUrl" value="/tools/notificationGroup/list" />
                 <cti:button nameKey="cancel" href="${listUrl}" />
+            </cti:displayForPageEditModes>
+            
+            <cti:displayForPageEditModes modes="EDIT">
+                <cti:url var="viewUrl" value="/tools/notificationGroup/${notificationGroup.id}"/>
+                <cti:button nameKey="cancel" href="${viewUrl}" />
             </cti:displayForPageEditModes>
         </div>
         
