@@ -987,46 +987,46 @@ Java :
     jira : YUK-25377
     notes : Pentaho reporting latest version is dependent on this
     
-  - filename : jackson-annotations-2.13.0.jar
+  - filename : jackson-annotations-2.13.3.jar
     yukon group : Jackson
     project : Jackson
-    version : 2.13.0
+    version : 2.13.3
     project URL : "https://github.com/FasterXML/jackson"
     license : Apache 2.0
     license URLs : "https://opensource.org/licenses/Apache-2.0"
-    maven URL : "https://mvnrepository.com/artifact/com.fasterxml.jackson.core/jackson-annotations/2.13.0"
-    md5 : 9b8bb9a5e1f2af431ad919252c643cbc
-    sha1 : 15be89db6609bd6fda3dc309bacf0318a312c03f
-    updated : 2022-01-07
-    jira : YUK-25692
+    maven URL : "https://mvnrepository.com/artifact/com.fasterxml.jackson.core/jackson-annotations/2.13.3"
+    md5 : 3fb8ee542a62a113fa7474fe88bb97e8
+    sha1 : 7198b3aac15285a49e218e08441c5f70af00fc51
+    updated : 2022-07-26
+    jira : YUK-27021
     notes : Jackson Annotations
 
-  - filename : jackson-core-2.13.0.jar
+  - filename : jackson-core-2.13.3.jar
     yukon group : Jackson
     project : Jackson
-    version : 2.13.0
+    version : 2.13.3
     project URL : "https://github.com/FasterXML/jackson"
     license : Apache 2.0
     license URLs : "https://opensource.org/licenses/Apache-2.0"
-    maven URL : "https://mvnrepository.com/artifact/com.fasterxml.jackson.core/jackson-core/2.13.0"
-    md5 : 94e04abccab99e295a3f4f57f6e387c8
-    sha1 : e957ec5442966e69cef543927bdc80e5426968bb
-    updated : 2022-01-07
-    jira : YUK-25692
+    maven URL : "https://mvnrepository.com/artifact/com.fasterxml.jackson.core/jackson-core/2.13.3"
+    md5 : 9a6679e6a2f7d601a9f212576fda550c
+    sha1 : a27014716e4421684416e5fa83d896ddb87002da
+    updated : 2022-07-26
+    jira : YUK-27021
     notes : Jackson Core
 
-  - filename : jackson-databind-2.13.0.jar
+  - filename : jackson-databind-2.13.3.jar
     yukon group : Jackson
     project : Jackson
-    version : 2.13.0
+    version : 2.13.3
     project URL : "https://github.com/FasterXML/jackson"
     license : Apache 2.0
     license URLs : "https://opensource.org/licenses/Apache-2.0"
-    maven URL : "https://mvnrepository.com/artifact/com.fasterxml.jackson.core/jackson-databind/2.13.0"
-    md5 : 309228a89a5a9da89174114b1e681def
-    sha1 : 889672a1721d6d85b2834fcd29d3fda92c8c8891
-    updated : 2022-01-07
-    jira : YUK-25692
+    maven URL : "https://mvnrepository.com/artifact/com.fasterxml.jackson.core/jackson-databind/2.13.3"
+    md5 : e35e2adf33b2eed8e9f538a911244175
+    sha1 : 56deb9ea2c93a7a556b3afbedd616d342963464e
+    updated : 2022-07-26
+    jira : YUK-27021
     notes : Jackson Databind
 
   - filename : jackson-dataformat-csv-2.9.6.jar

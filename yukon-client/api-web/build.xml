@@ -62,9 +62,9 @@
         <include name="hawtbuf-1.11.jar"/>
         <include name="i18n-en_US.jar"/>
     	<include name="itext-2.1.7.jar"/>
-        <include name="jackson-annotations-2.13.0.jar"/>
-        <include name="jackson-core-2.13.0.jar"/>
-        <include name="jackson-databind-2.13.0.jar"/>
+        <include name="jackson-annotations-2.13.3.jar"/>
+        <include name="jackson-core-2.13.3.jar"/>
+        <include name="jackson-databind-2.13.3.jar"/>
     	<include name="jackson-dataformat-csv-2.9.6.jar"/>
         <include name="jackson-dataformat-xml-2.13.0.jar"/>
         <include name="jackson-datatype-jsr310-2.13.0.jar"/>
