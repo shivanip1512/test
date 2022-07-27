@@ -21,7 +21,7 @@
                     <d:confirm on="#js-delete-option" nameKey="confirmDelete" argument="${communicationRoute.deviceName}" />
                 <cti:url var="deleteUrl" value="/stars/device/routes/${communicationRoute.deviceId}/delete" />
                 <form:form id="js-route-delete-form" action="${deleteUrl}" method="delete" modelAttribute="communicationRoute">
-                <cti:csrfToken />
+                    <cti:csrfToken />
                 </form:form>
             </div>
         </cti:displayForPageEditModes>
