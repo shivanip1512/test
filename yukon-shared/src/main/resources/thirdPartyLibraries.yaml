@@ -542,7 +542,7 @@ Java :
   - filename : commons-configuration2-2.8.0.jar
     yukon group : Apache Commons
     project : Apache Commons Configuration 2
-    version : 2.8
+    version : 2.8.0
     project URL : "https://commons.apache.org/proper/commons-configuration/"
     license : Apache 2.0
     license URLs : "https://opensource.org/licenses/Apache-2.0"
@@ -3350,7 +3350,7 @@ Java :
     md5 : 9e654158eed8219e46a330f4171d1d77
     sha1 : 276629e1525f3e27b41922297201d8d4cd2f1841
     updated : 2022-03-01
-    jira : YUK-25904
+    jira : YUK-26978
     notes : YAJSW Wrapper.  Maven version is 11.11, not 13.02.  Jar rebuilt to adjust classpath entries in MANIFEST.MF
   
   - filename : wrapperApp.jar
@@ -3364,7 +3364,7 @@ Java :
     md5 : 7613993ada3a207ce09dc2401d559df9
     sha1 : 1a5b804e91cb81eca3cf9ad7f44293a70eca0350
     updated : 2022-03-01
-    jira : YUK-25904
+    jira : YUK-26978
     notes : YAJSW Wrapper App.  Maven version is 11.11, not 13.02.  Jar rebuilt to adjust classpath entries in MANIFEST.MF
   
   - filename : wrapperApp9.jar
@@ -3378,7 +3378,7 @@ Java :
     md5 : ad18f1b6d4c45ab11d42197f373a193b
     sha1 : e45f946e2a7531439a2dcfa83633f9c0152d9000
     updated : 2022-03-01
-    jira : YUK-25904
+    jira : YUK-26978
     notes : YAJSW Wrapper App.  Maven version is 11.11, not 13.02.  Jar rebuilt to adjust classpath entries in MANIFEST.MF
   
   - filename : woodstox-core-6.2.6.jar
