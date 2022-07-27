@@ -17,5 +17,8 @@
     
     <!-- Macro routes entry -->
     <entry key="yukon.web.modules.operator.routes.createMacroRoute.create">Macro Route</entry>
-    <entry key="yukon.web.modules.operator.macroRoutes.CREATE.pageName">Create Macro Route</entry>
+        <entry key="yukon.web.modules.operator.routes.macroRoutes.CREATE.pageName">Create Macro Route</entry>
+    <entry key="yukon.web.modules.operator.routes.macroRoutes.VIEW.pageHeading">Macro Routes: {0}</entry>
+    <entry key="yukon.web.modules.operator.routes.macroRoutes.VIEW.crumbTitle">{0}</entry>
+    <entry key="yukon.web.modules.operator.routes.macroRoutes.VIEW.pageTitle">Macro Routes: {0}</entry>
 </properties>

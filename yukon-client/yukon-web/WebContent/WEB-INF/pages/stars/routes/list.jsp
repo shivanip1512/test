@@ -42,8 +42,16 @@
                     <cti:msg2 var="status" key="yukon.common.disabled"/>
                     <tr>
                         <td>
-                            <cti:url value="/stars/device/routes/${nonCCUAndMacroRoutes.deviceId}" var="viewUrl"/>
-                            <a href="${viewUrl}">${fn:escapeXml(nonCCUAndMacroRoutes.deviceName)}</a>
+                           <c:choose>
+                                <c:when test="${nonCCUAndMacroRoutes.deviceType == 'ROUTE_MACRO'}">
+                                    <cti:url value="/stars/device/routes/macroRoutes/${nonCCUAndMacroRoutes.deviceId}" var="viewMacroRouteUrl"/>
+                                    <a href="${viewMacroRouteUrl}">${fn:escapeXml(nonCCUAndMacroRoutes.deviceName)}</a>
+                                </c:when>
+                                <c:otherwise>
+                                    <cti:url value="/stars/device/routes/${nonCCUAndMacroRoutes.deviceId}" var="viewUrl"/>
+                                    <a href="${viewUrl}">${fn:escapeXml(nonCCUAndMacroRoutes.deviceName)}</a>
+                                </c:otherwise>
+                            </c:choose>
                         </td>
                         <td><i:inline key="${nonCCUAndMacroRoutes.deviceType}"/></td>
                     </tr>

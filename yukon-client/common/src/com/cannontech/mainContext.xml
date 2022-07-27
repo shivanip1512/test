@@ -304,7 +304,6 @@
                 <value>classpath:com/cannontech/yukon/web/modules/dr/rfBroadcastEventDetail</value>
                 <value>classpath:com/cannontech/yukon/web/modules/operator/pagingTerminal</value>
                 <value>classpath:com/cannontech/yukon/web/modules/operator/routes</value>
-                <value>classpath:com/cannontech/yukon/web/modules/operator/routes/macroRoutes</value>
             </list>
         </constructor-arg>
     </bean>
