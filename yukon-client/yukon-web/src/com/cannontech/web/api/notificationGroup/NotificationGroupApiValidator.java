@@ -212,7 +212,9 @@ public class NotificationGroupApiValidator extends SimpleValidator<NotificationG
             boolean isCICustomerIdValid = !errors.hasFieldErrors("id");
             errors.pushNestedPath("contacts[" + contactIndex + "]");
             if (isCICustomerIdValid && !errors.hasFieldErrors("id")) {
-                LiteCustomer validCICust = databaseCache.getACustomerByPrimaryContactID(cont.getId());
+                // checking with first primary contact, if not then with additional contact
+                LiteCustomer validCICust = databaseCache.getACustomerByPrimaryContactID(cont.getId()) == null ? contactDao
+                        .getOwnerCICustomer(cont.getId()) : null;
                 if (validCICust == null || cICust.getId() != validCICust.getCustomerID()) {
                     String invalidContactI18nText = accessor.getMessage(notificationGroupKey + "invalidContact");
                     errors.rejectValue("id", ApiErrorDetails.INVALID_VALUE.getCodeString(),
