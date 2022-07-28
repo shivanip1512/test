@@ -945,18 +945,18 @@ Java :
     jira : YUK-13953
     notes : 
   
-  - filename : httpclient-4.5.6.jar
+  - filename : httpclient-4.5.13.jar
     yukon group : Spring Web Services
     project : Apache HttpComponents HTTP Client
-    version : 4.5.6
+    version : 4.5.13
     project URL : "http://hc.apache.org/httpcomponents-client-4.5.x/index.html"
     license : Apache 2.0
     license URLs : "https://opensource.org/licenses/Apache-2.0"
-    maven URL : "https://mvnrepository.com/artifact/org.apache.httpcomponents/httpclient/4.5.6"
-    md5 : 877aca56579fea38c6358d06408976ba
-    sha1 : 1afe5621985efe90a92d0fbc9be86271efbe796f
-    updated : 2018-10-29
-    jira : YUK-18680
+    maven URL : "https://mvnrepository.com/artifact/org.apache.httpcomponents/httpclient/4.5.13"
+    md5 : 40d6b9075fbd28fa10292a45a0db9457
+    sha1 : e5f6cae5ca7ecaac1ec2827a9e2d65ae2869cada
+    updated : 2022-07-28
+    jira : YUK-27024
     notes : 
   
   - filename : httpcore-4.4.10.jar
