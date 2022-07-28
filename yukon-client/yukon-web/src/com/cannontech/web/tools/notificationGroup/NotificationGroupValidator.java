@@ -6,7 +6,6 @@ import org.springframework.validation.Errors;
 import com.cannontech.common.validator.SimpleValidator;
 import com.cannontech.common.validator.YukonValidationHelper;
 import com.cannontech.common.validator.YukonValidationUtils;
-import com.cannontech.stars.util.ServletUtils;
 import com.cannontech.web.notificationGroup.NotificationGroup;
 import com.cannontech.yukon.IDatabaseCache;
 
