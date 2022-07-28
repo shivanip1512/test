@@ -21,16 +21,15 @@ public class NotificationGroupValidator extends SimpleValidator<NotificationGrou
     }
 
     @Override
-    protected void doValidation(NotificationGroup target, Errors errors) {
+    protected void doValidation(NotificationGroup notificationGroup, Errors errors) {
         String nameTxt = yukonValidationHelper.getMessage(key + ".name");
-        yukonValidationHelper.checkIfFieldRequired("name", errors, target.getName(), nameTxt);
-        String notifGrpId = ServletUtils.getPathVariable("id");
-        Integer id = notifGrpId != null ? Integer.valueOf(notifGrpId) : null;
+        yukonValidationHelper.checkIfFieldRequired("name", errors, notificationGroup.getName(), nameTxt);
+        Integer id = notificationGroup.getId();
         
         if (!errors.hasFieldErrors("name")) {
             YukonValidationUtils.checkExceedsMaxLength(errors, "name", nameTxt, 40);
             databaseCache.getAllContactNotificationGroups().stream()
-                    .filter(liteGroup -> liteGroup.getNotificationGroupName().equalsIgnoreCase(target.getName().trim()))
+                    .filter(liteGroup -> liteGroup.getNotificationGroupName().equalsIgnoreCase(notificationGroup.getName().trim()))
                     .findAny()
                     .ifPresent(group -> {
                         if (id == null || group.getNotificationGroupID() != id) {
