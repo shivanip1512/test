@@ -13,7 +13,7 @@ public enum InfrastructureWarningType implements DisplayableEnum {
     GATEWAY_DATA_STREAMING_LOAD("Gateway data streaming load"),
     GATEWAY_READY_NODES("Gateway ready nodes"),
     RELAY_OUTAGE("Relay outage"),
-    CELLULAR_RELAY_CONNECTION_STATUS("Cellular Relay Connection Status"),
+    CELLULAR_DEVICE_CONNECTION_STATUS("Cellular Device Connection Status"),
     CELLULAR_RELAY_DESCENDANT_COUNT("Cellular Relay Descendant Count"),
     CCU_COMM_STATUS("CCU comm status"),
     REPEATER_COMM_STATUS("Repeater comm status"),
