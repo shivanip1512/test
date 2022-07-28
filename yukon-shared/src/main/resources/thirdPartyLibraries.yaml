@@ -2625,18 +2625,18 @@ Java :
     jira : YUK-20994
     notes : 
   
-  - filename : snakeyaml-1.18.2.jar
+  - filename : snakeyaml-1.30.jar
     yukon group : Jackson
     project : SnakeYAML
-    version : 1.18.2
+    version : 1.30
     project URL : "https://github.com/DroidsOnRoids/snakeyaml"
     license : Apache 2.0
     license URLs : "https://opensource.org/licenses/Apache-2.0"
-    maven URL : "https://mvnrepository.com/artifact/pl.droidsonroids.yaml/snakeyaml/1.18.2"
-    md5 : 3041218f98b3798eee443b317d91e28f
-    sha1 : aacf63abc979a710ddc0172509f7857cb69ff241
-    updated : 2018-04-04
-    jira : YUK-16918
+    maven URL : "https://mvnrepository.com/artifact/org.yaml/snakeyaml/1.30"
+    md5 : ba063b8ef3a8bfd591a1b56451166b14
+    sha1 : 8fde7fe2586328ac3c68db92045e1c8759125000
+    updated : 2022-07-28
+    jira : YUK-27025
     notes : 
   
   - filename : spring-aop-5.3.22.jar
