@@ -599,7 +599,7 @@
 		</attributes>
 	</classpathentry>
 	<classpathentry kind="lib" path="/third-party/catalina.jar"/>
-	<classpathentry kind="lib" path="/third-party/tomcat-juli-9.0.56.jar"/>
+	<classpathentry kind="lib" path="/third-party/tomcat-juli-9.0.65.jar"/>
 	<classpathentry exported="true" kind="lib" path="/third-party/itronDeviceManagerTypes_v1_8.jar" sourcepath="/third-party/linked-sources/itronDeviceManagerTypes_v1_8_sources.jar">
 		<attributes>
 			<attribute name="org.eclipse.jst.component.dependency" value="../"/>
