@@ -54,7 +54,7 @@ public class NotificationGroupApiController {
     }
 
     @GetMapping
-    public ResponseEntity<Object> getAll(String name, @DefaultSort(dir = Direction.asc, sort = "NAME") SortingParameters sorting,
+    public ResponseEntity<Object> getAll(@RequestParam("name") String name, @DefaultSort(dir = Direction.asc, sort = "NAME") SortingParameters sorting,
             @RequestParam(defaultValue = "1") int page,
             @RequestParam(name = "itemsPerPage", defaultValue = "250") int itemsPerPage) {
         SortBy sortBy = SortBy.valueOf(sorting.getSort());
