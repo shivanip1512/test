@@ -30,7 +30,7 @@
                     </tags:nameValue2>
                     <tags:nameValue2 nameKey=".selectSignalTransmitter" valueClass="dib">
                         <tags:pickerDialog id="signalTransmitterPicker${id}" 
-                                               type="signalTransmitterPicker" 
+                                               type="categoryAndClassFilteredPaoPicker" 
                                                destinationFieldName="signalTransmitterId"
                                                linkType="selection" 
                                                selectionProperty="paoName"
@@ -38,7 +38,8 @@
                                                multiSelectMode="false"
                                                allowEmptySelection="false" 
                                                viewOnlyMode="${mode == 'VIEW'}"
-                                               initialId="${communicationRoute.signalTransmitterId}"/>
+                                               initialId="${communicationRoute.signalTransmitterId}"
+                                               extraArgs="${communicationRoute.deviceType}"/>
                          <tags:hidden path="signalTransmitterId"/>
                      </tags:nameValue2>
                      <tags:nameValue2 nameKey=".defaultRoute">
