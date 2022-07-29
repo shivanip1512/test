@@ -43,7 +43,7 @@
             <tags:sectionContainer2 nameKey="general">
                 <tags:nameValueContainer2>
                     <tags:nameValue2 nameKey="yukon.common.name">
-                        <tags:input path="deviceName" maxlength="60" autofocus="autofocus" inputClass="w300 js-name"/>
+                        <tags:input path="deviceName" maxlength="60" autofocus="autofocus" inputClass="w300"/>
                     </tags:nameValue2>
                 </tags:nameValueContainer2>
             </tags:sectionContainer2>
