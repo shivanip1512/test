@@ -67,7 +67,7 @@ public class RfnPointMappingTest {
     private PointMappingIcd getPointMappingIcd() throws IOException {
         ClassPathResource yukonPointMappingIcdYaml = new ClassPathResource("yukonPointMappingIcd.yaml");
         
-        return YamlParserUtils.parseToObject(yukonPointMappingIcdYaml.getInputStream(), PointMappingIcd.class);
+        return YamlParserUtils.parseToObject(yukonPointMappingIcdYaml.getInputStream(), PointMappingIcd.class, yukonPointMappingIcdYaml.getFilename());
     }
 
     private InputStream getRfnXmlStream() throws IOException {
