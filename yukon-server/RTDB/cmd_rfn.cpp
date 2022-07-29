@@ -62,6 +62,10 @@ bool RfnCommand::isOneWay() const
     return false;
 }
 
+bool RfnCommand::isOscoreEncrypted() const
+{
+    return false;
+}
 
 std::unique_ptr<RfnConfigNotificationCommand> RfnCommand::handleUnsolicitedReport(const CtiTime now, RfnResponsePayload payload)
 {

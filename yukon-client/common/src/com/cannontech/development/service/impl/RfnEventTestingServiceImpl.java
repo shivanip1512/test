@@ -61,6 +61,8 @@ import com.cannontech.common.pao.PaoType;
 import com.cannontech.common.rfn.message.RfnIdentifier;
 import com.cannontech.common.rfn.message.RfnIdentifyingMessage;
 import com.cannontech.common.rfn.message.location.LocationResponse;
+import com.cannontech.common.rfn.message.node.RelayCellularComm;
+import com.cannontech.common.rfn.message.node.RfnRelayCellularCommArchiveRequest;
 import com.cannontech.common.rfn.model.RfnDevice;
 import com.cannontech.common.rfn.model.RfnManufacturerModel;
 import com.cannontech.common.util.ByteUtil;
@@ -95,6 +97,7 @@ public class RfnEventTestingServiceImpl implements RfnEventTestingService {
     private YukonJmsTemplate rfnMeterReadArchiveJmsTemplate;
     private YukonJmsTemplate rfnLcrReadArchiveJmsTemplate;
     private YukonJmsTemplate locationJmsTemplate;
+    private YukonJmsTemplate rfnCellularCommArchiveJmsTemplate;
     @Autowired private DeviceGroupService deviceGroupService;
     @Autowired private RfnDeviceDao rfnDeviceDao;
 
@@ -283,6 +286,7 @@ public class RfnEventTestingServiceImpl implements RfnEventTestingService {
         rfnMeterReadArchiveJmsTemplate = jmsTemplateFactory.createTemplate(JmsApiDirectory.RFN_METER_READ_ARCHIVE);
         rfnLcrReadArchiveJmsTemplate = jmsTemplateFactory.createTemplate(JmsApiDirectory.RFN_LCR_READ_ARCHIVE);
         locationJmsTemplate = jmsTemplateFactory.createTemplate(JmsApiDirectory.LOCATION);
+        rfnCellularCommArchiveJmsTemplate = jmsTemplateFactory.createTemplate(JmsApiDirectory.RFN_RELAY_CELL_COMM_ARCHIVE);
     }
 
     @Override
@@ -736,5 +740,16 @@ public class RfnEventTestingServiceImpl implements RfnEventTestingService {
         }
 
         return messagesSent;
+    }
+
+    @Override
+    public void sendCellularCommArchiveRequest(RelayCellularComm cellularComm) {
+        RfnRelayCellularCommArchiveRequest rfnCellularCommArchiveRequest = new RfnRelayCellularCommArchiveRequest();
+        Map<Long, RelayCellularComm> commMap = new HashMap<Long, RelayCellularComm>();
+        commMap.put(Long.valueOf(1l) ,cellularComm);
+        rfnCellularCommArchiveRequest.setRelayCellularComms(commMap);
+        log.debug("Sending archive request: {} on queue {}", cellularComm.getDeviceRfnIdentifier().getCombinedIdentifier(), rfnCellularCommArchiveJmsTemplate.getDefaultDestinationName());
+        rfnLogger.info("<<< Sent" + rfnCellularCommArchiveRequest);
+        rfnCellularCommArchiveJmsTemplate.convertAndSend(rfnCellularCommArchiveRequest);
     }
 }

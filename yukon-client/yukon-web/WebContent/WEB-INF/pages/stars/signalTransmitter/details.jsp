@@ -73,8 +73,13 @@
             </cti:displayForPageEditModes>
             
             <cti:displayForPageEditModes modes="CREATE">
-                <cti:url var="listUrl" value="/stars/device/signalTransmitter/list" />
-                <cti:button nameKey="cancel" href="${listUrl}" />
+                <cti:url var="listUrl" value="/stars/device/signalTransmitter/list"/>
+                <cti:button nameKey="cancel" href="${listUrl}"/>
+            </cti:displayForPageEditModes>
+            
+            <cti:displayForPageEditModes modes="EDIT">
+                <cti:url var="listUrl" value="/stars/device/signalTransmitter/${signalTransmitter.id}"/>
+                <cti:button nameKey="cancel" href="${listUrl}"/>
             </cti:displayForPageEditModes>
         </div>
     </form:form>

@@ -12,12 +12,14 @@ import com.cannontech.user.YukonUserContext;
 
 public interface DerEdgeCommunicationService {
 
-    Map<Integer, Short> sendUnicastRequest(YukonPao pao, byte[] payload, EdgeUnicastPriority queuePriority,
+    String sendUnicastRequest(YukonPao pao, byte[] payload, EdgeUnicastPriority queuePriority,
             EdgeUnicastPriority networkPriority, YukonUserContext userContext) throws EdgeDrCommunicationException;
 
-    Map<Integer, Short> sendMultiUnicastRequest(Set<SimpleDevice> simpleDeviceList, byte[] payload, EdgeUnicastPriority queuePriority,
+    String sendMultiUnicastRequest(Set<SimpleDevice> simpleDeviceList, byte[] payload, EdgeUnicastPriority queuePriority,
             EdgeUnicastPriority networkPriority, YukonUserContext userContext) throws EdgeDrCommunicationException;
 
     void sendBroadcastRequest(byte[] payload, EdgeBroadcastMessagePriority priority, YukonUserContext userContext) throws EdgeDrCommunicationException;
+
+    void cacheE2EIDToGUIDResponses(Map<Integer, Integer> paoToE2eId, String messageGuid) throws EdgeDrCommunicationException;
 
 }

@@ -1,6 +1,7 @@
 package com.cannontech.web.stars.signalTransmitter;
 
 import java.io.IOException;
+import java.net.URISyntaxException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -11,6 +12,8 @@ import java.util.stream.Stream;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import org.apache.commons.lang3.StringUtils;
+import org.apache.http.client.utils.URIBuilder;
 import org.apache.logging.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpMethod;
@@ -46,7 +49,12 @@ import com.cannontech.common.device.terminal.model.WCTPTerminal;
 import com.cannontech.common.dr.setup.LMDelete;
 import com.cannontech.common.dr.setup.LMDto;
 import com.cannontech.common.i18n.MessageSourceAccessor;
+import com.cannontech.common.model.DefaultItemsPerPage;
+import com.cannontech.common.model.DefaultSort;
+import com.cannontech.common.model.Direction;
 import com.cannontech.common.model.PaginatedResponse;
+import com.cannontech.common.model.PagingParameters;
+import com.cannontech.common.model.SortingParameters;
 import com.cannontech.common.pao.PaoType;
 import com.cannontech.common.util.JsonUtils;
 import com.cannontech.core.roleproperties.HierarchyPermissionLevel;
@@ -61,6 +69,7 @@ import com.cannontech.web.api.ApiURL;
 import com.cannontech.web.api.validation.ApiCommunicationException;
 import com.cannontech.web.api.validation.ApiControllerHelper;
 import com.cannontech.web.common.flashScope.FlashScope;
+import com.cannontech.web.common.sort.SortableColumn;
 import com.cannontech.web.security.annotation.CheckPermissionLevel;
 import com.cannontech.yukon.IDatabaseCache;
 
@@ -87,11 +96,33 @@ public class SignalTransmitterController {
             .collect(Collectors.toList());
 
     @GetMapping("list")
-    public String list(ModelMap model, YukonUserContext userContext, FlashScope flash, HttpServletRequest request) {
+    public String list(ModelMap model, @DefaultSort(dir = Direction.asc, sort = "name") SortingParameters sorting,
+            @DefaultItemsPerPage(value = 250) PagingParameters paging,
+            String filterValueName,
+            YukonUserContext userContext, FlashScope flash,
+            HttpServletRequest request) throws URISyntaxException {
         ResponseEntity<? extends Object> response = null;
         try {
+            MessageSourceAccessor accessor = messageResolver.getMessageSourceAccessor(userContext);
+            SignalTransmitterSortBy sortBy = SignalTransmitterSortBy.valueOf(sorting.getSort());
+            Direction dir = sorting.getDirection();
+
+            List<SortableColumn> columns = new ArrayList<>();
+            for (SignalTransmitterSortBy column : SignalTransmitterSortBy.values()) {
+                String text = accessor.getMessage(column);
+                SortableColumn col = SortableColumn.of(dir, column == sortBy, text, column.name());
+                columns.add(col);
+                model.addAttribute(column.name(), col);
+            }
             String url = helper.findWebServerUrl(request, userContext, ApiURL.pagingTerminalUrl);
-            response = apiRequestHelper.callAPIForParameterizedTypeObject(userContext, request, url, HttpMethod.GET,
+            URIBuilder ub = new URIBuilder(url);
+            ub.addParameter("sort", sortBy.getValue().name());
+            ub.addParameter("dir", dir.name());
+            ub.addParameter("name", filterValueName);
+            ub.addParameter("itemsPerPage", Integer.toString(paging.getItemsPerPage()));
+            ub.addParameter("page", Integer.toString(paging.getPage()));
+
+            response = apiRequestHelper.callAPIForParameterizedTypeObject(userContext, request, ub.toString(), HttpMethod.GET,
                     TerminalBase.class);
         } catch (ApiCommunicationException e) {
             log.error(e.getMessage());
@@ -107,10 +138,12 @@ public class SignalTransmitterController {
         if (response.getStatusCode() == HttpStatus.OK) {
             signalTransmitters = (PaginatedResponse) response.getBody();
         }
-        model.addAttribute("signalTransmitters", signalTransmitters.getItems());
+
+        model.addAttribute("signalTransmitters", signalTransmitters);
+        model.addAttribute("filterValueName", filterValueName);
         return "/signalTransmitter/list.jsp";
     }
-    
+
     @GetMapping("/{id}/edit")
     public String edit(ModelMap model, YukonUserContext userContext, @PathVariable int id, FlashScope flash,
             HttpServletRequest request) {
@@ -125,7 +158,7 @@ public class SignalTransmitterController {
                 terminalBase = (TerminalBase) model.get("signalTransmitter");
                 terminalBase.setId(id);
             }
-            
+
             model.addAttribute("signalTransmitter", terminalBase);
             model.addAttribute("selectedSignalTransmitterType", terminalBase.getType());
             setupModel(model, request, userContext);
@@ -247,7 +280,7 @@ public class SignalTransmitterController {
         }
         return null;
     }
-    
+
     @DeleteMapping("/{id}/delete")
     public String delete(@PathVariable int id, @ModelAttribute LMDelete lmDelete, YukonUserContext userContext,
             FlashScope flash, HttpServletRequest request) {
@@ -272,7 +305,7 @@ public class SignalTransmitterController {
         }
         return redirectListPageLink;
     }
-    
+
     @GetMapping("/{id}/renderCopyDialog")
     public String renderCopyDialog(@PathVariable int id, ModelMap model, YukonUserContext userContext) {
 
@@ -287,16 +320,16 @@ public class SignalTransmitterController {
         model.addAttribute("selectedSignalTransmitterType", selectedSignalTransmitterType);
         return "/signalTransmitter/copySignalTransmitter.jsp";
     }
-    
+
     @PostMapping("/{id}/copy")
     public String copy(@ModelAttribute("terminalCopy") TerminalCopy terminalCopy, @PathVariable int id, BindingResult result,
             YukonUserContext userContext, FlashScope flash, ModelMap model, HttpServletRequest request,
             HttpServletResponse servletResponse) throws IOException {
         Map<String, String> json = new HashMap<>();
         try {
-            String url = helper.findWebServerUrl(request, userContext, ApiURL.pagingTerminalUrl + "/" + id + "/copy" );
-            ResponseEntity<? extends Object> response = 
-                    apiRequestHelper.callAPIForObject(userContext, request, url, HttpMethod.POST, Object.class, terminalCopy);
+            String url = helper.findWebServerUrl(request, userContext, ApiURL.pagingTerminalUrl + "/" + id + "/copy");
+            ResponseEntity<? extends Object> response = apiRequestHelper.callAPIForObject(userContext, request, url,
+                    HttpMethod.POST, Object.class, terminalCopy);
 
             if (response.getStatusCode() == HttpStatus.UNPROCESSABLE_ENTITY) {
                 BindException error = new BindException(terminalCopy, "terminalCopy");
@@ -366,8 +399,7 @@ public class SignalTransmitterController {
         if (signalTransmitter.getId() == null) {
             return "redirect:/stars/device/signalTransmitter/create";
         }
-        // TODO: change this URL to edit functionality later.
-        return "redirect:/stars/device/signalTransmitter/create";
+        return "redirect:/stars/device/signalTransmitter/" + signalTransmitter.getId() + "/edit";
     }
 
     private TerminalBase retrieveSignalTransmitter(YukonUserContext userContext, HttpServletRequest request, int id, String url) {
@@ -386,12 +418,12 @@ public class SignalTransmitterController {
         }
         return terminalBase;
     }
-    
+
     private PaoType getPaoTypeForPaoId(int signalTransmitterId) {
         LiteYukonPAObject litePao = dbCache.getAllPaosMap().get(signalTransmitterId);
         return litePao.getPaoType();
     }
-    
+
     private String bindAndForwardForCopy(TerminalCopy terminalCopy, BindingResult result, ModelMap model,
             HttpServletResponse response, int id) {
         PaoType selectedSignalTransmitterType = getPaoTypeForPaoId(id);

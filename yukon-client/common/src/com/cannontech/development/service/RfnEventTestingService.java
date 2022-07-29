@@ -7,6 +7,7 @@ import java.util.Map;
 import org.apache.commons.codec.DecoderException;
 
 import com.cannontech.common.rfn.message.location.LocationResponse;
+import com.cannontech.common.rfn.message.node.RelayCellularComm;
 import com.cannontech.common.rfn.model.RfnManufacturerModel;
 import com.cannontech.development.model.RfnTestEvent;
 import com.cannontech.development.model.RfnTestMeterReading;
@@ -40,4 +41,9 @@ public interface RfnEventTestingService {
      */
     int sendOutageAndRestoreEvents(RfnTestOutageRestoreEvent event);
     void sendGatewayLocationResponse(LocationResponse locationResponse);
+    
+    /**
+     * Sends a cellular comm archive request to Service manager.
+     */
+    void sendCellularCommArchiveRequest(RelayCellularComm relayCellularComm);
 }

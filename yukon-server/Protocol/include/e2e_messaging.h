@@ -69,5 +69,7 @@ namespace Cti::Protocols::E2e {
         bool confirmable;
 
         std::optional<Coap::Block> block;
+
+        bool oscoreEncrypted;
     };
 }

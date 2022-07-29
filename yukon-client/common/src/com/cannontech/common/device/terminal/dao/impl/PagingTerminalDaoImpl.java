@@ -43,7 +43,15 @@ public class PagingTerminalDaoImpl implements PagingTerminalDao {
             sql.append("ORDER BY");
             sql.append(sortBy.getDbString());
             if (direction != null) {
-                sql.append(direction);
+                if (sortBy == SortBy.STATUS) {
+                    if (direction == Direction.asc) {
+                        sql.append(Direction.desc);
+                    } else {
+                        sql.append(Direction.asc);
+                    }
+                } else {
+                    sql.append(direction);
+                }
             }
         }
         return jdbcTemplate.query(sql, rowMapper);

@@ -24,6 +24,7 @@ import org.springframework.beans.factory.annotation.Qualifier;
 import com.cannontech.amr.errors.dao.DeviceErrorTranslatorDao;
 import com.cannontech.clientutils.YukonLogManager;
 import com.cannontech.common.config.ConfigurationSource;
+import com.cannontech.common.config.MasterConfigBoolean;
 import com.cannontech.common.config.MasterConfigInteger;
 import com.cannontech.common.util.ScheduledExecutor;
 import com.cannontech.dr.eatonCloud.job.service.EatonCloudJobControlType;
@@ -63,16 +64,19 @@ public class EatonCloudJobServiceImpl extends EatonCloudJobHelperService impleme
 
     @PostConstruct
     public void init() {
-        String siteGuid = settingDao.getString(GlobalSettingType.EATON_CLOUD_SERVICE_ACCOUNT_ID);
-        if (Strings.isNullOrEmpty(siteGuid)) {
-            return;
+        if (configurationSource.getBoolean(MasterConfigBoolean.EATON_CLOUD_JOBS_TREND, false)) {
+            log.info("Initializing");
+            String siteGuid = settingDao.getString(GlobalSettingType.EATON_CLOUD_SERVICE_ACCOUNT_ID);
+            if (Strings.isNullOrEmpty(siteGuid)) {
+                return;
+            }
+
+            maxDevicesPerJob = configurationSource.getInteger(
+                    MasterConfigInteger.EATON_CLOUD_DEVICES_PER_JOB, 2500);
+
+            schedule();
+            eatonCloudJobResponseProcessor.failDevicesOnStartup();
         }
-
-        maxDevicesPerJob = configurationSource.getInteger(
-                MasterConfigInteger.EATON_CLOUD_DEVICES_PER_JOB, 2500);
-
-        schedule();
-        eatonCloudJobResponseProcessor.failDevicesOnStartup();
     }
 
     private void schedule() {
@@ -214,11 +218,15 @@ public class EatonCloudJobServiceImpl extends EatonCloudJobHelperService impleme
 
     @Override
     public void terminateEvent(int eventId) {
-        var retrySummary = resendTries.remove(eventId);
-        if (retrySummary != null) {
-            EventSummary summary = retrySummary.summary;
-            log.info("{} terminating event due to RESTORE", summary.getLogSummary(false));
-            eatonCloudJobPollService.failWillRetryDevicesAfterLastPoll(summary);
+        Iterator<Entry<Integer, RetrySummary>> iter = resendTries.entrySet().iterator();
+        while (iter.hasNext()) {
+            Entry<Integer, RetrySummary> entry = iter.next();
+            if(entry.getKey() == eventId) {
+                iter.remove();
+                EventSummary summary = entry.getValue().summary;
+                log.info("{} terminating event due to RESTORE", summary.getLogSummary(false));
+                eatonCloudJobPollService.failWillRetryDevicesAfterLastPoll(summary);
+            }
         }
     }
 }

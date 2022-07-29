@@ -28,13 +28,13 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.http.client.HttpComponentsClientHttpRequestFactory;
 import org.springframework.web.client.RestClientException;
 import org.springframework.web.client.RestTemplate;
+import org.springframework.web.util.DefaultUriBuilderFactory;
 
 import com.cannontech.clientutils.YukonLogManager;
 import com.cannontech.common.device.model.DeviceBaseModel;
 import com.cannontech.common.device.terminal.model.TerminalBase;
 import com.cannontech.common.device.virtualDevice.VirtualDeviceBaseModel;
 import com.cannontech.common.dr.gear.setup.model.ProgramGear;
-import com.cannontech.web.notificationGroup.NotificationGroup;
 import com.cannontech.common.dr.setup.LMDto;
 import com.cannontech.common.dr.setup.LMPaoDto;
 import com.cannontech.common.dr.setup.ProgramConstraint;
@@ -56,6 +56,7 @@ import com.cannontech.web.api.dr.setup.model.LoadProgramFilteredResult;
 import com.cannontech.web.api.dr.setup.model.MacroLoadGroupFilteredResult;
 import com.cannontech.web.api.route.model.RouteBaseModel;
 import com.cannontech.web.api.token.TokenHelper;
+import com.cannontech.web.notificationGroup.NotificationGroup;
 
 public class ApiRequestHelper {
 
@@ -242,6 +243,10 @@ public class ApiRequestHelper {
         }
         newheaders.set("Authorization", "Bearer " + token);
         return newheaders;
+    }
+    
+    public DefaultUriBuilderFactory getUriTemplateHandler() {
+        return (DefaultUriBuilderFactory) apiRestTemplate.getUriTemplateHandler();
     }
 
 }

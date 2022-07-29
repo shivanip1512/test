@@ -44,6 +44,7 @@ public:
     static const OutboundQueue MeterProgramStatusArchiveRequest;
     static const OutboundQueue RfnEdgeDrUnicastResponse;
     static const OutboundQueue RfnEdgeDrBroadcastResponse;
+    static const OutboundQueue RfnEdgeDrDataNotification;
     static const OutboundQueue NetworkManagerRfnBroadcastRequest;
 };
 

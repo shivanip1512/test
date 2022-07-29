@@ -235,6 +235,7 @@
     <entry key="yukon.web.modules.dev.rfnTest.numEventsSent">{0,choice,0#no events sent|1#{0} event sent successfully|1&lt;{0} events sent successfully}</entry>
     <entry key="yukon.web.modules.dev.rfnTest.sendEvent.title">RFN Event Archive Request Test</entry>
     <entry key="yukon.web.modules.dev.rfnTest.sendAlarm.title">RFN Alarm Archive Request Test</entry>
+    <entry key="yukon.web.modules.dev.rfnTest.sendCellularArchiveRequest.title">Cellular Comm Archive Request Test</entry>
     <entry key="yukon.web.modules.dev.rfnTest.tests.title">Archive Request Test Pages</entry>
     <entry key="yukon.web.modules.dev.rfnTest.send.label">Send Archive Request</entry>
     <entry key="yukon.web.modules.dev.rfnTest.sendMessage.label">Send Message</entry>
@@ -250,6 +251,7 @@
     <entry key="yukon.web.modules.dev.rfnTest.viewEventArchive.pageName">Event Archive Request</entry>
     <entry key="yukon.web.modules.dev.rfnTest.alarmArchiveRequest.pageName">Alarm Archive Request</entry>
     <entry key="yukon.web.modules.dev.rfnTest.rfLocationArchiveRequest.pageName">RF Location Archive Request</entry>
+    <entry key="yukon.web.modules.dev.rfnTest.viewCellularCommArchiveRequest.pageName">Cellular Archive Request</entry>
     <entry key="yukon.web.modules.dev.rfnTest.viewGatewayDataSimulator.pageName">NM Gateway Simulator</entry>
     <entry key="yukon.web.modules.dev.rfnTest.gatewaySimulator.gatewayCreated">Gateway {0} creation message sent.</entry>
     <entry key="yukon.web.modules.dev.rfnTest.gatewaySimulator.gatewayDelete">Gateway {0} delete message sent.</entry>
@@ -442,6 +444,11 @@
     <entry key="yukon.web.modules.dev.eatonCloudToken.applicationId">Eaton Cloud GUID</entry>
     <entry key="yukon.web.modules.dev.eatonCloudToken.pageName">Eaton Cloud Token Test</entry>
     <entry key="yukon.web.modules.dev.eatonCloudToken.loadError">Error loading Eaton Cloud Authorization Token</entry>
+
+        <!-- Seto Simulator -->
+    <entry key="yukon.web.modules.dev.setoSimulator.pageName">Seto Simulator</entry>
+    <entry key="yukon.web.modules.dev.setoSimulator.send.success">Message sent to Central Controller successfully</entry>
+    <entry key="yukon.web.modules.dev.setoSimulator.sendToCentralControllerError">Error sending porter response to Central Controller</entry>
 
     <!-- Nest Test -->
     <entry key="yukon.web.modules.dev.nest.pageName">Nest Test</entry>

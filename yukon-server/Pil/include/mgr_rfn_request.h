@@ -127,6 +127,8 @@ protected:
 
     virtual bool isE2eServerDisabled() const;
 
+    virtual Bytes oscoreEncrypt(const Bytes& payload, const RfnIdentifier endpointId);
+
 private:
 
     using RfnIdentifierSet = std::set<RfnIdentifier>;
@@ -259,7 +261,7 @@ private:
     void                  handleNodeOriginated     (const CtiTime Now, const RfnIdentifier rfnIdentifier, const EndpointMessage & message, const ApplicationServiceIdentifiers asid);
     OptionalResult        handleResponse           (const CtiTime Now, const RfnIdentifier rfnIdentifier, const EndpointMessage & message);
     void                  handleBlockContinuation  (const CtiTime Now, const RfnIdentifier rfnIdentifier, ActiveRfnRequest & activeRequest, const Token token, const Bytes& payload, const Block block);
-    RfnDeviceResult       handleCommandResponse    (const CtiTime Now, const RfnIdentifier rfnIdentifier, ActiveRfnRequest & activeRequest, const Token token, const Bytes& payload);
+    RfnDeviceResult       handleCommandResponse    (const CtiTime Now, const RfnIdentifier rfnIdentifier, ActiveRfnRequest & activeRequest, const Token token, const Bytes& payload, const bool oscoreEncrypted);
     RfnDeviceResult       handleCommandError       (const CtiTime Now, const RfnIdentifier rfnIdentifier, ActiveRfnRequest & activeRequest, const YukonError_t error);
 };
 

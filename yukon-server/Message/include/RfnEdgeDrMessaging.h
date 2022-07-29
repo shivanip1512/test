@@ -29,7 +29,6 @@ struct EdgeDrUnicastRequest
 {
     std::string messageGuid;
     std::set<int> paoIds;
-
     std::vector<unsigned char> payload;
 
     EdgeUnicastPriority queuePriority;      // = HIGH;
@@ -39,9 +38,7 @@ struct EdgeDrUnicastRequest
 struct EdgeDrUnicastResponse
 {
     std::string messageGuid;
-
-    std::map<int,short> paoToE2eId;       // map<i32,i16>
-
+    std::map<int,int> paoToE2eId;
     std::optional<EdgeDrError> error;
 };
 
@@ -75,7 +72,7 @@ struct EdgeDrDataNotification
 {
     int paoId;
     std::optional<std::vector<unsigned char>> payload;
-    std::optional<short> e2eId;   // i16
+    std::optional<int> e2eId;
     std::optional<EdgeDrError> error;
 }; 
 

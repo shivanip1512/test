@@ -195,9 +195,9 @@
     <entry key="yukon.web.modules.capcontrol.ivvc.voltProfileGraph.values.yLeft.min">-3</entry>
     <entry key="yukon.web.modules.capcontrol.ivvc.voltProfileGraph.values.yLeft.max">3</entry>
     <entry key="yukon.web.modules.capcontrol.ivvc.voltProfileGraph.balloonText.distance">Dist: </entry>
-    <entry key="yukon.web.modules.capcontrol.ivvc.voltProfileGraph.zoneLineColorPhaseA">#8a0a27</entry>
-    <entry key="yukon.web.modules.capcontrol.ivvc.voltProfileGraph.zoneLineColorPhaseB">#004c9a</entry>
-    <entry key="yukon.web.modules.capcontrol.ivvc.voltProfileGraph.zoneLineColorPhaseC">#1c5b16</entry>
+    <entry key="yukon.web.modules.capcontrol.ivvc.voltProfileGraph.zoneLineColorPhaseA">#004c9a</entry>
+    <entry key="yukon.web.modules.capcontrol.ivvc.voltProfileGraph.zoneLineColorPhaseB">#1c5b16</entry>
+    <entry key="yukon.web.modules.capcontrol.ivvc.voltProfileGraph.zoneLineColorPhaseC">#8a0a27</entry>
     <entry key="yukon.web.modules.capcontrol.ivvc.voltProfileGraph.zoneLineColorNoPhase">#000000</entry>
     <entry key="yukon.web.modules.capcontrol.ivvc.voltProfileGraph.zonePointColorIgnoredPoints">#9ca5a9</entry>
     <entry key="yukon.web.modules.capcontrol.ivvc.voltProfileGraph.zonePointColorNoFeederPoints">#5f6b71</entry>

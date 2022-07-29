@@ -1,7 +1,6 @@
 package com.cannontech.web.api.der.edge;
 
 import java.math.BigInteger;
-import java.util.Map;
 import java.util.Set;
 
 import javax.validation.Valid;
@@ -57,17 +56,18 @@ public class DerEdgeApiController {
         EdgeUnicastPriority networkPriority = edgeUnicastRequest.getNetworkPriority();
         
         //Send the request to Porter and get back the E2E ID that will correlate with the response data when it comes back.
-        Map<Integer, Short> e2eIds;
+        String transactionGUID;
+//        Map<Integer, Short> e2eIds;
         try {
-            e2eIds = derEdgeCommunicationService.sendUnicastRequest(pao, payload, queuePriority, networkPriority, userContext);
+            transactionGUID = derEdgeCommunicationService.sendUnicastRequest(pao, payload, queuePriority, networkPriority, userContext);
         } catch (EdgeDrCommunicationException e) {
             throw new YukonApiException(e.getMessage(), e, ApiErrorDetails.COMMUNICATION_ERROR);
         }
         
         //TODO later - correlate E2E IDs with response GUID
         //for now, always return this temp GUID
-        String tempGUID = "692c8e7d-bd82-49f2-ace2-a6a9600f6347";
-        return new ResponseEntity<>(new EdgeUnicastResponse(tempGUID), HttpStatus.OK);
+//        String tempGUID = "692c8e7d-bd82-49f2-ace2-a6a9600f6347";
+        return new ResponseEntity<>(new EdgeUnicastResponse(transactionGUID), HttpStatus.OK);
     }
 
     @PostMapping("/multipointMessage")
@@ -78,10 +78,10 @@ public class DerEdgeApiController {
         EdgeUnicastPriority queuePriority = edgeMultipointRequest.getQueuePriority();
         EdgeUnicastPriority networkPriority = edgeMultipointRequest.getNetworkPriority();
         String edgeGroupName = "/Edge Addressing";
-        Map<Integer, Short> e2eId;
+        String transactionGUID;
+//        Map<Integer, Short> e2eId;
 
         try {
-
             // Lookup Edge Addressing Group
             DeviceGroup edgeAddressingGroup = deviceGroupService.resolveGroupName(edgeGroupName);
             // Lookup targeted group
@@ -90,7 +90,7 @@ public class DerEdgeApiController {
             Set<SimpleDevice> simpleDeviceList = deviceGroupProviderDaoMain.getDevices(targetedAddressingGroup);
             try {
                 // Send the devices to the service layer for processing
-                e2eId = derEdgeCommunicationService.sendMultiUnicastRequest(simpleDeviceList, payload, queuePriority, networkPriority, userContext);
+                transactionGUID = derEdgeCommunicationService.sendMultiUnicastRequest(simpleDeviceList, payload, queuePriority, networkPriority, userContext);
             } catch (EdgeDrCommunicationException e) {
                 throw new YukonApiException(e.getMessage(), e, ApiErrorDetails.COMMUNICATION_ERROR);
             }
@@ -101,8 +101,8 @@ public class DerEdgeApiController {
 
         // TODO later - correlate E2E IDs with response GUID
         // for now, always return this temp GUID
-        String tempGUID = "692c8e7d-bd82-49f2-ace2-a6a9600f6347";
-        return new ResponseEntity<>(new EdgeUnicastResponse(tempGUID), HttpStatus.OK);
+//        String tempGUID = "692c8e7d-bd82-49f2-ace2-a6a9600f6347";
+        return new ResponseEntity<>(new EdgeUnicastResponse(transactionGUID), HttpStatus.OK);
     }
 
     @PostMapping("/broadcastMessage")
