@@ -30,8 +30,6 @@
                 <d:confirm on="#js-delete" nameKey="confirmDelete" argument="${macroRoute.deviceName}" />
                 <cti:url var="deleteUrl" value="/stars/device/routes/macroRoutes/${macroRoute.deviceId}/delete"/>
                 <form:form id="delete-macroRoute-form" action="${deleteUrl}" method="delete" modelAttribute="macroRoute">
-                    <tags:hidden path="deviceId"/>
-                    <tags:hidden path="deviceName"/>
                     <cti:csrfToken/>
                 </form:form>
             </div>
