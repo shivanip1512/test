@@ -30,7 +30,7 @@
                     </tags:nameValue2>
                     <tags:nameValue2 nameKey=".selectSignalTransmitter" valueClass="dib">
                         <tags:pickerDialog id="signalTransmitterPicker${id}" 
-                                               type="categoryAndClassFilteredPaoPicker" 
+                                               type="signalTransmitterPicker" 
                                                destinationFieldName="signalTransmitterId"
                                                linkType="selection" 
                                                selectionProperty="paoName"
