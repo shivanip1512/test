@@ -442,6 +442,13 @@
         </property>
     </bean>
     
+    <!-- TODO: Rename this picker. -->
+    <bean name="signalTransmitterPickerForMacroRoute" parent="abstractPaoPicker" class="com.cannontech.web.picker.PaoPicker">
+        <property name="criteria">
+            <bean class="com.cannontech.web.search.lucene.criteria.SignalTransmitterCriteria"/>
+        </property>
+    </bean>
+    
     <bean name="dnpRtuPicker" parent="abstractPaoPicker" class="com.cannontech.web.picker.PaoPicker">
         <property name="criteria">
             <bean class="com.cannontech.web.search.lucene.criteria.DnpRtuCriteria"/>

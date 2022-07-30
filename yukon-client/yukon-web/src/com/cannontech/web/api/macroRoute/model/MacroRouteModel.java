@@ -9,10 +9,11 @@ import org.apache.commons.collections4.CollectionUtils;
 import com.cannontech.common.device.model.DeviceBaseModel;
 import com.cannontech.common.device.port.DBPersistentConverter;
 import com.cannontech.database.data.route.MacroRoute;
+import com.google.common.collect.Lists;
 
 public class MacroRouteModel<T extends MacroRoute> extends DeviceBaseModel implements DBPersistentConverter<T> {
 
-    private List<MacroRouteList> routeList;
+    private List<MacroRouteList> routeList = Lists.newArrayList();
 
     public List<MacroRouteList> getRouteList() {
         return routeList;

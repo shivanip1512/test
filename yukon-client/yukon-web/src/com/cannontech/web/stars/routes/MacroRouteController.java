@@ -1,5 +1,8 @@
 package com.cannontech.web.stars.routes;
 
+import java.util.List;
+import java.util.stream.Collectors;
+
 import javax.servlet.http.HttpServletRequest;
 
 import org.apache.logging.log4j.Logger;
@@ -9,11 +12,15 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.ModelMap;
+import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.client.RestClientException;
+import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import com.cannontech.clientutils.YukonLogManager;
 import com.cannontech.core.roleproperties.HierarchyPermissionLevel;
@@ -48,6 +55,18 @@ public class MacroRouteController {
     @GetMapping("create")
     public String create(ModelMap model) {
         model.addAttribute("mode", PageEditMode.CREATE);
+        MacroRouteModel<?> macroRouteModel = null;
+        
+        if (model.containsKey("macroRouteModel")) {
+            macroRouteModel = (MacroRouteModel) model.getAttribute("macroRouteModel");
+        } else {
+            macroRouteModel = new MacroRouteModel<>();
+        }
+        model.addAttribute("macroRouteModel", macroRouteModel);
+        List<Integer> selectedIds = macroRouteModel.getRouteList().stream()
+                                                                  .map(route -> route.getRouteId())
+                                                                  .collect(Collectors.toList());
+        model.addAttribute("selectedIds", selectedIds);
         return "/routes/macroRouteView.jsp";
     }
     
@@ -110,6 +129,12 @@ public class MacroRouteController {
             return "redirect:/stars/device/routes/macroRoutes/" + id;
         }
         return redirectListPageLink;
+    }
+    
+    @PostMapping("/save")
+    public String save(@ModelAttribute("macroRouteModel") MacroRouteModel<?> macroRouteModel, BindingResult result,
+            YukonUserContext userContext, FlashScope flash, RedirectAttributes redirectAttributes, HttpServletRequest request) {
+        return null;
     }
 
 }
