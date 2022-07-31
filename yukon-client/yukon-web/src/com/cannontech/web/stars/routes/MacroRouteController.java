@@ -2,9 +2,11 @@ package com.cannontech.web.stars.routes;
 
 import java.io.IOException;
 import java.util.List;
+import java.util.stream.Collectors;
 
 import javax.servlet.http.HttpServletRequest;
 
+import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.compress.utils.Lists;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.logging.log4j.Logger;
@@ -63,7 +65,7 @@ public class MacroRouteController {
     @GetMapping("create")
     public String create(ModelMap model) {
         model.addAttribute("mode", PageEditMode.CREATE);
-        MacroRouteModel macroRouteModel = null;
+        MacroRouteModel<?> macroRouteModel = null;
 
         if (model.containsKey("macroRouteModel")) {
             macroRouteModel = (MacroRouteModel) model.getAttribute("macroRouteModel");
@@ -71,6 +73,12 @@ public class MacroRouteController {
             macroRouteModel = new MacroRouteModel<>();
         }
         model.addAttribute("macroRouteModel", macroRouteModel);
+        List<Integer> selectedRouteIds = Lists.newArrayList();
+        if (CollectionUtils.isNotEmpty(macroRouteModel.getRouteList())) {
+            selectedRouteIds = macroRouteModel.getRouteList().stream().map(route -> route.getRouteId())
+                                                                      .collect(Collectors.toList());
+        }
+        model.addAttribute("selectedRouteIds", selectedRouteIds);
         return "/routes/macroRouteView.jsp";
     }
 
@@ -141,7 +149,7 @@ public class MacroRouteController {
             YukonUserContext userContext, FlashScope flash, RedirectAttributes redirectAttributes, HttpServletRequest request)
             throws IOException {
         List<MacroRouteList> routes = Lists.newArrayList();
-        if (StringUtils.isNoneBlank(routeListJsonSting)) {
+        if (StringUtils.isNotBlank(routeListJsonSting)) {
             routes = JsonUtils.fromJson(routeListJsonSting, routeListTargetType);
         }
         macroRouteModel.setRouteList(routes);
@@ -167,7 +175,6 @@ public class MacroRouteController {
             }
 
             if (apiResponse.getStatusCode() == HttpStatus.UNPROCESSABLE_ENTITY) {
-                //TODO: Is this the right way to handle this scenario?
                 flash.setError(new YukonMessageSourceResolvable("yukon.web.error.genericMainMessage"));
                 log.error("Error saving macro route", JsonUtils.beautifyJson(apiResponse.getBody().toString()));
                 return bindAndForward(macroRouteModel, result, redirectAttributes);

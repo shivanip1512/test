@@ -51,7 +51,7 @@
             <tags:sectionContainer2 nameKey="routesAssignment">
                 <cti:displayForPageEditModes modes="EDIT,CREATE">
                     <input type="hidden" name="routeListJsonString"/>
-                    <div class="column-12-12 clearfix select-box bordered-div" style="margin-top: 30px;">
+                    <div class="column-12-12 clearfix select-box bordered-div">
                         <div class="column one">
                             <h3>
                                 <i:inline key="yukon.common.available" />
@@ -61,7 +61,8 @@
                                     <tags:pickerDialog id="js-signal-transmitter-picker"
                                                        type="routesPicker"
                                                        multiSelectMode="${true}"
-                                                       container="js-unassigned-signal-transmitter-container"/>
+                                                       container="js-unassigned-signal-transmitter-container"
+                                                       disabledIds="${selectedRouteIds}"/>
                                 </div>
                                 <div style="margin-bottom: 40px;">
                                     <cti:button nameKey="add" classes="fr js-add" icon="icon-add"/>
@@ -93,7 +94,7 @@
                                                             classes="right select-box-item-down js-move-down"
                                                             disabled="${disabled}" />
                                             </div>
-                                        </div>
+                                         </div>
                                      </c:forEach>
                                 </div>
                             </div>

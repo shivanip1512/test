@@ -13,7 +13,7 @@ import com.google.common.collect.Lists;
 
 public class MacroRouteModel<T extends MacroRoute> extends DeviceBaseModel implements DBPersistentConverter<T> {
 
-    private List<MacroRouteList> routeList = Lists.newArrayList();
+    private List<MacroRouteList> routeList;
 
     public List<MacroRouteList> getRouteList() {
         return routeList;

@@ -47,8 +47,7 @@ yukon.assets.macroRoutes = (function () {
                 var picker = yukon.pickers['js-signal-transmitter-picker'],
                     selectedId = $(this).parent().attr('data-id');
                 $(this).parent().remove();
-                $('#js-assigned-signal-transmitter-container').closest('.select-box')
-                .find('.js-with-movables').trigger('yukon:ordered-selection:added-removed');
+                $('#js-assigned-signal-transmitter-container').closest('.select-box').find('.js-with-movables').trigger('yukon:ordered-selection:added-removed');
                 picker.enableItem(selectedId);
             });
             
@@ -80,6 +79,4 @@ yukon.assets.macroRoutes = (function () {
     return mod;
 })();
  
-$(function () { 
-    yukon.assets.macroRoutes.init();
-});
+$(function () { yukon.assets.macroRoutes.init(); });
