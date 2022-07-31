@@ -30,14 +30,14 @@ yukon.assets.macroRoutes = (function () {
                 var picker = yukon.pickers['js-signal-transmitter-picker'],
                     selectedContainer = $('#js-assigned-signal-transmitter-container');
             
-                picker.selectedItems.forEach(function (signalTransmitter) {
+                picker.selectedItems.forEach(function (route) {
                     var templateRow = $('.template-row').clone();
-                    templateRow.attr('data-id', signalTransmitter.paoId);
+                    templateRow.attr('data-id', route.paoId);
                     var children = templateRow.children();
-                    templateRow.text(signalTransmitter.paoName + " - " + signalTransmitter.paoId).append(children);
+                    templateRow.text(route.paoName).append(children);
                     templateRow.removeClass('dn template-row');
                     templateRow.appendTo(selectedContainer);
-                    picker.disableItem(signalTransmitter.paoId);
+                    picker.disableItem(route.paoId);
                 });
                 selectedContainer.closest('.select-box').find('.js-with-movables').trigger('yukon:ordered-selection:added-removed');
                 picker.clearEntireSelection();
@@ -53,26 +53,24 @@ yukon.assets.macroRoutes = (function () {
             });
             
             $(document).on('click', '#js-save-macro-routes', function (ev) {
-            	debugger;
                 var container = $('#js-assigned-signal-transmitter-container'),
-                    selectedPoints = [],
-                    macroRouteModel = new Object();
-                
-                macroRouteModel.routeList = [];
+                    routeList = [];
                 
                 container.find('.select-box-item').each(function (idx, item) {
                     if ($(item).is(':visible')) {
                         var routeObj = new Object();
                         routeObj.routeId = $(item).data('id');
-                        macroRouteModel.routeList.push(routeObj);
-//                        selectedPoints.push($(item).data('id'));
+                        routeObj.routeName = $(item).text();
+                        routeList.push(routeObj);
                     }
                 });
-                
-//                $('#selectedPoints').val(selectedPoints.join(','));
-                console.log(macroRouteModel);
+                $('input[name="routeListJsonString"]').val(JSON.stringify(routeList));
                 $('#js-macro-route-form').submit();
             });
+            
+            if ($("#js-unassigned-signal-transmitter-container").exists()) {
+                yukon.pickers['js-signal-transmitter-picker'].show();
+            }
 
             _initialized = true;
         }

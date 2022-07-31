@@ -1388,7 +1388,7 @@
                     </page>
                     <page name="routes.macroRoutes.VIEW" type="DETAIL">
                         <link>/stars/device/routes/macroRoutes/{id}</link>
-                        <labelArgument>${macroRoute.deviceName}</labelArgument>
+                        <labelArgument>${macroRouteModel.deviceName}</labelArgument>
                     </page>
                     <page name="routes.EDIT" type="BASIC" hideFavorite="true">
                         <labelArgument>${communicationRoute.deviceName}</labelArgument>
