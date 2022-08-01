@@ -143,7 +143,8 @@ public class DerEdgeCommunicationServiceImpl implements DerEdgeCommunicationServ
     public void sendBroadcastRequest(byte[] payload, EdgeBroadcastMessagePriority priority, YukonUserContext userContext) throws EdgeDrCommunicationException {
 
         // TODO later - clean up this logging
-        log.info("Processing DER Edge Broadcast Request - Payload: {}, Priority: {}", Arrays.toString(payload), priority);
+        log.info("Processing DER Edge Broadcast Request - Payload: {}, Priority: {} ({})", 
+                 Arrays.toString(payload), priority, priority.getThriftEquivalent());
 
         final String messageGuid = UUID.randomUUID().toString();
 
@@ -168,6 +169,7 @@ public class DerEdgeCommunicationServiceImpl implements DerEdgeCommunicationServ
         }
     }
 
+    @Override
     public void cacheE2EIDToGUIDResponses(Map<Integer, Integer> paoToE2eId, String messageGuid)
             throws EdgeDrCommunicationException {
         try {

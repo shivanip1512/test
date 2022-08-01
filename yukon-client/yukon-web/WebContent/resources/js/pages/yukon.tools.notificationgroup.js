@@ -31,6 +31,18 @@ yukon.tools.notificationgroup = (function() {
             childNode.render();
         });
     },
+    
+    _deselectEmailSelection = function (node, selectedNode) {
+        if (node.data.hasOwnProperty('isEmailType') && node.data.isEmailType === false) {
+            selectedNode.emailEnabled = false;
+        }
+    },
+    
+    _deselectPhoneCallSelection = function (node, selectedNode) {
+        if (node.data.hasOwnProperty('isPhoneType') && node.data.isPhoneType === false) {
+            selectedNode.phoneCallEnabled = false;
+        }
+    },
 
     mod = {
 
@@ -39,32 +51,38 @@ yukon.tools.notificationgroup = (function() {
             
             if (_initialized) return;
             
-            var rootNode = $("#js-notification-tree-id").fancytree("getTree").getRootNode();
-            
-            /* Initialize the tree with the pre-selected/checked nodes and expand such nodes. */
-            rootNode.visit(function (treeNode) {
-                /**
-                 * For the QA automation code, the checkbox for a node needs to have a unique id.
-                 * When a node does have a checkbox, its span has 3 childNodes.
-                 * span.childNode[0] - expander icon
-                 * span.childNode[1] - checkbox
-                 * span.childNode[2] - node text/title
-                 * The below block of code inside the if condition sets the id for the checkbox after locating it as explained above.
-                 * TODO: Check if there is a better way or an API available to locate the checkbox and set its id.
-                 */
-                if (treeNode.checkbox !== false && treeNode.isVisible()) {
-                    treeNode.span.childNodes[1].id = treeNode.data.id;
-                }
+            /**
+             * Check if the tree is displayed (CREATE or EDIT mode and not VIEW mode) and check chechboxes are per the initial selection if any.
+             * */
+            if ($("#js-notification-tree-id").exists()) {
+                var rootNode = $("#js-notification-tree-id").fancytree("getTree").getRootNode();
                 
-                if (treeNode.isSelected()) {
-                    treeNode.setExpanded(true);
-                    $.each(treeNode.getParentList(), function (index, parentNode) {
-                        parentNode.setExpanded(true);
-                    }); 
-                    treeNode.render();
-                    _disableChildNodes(treeNode);
-                }
-            });
+                /* Initialize the tree with the pre-selected/checked nodes and expand such nodes. */
+                rootNode.visit(function (treeNode) {
+                    /**
+                     * For the QA automation code, the checkbox for a node needs to have a unique id.
+                     * When a node does have a checkbox, its span has 3 childNodes.
+                     * span.childNode[0] - expander icon
+                     * span.childNode[1] - checkbox
+                     * span.childNode[2] - node text/title
+                     * The below block of code inside the if condition sets the id for the checkbox after locating it as explained above.
+                     * TODO: Check if there is a better way or an API available to locate the checkbox and set its id.
+                     */
+                    if (treeNode.checkbox !== false && treeNode.isVisible()) {
+                        treeNode.span.childNodes[1].id = treeNode.data.id;
+                    }
+                    
+                    if (treeNode.isSelected()) {
+                        treeNode.setExpanded(true);
+                        $.each(treeNode.getParentList(), function (index, parentNode) {
+                            parentNode.setExpanded(true);
+                        }); 
+                        treeNode.render();
+                        _disableChildNodes(treeNode);
+                    }
+                });
+            }
+            
             
             $("#js-notification-tree-id").on("fancytreeclick", function (event, data) {
                 var node = data.node;
@@ -171,6 +189,8 @@ yukon.tools.notificationgroup = (function() {
                         selectedCICustomers.push(companyNameSelectedNode);
                         return;
                     }
+                    companyNameSelectedNode.emailEnabled = false;
+                    companyNameSelectedNode.phoneCallEnabled = false;
                     var addCompanyNameSelectedNodeFlag = false;
                     $.each(companyNameNode.getChildren(), function (index, lastNameFirstNameNode) {
                         var lastNameFirstNameSelectedNode = _setNodeAttributes(lastNameFirstNameNode);
@@ -180,10 +200,14 @@ yukon.tools.notificationgroup = (function() {
                             addCompanyNameSelectedNodeFlag = true;
                             return;
                         }
+                        lastNameFirstNameSelectedNode.emailEnabled = false;
+                        lastNameFirstNameSelectedNode.phoneCallEnabled = false;
                         if (lastNameFirstNameNode.getSelectedNodes().length > 0) {
                             addCompanyNameSelectedNodeFlag = true;
                             $.each(lastNameFirstNameNode.getSelectedNodes(), function (index, notificationsNode) {
                                 var notificationSelectedNode = _setNodeAttributes(notificationsNode);
+                                _deselectEmailSelection(notificationsNode, notificationSelectedNode);
+                                _deselectPhoneCallSelection(notificationsNode, notificationSelectedNode);
                                 lastNameFirstNameSelectedNode.notifications.push(notificationSelectedNode);
                             });
                             companyNameSelectedNode.contacts.push(lastNameFirstNameSelectedNode);
@@ -201,9 +225,13 @@ yukon.tools.notificationgroup = (function() {
                         selectedUnassignedContact.push(selectedContactNode);
                         return;
                     }
+                    selectedContactNode.emailEnabled = false;
+                    selectedContactNode.phoneCallEnabled = false;
                     if (unassignedContactNodeName.getSelectedNodes().length > 0) {
                         $.each(unassignedContactNodeName.getSelectedNodes(), function (index, notificationNode) {
                             var selectedNotificationNode = _setNodeAttributes(notificationNode);
+                            _deselectEmailSelection(notificationNode, selectedNotificationNode);
+                            _deselectPhoneCallSelection(notificationNode, selectedNotificationNode);
                             selectedContactNode.notifications.push(selectedNotificationNode);
                         });
                         selectedUnassignedContact.push(selectedContactNode);

@@ -66,10 +66,6 @@ public class ApiRequestHelper {
     
     public static volatile boolean isSSLConfigInitialized = false; 
     private static final Logger log = YukonLogManager.getLogger(ApiRequestHelper.class);
-    
-    public void setUriBuilderFactory(DefaultUriBuilderFactory factory) {
-        apiRestTemplate.setUriTemplateHandler(factory);
-    }
 
     public synchronized void setProxyAndSslConfig() {
         HttpComponentsClientHttpRequestFactory factory = new HttpComponentsClientHttpRequestFactory();

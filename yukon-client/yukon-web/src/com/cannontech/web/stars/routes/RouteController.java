@@ -13,6 +13,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.ModelMap;
 import org.springframework.validation.BindingResult;
+import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -28,6 +29,7 @@ import com.cannontech.core.roleproperties.HierarchyPermissionLevel;
 import com.cannontech.core.roleproperties.YukonRoleProperty;
 import com.cannontech.database.data.route.RouteBase;
 import com.cannontech.i18n.YukonMessageSourceResolvable;
+import com.cannontech.mbean.ServerDatabaseCache;
 import com.cannontech.user.YukonUserContext;
 import com.cannontech.web.PageEditMode;
 import com.cannontech.web.api.ApiRequestHelper;
@@ -47,6 +49,7 @@ public class RouteController {
     @Autowired private ApiControllerHelper helper;
     @Autowired private ApiRequestHelper apiRequestHelper;
     @Autowired private RouteValidator<? extends RouteBaseModel<?>> routeValidator;
+    @Autowired private ServerDatabaseCache dbCache;
 
     private static final String communicationKey = "yukon.exception.apiCommunicationException.communicationError";
     private static final String redirectListPageLink = "redirect:/stars/device/routes/list";
@@ -188,6 +191,30 @@ public class RouteController {
             flash.setError(new YukonMessageSourceResolvable(communicationKey));
             return redirectListPageLink;
         }
+    }
+    
+    @DeleteMapping("/{id}/delete")
+    public String delete(@PathVariable int id, YukonUserContext userContext, FlashScope flash, HttpServletRequest request) {
+        String routeName = dbCache.getAllPaosMap().get(id).getPaoName();
+        try {
+            String deleteUrl = helper.findWebServerUrl(request, userContext, ApiURL.retrieveAllRoutesUrl + "/" + id);
+            ResponseEntity<? extends Object> deleteResponse = apiRequestHelper.callAPIForObject(userContext,
+                    request, deleteUrl, HttpMethod.DELETE, Object.class, Integer.class);
+
+            if (deleteResponse.getStatusCode() == HttpStatus.OK) {
+                flash.setConfirm(new YukonMessageSourceResolvable("yukon.common.delete.success", routeName));
+                return redirectListPageLink;
+            }
+        } catch (ApiCommunicationException e) {
+            log.error(e.getMessage());
+            flash.setError(new YukonMessageSourceResolvable(communicationKey));
+            return "redirect:/stars/device/routes/" + id;
+        } catch (RestClientException ex) {
+            log.error("Error deleting route: {}. Error: {}", routeName, ex.getMessage());
+            flash.setError(new YukonMessageSourceResolvable("yukon.web.api.delete.error", routeName, ex.getMessage()));
+            return "redirect:/stars/device/routes/" + id;
+        }
+        return redirectListPageLink;
     }
 
     private RouteBaseModel<?> retrieveCommunicationRoute(YukonUserContext userContext, HttpServletRequest request, int id,
