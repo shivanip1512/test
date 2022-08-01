@@ -174,19 +174,20 @@
                 <include name="**/*.jar"/>
                 <exclude name="easymock-4.3.jar"/>
                 <exclude name="mockito-core-4.5.1.jar"/>
+            	<exclude name="mockito-junit-jupiter-4.5.1.jar"/>
                 <exclude name="byte-buddy-1.12.10.jar"/>
                 <exclude name="byte-buddy-agent-1.12.10.jar"/>
                 <exclude name="h2-1.4.178.jar"/>
                 <exclude name="objenesis-3.2.jar"/>
-                <exclude name="apiguardian-api-1.1.0.jar"/>
+                <exclude name="apiguardian-api-1.1.2.jar"/>
                 <exclude name="hamcrest-2.2.jar"/>
                 <exclude name="hamcrest-core-2.2.jar"/>
                 <exclude name="hamcrest-library-2.2.jar"/>
                 <exclude name="javassist-3.26.0-GA.jar"/>
-                <exclude name="junit-jupiter-api-5.7.1.jar"/>
+                <exclude name="junit-jupiter-api-5.8.2.jar"/>
                 <exclude name="junit-jupiter-engine-5.7.1.jar"/>
                 <exclude name="junit-jupiter-params-5.7.1.jar"/>
-                <exclude name="junit-platform-commons-1.7.1.jar"/>
+                <exclude name="junit-platform-commons-1.8.2.jar"/>
                 <exclude name="junit-platform-console-standalone-1.7.1.jar"/>
                 <exclude name="junit-platform-engine-1.7.1.jar"/>
                 <exclude name="reflections-0.9.12.jar"/>
@@ -204,9 +205,9 @@
         <copy todir="${client.bin}" preservelastmodified="true">
             <fileset dir="${basedir}/yukon-install/resources/client_common_dlls" />
             <fileset dir="${client.bag}" excludes="*.txt,*.xml,*.properties,*.debug,images/**,commands/**,easymock-4.3.jar,h2-1.4.178.jar,objenesis-3.2.jar,
-            apiguardian-api-1.1.0.jar,javassist-3.26.0-GA.jar,junit-jupiter-api-5.7.1.jar,junit-jupiter-engine-5.7.1.jar,junit-jupiter-params-5.7.1.jar,hamcrest-2.2.jar,
-            hamcrest-core-2.2.jar,hamcrest-library-2.2.jar,junit-platform-commons-1.7.1.jar,junit-platform-console-standalone-1.7.1.jar,junit-platform-engine-1.7.1.jar,
-            opentest4j-1.2.0.jar,reflections-0.9.12.jar,mockito-core-4.5.1.jar,byte-buddy-agent-1.12.10.jar,byte-buddy-1.12.10.jar"/>
+            apiguardian-api-1.1.2.jar,javassist-3.26.0-GA.jar,junit-jupiter-api-5.8.2.jar,junit-jupiter-engine-5.7.1.jar,junit-jupiter-params-5.7.1.jar,hamcrest-2.2.jar,
+            hamcrest-core-2.2.jar,hamcrest-library-2.2.jar,junit-platform-commons-1.8.2.jar,junit-platform-console-standalone-1.7.1.jar,junit-platform-engine-1.7.1.jar,
+            opentest4j-1.2.0.jar,reflections-0.9.12.jar,mockito-core-4.5.1.jar,mockito-junit-jupiter-4.5.1.jar,byte-buddy-agent-1.12.10.jar,byte-buddy-1.12.10.jar"/>
             <fileset file="${basedir}/yukon-client/billing/src/main/resources" includes="*.bat"/>
             <fileset file="${basedir}/yukon-client/commander/src/main/resources/CommanderIcon.ico"/>
             <fileset file="${basedir}/yukon-client/dbeditor/resource/dbEditorIcon.ico"/>
@@ -428,6 +429,7 @@
               <exclude name="byte-buddy-1.12.10.jar"/>
               <exclude name="byte-buddy-agent-1.12.10.jar"/>
               <exclude name="mockito-core-4.5.1.jar"/>
+           	  <exclude name="mockito-junit-jupiter-4.5.1.jar"/>
               <exclude name="h2-1.4.178.jar"/>
               <exclude name="jsp-api.jar"/>
               <exclude name="servlet-api.jar"/>

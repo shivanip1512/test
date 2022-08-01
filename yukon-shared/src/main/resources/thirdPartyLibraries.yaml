@@ -147,17 +147,17 @@ Java :
     jira : YUK-15125
     notes : Can probably be removed now that we're on log4j2
   
-  - filename : apiguardian-api-1.1.0.jar
+  - filename : apiguardian-api-1.1.2.jar
     yukon group : Unit Tests
     project : Junit
-    version : 1.1.0
+    version : 1.1.2
     project URL : "https://github.com/apiguardian-team/apiguardian"
     license : Apache 2.0
     license URLs : "http://www.apache.org/licenses/LICENSE-2.0.txt"
-    maven URL : "https://mvnrepository.com/artifact/org.apiguardian/apiguardian-api/1.1.0"
-    md5 : 944805817b648e558ed6be6fc7f054f3
-    sha1 : fc9dff4bb36d627bdc553de77e1f17efd790876c
-    updated : 2021-05-24
+    maven URL : "https://mvnrepository.com/artifact/org.apiguardian/apiguardian-api/1.1.2"
+    md5 : 8c7de3f82037fa4a2e8be2a2f13092af
+    sha1 : a231e0d844d2721b0fa1b238006d15c6ded6842a
+    updated : 2022-08-02
     jira : YUK-24356
     notes : 
   
@@ -1575,17 +1575,17 @@ Java :
     jira : YUK-17953
     notes : MD5 does not match Maven
   
-  - filename : junit-jupiter-api-5.7.1.jar
+  - filename : junit-jupiter-api-5.8.2.jar
     yukon group : Unit Tests
     project : Junit
-    version : 5.7.1
+    version : 5.8.2
     project URL : "https://junit.org/junit5/"
     license : Eclipse Public License v2.0
     license URLs : "https://www.eclipse.org/legal/epl-v20.html"
-    maven URL : "https://mvnrepository.com/artifact/org.junit.jupiter/junit-jupiter-api/5.7.1"
-    md5 : 69395a5e457e37765d4fbbbb5f2d5a18
-    sha1 : a7261dff44e64aea7f621842eac5977fd6d2412d
-    updated : 2021-05-24
+    maven URL : "https://mvnrepository.com/artifact/org.junit.jupiter/junit-jupiter-api/5.8.2"
+    md5 : 4e2f81d2ad6c031476d784d25c0f67a7
+    sha1 : 4c21029217adf07e4c0d0c5e192b6bf610c94bdc
+    updated : 2022-08-02
     jira : YUK-24356
     notes : 
   
@@ -1617,17 +1617,17 @@ Java :
     jira : YUK-24356
     notes : 
     
-  - filename : junit-platform-commons-1.7.1.jar
+  - filename : junit-platform-commons-1.8.2.jar
     yukon group : Unit Tests
     project : Junit
-    version : 1.7.1
+    version : 1.8.2
     project URL : "https://junit.org/junit5/"
     license : Eclipse Public License v2.0
     license URLs : "https://www.eclipse.org/legal/epl-v20.html"
-    maven URL : "https://mvnrepository.com/artifact/org.junit.platform/junit-platform-commons/1.7.1"
-    md5 : d6d74d7c8854ecd573bdc8cde68b80f1
-    sha1 : 7c49f0074842d07f4335de2389d624a7437d1407
-    updated : 2021-05-24
+    maven URL : "https://mvnrepository.com/artifact/org.junit.platform/junit-platform-commons/1.8.2"
+    md5 : 72693a20944048031e0a55f67413ca1b
+    sha1 : 32c8b8617c1342376fd5af2053da6410d8866861
+    updated : 2022-08-02
     jira : YUK-24356
     notes : 
     
@@ -1952,6 +1952,20 @@ Java :
     updated: 2022-05-04
     jira : YUK-26519
     notes:
+    
+  - filename : mockito-junit-jupiter-4.5.1.jar
+    yukon group : Unit Tests
+    project : Mockito
+    version : 4.5.1
+    project URL : "https://github.com/mockito/mockito"
+    license : MIT
+    license URLs : "https://opensource.org/licenses/MIT"
+    maven URL : "https://mvnrepository.com/artifact/org.mockito/mockito-junit-jupiter/4.5.1"
+    md5 : 26006c630a26899748f2014b29ff7c57
+    sha1 : f81fb60bd69b3a6e5537ae23b883326f01632a61
+    updated : 2022-08-02
+    jira : TBD
+    notes : 
   
   - filename : nagasena.jar
     yukon group : OpenEXI

@@ -40,6 +40,7 @@
 	<classpathentry kind="lib" path="/third-party/easymock-4.3.jar" sourcepath="/third-party/linked-sources/easymock-4.3-sources.jar"/>
 	<classpathentry kind="lib" path="/third-party/byte-buddy-agent-1.12.10.jar" sourcepath="/third-party/linked-sources/byte-buddy-agent-1.12.10-sources.jar"/>
 	<classpathentry kind="lib" path="/third-party/mockito-core-4.5.1.jar" sourcepath="/third-party/linked-sources/mockito-core-4.5.1-sources.jar"/>
+	<classpathentry kind="lib" path="/third-party/mockito-junit-jupiter-4.5.1.jar" sourcepath="/third-party/linked-sources/mockito-junit-jupiter-4.5.1-sources.jar"/>
 	<classpathentry kind="lib" path="/third-party/byte-buddy-1.12.10.jar" sourcepath="/third-party/linked-sources/byte-buddy-1.12.10-sources.jar"/>
 	<classpathentry kind="lib" path="/third-party/SchemaCompare.jar" sourcepath="/SchemaCompare"/>
 	<classpathentry kind="lib" path="/third-party/lucene-core-8.8.2.jar"/>

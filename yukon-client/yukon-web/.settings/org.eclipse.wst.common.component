@@ -457,6 +457,20 @@
         
         
         </dependent-module>
+                                                
+        
+        
+        <dependent-module archiveName="mockito-junit-jupiter-4.5.1.jar" deploy-path="/WEB-INF/lib" handle="module:/classpath/lib/third-party/mockito-junit-jupiter-4.5.1.jar">
+                                                            
+            
+            
+            
+            <dependency-type>uses</dependency-type>
+                                                        
+        
+        
+        
+        </dependent-module>
                                         
         
         
