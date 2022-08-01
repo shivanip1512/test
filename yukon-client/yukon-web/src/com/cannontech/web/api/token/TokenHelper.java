@@ -24,7 +24,7 @@ public class TokenHelper {
 
     private static Key secretKey ;
     private static Key refreshSecretKey ;
-    private static long tokenValidityInMilliSeconds = 900000; // 15 min
+    private static long tokenValidityInMilliSeconds = 1800000; // 30 min
     private static long refreshTokenValidityInMilliSeconds = 86400000;  // 24 hour
     private static final String BEARER = "Bearer";
 
