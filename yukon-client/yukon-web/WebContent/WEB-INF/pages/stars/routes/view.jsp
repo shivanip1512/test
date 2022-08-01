@@ -54,7 +54,7 @@
                      <cti:displayForPageEditModes modes="EDIT">
                          <tags:nameValue2 nameKey=".selectSignalTransmitter" valueClass="dib">
                             <tags:pickerDialog id="signalTransmitterPicker${id}" 
-                                                   type="categoryAndClassFilteredPaoPicker" 
+                                                   type="paoTypeFilteredPaoPicker" 
                                                    extraArgs="${communicationRoute.deviceType}"
                                                    destinationFieldName="signalTransmitterId"
                                                    linkType="selection" 
