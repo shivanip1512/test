@@ -39,7 +39,6 @@ import com.cannontech.common.model.Phase;
 import com.cannontech.common.pao.DisplayablePao;
 import com.cannontech.common.pao.YukonPao;
 import com.cannontech.common.pao.attribute.service.IllegalUseOfAttribute;
-import com.cannontech.common.point.PointQuality;
 import com.cannontech.common.util.GraphIntervalRounding;
 import com.cannontech.core.dao.ExtraPaoPointAssignmentDao;
 import com.cannontech.core.dao.NotFoundException;
@@ -62,6 +61,7 @@ import com.cannontech.message.capcontrol.streamable.CapBankDevice;
 import com.cannontech.message.capcontrol.streamable.Feeder;
 import com.cannontech.message.capcontrol.streamable.SubBus;
 import com.cannontech.user.YukonUserContext;
+import com.cannontech.web.capcontrol.IvvcHelper;
 import com.cannontech.web.capcontrol.ivvc.ZoneDtoHelper;
 import com.cannontech.web.capcontrol.ivvc.models.VfGraph;
 import com.cannontech.web.capcontrol.ivvc.models.VfGraphSettings;
@@ -91,6 +91,7 @@ public class VoltageFlatnessGraphServiceImpl implements VoltageFlatnessGraphServ
     @Autowired private ConfigurationSource configurationSource;
     @Autowired private ZoneDtoHelper zoneDtoHelper;
     @Autowired private CcMonitorBankListDao ccMonitorBankListDao;
+    @Autowired private IvvcHelper ivvcHelper;
 
     private static final Logger log = YukonLogManager.getLogger(VoltageFlatnessGraphService.class);
     
@@ -692,9 +693,9 @@ public class VoltageFlatnessGraphServiceImpl implements VoltageFlatnessGraphServ
         } else {
             pointValue = asyncDynamicDataSource.getPointValue(pointId);
         }
-        //Display Bad Data Quality points as Ignored
-        PointQuality quality = pointValue.getPointQuality();
-        if (!quality.equals(PointQuality.Manual) && !quality.equals(PointQuality.Normal)) {
+        
+        boolean badQualityOrOutdated = ivvcHelper.isBadQualityOrOutdated(pointValue);
+        if (badQualityOrOutdated) {
             ignore = true;
         }
                 
