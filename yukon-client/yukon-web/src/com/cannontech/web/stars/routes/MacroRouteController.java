@@ -46,9 +46,8 @@ import com.cannontech.web.security.annotation.CheckPermissionLevel;
 import com.fasterxml.jackson.core.type.TypeReference;
 
 @Controller
-@CheckPermissionLevel(property = YukonRoleProperty.ENDPOINT_PERMISSION, level = HierarchyPermissionLevel.VIEW)
+@CheckPermissionLevel(property = YukonRoleProperty.MANAGE_INFRASTRUCTURE, level = HierarchyPermissionLevel.VIEW)
 @RequestMapping("/device/routes/macroRoutes/")
-
 public class MacroRouteController {
 
     @Autowired private ApiControllerHelper helper;
