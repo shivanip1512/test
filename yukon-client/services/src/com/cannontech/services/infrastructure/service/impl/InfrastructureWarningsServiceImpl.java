@@ -53,6 +53,7 @@ public class InfrastructureWarningsServiceImpl implements InfrastructureWarnings
             .addAll(PaoType.getRfRelayTypes())
             .addAll(PaoType.getCcuTypes())
             .addAll(PaoType.getRepeaterTypes())
+            .addAll(PaoType.getCellularMeterTypes())
             .build();
     private static AtomicBoolean isRunning = new AtomicBoolean();
     private MessageSourceAccessor systemMessageSourceAccessor;

@@ -15,6 +15,7 @@ public enum InfrastructureWarningType implements DisplayableEnum {
     RELAY_OUTAGE("Relay outage"),
     CELLULAR_DEVICE_CONNECTION_STATUS("Cellular Device Connection Status"),
     CELLULAR_RELAY_DESCENDANT_COUNT("Cellular Relay Descendant Count"),
+    CELLULAR_METER_DESCENDANT_COUNT("Cellular Meter Descendant Count"),
     CCU_COMM_STATUS("CCU comm status"),
     REPEATER_COMM_STATUS("Repeater comm status"),
     GATEWAY_SECURITY_ALARM("Gateway security alarm"),
