@@ -13,7 +13,7 @@
     <entry key="yukon.web.modules.operator.routes.VIEW.crumbTitle">{0}</entry>
     <entry key="yukon.web.modules.operator.routes.VIEW.pageTitle">Route: {0}</entry>
     <entry key="yukon.web.modules.operator.routes.EDIT.pageHeading">Edit Route: {0}</entry>
-    <entry key="yukon.web.modules.operator.routes.EDIT.crumbTitle">Edit</entry>
+    <entry key="yukon.web.modules.operator.routes.EDIT.crumbTitle">{0}</entry>
     <entry key="yukon.web.modules.operator.routes.EDIT.pageTitle">Route: {0}</entry>
     
     <!-- Macro routes entry -->
