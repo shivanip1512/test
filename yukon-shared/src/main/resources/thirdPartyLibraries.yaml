@@ -2387,18 +2387,18 @@ Java :
     jira : YUK-25904
     notes : pentaho reporting engine core
     
-  - filename : protobuf-java-3.15.8.jar
+  - filename : protobuf-java-3.21.2.jar
     yukon group : Protobuf
     project : Protobuf
-    version : 3.15.8
+    version : 3.21.2
     project URL : "https://github.com/protocolbuffers/protobuf/releases"
     license : Apache 2.0
     license URLs : "https://www.apache.org/licenses/LICENSE-2.0.txt"
-    maven URL : "https://mvnrepository.com/artifact/com.google.protobuf/protobuf-java/3.15.8"
-    md5 : 1dc82c4de1a9730a03da9d9c5dc89296
-    sha1 : a1d93a50b1630e5826f37332ffa9771775e8f556
-    updated : 2021-05-03
-    jira : YUK-24160
+    maven URL : "https://mvnrepository.com/artifact/com.google.protobuf/protobuf-java/3.21.2"
+    md5 : 67568801c228e38d855c2ae368275150
+    sha1 : b7755d218ee7c15541afb51f2d247ca951603e0b
+    updated : 2022-07-29
+    jira : YUK-27030
     notes :
     
   - filename : protobuf-java-format-1.4.jar
@@ -2415,18 +2415,18 @@ Java :
     jira : YUK-24160
     notes :
     
-  - filename : protobuf-java-util-3.15.8.jar
+  - filename : protobuf-java-util-3.21.2.jar
     yukon group : Protobuf
     project : Protobuf
-    version : 3.15.8
+    version : 3.21.2
     project URL : "https://github.com/protocolbuffers/protobuf/releases"
     license : Apache 2.0
     license URLs : "https://www.apache.org/licenses/LICENSE-2.0.txt"
-    maven URL : "https://mvnrepository.com/artifact/com.google.protobuf/protobuf-java-util/3.15.8"
-    md5 : 42ddccd52dc81f44a8d06214d7dd5e42
-    sha1 : dbfce68ceaf0be0bf55eb2422066d3df8d778d3a
-    updated : 2021-05-03
-    jira : YUK-24160
+    maven URL : "https://mvnrepository.com/artifact/com.google.protobuf/protobuf-java-util/3.21.2"
+    md5 : 6aa9e98767f1da3faddcc910951dfa2a
+    sha1 : c9eec82f0afa7c0021982d30cb65f126feb17997
+    updated : 2022-07-29
+    jira : YUK-27030
     notes :
     
   - filename : proton-j-0.33.8.jar
