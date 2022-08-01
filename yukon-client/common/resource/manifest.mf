@@ -15,9 +15,9 @@ Class-Path: ./
  commons-codec-1.9.jar 
  commons-beanutils-1.9.4.jar 
  commons-discovery-0.5.jar 
- commons-configuration2-2.7.jar 
+ commons-configuration2-2.8.0.jar 
  commons-text-1.9.jar 
- xercesImpl-2.12.0.jar 
+ xercesImpl-2.12.2.jar 
  ecs-1.4.2.jar 
  jdom-2.0.2.jar 
  jradius-client.jar 
@@ -102,7 +102,7 @@ Class-Path: ./
  commons-lang3-3.8.1.jar 
  gson-2.9.0.jar 
  guava-18.0.jar 
- httpclient-4.5.6.jar 
+ httpclient-4.5.13.jar 
  httpcore-4.4.10.jar 
  jackson-annotations-2.13.3.jar 
  jackson-core-2.13.3.jar 

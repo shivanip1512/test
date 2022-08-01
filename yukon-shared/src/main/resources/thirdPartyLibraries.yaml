@@ -539,18 +539,18 @@ Java :
     jira : YUK-24852
     notes : 
   
-  - filename : commons-configuration2-2.7.jar
+  - filename : commons-configuration2-2.8.0.jar
     yukon group : Apache Commons
     project : Apache Commons Configuration 2
-    version : 2.7
+    version : 2.8.0
     project URL : "https://commons.apache.org/proper/commons-configuration/"
     license : Apache 2.0
     license URLs : "https://opensource.org/licenses/Apache-2.0"
-    maven URL : "https://mvnrepository.com/artifact/org.apache.commons/commons-configuration2/2.7"
-    md5 : 3307f404282a5040f14fd8cb8e0783ca
-    sha1 : 593326399e5fb5e1f986607f06f63c1250ab36b4
-    updated : 2020-12-14
-    jira : YUK-22557
+    maven URL : "https://mvnrepository.com/artifact/org.apache.commons/commons-configuration2/2.8.0"
+    md5 : 4bb1f1ad26727cf5966554cb6b9eb073
+    sha1 : 6a76acbe14d2c01d4758a57171f3f6a150dbd462
+    updated : 2022-07-27
+    jira : YUK-26978
     notes :  
   
   - filename : commons-dbcp2-2.0.jar
@@ -945,18 +945,18 @@ Java :
     jira : YUK-13953
     notes : 
   
-  - filename : httpclient-4.5.6.jar
+  - filename : httpclient-4.5.13.jar
     yukon group : Spring Web Services
     project : Apache HttpComponents HTTP Client
-    version : 4.5.6
+    version : 4.5.13
     project URL : "http://hc.apache.org/httpcomponents-client-4.5.x/index.html"
     license : Apache 2.0
     license URLs : "https://opensource.org/licenses/Apache-2.0"
-    maven URL : "https://mvnrepository.com/artifact/org.apache.httpcomponents/httpclient/4.5.6"
-    md5 : 877aca56579fea38c6358d06408976ba
-    sha1 : 1afe5621985efe90a92d0fbc9be86271efbe796f
-    updated : 2018-10-29
-    jira : YUK-18680
+    maven URL : "https://mvnrepository.com/artifact/org.apache.httpcomponents/httpclient/4.5.13"
+    md5 : 40d6b9075fbd28fa10292a45a0db9457
+    sha1 : e5f6cae5ca7ecaac1ec2827a9e2d65ae2869cada
+    updated : 2022-07-28
+    jira : YUK-27024
     notes : 
   
   - filename : httpcore-4.4.10.jar
@@ -3347,10 +3347,10 @@ Java :
     license : Apache 2.0, LGPL 2.1
     license URLs : "https://opensource.org/licenses/Apache-2.0, https://opensource.org/licenses/LGPL-2.1"
     maven URL : "https://mvnrepository.com/artifact/org.rzo.yajsw/wrapper/11.11"
-    md5 : fc0ca6942c61e91b419823a04d7f78c0
-    sha1 : e36153fe1a5bb956ef2e3054ff198a808f3b7112
-    updated : 2022-03-01
-    jira : YUK-25904
+    md5 : 9e654158eed8219e46a330f4171d1d77
+    sha1 : 276629e1525f3e27b41922297201d8d4cd2f1841
+    updated : 2022-07-27
+    jira : YUK-26978
     notes : YAJSW Wrapper.  Maven version is 11.11, not 13.02.  Jar rebuilt to adjust classpath entries in MANIFEST.MF
   
   - filename : wrapperApp.jar
@@ -3361,10 +3361,10 @@ Java :
     license : Apache 2.0, LGPL 2.1
     license URLs : "https://opensource.org/licenses/Apache-2.0, https://opensource.org/licenses/LGPL-2.1"
     maven URL : "https://mvnrepository.com/artifact/org.rzo.yajsw/wrapperApp/11.11"
-    md5 : 884d259e35716e63e8b2fefa9fb3eda9
-    sha1 : d0a36318643c45769b758379bdb556dba7088022
-    updated : 2022-03-01
-    jira : YUK-25904
+    md5 : 7613993ada3a207ce09dc2401d559df9
+    sha1 : 1a5b804e91cb81eca3cf9ad7f44293a70eca0350
+    updated : 2022-07-27
+    jira : YUK-26978
     notes : YAJSW Wrapper App.  Maven version is 11.11, not 13.02.  Jar rebuilt to adjust classpath entries in MANIFEST.MF
   
   - filename : wrapperApp9.jar
@@ -3375,10 +3375,10 @@ Java :
     license : Apache 2.0, LGPL 2.1
     license URLs : "https://opensource.org/licenses/Apache-2.0, https://opensource.org/licenses/LGPL-2.1"
     maven URL : "https://mvnrepository.com/artifact/org.rzo.yajsw/wrapperApp/11.11"
-    md5 : 042f0a0bd46d57ee151fbf52174b2aad
-    sha1 : 04f031e4d1f6b3b7df1e7d7806b46a6084751df6
-    updated : 2022-03-01
-    jira : YUK-25904
+    md5 : ad18f1b6d4c45ab11d42197f373a193b
+    sha1 : e45f946e2a7531439a2dcfa83633f9c0152d9000
+    updated : 2022-07-27
+    jira : YUK-26978
     notes : YAJSW Wrapper App.  Maven version is 11.11, not 13.02.  Jar rebuilt to adjust classpath entries in MANIFEST.MF
   
   - filename : woodstox-core-6.2.6.jar
@@ -3451,18 +3451,18 @@ Java :
     jira : YUK-12888
     notes : 
   
-  - filename : xercesImpl-2.12.0.jar
+  - filename : xercesImpl-2.12.2.jar
     yukon group : XML parsing
     project : Apache Xerces2 XML parser
-    version : 2.11.0
+    version : 2.12.2
     project URL : " https://xerces.apache.org/xerces2-j/"
     license : Apache 2.0
     license URLs : "https://www.apache.org/licenses/LICENSE-2.0.txt"
-    maven URL : "https://mvnrepository.com/artifact/xerces/xercesImpl/2.12.0"
-    md5 : b89632b53c4939a2982bcb52806f6dec
-    sha1 : f02c844149fd306601f20e0b34853a670bef7fa2
-    updated : 2019-09-27
-    jira : YUK-11706, YUK-20325
+    maven URL : "https://mvnrepository.com/artifact/xerces/xercesImpl/2.12.2"
+    md5 : 40e4f2d5aacfbf51a9a1572d77a0e5e9
+    sha1 : f051f988aa2c9b4d25d05f95742ab0cc3ed789e2
+    updated : 2022-07-26
+    jira : YUK-27026
     notes : 
   
   - filename : xmlschema-core-2.1.0.jar

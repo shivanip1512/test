@@ -114,7 +114,7 @@
 			<attribute name="org.eclipse.jst.component.dependency" value="../"/>
 		</attributes>
 	</classpathentry>
-	<classpathentry exported="true" kind="lib" path="/third-party/xercesImpl-2.12.0.jar" sourcepath="/third-party/linked-sources/xercesImpl-2.12.0-sources.jar">
+	<classpathentry exported="true" kind="lib" path="/third-party/xercesImpl-2.12.2.jar" sourcepath="/third-party/linked-sources/xercesImpl-2.12.2-sources.jar">
 		<attributes>
 			<attribute name="org.eclipse.jst.component.dependency" value="../"/>
 		</attributes>
@@ -504,7 +504,7 @@
 			<attribute name="org.eclipse.jst.component.dependency" value="../"/>
 		</attributes>
 	</classpathentry>
-	<classpathentry exported="true" kind="lib" path="/third-party/httpclient-4.5.6.jar">
+	<classpathentry exported="true" kind="lib" path="/third-party/httpclient-4.5.13.jar">
 		<attributes>
 			<attribute name="org.eclipse.jst.component.dependency" value="../"/>
 		</attributes>
@@ -563,7 +563,7 @@
 	<classpathentry exported="true" kind="lib" path="/third-party/reactor-netty-core-1.0.13.jar"/>
 	<classpathentry exported="true" kind="lib" path="/third-party/reactor-netty-http-1.0.13.jar"/>
 	<classpathentry exported="true" kind="lib" path="/third-party/woodstox-core-6.2.6.jar"/>
-	<classpathentry kind="lib" path="/third-party/commons-configuration2-2.7.jar">
+	<classpathentry kind="lib" path="/third-party/commons-configuration2-2.8.0.jar">
 		<attributes>
 			<attribute name="org.eclipse.jst.component.dependency" value="../"/>
 		</attributes>

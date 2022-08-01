@@ -52,10 +52,10 @@ SETO-Broadcast-Request:
       description: Broadcast payload, less than 54 bytes long.
     priority:
       type: string
-      enum: [IMMEDIATE, NON_REAL_TIME]
+      enum: [HIGH, LOW]
       description: Priority of the message. If omitted, this will default to NON_REAL_TIME.
-        * 'IMMEDIATE' - High priority for immediate delivery.
-        * 'NON_REAL_TIME' - Lower priority that may be delayed when the network is congested.
+        * 'HIGH' - High priority for immediate delivery.
+        * 'LOW' - Lower priority that may be delayed when the network is congested.
 
 SETO-Multipoint-Request:
   required:

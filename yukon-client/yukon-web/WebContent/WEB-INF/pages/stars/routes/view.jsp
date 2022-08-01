@@ -46,7 +46,8 @@
                                                multiSelectMode="false"
                                                allowEmptySelection="false" 
                                                viewOnlyMode="${mode == 'VIEW'}"
-                                               initialId="${communicationRoute.signalTransmitterId}"/>
+                                               initialId="${communicationRoute.signalTransmitterId}"
+                                               extraArgs="${communicationRoute.deviceType}"/>
                          <tags:hidden path="signalTransmitterId"/>
                      </tags:nameValue2>
                      <tags:nameValue2 nameKey=".defaultRoute">
