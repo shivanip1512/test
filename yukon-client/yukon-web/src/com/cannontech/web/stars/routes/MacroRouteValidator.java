@@ -12,8 +12,6 @@ public class MacroRouteValidator extends SimpleValidator<MacroRouteModel> {
 
     @Autowired private YukonValidationHelper yukonValidationHelper;
 
-    private static final String key = "yukon.web.modules.operator.routes.";
-
     @SuppressWarnings("unchecked")
     MacroRouteValidator() {
         super(MacroRouteModel.class);
