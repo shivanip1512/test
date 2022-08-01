@@ -1,6 +1,7 @@
 package com.cannontech.web.stars.routes;
 
 import java.io.IOException;
+import java.util.HashMap;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -163,19 +164,20 @@ public class MacroRouteController {
             if (macroRouteModel.getDeviceId() == null) {
                 url = helper.findWebServerUrl(request, userContext, ApiURL.macroRoutesUrl);
                 apiResponse = apiRequestHelper.callAPIForObject(userContext, request, url,
-                        HttpMethod.POST, MacroRouteModel.class, macroRouteModel);
+                        HttpMethod.POST, Object.class, macroRouteModel);
             }
 
             if (apiResponse.getStatusCode() == HttpStatus.OK || apiResponse.getStatusCode() == HttpStatus.CREATED) {
-                MacroRouteModel macroRouteModelResponse = (MacroRouteModel) apiResponse.getBody();
+                HashMap<String, Object> responseMap = (HashMap<String, Object>) apiResponse.getBody();
                 flash.setConfirm(
-                        new YukonMessageSourceResolvable("yukon.common.save.success", macroRouteModel.getDeviceName()));
-                return "redirect:/stars/device/routes/macroRoutes/" + macroRouteModelResponse.getDeviceId();
+                        new YukonMessageSourceResolvable("yukon.common.save.success", responseMap.get("deviceName")));
+                return "redirect:/stars/device/routes/macroRoutes/" + responseMap.get("deviceId");
             }
 
             if (apiResponse.getStatusCode() == HttpStatus.UNPROCESSABLE_ENTITY) {
                 flash.setError(new YukonMessageSourceResolvable("yukon.web.error.genericMainMessage"));
-                log.error("Error saving macro route", JsonUtils.beautifyJson(apiResponse.getBody().toString()));
+                log.error("Error saving macro route");
+                log.error(JsonUtils.beautifyJson(JsonUtils.toJson(apiResponse.getBody())));
                 return bindAndForward(macroRouteModel, result, redirectAttributes);
             }
         } catch (ApiCommunicationException e) {
