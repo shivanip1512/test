@@ -7,6 +7,9 @@
     <entry key="yukon.web.modules.tools.notificationGroup.CREATE.pageHeading">Create Notification Group</entry>
     <entry key="yukon.web.modules.tools.notificationGroup.CREATE.crumbTitle">Create Notification Group</entry>
     <entry key="yukon.web.modules.tools.notificationGroup.CREATE.pageTitle">Create Notification Group</entry>
+    <entry key="yukon.web.modules.tools.notificationGroup.EDIT.pageHeading">Edit Notification Group: {0}</entry>
+    <entry key="yukon.web.modules.tools.notificationGroup.EDIT.crumbTitle">{0}</entry>
+    <entry key="yukon.web.modules.tools.notificationGroup.EDIT.pageTitle">Notification Group: {0}</entry>
     <entry key="yukon.web.modules.tools.notificationGroup.list.pageName">Notification Groups</entry>
     <entry key="yukon.web.modules.tools.notificationGroup.filter.error">Error filtering notification group records: {0}.</entry>
     <entry key="yukon.web.modules.tools.notificationGroup.retrieve.error">An error occurred in retrieving notification group.</entry>

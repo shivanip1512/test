@@ -3,6 +3,7 @@ package com.cannontech.web.tools.notificationGroup;
 import java.io.IOException;
 import java.net.URISyntaxException;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 
 import javax.servlet.http.HttpServletRequest;
@@ -39,6 +40,7 @@ import com.cannontech.common.model.PaginatedResponse;
 import com.cannontech.common.model.PagingParameters;
 import com.cannontech.common.model.SortingParameters;
 import com.cannontech.common.util.JsonUtils;
+import com.cannontech.core.dao.NotificationGroupDao.SortBy;
 import com.cannontech.i18n.YukonMessageSourceResolvable;
 import com.cannontech.i18n.YukonUserContextMessageSourceResolver;
 import com.cannontech.user.YukonUserContext;
@@ -48,14 +50,13 @@ import com.cannontech.web.api.ApiURL;
 import com.cannontech.web.api.validation.ApiCommunicationException;
 import com.cannontech.web.api.validation.ApiControllerHelper;
 import com.cannontech.web.common.flashScope.FlashScope;
+import com.cannontech.web.common.sort.SortableColumn;
 import com.cannontech.web.notificationGroup.CICustomer;
 import com.cannontech.web.notificationGroup.Contact;
-import com.cannontech.web.common.sort.SortableColumn;
 import com.cannontech.web.notificationGroup.NotificationGroup;
 import com.cannontech.web.util.JsTreeNode;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.core.type.TypeReference;
-import com.cannontech.core.dao.NotificationGroupDao.SortBy;
 
 @Controller
 @RequestMapping("/notificationGroup/*")
@@ -265,15 +266,16 @@ public class NotificationGroupController {
             }
 
             if (apiResponse.getStatusCode() == HttpStatus.OK || apiResponse.getStatusCode() == HttpStatus.CREATED) {
-                NotificationGroup notificationGroupResponse = (NotificationGroup) apiResponse.getBody();
+                HashMap<String, Object> responseMap = (HashMap<String, Object>) apiResponse.getBody();
                 flash.setConfirm(
-                        new YukonMessageSourceResolvable("yukon.common.save.success", notificationGroupResponse.getName()));
-                return "redirect:/tools/notificationGroup/" + notificationGroupResponse.getId();
+                        new YukonMessageSourceResolvable("yukon.common.save.success", responseMap.get("name")));
+                return "redirect:/tools/notificationGroup/" + responseMap.get("id");
             }
 
             if (apiResponse.getStatusCode() == HttpStatus.UNPROCESSABLE_ENTITY) {
                 flash.setError(new YukonMessageSourceResolvable("yukon.web.error.genericMainMessage"));
-                log.error("Error saving notification group", JsonUtils.beautifyJson(apiResponse.getBody().toString()));
+                log.error("Error saving notification group");
+                log.error(JsonUtils.beautifyJson(JsonUtils.toJson(apiResponse.getBody())));
                 return bindAndForward(notificationGroup, result, redirectAttributes);
             }
 
@@ -303,7 +305,7 @@ public class NotificationGroupController {
     private ResponseEntity<? extends Object> saveNotificationGroup(YukonUserContext userContext, HttpServletRequest request,
             String webserverUrl, NotificationGroup notificationGroup, HttpMethod methodtype) throws RestClientException {
         return  apiRequestHelper.callAPIForObject(userContext, request, webserverUrl,
-                methodtype, NotificationGroup.class, notificationGroup);
+                methodtype, Object.class, notificationGroup);
     }
 
     public enum NotificationGroupSortBy implements DisplayableEnum {
