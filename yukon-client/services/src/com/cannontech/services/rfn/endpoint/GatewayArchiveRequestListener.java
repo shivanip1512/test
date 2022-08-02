@@ -42,7 +42,7 @@ public class GatewayArchiveRequestListener extends ArchiveRequestListenerBase<Ga
             if (missingGatewayFirstDataTimes.containsKey(identifier)) {
                 missingGatewayFirstDataTimes.remove(identifier);
             }
-            RfnDevice device = rfnDeviceLookupService.getDevice(identifier);
+            RfnDevice device = rfnDeviceLookupService.findRfnDevices(identifier);
             if(device != null) {
                 return device;
             }
