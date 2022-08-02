@@ -36,20 +36,37 @@
                     <tags:nameValue2 nameKey="yukon.common.name">
                         <tags:input path="deviceName" maxlength="60" autofocus="autofocus" inputClass="w300 js-name"/>
                     </tags:nameValue2>
-                    <tags:nameValue2 nameKey=".selectSignalTransmitter" valueClass="dib">
-                        <tags:pickerDialog id="signalTransmitterPicker${id}" 
-                                               type="signalTransmitterPicker" 
-                                               destinationFieldName="signalTransmitterId"
-                                               linkType="selection" 
-                                               selectionProperty="paoName"
-                                               icon="icon-magnifier"
-                                               multiSelectMode="false"
-                                               allowEmptySelection="false" 
-                                               viewOnlyMode="${mode == 'VIEW'}"
-                                               initialId="${communicationRoute.signalTransmitterId}"
-                                               extraArgs="${communicationRoute.deviceType}"/>
-                         <tags:hidden path="signalTransmitterId"/>
-                     </tags:nameValue2>
+                    <cti:displayForPageEditModes modes="CREATE,VIEW">
+                        <tags:nameValue2 nameKey=".selectSignalTransmitter" valueClass="dib">
+                            <tags:pickerDialog id="signalTransmitterPicker${id}" 
+                                                   type="signalTransmitterPicker" 
+                                                   destinationFieldName="signalTransmitterId"
+                                                   linkType="selection" 
+                                                   selectionProperty="paoName"
+                                                   icon="icon-magnifier"
+                                                   multiSelectMode="false"
+                                                   allowEmptySelection="false" 
+                                                   viewOnlyMode="${mode == 'VIEW'}"
+                                                   initialId="${communicationRoute.signalTransmitterId}"/>
+                             <tags:hidden path="signalTransmitterId"/>
+                         </tags:nameValue2>
+                     </cti:displayForPageEditModes>
+                     <cti:displayForPageEditModes modes="EDIT">
+                         <tags:nameValue2 nameKey=".selectSignalTransmitter" valueClass="dib">
+                            <tags:pickerDialog id="signalTransmitterPicker${id}" 
+                                                   type="paoTypeFilteredPaoPicker" 
+                                                   extraArgs="${communicationRoute.deviceType}"
+                                                   destinationFieldName="signalTransmitterId"
+                                                   linkType="selection" 
+                                                   selectionProperty="paoName"
+                                                   icon="icon-magnifier"
+                                                   multiSelectMode="false"
+                                                   allowEmptySelection="false" 
+                                                   viewOnlyMode="${mode == 'VIEW'}"
+                                                   initialId="${communicationRoute.signalTransmitterId}"/>
+                             <tags:hidden path="signalTransmitterId"/>
+                         </tags:nameValue2>
+                     </cti:displayForPageEditModes>
                      <tags:nameValue2 nameKey=".defaultRoute">
                          <tags:switchButton path="defaultRoute" onNameKey=".yes.label" offNameKey=".no.label"/>
                      </tags:nameValue2>

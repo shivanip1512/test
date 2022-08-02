@@ -32,6 +32,10 @@
         <property name="searcher" ref="paoTypeSearcherLucene"/>
     </bean>
     
+    <bean name="paoTypeFilteredPaoPicker" class="com.cannontech.web.search.lucene.criteria.PaoTypeFilteredPaoPicker">
+        <property name="searcher" ref="paoTypeSearcherLucene"/>
+    </bean>
+    
     <bean name="paoPicker" parent="abstractPaoPicker" class="com.cannontech.web.picker.PaoPicker"/>
     <bean name="programPicker" parent="abstractPaoPicker" class="com.cannontech.web.picker.PaoPicker">
         <property name="criteria">
