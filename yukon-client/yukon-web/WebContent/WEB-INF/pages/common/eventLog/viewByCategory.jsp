@@ -70,7 +70,7 @@ $(function () {
                                 startCssClass="${startCssClass}" startWrapperClass="${startWrapperClass}"
                                 endCssClass="${stopCssClass}" endWrapperClass="${stopWrapperClass}"/>
                         </spring:bind>
-                        <span class="fl" style="width:170px">&nbsp;
+                        <span class="fl" style="width:170px;min-height:18px">
                             <spring:bind path="startDate">
                                 <c:if test="${status.error}"><form:errors path="startDate" cssClass="error" /></c:if>
                             </spring:bind>
