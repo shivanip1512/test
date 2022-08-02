@@ -327,18 +327,13 @@ public class MspAccountInformationV4 implements MspAccountInformation {
                 if (electricService.getMeterBase() != null && electricService.getMeterBase().getElectricMeter() != null) {
                     ElectricMeter electricMeter = electricService.getMeterBase().getElectricMeter();
                     if (electricMeter.getMeterConnectionStatus() != null) {
-                        add("Connection Status", electricMeter.getMeterConnectionStatus(), true, info,
-                                userContext);
+                        add("Connection Status", electricMeter.getMeterConnectionStatus(), true, info, userContext);
 
-                        add("Metrology Firmware Version", electricMeter.getMetrologyFirmwareVersion(), true, info,
-                                userContext);
-                        add("Metrology Firmware Revision", electricMeter.getMetrologyFirmwareRevision(), true, info,
-                                userContext);
-                        add("AMI Device Type", electricMeter.getAMRDeviceType(), false, info,
-                                userContext);
+                        add("Metrology Firmware Version", electricMeter.getMetrologyFirmwareVersion(), true, info, userContext);
+                        add("Metrology Firmware Revision", electricMeter.getMetrologyFirmwareRevision(), true, info, userContext);
+                        add("AMI Device Type", electricMeter.getAMRDeviceType(), false, info, userContext);
                         add("AMI Vendor", electricMeter.getAMRVendor(), false, info, userContext);
-                        add("Billing Cycle", electricMeter.getBillingCycle(), true, info,
-                                userContext);
+                        add("Billing Cycle", electricMeter.getBillingCycle(), true, info, userContext);
                     }
                     if (electricMeter.getUtilityInfo() != null) {
                         add("Owner", electricMeter.getUtilityInfo().getOwner(), true, info, userContext);
@@ -369,9 +364,8 @@ public class MspAccountInformationV4 implements MspAccountInformation {
                     if (electricMeter.getConfiguredReadingTypes() != null
                             && electricMeter.getConfiguredReadingTypes().getConfiguredReadingType() != null) {
                         electricMeter.getConfiguredReadingTypes().getConfiguredReadingType()
-                                .forEach(
-                                        configuredReadingType -> {
-                                            add("Configured Reading Type", configuredReadingType, true, info, userContext);
+                                .forEach(configuredReadingType -> {
+                                                                    add("Configured Reading Type", configuredReadingType, true, info, userContext);
                                         });
                     }
 
@@ -386,11 +380,8 @@ public class MspAccountInformationV4 implements MspAccountInformation {
                         add("kh", electricNameplate.getKh(), true, info, userContext);
                         add("kr", electricNameplate.getKr(), true, info, userContext);
                         if (electricNameplate.getFrequency() != null && electricNameplate.getFrequency().getUnits() != null) {
-                            add("Frequency", electricNameplate.getFrequency().getValue()
-                                    + StringUtils.SPACE
-                                    + electricNameplate.getFrequency()
-                                            .getUnits().value(),
-                                    true, info, userContext);
+                            add("Frequency", electricNameplate.getFrequency().getValue() + StringUtils.SPACE + 
+                                 electricNameplate.getFrequency().getUnits().value(), true, info, userContext);
                         }
                         add("Number of elements",
                                 electricNameplate.getNumberOfElements(), true, info, userContext);
@@ -416,8 +407,7 @@ public class MspAccountInformationV4 implements MspAccountInformation {
                         add("Dials", electricNameplate.getDials(), true, info, userContext);
                         add("Form", electricNameplate.getForm(), true, info, userContext);
                         add("Multiplier", electricNameplate.getMultiplier(), false, info, userContext);
-                        add("Demand Multiplier", electricNameplate.getDemandMult(), false,
-                                info, userContext);
+                        add("Demand Multiplier", electricNameplate.getDemandMult(), false, info, userContext);
                     }
 
                     // Billing Information
@@ -440,8 +430,7 @@ public class MspAccountInformationV4 implements MspAccountInformation {
 
                 if (electricService.getServiceStatus() != null) {
                     add("Service Point Status - Service Status",
-                            electricService.getServiceStatus(), true, info,
-                            userContext);
+                         electricService.getServiceStatus(), true, info, userContext);
                 }
 
                 // Electric Location Fields
@@ -505,37 +494,29 @@ public class MspAccountInformationV4 implements MspAccountInformation {
                             add(null, "Nameplate Information", true, info, userContext);
                             if (gasNameplate.getMechanicalForm() != null) {
                                 add("Mechanical Form",
-                                        gasNameplate.getMechanicalForm().value(), true, info, userContext);
+                                     gasNameplate.getMechanicalForm().value(), true, info, userContext);
                             }
                             if (gasNameplate.getMeasurementSystem() != null) {
                                 add("Measurement System",
-                                        gasNameplate.getMeasurementSystem().value(), true, info, userContext);
+                                     gasNameplate.getMeasurementSystem().value(), true, info, userContext);
                             }
                             if (gasNameplate.getGasPressure() != null
                                     && gasNameplate.getGasPressure().getMaxPressureUOM() != null) {
-                                add("Gas Pressure", gasNameplate.getGasPressure().getValue()
-                                        + StringUtils.SPACE
-                                        + gasNameplate.getGasPressure().getMaxPressureUOM().value(), true, info, userContext);
+                                add("Gas Pressure", gasNameplate.getGasPressure().getValue() + StringUtils.SPACE
+                                     + gasNameplate.getGasPressure().getMaxPressureUOM().value(), true, info, userContext);
                             }
                             if (gasNameplate.getGasFlow() != null
                                     && gasNameplate.getGasFlow().getMaxFlowRateUOM() != null) {
-                                add("Gas Flow", gasNameplate.getGasFlow().getValue()
-                                        + StringUtils.SPACE
-                                        + gasNameplate.getGasFlow().getMaxFlowRateUOM().value(), true, info, userContext);
+                                add("Gas Flow", gasNameplate.getGasFlow().getValue() + StringUtils.SPACE
+                                     + gasNameplate.getGasFlow().getMaxFlowRateUOM().value(), true, info, userContext);
                             }
                             if (gasNameplate.getGearDriveSize() != null) {
-                                add("Gas Drive Size",
-                                        gasNameplate.getGearDriveSize().value(), true, info,
-                                        userContext);
-                                add("Gas Internal Pipe Diameter",
-                                        gasNameplate.getInternalPipeDiameter().value(), true, info,
-                                        userContext);
+                                add("Gas Drive Size", gasNameplate.getGearDriveSize().value(), true, info, userContext);
+                                add("Gas Internal Pipe Diameter", gasNameplate.getInternalPipeDiameter().value(), true, info, userContext);
                                 add("Gas Temperature Compensation Type",
-                                        gasNameplate.getTemperatureCompensationType().value(), true, info,
-                                        userContext);
+                                     gasNameplate.getTemperatureCompensationType().value(), true, info, userContext);
                                 add("Gas Pressure Compensation Type",
-                                        gasNameplate.getPressureCompensationType().value(), true, info,
-                                        userContext);
+                                     gasNameplate.getPressureCompensationType().value(), true, info, userContext);
                             }
                         }
                     });
@@ -582,22 +563,17 @@ public class MspAccountInformationV4 implements MspAccountInformation {
                             add(null, "Nameplate Information", true, info, userContext);
                             if (fetchWaterNamplate.getInstallType() != null) {
                                 add("Install Type",
-                                        fetchWaterNamplate.getInstallType().value(), true,
-                                        info, userContext);
+                                     fetchWaterNamplate.getInstallType().value(), true, info, userContext);
                             }
                             if (fetchWaterNamplate.getFluidType() != null) {
-                                add("Fluid Type", fetchWaterNamplate.getFluidType().value(),
-                                        true, info, userContext);
+                                add("Fluid Type", fetchWaterNamplate.getFluidType().value(), true, info, userContext);
                             }
                             if (waterServicePoint.getWaterMeter().getWaterNameplate().getDriveType() != null) {
-                                add("Drive Type", fetchWaterNamplate.getDriveType().value(),
-                                        true, info, userContext);
+                                add("Drive Type", fetchWaterNamplate.getDriveType().value(), true, info, userContext);
                             }
                             if (fetchWaterNamplate.getPipeSize() != null) {
-                                add("Pipe Size", fetchWaterNamplate.getPipeSize().value(), true, info,
-                                        userContext);
+                                add("Pipe Size", fetchWaterNamplate.getPipeSize().value(), true, info, userContext);
                             }
-
                         }
                     });
         }
