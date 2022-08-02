@@ -68,7 +68,7 @@ public class MacroRouteController {
         MacroRouteModel<?> macroRouteModel = null;
 
         if (model.containsKey("macroRouteModel")) {
-            macroRouteModel = (MacroRouteModel) model.getAttribute("macroRouteModel");
+            macroRouteModel = (MacroRouteModel<?>) model.getAttribute("macroRouteModel");
         } else {
             macroRouteModel = new MacroRouteModel<>();
         }
@@ -88,7 +88,7 @@ public class MacroRouteController {
         try {
             model.addAttribute("mode", PageEditMode.VIEW);
             String url = helper.findWebServerUrl(request, userContext, ApiURL.macroRoutesUrl + "/" + id);
-            MacroRouteModel macroRoute = retrieveMacroRoute(userContext, request, id, url);
+            MacroRouteModel<?> macroRoute = retrieveMacroRoute(userContext, request, id, url);
 
             if (macroRoute == null) {
                 flash.setError(new YukonMessageSourceResolvable(baseKey + "retrieve.error"));
@@ -103,20 +103,44 @@ public class MacroRouteController {
         }
     }
 
-    private MacroRouteModel retrieveMacroRoute(YukonUserContext userContext, HttpServletRequest request, int id, String url) {
-        MacroRouteModel macroRoute = null;
+    private MacroRouteModel<?> retrieveMacroRoute(YukonUserContext userContext, HttpServletRequest request, int id, String url) {
+        MacroRouteModel<?> macroRoute = null;
         try {
             ResponseEntity<? extends Object> response = apiRequestHelper.callAPIForObject(userContext, request, url,
                     HttpMethod.GET, MacroRouteModel.class);
 
             if (response.getStatusCode() == HttpStatus.OK) {
-                macroRoute = (MacroRouteModel) response.getBody();
+                macroRoute = (MacroRouteModel<?>) response.getBody();
                 macroRoute.setDeviceId(id);
             }
         } catch (RestClientException ex) {
             log.error("Error retrieving route : " + ex.getMessage());
         }
         return macroRoute;
+    }
+    
+    @GetMapping("/{id}/edit")
+    public String edit(ModelMap model, YukonUserContext userContext, @PathVariable int id, FlashScope flash,
+            HttpServletRequest request) {
+        try {
+            String url = helper.findWebServerUrl(request, userContext, ApiURL.macroRoutesUrl + "/" + id);
+            model.addAttribute("mode", PageEditMode.EDIT);
+            MacroRouteModel<?> macroRouteModel = retrieveMacroRoute(userContext, request, id, url);
+            if (macroRouteModel == null) {
+                flash.setError(new YukonMessageSourceResolvable(baseKey + "macroRouteModel.retrieve.error"));
+                return redirectListPageLink;
+            } else if (model.containsAttribute("macroRouteModel")) {
+                macroRouteModel = (MacroRouteModel<?>) model.get("macroRouteModel");
+                macroRouteModel.setDeviceId(id);
+            }
+            
+            model.addAttribute("macroRouteModel", macroRouteModel);
+            return "/routes/macroRouteView.jsp";
+        } catch (ApiCommunicationException e) {
+            log.error(e.getMessage());
+            flash.setError(new YukonMessageSourceResolvable(communicationKey));
+            return redirectListPageLink;
+        }
     }
 
     @DeleteMapping("/{id}/delete")
@@ -125,7 +149,7 @@ public class MacroRouteController {
         try {
             String url = helper.findWebServerUrl(request, userContext, ApiURL.macroRoutesUrl + "/" + id);
             ResponseEntity<? extends Object> response = apiRequestHelper.callAPIForObject(userContext,
-                    request, url, HttpMethod.DELETE, Object.class, macroRoute);
+                    request, url, HttpMethod.DELETE, Object.class, Integer.class);
 
             if (response.getStatusCode() == HttpStatus.OK) {
                 flash.setConfirm(new YukonMessageSourceResolvable("yukon.common.delete.success", macroRoute));
@@ -144,7 +168,7 @@ public class MacroRouteController {
     }
 
     @PostMapping("/save")
-    public String save(@ModelAttribute("macroRouteModel") MacroRouteModel macroRouteModel,
+    public String save(@ModelAttribute("macroRouteModel") MacroRouteModel<?> macroRouteModel,
             @RequestParam("routeListJsonString") String routeListJsonSting, BindingResult result,
             YukonUserContext userContext, FlashScope flash, RedirectAttributes redirectAttributes, HttpServletRequest request)
             throws IOException {
@@ -165,6 +189,10 @@ public class MacroRouteController {
                 url = helper.findWebServerUrl(request, userContext, ApiURL.macroRoutesUrl);
                 apiResponse = apiRequestHelper.callAPIForObject(userContext, request, url,
                         HttpMethod.POST, Object.class, macroRouteModel);
+            } else {
+                url = helper.findWebServerUrl(request, userContext, ApiURL.macroRoutesUrl) + "/" + macroRouteModel.getDeviceId();
+                apiResponse = apiRequestHelper.callAPIForObject(userContext, request, url,
+                        HttpMethod.PATCH, Object.class, macroRouteModel);
             }
 
             if (apiResponse.getStatusCode() == HttpStatus.OK || apiResponse.getStatusCode() == HttpStatus.CREATED) {

@@ -18,7 +18,7 @@
                 <cti:url var="createUrl" value="/stars/device/routes/macroRoutes/create"/>
                 <cm:dropdownOption icon="icon-plus-green" key="yukon.web.components.button.create.label" data-popup="#js-create-route-popup" href="${createUrl}"/>
                 <!-- Edit --> 
-                <cti:url var="editUrl" value="/stars/device/routes/macroRoutes/${macroRoute.deviceId}/edit" />
+                <cti:url var="editUrl" value="/stars/device/routes/macroRoutes/${macroRouteModel.deviceId}/edit" />
                 <cm:dropdownOption icon="icon-pencil" key="yukon.web.components.button.edit.label" href="${editUrl}"/>
                 <!-- Delete -->
                 <li class="divider"></li>
@@ -27,8 +27,8 @@
                                    classes="js-hide-dropdown" 
                                    id="js-delete" 
                                    data-ok-event="yukon:macroRoute:delete"/>
-                <d:confirm on="#js-delete" nameKey="confirmDelete" argument="${macroRoute.deviceName}" />
-                <cti:url var="deleteUrl" value="/stars/device/routes/macroRoutes/${macroRoute.deviceId}/delete"/>
+                <d:confirm on="#js-delete" nameKey="confirmDelete" argument="${macroRouteModel.deviceName}" />
+                <cti:url var="deleteUrl" value="/stars/device/routes/macroRoutes/${macroRouteModel.deviceId}/delete"/>
                 <form:form id="delete-macroRoute-form" action="${deleteUrl}" method="delete" modelAttribute="macroRoute">
                     <cti:csrfToken/>
                 </form:form>
@@ -137,6 +137,10 @@
                 <cti:displayForPageEditModes modes="CREATE">
                     <cti:url var="listUrl" value="/stars/device/routes/list"/>
                     <cti:button nameKey="cancel" href="${listUrl}"/>
+                </cti:displayForPageEditModes>
+                <cti:displayForPageEditModes modes="EDIT">
+                        <cti:url var="viewUrl" value="/stars/device/routes/macroRoutes/${macroRouteModel.deviceId}" />
+                        <cti:button nameKey="cancel" href="${viewUrl}"/>
                 </cti:displayForPageEditModes>
             </div>
             
