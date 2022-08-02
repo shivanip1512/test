@@ -238,7 +238,24 @@ void E2eMessenger::handleRfnE2eDataIndicationMsg(const SerializedMessage &msg)
 
                 return (*_dataStreamingCallback)(ind);
             }
-            
+
+            if ( isAsid_Der(asid) )
+            {
+                if( ! _derCallback )
+                {
+                    CTILOG_WARN(dout, "WARNING - DER ASID " << asid << " unhandled, no callback registered");
+                    return;
+                }
+
+                Indication ind;
+
+                ind.rfnIdentifier = indicationMsg->rfnIdentifier;
+                ind.payload       = indicationMsg->payload;
+                ind.asid          = indicationMsg->applicationServiceId;
+
+                return (*_derCallback)(ind);
+            }
+
             CTILOG_WARN(dout, "WARNING - unknown ASID " << asid << " unhandled");
         }
     }

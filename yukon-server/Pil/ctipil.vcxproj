@@ -368,6 +368,7 @@ if exist $(OutDir)$(TargetName).pdb xcopy /d/y/f $(OutDir)$(TargetName).pdb $(So
     <ClCompile Include="RfnMeterDisconnectMsg_serialization.cpp" />
     <ClCompile Include="RfnMeterReadMsg_serialization.cpp" />
     <ClCompile Include="rf_data_streaming_processor.cpp" />
+    <ClCompile Include="rf_der_processor.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="include\exe_pcreq.h" />
@@ -377,6 +378,7 @@ if exist $(OutDir)$(TargetName).pdb xcopy /d/y/f $(OutDir)$(TargetName).pdb $(So
     <ClInclude Include="include\pilserver.h" />
     <ClInclude Include="include\rfn_statistics.h" />
     <ClInclude Include="include\rf_data_streaming_processor.h" />
+    <ClInclude Include="include\rf_der_processor.h" />
   </ItemGroup>
   <ItemGroup>
     <ResourceCompile Include="..\versioninfo.rc" />
