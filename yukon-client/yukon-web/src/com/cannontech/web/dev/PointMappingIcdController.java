@@ -210,7 +210,7 @@ public class PointMappingIcdController {
     @RequestMapping("/rfn/icd/view")
     public String view(ModelMap model) throws JsonParseException, JsonMappingException, JsonProcessingException, IOException {
 
-        PointMappingIcd parsedIcd = YamlParserUtils.parseToObject(inputFile.getInputStream(), PointMappingIcd.class);
+        PointMappingIcd parsedIcd = YamlParserUtils.parseToObject(inputFile.getInputStream(), PointMappingIcd.class, inputFile.getFilename());
 
         model.addAttribute("icd", YamlParserUtils.parseToJson(inputFile.getInputStream()));
 

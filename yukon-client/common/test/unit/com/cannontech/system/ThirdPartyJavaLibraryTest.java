@@ -89,7 +89,7 @@ public class ThirdPartyJavaLibraryTest {
         ClassPathResource libraryYaml = new ClassPathResource("thirdPartyLibraries.yaml");
         
         ThirdPartyLibraries documentedLibraries = YamlParserUtils.parseToObject(libraryYaml.getInputStream(),
-                ThirdPartyLibraries.class);
+                ThirdPartyLibraries.class, libraryYaml.getFilename());
         
         Map<String, ThirdPartyJavaLibrary> documentedLibrariesByFilename = Maps.uniqueIndex(documentedLibraries.javaLibraries, l -> l.filename); 
         
@@ -163,7 +163,7 @@ public class ThirdPartyJavaLibraryTest {
         ClassPathResource libraryYaml = new ClassPathResource("thirdPartyLibraries.yaml");
 
         ThirdPartyLibraries documentedLibraries = YamlParserUtils.parseToObject(libraryYaml.getInputStream(),
-                ThirdPartyLibraries.class);
+                ThirdPartyLibraries.class, libraryYaml.getFilename());
         Map<String, ThirdPartyJavaLibrary> documentedLibrariesByFilename = Maps.uniqueIndex(documentedLibraries.javaLibraries,
                 l -> l.filename);
 

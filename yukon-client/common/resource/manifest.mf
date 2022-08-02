@@ -140,7 +140,7 @@ Class-Path: ./
  reactor-netty-core-1.0.13.jar 
  reactor-netty-http-1.0.13.jar 
  slf4j-api-1.8.0-alpha2.jar 
- snakeyaml-1.18.2.jar 
+ snakeyaml-1.30.jar 
  jjwt-api-0.11.2.jar 
  jjwt-impl-0.11.2.jar 
  jjwt-jackson-0.11.2.jar 
