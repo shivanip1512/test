@@ -59,7 +59,7 @@ public class SignalTransmitterValidator<T extends TerminalBase<?>> extends Simpl
                     loginTxt);
             if (!errors.hasFieldErrors("login")) {
                 yukonValidationHelper.checkExceedsMaxLength("login", errors, terminal.getLogin(),
-                        loginTxt, 20);
+                        loginTxt, 64);
             }
         }
 

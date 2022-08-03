@@ -2,7 +2,7 @@
 
 <tags:nameValueContainer2>
     <tags:nameValue2 nameKey=".login">
-        <tags:input path="login" maxlength="20"/>
+        <tags:input path="login" maxlength="64"/>
     </tags:nameValue2>
     <tags:nameValue2 nameKey=".password">
         <tags:password path="password" includeShowHideButton="true" maxlength="64" showPassword="true"/>
