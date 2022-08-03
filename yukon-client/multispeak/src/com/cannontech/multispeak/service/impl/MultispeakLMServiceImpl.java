@@ -142,7 +142,9 @@ public class MultispeakLMServiceImpl extends MultispeakLMServiceBase implements 
                     } else if (mspLoadControl.getControlEventType() == ControlEventType.RESTORE) {
                         programStatus = stopControlByProgramName(programName, mspLoadControl.getStopTime(), liteYukonUser);
                     }
-                    CTILogger.info("Control Status: " + programStatus.toString());
+                    if (programStatus != null) {
+                        CTILogger.info("Control Status: " + programStatus.toString());
+                    }
                 } else if (liteYukonPAObject.getPaoType() == PaoType.LM_SCENARIO) {
                     String scenarioName = liteYukonPAObject.getPaoName();
                     ScenarioStatus scenarioStatus = null;
@@ -151,7 +153,9 @@ public class MultispeakLMServiceImpl extends MultispeakLMServiceBase implements 
                     } else if (mspLoadControl.getControlEventType() == ControlEventType.RESTORE) {
                         scenarioStatus = stopControlByControlScenario(scenarioName, mspLoadControl.getStopTime(), liteYukonUser);
                     }
-                    CTILogger.info("Control Status: " + scenarioStatus.toString());
+                    if (scenarioStatus != null) {
+                        CTILogger.info("Control Status: " + scenarioStatus.toString());
+                    }
                 }
             } catch (TimeoutException e) {
                 errorObject = mspObjectDao.getErrorObject(null,

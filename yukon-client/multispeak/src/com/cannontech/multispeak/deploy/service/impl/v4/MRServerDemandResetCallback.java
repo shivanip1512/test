@@ -151,12 +151,14 @@ public class MRServerDemandResetCallback implements DemandResetCallback {
                     errObjects = mspObjectDao.toErrorObject(errorObjects);
                 }
             }
-            multispeakEventLogService.notificationResponse("InitiateDemandReset",
-                                                            transactionId,
-                                                            meterNumber,
-                                                            "Reset and Verified",
-                                                            errObjects.length,
-                                                            responseUrl);
+            if (errObjects != null) {
+                multispeakEventLogService.notificationResponse("InitiateDemandReset",
+                                                                transactionId,
+                                                                meterNumber,
+                                                                "Reset and Verified",
+                                                                errObjects.length,
+                                                                responseUrl);
+            }
         } catch (MultispeakWebServiceClientException re) {
             log.error("error pushing verification notice", re);
         }
