@@ -60,7 +60,9 @@ public class MacroRouteController {
     private static final String communicationKey = "yukon.exception.apiCommunicationException.communicationError";
     private static final String baseKey = "yukon.web.modules.operator.routes.macroRoutes.";
     private static final String redirectListPageLink = "redirect:/stars/device/routes/list";
-    private static final TypeReference<List<MacroRouteList>> routeListTargetType = new TypeReference<List<MacroRouteList>>() {};
+
+    private static final TypeReference<List<MacroRouteList>> routeListTargetType = new TypeReference<List<MacroRouteList>>() {
+    };
 
     @GetMapping("create")
     public String create(ModelMap model) {
@@ -68,7 +70,7 @@ public class MacroRouteController {
         MacroRouteModel<?> macroRouteModel = null;
 
         if (model.containsKey("macroRouteModel")) {
-            macroRouteModel = (MacroRouteModel<?>) model.getAttribute("macroRouteModel");
+            macroRouteModel = (MacroRouteModel) model.getAttribute("macroRouteModel");
         } else {
             macroRouteModel = new MacroRouteModel<>();
         }
@@ -76,7 +78,7 @@ public class MacroRouteController {
         List<Integer> selectedRouteIds = Lists.newArrayList();
         if (CollectionUtils.isNotEmpty(macroRouteModel.getRouteList())) {
             selectedRouteIds = macroRouteModel.getRouteList().stream().map(route -> route.getRouteId())
-                                                                      .collect(Collectors.toList());
+                    .collect(Collectors.toList());
         }
         model.addAttribute("selectedRouteIds", selectedRouteIds);
         return "/routes/macroRouteView.jsp";
@@ -118,37 +120,6 @@ public class MacroRouteController {
         }
         return macroRoute;
     }
-    
-    @GetMapping("/{id}/edit")
-    public String edit(ModelMap model, YukonUserContext userContext, @PathVariable int id, FlashScope flash,
-            HttpServletRequest request) {
-        try {
-            String url = helper.findWebServerUrl(request, userContext, ApiURL.macroRoutesUrl + "/" + id);
-            model.addAttribute("mode", PageEditMode.EDIT);
-            MacroRouteModel<?> macroRouteModel = retrieveMacroRoute(userContext, request, id, url);
-            if (macroRouteModel == null) {
-                flash.setError(new YukonMessageSourceResolvable(baseKey + "macroRouteModel.retrieve.error"));
-                return redirectListPageLink;
-            } else if (model.containsAttribute("macroRouteModel")) {
-                macroRouteModel = (MacroRouteModel<?>) model.get("macroRouteModel");
-                macroRouteModel.setDeviceId(id);
-            }
-            model.addAttribute("selectedRouteIds", getSelectedRouteIds(macroRouteModel.getRouteList()));
-            model.addAttribute("macroRouteModel", macroRouteModel);
-            return "/routes/macroRouteView.jsp";
-        } catch (ApiCommunicationException e) {
-            log.error(e.getMessage());
-            flash.setError(new YukonMessageSourceResolvable(communicationKey));
-            return redirectListPageLink;
-        }
-    }
-    private List<Integer> getSelectedRouteIds(List<MacroRouteList> allRoutes) {
-        List<Integer> selectedRouteIds = Lists.newArrayList();
-        CollectionUtils.emptyIfNull(allRoutes).stream().forEach(route -> {
-            selectedRouteIds.add(route.getRouteId());
-        });
-        return selectedRouteIds;
-    }
 
     @DeleteMapping("/{id}/delete")
     public String delete(@PathVariable int id, YukonUserContext userContext, FlashScope flash, HttpServletRequest request) {
@@ -156,7 +127,7 @@ public class MacroRouteController {
         try {
             String url = helper.findWebServerUrl(request, userContext, ApiURL.macroRoutesUrl + "/" + id);
             ResponseEntity<? extends Object> response = apiRequestHelper.callAPIForObject(userContext,
-                    request, url, HttpMethod.DELETE, Object.class, Integer.class);
+                    request, url, HttpMethod.DELETE, Object.class, macroRoute);
 
             if (response.getStatusCode() == HttpStatus.OK) {
                 flash.setConfirm(new YukonMessageSourceResolvable("yukon.common.delete.success", macroRoute));
@@ -175,7 +146,7 @@ public class MacroRouteController {
     }
 
     @PostMapping("/save")
-    public String save(@ModelAttribute("macroRouteModel") MacroRouteModel<?> macroRouteModel,
+    public String save(@ModelAttribute("macroRouteModel") MacroRouteModel macroRouteModel,
             @RequestParam("routeListJsonString") String routeListJsonSting, BindingResult result,
             YukonUserContext userContext, FlashScope flash, RedirectAttributes redirectAttributes, HttpServletRequest request)
             throws IOException {
@@ -196,10 +167,6 @@ public class MacroRouteController {
                 url = helper.findWebServerUrl(request, userContext, ApiURL.macroRoutesUrl);
                 apiResponse = apiRequestHelper.callAPIForObject(userContext, request, url,
                         HttpMethod.POST, Object.class, macroRouteModel);
-            } else {
-                url = helper.findWebServerUrl(request, userContext, ApiURL.macroRoutesUrl) + "/" + macroRouteModel.getDeviceId();
-                apiResponse = apiRequestHelper.callAPIForObject(userContext, request, url,
-                        HttpMethod.PATCH, Object.class, macroRouteModel);
             }
 
             if (apiResponse.getStatusCode() == HttpStatus.OK || apiResponse.getStatusCode() == HttpStatus.CREATED) {

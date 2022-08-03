@@ -18,7 +18,7 @@
                 <cti:url var="createUrl" value="/stars/device/routes/macroRoutes/create"/>
                 <cm:dropdownOption icon="icon-plus-green" key="yukon.web.components.button.create.label" data-popup="#js-create-route-popup" href="${createUrl}"/>
                 <!-- Edit --> 
-                <cti:url var="editUrl" value="/stars/device/routes/macroRoutes/${macroRouteModel.deviceId}/edit" />
+                <cti:url var="editUrl" value="/stars/device/routes/macroRoutes/${macroRoute.deviceId}/edit" />
                 <cm:dropdownOption icon="icon-pencil" key="yukon.web.components.button.edit.label" href="${editUrl}"/>
                 <!-- Delete -->
                 <li class="divider"></li>
@@ -27,8 +27,8 @@
                                    classes="js-hide-dropdown" 
                                    id="js-delete" 
                                    data-ok-event="yukon:macroRoute:delete"/>
-                <d:confirm on="#js-delete" nameKey="confirmDelete" argument="${macroRouteModel.deviceName}" />
-                <cti:url var="deleteUrl" value="/stars/device/routes/macroRoutes/${macroRouteModel.deviceId}/delete"/>
+                <d:confirm on="#js-delete" nameKey="confirmDelete" argument="${macroRoute.deviceName}" />
+                <cti:url var="deleteUrl" value="/stars/device/routes/macroRoutes/${macroRoute.deviceId}/delete"/>
                 <form:form id="delete-macroRoute-form" action="${deleteUrl}" method="delete" modelAttribute="macroRoute">
                     <cti:csrfToken/>
                 </form:form>
@@ -77,7 +77,7 @@
                                 <div id="js-assigned-signal-transmitter-container" class="select-box-selected js-with-movables" 
                                      data-item-selector=".select-box-item" style="min-height: 150px;">
                                      <c:forEach var="route" items="${macroRouteModel.routeList}" varStatus="status">
-                                        <div class="select-box-item cm" data-id="${route.routeId}" style="min-height: 35px;">
+                                        <div class="select-box-item" data-id="${route.routeId}" style="min-height: 35px;">
                                             ${fn:escapeXml(route.routeName)}
                                             <cti:button icon="icon-cross"
                                                         renderMode="buttonImage"
@@ -98,7 +98,7 @@
                                      </c:forEach>
                                 </div>
                             </div>
-                            <div class="dn template-row select-box-item cm" data-id="0" style="min-height: 35px;">
+                            <div class="dn template-row select-box-item" data-id="0" style="min-height: 35px;">
                                 <cti:button icon="icon-cross" renderMode="buttonImage" classes="select-box-item-remove js-remove" />
                                 <div class="select-box-item-movers">
                                     <cti:button icon="icon-bullet-go-up" renderMode="buttonImage" classes="left select-box-item-up js-move-up" />
@@ -138,14 +138,10 @@
                     <cti:url var="listUrl" value="/stars/device/routes/list"/>
                     <cti:button nameKey="cancel" href="${listUrl}"/>
                 </cti:displayForPageEditModes>
-                <cti:displayForPageEditModes modes="EDIT">
-                        <cti:url var="viewUrl" value="/stars/device/routes/macroRoutes/${macroRouteModel.deviceId}" />
-                        <cti:button nameKey="cancel" href="${viewUrl}"/>
-                </cti:displayForPageEditModes>
             </div>
             
-        </form:form>
-        
+        </form:form> 
+
         <cti:includeScript link="/resources/js/pages/yukon.assets.macroRoutes.js"/>
     </cti:standardPage>
 </cti:msgScope>
