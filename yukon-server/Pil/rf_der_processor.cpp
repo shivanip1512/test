@@ -24,7 +24,7 @@ RfDerProcessor::RfDerProcessor( CtiDeviceManager & deviceManager )
 void RfDerProcessor::start()
 {
     E2eMessenger::registerDataStreamingHandler(
-        [ & ]( const E2eMessenger::Indication & msg )
+        [ this ]( const E2eMessenger::Indication & msg )
         {
             CTILOG_INFO( dout, "DER packet received for " << msg.rfnIdentifier << "\n" << msg.payload );
 
@@ -63,9 +63,9 @@ void RfDerProcessor::tick()
         }
         else
         {
-            CTILOG_WARN( dout, "Could not find device w/RfnID: " << packet.rfnIdentifier );
+            CTILOG_WARN( dout, "Device not found for RfnIdentifier: " << packet.rfnIdentifier );
 
-            notification.error = { ClientErrors::IdNotFound, "Could not find device w/RfnID: " + packet.rfnIdentifier.toString() };
+            notification.error = { ClientErrors::IdNotFound, "Device not found for RfnIdentifier: " + packet.rfnIdentifier.toString() };
         }
 
         if ( auto serializedNotification = Messaging::Serialization::serialize( notification ); ! serializedNotification.empty() )
