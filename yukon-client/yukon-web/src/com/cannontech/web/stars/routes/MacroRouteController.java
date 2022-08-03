@@ -133,7 +133,7 @@ public class MacroRouteController {
                 macroRouteModel = (MacroRouteModel<?>) model.get("macroRouteModel");
                 macroRouteModel.setDeviceId(id);
             }
-            
+            model.addAttribute("selectedRouteIds", getSelectedRouteIds(macroRouteModel.getRouteList()));
             model.addAttribute("macroRouteModel", macroRouteModel);
             return "/routes/macroRouteView.jsp";
         } catch (ApiCommunicationException e) {
@@ -141,6 +141,13 @@ public class MacroRouteController {
             flash.setError(new YukonMessageSourceResolvable(communicationKey));
             return redirectListPageLink;
         }
+    }
+    private List<Integer> getSelectedRouteIds(List<MacroRouteList> allRoutes) {
+        List<Integer> selectedRouteIds = Lists.newArrayList();
+        CollectionUtils.emptyIfNull(allRoutes).stream().forEach(route -> {
+            selectedRouteIds.add(route.getRouteId());
+        });
+        return selectedRouteIds;
     }
 
     @DeleteMapping("/{id}/delete")
