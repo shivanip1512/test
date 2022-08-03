@@ -446,6 +446,12 @@
         </property>
     </bean>
     
+    <bean name="routesPicker" parent="abstractPaoPicker" class="com.cannontech.web.picker.PaoPicker">
+        <property name="criteria">
+            <bean class="com.cannontech.web.search.lucene.criteria.RouteCriteria"/>
+        </property>
+    </bean>
+    
     <bean name="dnpRtuPicker" parent="abstractPaoPicker" class="com.cannontech.web.picker.PaoPicker">
         <property name="criteria">
             <bean class="com.cannontech.web.search.lucene.criteria.DnpRtuCriteria"/>
