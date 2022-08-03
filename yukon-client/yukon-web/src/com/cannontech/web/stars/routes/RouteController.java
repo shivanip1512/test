@@ -141,11 +141,15 @@ public class RouteController {
         }
         return null;
     }
-    
+
     private String bindAndForward(RouteBaseModel<?> communicationRoute, BindingResult result, RedirectAttributes attrs) {
         attrs.addFlashAttribute("communicationRoute", communicationRoute);
         attrs.addFlashAttribute("org.springframework.validation.BindingResult.communicationRoute", result);
-        return "redirect:/stars/device/routes/create";
+        if (communicationRoute.getDeviceId() == null) {
+            return "redirect:/stars/device/routes/create";
+        }
+        return "redirect:/stars/device/routes/" + communicationRoute.getDeviceId() + "/edit";
+    
     }
 
     @GetMapping("/{id}")

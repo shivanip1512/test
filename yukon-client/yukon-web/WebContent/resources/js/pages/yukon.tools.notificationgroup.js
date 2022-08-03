@@ -31,6 +31,18 @@ yukon.tools.notificationgroup = (function() {
             childNode.render();
         });
     },
+    
+    _deselectEmailSelection = function (node, selectedNode) {
+        if (node.data.hasOwnProperty('isEmailType') && node.data.isEmailType === false) {
+            selectedNode.emailEnabled = false;
+        }
+    },
+    
+    _deselectPhoneCallSelection = function (node, selectedNode) {
+        if (node.data.hasOwnProperty('isPhoneType') && node.data.isPhoneType === false) {
+            selectedNode.phoneCallEnabled = false;
+        }
+    },
 
     mod = {
 
@@ -177,6 +189,8 @@ yukon.tools.notificationgroup = (function() {
                         selectedCICustomers.push(companyNameSelectedNode);
                         return;
                     }
+                    companyNameSelectedNode.emailEnabled = false;
+                    companyNameSelectedNode.phoneCallEnabled = false;
                     var addCompanyNameSelectedNodeFlag = false;
                     $.each(companyNameNode.getChildren(), function (index, lastNameFirstNameNode) {
                         var lastNameFirstNameSelectedNode = _setNodeAttributes(lastNameFirstNameNode);
@@ -186,10 +200,14 @@ yukon.tools.notificationgroup = (function() {
                             addCompanyNameSelectedNodeFlag = true;
                             return;
                         }
+                        lastNameFirstNameSelectedNode.emailEnabled = false;
+                        lastNameFirstNameSelectedNode.phoneCallEnabled = false;
                         if (lastNameFirstNameNode.getSelectedNodes().length > 0) {
                             addCompanyNameSelectedNodeFlag = true;
                             $.each(lastNameFirstNameNode.getSelectedNodes(), function (index, notificationsNode) {
                                 var notificationSelectedNode = _setNodeAttributes(notificationsNode);
+                                _deselectEmailSelection(notificationsNode, notificationSelectedNode);
+                                _deselectPhoneCallSelection(notificationsNode, notificationSelectedNode);
                                 lastNameFirstNameSelectedNode.notifications.push(notificationSelectedNode);
                             });
                             companyNameSelectedNode.contacts.push(lastNameFirstNameSelectedNode);
@@ -207,9 +225,13 @@ yukon.tools.notificationgroup = (function() {
                         selectedUnassignedContact.push(selectedContactNode);
                         return;
                     }
+                    selectedContactNode.emailEnabled = false;
+                    selectedContactNode.phoneCallEnabled = false;
                     if (unassignedContactNodeName.getSelectedNodes().length > 0) {
                         $.each(unassignedContactNodeName.getSelectedNodes(), function (index, notificationNode) {
                             var selectedNotificationNode = _setNodeAttributes(notificationNode);
+                            _deselectEmailSelection(notificationNode, selectedNotificationNode);
+                            _deselectPhoneCallSelection(notificationNode, selectedNotificationNode);
                             selectedContactNode.notifications.push(selectedNotificationNode);
                         });
                         selectedUnassignedContact.push(selectedContactNode);

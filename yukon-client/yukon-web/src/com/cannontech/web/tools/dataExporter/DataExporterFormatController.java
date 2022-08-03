@@ -596,7 +596,7 @@ public class DataExporterFormatController {
         String sep = System.getProperty("file.separator");
         FileInputStream inputStream = new FileInputStream(
                 StringUtils.joinWith(sep, CtiUtilities.getDataExportTemplatesDirPath(), fileName));
-        ExportFormat exportFormat = YamlParserUtils.parseToObject(inputStream, ExportFormat.class);
+        ExportFormat exportFormat = YamlParserUtils.parseToObject(inputStream, ExportFormat.class, fileName);
         exportFormatTemplateValidator.validate(exportFormat, result);
 
         if (result.hasErrors()) {

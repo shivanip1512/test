@@ -95,7 +95,7 @@ public class ConnectionStatusEvaluatorTest {
         
         // Build the connection status info, with warning duration of 60 minutes and no CONNECTED value
         
-        CellularRelayConnectionStatusEvaluator evaluator = new CellularRelayConnectionStatusEvaluator();
+        CellularDeviceConnectionStatusEvaluator evaluator = new CellularDeviceConnectionStatusEvaluator();
         
         Map.Entry<PaoIdentifier, PointValueQualityHolder> relayConnectionStatusEntry = 
                 new AbstractMap.SimpleEntry<>(gatewayPaoId, null);
@@ -169,7 +169,7 @@ public class ConnectionStatusEvaluatorTest {
         
         // Build the connection status info, with warning duration of 60 minutes
         
-        CellularRelayConnectionStatusEvaluator evaluator = new CellularRelayConnectionStatusEvaluator();
+        CellularDeviceConnectionStatusEvaluator evaluator = new CellularDeviceConnectionStatusEvaluator();
         ReflectionTestUtils.setField(evaluator, "rphDao", mockRphDao);
         
         Map.Entry<PaoIdentifier, PointValueQualityHolder> relayConnectionStatusEntry = 
@@ -243,7 +243,7 @@ public class ConnectionStatusEvaluatorTest {
         
         // Build the connection status info, with warning duration of 60 minutes
         
-        CellularRelayConnectionStatusEvaluator evaluator = new CellularRelayConnectionStatusEvaluator();
+        CellularDeviceConnectionStatusEvaluator evaluator = new CellularDeviceConnectionStatusEvaluator();
         ReflectionTestUtils.setField(evaluator, "rphDao", mockRphDao);
         
         Map.Entry<PaoIdentifier, PointValueQualityHolder> relayConnectionStatusEntry = 
@@ -317,7 +317,7 @@ public class ConnectionStatusEvaluatorTest {
         
         // Build the connection status info, with warning duration of 60 minutes
         
-        CellularRelayConnectionStatusEvaluator evaluator = new CellularRelayConnectionStatusEvaluator();
+        CellularDeviceConnectionStatusEvaluator evaluator = new CellularDeviceConnectionStatusEvaluator();
         ReflectionTestUtils.setField(evaluator, "rphDao", mockRphDao);
         
         Map.Entry<PaoIdentifier, PointValueQualityHolder> relayConnectionStatusEntry = 
@@ -394,7 +394,7 @@ public class ConnectionStatusEvaluatorTest {
         
         // Build the connection status info, with warning duration of 60 minutes
         
-        CellularRelayConnectionStatusEvaluator evaluator = new CellularRelayConnectionStatusEvaluator();
+        CellularDeviceConnectionStatusEvaluator evaluator = new CellularDeviceConnectionStatusEvaluator();
         ReflectionTestUtils.setField(evaluator, "rphDao", mockRphDao);
         
         Map.Entry<PaoIdentifier, PointValueQualityHolder> relayConnectionStatusEntry = 

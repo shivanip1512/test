@@ -23,5 +23,7 @@ public enum MasterConfigInteger {
     EATON_CLOUD_DEVICES_PER_JOB,
     
     RUNTIME_CALC_RANGE_LIMIT_DAYS, // Number of days back to perform runtime calculation from relay data
+    
+    CAP_CONTROL_POINT_AGE, // Age in minutes at which cap control points are determined to be outdated (1 minute is automatically added to this value)
     ;
 }

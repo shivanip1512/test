@@ -51,7 +51,7 @@ public class RfnDeviceAttributeDaoImplTest {
     public void test_allMetricsMapped() throws IOException {
         ClassPathResource yukonPointMappingIcdYaml = new ClassPathResource("yukonPointMappingIcd.yaml");
 
-        PointMappingIcd icd = YamlParserUtils.parseToObject(yukonPointMappingIcdYaml.getInputStream(), PointMappingIcd.class);
+        PointMappingIcd icd = YamlParserUtils.parseToObject(yukonPointMappingIcdYaml.getInputStream(), PointMappingIcd.class, yukonPointMappingIcdYaml.getFilename());
 
         Set<Integer> baseMetricIds = rfnDeviceAttributeDao.getAttributeLookup().keySet().stream()
                 .map(metricId -> metricId % TOU_OFFSET) // Trim down to just the base metric ID
@@ -76,7 +76,7 @@ public class RfnDeviceAttributeDaoImplTest {
     public void test_allMetricDefinitionsUnique() throws IOException {
         ClassPathResource yukonPointMappingIcdYaml = new ClassPathResource("yukonPointMappingIcd.yaml");
 
-        PointMappingIcd icd = YamlParserUtils.parseToObject(yukonPointMappingIcdYaml.getInputStream(), PointMappingIcd.class);
+        PointMappingIcd icd = YamlParserUtils.parseToObject(yukonPointMappingIcdYaml.getInputStream(), PointMappingIcd.class, yukonPointMappingIcdYaml.getFilename());
 
         icd.metricIds.entrySet().stream().collect(
                 Collectors.groupingBy(e -> e.getValue().getUnit(),

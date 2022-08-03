@@ -425,7 +425,7 @@
 			<attribute name="org.eclipse.jst.component.dependency" value="../"/>
 		</attributes>
 	</classpathentry>
-	<classpathentry exported="true" kind="lib" path="/third-party/snakeyaml-1.18.2.jar" sourcepath="/third-party/linked-sources/snakeyaml-1.18.2-sources.jar"/>
+	<classpathentry exported="true" kind="lib" path="/third-party/snakeyaml-1.30.jar" sourcepath="/third-party/linked-sources/snakeyaml-1.30.jar"/>
 	<classpathentry exported="true" kind="lib" path="/third-party/easymock-4.3.jar" sourcepath="/third-party/linked-sources/easymock-4.3-sources.jar"/>
 	<classpathentry exported="true" kind="lib" path="/third-party/mockito-core-4.5.1.jar" sourcepath="/third-party/linked-sources/mockito-core-4.5.1-sources.jar"/>
 	<classpathentry exported="true" kind="lib" path="/third-party/byte-buddy-1.12.10.jar" sourcepath="/third-party/linked-sources/byte-buddy-1.12.10-sources.jar"/>
@@ -499,12 +499,42 @@
 			<attribute name="org.eclipse.jst.component.dependency" value="../"/>
 		</attributes>
 	</classpathentry>
-	<classpathentry exported="true" kind="lib" path="/third-party/guava-18.0.jar">
+	<classpathentry exported="true" kind="lib" path="/third-party/guava-31.1-jre.jar">
 		<attributes>
 			<attribute name="org.eclipse.jst.component.dependency" value="../"/>
 		</attributes>
 	</classpathentry>
-	<classpathentry exported="true" kind="lib" path="/third-party/httpclient-4.5.6.jar">
+	<classpathentry exported="true" kind="lib" path="/third-party/jsr305-3.0.2.jar">
+        <attributes>
+            <attribute name="org.eclipse.jst.component.dependency" value="../"/>
+        </attributes>
+    </classpathentry>
+    <classpathentry exported="true" kind="lib" path="/third-party/error_prone_annotations-2.11.0.jar">
+        <attributes>
+            <attribute name="org.eclipse.jst.component.dependency" value="../"/>
+        </attributes>
+    </classpathentry>
+    <classpathentry exported="true" kind="lib" path="/third-party/failureaccess-1.0.1.jar">
+        <attributes>
+            <attribute name="org.eclipse.jst.component.dependency" value="../"/>
+        </attributes>
+    </classpathentry>
+    <classpathentry exported="true" kind="lib" path="/third-party/listenablefuture-9999.0-empty-to-avoid-conflict-with-guava.jar">
+        <attributes>
+            <attribute name="org.eclipse.jst.component.dependency" value="../"/>
+        </attributes>
+    </classpathentry>
+    <classpathentry exported="true" kind="lib" path="/third-party/j2objc-annotations-1.3.jar">
+        <attributes>
+            <attribute name="org.eclipse.jst.component.dependency" value="../"/>
+        </attributes>
+    </classpathentry>.
+    <classpathentry exported="true" kind="lib" path="/third-party/checker-qual-3.12.0.jar">
+        <attributes>
+            <attribute name="org.eclipse.jst.component.dependency" value="../"/>
+        </attributes>
+    </classpathentry>
+	<classpathentry exported="true" kind="lib" path="/third-party/httpclient-4.5.13.jar">
 		<attributes>
 			<attribute name="org.eclipse.jst.component.dependency" value="../"/>
 		</attributes>

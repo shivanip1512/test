@@ -17,6 +17,7 @@ import org.apache.commons.collections4.BidiMap;
 import org.apache.commons.collections4.bidimap.DualHashBidiMap;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.logging.log4j.Logger;
+import org.joda.time.Hours;
 import org.joda.time.Instant;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.util.CollectionUtils;
@@ -98,7 +99,7 @@ public class EatonCloudDataReadServiceImpl implements EatonCloudDataReadService 
         for (PaoType type : paos.keySet()) {
             Set<BuiltInAttribute> attr = channels != null ? getAttributesForChannels(channels, type) : getAttributesForPaoType(type);
             log.info("Initiating read ({}) for type:{} devices: {} on attributes/channels:{}/{}", debugReadType, type, paos.get(type).size(),
-                   attr.size(), channels != null ? channels : "All");
+                    attr.size(), channels != null ? channels : "All");
             receivedPoints.putAll(retrievePointData(paos.get(type), attr, range, channels, throwErrorIfFailed));
         }
 
@@ -110,6 +111,20 @@ public class EatonCloudDataReadServiceImpl implements EatonCloudDataReadService 
         return receivedPoints;
     }
 
+    /**
+     * We will use the 1000 channels on any read that is within the last 4 hours of current time.
+     * Any further than that and we have to fall back to the 10 channel limit.
+     * 
+     * @return true - read in 1000 channels, false - read in 10 channels
+     */
+    private boolean readIn1kChunks(Range<Instant> queryRange) {
+        Hours hours = Hours.hoursBetween(queryRange.getMin(), queryRange.getMax());
+        if(hours.getHours() > 4) {
+            return false;
+        }
+        return configurationSource.getBoolean(MasterConfigBoolean.EATON_CLOUD_JOBS_TREND, false);
+    }
+    
     private Multimap<PaoIdentifier, PointData> retrievePointData(Iterable<LiteYukonPAObject> paos,
             Set<BuiltInAttribute> attributes, Range<Instant> queryRange, List<EatonCloudChannel> channels,
             boolean throwErrorIfFailed) {
@@ -123,8 +138,8 @@ public class EatonCloudDataReadServiceImpl implements EatonCloudDataReadService 
         Set<String> tags = channels != null ? getTagsForChannels(channels,
                 paos.iterator().next().getPaoType()) : EatonCloudChannel
                         .getTagsForAttributes(attributes);
-
-        if (configurationSource.getBoolean(MasterConfigBoolean.EATON_CLOUD_JOBS_TREND, false)) {
+        
+        if (readIn1kChunks(queryRange)) {
             List<EatonCloudTimeSeriesDeviceV1> requests = deviceIdGuid.values().stream()
                     .map(guid -> new EatonCloudTimeSeriesDeviceV1(guid, StringUtils.join(tags, ',')))
                     .collect(Collectors.toList());
@@ -143,7 +158,6 @@ public class EatonCloudDataReadServiceImpl implements EatonCloudDataReadService 
                 }
             }
         } else {
-            // Legacy, to be deleted
             List<EatonCloudTimeSeriesDeviceV1> chunkedRequests = buildRequests(deviceIdGuid.values(), tags);
             for (EatonCloudTimeSeriesDeviceV1 request : chunkedRequests) {
                 try {
