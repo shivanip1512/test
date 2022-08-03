@@ -2179,7 +2179,7 @@ void  CtiCommandParser::doParsePutConfig(const string &_CmdStr)
         {
             // putconfig der {hex-string-payload}
 
-            if( !(token = matchRegex(CmdStr, "der +[0-9a-fA-F]*")).empty() )
+            if( token = matchRegex(CmdStr, "der +[0-9a-fA-F]*"); ! token.empty() )
             {
                 CtiTokenizer cmdtok(token);
                 cmdtok();  //  go past "der"

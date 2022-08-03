@@ -12,7 +12,6 @@ class IM_EX_CTIPIL RfDerProcessor
 {
 public:
     
-//    RfDerProcessor( CtiDeviceManager& deviceManager, CtiPointManager& pointManager );
     RfDerProcessor( CtiDeviceManager & deviceManager );
 
     void tick();

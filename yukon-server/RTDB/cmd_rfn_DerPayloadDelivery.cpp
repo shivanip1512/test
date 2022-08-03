@@ -22,7 +22,7 @@ std::string RfnDerPayloadDeliveryCommand::getCommandName() const
 
 bool RfnDerPayloadDeliveryCommand::isOscoreEncrypted() const
 {
-    return true;
+    return false;
 }
 
 long RfnDerPayloadDeliveryCommand::getUserMessageId() const
@@ -77,11 +77,7 @@ RfnCommandResult RfnDerPayloadDeliveryCommand::decodeCommand( const CtiTime now,
 
 auto RfnDerPayloadDeliveryCommand::getResponseMessage() const -> std::optional<ReplyMsg>
 {
-    if ( _response )
-    {
-        return *_response;
-    }
-    return std::nullopt;
+    return _response;
 }
 
 }
