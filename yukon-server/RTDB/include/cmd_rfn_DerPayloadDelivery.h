@@ -30,7 +30,7 @@ public:
 
 private:
 
-    ReplyMsg buildReply( const YukonError_t errorCode, const std::string & errorText ) const;
+    ReplyMsg buildReply() const;
 
     Bytes getCommandHeader() override;
     Bytes getCommandData()   override;
