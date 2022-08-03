@@ -53,7 +53,7 @@ SETO-Broadcast-Request:
     priority:
       type: string
       enum: [HIGH, LOW]
-      description: Priority of the message. If omitted, this will default to NON_REAL_TIME.
+      description: Priority of the message. If omitted, this will default to LOW.
         * 'HIGH' - High priority for immediate delivery.
         * 'LOW' - Lower priority that may be delayed when the network is congested.
 
@@ -190,7 +190,7 @@ components:
     Broadcast Request Example:
       value:
         payload: 7B0D0A2020226B6579223A202276616C7565220D0A7D
-        priority: IMMEDIATE
+        priority: HIGH
 
     Multipoint Request Example:
       value:
