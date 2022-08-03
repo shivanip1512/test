@@ -1389,12 +1389,15 @@
                         <link>/stars/device/routes/{id}</link>
                         <labelArgument>${communicationRoute.deviceName}</labelArgument>
                     </page>
+                    <page name="routes.EDIT" type="BASIC" hideFavorite="true">
+                        <labelArgument>${communicationRoute.deviceName}</labelArgument>
+                    </page>
                     <page name="routes.macroRoutes.VIEW" type="DETAIL">
                         <link>/stars/device/routes/macroRoutes/{id}</link>
                         <labelArgument>${macroRouteModel.deviceName}</labelArgument>
                     </page>
-                    <page name="routes.EDIT" type="BASIC" hideFavorite="true">
-                        <labelArgument>${communicationRoute.deviceName}</labelArgument>
+                    <page name="routes.macroRoutes.EDIT" type="BASIC" hideFavorite="true">
+                        <labelArgument>${macroRouteModel.deviceName}</labelArgument>
                     </page>
                 </pages>
             </page>
