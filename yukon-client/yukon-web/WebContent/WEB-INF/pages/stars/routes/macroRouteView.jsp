@@ -77,7 +77,7 @@
                                 <div id="js-assigned-signal-transmitter-container" class="select-box-selected js-with-movables" 
                                      data-item-selector=".select-box-item" style="min-height: 150px;">
                                      <c:forEach var="route" items="${macroRouteModel.routeList}" varStatus="status">
-                                        <div class="select-box-item cm" data-id="${route.routeId}" style="min-height: 35px;">
+                                        <div class="select-box-item" data-id="${route.routeId}" style="min-height: 35px;">
                                             ${fn:escapeXml(route.routeName)}
                                             <cti:button icon="icon-cross"
                                                         renderMode="buttonImage"
@@ -98,7 +98,7 @@
                                      </c:forEach>
                                 </div>
                             </div>
-                            <div class="dn template-row select-box-item cm" data-id="0" style="min-height: 35px;">
+                            <div class="dn template-row select-box-item" data-id="0" style="min-height: 35px;">
                                 <cti:button icon="icon-cross" renderMode="buttonImage" classes="select-box-item-remove js-remove" />
                                 <div class="select-box-item-movers">
                                     <cti:button icon="icon-bullet-go-up" renderMode="buttonImage" classes="left select-box-item-up js-move-up" />
