@@ -165,6 +165,7 @@
     <entry key="yukon.web.modules.adminSetup.vendor.endpoint.CB_CD">CB_CD</entry>
     <entry key="yukon.web.modules.adminSetup.vendor.endpoint.NOT_Server">NOT_Server</entry>
     <entry key="yukon.web.modules.adminSetup.vendor.endpoint.NOT_Server_DR">NOT_Server (DR)</entry>
+    <entry key="yukon.web.modules.adminSetup.vendor.warningMessage">When changing the number of Attributes returned you should consider changing Maximum Records Returned. Please check help icon on how to recalculate Maximum Records Returned value.</entry>
     <entry key="yukon.web.modules.adminSetup.multispeak.exception">Multispeak Vendor not inserted for Company Name {0}.</entry>
 
     <!-- device group sync pages -->
