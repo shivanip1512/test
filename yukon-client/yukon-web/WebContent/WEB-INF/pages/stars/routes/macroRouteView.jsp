@@ -29,7 +29,7 @@
                                    data-ok-event="yukon:macroRoute:delete"/>
                 <d:confirm on="#js-delete" nameKey="confirmDelete" argument="${macroRouteModel.deviceName}" />
                 <cti:url var="deleteUrl" value="/stars/device/routes/macroRoutes/${macroRouteModel.deviceId}/delete"/>
-                <form:form id="delete-macroRoute-form" action="${deleteUrl}" method="delete" modelAttribute="macroRoute">
+                <form:form id="delete-macroRoute-form" action="${deleteUrl}" method="delete">
                     <cti:csrfToken/>
                 </form:form>
             </div>
@@ -71,7 +71,7 @@
                         </div>
                         <div class="column two nogutter">
                             <h3>
-                                <i:inline key="yukon.common.selected" />
+                                <i:inline key="yukon.common.assigned" />
                             </h3>
                             <div class="bordered-div" style="height: 720px;">
                                 <div id="js-assigned-signal-transmitter-container" class="select-box-selected js-with-movables" 
