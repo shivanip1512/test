@@ -138,7 +138,7 @@ IM_EX_CTIBASE INT   OverrideOutMessagePriority(CtiOutMessage *Out, INT priority)
 IM_EX_CTIBASE ULONG   BCDtoBase10(const UCHAR* buffer, ULONG len);
 IM_EX_CTIBASE ULONG   StrToUlong(UCHAR* buffer, ULONG len);
 IM_EX_CTIBASE auto    convertHexStringToBytes( std::string stringInput ) -> std::vector<unsigned char>;
-IM_EX_CTIBASE std::string   convertBytesToHexString( const std::vector<unsigned char> & bytes );
+IM_EX_CTIBASE auto    convertBytesToHexString( const std::vector<unsigned char> & bytes ) -> std::string;
 
 IM_EX_CTIBASE std::string toBase94(uint64_t input);
 

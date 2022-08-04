@@ -31,7 +31,7 @@ BOOST_AUTO_TEST_CASE( test_cmd_rfn_DerPayloadDelivery_test_1 )
     RfnDerPayloadDeliveryCommand  command( 101, 10011001, "000102030405060708090a0b0c0d0e0f" );
 
     BOOST_CHECK_EQUAL( "DER Payload Delivery Request",  command.getCommandName() );
-    BOOST_CHECK_EQUAL( true,                            command.isOscoreEncrypted() );
+    BOOST_CHECK_EQUAL( false,                           command.isOscoreEncrypted() );
     BOOST_CHECK_EQUAL( 10011001,                        command.getUserMessageId() );
 
     {

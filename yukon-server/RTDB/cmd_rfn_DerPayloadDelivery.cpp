@@ -22,7 +22,7 @@ std::string RfnDerPayloadDeliveryCommand::getCommandName() const
 
 bool RfnDerPayloadDeliveryCommand::isOscoreEncrypted() const
 {
-    return true;
+    return false;
 }
 
 long RfnDerPayloadDeliveryCommand::getUserMessageId() const
@@ -50,38 +50,36 @@ unsigned char RfnDerPayloadDeliveryCommand::getCommandCode() const
     return { };
 }
 
-RfnDerPayloadDeliveryCommand::ReplyMsg RfnDerPayloadDeliveryCommand::buildReply( const YukonError_t errorCode, const std::string & errorText ) const
+RfnDerPayloadDeliveryCommand::ReplyMsg RfnDerPayloadDeliveryCommand::buildReply() const
 {
     return
     {
         _paoID,
         _payload,
         _userMsgID,
-        Messaging::Rfn::EdgeDrError { errorCode, errorText }
+        std::nullopt
     };
 }
 
 RfnCommandResult RfnDerPayloadDeliveryCommand::error( const CtiTime now, const YukonError_t errorCode )
 {
-    _response = buildReply( errorCode, "Some kind of error..." );
+    _response = buildReply();
+
+    _response->error = { errorCode, "DER error" };
 
     return RfnIndividualCommand::error( now, errorCode );
 }
 
 RfnCommandResult RfnDerPayloadDeliveryCommand::decodeCommand( const CtiTime now, const RfnResponsePayload & response )
 {
-    _response = buildReply( YukonError_t::None, "OK" );
+    _response = buildReply();
 
     return "OK";
 }
 
 auto RfnDerPayloadDeliveryCommand::getResponseMessage() const -> std::optional<ReplyMsg>
 {
-    if ( _response )
-    {
-        return *_response;
-    }
-    return std::nullopt;
+    return _response;
 }
 
 }

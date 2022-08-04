@@ -131,6 +131,7 @@ PilServer::PilServer(CtiDeviceManager& DM, CtiPointManager& PM, CtiRouteManager&
     _schedulerThread     (WorkerThread::Function([this]{ schedulerThread();      }).name("_schedulerThread")),
     _periodicActionThread(WorkerThread::Function([this]{ periodicActionThread(); }).name("_periodicActionThread")),
     _rfDataStreamingProcessor { DM, PM },
+    _rfDerProcessor { DM },
     _rfnRequestManager { DM }
 {
     serverClosingEvent = CreateEvent(NULL, TRUE, FALSE, NULL);
@@ -171,6 +172,7 @@ int PilServer::execute()
         Messaging::Rfn::gE2eMessenger->start();
         _rfnRequestManager.start();
         _rfDataStreamingProcessor.start();
+        _rfDerProcessor.start();
 
         amq_cm::registerReplyHandler(
             in_q::RfnMeterDisconnectRequest,
@@ -2717,6 +2719,8 @@ void PilServer::periodicActionThread()
 
         {
             _rfnRequestManager.tick();
+
+            _rfDerProcessor.tick();
 
             for( auto& msg : _rfDataStreamingProcessor.tick() )
             {

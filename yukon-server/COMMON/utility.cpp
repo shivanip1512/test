@@ -646,7 +646,7 @@ auto convertHexStringToBytes( std::string stringInput ) -> std::vector<unsigned 
     return result;
 }
 
-std::string convertBytesToHexString( const std::vector<unsigned char> & bytes )
+auto convertBytesToHexString( const std::vector<unsigned char> & bytes ) -> std::string
 {
     std::string result;
 

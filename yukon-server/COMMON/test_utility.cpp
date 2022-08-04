@@ -334,9 +334,7 @@ BOOST_AUTO_TEST_CASE(test_convertBytesToHexString)
 {
     // test the empty vector produces an empty string
     {
-        std::vector<unsigned char> input;
-
-        const auto result = convertBytesToHexString( input );
+        const auto result = convertBytesToHexString( { } );
 
         BOOST_CHECK_EQUAL(   0, result.size() );
         BOOST_CHECK_EQUAL(  "", result );

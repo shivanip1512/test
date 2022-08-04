@@ -16,6 +16,7 @@
 #include "mgr_rfn_request.h"
 #include "cmd_rfn_ConfigNotification.h"
 #include "rf_data_streaming_processor.h"
+#include "rf_der_processor.h"
 
 #include <boost/thread/synchronized_value.hpp>
 
@@ -55,6 +56,7 @@ class IM_EX_CTIPIL PilServer : public CtiServer
    boost::synchronized_value<ReplyCallbacks> _replyCallbacks;
 
    RfDataStreamingProcessor _rfDataStreamingProcessor;
+   RfDerProcessor           _rfDerProcessor;
 
    typedef std::multiset<CtiRequestMsg *, std::greater<CtiMessage *> > group_queue_t;
 

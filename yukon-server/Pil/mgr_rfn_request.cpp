@@ -1208,9 +1208,7 @@ void RfnRequestManager::submitBroadcastRequest( const Messaging::Rfn::EdgeDrBroa
 
         // report back to web client that we have forwarded the request to NM.  Any responses from NM will be logged in the callbacks.
 
-        sendClientResponse( {
-           request.messageGuid,
-           EdgeDrError { ClientErrors::None, "Sending RFN broadcast request to NM" } } );  // need different error code?
+        sendClientResponse( { request.messageGuid, std::nullopt } );  // not an error
     }
     else
     {
