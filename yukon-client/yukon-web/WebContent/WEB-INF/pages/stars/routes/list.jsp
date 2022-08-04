@@ -21,7 +21,7 @@
                     </td>
                     <td>
                         <cti:url var="createMacroRoute" value="macroRoutes/create"/>
-                        <a href="${createMacroRoute}"><i:inline key=".routes.createMacroRoute.create"/></a>
+                        <a href="${createMacroRoute}"><i:inline key=".macroRoutes.createMacroRoute.create"/></a>
                     </td>
 
                 </tr>

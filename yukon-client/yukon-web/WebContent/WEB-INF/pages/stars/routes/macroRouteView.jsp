@@ -7,8 +7,8 @@
 <%@ taglib prefix="i" tagdir="/WEB-INF/tags/i18n" %>
 <%@ taglib prefix="tags" tagdir="/WEB-INF/tags"%>
 
-<cti:msgScope paths="yukon.web.modules.operator.routes">
-    <cti:standardPage module="operator" page="routes.macroRoutes.${mode}">
+<cti:msgScope paths="yukon.web.modules.operator.macroRoutes">
+    <cti:standardPage module="operator" page="macroRoutes.${mode}">
         <tags:setFormEditMode mode="${mode}"/>
 
         <!-- Actions drop-down -->

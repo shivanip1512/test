@@ -1384,7 +1384,6 @@
                 <link>/stars/device/routes/list</link>
                 <pages>
                     <page name="routes.CREATE" type="BASIC"/>
-                    <page name="routes.macroRoutes.CREATE" type="BASIC"/>
                     <page name="routes.VIEW" type="DETAIL">
                         <link>/stars/device/routes/{id}</link>
                         <labelArgument>${communicationRoute.deviceName}</labelArgument>
@@ -1392,11 +1391,12 @@
                     <page name="routes.EDIT" type="BASIC" hideFavorite="true">
                         <labelArgument>${communicationRoute.deviceName}</labelArgument>
                     </page>
-                    <page name="routes.macroRoutes.VIEW" type="DETAIL">
+                    <page name="macroRoutes.CREATE" type="BASIC"/>
+                    <page name="macroRoutes.VIEW" type="DETAIL">
                         <link>/stars/device/routes/macroRoutes/{id}</link>
                         <labelArgument>${macroRouteModel.deviceName}</labelArgument>
                     </page>
-                    <page name="routes.macroRoutes.EDIT" type="BASIC" hideFavorite="true">
+                    <page name="macroRoutes.EDIT" type="BASIC" hideFavorite="true">
                         <labelArgument>${macroRouteModel.deviceName}</labelArgument>
                     </page>
                 </pages>

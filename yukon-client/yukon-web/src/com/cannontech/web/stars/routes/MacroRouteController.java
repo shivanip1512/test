@@ -58,7 +58,7 @@ public class MacroRouteController {
 
     private static final Logger log = YukonLogManager.getLogger(MacroRouteController.class);
     private static final String communicationKey = "yukon.exception.apiCommunicationException.communicationError";
-    private static final String baseKey = "yukon.web.modules.operator.routes.macroRoutes.";
+    private static final String baseKey = "yukon.web.modules.operator.macroRoutes.";
     private static final String redirectListPageLink = "redirect:/stars/device/routes/list";
 
     private static final TypeReference<List<MacroRouteList>> routeListTargetType = new TypeReference<List<MacroRouteList>>() {
@@ -129,7 +129,7 @@ public class MacroRouteController {
             model.addAttribute("mode", PageEditMode.EDIT);
             MacroRouteModel<?> macroRouteModel = retrieveMacroRoute(userContext, request, id, url);
             if (macroRouteModel == null) {
-                flash.setError(new YukonMessageSourceResolvable(baseKey + "macroRouteModel.retrieve.error"));
+                flash.setError(new YukonMessageSourceResolvable(baseKey + "retrieve.error"));
                 return redirectListPageLink;
             } else if (model.containsAttribute("macroRouteModel")) {
                 macroRouteModel = (MacroRouteModel<?>) model.get("macroRouteModel");
@@ -190,6 +190,12 @@ public class MacroRouteController {
         try {
             macroRouteValidator.validate(macroRouteModel, result);
             if (result.hasErrors()) {
+                if (result.hasGlobalErrors()) {
+                    List<String> errors = result.getGlobalErrors().stream()
+                                                                  .map(obj -> obj.getCode())
+                                                                  .collect(Collectors.toList());
+                    flash.setError(YukonMessageSourceResolvable.createMultipleCodes(String.join(",", errors)));
+                }
                 return bindAndForward(macroRouteModel, result, redirectAttributes);
             }
             String url = null;
