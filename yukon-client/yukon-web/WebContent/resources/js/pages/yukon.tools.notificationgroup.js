@@ -46,18 +46,20 @@ yukon.tools.notificationgroup = (function() {
     
     _displaySelectedNodeCount = function () {
         $("#js-notification-tree-id").fancytree("getTree").getRootNode().visit(function (node) {
-            var count = 0;
-            var title = node.data.text;
-            if(node.getSelectedNodes().length == 1) {
-                title = title + " (" + node.getSelectedNodes().length + " " + yg.text.childSelected + ") ";
-                node.setTitle(title.italics());
-            }
-            if(node.getSelectedNodes().length > 1) {
-                title = title + " (" + node.getSelectedNodes().length + " " + yg.text.childrenSelected + ") ";
-                node.setTitle(title);
-            }
-            else {
-                node.setTitle(title);
+            if (node.isVisible()) {
+                var title = node.data.text,
+                    nodeCountSpan = $(node.span).find('.js-selected-node-count > i');
+                if (!nodeCountSpan.exists()) {
+                    $(node.span).children("span.fancytree-title").after("<span class='js-selected-node-count'><i></i></span>");
+                    nodeCountSpan = $(node.span).find(".js-selected-node-count > i");
+                }
+                if (node.getSelectedNodes().length == 1) {
+                    nodeCountSpan.text(" (" + node.getSelectedNodes().length + " " + yg.text.childSelected + ") ");
+                } else if (node.getSelectedNodes().length > 1) {
+                     nodeCountSpan.text(" (" + node.getSelectedNodes().length + " " + yg.text.childrenSelected + ") ");
+                } else {
+                     nodeCountSpan.text("");
+                }
             }
         });
     },
