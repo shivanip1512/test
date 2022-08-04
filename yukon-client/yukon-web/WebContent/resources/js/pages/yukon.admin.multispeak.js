@@ -97,7 +97,7 @@ yukon.admin.multispeak = (function() {
                 var value = $("#attributes").val();
                 if (value.length == 0 || value.length == 1 && (value.includes("PEAKDEMAND_USAGE"))) {
                     $('#vendor-js-warning').hide();
-                } else if (value.length != 0) {
+                } else {
                     $('#vendor-js-warning').show();
                     $('#vendor-js-warning').addMessage({
                         message : $('.js-vendor-warning-message').val(),
