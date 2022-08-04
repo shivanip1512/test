@@ -48,8 +48,9 @@
                 </tags:nameValueContainer2>
             </tags:sectionContainer2>
             
-            <tags:sectionContainer2 nameKey="routesAssignment">
-                <cti:displayForPageEditModes modes="EDIT,CREATE">
+            
+            <cti:displayForPageEditModes modes="EDIT,CREATE">
+                <tags:sectionContainer2 nameKey="routesAssignment">
                     <input type="hidden" name="routeListJsonString"/>
                     <div class="column-12-12 clearfix select-box bordered-div">
                         <div class="column one">
@@ -108,8 +109,11 @@
                             </div>
                         </div>
                     </div>
-                </cti:displayForPageEditModes>
-                <cti:displayForPageEditModes modes="VIEW">
+                </tags:sectionContainer2>
+            </cti:displayForPageEditModes>
+                
+            <cti:displayForPageEditModes modes="VIEW">
+                <tags:sectionContainer2 nameKey="assignedRoutes">
                     <div class="js-table-container scroll-lg">  
                         <table class="compact-results-table dashed">
                             <thead>
@@ -126,8 +130,9 @@
                             </tbody>
                         </table>
                     </div>
-                </cti:displayForPageEditModes>
-            </tags:sectionContainer2>
+                </tags:sectionContainer2>
+            </cti:displayForPageEditModes>
+            
             
             <div class="page-action-area">
                 <cti:displayForPageEditModes modes="EDIT,CREATE">

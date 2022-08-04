@@ -29,6 +29,7 @@
     <entry key="yukon.web.modules.operator.macroRoutes.EDIT.pageTitle">Macro Route: {0}</entry>
     <entry key="yukon.web.modules.operator.macroRoutes.EDIT.pageHeading">Edit Macro Route: {0}</entry>
     <entry key="yukon.web.modules.operator.macroRoutes.EDIT.crumbTitle">Edit</entry>
-    <entry key="yukon.web.modules.operator.macroRoutes.routesAssignment.title">Assigned Routes</entry>
+    <entry key="yukon.web.modules.operator.macroRoutes.assignedRoutes.title">Assigned Routes</entry>
+    <entry key="yukon.web.modules.operator.macroRoutes.routesAssignment.title">Routes Assignment</entry>
     <entry key="yukon.web.modules.operator.macroRoutes.routesAssignment.empty.error">Cannot create macro route without assigning a route. Please assign at least 1 route.</entry>
 </properties>
