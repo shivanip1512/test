@@ -7,7 +7,6 @@
 <%@ taglib prefix="fn" uri="http://java.sun.com/jsp/jstl/functions" %>
 <%@ taglib prefix="form" uri="http://www.springframework.org/tags/form" %>
 <%@ taglib prefix="i" tagdir="/WEB-INF/tags/i18n"%>
-<%@ taglib prefix="spring" uri="http://www.springframework.org/tags" %>
 <%@ taglib prefix="tags" tagdir="/WEB-INF/tags"%>
 
 <cti:standardPage module="support" page="eventViewer.byCategory">
@@ -52,33 +51,7 @@ $(function () {
                 </tags:nameValue2>
                 
                 <tags:nameValue2 nameKey=".dateRange">
-                    <span class="dateRangeInputField">
-                        <spring:bind path="startDate">
-                            <c:if test="${status.error}">
-                                <c:set var="startCssClass">error</c:set>
-                                <c:set var="startWrapperClass">date-time-error</c:set>
-                            </c:if>
-                        </spring:bind>
-                        <spring:bind path="stopDate">
-                            <c:if test="${status.error}">
-                                <c:set var="stopCssClass">error</c:set>
-                                <c:set var="stopWrapperClass">date-time-error</c:set>
-                            </c:if>
-                        </spring:bind>
-                        <spring:bind path="startDate">
-                            <dt:dateRange startPath="startDate" endPath="stopDate" hideErrors="true" 
-                                startCssClass="${startCssClass}" startWrapperClass="${startWrapperClass}"
-                                endCssClass="${stopCssClass}" endWrapperClass="${stopWrapperClass}"/>
-                        </spring:bind>
-                        <span class="fl" style="width:170px;min-height:18px">
-                            <spring:bind path="startDate">
-                                <c:if test="${status.error}"><form:errors path="startDate" cssClass="error" /></c:if>
-                            </spring:bind>
-                        </span>
-                        <spring:bind path="stopDate">
-                            <c:if test="${status.error}"><form:errors path="stopDate" cssClass="error" /></c:if>
-                        </spring:bind>                        
-                    </span>
+                   <tags:eventDateRangeInput startDatePath="startDate" stopDatePath="stopDate"></tags:eventDateRangeInput>
                 </tags:nameValue2>
                 
             </tags:nameValueContainer2>
