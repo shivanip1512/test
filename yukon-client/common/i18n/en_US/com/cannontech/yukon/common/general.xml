@@ -57,6 +57,8 @@
 <entry key="yukon.common.cancel">Cancel</entry>
 <entry key="yukon.common.cancelChanges">Cancel changes</entry>
 <entry key="yukon.common.celsius">°C</entry>
+<entry key="yukon.common.childSelected">child selected</entry>
+<entry key="yukon.common.childrenSelected">children selected</entry>
 <entry key="yukon.common.choose">Choose</entry>
 <entry key="yukon.common.chooseAccountNumbers">Choose Account Numbers</entry>
 <entry key="yukon.common.chooseControlAreas">Choose Control Areas</entry>

@@ -43,6 +43,37 @@ yukon.tools.notificationgroup = (function() {
             selectedNode.phoneCallEnabled = false;
         }
     },
+    
+    _displaySelectedNodeCount = function () {
+        $("#js-notification-tree-id").fancytree("getTree").getRootNode().visit(function (node) {
+            if (node.isVisible()) {
+                var title = node.data.text,
+                    nodeCountSpan = $(node.span).find('.js-selected-node-count > i');
+                if (!nodeCountSpan.exists()) {
+                    $(node.span).children("span.fancytree-title").after("<span class='js-selected-node-count'><i></i></span>");
+                    nodeCountSpan = $(node.span).find(".js-selected-node-count > i");
+                }
+                if (node.getSelectedNodes().length == 1) {
+                    nodeCountSpan.text(" (" + node.getSelectedNodes().length + " " + yg.text.childSelected + ") ");
+                } else if (node.getSelectedNodes().length > 1) {
+                     nodeCountSpan.text(" (" + node.getSelectedNodes().length + " " + yg.text.childrenSelected + ") ");
+                } else {
+                     nodeCountSpan.text("");
+                }
+            }
+        });
+    },
+    
+    /* Set the title of the Notification Settings container with the name of the node clicked */
+    _displayNotificationSettingsContainer = function (node) {
+        var notificationSettingContainer = $("#js-notification-settings");
+        notificationSettingContainer.find(".js-box-container-title").text(node.data.text + " " + yg.text.settings);
+        notificationSettingContainer.removeClass("dn");
+        if (!notificationSettingContainer.data('nodekey')) {
+            notificationSettingContainer.attr('data-nodekey', '');
+        }
+        notificationSettingContainer.data('nodekey', node.key);
+    },
 
     mod = {
 
@@ -81,6 +112,8 @@ yukon.tools.notificationgroup = (function() {
                         _disableChildNodes(treeNode);
                     }
                 });
+                
+                _displaySelectedNodeCount();
             }
             
             
@@ -101,7 +134,7 @@ yukon.tools.notificationgroup = (function() {
                  if (isUnselectable) {
                     node.data.isEmailEnabled = false;
                     node.data.isPhoneCallEnabled = false;
-                    
+                    node.toggleExpanded();
                     $.each(notificationSettingsCheckboxes, function (index, checkbox) {
                         if (isUnselectable) {
                             $(checkbox).attr('disabled', true);
@@ -111,20 +144,12 @@ yukon.tools.notificationgroup = (function() {
                     });
                     isEmailEnabledBtnGrp.prop("checked", node.data.isEmailEnabled);
                     isPhoneCallEnabledBtnGrp.prop("checked", node.data.isPhoneCallEnabled);
+                    _displayNotificationSettingsContainer(node);
                     return;
                 }
 
-                /**
-                 * Set the title of the Notification Settings container with the name of the node clicked and display
-                 * appropriate value of the send email and make phone call toggle buttons.
-                 * */
-                notificationSettingContainer.find(".js-box-container-title").text(data.node.title + " " + yg.text.settings);
-                notificationSettingContainer.removeClass("dn");
-                if (!notificationSettingContainer.data('nodekey')) {
-                    notificationSettingContainer.attr('data-nodekey', '');
-                }
-                notificationSettingContainer.data('nodekey', node.key);
-                
+                // Display appropriate value of the send email and make phone call toggle buttons.
+                _displayNotificationSettingsContainer(node);
                 isEmailEnabledBtnGrp.prop("checked", node.data.isEmailEnabled);
                 if (node.data.hasOwnProperty('isEmailType') && node.data.isEmailType === true) {
                     isEmailEnabledBtnGrp.removeAttr("disabled");
@@ -153,6 +178,8 @@ yukon.tools.notificationgroup = (function() {
                     thisNode.toggleClass("disabled-look", isSelected);
                     thisNode.render();
                 });
+                
+                _displaySelectedNodeCount();
             });
             
             /**
