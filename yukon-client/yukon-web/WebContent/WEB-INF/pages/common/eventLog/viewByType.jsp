@@ -75,7 +75,7 @@
                     <tags:nameValueContainer2 >
         
                         <tags:nameValue2 nameKey=".eventLogDateRange">
-                           <tags:eventDateRangeInput startDatePath="startDate" stopDatePath="stopDate"></tags:eventDateRangeInput>
+                            <tags:eventDateRangeInput startDatePath="startDate" stopDatePath="stopDate"></tags:eventDateRangeInput>
                         </tags:nameValue2>
         
                         <c:forEach var="eventLogFilter" items="${filter.eventLogFilters}" varStatus="status">
