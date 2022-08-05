@@ -7,8 +7,8 @@
 <%@ taglib prefix="i" tagdir="/WEB-INF/tags/i18n" %>
 <%@ taglib prefix="tags" tagdir="/WEB-INF/tags"%>
 
-<cti:msgScope paths="yukon.web.modules.operator.routes">
-    <cti:standardPage module="operator" page="routes.macroRoutes.${mode}">
+<cti:msgScope paths="yukon.web.modules.operator.macroRoutes">
+    <cti:standardPage module="operator" page="macroRoutes.${mode}">
         <tags:setFormEditMode mode="${mode}"/>
 
         <!-- Actions drop-down -->
@@ -29,7 +29,7 @@
                                    data-ok-event="yukon:macroRoute:delete"/>
                 <d:confirm on="#js-delete" nameKey="confirmDelete" argument="${macroRouteModel.deviceName}" />
                 <cti:url var="deleteUrl" value="/stars/device/routes/macroRoutes/${macroRouteModel.deviceId}/delete"/>
-                <form:form id="delete-macroRoute-form" action="${deleteUrl}" method="delete" modelAttribute="macroRoute">
+                <form:form id="delete-macroRoute-form" action="${deleteUrl}" method="delete">
                     <cti:csrfToken/>
                 </form:form>
             </div>
@@ -48,8 +48,9 @@
                 </tags:nameValueContainer2>
             </tags:sectionContainer2>
             
-            <tags:sectionContainer2 nameKey="routesAssignment">
-                <cti:displayForPageEditModes modes="EDIT,CREATE">
+            
+            <cti:displayForPageEditModes modes="EDIT,CREATE">
+                <tags:sectionContainer2 nameKey="routesAssignment">
                     <input type="hidden" name="routeListJsonString"/>
                     <div class="column-12-12 clearfix select-box bordered-div">
                         <div class="column one">
@@ -71,7 +72,7 @@
                         </div>
                         <div class="column two nogutter">
                             <h3>
-                                <i:inline key="yukon.common.selected" />
+                                <i:inline key="yukon.common.assigned" />
                             </h3>
                             <div class="bordered-div" style="height: 720px;">
                                 <div id="js-assigned-signal-transmitter-container" class="select-box-selected js-with-movables" 
@@ -108,8 +109,11 @@
                             </div>
                         </div>
                     </div>
-                </cti:displayForPageEditModes>
-                <cti:displayForPageEditModes modes="VIEW">
+                </tags:sectionContainer2>
+            </cti:displayForPageEditModes>
+                
+            <cti:displayForPageEditModes modes="VIEW">
+                <tags:sectionContainer2 nameKey="assignedRoutes">
                     <div class="js-table-container scroll-lg">  
                         <table class="compact-results-table dashed">
                             <thead>
@@ -126,8 +130,9 @@
                             </tbody>
                         </table>
                     </div>
-                </cti:displayForPageEditModes>
-            </tags:sectionContainer2>
+                </tags:sectionContainer2>
+            </cti:displayForPageEditModes>
+            
             
             <div class="page-action-area">
                 <cti:displayForPageEditModes modes="EDIT,CREATE">
