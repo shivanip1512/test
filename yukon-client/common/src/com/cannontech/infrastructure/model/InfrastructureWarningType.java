@@ -12,7 +12,7 @@ public enum InfrastructureWarningType implements DisplayableEnum {
     GATEWAY_CONNECTED_NODES("Gateway connected nodes"),
     GATEWAY_DATA_STREAMING_LOAD("Gateway data streaming load"),
     GATEWAY_READY_NODES("Gateway ready nodes"),
-    RELAY_OUTAGE("Relay outage"),
+    INFRASTRUCTURE_OUTAGE("Infrastructure outage"),
     CELLULAR_DEVICE_CONNECTION_STATUS("Cellular Device Connection Status"),
     CELLULAR_RELAY_DESCENDANT_COUNT("Cellular Relay Descendant Count"),
     CELLULAR_METER_DESCENDANT_COUNT("Cellular Meter Descendant Count"),
@@ -26,7 +26,7 @@ public enum InfrastructureWarningType implements DisplayableEnum {
     GATEWAY_NODE_COUNT_EXCEEDED("Gateway node count exceeded"),
     GATEWAY_UPS_BATTERY_VOLTAGE_LOW("Gateway UPS battery voltage low"),
     GATEWAY_CERT_EXPIRATION("Gateway certificate expiration"),
-    GATEWAY_HIGH_DISK_USAGE("Gateway high risk usage"),
+    GATEWAY_HIGH_DISK_USAGE("Gateway high disk usage"),
     GATEWAY_RTC_BATTERY_FAILURE("Gateway RTC battery failure"),
     GATEWAY_AC_POWER_FAILURE("Gateway AC power failure"),
     ;
