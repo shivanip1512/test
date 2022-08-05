@@ -18,6 +18,10 @@
             <c:url value="/multispeak/setup/home" />
         </cti:linkTab>
 
+        <cti:msg2 key=".warningMessage" var="vendorWarningMessage"/>
+        <input type="hidden" class="js-vendor-warning-message" value="${vendorWarningMessage}"/>
+        <div id="vendor-js-warning" class="MT10"></div>
+
         <cti:linkTab tabId="vendorTab" selectorKey="yukon.web.modules.adminSetup.vendor.tab.title"
             initiallySelected="${true}">
             <c:url value="/multispeak/setup/vendorHome" />
