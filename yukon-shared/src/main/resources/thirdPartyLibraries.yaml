@@ -6505,16 +6505,16 @@ C++ :
     
   - project : OpenSSL
     path : OPENSSL
-    version : 1.1.1m
+    version : 1.1.1q
     project URL : "https://www.openssl.org/"
     license : Apache 2.0
     license URLs : "https://github.com/openssl/openssl/blob/e216bf9d7ca761718f34e8b3094fcb32c7a143e4/LICENSE"
-    md5 : 67e2804b6d9982bd67d1c5c7caee1edb
-    sha1 : aa2c1e4f559a985e871512b0a0db9c1fd74bfc56
+    md5 : 379d62641c2be06c64ef4eaab37c2059
+    sha1 : 2425badca998627873b7b4f2441ea85bda66a274
     fileCount : 121
-    totalSize : 11133713
-    updated : 2022-01-24
-    jira : YUK-25001
+    totalSize : 11159018 
+    updated : 2022-08-02
+    jira : YUK-26488
     notes : 
     
   - project : Eaton Remote Meter Programming Converter
