@@ -51,9 +51,7 @@ $(function () {
                 </tags:nameValue2>
                 
                 <tags:nameValue2 nameKey=".dateRange">
-                    <span class="dateRangeInputField">
-                        <dt:dateRange startPath="startDate" endPath="stopDate" />
-                    </span>
+                    <tags:eventDateRangeInput startDatePath="startDate" stopDatePath="stopDate"></tags:eventDateRangeInput>
                 </tags:nameValue2>
                 
             </tags:nameValueContainer2>
