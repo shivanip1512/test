@@ -12,9 +12,12 @@ public class EdgeDrUnicastResponseSerializer extends SimpleThriftSerializer impl
         
         var thriftMessage = new com.cannontech.messaging.serialization.thrift.generated.EdgeDrUnicastResponse();
         deserialize(msgBytes, thriftMessage);
-        
-        EdgeDrError error = new EdgeDrError(thriftMessage.getError().getErrorType(), 
+
+        EdgeDrError error = null;
+        if(thriftMessage.isSetError()) {
+                    error = new EdgeDrError(thriftMessage.getError().getErrorType(), 
                                             thriftMessage.getError().getErrorMessage());
+        }
         EdgeDrUnicastResponse response = new EdgeDrUnicastResponse(thriftMessage.getMessageGuid(), thriftMessage.getPaoToE2eId(), error);
         
         return response;
