@@ -305,7 +305,7 @@ public class ComprehensiveMapController {
         headerRow[4] = accessor.getMessage(baseKey + "location.latitude");
         headerRow[5] = accessor.getMessage(baseKey + "location.longitude");
         headerRow[6] = accessor.getMessage(baseKey + "primaryGateway");
-        headerRow[7] = accessor.getMessage(baseKey + "status");
+        headerRow[7] = accessor.getMessage(baseKey + "commStatus");
         headerRow[8] = accessor.getMessage(baseKey + "macAddress");
         headerRow[9] = accessor.getMessage(baseKey + "nodeSN");
         headerRow[10] = accessor.getMessage("yukon.web.modules.operator.comprehensiveMap.colorCodeBy.LINK_QUALITY");
