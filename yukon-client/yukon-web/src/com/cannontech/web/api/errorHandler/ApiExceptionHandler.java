@@ -538,19 +538,40 @@ public class ApiExceptionHandler extends ResponseEntityExceptionHandler {
     }
     
     /**
-     * Handle Method when authentication token in not passed.
+     * Handle Method when authentication token is not passed.
      */
-    public static void authorizationRequired(HttpServletRequest request, HttpServletResponse response, String uniqueKey)
+    public static void authenticationRequired(HttpServletRequest request, HttpServletResponse response, String uniqueKey)
             throws IOException {
-        String message = String.format("Authorization token not found");
+        
+        String message = "Authorization token not found";
+        ApiErrorDetails errorType = ApiErrorDetails.AUTHENTICATION_REQUIRED;
+        HttpStatus status = HttpStatus.UNAUTHORIZED;
+        writeErrorToOutput(request, response, uniqueKey, message, errorType, status);
+    }
+    
+    /**
+     * Handle Method when user is not authorized for the endpoint.
+     */
+    public static void notAuthorized(HttpServletRequest request, HttpServletResponse response, String uniqueKey)
+            throws IOException {
+        
+        String message = "User is not authorized to access this endpoint.";
+        ApiErrorDetails errorType = ApiErrorDetails.NOT_AUTHORIZED;
+        HttpStatus status = HttpStatus.FORBIDDEN;
+        writeErrorToOutput(request, response, uniqueKey, message, errorType, status);
+    }
+    
+    private static void writeErrorToOutput(HttpServletRequest request, HttpServletResponse response, String uniqueKey, 
+            String message, ApiErrorDetails errorType, HttpStatus status) throws IOException {
+        
         if (isNewApiErrorSupported(new ServletWebRequest(request))) {
-            final ApiErrorModel apiError = new ApiErrorModel(ApiErrorDetails.AUTHENTICATION_REQUIRED,
+            final ApiErrorModel apiError = new ApiErrorModel(errorType,
                     ServletUtil.getFullURL(request),
                     uniqueKey);
-            parseToJson(response, apiError, HttpStatus.UNAUTHORIZED);
+            parseToJson(response, apiError, status);
         } else {
-            final ApiError apiError = new ApiError(HttpStatus.UNAUTHORIZED.value(), message, uniqueKey);
-            parseToJson(response, apiError, HttpStatus.UNAUTHORIZED);
+            final ApiError apiError = new ApiError(status.value(), message, uniqueKey);
+            parseToJson(response, apiError, status);
         }
     }
 
