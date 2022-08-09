@@ -69,9 +69,8 @@ public class DerEdgeCommunicationServiceImpl implements DerEdgeCommunicationServ
     public String sendUnicastRequest(YukonPao pao, byte[] payload, EdgeUnicastPriority queuePriority, 
             EdgeUnicastPriority networkPriority, YukonUserContext userContext) throws EdgeDrCommunicationException {
         
-        //TODO later - clean up this logging
         log.info("Processing DER Edge Unicast Request - Pao: {}, queue priority: {}, net priority: {}, payload: {}", 
-                pao, queuePriority, networkPriority, Arrays.toString(payload));
+                pao, queuePriority, networkPriority, new LazyPrintingPayload(payload));
 
         final String messageGuid = UUID.randomUUID().toString();
 
@@ -110,9 +109,8 @@ public class DerEdgeCommunicationServiceImpl implements DerEdgeCommunicationServ
                                                .map(device -> device.getPaoIdentifier().getPaoId())
                                                .collect(Collectors.toList());
         
-        //TODO later - clean up this logging
-        log.info("Processing DER Edge Unicast Request - Paos: {}, queue priority: {}, net priority: {}, payload: {}", 
-                paoIds, queuePriority, networkPriority, Arrays.toString(payload));
+        log.info("Processing DER Edge Multi-Unicast Request - Paos: {}, queue priority: {}, net priority: {}, payload: {}", 
+                paoIds, queuePriority, networkPriority, new LazyPrintingPayload(payload));
 
         final String messageGuid = UUID.randomUUID().toString();
 
@@ -142,9 +140,8 @@ public class DerEdgeCommunicationServiceImpl implements DerEdgeCommunicationServ
     @Override
     public void sendBroadcastRequest(byte[] payload, EdgeBroadcastMessagePriority priority, YukonUserContext userContext) throws EdgeDrCommunicationException {
 
-        // TODO later - clean up this logging
         log.info("Processing DER Edge Broadcast Request - Payload: {}, Priority: {} ({})", 
-                 Arrays.toString(payload), priority, priority.getThriftEquivalent());
+                 new LazyPrintingPayload(payload), priority, priority.getThriftEquivalent());
 
         final String messageGuid = UUID.randomUUID().toString();
 
@@ -178,6 +175,22 @@ public class DerEdgeCommunicationServiceImpl implements DerEdgeCommunicationServ
             log.debug("Caching response completed");
         } catch (Exception e) {
             throw new EdgeDrCommunicationException("An unexpected error occurred while caching the response", e);
+        }
+    }
+    
+    /**
+     * Utility wrapper to defer the Arrays.toString() call in logging parameters and appease SonarLint. 
+     */
+    private static final class LazyPrintingPayload {
+        private byte[] payload;
+        
+        public LazyPrintingPayload(byte[] payload) {
+            this.payload = payload;
+        }
+        
+        @Override
+        public String toString() {
+            return Arrays.toString(payload);
         }
     }
 
