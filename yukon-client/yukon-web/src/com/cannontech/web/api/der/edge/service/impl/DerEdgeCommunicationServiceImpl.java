@@ -109,7 +109,7 @@ public class DerEdgeCommunicationServiceImpl implements DerEdgeCommunicationServ
                                                .map(device -> device.getPaoIdentifier().getPaoId())
                                                .collect(Collectors.toList());
         
-        log.info("Processing DER Edge Unicast Request - Paos: {}, queue priority: {}, net priority: {}, payload: {}", 
+        log.info("Processing DER Edge Multi-Unicast Request - Paos: {}, queue priority: {}, net priority: {}, payload: {}", 
                 paoIds, queuePriority, networkPriority, new LazyPrintingPayload(payload));
 
         final String messageGuid = UUID.randomUUID().toString();
