@@ -97,7 +97,7 @@ public class DerEdgeCommunicationServiceImpl implements DerEdgeCommunicationServ
             return messageGuid;
 
         } catch (InterruptedException | ExecutionException | TimeoutException e) {
-            throw new EdgeDrCommunicationException("An unexpected error occurred while sending a broadcast message.", e);
+            throw new EdgeDrCommunicationException("An unexpected error occurred while sending a Unicast message.", e);
         }
     }
 
@@ -165,7 +165,7 @@ public class DerEdgeCommunicationServiceImpl implements DerEdgeCommunicationServ
             }
 
         } catch (InterruptedException | ExecutionException | TimeoutException e) {
-            throw new EdgeDrCommunicationException("An unexpected error occurred while sending a broadcast message.", e);
+            throw new EdgeDrCommunicationException("An unexpected error occurred while sending a Broadcast message.", e);
         }
     }
 
