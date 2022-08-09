@@ -9,6 +9,7 @@ import com.cannontech.common.device.terminal.model.SNPPTerminal;
 import com.cannontech.common.device.terminal.model.TNPPTerminal;
 import com.cannontech.common.device.terminal.model.TerminalBase;
 import com.cannontech.common.device.terminal.model.WCTPTerminal;
+import com.cannontech.common.pao.PaoUtils;
 import com.cannontech.common.validator.SimpleValidator;
 import com.cannontech.common.validator.YukonValidationHelper;
 import com.cannontech.common.validator.YukonValidationUtils;
@@ -31,14 +32,21 @@ public class SignalTransmitterValidator<T extends TerminalBase<?>> extends Simpl
     protected void doValidation(T terminalBase, Errors errors) {
         String paoId = terminalBase.getId() != null ? terminalBase.getId().toString() : null;
 
+        // Validate Name
+        yukonValidationHelper.checkIfFieldRequired("name", errors, terminalBase.getName(),
+                yukonValidationHelper.getMessage(key + ".name"));
+        if (!PaoUtils.isValidPaoName(terminalBase.getName())) {
+            errors.rejectValue("name", "yukon.web.error.paoName.containsIllegalChars");
+        }
+
         // Validate Type
         yukonValidationHelper.checkIfFieldRequired("type", errors, terminalBase.getType(),
                 yukonValidationHelper.getMessage(key + ".type"));
 
-        // Validate Name
-        if (!errors.hasFieldErrors("type")) {
-        yukonValidationHelper.validatePaoName(terminalBase.getName(), terminalBase.getType(), errors,
-                yukonValidationHelper.getMessage("yukon.common.name"), paoId, "name");
+        // Validate Pao Name
+        if (!errors.hasFieldErrors("type") && !errors.hasFieldErrors("name")) {
+            yukonValidationHelper.validatePaoName(terminalBase.getName(), terminalBase.getType(), errors,
+                    yukonValidationHelper.getMessage("yukon.common.name"), paoId, "name");
         }
 
         // validate commChannel
