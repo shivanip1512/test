@@ -83,7 +83,7 @@
                             </td>
                             <c:choose>
                                 <c:when test="${identifierFieldsMap[field]}">
-                                    <td style="text-align:center;"><cti:icon icon="icon-check"/></td>
+                                    <td style="text-align:center;"><cti:icon icon="icon-accept"/></td>
                                 </c:when>
                                 <c:otherwise>
                                     <td></td>
