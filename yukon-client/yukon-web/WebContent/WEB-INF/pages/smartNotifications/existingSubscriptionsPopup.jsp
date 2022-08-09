@@ -94,9 +94,14 @@
             <cti:url var="createUrl" value="/notifications/subscription/popup/${type}">
                 <cti:param name="monitorId" value="${monitorId}"/>
             </cti:url>
-            <div id="create-popup-${type}" data-dialog class="dn js-smart-notifications-popup"
-                data-event="yukon:notifications:save" data-title="<cti:msg2 key=".createPopup.title"/>"
-                data-url="${createUrl}" data-load-event="yukon:notifications:load" data-width="600"></div>
+            <cti:msg var="helpText" key="yukon.web.modules.smartNotifications.popup.helpText"/>
+            <div id="create-popup-${type}" 
+                 data-dialog class="dn js-smart-notifications-popup"
+                data-event="yukon:notifications:save" 
+                data-title="<cti:msg2 key=".createPopup.title"/>"
+                data-url="${createUrl}" data-load-event="yukon:notifications:load" 
+                data-width="600"
+                data-help-text="${helpText}"></div>
             <cti:button icon="icon-add" data-popup="#create-popup-${type}" nameKey="add"/>
         </div>
     
