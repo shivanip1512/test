@@ -18,6 +18,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.ModelMap;
+import org.springframework.validation.BindException;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -273,9 +274,13 @@ public class NotificationGroupController {
             }
 
             if (apiResponse.getStatusCode() == HttpStatus.UNPROCESSABLE_ENTITY) {
-                flash.setError(new YukonMessageSourceResolvable("yukon.web.error.genericMainMessage"));
-                log.error("Error saving notification group");
-                log.error(JsonUtils.beautifyJson(JsonUtils.toJson(apiResponse.getBody())));
+                BindException error = new BindException(notificationGroup, "notificationGroup");
+                result = helper.populateBindingErrorForApiErrorModel(result, error, apiResponse, "yukon.web.error.");
+                if(!result.hasErrors()) {
+                    flash.setError(new YukonMessageSourceResolvable("yukon.web.error.genericMainMessage"));
+                    log.error("Error saving notification group");
+                    log.error(JsonUtils.beautifyJson(JsonUtils.toJson(apiResponse.getBody())));
+                }
                 return bindAndForward(notificationGroup, result, redirectAttributes);
             }
 
