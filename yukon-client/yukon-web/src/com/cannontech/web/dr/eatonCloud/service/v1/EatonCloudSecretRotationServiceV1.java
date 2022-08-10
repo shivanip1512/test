@@ -19,6 +19,19 @@ public interface EatonCloudSecretRotationServiceV1 {
      * @return new expiry time for the rotated secret
      * @throws EatonCloudCommunicationExceptionV1
      */
-
     Instant rotateSecret(int secretNumber, LiteYukonUser user);
+    
+    /**
+     * Returns true if a secret rotation is allowed at the current time. Rotating secrets too often can result in rate limit errors.
+     * @param secretNumber the secret number that you are checking
+     * @return true if a secret rotation can be performed now, false if a secret rotation should wait
+     */
+    Boolean secretRotationAllowed(int secretNumber);
+    
+    /**
+     * Returns the time that the next secret rotation will be allowed at. Will not persist properly across restarts so DO NOT TRY AND INFER THE TIME OF THE LAST ROTATION FROM THIS. 
+     * @param secretNumber The secret number that you want to know the next allowed time of rotation for
+     * @return An instant with the time that the next rotation will be allowed at. 
+     */
+    Instant timeNextRotationAllowed(int secretNumber);
 }
