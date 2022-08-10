@@ -102,6 +102,7 @@
                 { "metricId" : 185, "attributeMagnitude" : 3, "attribute" : "SUM_PEAK_KVAR_FROZEN" },
                 
                 { "metricId" : 194, "attribute" : "SUM_KW" },
+                { "metricId" : 195, "attribute" : "NET_PEAK_DEMAND" },
                 
                 { "metricId" : 199, "attribute" : "SUM_KVAR" },
 

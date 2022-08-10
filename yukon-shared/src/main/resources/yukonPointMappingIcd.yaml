@@ -1,4 +1,4 @@
-﻿Meter models:
+﻿﻿Meter models:
     Itron Centron:
         - &c1sx ITRN C1SX
         - &c2sx ITRN C2SX
@@ -1061,7 +1061,7 @@ RFN-500 Node in Landis & Gyr S4e and S4x:
     - Coincident Power Factor:                    { Unit: *PF,    Modifiers: [ *Q1, *Q2, *Q3, *Q4, *Coin5                            ], Models: *ADTR-RDTR-650 }
     - Previous Peak Total watts:                  { Unit: *W,     Modifiers: [ *Q1, *Q2, *Q3, *Q4, *Max, *Prev                       ], Models: *ADTR-RDTR-650, Mapped: false }
     - Time of Previous Peak Total watts:          { Unit: *s,     Modifiers: [ *Coin1, *Prev                                         ], Models: *ADTR-RDTR-650 }
-    - Peak Net watts:                             { Unit: *W,     Modifiers: [ *Q1, *Q2, *Q3, *Q4, *Max, *Net                        ], Models: *____-____-650 }
+    - Peak Net watts:                             { Unit: *W,     Modifiers: [ *Q1, *Q2, *Q3, *Q4, *Max, *Net                        ], Models: *ADTR-RDTR-650 }
     - Time of Peak Net watts:                     { Unit: *s,     Modifiers: [ *Coin1                                                ], Models: *____-____-650 }
     - Cumulative Peak Net watts:                  { Unit: *W,     Modifiers: [ *Q1, *Q2, *Q3, *Q4, *Max, *Net, *Coin2, *Cuml         ], Models: *____-____-650, Mapped: false }
     - Continuous Cumulative Peak Net watts:       { Unit: *W,     Modifiers: [ *Q1, *Q2, *Q3, *Q4, *Max, *Net, *Coin3, *Cont         ], Models: *____-____-650, Mapped: false }
@@ -1161,7 +1161,7 @@ RFN-500 Node in Landis & Gyr S4e and S4x:
     - Power Factor at Peak Total watts:           { Unit: *PF,    Modifiers: [ *Q1, *Q2, *Q3, *Q4, *RateA, *Coin4                    ], Models: *____-____-650 }
     - Previous Peak Total watts:                  { Unit: *W,     Modifiers: [ *Q1, *Q2, *Q3, *Q4, *Max, *RateA, *Prev               ], Models: *____-____-650, Mapped: false }
     - Time of Previous Peak Total watts:          { Unit: *s,     Modifiers: [ *RateA, *Coin1, *Prev                                 ], Models: *____-____-650 }
-    - Peak Net watts:                             { Unit: *W,     Modifiers: [ *Q1, *Q2, *Q3, *Q4, *Max, *Net, *RateA                ], Models: *____-____-650 }
+    - Peak Net watts:                             { Unit: *W,     Modifiers: [ *Q1, *Q2, *Q3, *Q4, *Max, *Net, *RateA                ], Models: *ADTR-RDTR-650 }
     - Time of Peak Net watts:                     { Unit: *s,     Modifiers: [ *RateA, *Coin1                                        ], Models: *____-____-650 }
     - Cumulative Peak Net watts:                  { Unit: *W,     Modifiers: [ *Q1, *Q2, *Q3, *Q4, *Max, *Net, *RateA, *Coin2, *Cuml ], Models: *____-____-650, Mapped: false }
     - Continuous Cumulative Peak Net watts:       { Unit: *W,     Modifiers: [ *Q1, *Q2, *Q3, *Q4, *Max, *Net, *RateA, *Coin3, *Cont ], Models: *____-____-650, Mapped: false }
@@ -1259,7 +1259,7 @@ RFN-500 Node in Landis & Gyr S4e and S4x:
     - Power Factor at Peak Total watts:           { Unit: *PF,    Modifiers: [ *Q1, *Q2, *Q3, *Q4, *RateB, *Coin4                    ], Models: *____-____-650 }
     - Previous Peak Total watts:                  { Unit: *W,     Modifiers: [ *Q1, *Q2, *Q3, *Q4, *Max, *RateB, *Prev               ], Models: *____-____-650, Mapped: false }
     - Time of Previous Peak Total watts:          { Unit: *s,     Modifiers: [ *RateB, *Coin1, *Prev                                 ], Models: *____-____-650 }
-    - Peak Net watts:                             { Unit: *W,     Modifiers: [ *Q1, *Q2, *Q3, *Q4, *Max, *Net, *RateB                ], Models: *____-____-650 }
+    - Peak Net watts:                             { Unit: *W,     Modifiers: [ *Q1, *Q2, *Q3, *Q4, *Max, *Net, *RateB                ], Models: *ADTR-RDTR-650 }
     - Time of Peak Net watts:                     { Unit: *s,     Modifiers: [ *RateB, *Coin1                                        ], Models: *____-____-650 }
     - Cumulative Peak Net watts:                  { Unit: *W,     Modifiers: [ *Q1, *Q2, *Q3, *Q4, *Max, *Net, *RateB, *Coin2, *Cuml ], Models: *____-____-650, Mapped: false }
     - Continuous Cumulative Peak Net watts:       { Unit: *W,     Modifiers: [ *Q1, *Q2, *Q3, *Q4, *Max, *Net, *RateB, *Coin3, *Cont ], Models: *____-____-650, Mapped: false }
@@ -1357,7 +1357,7 @@ RFN-500 Node in Landis & Gyr S4e and S4x:
     - Power Factor at Peak Total watts:           { Unit: *PF,    Modifiers: [ *Q1, *Q2, *Q3, *Q4, *RateC, *Coin4                    ], Models: *____-____-650 }
     - Previous Peak Total watts:                  { Unit: *W,     Modifiers: [ *Q1, *Q2, *Q3, *Q4, *Max, *RateC, *Prev               ], Models: *____-____-650, Mapped: false }
     - Time of Previous Peak Total watts:          { Unit: *s,     Modifiers: [ *RateC, *Coin1, *Prev                                 ], Models: *____-____-650 }
-    - Peak Net watts:                             { Unit: *W,     Modifiers: [ *Q1, *Q2, *Q3, *Q4, *Max, *Net, *RateC                ], Models: *____-____-650 }
+    - Peak Net watts:                             { Unit: *W,     Modifiers: [ *Q1, *Q2, *Q3, *Q4, *Max, *Net, *RateC                ], Models: *ADTR-RDTR-650 }
     - Time of Peak Net watts:                     { Unit: *s,     Modifiers: [ *RateC, *Coin1                                        ], Models: *____-____-650 }
     - Cumulative Peak Net watts:                  { Unit: *W,     Modifiers: [ *Q1, *Q2, *Q3, *Q4, *Max, *Net, *RateC, *Coin2, *Cuml ], Models: *____-____-650, Mapped: false }
     - Continuous Cumulative Peak Net watts:       { Unit: *W,     Modifiers: [ *Q1, *Q2, *Q3, *Q4, *Max, *Net, *RateC, *Coin3, *Cont ], Models: *____-____-650, Mapped: false }
@@ -1455,7 +1455,7 @@ RFN-500 Node in Landis & Gyr S4e and S4x:
     - Power Factor at Peak Total watts:           { Unit: *PF,    Modifiers: [ *Q1, *Q2, *Q3, *Q4, *RateD, *Coin4                    ], Models: *____-____-650 }
     - Previous Peak Total watts:                  { Unit: *W,     Modifiers: [ *Q1, *Q2, *Q3, *Q4, *Max, *RateD, *Prev               ], Models: *____-____-650, Mapped: false }
     - Time of Previous Peak Total watts:          { Unit: *s,     Modifiers: [ *RateD, *Coin1, *Prev                                 ], Models: *____-____-650 }
-    - Peak Net watts:                             { Unit: *W,     Modifiers: [ *Q1, *Q2, *Q3, *Q4, *Max, *Net, *RateD                ], Models: *____-____-650 }
+    - Peak Net watts:                             { Unit: *W,     Modifiers: [ *Q1, *Q2, *Q3, *Q4, *Max, *Net, *RateD                ], Models: *ADTR-RDTR-650 }
     - Time of Peak Net watts:                     { Unit: *s,     Modifiers: [ *RateD, *Coin1                                        ], Models: *____-____-650 }
     - Cumulative Peak Net watts:                  { Unit: *W,     Modifiers: [ *Q1, *Q2, *Q3, *Q4, *Max, *Net, *RateD, *Coin2, *Cuml ], Models: *____-____-650, Mapped: false }
     - Continuous Cumulative Peak Net watts:       { Unit: *W,     Modifiers: [ *Q1, *Q2, *Q3, *Q4, *Max, *Net, *RateD, *Coin3, *Cont ], Models: *____-____-650, Mapped: false }

@@ -75,7 +75,7 @@ const std::vector<int> allMetrics = [] {
             _,X,X,X,X,X,X,X,X,X, X,X,X,a,_,_,_,X,_,_, _,X,X,X,X,X,X,X,X,X, X,X,X,X,X,X,X,X,_,_, _,X,X,X,X,X,X,X,X,X, X,X,X,X,X,X,X,o,_,_, _,X,X,X,X,X,X,X,X,X,X, _,_,_,_,_,_,_,o,o, _,X,X,X,_,_,_,_,_,_, _,_,_,_,_,_,_,_,_,_,
         
         //  100                  110                  120                  130                  140                  150                  160                    170                180                  190
-            X,X,X,X,X,X,X,X,X,X, X,X,X,X,X,X,X,X,X,X, X,X,X,X,X,_,_,_,_,_, _,_,_,_,_,_,_,_,_,_, _,_,_,_,_,_,_,_,_,_, X,X,X,X,X,X,X,X,X,X, X,X,X,X,X,_,_,_,_,_,_, _,_,_,_,_,_,_,_,_, o,o,_,_,A,o,_,_,_,_, _,_,_,_,o,_,_,_,_,o,
+            X,X,X,X,X,X,X,X,X,X, X,X,X,X,X,X,X,X,X,X, X,X,X,X,X,_,_,_,_,_, _,_,_,_,_,_,_,_,_,_, _,_,_,_,_,_,_,_,_,_, X,X,X,X,X,X,X,X,X,X, X,X,X,X,X,_,_,_,_,_,_, _,_,_,_,_,_,_,_,_, o,o,_,_,A,o,_,_,_,_, _,_,_,_,o,X,_,_,_,o,
 
         //  200                  210                  220                  230                  240                  250                  260                    270                280                  290
             _,_,_,_,_,_,X,_,_,_, A,o,_,_,_,_,_,_,_,_, _,_,X,_,_,_,_,_,_,_, o,o,_,o,o,_,_,_,_,_, o,o,_,_,_,_,_,_,_,_, _,_,_,_,_,_,X,o,_,_, _,_,_,_,_,_,_,_,_,_,_, _,_,_,_,_,_,_,_,_, _,_,_,_,_,_,_,_,_,_, _,_,_,_,_,_,_,_,_,_
@@ -221,6 +221,7 @@ const std::vector<std::string> allDescriptions
     "Sum Peak kVAr (184)",
     "Sum Peak kVAr Frozen (185)",
     "Sum Watts (194)",
+    "Net Peak kW (195)",
     "Sum kVAr (199)",
     "Peak kVA (Quadrants 1 2) (206)",
     "Sum Peak kVA (210)",
@@ -335,6 +336,7 @@ const std::vector<std::string> allDescriptions
     "PF Phase B, Rate A (1163)",
     "PF Phase C, Rate A (1164)",
     "Sum Peak kVAr, Rate A (1184)",
+    "Net Peak kW, Rate A (1195)",
     "Peak kVA (Quadrants 1 2), Rate A (1206)",
     "Sum Peak kVA, Rate A (1210)",
     "VA hour Q2 + Q3 + Q4, Rate A (1222)",
@@ -438,6 +440,7 @@ const std::vector<std::string> allDescriptions
     "PF Phase A, Rate B (2162)",
     "PF Phase B, Rate B (2163)",
     "PF Phase C, Rate B (2164)",
+    "Net Peak kW, Rate B (2195)",
     "Peak kVA (Quadrants 1 2), Rate B (2206)",
     "VA hour Q2 + Q3 + Q4, Rate B (2222)",
     "Time in Seconds, Rate B (2256)",
@@ -540,6 +543,7 @@ const std::vector<std::string> allDescriptions
     "PF Phase A, Rate C (3162)",
     "PF Phase B, Rate C (3163)",
     "PF Phase C, Rate C (3164)",
+    "Net Peak kW, Rate C (3195)",
     "Peak kVA (Quadrants 1 2), Rate C (3206)",
     "VA hour Q2 + Q3 + Q4, Rate C (3222)",
     "Time in Seconds, Rate C (3256)",
@@ -642,6 +646,7 @@ const std::vector<std::string> allDescriptions
     "PF Phase A, Rate D (4162)",
     "PF Phase B, Rate D (4163)",
     "PF Phase C, Rate D (4164)",
+    "Net Peak kW, Rate B (4195)",
     "Peak kVA (Quadrants 1 2), Rate D (4206)",
     "VA hour Q2 + Q3 + Q4, Rate D (4222)",
     "Time in Seconds, Rate D (4256)",

@@ -54,6 +54,11 @@
         <pointInfo name="Net kWh (Rate B kWh)" attributes="NET_KWH_RATE_B"/>
         <pointInfo name="Net kWh (Rate C kWh)" attributes="NET_KWH_RATE_C"/>
         <pointInfo name="Net kWh (Rate D kWh)" attributes="NET_KWH_RATE_D"/>
+        <pointInfo name="Net Peak kW" attributes="NET_PEAK_DEMAND"/>
+        <pointInfo name="Net Peak kW (Rate A kW)" attributes="NET_PEAK_DEMAND_RATE_A"/>
+        <pointInfo name="Net Peak kW (Rate B kW)" attributes="NET_PEAK_DEMAND_RATE_B"/>
+        <pointInfo name="Net Peak kW (Rate C kW)" attributes="NET_PEAK_DEMAND_RATE_C"/>
+        <pointInfo name="Net Peak kW (Rate D kW)" attributes="NET_PEAK_DEMAND_RATE_D"/>
         <pointInfo name="Net kWh per Interval" attributes="NET_KWH_PER_INTERVAL"/>
         <pointInfo name="Non Volatile Mem Failure" attributes="NON_VOLATILE_MEM_FAILURE"/>
         <pointInfo name="Outage Count" init="true" attributes="RFN_OUTAGE_COUNT"/>
