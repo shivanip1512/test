@@ -276,7 +276,10 @@ public class NotificationGroupController {
             if (apiResponse.getStatusCode() == HttpStatus.UNPROCESSABLE_ENTITY) {
                 BindException error = new BindException(notificationGroup, "notificationGroup");
                 result = helper.populateBindingErrorForApiErrorModel(result, error, apiResponse, "yukon.web.error.");
-                if(!result.hasErrors()) {
+                // Fancy tree does not support field errors.
+                // A generic global error message will be shown for field errors coming from API.
+                // Field errors for Name field are displayable on UI. Skipping the generic message for name field.
+                if (!result.hasFieldErrors("name") || result.getFieldErrorCount() > 1) {
                     flash.setError(new YukonMessageSourceResolvable("yukon.web.error.genericMainMessage"));
                     log.error("Error saving notification group");
                     log.error(JsonUtils.beautifyJson(JsonUtils.toJson(apiResponse.getBody())));
