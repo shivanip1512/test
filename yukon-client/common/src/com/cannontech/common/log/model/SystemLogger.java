@@ -44,7 +44,7 @@ public enum SystemLogger {
             }
         }
         lookupByLoggerName = nameBuilder.build();
-        customAppenderLoggers = ImmutableSet.of(API_LOGGER, COMMS_LOGGER, RFN_COMMS_LOGGER, SMART_NOTIFICATION_LOGGER);
+        customAppenderLoggers = ImmutableSet.of(API_LOGGER, COMMS_LOGGER, RFN_COMMS_LOGGER, SMART_NOTIFICATION_LOGGER, EATON_CLOUD_COMMS_LOGGER);
         appenderRefByLoggerName = appenderRefByLoggerNameBuilder.build();
         lookupByCustomizedSystemLogger = customizedSystemLoggerBuilder.build();
     }
