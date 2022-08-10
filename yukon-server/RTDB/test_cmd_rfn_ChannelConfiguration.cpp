@@ -646,7 +646,7 @@ const std::vector<std::string> allDescriptions
     "PF Phase A, Rate D (4162)",
     "PF Phase B, Rate D (4163)",
     "PF Phase C, Rate D (4164)",
-    "Net Peak kW, Rate B (4195)",
+    "Net Peak kW, Rate D (4195)",
     "Peak kVA (Quadrants 1 2), Rate D (4206)",
     "VA hour Q2 + Q3 + Q4, Rate D (4222)",
     "Time in Seconds, Rate D (4256)",
