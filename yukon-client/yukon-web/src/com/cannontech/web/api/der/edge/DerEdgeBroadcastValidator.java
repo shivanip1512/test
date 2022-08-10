@@ -18,6 +18,11 @@ public class DerEdgeBroadcastValidator extends SimpleValidator<EdgeBroadcastRequ
 
     @Override
     protected void doValidation(EdgeBroadcastRequest request, Errors errors) {
-        validationUtils.checkIsValidHexByteString(errors, "payload", request.getPayload(), "Payload", 54);
+        // Check if Payload is NULL
+        validationUtils.checkIfFieldRequired("payload", errors, request.getPayload(), "Payload");
+        // If Payload is not null or blank, check if Payload is valid Hex Byte String
+        if (request.getPayload() != null && !request.getPayload().isBlank()) {
+            validationUtils.checkIsValidHexByteString(errors, "payload", request.getPayload(), "Payload", 54);
+        }
     }
 }
