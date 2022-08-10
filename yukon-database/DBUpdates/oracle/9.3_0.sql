@@ -118,6 +118,13 @@ ALTER TABLE MSPVendor MODIFY Attributes VARCHAR2(500) NOT NULL;
 INSERT INTO DBUpdates VALUES ('YUK-26847', '9.3.0', SYSDATE);
 /* @end YUK-26847 */
 
+/* @start YUK-27139 */
+UPDATE InfrastructureWarnings SET WarningType = 'INFRASTRUCTURE_OUTAGE' WHERE WarningType = 'RELAY_OUTAGE';
+UPDATE SmartNotificationEventParam SET Value = 'INFRASTRUCTURE_OUTAGE' WHERE Name = 'WarningType' AND Value = 'RELAY_OUTAGE';
+
+INSERT INTO DBUpdates VALUES ('YUK-27139', '9.3.0', SYSDATE);
+/* @end YUK-27139 */
+
 
 /***********************************************************************************/
 /* VERSION INFO                                                                    */

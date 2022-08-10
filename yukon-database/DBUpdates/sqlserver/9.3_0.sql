@@ -108,6 +108,13 @@ GO
 INSERT INTO DBUpdates VALUES ('YUK-26847', '9.3.0', GETDATE());
 /* @end YUK-26847 */
 
+/* @start YUK-27139 */
+UPDATE InfrastructureWarnings SET WarningType = 'INFRASTRUCTURE_OUTAGE' WHERE WarningType = 'RELAY_OUTAGE';
+UPDATE SmartNotificationEventParam SET Value = 'INFRASTRUCTURE_OUTAGE' WHERE Name = 'WarningType' AND Value = 'RELAY_OUTAGE';
+
+INSERT INTO DBUpdates VALUES ('YUK-27139', '9.3.0', GETDATE());
+/* @end YUK-27139 */
+
 /***********************************************************************************/
 /* VERSION INFO                                                                    */
 /* Inserted when update script is run, stays commented out until the release build */
