@@ -12,7 +12,7 @@ public enum FieldNamesMspV4 {
     PEAK_DEMAND(BuiltInAttribute.PEAK_DEMAND, SyntaxItem.PEAK_DEMAND),
     USAGE(BuiltInAttribute.USAGE, SyntaxItem.KWH),
     BLINK_COUNT(BuiltInAttribute.BLINK_COUNT, SyntaxItem.BLINK_COUNT),
-    KVA(BuiltInAttribute.KVA,SyntaxItem.KVA),
+    KVA(BuiltInAttribute.KVA, SyntaxItem.KVA),
     KVAR(BuiltInAttribute.KVAR, SyntaxItem.KVAR),
     KVARH(BuiltInAttribute.KVARH, SyntaxItem.KVARH),
     DELIVERED_KWH_RATE_A(BuiltInAttribute.DELIVERED_KWH_RATE_A, SyntaxItem.DELIVERED_KWH_RATE_A),
