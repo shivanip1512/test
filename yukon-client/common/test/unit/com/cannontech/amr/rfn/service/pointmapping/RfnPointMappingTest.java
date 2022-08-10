@@ -993,11 +993,6 @@ public class RfnPointMappingTest {
         missing.put(PaoType.RFN530S4EAX, "Min Voltage Phase A");
         missing.put(PaoType.RFN530S4EAX, "Min Voltage Phase B");
         missing.put(PaoType.RFN530S4EAX, "Min Voltage Phase C");
-        missing.put(PaoType.RFN530S4EAX, "Net Peak kW (Rate A kW)");
-        missing.put(PaoType.RFN530S4EAX, "Net Peak kW (Rate B kW)");
-        missing.put(PaoType.RFN530S4EAX, "Net Peak kW (Rate C kW)");
-        missing.put(PaoType.RFN530S4EAX, "Net Peak kW (Rate D kW)");
-        missing.put(PaoType.RFN530S4EAX, "Net Peak kW");
         missing.put(PaoType.RFN530S4EAX, "Net kVArh (Rate A kVArh)");
         missing.put(PaoType.RFN530S4EAX, "Net kVArh (Rate B kVArh)");
         missing.put(PaoType.RFN530S4EAX, "Net kVArh (Rate C kVArh)");
@@ -1106,11 +1101,6 @@ public class RfnPointMappingTest {
         missing.put(PaoType.RFN530S4EAXR, "Min Voltage Phase A");
         missing.put(PaoType.RFN530S4EAXR, "Min Voltage Phase B");
         missing.put(PaoType.RFN530S4EAXR, "Min Voltage Phase C");
-        missing.put(PaoType.RFN530S4EAXR, "Net Peak kW (Rate A kW)");
-        missing.put(PaoType.RFN530S4EAXR, "Net Peak kW (Rate B kW)");
-        missing.put(PaoType.RFN530S4EAXR, "Net Peak kW (Rate C kW)");
-        missing.put(PaoType.RFN530S4EAXR, "Net Peak kW (Rate D kW)");
-        missing.put(PaoType.RFN530S4EAXR, "Net Peak kW");
         missing.put(PaoType.RFN530S4EAXR, "Net kVArh (Rate A kVArh)");
         missing.put(PaoType.RFN530S4EAXR, "Net kVArh (Rate B kVArh)");
         missing.put(PaoType.RFN530S4EAXR, "Net kVArh (Rate C kVArh)");
@@ -1220,11 +1210,6 @@ public class RfnPointMappingTest {
         missing.put(PaoType.RFN530S4ERX, "Min Voltage Phase A");
         missing.put(PaoType.RFN530S4ERX, "Min Voltage Phase B");
         missing.put(PaoType.RFN530S4ERX, "Min Voltage Phase C");
-        missing.put(PaoType.RFN530S4ERX, "Net Peak kW (Rate A kW)");
-        missing.put(PaoType.RFN530S4ERX, "Net Peak kW (Rate B kW)");
-        missing.put(PaoType.RFN530S4ERX, "Net Peak kW (Rate C kW)");
-        missing.put(PaoType.RFN530S4ERX, "Net Peak kW (Rate D kW)");
-        missing.put(PaoType.RFN530S4ERX, "Net Peak kW");
         missing.put(PaoType.RFN530S4ERX, "Net kVArh (Rate A kVArh)");
         missing.put(PaoType.RFN530S4ERX, "Net kVArh (Rate B kVArh)");
         missing.put(PaoType.RFN530S4ERX, "Net kVArh (Rate C kVArh)");
@@ -1324,11 +1309,6 @@ public class RfnPointMappingTest {
         missing.put(PaoType.RFN530S4ERXR, "Min Voltage Phase A");
         missing.put(PaoType.RFN530S4ERXR, "Min Voltage Phase B");
         missing.put(PaoType.RFN530S4ERXR, "Min Voltage Phase C");
-        missing.put(PaoType.RFN530S4ERXR, "Net Peak kW (Rate A kW)");
-        missing.put(PaoType.RFN530S4ERXR, "Net Peak kW (Rate B kW)");
-        missing.put(PaoType.RFN530S4ERXR, "Net Peak kW (Rate C kW)");
-        missing.put(PaoType.RFN530S4ERXR, "Net Peak kW (Rate D kW)");
-        missing.put(PaoType.RFN530S4ERXR, "Net Peak kW");
         missing.put(PaoType.RFN530S4ERXR, "Peak Demand Daily");
         missing.put(PaoType.RFN530S4ERXR, "Peak kVA");
         missing.put(PaoType.RFN530S4ERXR, "Peak kW Frozen (Rate A kW)");
