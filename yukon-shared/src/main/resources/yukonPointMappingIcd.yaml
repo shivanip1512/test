@@ -1039,7 +1039,7 @@ RFN-500 Node in Landis & Gyr S4e and S4x:
     - Q3 VAhours:                                 { Unit: *VAh,   Modifiers: [ *Q3                                                   ], Models: *____-____-650, Mapped: false }
     - Q4 VAhours:                                 { Unit: *VAh,   Modifiers: [ *Q4                                                   ], Models: *____-____-650, Mapped: false }
     - VAhours Leading (Q1 + Q3):                  { Unit: *VAh,   Modifiers: [ *Q1, *Q3                                              ], Models: *____-RDTR-___ }
-    - Peak Delivered watts:                       { Unit: *W,     Modifiers: [ *Q1, *Q4, *Max                                        ], Models: *____-____-650 }
+    - Peak Delivered watts:                       { Unit: *W,     Modifiers: [ *Q1, *Q4, *Max                                        ], Models: *ADTR-RDTR-650 }
     - Time of Peak Delivered watts:               { Unit: *s,     Modifiers: [ *Coin1                                                ], Models: *____-____-650 }
     - Cumulative Peak Delivered watts:            { Unit: *W,     Modifiers: [ *Q1, *Q4, *Max, *Coin2, *Cuml                         ], Models: *____-____-650, Mapped: false }
     - Continuous Cumulative Peak Delivered watts: { Unit: *W,     Modifiers: [ *Q1, *Q4, *Max, *Coin3, *Cont                         ], Models: *____-____-650, Mapped: false }
@@ -1140,7 +1140,7 @@ RFN-500 Node in Landis & Gyr S4e and S4x:
     - Q2 VAhours:                                 { Unit: *VAh,   Modifiers: [ *Q2, *RateA                                           ], Models: *____-____-650, Mapped: false }
     - Q3 VAhours:                                 { Unit: *VAh,   Modifiers: [ *Q3, *RateA                                           ], Models: *____-____-650, Mapped: false }
     - Q4 VAhours:                                 { Unit: *VAh,   Modifiers: [ *Q4, *RateA                                           ], Models: *____-____-650, Mapped: false }
-    - Peak Delivered watts:                       { Unit: *W,     Modifiers: [ *Q1, *Q4, *Max, *RateA                                ], Models: *____-____-650 }
+    - Peak Delivered watts:                       { Unit: *W,     Modifiers: [ *Q1, *Q4, *Max, *RateA                                ], Models: *ADTR-RDTR-650 }
     - Time of Peak Delivered watts:               { Unit: *s,     Modifiers: [ *RateA, *Coin1                                        ], Models: *____-____-650 }
     - Cumulative Peak Delivered watts:            { Unit: *W,     Modifiers: [ *Q1, *Q4, *Max, *RateA, *Coin2, *Cuml                 ], Models: *____-____-650, Mapped: false }
     - Continuous Cumulative Peak Delivered watts: { Unit: *W,     Modifiers: [ *Q1, *Q4, *Max, *RateA, *Coin3, *Cont                 ], Models: *____-____-650, Mapped: false }
@@ -1238,7 +1238,7 @@ RFN-500 Node in Landis & Gyr S4e and S4x:
     - Q2 VAhours:                                 { Unit: *VAh,   Modifiers: [ *Q2, *RateB                                           ], Models: *____-____-650, Mapped: false }
     - Q3 VAhours:                                 { Unit: *VAh,   Modifiers: [ *Q3, *RateB                                           ], Models: *____-____-650, Mapped: false }
     - Q4 VAhours:                                 { Unit: *VAh,   Modifiers: [ *Q4, *RateB                                           ], Models: *____-____-650, Mapped: false }
-    - Peak Delivered watts:                       { Unit: *W,     Modifiers: [ *Q1, *Q4, *Max, *RateB                                ], Models: *____-____-650 }
+    - Peak Delivered watts:                       { Unit: *W,     Modifiers: [ *Q1, *Q4, *Max, *RateB                                ], Models: *ADTR-RDTR-650 }
     - Time of Peak Delivered watts:               { Unit: *s,     Modifiers: [ *RateB, *Coin1                                        ], Models: *____-____-650 }
     - Cumulative Peak Delivered watts:            { Unit: *W,     Modifiers: [ *Q1, *Q4, *Max, *RateB, *Coin2, *Cuml                 ], Models: *____-____-650, Mapped: false }
     - Continuous Cumulative Peak Delivered watts: { Unit: *W,     Modifiers: [ *Q1, *Q4, *Max, *RateB, *Coin3, *Cont                 ], Models: *____-____-650, Mapped: false }
@@ -1336,7 +1336,7 @@ RFN-500 Node in Landis & Gyr S4e and S4x:
     - Q2 VAhours:                                 { Unit: *VAh,   Modifiers: [ *Q2, *RateC                                           ], Models: *____-____-650, Mapped: false }
     - Q3 VAhours:                                 { Unit: *VAh,   Modifiers: [ *Q3, *RateC                                           ], Models: *____-____-650, Mapped: false }
     - Q4 VAhours:                                 { Unit: *VAh,   Modifiers: [ *Q4, *RateC                                           ], Models: *____-____-650, Mapped: false }
-    - Peak Delivered watts:                       { Unit: *W,     Modifiers: [ *Q1, *Q4, *Max, *RateC                                ], Models: *____-____-650 }
+    - Peak Delivered watts:                       { Unit: *W,     Modifiers: [ *Q1, *Q4, *Max, *RateC                                ], Models: *ADTR-RDTR-650 }
     - Time of Peak Delivered watts:               { Unit: *s,     Modifiers: [ *RateC, *Coin1                                        ], Models: *____-____-650 }
     - Cumulative Peak Delivered watts:            { Unit: *W,     Modifiers: [ *Q1, *Q4, *Max, *RateC, *Coin2, *Cuml                 ], Models: *____-____-650, Mapped: false }
     - Continuous Cumulative Peak Delivered watts: { Unit: *W,     Modifiers: [ *Q1, *Q4, *Max, *RateC, *Coin3, *Cont                 ], Models: *____-____-650, Mapped: false }
@@ -1434,7 +1434,7 @@ RFN-500 Node in Landis & Gyr S4e and S4x:
     - Q2 VAhours:                                 { Unit: *VAh,   Modifiers: [ *Q2, *RateD                                           ], Models: *____-____-650, Mapped: false }
     - Q3 VAhours:                                 { Unit: *VAh,   Modifiers: [ *Q3, *RateD                                           ], Models: *____-____-650, Mapped: false }
     - Q4 VAhours:                                 { Unit: *VAh,   Modifiers: [ *Q4, *RateD                                           ], Models: *____-____-650, Mapped: false }
-    - Peak Delivered watts:                       { Unit: *W,     Modifiers: [ *Q1, *Q4, *Max, *RateD                                ], Models: *____-____-650 }
+    - Peak Delivered watts:                       { Unit: *W,     Modifiers: [ *Q1, *Q4, *Max, *RateD                                ], Models: *ADTR-RDTR-650 }
     - Time of Peak Delivered watts:               { Unit: *s,     Modifiers: [ *RateD, *Coin1                                        ], Models: *____-____-650 }
     - Cumulative Peak Delivered watts:            { Unit: *W,     Modifiers: [ *Q1, *Q4, *Max, *RateD, *Coin2, *Cuml                 ], Models: *____-____-650, Mapped: false }
     - Continuous Cumulative Peak Delivered watts: { Unit: *W,     Modifiers: [ *Q1, *Q4, *Max, *RateD, *Coin3, *Cont                 ], Models: *____-____-650, Mapped: false }
