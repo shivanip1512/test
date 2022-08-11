@@ -89,16 +89,23 @@ public class EatonCloudAuthTokenServiceImplV1 implements EatonCloudAuthTokenServ
             GlobalSettingType rotatedSecret) {
         GlobalSettingType secretForTokenRetrieval = rotatedSecret == EATON_CLOUD_SECRET ? EATON_CLOUD_SECRET2 : EATON_CLOUD_SECRET;
         if (settingDao.isDbChangeForSetting(event, rotatedSecret)) {
-            log.info("Updated {}. Attempting to retrieve token using {}.", rotatedSecret, secretForTokenRetrieval);
-            if (Strings.isNullOrEmpty(settingDao.getString(secretForTokenRetrieval))) {
-                log.info("Updated {}. {} is blank.", rotatedSecret, secretForTokenRetrieval);
+            try {
+                log.info("Updated {}. Attempting to retrieve token using {}.", rotatedSecret, secretForTokenRetrieval);
+                if (Strings.isNullOrEmpty(settingDao.getString(secretForTokenRetrieval))) {
+                    log.info("Updated {}. {} is blank.", rotatedSecret, secretForTokenRetrieval);
+                    tokenCache.invalidateAll();
+                } else if (getAndCacheToken(secretForTokenRetrieval) == null) {
+                    log.error("Updated {} failed to retrieve token using {}.", rotatedSecret,
+                            secretForTokenRetrieval);
+                    tokenCache.invalidateAll();
+                } else {
+                    log.info("Updated {}. Retrieved the token using {}.", rotatedSecret, secretForTokenRetrieval);
+                }
+            } catch (EatonCloudCommunicationExceptionV1 e) {
                 tokenCache.invalidateAll();
-            } else if (getAndCacheToken(secretForTokenRetrieval) == null) {
-                log.error("Updated {} failed to retrieve token using {}.", rotatedSecret,
-                        secretForTokenRetrieval);
-                tokenCache.invalidateAll();
-            } else {
-                log.info("Updated {}. Retrieved the token using {}.", rotatedSecret, secretForTokenRetrieval);
+                log.error("Token retrieval using {} failed:{}.",
+                        secretForTokenRetrieval,
+                        new GsonBuilder().setPrettyPrinting().create().toJson(e.getErrorMessage()));
             }
         }
     }
