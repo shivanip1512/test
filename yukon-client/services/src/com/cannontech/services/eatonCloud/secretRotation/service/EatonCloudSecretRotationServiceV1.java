@@ -184,7 +184,6 @@ public class EatonCloudSecretRotationServiceV1 {
                 secretRotations.remove(type);
                 log.info("({} of {}) {} rotation is successful.", currentTry.get(), numberOfTimesToRetry, secret);
                 eatonCloudEventLogService.secretRotationSuccess(secret, YukonUserContext.system.getYukonUser(), currentTry.get());
-                validateSecret(type);
             } catch (EatonCloudCommunicationExceptionV1 e) {
                 if (currentTry.get() == numberOfTimesToRetry) {
                     log.error("({} of {}) {} rotation failed. Alert created:{}", currentTry.get(), numberOfTimesToRetry, secret,
