@@ -22,11 +22,11 @@
                 <form:input path="username" cssClass="${clazz} fl" maxlength="64"/>
                 <cti:msg2 var="available" key=".available"/>
                 <cti:msg2 var="unavailable" key=".unavailable"/>
-                <span class="js-username-available" 
+                <span class="js-username-available ML5 MT5 fl" 
                     data-available="${available}" data-unavailable="${unavailable}"></span>
                 <c:if test="${status.error}">
                     <div><form:errors path="username" cssClass="error"/></div>
-                 </c:if>
+                </c:if>
             </s:bind>
         </tags:nameValue2>
         
