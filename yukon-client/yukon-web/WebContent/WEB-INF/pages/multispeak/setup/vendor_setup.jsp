@@ -116,7 +116,6 @@
                                         <c:if test="${!loop.last}">,</c:if>
                                     </c:forEach>
                                 </cti:displayForPageEditModes>
-
                             </tags:nameValue2>
 
                         </tags:nameValueContainer2>

@@ -117,22 +117,23 @@
 
     <entry key="yukon.web.modules.adminSetup.vendor.attribute.helpText"><![CDATA[
             All the supported attributes for multispeak are categorized into 5 categories.
-            <br>Below are the list of categories along with their attributes:
             <br>
+            Below are the list of categories along with their attributes:
             <ol>
                 <li>Peak Demand + Usage: It has 2 attributes - Peak demand and usage.</li>
-                <li>kVar + kVarH: It has 3 attributes - kVa , kVar and kVarH.</li>
+                <li>kVar + kVarH: It has 3 attributes - kVa, kVar and kVarH.</li>
                 <li>TOU: It has 12 attributes - Delivered kWh Rate A, Delivered kWh Rate B, Delivered kWh Rate C, Delivered kWh Rate D,
-                                Received kWh Rate A, Received kWh Rate B, Received kWh Rate C, Received kWh Rate D,  
+                                Received kWh Rate A, Received kWh Rate B, Received kWh Rate C, Received kWh Rate D,
                                 Peak Demand Rate A, Peak Demand Rate B, Peak Demand Rate C, Peak Demand Rate D.</li>
                 <li>Power Factor: It has 1 attributes - Power Factor.</li> 
                 <li>Received kWh: It has 1 attributes - Received kWh.</li>
             </ol>
-            <b> Recommended values for Maximum Records Returned:</b>
+            <b>Recommended values for Maximum Records Returned:</b>
             <br>
             By default the value for Maximum Records Returned is 10000 for Peak Demand + Usage. 
             After selection of multiple attributes in drop down, it will require to change Maximum Records Returned value.
-            <br>Below are the default recommended values we can set if only single option (eg. TOU) is selected from Attributes dropdown:
+            <br>
+            Below are the default recommended values we can set if only single option (eg. TOU) is selected from Attributes dropdown:
             <ol>
                 <li>TOU: 2000</li>
                 <li>kVar + kVarH: 7000</li>
