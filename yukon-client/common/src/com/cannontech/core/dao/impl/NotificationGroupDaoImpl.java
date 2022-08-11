@@ -19,6 +19,7 @@ import com.cannontech.database.YukonJdbcTemplate;
 import com.cannontech.database.YukonResultSet;
 import com.cannontech.database.YukonRowMapper;
 import com.cannontech.database.data.lite.LiteNotificationGroup;
+import com.cannontech.database.db.point.PointAlarming;
 import com.cannontech.web.notificationGroup.NotificationGroup;
 import com.cannontech.yukon.IDatabaseCache;
 
@@ -91,9 +92,9 @@ public final class NotificationGroupDaoImpl implements NotificationGroupDao {
     public List<NotificationGroup> getAllNotificationGroups(String filterByName, SortBy sortBy, Direction direction) {
         SqlStatementBuilder sql = new SqlStatementBuilder();
         sql.append("SELECT * FROM NotificationGroup");
-        
+        sql.append("WHERE NotificationGroupId").gt(PointAlarming.NONE_NOTIFICATIONID);
         if (StringUtils.isNotEmpty(filterByName)) {
-            sql.append("WHERE UPPER(GroupName) LIKE");
+            sql.append("AND UPPER(GroupName) LIKE");
             sql.append("'%" + filterByName.toUpperCase() + "%'");
         }
         if (sortBy != null) {
