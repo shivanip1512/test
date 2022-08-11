@@ -120,13 +120,13 @@
             <br>
             Below are the list of categories along with their attributes:
             <ol>
-                <li>Peak Demand + Usage: It has 2 attributes - Peak demand and usage.</li>
-                <li>kVar + kVarH: It has 3 attributes - kVa, kVar and kVarH.</li>
-                <li>TOU: It has 12 attributes - Delivered kWh Rate A, Delivered kWh Rate B, Delivered kWh Rate C, Delivered kWh Rate D,
-                               Received kWh Rate A, Received kWh Rate B, Received kWh Rate C, Received kWh Rate D,
-                               Peak Demand Rate A, Peak Demand Rate B, Peak Demand Rate C, Peak Demand Rate D.</li>
-                <li>Power Factor: It has 1 attributes - Power Factor.</li> 
-                <li>Received kWh: It has 1 attributes - Received kWh.</li>
+                <li>Peak Demand + Usage: Peak Demand and Usage (2 attributes).</li>
+                <li>kVar + kVarH: kVa, kVar and kVarH (3 attributes).</li>
+                <li>TOU: Delivered kWh Rate A, Delivered kWh Rate B, Delivered kWh Rate C, Delivered kWh Rate D,
+                                 Received kWh Rate A, Received kWh Rate B, Received kWh Rate C, Received kWh Rate D,
+                                 Peak Demand Rate A, Peak Demand Rate B, Peak Demand Rate C, Peak Demand Rate D (12 attributes).</li>
+                <li>Power Factor: Power Factor (1 attribute).</li> 
+                <li>Received kWh: Received kWh (1 attribute).</li>
             </ol>
             <b>Recommended values for Maximum Records Returned:</b>
             <br>
@@ -135,9 +135,9 @@
             <br>
             Below are the default recommended values we can set if only single option (eg. TOU) is selected from Attributes dropdown:
             <ol>
-                <li>TOU: 2000</li>
-                <li>kVar + kVarH: 7000</li>
                 <li>Peak Demand + Usage: 10000</li>
+                <li>kVar + kVarH: 7000</li>
+                <li>TOU: 2000</li>
                 <li>Power Factor: 10000</li>
                 <li>Received kWh: 10000</li>
             </ol>
