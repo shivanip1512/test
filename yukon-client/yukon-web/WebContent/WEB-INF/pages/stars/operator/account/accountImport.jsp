@@ -50,7 +50,7 @@
                         
                         <tags:nameValueContainer2>
                             <tags:nameValue2 nameKey=".accountImportFile" >
-                                <tags:file name="accountImportFile"/>
+                                <tags:file name="accountImportFile" spanClass="clear"/>
                             </tags:nameValue2>
                             <tags:nameValue2 nameKey=".hardwareImportFile">
                                 <tags:file name="hardwareImportFile"/>
