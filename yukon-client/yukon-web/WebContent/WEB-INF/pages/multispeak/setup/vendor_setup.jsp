@@ -112,6 +112,10 @@
                                         <c:if test="${!loop.last}">,</c:if>
                                     </c:forEach>
                                 </cti:displayForPageEditModes>
+                                <cti:msg2 var="helpTitle" key="yukon.common.attributes"/>
+                                <cti:msg2 var="helpText" key=".attribute.helpText"/>
+                                <span class="fr cp"><cti:icon icon="icon-help" data-popup="#attribute-help"/></span>
+                                <div id="attribute-help" class="dn" data-width="600" data-title="${helpTitle}">${helpText}</div>
                             </tags:nameValue2>
 
                         </tags:nameValueContainer2>
