@@ -28,6 +28,8 @@ public enum AttributeGroup implements DisplayableEnum {
     RFN_SOFTWARE_EVENT,
     RFN_VOLTAGE_EVENT,
     
+    CELLULAR_ENUMERATED_VALUE_EVENT,
+    
     GATEWAY_STATISTICS,
 
     // Demand Response

@@ -125,6 +125,15 @@ UPDATE SmartNotificationEventParam SET Value = 'INFRASTRUCTURE_OUTAGE' WHERE Nam
 INSERT INTO DBUpdates VALUES ('YUK-27139', '9.3.0', SYSDATE);
 /* @end YUK-27139 */
 
+/* @start YUK-26089 */
+INSERT INTO StateGroup VALUES( 8, 'InsertedRemoved', 'Status');
+
+INSERT INTO State VALUES( 8, 0, 'Removed', 1, 6, 0);
+INSERT INTO State VALUES( 8, 1, 'Inserted', 0, 6, 0);
+INSERT INTO State VALUES( 8, 2, 'Unknown', 9, 6, 0);
+
+INSERT INTO DBUpdates VALUES ('YUK-26089', '9.3.0', SYSDATE);
+/* @end YUK-26089 */
 
 /***********************************************************************************/
 /* VERSION INFO                                                                    */

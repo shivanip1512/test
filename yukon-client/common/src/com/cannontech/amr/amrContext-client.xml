@@ -94,6 +94,7 @@
     <bean class="com.cannontech.amr.rfn.service.processor.impl.RfnTimeSyncFailedEventArchiveRequestProcessor"/>
 
     <bean class="com.cannontech.amr.rfn.service.processor.impl.CellularApnChangedEventProcessor"/>
+    <bean class="com.cannontech.amr.rfn.service.processor.impl.CellularSimCardInsertRemovedEventProcessor" />
     <bean id="meterEventLookupService" class="com.cannontech.amr.meter.service.impl.MeterEventLookupService"/>
     
     <bean id="rfnDeviceDao" class="com.cannontech.amr.rfn.dao.impl.RfnDeviceDaoImpl"/>
