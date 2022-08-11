@@ -1,5 +1,7 @@
 package com.cannontech.web.api.error.model;
 
+import java.util.Arrays;
+
 import org.springframework.validation.FieldError;
 
 import com.cannontech.api.error.model.ApiErrorDetails;
@@ -83,6 +85,12 @@ public class ApiFieldErrorModel {
 
     public void setParameters(Object[] parameters) {
         this.parameters = parameters;
+    }
+
+    @Override
+    public String toString() {
+        return "ApiFieldErrorModel [title=" + title + ", type=" + type + ", code=" + code + ", detail=" + detail + ", field="
+                + field + ", rejectedValue=" + rejectedValue + ", parameters=" + Arrays.toString(parameters) + "]";
     }
 
 }

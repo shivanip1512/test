@@ -102,4 +102,10 @@ public class ApiErrorModel {
         this.errors = errors;
     }
 
+    @Override
+    public String toString() {
+        return "ApiErrorModel [title=" + title + ", type=" + type + ", code=" + code + ", detail=" + detail + ", requestUri="
+                + requestUri + ", logRef=" + logRef + ", errors=" + errors + "]";
+    }
+
 }

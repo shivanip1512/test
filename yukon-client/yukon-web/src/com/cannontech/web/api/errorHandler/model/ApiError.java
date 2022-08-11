@@ -82,4 +82,10 @@ public class ApiError {
         return errorCode;
     }
 
+    @Override
+    public String toString() {
+        return "ApiError [status=" + status + ", message=" + message + ", errorCode=" + errorCode + ", errors=" + errors
+                + ", fieldErrors=" + fieldErrors + ", globalErrors=" + globalErrors + "]";
+    }
+
 }
