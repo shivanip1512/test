@@ -53,7 +53,7 @@
                                 <tags:file name="accountImportFile" spanClass="clear"/>
                             </tags:nameValue2>
                             <tags:nameValue2 nameKey=".hardwareImportFile">
-                                <tags:file name="hardwareImportFile"/>
+                                <tags:file name="hardwareImportFile" spanClass="clear"/>
                             </tags:nameValue2>
                             <tags:inputNameValue nameKey=".email" path="email" size="35"/>
                         </tags:nameValueContainer2>
