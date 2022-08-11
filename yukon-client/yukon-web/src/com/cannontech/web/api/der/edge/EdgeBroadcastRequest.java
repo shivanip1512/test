@@ -6,7 +6,7 @@ import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 @JsonIgnoreProperties(ignoreUnknown = true)
 public class EdgeBroadcastRequest {
     private String payload;
-    private EdgeBroadcastMessagePriority priority;
+    private EdgeBroadcastMessagePriority priority = EdgeBroadcastMessagePriority.LOW;
 
     public String getPayload() {
         return this.payload;
