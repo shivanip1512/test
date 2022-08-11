@@ -80,7 +80,7 @@
                 							<c:if test="${!empty loadGroups}">
                     							<c:set var="selectedLoadGroupId" value="${programEnrollment.loadGroupId}"/>
                     							<form:select path="inventoryEnrollments[${status.index}].loadGroupId" items="${loadGroups}"
-                        						itemLabel="name" itemValue="paoIdentifier.paoId" cssClass="js-enroll-relay ${nestClass}" disabled="${!enrolled}"/>
+                        						itemLabel="name" itemValue="paoIdentifier.paoId" cssClass="MT10 js-enroll-relay ${nestClass}" disabled="${!enrolled}"/>
                 							</c:if>
        								 </tags:nameValueContainer2>
        								 </td>
