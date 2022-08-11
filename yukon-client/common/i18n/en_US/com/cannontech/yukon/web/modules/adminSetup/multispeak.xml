@@ -123,8 +123,8 @@
                 <li>Peak Demand + Usage: It has 2 attributes - Peak demand and usage.</li>
                 <li>kVar + kVarH: It has 3 attributes - kVa, kVar and kVarH.</li>
                 <li>TOU: It has 12 attributes - Delivered kWh Rate A, Delivered kWh Rate B, Delivered kWh Rate C, Delivered kWh Rate D,
-                                Received kWh Rate A, Received kWh Rate B, Received kWh Rate C, Received kWh Rate D,
-                                Peak Demand Rate A, Peak Demand Rate B, Peak Demand Rate C, Peak Demand Rate D.</li>
+                                                               Received kWh Rate A, Received kWh Rate B, Received kWh Rate C, Received kWh Rate D,
+                                                               Peak Demand Rate A, Peak Demand Rate B, Peak Demand Rate C, Peak Demand Rate D.</li>
                 <li>Power Factor: It has 1 attributes - Power Factor.</li> 
                 <li>Received kWh: It has 1 attributes - Received kWh.</li>
             </ol>
