@@ -197,8 +197,10 @@ public class EatonCloudAuthTokenServiceImplV1 implements EatonCloudAuthTokenServ
     private EatonCloudTokenV1 getAndCacheToken(GlobalSettingType type) {
         String serviceAccountId = settingDao.getString(EATON_CLOUD_SERVICE_ACCOUNT_ID);
         EatonCloudTokenV1 newToken = retrieveNewToken(type, serviceAccountId);
-        log.info("Retrieved token using {}", type);
-        tokenCache.put(serviceAccountId, newToken);
+        if(newToken != null) {
+            log.info("Retrieved token using {}", type);
+            tokenCache.put(serviceAccountId, newToken);
+        }
         return newToken;
     }
 
@@ -207,7 +209,7 @@ public class EatonCloudAuthTokenServiceImplV1 implements EatonCloudAuthTokenServ
         String url = EatonCloudRetrievalUrl.SECURITY_TOKEN.getUrl(settingDao, restTemplate);
         String secret = settingDao.getString(type);
         if (Strings.isNullOrEmpty(secret)) {
-            log.error("{} is blank", type);
+            log.error("{} is blank. Failed t retrieve token.", type);
             return null;
         }
         EatonCloudCredentialsV1 credentials = new EatonCloudCredentialsV1(serviceAccountId, secret);
