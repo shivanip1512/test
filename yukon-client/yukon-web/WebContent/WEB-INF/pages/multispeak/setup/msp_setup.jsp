@@ -79,12 +79,16 @@
                             </tags:nameValue2>
                             
                             <c:if test="${multispeak.paoNameUsesExtension || !viewMode}">
-                            <tags:nameValue2 nameKey=".useExtension">
-                            <tags:switchButton path="paoNameUsesExtension" offClasses="M0" hideValue="true"
-                                toggleGroup="mspPaoNameAliasExtension" toggleAction="hide" inputClass="js-use-offset" />
+                                <tags:nameValue2 nameKey=".useExtension">
+                                    <tags:switchButton path="paoNameUsesExtension"
+                                                       offClasses="M0"
+                                                       toggleGroup="mspPaoNameAliasExtension" 
+                                                       toggleAction="hide"
+                                                       hideValue="true"
+                                                       inputClass="js-use-offset"/>
                             
-                            <tags:input path="paoNameAliasExtension" size="6" toggleGroup="mspPaoNameAliasExtension"/>
-                            </tags:nameValue2>
+                                    <tags:input path="paoNameAliasExtension" size="6" toggleGroup="mspPaoNameAliasExtension"/>
+                                </tags:nameValue2>
                             </c:if>
                             <tags:nameValue2 nameKey=".meterLookupField">
                                 <tags:selectWithItems id="meterLookupField" path="meterLookupField" items="${meterLookupFields}" 
