@@ -101,21 +101,22 @@
                                 <tags:input path="mspVendor.templateNameDefault" maxlength="32" />
                             </tags:nameValue2>
                             
-                            <tags:nameValue2 nameKey="yukon.common.attributes"  requiredField="true">
+                            <tags:nameValue2 nameKey="yukon.common.attributes" requiredField="true">
                                 <cti:displayForPageEditModes modes="CREATE,EDIT">
                                     <cti:msg2 key="yukon.common.attribute.select.multi" var="selectLbl" />
                                        <tags:selectWithItems items="${allAttributeList}" path="mspVendor.attributes" dataPlaceholder="${selectLbl}" id="attributes"/>
                                 </cti:displayForPageEditModes>
+                                <cti:msg2 var="helpTitle" key="yukon.common.attributes"/>
+                                <cti:msg2 var="helpText" key=".attribute.helpText"/>
+                                <span class="fr cp"><cti:icon icon="icon-help" data-popup="#attribute-help"/></span>
+                                <div id="attribute-help" class="dn" data-width="600" data-title="${helpTitle}">${helpText}</div>
                                 <cti:displayForPageEditModes modes="VIEW">
                                     <c:forEach var="mspattribute" items="${mspVendor.attributes}" varStatus="loop">
                                         <i:inline key="${mspattribute}"/>
                                         <c:if test="${!loop.last}">,</c:if>
                                     </c:forEach>
                                 </cti:displayForPageEditModes>
-                                <cti:msg2 var="helpTitle" key="yukon.common.attributes"/>
-                                <cti:msg2 var="helpText" key=".attribute.helpText"/>
-                                <span class="fr cp"><cti:icon icon="icon-help" data-popup="#attribute-help"/></span>
-                                <div id="attribute-help" class="dn" data-width="600" data-title="${helpTitle}">${helpText}</div>
+
                             </tags:nameValue2>
 
                         </tags:nameValueContainer2>
