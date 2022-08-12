@@ -216,10 +216,6 @@ yukon.da.zone.wizard = (function () {
                 window.location.href = yukon.url('/capcontrol/ivvc/wizard/deleteZone?zoneId=' + zoneId);
             });
             
-            $(document).on("yukon:ui:dialog:confirm", function(event, ui) {
-                debugger;
-                console.log("anc");
-            });
         }
 
     };
