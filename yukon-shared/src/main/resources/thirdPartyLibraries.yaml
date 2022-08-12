@@ -4278,18 +4278,18 @@ Network Manager :
     jira : NM-1555
     notes : 
 
-  - filename : commons-configuration2-2.7.jar
+  - filename : commons-configuration2-2.8.jar
     yukon group : Apache Commons
     project : Apache Commons Configuration 2
-    version : 2.7
+    version : 2.8
     project URL : "https://commons.apache.org/proper/commons-configuration/"
     license : Apache 2.0
     license URLs : "https://opensource.org/licenses/Apache-2.0"
-    maven URL : "https://mvnrepository.com/artifact/org.apache.commons/commons-configuration2/2.7"
-    md5 : 3307f404282a5040f14fd8cb8e0783ca
-    sha1 : 593326399e5fb5e1f986607f06f63c1250ab36b4
-    updated : 2021-02-02
-    jira : NM-1854
+    maven URL : "https://mvnrepository.com/artifact/org.apache.commons/commons-configuration2/2.8.0"
+    md5 : 4bb1f1ad26727cf5966554cb6b9eb073
+    sha1 : 6a76acbe14d2c01d4758a57171f3f6a150dbd462
+    updated : 2022-08-12
+    jira : NM-2437
     notes : YAJSW
 
   - filename : commons-dbcp-1.2.2.jar
@@ -6064,8 +6064,8 @@ Network Manager :
     license : Apache 2.0, LGPL 2.1
     license URLs : "https://opensource.org/licenses/Apache-2.0, https://opensource.org/licenses/LGPL-2.1"
     maven URL : "https://mvnrepository.com/artifact/org.rzo.yajsw/wrapper/11.11"
-    md5 : 2e6db977a577501c3569956646255615
-    sha1 : a34fa27a08c38fa8b10060c036ceb0bfcf65a389
+    md5 : 2cc61959633fc1817fdce4134fb43abd
+    sha1 : 1a27a7fcc46f46ece80cf6ba2529b2a14f367f0b
     updated : 2022-08-12
     jira : NM-2437
     notes : YAJSW Wrapper.  Maven version is 11.11, not 13.02.
@@ -6078,8 +6078,8 @@ Network Manager :
     license : Apache 2.0, LGPL 2.1
     license URLs : "https://opensource.org/licenses/Apache-2.0, https://opensource.org/licenses/LGPL-2.1"
     maven URL : "https://mvnrepository.com/artifact/org.rzo.yajsw/wrapperApp/11.11"
-    md5 : 5dbde8e7b27e8216b4e414d1b4b2a58c
-    sha1 : 9bec4e06852e2b50a1e191d6884fdd85ae27ee31
+    md5 : 7f1286d6daef6954efe43cb77f863456
+    sha1 : d1f23e924802919b0140cd102ab46252352ab075
     updated : 2022-08-12
     jira : NM-2437
     notes : YAJSW Wrapper App.  Maven version is 11.11, not 13.02.
@@ -6092,8 +6092,8 @@ Network Manager :
     license : Apache 2.0, LGPL 2.1
     license URLs : "https://opensource.org/licenses/Apache-2.0, https://opensource.org/licenses/LGPL-2.1"
     maven URL : n/a
-    md5 : 66af880d1d54fb592e383ec1cf98cea8
-    sha1 : d221b5b9d3bfe38e6e9f579e8f733186d3f40388
+    md5 : c6f41af72bd7b3e1052d492679f65c0f
+    sha1 : b820ccc4366c8835a5ea75e60b4580c83d8ebb7d
     updated : 2022-08-12
     jira : NM-2437
 
