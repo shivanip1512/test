@@ -70,19 +70,23 @@
                                 </form:select>
                             </td>
                             
-                                <cti:checkEnergyCompanySetting value="!TRACK_HARDWARE_ADDRESSING" energyCompanyId="${energyCompanyId}">
-                                    <td>
-                                        <c:set var="nestClass" value="${isNest ? 'js-nest-group' : ''}"/>
-                                            <c:if test="${empty loadGroups}">
-                                                <i:inline key=".groupNotApplicable"/>
-                                            </c:if>
-                                            <c:if test="${!empty loadGroups}">
-                                                <c:set var="selectedLoadGroupId" value="${programEnrollment.loadGroupId}"/>
-                                                <form:select path="inventoryEnrollments[${status.index}].loadGroupId" items="${loadGroups}"
-                                                itemLabel="name" itemValue="paoIdentifier.paoId" cssClass="js-enroll-relay ${nestClass}" disabled="${!enrolled}"/>
-                                            </c:if>
-                                        </td>
-                                    </cti:checkEnergyCompanySetting>
+                            <cti:checkEnergyCompanySetting value="!TRACK_HARDWARE_ADDRESSING" energyCompanyId="${energyCompanyId}">
+                                <td>
+                                    <c:set var="nestClass" value="${isNest ? 'js-nest-group' : ''}"/>
+                                    <c:if test="${empty loadGroups}">
+                                        <i:inline key=".groupNotApplicable"/>
+                                    </c:if>
+                                    <c:if test="${!empty loadGroups}">
+                                        <c:set var="selectedLoadGroupId" value="${programEnrollment.loadGroupId}"/>
+                                        <form:select path="inventoryEnrollments[${status.index}].loadGroupId" 
+                                                     items="${loadGroups}"
+                                                     itemLabel="name" 
+                                                     itemValue="paoIdentifier.paoId" 
+                                                     cssClass="js-enroll-relay ${nestClass}" 
+                                                     disabled="${!enrolled}"/>
+                                    </c:if>
+                                </td>
+                            </cti:checkEnergyCompanySetting>
                             
                         </tr>
                     </c:forEach>
