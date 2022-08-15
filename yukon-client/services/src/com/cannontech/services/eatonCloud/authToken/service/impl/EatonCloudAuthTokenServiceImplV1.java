@@ -20,7 +20,6 @@ import org.springframework.web.client.RestTemplate;
 
 import com.cannontech.clientutils.YukonLogManager;
 import com.cannontech.common.util.jms.YukonJmsTemplate;
-import com.cannontech.core.dynamic.AsyncDynamicDataSource;
 import com.cannontech.dr.eatonCloud.message.EatonCloudHeartbeatRequest;
 import com.cannontech.dr.eatonCloud.message.EatonCloudHeartbeatResponse;
 import com.cannontech.dr.eatonCloud.message.v1.EatonCloudAuthTokenRequestV1;
@@ -29,8 +28,6 @@ import com.cannontech.dr.eatonCloud.model.v1.EatonCloudCommunicationExceptionV1;
 import com.cannontech.dr.eatonCloud.model.v1.EatonCloudErrorHandlerV1;
 import com.cannontech.dr.eatonCloud.model.v1.EatonCloudTokenV1;
 import com.cannontech.dr.eatonCloud.service.v1.EatonCloudCommunicationServiceV1;
-import com.cannontech.message.dispatch.message.DatabaseChangeEvent;
-import com.cannontech.message.dispatch.message.DbChangeCategory;
 import com.cannontech.services.eatonCloud.authToken.service.EatonCloudAuthTokenServiceV1;
 import com.cannontech.system.GlobalSettingType;
 import com.cannontech.system.dao.GlobalSettingDao;
@@ -47,7 +44,6 @@ public class EatonCloudAuthTokenServiceImplV1 implements EatonCloudAuthTokenServ
     @Autowired private GlobalSettingDao settingDao;
     @Autowired private YukonJmsTemplate jmsTemplate;
     @Autowired private MappingJackson2HttpMessageConverter mappingJackson2HttpMessageConverter;
-    @Autowired private AsyncDynamicDataSource asyncDynamicDataSource;
     @Autowired private EatonCloudCommunicationServiceV1 eatonCloudCommunicationService;
     private RestTemplate restTemplate;
     private Gson jsonPrinter;
@@ -57,59 +53,11 @@ public class EatonCloudAuthTokenServiceImplV1 implements EatonCloudAuthTokenServ
         restTemplate = new RestTemplate();
         restTemplate.setErrorHandler(new EatonCloudErrorHandlerV1());
         restTemplate.setMessageConverters(Arrays.asList(mappingJackson2HttpMessageConverter));
-        asyncDynamicDataSource.addDatabaseChangeEventListener(DbChangeCategory.GLOBAL_SETTING, this::databaseChangeEvent);
         jsonPrinter = new GsonBuilder().setPrettyPrinting().create();
     }
 
     private Cache<String, EatonCloudTokenV1> tokenCache = CacheBuilder.newBuilder().expireAfterWrite(59, TimeUnit.MINUTES)
             .build();
-
-    /**
-     * Called when any global setting is updated
-     */
-    private void databaseChangeEvent(DatabaseChangeEvent event) {
-        if (tokenCache.size() == 0) {
-            return;
-        }
-        try {
-            checkEventForSecretUpdate(event, EATON_CLOUD_SECRET);
-            checkEventForSecretUpdate(event, EATON_CLOUD_SECRET2);
-        } catch (Exception e) {
-            log.error("Unable to retrieve token", e);
-        }
-    }
-
-    /**
-     * Check if secret was updated and refresh the token
-     * 
-     * It takes a few seconds after the secret rotation to be able to retrieve the token, we will use the secret that
-     * was not updated to retrieve the token in order to prevent error from displaying in the log file
-     * if we were unable to get the token the token will be removed from cache and it will be retrieved on the next call to
-     * cloud
-     */
-    private void checkEventForSecretUpdate(DatabaseChangeEvent event,
-            GlobalSettingType rotatedSecret) {
-        GlobalSettingType secretForTokenRetrieval = rotatedSecret == EATON_CLOUD_SECRET ? EATON_CLOUD_SECRET2 : EATON_CLOUD_SECRET;
-        if (settingDao.isDbChangeForSetting(event, rotatedSecret)) {
-            try {
-                log.info("Updated {}. Attempting to retrieve token using {}.", rotatedSecret, secretForTokenRetrieval);
-                if (Strings.isNullOrEmpty(settingDao.getString(secretForTokenRetrieval))) {
-                    log.info("Updated {}. {} is blank.", rotatedSecret, secretForTokenRetrieval);
-                    tokenCache.invalidateAll();
-                } else if (getAndCacheToken(secretForTokenRetrieval) == null) {
-                    log.error("Updated {} failed to retrieve token using {}.", rotatedSecret,
-                            secretForTokenRetrieval);
-                    tokenCache.invalidateAll();
-                } else {
-                    log.info("Updated {}. Retrieved the token using {}.", rotatedSecret, secretForTokenRetrieval);
-                }
-            } catch (EatonCloudCommunicationExceptionV1 e) {
-                tokenCache.invalidateAll();
-                log.error("Token retrieval using {} failed:{}.", secretForTokenRetrieval,
-                        jsonPrinter.toJson(e.getErrorMessage()));
-            }
-        }
-    }
 
     @Override
     public void onMessage(Message message) {

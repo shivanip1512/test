@@ -1,5 +1,8 @@
 package com.cannontech.services.eatonCloud.secretRotation.service;
 
+import static com.cannontech.system.GlobalSettingType.EATON_CLOUD_SECRET;
+import static com.cannontech.system.GlobalSettingType.EATON_CLOUD_SECRET2;
+
 import java.text.DateFormat;
 import java.util.ArrayList;
 import java.util.Date;
@@ -29,11 +32,14 @@ import com.cannontech.common.util.ScheduledExecutor;
 import com.cannontech.common.util.jms.YukonJmsTemplate;
 import com.cannontech.common.util.jms.YukonJmsTemplateFactory;
 import com.cannontech.common.util.jms.api.JmsApiDirectory;
+import com.cannontech.core.dynamic.AsyncDynamicDataSource;
 import com.cannontech.core.service.DateFormattingService;
 import com.cannontech.dr.eatonCloud.model.v1.EatonCloudCommunicationExceptionV1;
 import com.cannontech.dr.eatonCloud.model.v1.EatonCloudSecretValueV1;
 import com.cannontech.dr.eatonCloud.model.v1.EatonCloudServiceAccountDetailV1;
 import com.cannontech.dr.eatonCloud.service.v1.EatonCloudCommunicationServiceV1;
+import com.cannontech.message.dispatch.message.DatabaseChangeEvent;
+import com.cannontech.message.dispatch.message.DbChangeCategory;
 import com.cannontech.simulators.message.request.EatonCloudSecretRotationSimulationRequest;
 import com.cannontech.system.GlobalSettingType;
 import com.cannontech.system.dao.GlobalSettingDao;
@@ -52,6 +58,7 @@ public class EatonCloudSecretRotationServiceV1 {
     @Autowired private DateFormattingService dateFormattingService;
     @Autowired private YukonJmsTemplateFactory jmsTemplateFactory;
     @Autowired private ConfigurationSource configSource;
+    @Autowired private AsyncDynamicDataSource asyncDynamicDataSource;
     private YukonJmsTemplate jmsTemplate;
     
     private static final Logger log = YukonLogManager.getLogger(EatonCloudSecretRotationServiceV1.class);
@@ -66,6 +73,7 @@ public class EatonCloudSecretRotationServiceV1 {
     
     private final int numberOfTimesToRetry = 3;
     private int retryIntervalMinutes = 10;
+
     
     @PostConstruct
     public void init() {
@@ -82,8 +90,32 @@ public class EatonCloudSecretRotationServiceV1 {
             }, 0, 1, TimeUnit.DAYS);
         }, 15, TimeUnit.MINUTES);
         initDebugOptions();
+        asyncDynamicDataSource.addDatabaseChangeEventListener(DbChangeCategory.GLOBAL_SETTING, this::databaseChangeEvent);
     }
 
+    /**
+     * Called when any global setting is updated
+     */
+    private void databaseChangeEvent(DatabaseChangeEvent event) {
+        try {
+            checkEventForSecretUpdate(event, EATON_CLOUD_SECRET);
+            checkEventForSecretUpdate(event, EATON_CLOUD_SECRET2);
+        } catch (Exception e) {
+            log.error("Unable to retrieve token", e);
+        }
+    }
+    
+    /**
+     * Validates secret 1 minute after rotation was performed
+     */
+    private void checkEventForSecretUpdate(DatabaseChangeEvent event,
+            GlobalSettingType rotatedSecret) {
+        if (settingDao.isDbChangeForSetting(event, rotatedSecret)) {
+            secretValidations.remove(rotatedSecret);
+            executor.schedule(() -> validateSecret(rotatedSecret), 1, TimeUnit.MINUTES);
+        }
+    }
+    
     /**
      * master.cfg DEV_FORCE_SECRET_ROTATION
      * secret1 - rotates secret1
