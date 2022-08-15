@@ -10,7 +10,6 @@
 <%@ taglib prefix="tags" tagdir="/WEB-INF/tags" %>
 
 <cti:standardPage module="support" page="eventViewer.byType">
-<cti:includeScript link="/resources/js/pages/yukon.support.eventlog.type.js"/>
 
     <cti:linkTabbedContainer>
         <cti:msg2 key=".byCategory.contextualPageName" var="byCategoryTab"/>
@@ -96,7 +95,7 @@
         </c:choose>
     <div class="action-area stacked">
         <c:if test="${not empty filter}">
-            <cti:button id="filter-btn" nameKey="filter" classes="action primary fl"/>
+            <cti:button id="filterByType-btn" nameKey="filter" classes="action primary fl"/>
         </c:if>
         <c:choose>
             <c:when test="${maxCsvRows > searchResult.hitCount}">
@@ -114,7 +113,7 @@
     <cti:msg var="eventsTitle" key="yukon.common.events.title"/>
    
     <tags:sectionContainer title="${eventsTitle}" controls="${controls}">
-        <div id="events-container" data-static>
+        <div id="eventsByType-container" data-static>
             <table class="compact-results-table">
                 <thead>
                     <tr>
@@ -147,5 +146,7 @@
             <tags:pagingResultsControls result="${searchResult}" adjustPageCount="true" hundreds="true"/>
         </div>
     </tags:sectionContainer>
+    
+    <cti:includeScript link="/resources/js/pages/yukon.support.eventlog.js"/>
 
 </cti:standardPage>
