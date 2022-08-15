@@ -20,6 +20,11 @@ std::string RfnDerPayloadDeliveryCommand::getCommandName() const
     return "DER Payload Delivery Request";
 }
 
+auto RfnDerPayloadDeliveryCommand::getApplicationServiceId() const -> ASID
+{
+    return ASID::E2EAP_DER;
+}
+
 bool RfnDerPayloadDeliveryCommand::isOscoreEncrypted() const
 {
     return false;
