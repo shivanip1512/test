@@ -227,15 +227,11 @@ public class YukonSecurityController {
         MessageSourceAccessor accessor = messageSourceResolver.getMessageSourceAccessor(userContext);
         model.addAttribute("encryptedRoute", encryptedRoute);
         model.addAttribute("encryptedRoutes", encryptedRouteDao.getAllEncryptedRoutes());
-        model.addAttribute("secret1RotationAllowed", eatonCloudSecretRotationServiceV1.secretRotationAllowed(1));
-        model.addAttribute("secret2RotationAllowed", eatonCloudSecretRotationServiceV1.secretRotationAllowed(2));        
+        model.addAttribute("secretRotationAllowed", eatonCloudSecretRotationServiceV1.secretRotationAllowed());
         
-        String secret1RotationTime = dateFormattingService.format(eatonCloudSecretRotationServiceV1.timeNextRotationAllowed(1), DateFormattingService.DateFormatEnum.DATEHMS_12, userContext);
-        String secret2RotationTime = dateFormattingService.format(eatonCloudSecretRotationServiceV1.timeNextRotationAllowed(2), DateFormattingService.DateFormatEnum.DATEHMS_12, userContext);;
-        String secret1RotationTitleText = !eatonCloudSecretRotationServiceV1.secretRotationAllowed(1) ? accessor.getMessage(baseKey + ".secretsBox.nextRefreshAllowedAt") + secret1RotationTime : "" ;
-        String secret2RotationTitleText = !eatonCloudSecretRotationServiceV1.secretRotationAllowed(2) ? accessor.getMessage(baseKey + ".secretsBox.nextRefreshAllowedAt") + secret2RotationTime : "" ;
-        model.addAttribute("secret1RotationTitleText", secret1RotationTitleText);
-        model.addAttribute("secret2RotationTitleText", secret2RotationTitleText);
+        String secretRotationTime = dateFormattingService.format(eatonCloudSecretRotationServiceV1.timeNextRotationAllowed(), DateFormattingService.DateFormatEnum.DATEHMS_12, userContext);
+        String secretRotationTitleText = !eatonCloudSecretRotationServiceV1.secretRotationAllowed() ? accessor.getMessage(baseKey + ".secretsBox.nextRefreshAllowedAt") + secretRotationTime : "" ;
+        model.addAttribute("secretRotationTitleText", secretRotationTitleText);
         
         try {
             EatonCloudSecretExpiryTime secretExpirations = eatonCloudSecretRotationServiceV1.getSecretExpiryTime();

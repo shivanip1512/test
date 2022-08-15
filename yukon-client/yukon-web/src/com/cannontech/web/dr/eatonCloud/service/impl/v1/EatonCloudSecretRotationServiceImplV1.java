@@ -32,14 +32,9 @@ public class EatonCloudSecretRotationServiceImplV1 implements EatonCloudSecretRo
     private static final int minimumRotationInterval = 5;
     
     
-    private Map<Integer, Instant> nextRotationTime = new HashMap<Integer, Instant>();
+    private Instant nextRotationTime = new Instant();
     private Map<Integer, GlobalSettingType> secretToGlobalSettings = Map.of(1, GlobalSettingType.EATON_CLOUD_SECRET, 2,
             GlobalSettingType.EATON_CLOUD_SECRET2);
-    
-    @PostConstruct
-    public void init() {
-        secretToGlobalSettings.keySet().stream().forEach(secretNumber -> nextRotationTime.put(secretNumber, new Instant())); // This allows the secrets to be immediately rotated upon service start
-    }
     
     @Override
     public EatonCloudSecretExpiryTime getSecretExpiryTime() {
@@ -54,18 +49,18 @@ public class EatonCloudSecretRotationServiceImplV1 implements EatonCloudSecretRo
         settingDao.updateSetting(new GlobalSetting(secretToGlobalSettings.get(secretNumber), value.getSecret()), user);
         eatonCloudEventLogService.secretRotationSuccess("secret" + secretNumber, user, 1);
         if (value.getExpiryTime() != null) {
-            nextRotationTime.put(secretNumber, new Instant().plus(Duration.standardMinutes(minimumRotationInterval)));
+            nextRotationTime = new Instant().plus(Duration.standardMinutes(minimumRotationInterval));
         }
         return value.getExpiryTime() == null ? null : new Instant(value.getExpiryTime());
     }
 
     @Override
-    public Boolean secretRotationAllowed(int secretNumber) {
-        return nextRotationTime.get(secretNumber).isBeforeNow();
+    public Boolean secretRotationAllowed() {
+        return nextRotationTime.isBeforeNow();
     }
 
     @Override
-    public Instant timeNextRotationAllowed(int secretNumber) {
-        return nextRotationTime.get(secretNumber);
+    public Instant timeNextRotationAllowed() {
+        return nextRotationTime;
     }
 }

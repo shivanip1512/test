@@ -184,12 +184,12 @@
             	<div class="PB10" style="line-height:40px;">
             		<i:inline key=".secretsBox.secret1Expiration"/>:&nbsp;
             		<cti:formatDate type="DATEHMS_12" value="${brightlayerSecretKeyExpiration.expiryTime1}" nullText="${secretNotFoundMessage}"/>
-            		<cti:button nameKey="refresh" classes="fr js-refresh-secret" data-secret-number="1" disabled="${!secret1RotationAllowed}" title="${secret1RotationTitleText}"/>
+            		<cti:button nameKey="refresh" classes="fr js-refresh-secret" data-secret-number="1" disabled="${!secretRotationAllowed}" title="${secretRotationTitleText}"/>
             	</div>
             	<div style="line-height:40px;">
             		<i:inline key=".secretsBox.secret2Expiration"/>:&nbsp;
             		<cti:formatDate type="DATEHMS_12" value="${brightlayerSecretKeyExpiration.expiryTime2}" nullText="${secretNotFoundMessage}"/>
-            		<cti:button nameKey="refresh" classes="fr js-refresh-secret" data-secret-number="2" disabled="${!secret2RotationAllowed}" title="${secret2RotationTitleText}"/>
+            		<cti:button nameKey="refresh" classes="fr js-refresh-secret" data-secret-number="2" disabled="${!secretRotationAllowed}" title="${secretRotationTitleText}"/>
             	</div>
             </tags:boxContainer2>
         </div>
