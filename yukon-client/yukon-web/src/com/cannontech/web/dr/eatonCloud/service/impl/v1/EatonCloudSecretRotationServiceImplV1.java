@@ -38,7 +38,7 @@ public class EatonCloudSecretRotationServiceImplV1 implements EatonCloudSecretRo
     
     @PostConstruct
     public void init() {
-        secretToGlobalSettings.keySet().stream().forEach(secretNumber -> nextRotationTime.put(secretNumber, new Instant())); // Allow immediate rotation on startup
+        secretToGlobalSettings.keySet().stream().forEach(secretNumber -> nextRotationTime.put(secretNumber, new Instant())); // This allows the secrets to be immediately rotated upon service start
     }
     
     @Override

@@ -233,7 +233,7 @@
     <entry key="yukon.web.modules.adminSetup.security.secretsBox.secretRotationError">An error occurred trying to refresh secret{0}. {1}</entry>
     <entry key="yukon.web.modules.adminSetup.security.secretsBox.secretExpirationRetrieveError">Unable to retrieve the Brightlayer Secret Expirations. {0}</entry>
     <entry key="yukon.web.modules.adminSetup.security.secretsBox.secretNotFound">Secret not found.</entry>
-    <entry key="yukon.web.modules.adminSetup.security.secretsBox.nextRefreshAllowedAt">Next refresh allowed at </entry>
+    <entry key="yukon.web.modules.adminSetup.security.secretsBox.nextRefreshAllowedAt">Next Refresh Available: </entry>
     
     <entry key="yukon.web.modules.adminSetup.security.deleteKeyBtnTitle">Delete Key</entry>
     <entry key="yukon.web.modules.adminSetup.security.deleteKeyBtnDisabledTitle">Cannot delete key while key is in use</entry>

@@ -227,8 +227,8 @@ public class YukonSecurityController {
         MessageSourceAccessor accessor = messageSourceResolver.getMessageSourceAccessor(userContext);
         model.addAttribute("encryptedRoute", encryptedRoute);
         model.addAttribute("encryptedRoutes", encryptedRouteDao.getAllEncryptedRoutes());
-        model.addAttribute("secret1RoatationAllowed", eatonCloudSecretRotationServiceV1.secretRotationAllowed(1));
-        model.addAttribute("secret2RoatationAllowed", eatonCloudSecretRotationServiceV1.secretRotationAllowed(2));        
+        model.addAttribute("secret1RotationAllowed", eatonCloudSecretRotationServiceV1.secretRotationAllowed(1));
+        model.addAttribute("secret2RotationAllowed", eatonCloudSecretRotationServiceV1.secretRotationAllowed(2));        
         
         String secret1RotationTime = dateFormattingService.format(eatonCloudSecretRotationServiceV1.timeNextRotationAllowed(1), DateFormattingService.DateFormatEnum.DATEHMS_12, userContext);
         String secret2RotationTime = dateFormattingService.format(eatonCloudSecretRotationServiceV1.timeNextRotationAllowed(2), DateFormattingService.DateFormatEnum.DATEHMS_12, userContext);;
