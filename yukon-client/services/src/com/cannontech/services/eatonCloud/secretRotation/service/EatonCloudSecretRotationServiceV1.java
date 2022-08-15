@@ -34,7 +34,6 @@ import com.cannontech.dr.eatonCloud.model.v1.EatonCloudCommunicationExceptionV1;
 import com.cannontech.dr.eatonCloud.model.v1.EatonCloudSecretValueV1;
 import com.cannontech.dr.eatonCloud.model.v1.EatonCloudServiceAccountDetailV1;
 import com.cannontech.dr.eatonCloud.service.v1.EatonCloudCommunicationServiceV1;
-import com.cannontech.services.eatonCloud.authToken.service.EatonCloudAuthTokenServiceV1;
 import com.cannontech.simulators.message.request.EatonCloudSecretRotationSimulationRequest;
 import com.cannontech.system.GlobalSettingType;
 import com.cannontech.system.dao.GlobalSettingDao;
@@ -48,7 +47,6 @@ public class EatonCloudSecretRotationServiceV1 {
     @Autowired @Qualifier("main") private ScheduledExecutor executor;
     @Autowired private GlobalSettingDao settingDao;
     @Autowired private GlobalSettingUpdateDao settingUpdateDao;
-    @Autowired private EatonCloudAuthTokenServiceV1 eatonCloudAuthTokenServiceV1;
     @Autowired private EatonCloudCommunicationServiceV1 eatonCloudCommunicationService;
     @Autowired private EatonCloudEventLogService eatonCloudEventLogService;
     @Autowired private DateFormattingService dateFormattingService;
@@ -142,11 +140,10 @@ public class EatonCloudSecretRotationServiceV1 {
      */
     private void validateSecret(GlobalSettingType type) {
         synchronized (this) {
-            String serviceAccountId = settingDao.getString(GlobalSettingType.EATON_CLOUD_SERVICE_ACCOUNT_ID);
             String secret = "secret" + globalSettingsToSecret.get(type);
             AtomicInteger currentTry = secretValidations.getOrDefault(type, new AtomicInteger(1));
             try {
-                eatonCloudAuthTokenServiceV1.retrieveNewToken(type, serviceAccountId);
+                eatonCloudCommunicationService.retrieveNewToken(type);
                 secretValidations.remove(type);
                 log.info("({} of {}) {} token retrieval successful.", currentTry.get(), numberOfTimesToRetry, secret);
             } catch (EatonCloudCommunicationExceptionV1 e) {

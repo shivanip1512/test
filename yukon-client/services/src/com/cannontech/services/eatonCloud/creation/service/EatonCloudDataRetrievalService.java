@@ -94,8 +94,8 @@ public class EatonCloudDataRetrievalService {
         jmsTemplate = jmsTemplateFactory.createTemplate(JmsApiDirectory.SIMULATORS);
         
         asyncDynamicDataSource.addDatabaseChangeEventListener(DbChangeCategory.GLOBAL_SETTING, this::databaseChangeEvent);
-        scheduleDeviceAutoCreate(5);
-        scheduleDeviceRead(5);
+       // scheduleDeviceAutoCreate(5);
+      //  scheduleDeviceRead(5);
     }
 
 

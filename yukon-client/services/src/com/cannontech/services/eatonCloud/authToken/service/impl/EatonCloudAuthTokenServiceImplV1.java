@@ -1,5 +1,9 @@
 package com.cannontech.services.eatonCloud.authToken.service.impl;
 
+import static com.cannontech.system.GlobalSettingType.EATON_CLOUD_SECRET;
+import static com.cannontech.system.GlobalSettingType.EATON_CLOUD_SECRET2;
+import static com.cannontech.system.GlobalSettingType.EATON_CLOUD_SERVICE_ACCOUNT_ID;
+
 import java.util.Arrays;
 import java.util.concurrent.TimeUnit;
 
@@ -21,9 +25,7 @@ import com.cannontech.dr.eatonCloud.message.EatonCloudHeartbeatRequest;
 import com.cannontech.dr.eatonCloud.message.EatonCloudHeartbeatResponse;
 import com.cannontech.dr.eatonCloud.message.v1.EatonCloudAuthTokenRequestV1;
 import com.cannontech.dr.eatonCloud.message.v1.EatonCloudAuthTokenResponseV1;
-import com.cannontech.dr.eatonCloud.model.EatonCloudRetrievalUrl;
 import com.cannontech.dr.eatonCloud.model.v1.EatonCloudCommunicationExceptionV1;
-import com.cannontech.dr.eatonCloud.model.v1.EatonCloudCredentialsV1;
 import com.cannontech.dr.eatonCloud.model.v1.EatonCloudErrorHandlerV1;
 import com.cannontech.dr.eatonCloud.model.v1.EatonCloudTokenV1;
 import com.cannontech.dr.eatonCloud.service.v1.EatonCloudCommunicationServiceV1;
@@ -35,10 +37,8 @@ import com.cannontech.system.dao.GlobalSettingDao;
 import com.google.common.base.Strings;
 import com.google.common.cache.Cache;
 import com.google.common.cache.CacheBuilder;
+import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
-import static com.cannontech.system.GlobalSettingType.EATON_CLOUD_SECRET;
-import static com.cannontech.system.GlobalSettingType.EATON_CLOUD_SECRET2;
-import static com.cannontech.system.GlobalSettingType.EATON_CLOUD_SERVICE_ACCOUNT_ID;
 
 public class EatonCloudAuthTokenServiceImplV1 implements EatonCloudAuthTokenServiceV1, MessageListener {
 
@@ -50,6 +50,7 @@ public class EatonCloudAuthTokenServiceImplV1 implements EatonCloudAuthTokenServ
     @Autowired private AsyncDynamicDataSource asyncDynamicDataSource;
     @Autowired private EatonCloudCommunicationServiceV1 eatonCloudCommunicationService;
     private RestTemplate restTemplate;
+    private Gson jsonPrinter;
 
     @PostConstruct
     public void init() {
@@ -57,6 +58,7 @@ public class EatonCloudAuthTokenServiceImplV1 implements EatonCloudAuthTokenServ
         restTemplate.setErrorHandler(new EatonCloudErrorHandlerV1());
         restTemplate.setMessageConverters(Arrays.asList(mappingJackson2HttpMessageConverter));
         asyncDynamicDataSource.addDatabaseChangeEventListener(DbChangeCategory.GLOBAL_SETTING, this::databaseChangeEvent);
+        jsonPrinter = new GsonBuilder().setPrettyPrinting().create();
     }
 
     private Cache<String, EatonCloudTokenV1> tokenCache = CacheBuilder.newBuilder().expireAfterWrite(59, TimeUnit.MINUTES)
@@ -103,9 +105,8 @@ public class EatonCloudAuthTokenServiceImplV1 implements EatonCloudAuthTokenServ
                 }
             } catch (EatonCloudCommunicationExceptionV1 e) {
                 tokenCache.invalidateAll();
-                log.error("Token retrieval using {} failed:{}.",
-                        secretForTokenRetrieval,
-                        new GsonBuilder().setPrettyPrinting().create().toJson(e.getErrorMessage()));
+                log.error("Token retrieval using {} failed:{}.", secretForTokenRetrieval,
+                        jsonPrinter.toJson(e.getErrorMessage()));
             }
         }
     }
@@ -177,14 +178,11 @@ public class EatonCloudAuthTokenServiceImplV1 implements EatonCloudAuthTokenServ
         } catch (EatonCloudCommunicationExceptionV1 e) {
             if (Strings.isNullOrEmpty(secret2)) {
                 log.error("{} is blank. Token retrieval using {} failed:{}.",
-                        EATON_CLOUD_SECRET2,
-                        EATON_CLOUD_SECRET,
-                        new GsonBuilder().setPrettyPrinting().create().toJson(e.getErrorMessage()));
+                        EATON_CLOUD_SECRET2, EATON_CLOUD_SECRET, jsonPrinter.toJson(e.getErrorMessage()));
                 sendResponse(message, null, e);
             } else {
                 log.error("Token retrieval using {} failed:{}.",
-                        EATON_CLOUD_SECRET,
-                        new GsonBuilder().setPrettyPrinting().create().toJson(e.getErrorMessage()));
+                        EATON_CLOUD_SECRET, jsonPrinter.toJson(e.getErrorMessage()));
                 retrieveTokenUsingSecret2(message);
             }
         }
@@ -195,32 +193,16 @@ public class EatonCloudAuthTokenServiceImplV1 implements EatonCloudAuthTokenServ
             EatonCloudTokenV1 newToken = getAndCacheToken(EATON_CLOUD_SECRET2);
             sendResponse(message, newToken, null);
         } catch (EatonCloudCommunicationExceptionV1 e) {
-            log.error("Token retrieval using {} failed:{}.", EATON_CLOUD_SECRET2,
-                    new GsonBuilder().setPrettyPrinting().create().toJson(e.getErrorMessage()));
+            log.error("Token retrieval using {} failed:{}.", EATON_CLOUD_SECRET2, jsonPrinter.toJson(e.getErrorMessage()));
             sendResponse(message, null, e);
         }
     }
 
     private EatonCloudTokenV1 getAndCacheToken(GlobalSettingType type) {
+        EatonCloudTokenV1 newToken = eatonCloudCommunicationService.retrieveNewToken(type);
+        log.info("Retrieved token using {}", type);
         String serviceAccountId = settingDao.getString(EATON_CLOUD_SERVICE_ACCOUNT_ID);
-        EatonCloudTokenV1 newToken = retrieveNewToken(type, serviceAccountId);
-        if(newToken != null) {
-            log.info("Retrieved token using {}", type);
-            tokenCache.put(serviceAccountId, newToken);
-        }
-        return newToken;
-    }
-
-    @Override
-    public EatonCloudTokenV1 retrieveNewToken(GlobalSettingType type, String serviceAccountId) {
-        String url = EatonCloudRetrievalUrl.SECURITY_TOKEN.getUrl(settingDao, restTemplate);
-        String secret = settingDao.getString(type);
-        if (Strings.isNullOrEmpty(secret)) {
-            log.error("{} is blank. Failed t retrieve token.", type);
-            return null;
-        }
-        EatonCloudCredentialsV1 credentials = new EatonCloudCredentialsV1(serviceAccountId, secret);
-        EatonCloudTokenV1 newToken = restTemplate.postForObject(url, credentials, EatonCloudTokenV1.class);
+        tokenCache.put(serviceAccountId, newToken);
         return newToken;
     }
 
