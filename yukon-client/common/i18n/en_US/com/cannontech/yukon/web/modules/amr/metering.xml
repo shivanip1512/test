@@ -189,6 +189,9 @@
     <entry key="yukon.web.widgets.configWidget.uploadPopup.message">Device Configuration has been changed to ''{0}'' for device ''{1}'', would you like to Upload the Configuration to the device?</entry>
     <entry key="yukon.web.widgets.configWidget.actionsDisabledMessage">Actions are disabled while Status is In Progress</entry>
     <entry key="yukon.web.widgets.configWidget.actionInProgress">Action not allowed while Status is In Progress.</entry>
+    <entry key="yukon.web.widgets.configWidget.noConfig.message">
+        There is no Device Configuration created for this device type yet. Please create one from Device Configuration page.
+    </entry>
     <!-- Used in outOfSync.jsp -->
     <entry key="yukon.web.widgets.configWidget.verifyResult">Verify Result</entry>
     <entry key="yukon.web.widgets.configWidget.inSync">In Sync</entry>
