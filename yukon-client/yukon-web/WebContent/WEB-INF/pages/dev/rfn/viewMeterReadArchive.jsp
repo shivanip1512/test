@@ -149,9 +149,9 @@
                     </form:select>
                 </tags:nameValue>
                 
-                <tags:nameValue name="Reading Time">
-                    <dt:dateTime id="timestamp" path="timestamp" disabled="${meterReading.now}" />
-                    <tags:check id="now" path="now" label="Now" buttonStyle="margin-top:-19px" onclick="enableByCheckbox('timestamp', 'now')"/>
+                <tags:nameValue name="Reading Time" valueClass="dif">
+                    <dt:dateTime id="timestamp" path="timestamp" disabled="${meterReading.now}" wrapperClass="H37"/>
+                    <tags:check id="now" path="now" label="Now" onclick="enableByCheckbox('timestamp', 'now')"/>
                 </tags:nameValue>
 
                 <tags:nameValue name="Value">
