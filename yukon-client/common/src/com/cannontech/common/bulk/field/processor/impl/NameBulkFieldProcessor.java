@@ -29,7 +29,7 @@ public class NameBulkFieldProcessor extends BulkYukonDeviceFieldProcessor {
                 key = "changeDeviceName";
                 errorMessage = "Could not change name of device with id: " + device.getDeviceId();
             }
-            throw new ProcessingException(errorMessage, key, e, device.getDeviceId());
+            throw new ProcessingException(errorMessage, key, e, Integer.toString(device.getDeviceId()));
         }
     }
     
