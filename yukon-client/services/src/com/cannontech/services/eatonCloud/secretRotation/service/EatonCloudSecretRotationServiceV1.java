@@ -4,6 +4,9 @@ import static com.cannontech.system.GlobalSettingType.EATON_CLOUD_SECRET;
 import static com.cannontech.system.GlobalSettingType.EATON_CLOUD_SECRET2;
 
 import java.text.DateFormat;
+import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.time.temporal.ChronoUnit;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
@@ -56,9 +59,9 @@ public class EatonCloudSecretRotationServiceV1 {
     @Autowired private EatonCloudCommunicationServiceV1 eatonCloudCommunicationService;
     @Autowired private EatonCloudEventLogService eatonCloudEventLogService;
     @Autowired private DateFormattingService dateFormattingService;
-    @Autowired private YukonJmsTemplateFactory jmsTemplateFactory;
     @Autowired private ConfigurationSource configSource;
     @Autowired private AsyncDynamicDataSource asyncDynamicDataSource;
+    @Autowired private YukonJmsTemplateFactory jmsTemplateFactory;
     private YukonJmsTemplate jmsTemplate;
     
     private static final Logger log = YukonLogManager.getLogger(EatonCloudSecretRotationServiceV1.class);
@@ -81,16 +84,15 @@ public class EatonCloudSecretRotationServiceV1 {
         if (Strings.isNullOrEmpty(serviceAccountId)) {
             return;
         }
-        
         jmsTemplate = jmsTemplateFactory.createTemplate(JmsApiDirectory.NEW_ALERT_CREATION);
-        executor.schedule(() -> {
-            log.info("Scheduling Eaton Cloud Secret rotation and validation");
-            executor.scheduleAtFixedRate(() -> {
-                rotateSecrets();
-            }, 0, 1, TimeUnit.DAYS);
-        }, 15, TimeUnit.MINUTES);
-        initDebugOptions();
+        Long minutesTo10Pm = LocalDateTime.now().until(LocalDate.now().plusDays(1).atStartOfDay().minusHours(2), ChronoUnit.MINUTES);
+        log.info("Secret Rotation scheduled to run in {} minutes", minutesTo10Pm);
+        Long minutesInADay = 1440L;
+        executor.scheduleAtFixedRate(() -> {
+           rotateSecrets();
+        }, minutesTo10Pm, minutesInADay, TimeUnit.MINUTES);
         asyncDynamicDataSource.addDatabaseChangeEventListener(DbChangeCategory.GLOBAL_SETTING, this::databaseChangeEvent);
+        initDebugOptions();
     }
 
     /**
