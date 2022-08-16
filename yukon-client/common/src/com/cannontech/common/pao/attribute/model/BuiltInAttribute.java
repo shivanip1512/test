@@ -1079,6 +1079,7 @@ public enum BuiltInAttribute implements Attribute, DisplayableEnum {
         groupedRfnEventBuilder.put(AttributeGroup.RFN_DEMAND_EVENT, lookupByGroup.get(AttributeGroup.RFN_DEMAND_EVENT));
         groupedRfnEventBuilder.put(AttributeGroup.RFN_OTHER_EVENT, lookupByGroup.get(AttributeGroup.RFN_OTHER_EVENT));
         groupedRfnEventBuilder.put(AttributeGroup.RFN_METERING_EVENT, lookupByGroup.get(AttributeGroup.RFN_METERING_EVENT));
+        groupedRfnEventBuilder.put(AttributeGroup.CELLULAR_ENUMERATED_VALUE_EVENT, lookupByGroup.get(AttributeGroup.CELLULAR_ENUMERATED_VALUE_EVENT));
 
         groupedRfnEventAttributes = groupedRfnEventBuilder.build();
     }

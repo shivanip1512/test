@@ -10,8 +10,6 @@ public enum InsertedRemoved implements PointState {
     final private int analogValue;
     final private String displayValue;
     
-    
-    // TODO: Verify that we actually need these extra methods. Should they be added to the interface?
     private InsertedRemoved(int analogValue, String displayValue) {
         this.analogValue = analogValue;
         this.displayValue = displayValue;

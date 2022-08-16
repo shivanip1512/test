@@ -3143,7 +3143,7 @@ Note: Look at BuiltInAttribute as that follows the same convention.
     <point offset="106" type="Status">
         <name>Cellular Sim Card Inserted Removed</name>
         <archive interval="ZERO" type="ON_UPDATE"/>
-        <stategroup value="Event Status"/>
+        <stategroup value="InsertedRemoved"/>
     </point>
     <point offset="107" type="Status">
         <name>Cellular APN Changed</name>

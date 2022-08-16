@@ -85,6 +85,7 @@
                     <tags:inputNameValue nameKey=".dataType.THRESHOLD_VALUE" path="thresholdValue" />
                     <tags:inputNameValue nameKey=".dataType.UOM" path="uom" />
                     <tags:inputNameValue nameKey=".dataType.UOM_MODIFIERS" path="uomModifiers" />
+                    <tags:inputNameValue nameKey=".dataType.SIM_CARD_STATUS" path="simCardStatus" />
                 </tags:nameValueContainer2>
             </tags:sectionContainer>
 
