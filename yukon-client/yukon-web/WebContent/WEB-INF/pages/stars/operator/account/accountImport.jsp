@@ -50,10 +50,10 @@
                         
                         <tags:nameValueContainer2>
                             <tags:nameValue2 nameKey=".accountImportFile" >
-                                <tags:file name="accountImportFile" spanClass="clear"/>
+                                <tags:file name="accountImportFile"/>
                             </tags:nameValue2>
                             <tags:nameValue2 nameKey=".hardwareImportFile">
-                                <tags:file name="hardwareImportFile" spanClass="clear"/>
+                                <tags:file name="hardwareImportFile"/>
                             </tags:nameValue2>
                             <tags:inputNameValue nameKey=".email" path="email" size="35"/>
                         </tags:nameValueContainer2>
