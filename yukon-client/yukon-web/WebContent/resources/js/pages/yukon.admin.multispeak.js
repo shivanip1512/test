@@ -161,7 +161,7 @@ yukon.admin.multispeak = (function() {
             });
             if ($("#attributes").is(":visible")) {
                $("#attributes").chosen({
-                  width: "200px"
+                  width: "170px"
                });
             }
             if (document.querySelector('[id^="mspVendor.attributes.errors"]') !== null) {
